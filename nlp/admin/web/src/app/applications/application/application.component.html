@@ -1,0 +1,49 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<md-card>
+  <md-card-title>
+      <span *ngIf="applications.length !== 0">Applications</span>
+  </md-card-title>
+  <md-card-content *ngIf="application">
+    <div>
+      <md-input-container>
+        <input mdInput placeholder="New Application name" [(ngModel)]="application.name" (keyup.enter)="saveApplication()">
+      </md-input-container>
+    </div>
+    <div *ngIf="state.locales">
+      <md-chip-list>
+        <md-chip *ngFor="let locale of application.supportedLocales" mdTooltip="Delete locale" selected="true" (click)="removeLocale(locale)" color="accent">
+          {{state.localeName(locale)}}
+        </md-chip>
+      </md-chip-list>
+    </div>
+    <div>
+      <md-select (change)="addLocale($event.value)" [ngModel]="newLocale" placeholder="Add new locale" class="mat-chip-list-stacked select-locale">
+        <md-option *ngFor="let locale of state.locales"
+                   [value]="locale.first">{{ locale.second }}
+        </md-option>
+      </md-select>
+    </div>
+  </md-card-content>
+  <md-card-actions>
+    <button *ngIf="applications.length !== 0" routerLink="/applications" md-button>Cancel</button>
+    <button *ngIf="!newApplication" md-raised-button (click)="deleteApplication()" color="warn">Delete Application</button>
+    <button *ngIf="newApplication" md-raised-button (click)="saveApplication()" color="primary">Create new Application</button>
+    <button *ngIf="!newApplication" md-raised-button (click)="saveApplication()" color="primary">Update Application</button>
+  </md-card-actions>
+</md-card>
+

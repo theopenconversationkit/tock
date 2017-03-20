@@ -1,0 +1,57 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<nav md-tab-nav-bar>
+  <a md-tab-link
+     [routerLink]="['try']"
+     routerLinkActive #rla2="routerLinkActive"
+     [active]="rla2.isActive">
+    Try it
+  </a>
+  <a md-tab-link
+     [routerLink]="['inbox']"
+     routerLinkActive #rla3="routerLinkActive"
+     [active]="rla3.isActive">
+    Inbox
+  </a>
+  <a md-tab-link
+     [routerLink]="['archive']"
+     routerLinkActive #rla4="routerLinkActive"
+     [active]="rla4.isActive">
+    Archive
+  </a>
+  <a md-tab-link
+     [routerLink]="['search']"
+     routerLinkActive #rla6="routerLinkActive"
+     [active]="rla6.isActive">
+    Search
+  </a>
+  <a md-tab-link
+     [routerLink]="['intents']"
+     routerLinkActive #rla5="routerLinkActive"
+     [active]="rla5.isActive">
+    Intents
+  </a>
+  <!--a md-tab-link
+     [routerLink]="['logs']"
+     routerLinkActive #rla7="routerLinkActive"
+     [active]="rla7.isActive"
+     (click)="selectChange()">
+    Logs
+  </a-->
+</nav>
+
+<router-outlet></router-outlet>

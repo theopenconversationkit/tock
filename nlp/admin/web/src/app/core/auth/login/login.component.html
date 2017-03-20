@@ -1,0 +1,51 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<md-card class="">
+  <md-card-title>Authentication</md-card-title>
+  <md-card-content>
+    <md-spinner *ngIf="sendLogin" class="spinner"></md-spinner>
+    <p *ngIf="errorMessage" class="error">
+      {{errorMessage}}
+    </p>
+    <form (keydown.enter)="onSubmit()" (ngSubmit)="onSubmit()" #loginForm="ngForm">
+      <p>
+        <md-input-container #emailInput name="emailInput"
+                  placeholder="E-MAIL"
+                  [(ngModel)]="email"
+                  class="formInput"
+                  ngDefaultControl required email>
+          <input mdInput placeholder="E-MAIL">
+        </md-input-container>
+      </p>
+      <p>
+        <md-input-container #passwordInput name="passwordInput"
+                  placeholder="MOT DE PASSE"
+                  [(ngModel)]="password"
+                  type="password"
+                  class="formInput"
+                  ngDefaultControl required>
+          <input type="password" mdInput placeholder="PASSWORD">
+        </md-input-container>
+      </p>
+      <md-card-actions>
+        <button md-raised-button color="primary" type="submit" [disabled]="!loginForm.form.valid">LOGIN</button>
+      </md-card-actions>
+    </form>
+  </md-card-content>
+</md-card>
+
+

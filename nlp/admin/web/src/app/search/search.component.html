@@ -1,0 +1,42 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<div class="search">
+  <tock-sentences-scroll [filter]="filter" title="">
+    <md-card>
+      <md-card-content>
+        <md-input-container class="search-input">
+          <input mdInput placeholder="Search sentences" [(ngModel)]="filter.search" (keyup.enter)="search()">
+        </md-input-container>
+        <md-select placeholder="Intent" [(ngModel)]="filter.intentId" (change)="search()">
+          <md-option value="-1">All</md-option>
+          <md-option *ngFor="let intent of state.currentApplication.intents" [value]="intent._id">
+            {{intent.name}}
+          </md-option>
+          <md-option value="unknown">Unknown</md-option>
+        </md-select>
+        <md-select placeholder="Status" [(ngModel)]="status" (change)="search()">
+          <md-option value="">All</md-option>
+          <md-option value="inbox">Inbox</md-option>
+          <md-option value="validated">Validated</md-option>
+          <md-option value="model">Included in model</md-option>
+        </md-select>
+        <button md-button (click)="search()">GO</button>
+      </md-card-content>
+    </md-card>
+  </tock-sentences-scroll>
+</div>
+

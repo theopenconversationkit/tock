@@ -1,0 +1,48 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<md-card>
+  <md-card-title>
+    <span *ngIf="state.applications.length === 0">Welcome! Please create your first Application</span>
+    <span *ngIf="state.applications.length !== 0">Applications</span>
+  </md-card-title>
+  <md-card-content>
+    <span *ngIf="state.applications.length === 0">
+      <tock-application></tock-application>
+    </span>
+    <span *ngIf="state.applications.length !== 0">
+      <md-list>
+        <md-list-item *ngFor="let app of state.applications">
+          <button *ngIf="app._id === state.currentApplication._id" mdTooltip="Selected" disabled md-mini-fab><md-icon>label</md-icon></button>
+          <button *ngIf="app._id !== state.currentApplication._id" class="select-action" mdTooltip="Select" (click)="selectApplication(app)" md-mini-fab><md-icon>label_outline</md-icon></button>
+          <span class="tock-name">{{app.name}}</span>
+          <md-chip-list class="mat-chip-list-stacked locales">
+            <md-chip *ngFor="let locale of app.supportedLocales" disabled="true" selected="true" color="accent">
+                {{state.localeName(locale)}}
+            </md-chip>
+          </md-chip-list>
+          <button routerLink="edit/{{app._id}}" md-mini-fab mdTooltip="Edit"><md-icon>edit</md-icon></button>
+        </md-list-item>
+      </md-list>
+    </span>
+    <p></p>
+
+  </md-card-content>
+  <md-card-actions>
+    <button *ngIf="state.applications.length !== 0" md-raised-button routerLink="create" color="primary">Create new Application</button>
+  </md-card-actions>
+</md-card>
+

@@ -1,0 +1,60 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<md-card class="sentence-analysis">
+  <tock-highlight [sentence]="sentence"></tock-highlight>
+  <md-card-content>
+    <div class="sentence-analysis-content">
+      <md-select placeholder="Intent" [ngModel]="sentence.classification.intentId" (change)="onIntentChange($event.value)">
+        <md-option *ngFor="let intent of state.currentApplication.intents" [value]="intent._id">
+          {{intent.name}}
+        </md-option>
+        <md-option value="newIntent">Create a new Intent</md-option>
+      </md-select>
+      <div *ngIf="intentCreation">
+        <md-input-container>
+          <input mdInput placeholder="Intent name"  #intentName (keyup.enter)="createIntent(intentName.value)">
+        </md-input-container>
+        <button md-button color="primary" (click)="createIntent(intentName.value)">OK</button>
+      </div>
+
+      <md-select placeholder="Language" [(ngModel)]="sentence.language" (change)="onLanguageChange($event.value)">
+        <md-option *ngFor="let l of state.currentApplication.supportedLocales" [value]="l">
+          {{state.localeName(l)}}
+        </md-option>
+      </md-select>
+
+
+      <md-list>
+        <md-list-item *ngFor="let entity of sentence.classification.entities">
+          <label [style.background-color]="entity.entityColor">{{entity.qualifiedName(state.user)}}</label>
+          &nbsp;&nbsp;&nbsp;{{sentence.entityValue(entity)}}
+          &nbsp;&nbsp;
+          <button md-button color="warn" (click)="onDeleteEntity(entity)">
+            <md-icon>delete</md-icon>
+            Delete
+          </button>
+        </md-list-item>
+      </md-list>
+    </div>
+  </md-card-content>
+  <md-card-actions class="sentence-analysis-content">
+    <button md-raised-button color="warn" (click)="onDelete()">Delete</button>
+    <button md-raised-button color="accent" (click)="onArchive()" [hidden]="!displayArchiveButton">Archive
+    </button>
+    <button md-raised-button color="primary" (click)="onValidate()">Validate</button>
+  </md-card-actions>
+</md-card>
