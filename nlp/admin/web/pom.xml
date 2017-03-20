@@ -22,7 +22,7 @@
 
   <parent>
     <groupId>fr.vsct.tock</groupId>
-    <artifactId>tock-admin</artifactId>
+    <artifactId>tock-nlp-admin</artifactId>
     <version>0.1-SNAPSHOT</version>
   </parent>
 
