@@ -48,6 +48,6 @@ object ApplicationConfigurationService :
     }
 
     override fun getIntentIdForIntentName(name: String): String {
-        return if (name == unknownIntent) unknownIntent else IntentDefinitionDAO.getIntentByName(name)!!._id!!
+        return if (name == unknownIntent) unknownIntent else intentDAO.getIntentByName(name)!!._id!!
     }
 }
