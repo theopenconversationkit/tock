@@ -42,6 +42,16 @@
                 <artifactId>tock-bot-engine</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
+                <artifactId>connector-messenger</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
+                <artifactId>storage-mongo</artifactId>
+                <version>${project.version}</version>
+            </dependency>
         </dependencies>
     </dependencyManagement>
 
