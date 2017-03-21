@@ -22,16 +22,28 @@ import com.mongodb.client.MongoDatabase
 import mu.KotlinLogging
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.util.KMongoConfiguration
+import kotlin.reflect.KClass
 
 private val logger = KotlinLogging.logger {}
 
+internal val collectionBuilder: (KClass<*>) -> String = {
+    it.simpleName!!
+            .replace("storage", "", true)
+            .toCharArray()
+            .fold("", { s, t ->
+                if (s.isEmpty()) t.toLowerCase().toString()
+                else if (t.isUpperCase()) "${s}_${t.toLowerCase()}"
+                else "$s$t"
+            })
+}
+
 val mongoClient: MongoClient by lazy {
-    KMongoConfiguration.defaultCollectionNameBuilder = { it.simpleName!!.toLowerCase().replace("storage", "") }
+    KMongoConfiguration.defaultCollectionNameBuilder = collectionBuilder
     KMongo.createClient(MongoClientURI("mongodb://localhost:27017"))
 }
 
 fun getDatabase(databaseNameProperty: String): MongoDatabase {
-    val databaseName  = property(databaseNameProperty, databaseNameProperty)
+    val databaseName = property(databaseNameProperty, databaseNameProperty)
     logger.info("get database $databaseName")
     return mongoClient.getDatabase(databaseName)
 }
