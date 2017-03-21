@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.nlp.shared
+package fr.vsct.tock.nlp.shared
 
 import fr.vsct.tock.shared.Runner
 
 /**
  *
  */
-object ThreadRunner : Runner {
+object SimpleThreadRunner : Runner {
 
     override fun executeBlocking(runnable: () -> Unit) {
         Thread(runnable).start()
