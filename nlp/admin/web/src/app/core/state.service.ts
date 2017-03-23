@@ -42,7 +42,7 @@ export class StateService implements AuthListener {
   constructor(private auth: AuthService, private settings: SettingsService) {
     this.auth.addListener(this);
     //hack for dev env
-    if (!environment.production) {
+    if (environment.autologin) {
       this.auth.login("password", new AuthenticateResponse(true, "admin@vsct.fr", "vsc"));
     }
   }

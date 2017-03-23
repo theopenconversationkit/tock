@@ -23,22 +23,19 @@
     </p>
     <form (keydown.enter)="onSubmit()" (ngSubmit)="onSubmit()" #loginForm="ngForm">
       <p>
-        <md-input-container #emailInput name="emailInput"
-                  placeholder="E-MAIL"
-                  [(ngModel)]="email"
-                  class="formInput"
-                  ngDefaultControl required email>
-          <input mdInput placeholder="E-MAIL">
+        <md-input-container #emailInputContainer class="formInput">
+          <input mdInput placeholder="E-MAIL"
+                 #emailInput name="emailInput"
+                 [(ngModel)]="email"
+                 ngDefaultControl required email>
         </md-input-container>
       </p>
       <p>
-        <md-input-container #passwordInput name="passwordInput"
-                  placeholder="MOT DE PASSE"
-                  [(ngModel)]="password"
-                  type="password"
-                  class="formInput"
-                  ngDefaultControl required>
-          <input type="password" mdInput placeholder="PASSWORD">
+        <md-input-container class="formInput">
+          <input type="password"
+                 [(ngModel)]="password"
+                 #passwordInput name="passwordInput" mdInput placeholder="PASSWORD"
+                 ngDefaultControl required>
         </md-input-container>
       </p>
       <md-card-actions>

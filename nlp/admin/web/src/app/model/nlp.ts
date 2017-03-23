@@ -111,7 +111,7 @@ export class Sentence {
 
     let v;
     if (json.value) {
-      switch (json.value.@type) {
+      switch (json.value.type) {
         case "DateEntityValue" :
           v = DateEntityValue.fromJSON(json.value);
           break;

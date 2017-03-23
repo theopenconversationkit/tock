@@ -31,7 +31,7 @@ export class LoginComponent implements OnInit, AfterViewInit {
   errorMessage: string;
   sendLogin: boolean;
 
-  @ViewChild('emailInput') emailInput: MdInputContainer;
+  @ViewChild('emailInputContainer') emailInput: MdInputContainer;
 
   constructor(private authService: AuthService, private router: Router) {
   }
