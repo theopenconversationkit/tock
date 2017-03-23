@@ -249,7 +249,7 @@
                 <version>${plugin.release}</version>
                 <configuration>
                     <autoVersionSubmodules>true</autoVersionSubmodules>
-                    <releaseProfiles>release</releaseProfiles>
+                    <releaseProfiles>deploy</releaseProfiles>
                     <goals>deploy</goals>
                     <tagNameFormat>tock-@{project.version}</tagNameFormat>
                     <preparationGoals>clean package dokka:javadocJar verify</preparationGoals>
@@ -351,7 +351,7 @@
             <id>build</id>
             <activation>
                 <property>
-                    <name>!release</name>
+                    <name>!deploy</name>
                 </property>
             </activation>
             <properties>
@@ -359,10 +359,10 @@
             </properties>
         </profile>
         <profile>
-            <id>release</id>
+            <id>deploy</id>
             <activation>
                 <property>
-                    <name>release</name>
+                    <name>deploy</name>
                 </property>
             </activation>
             <properties>
