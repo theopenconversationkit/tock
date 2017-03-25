@@ -9,8 +9,7 @@
       "outDir": "dist",
       "assets": [
         "assets",
-        "favicon.ico",
-        {"glob": "index.js", "input": "../node_modules/texthighlighter", "output": "./texthighlighter/"}
+        "favicon.ico"
       ],
       "index": "index.html",
       "main": "main.ts",

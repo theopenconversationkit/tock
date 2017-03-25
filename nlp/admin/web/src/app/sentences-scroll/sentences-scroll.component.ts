@@ -53,7 +53,6 @@ export class SentencesScrollComponent implements OnInit {
   load() {
     if (!this.loading && (this.total === -1 || this.total > this.cursor)) {
       this.loading = true;
-      console.log("load " + this.cursor);
       const app = this.state.currentApplication;
       const language = this.state.currentLocale;
       this.nlp.searchSentences(new SearchQuery(
@@ -84,7 +83,6 @@ export class SentencesScrollComponent implements OnInit {
     this.sentences.splice(this.sentences.indexOf(s), 1);
     this.total -= 1;
     this.cursor -= 1;
-    console.log(this.total);
   }
 
 }

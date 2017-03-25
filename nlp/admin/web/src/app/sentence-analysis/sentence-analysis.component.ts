@@ -47,7 +47,6 @@ export class SentenceAnalysisComponent implements OnInit {
 
   onIntentChange(value) {
     //cleanup entities
-    console.log(value);
     this.sentence.classification.entities = [];
     if (value === "newIntent") {
       this.intentCreation = true;

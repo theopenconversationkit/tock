@@ -198,7 +198,7 @@ export class ClassifiedEntity {
               public role: string,
               public start: number,
               public end: number,
-              public value: any) {
+              public value?: any) {
     this.qualifiedRole = qualifiedRole(type, role);
     this.entityColor = entityColor(this.qualifiedRole)
   }

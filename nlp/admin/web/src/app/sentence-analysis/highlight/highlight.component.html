@@ -14,7 +14,16 @@
   ~ limitations under the License.
   -->
 
-<md-card-title class="highlight-text">{{sentence.text}}</md-card-title>
+<md-card-title class="highlight-text">
+  <div *ngIf="tokens"><span *ngFor="let t of tokens"
+                            [style.background]="t.color()"
+                            (mouseup)="select()"
+                            (touchend)="select()"
+                            [id]="t.index">{{t.text}}</span></div>
+</md-card-title>
+<md-card-content>
+
+</md-card-content>
 
 <md-card-subtitle *ngIf="edited" class="highlight">
   <div *ngIf="intent">

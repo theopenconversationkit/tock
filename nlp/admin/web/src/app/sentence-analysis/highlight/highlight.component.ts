@@ -14,83 +14,107 @@
  * limitations under the License.
  */
 
-import {Component, Input, ElementRef, OnChanges, OnDestroy, AfterViewInit, SimpleChange} from "@angular/core";
-import {Sentence, ClassifiedEntity, EntityDefinition} from "../../model/nlp";
+import {Component, Input, OnChanges, OnInit, SimpleChange} from "@angular/core";
+import {ClassifiedEntity, EntityDefinition, Sentence} from "../../model/nlp";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {Intent} from "../../model/application";
 import {StateService} from "../../core/state.service";
 import {MdDialog, MdSnackBar} from "@angular/material";
 import {CreateEntityDialogComponent} from "../create-entity-dialog/create-entity-dialog.component";
 
-declare var TextHighlighter: any;
-
 @Component({
   selector: 'tock-highlight',
   templateUrl: 'highlight.component.html',
   styleUrls: ['highlight.component.css']
 })
-export class HighlightComponent implements AfterViewInit, OnDestroy, OnChanges {
+export class HighlightComponent implements OnInit, OnChanges {
 
   @Input() sentence: Sentence;
 
   intent: Intent;
-  textHighlighter: any;
-  highlightedNode: any;
   selectedStart: number;
   selectedEnd: number;
   editable: boolean;
   edited: boolean;
+  tokens: Token[];
 
-  constructor(private elementRef: ElementRef,
-    private nlp: NlpService,
-    private state: StateService,
-    private snackBar: MdSnackBar,
-    private dialog: MdDialog) {
+  constructor(private nlp: NlpService,
+              private state: StateService,
+              private snackBar: MdSnackBar,
+              private dialog: MdDialog) {
     this.editable = true;
     this.edited = false;
     this.selectedStart = -1;
     this.selectedEnd = -1;
   }
 
-  ngAfterViewInit() {
-    const _this = this;
-    this.textHighlighter = new TextHighlighter(this.elementToHighlight(), {
-      color: "#F8BB86",
-      onBeforeHighlight: function (range, hlts) {
-        return true;
-      },
-      onAfterHighlight: function (range, hlts) {
-        _this.afterHighlighting(range, hlts);
-      },
-      onRemoveHighlight: function (hlt) {
-        return true;
+  private initTokens() {
+    let i = 0;
+    let entityIndex = 0;
+    const text = this.sentence.text;
+    const entities = this.sentence.classification.entities;
+    const result: Token[] = [];
+    while (i <= text.length) {
+      if (entities.length > entityIndex) {
+        const e = entities[entityIndex];
+        if (e.start !== i) {
+          result.push(new Token(text.substring(i, e.start), result.length));
+        }
+        result.push(new Token(text.substring(e.start, e.end), result.length, e));
+        i = e.end;
+        entityIndex++;
+      } else {
+        if (i != text.length) {
+          result.push(new Token(text.substring(i, text.length), result.length));
+        }
+        break;
       }
-    });
-    this.highlightEntities();
+    }
+    this.tokens = result;
   }
 
-  ngOnChanges(changes: {[key: string]: SimpleChange}): any {
-    console.log("listen change " + changes);
+
+  ngOnInit(): void {
     this.rebuild();
   }
 
-  ngOnDestroy() {
-    if (this.textHighlighter) {
-      this.textHighlighter.destroy();
+  ngOnChanges(changes: { [key: string]: SimpleChange }): any {
+    this.rebuild();
+  }
+
+  select() {
+    const selection = window.getSelection().getRangeAt(0);
+    let start = selection.startOffset;
+    let end = selection.endOffset;
+    if(selection.startContainer !== selection.endContainer) {
+      end = selection.startContainer.childNodes[0].textContent.length - start;
+    } else {
+      if(start > end) {
+        const tmp = start;
+        start = end;
+        end = tmp;
+      }
     }
-  }
-
-  private retrieveIntent() {
-    if (this.sentence.classification) {
-      this.intent = this.state.currentApplication.intentById(this.sentence.classification.intentId);
+    if(start === end) {
+      return;
     }
+    const span = selection.startContainer.parentElement;
+    const tokenIndex = Number(span.getAttribute("id"));
+    this.edited = true;
+    this.selectedStart = -1;
+    this.selectedEnd = -1;
+    this.findSelected(span.parentNode, new SelectedResult(span, start, end));
+
+    if (this.sentence.overlapEntity(this.selectedStart, this.selectedEnd)) {
+      //removehighlight is not ok as it could remove existing highligthing
+      this.rebuild();
+    } else {
+      this.edited = true;
+    }
+
   }
 
-  private elementToHighlight(): HTMLElement {
-    return this.elementRef.nativeElement.childNodes[0];
-  }
-
-  private addEntity() {
+  addEntity() {
     let dialogRef = this.dialog.open(CreateEntityDialogComponent);
     dialogRef.afterClosed().subscribe(result => {
       if (result !== "cancel") {
@@ -128,84 +152,27 @@ export class HighlightComponent implements AfterViewInit, OnDestroy, OnChanges {
   }
 
   private rebuild() {
-    if (this.textHighlighter) {
-      this.textHighlighter.removeHighlights();
+    this.edited = false;
+    this.retrieveIntent();
+    this.initTokens();
+  }
 
-      this.textHighlighter.el.innerText = this.sentence.text;
-      this.edited = false;
-
-      this.highlightEntities();
+  private retrieveIntent() {
+    if (this.sentence.classification) {
+      this.intent = this.state.currentApplication.intentById(this.sentence.classification.intentId);
     }
   }
 
   onClose() {
     this.edited = false;
-    this.textHighlighter.removeHighlights(this.highlightedNode);
   }
 
   onSelect(entity: EntityDefinition) {
     this.edited = false;
-    this.textHighlighter.removeHighlights(this.highlightedNode);
-    const e = new ClassifiedEntity(entity.entityTypeName, entity.role,
-      this.selectedStart, this.selectedEnd, this.sentence.text.substring(this.selectedStart, this.selectedEnd));
+    const e = new ClassifiedEntity(entity.entityTypeName, entity.role, this.selectedStart, this.selectedEnd);
     this.sentence.classification.entities.push(e);
     this.sentence.classification.entities.sort((e1, e2) => e1.start - e2.start);
-    this.highlight(e);
-  }
-
-  private afterHighlighting(range, hlts) {
-    this.selectedStart = -1;
-    this.selectedEnd = -1;
-    this.highlightedNode = hlts[0];
-    this.findSelected(this.textHighlighter.el, new SelectedResult(this.highlightedNode));
-
-    if (this.sentence.overlapEntity(this.selectedStart, this.selectedEnd)) {
-      //removehighlight is not ok as it could remove existing highligthing
-      this.rebuild();
-    } else {
-      this.edited = true;
-    }
-  }
-
-  private highlight(entity: ClassifiedEntity) {
-    const sentenceElement = this.textHighlighter.el;
-    const range = document.createRange();
-    //find
-    this.fillRange(sentenceElement, new RangeResult(range, entity.start, entity.end));
-
-    this.textHighlighter.setColor(entity.entityColor);
-    const wrapper = TextHighlighter.createWrapper({
-      color: entity.entityColor,
-      highlightedClass: 'highlighted'
-    });
-    this.textHighlighter.highlightRange(range, wrapper);
-    this.textHighlighter.setColor("#F8BB86");
-  }
-
-  private fillRange(node, result) {
-    if (!result.found()) {
-      if (node.nodeType === 3) {
-        const toCount = result.toCount();
-        const content = node.textContent;
-        if (content.length >= toCount) {
-          result.setRange(node, toCount);
-          if (!result.found()) {
-            const toEndCount = result.toCount();
-            if (content.length >= toEndCount) {
-              result.setRange(node, toEndCount);
-            }
-          }
-        }
-        result.alreadyCount += content.length;
-        return;
-      } else {
-        for (const child of node.childNodes) {
-          if (node.nodeType === 1) {
-            this.fillRange(child, result);
-          }
-        }
-      }
-    }
+    this.initTokens();
   }
 
   private findSelected(node, result) {
@@ -219,8 +186,8 @@ export class HighlightComponent implements AfterViewInit, OnDestroy, OnChanges {
             if (node === result.selectedNode) {
               const textNode = node.childNodes[0];
               const content = textNode.textContent;
-              this.selectedStart = result.alreadyCount;
-              this.selectedEnd = result.alreadyCount + content.length;
+              this.selectedStart = result.alreadyCount + result.startOffset;
+              this.selectedEnd = this.selectedStart + result.endOffset - result.startOffset;
             } else {
               this.findSelected(child, result);
             }
@@ -230,71 +197,29 @@ export class HighlightComponent implements AfterViewInit, OnDestroy, OnChanges {
     }
   }
 
-  private highlightEntities() {
-    //need this to bypass angular checks
-    window.setTimeout(() => {
-        if (this.sentence.classification) {
-          this.retrieveIntent();
-          for (const e of this.sentence.classification.entities) {
-            this.highlight(e);
-          }
-        }
-      }
-    );
-  }
-
 }
 
 export class SelectedResult {
 
-  selectedNode: any;
   alreadyCount: number;
 
-  constructor(selectedNode: any) {
-    this.selectedNode = selectedNode;
+  constructor(public selectedNode: any, public startOffset: Number, public endOffset) {
     this.alreadyCount = 0;
   }
 }
 
-export class RangeResult {
-  range: Range;
-  startIndex: number;
-  endIndex: number;
-  alreadyCount: number;
-  startFound: boolean;
-  endFound: boolean;
-
-
-  constructor(range: Range, startIndex: number, endIndex: number) {
-    this.range = range;
-    this.startIndex = startIndex;
-    this.endIndex = endIndex;
-    this.alreadyCount = 0;
-    this.startFound = false;
-    this.endFound = false;
+export class Token {
+  constructor(public text: string, public index: number, public entity?: ClassifiedEntity) {
   }
 
-  found() {
-    return this.startFound && this.endFound;
-  }
-
-  setRange(node, index) {
-    if (!this.startFound) {
-      this.range.setStart(node, index);
-      this.startFound = true;
+  color(): string {
+    if (this.entity) {
+      return this.entity.entityColor;
     } else {
-      this.range.setEnd(node, index);
-      this.endFound = true;
-    }
-  }
-
-  toCount() {
-    if (!this.startFound) {
-      return this.startIndex - this.alreadyCount;
-    } else {
-      return this.endIndex - this.alreadyCount;
+      return "";
     }
   }
 }
+
 
 
