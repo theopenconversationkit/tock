@@ -22,8 +22,8 @@ import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.UserProfile
 import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
-import fr.vsct.tock.bot.connector.messenger.model.webhook.FacebookResponse
-import fr.vsct.tock.shared.mapper
+import fr.vsct.tock.bot.connector.messenger.model.send.SendResponse
+import fr.vsct.tock.shared.jackson.mapper
 import mu.KotlinLogging
 import okhttp3.OkHttpClient
 import retrofit2.Call
@@ -46,12 +46,12 @@ class MessengerClient(val secretKey: String) {
     interface GraphApi {
 
         @POST("/v2.6/me/messages")
-        fun sendMessage(@Query("access_token") accessToken: String, @Body messageRequest: MessageRequest): Call<FacebookResponse>
+        fun sendMessage(@Query("access_token") accessToken: String, @Body messageRequest: MessageRequest): Call<SendResponse>
 
-        @POST("v2.6/me/messages")
-        fun activateTyping(@Query("access_token") accessToken: String, @Body actionRequest: ActionRequest): Call<FacebookResponse>
+        @POST("/v2.6/me/messages")
+        fun activateTyping(@Query("access_token") accessToken: String, @Body actionRequest: ActionRequest): Call<SendResponse>
 
-        @GET("v2.6/{userId}/")
+        @GET("/v2.6/{userId}/")
         fun getUserProfile(@Path("userId") userId: String, @Query("access_token") accessToken: String, @Query("fields") fields: String): Call<UserProfile>
     }
 
@@ -68,11 +68,11 @@ class MessengerClient(val secretKey: String) {
         graphApi = retrofit.create<MessengerClient.GraphApi>(MessengerClient.GraphApi::class.java)
     }
 
-    fun sendMessage(token: String, messageRequest: MessageRequest): FacebookResponse {
+    fun sendMessage(token: String, messageRequest: MessageRequest): SendResponse {
         return send(messageRequest, { graphApi.sendMessage(token, messageRequest).execute() })
     }
 
-    fun sendAction(token: String, actionRequest: ActionRequest): FacebookResponse {
+    fun sendAction(token: String, actionRequest: ActionRequest): SendResponse {
         return send(actionRequest, { graphApi.activateTyping(token, actionRequest).execute() })
     }
 
@@ -86,7 +86,7 @@ class MessengerClient(val secretKey: String) {
         }
     }
 
-    private fun <T> send(request: T, call: (T) -> Response<FacebookResponse>): FacebookResponse {
+    private fun <T> send(request: T, call: (T) -> Response<SendResponse>): SendResponse {
         try {
             logger.debug { "Graph Request Input : ${jacksonObjectMapper().writeValueAsString(request)}" }
             val response = call(request)

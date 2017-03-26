@@ -16,11 +16,10 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.annotation.JsonProperty
+/**
+ *
+ */
+//TODO check 640 char text limit https://developers.facebook.com/docs/messenger-platform/send-api-reference/text-message
+data class OutputTextMessage(val text: String) : Message() {
 
-data class Element(val title: String,
-                   @JsonProperty("image_url") val imageUrl: String?,
-                   val subtitle: String?,
-                   val buttons: List<Button>?,
-                   @JsonProperty("item_url") val itemUrl: String?) {
 }

@@ -14,13 +14,20 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.send
+package fr.vsct.tock.bot.connector.messenger.model.webhook
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class Element(val title: String,
-                   @JsonProperty("image_url") val imageUrl: String?,
-                   val subtitle: String?,
-                   val buttons: List<Button>?,
-                   @JsonProperty("item_url") val itemUrl: String?) {
+/**
+ *
+ */
+data class MessageEcho(
+        override val mid: String,
+        override val seq: Long,
+        override var text: String? = null,
+        override val attachments: List<Attachment> = emptyList(),
+        @JsonProperty("is_echo") val echo: Boolean = true,
+        @JsonProperty("app_id") val appId: Long,
+        val metadata: String? = null
+) : Message(mid, seq, text, attachments) {
 }

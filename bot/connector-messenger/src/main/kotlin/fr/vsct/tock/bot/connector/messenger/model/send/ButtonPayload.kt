@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.webhook
+package fr.vsct.tock.bot.connector.messenger.model.send
 
-import fr.vsct.tock.bot.engine.user.UserLocation
-
-
-data class InputPayload(val coordinates: UserLocation? = null, val url: String? = null) {
+/**
+ *
+ */
+//TODO check 640 char text limit
+data class ButtonPayload(val text: String, val buttons: List<Button>) : ModelPayload(ModelType.button) {
 }

@@ -42,7 +42,7 @@ import io.vertx.ext.web.handler.CorsHandler
 import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.handler.UserSessionHandler
 import io.vertx.ext.web.sstore.LocalSessionStore
-import fr.vsct.tock.shared.mapper
+import fr.vsct.tock.shared.jackson.mapper
 import mu.KLogger
 import java.util.EnumSet
 

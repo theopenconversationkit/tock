@@ -14,13 +14,16 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.send
+package fr.vsct.tock.bot.connector.messenger.model.webhook
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import fr.vsct.tock.bot.connector.messenger.model.Recipient
+import fr.vsct.tock.bot.connector.messenger.model.Sender
 
-data class Element(val title: String,
-                   @JsonProperty("image_url") val imageUrl: String?,
-                   val subtitle: String?,
-                   val buttons: List<Button>?,
-                   @JsonProperty("item_url") val itemUrl: String?) {
+/**
+ *
+ */
+data class OptinWebhook(override val sender: Sender,
+                        override val recipient: Recipient,
+                        override val timestamp: Long,
+                        val optin: Optin) : Webhook() {
 }

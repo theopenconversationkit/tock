@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.engine.user
 
 import fr.vsct.tock.bot.mongo.DialogCol.AnyValueMongoWrapper
-import fr.vsct.tock.shared.mapper
+import fr.vsct.tock.shared.jackson.mapper
 import org.junit.Test
 import kotlin.test.assertEquals
 

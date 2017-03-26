@@ -16,21 +16,9 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
-import fr.vsct.tock.bot.connector.ConnectorMessage
-import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.messenger.MessengerConnectorProvider
-
 /**
  *
  */
-data class OutputMessage(var text: String?,
-                         val attachment: Attachment?) : ConnectorMessage {
+data class OutputMessage(val attachment: Attachment) : Message() {
 
-    override val connectorType: ConnectorType get() = MessengerConnectorProvider.connectorType
-
-    constructor(text: String) : this(text, null) {
-    }
-
-    constructor(attachment: Attachment) : this(null, attachment) {
-    }
 }

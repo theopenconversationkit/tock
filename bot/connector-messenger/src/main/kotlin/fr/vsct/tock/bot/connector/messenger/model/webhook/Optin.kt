@@ -19,5 +19,5 @@ package fr.vsct.tock.bot.connector.messenger.model.webhook
 /**
  *
  */
-data class Optin(val ref:String) {
+data class Optin(val ref: String) {
 }

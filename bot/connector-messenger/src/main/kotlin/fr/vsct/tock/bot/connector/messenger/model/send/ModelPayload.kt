@@ -18,9 +18,8 @@ package fr.vsct.tock.bot.connector.messenger.model.send
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-data class Element(val title: String,
-                   @JsonProperty("image_url") val imageUrl: String?,
-                   val subtitle: String?,
-                   val buttons: List<Button>?,
-                   @JsonProperty("item_url") val itemUrl: String?) {
+/**
+ *
+ */
+abstract class ModelPayload(@JsonProperty("template_type") val templateType: ModelType) : Payload() {
 }

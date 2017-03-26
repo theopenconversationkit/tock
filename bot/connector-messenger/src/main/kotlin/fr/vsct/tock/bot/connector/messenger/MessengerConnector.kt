@@ -16,8 +16,6 @@
 
 package fr.vsct.tock.bot.connector.messenger
 
-import fr.vsct.tock.shared.defaultLocale
-import fr.vsct.tock.shared.vertx.vertx
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
@@ -31,8 +29,10 @@ import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType.bot
 import fr.vsct.tock.bot.engine.user.UserPreferences
+import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
-import fr.vsct.tock.shared.mapper
 import mu.KotlinLogging
 import org.apache.commons.codec.binary.Hex
 import java.lang.Exception
@@ -107,7 +107,7 @@ class MessengerConnector(
                                                     val applicationId = pageApplicationMap.getValue(entry.id)
                                                     entry.messaging!!.forEach { m ->
                                                         try {
-                                                            val action = MessengerActionConverter.messengerToAction(m, applicationId)
+                                                            val action = WebhookActionConverter.toAction(m, applicationId)
                                                             if (action != null) {
                                                                 controller.handle(action)
                                                             } else {
@@ -162,7 +162,7 @@ class MessengerConnector(
     override fun send(action: Action) {
         try {
             val recipient = Recipient(action.recipientId.id)
-            val message = MessengerActionConverter.actionToMessenger(action)
+            val message = SendActionConverter.toMessageRequest(action)
             if (message != null) {
                 logger.debug { "message sent: $message to ${action.recipientId}" }
                 val token = getToken(action)

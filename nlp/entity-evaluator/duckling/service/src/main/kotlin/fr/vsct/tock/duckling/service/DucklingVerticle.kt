@@ -25,7 +25,7 @@ import fr.vsct.tock.shared.vertx.WebVerticle
 import fr.vsct.tock.shared.vertx.blocking
 import io.vertx.core.Future
 import io.vertx.ext.web.RoutingContext
-import fr.vsct.tock.shared.mapper
+import fr.vsct.tock.shared.jackson.mapper
 import mu.KotlinLogging
 import java.time.ZonedDateTime
 

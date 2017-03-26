@@ -16,22 +16,23 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.webhook
 
-import fr.vsct.tock.bot.connector.ConnectorMessage
-import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.messenger.MessengerConnectorProvider
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import fr.vsct.tock.bot.connector.messenger.json.webhook.WebhookDeserializer
+import fr.vsct.tock.bot.connector.messenger.model.MessengerConnectorMessage
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.Sender
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 
-data class InputMessage(val sender: Sender,
-                        val recipient: Recipient,
-                        val timestamp: Long,
-                        val message: Message?,
-                        val postback: Postback?,
-                        val optin: Optin?) : ConnectorMessage {
+/**
+ *
+ */
+@JsonDeserialize(using = WebhookDeserializer::class)
+abstract class Webhook : MessengerConnectorMessage() {
 
-    override val connectorType: ConnectorType get() = MessengerConnectorProvider.connectorType
+    abstract val sender: Sender
+    abstract val recipient: Recipient
+    abstract val timestamp: Long
 
     fun playerId(playerType: PlayerType): PlayerId = PlayerId(sender.id, playerType)
 

@@ -36,6 +36,6 @@ class SendAttachment(playerId: PlayerId,
                      botMetadata: BotMetadata = BotMetadata()) : Action(playerId, recipientId, applicationId, id, date, state, botMetadata) {
 
     enum class AttachmentType {
-        image, audio, video
+        image, audio, video, file
     }
 }

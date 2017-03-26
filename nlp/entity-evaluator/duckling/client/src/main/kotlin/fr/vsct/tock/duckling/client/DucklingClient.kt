@@ -18,7 +18,7 @@ package fr.vsct.tock.duckling.client
 
 import fr.vsct.tock.shared.property
 import io.vertx.core.json.JsonArray
-import fr.vsct.tock.shared.mapper
+import fr.vsct.tock.shared.jackson.mapper
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call

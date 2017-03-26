@@ -16,17 +16,6 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.annotation.JsonProperty
+abstract class Payload {
 
-data class Payload(@JsonProperty("template_type") var templateType: String? = null,
-                   val text: String? = null,
-                   var buttons: List<Button>? = null,
-                   val elements: List<Element>? = null,
-                   val url: String? = null) {
-
-    constructor(templateType: String, text: String?, buttons: List<Button>?) : this(templateType, text, buttons, null) {
-    }
-
-    constructor(templateType: String, elements: List<Element>?) : this(templateType, null, null, elements) {
-    }
 }

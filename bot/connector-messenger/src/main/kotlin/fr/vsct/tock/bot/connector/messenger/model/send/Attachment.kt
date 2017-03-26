@@ -16,5 +16,5 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
-data class Attachment (val type: String, val payload: Payload){
+data class Attachment (val type: AttachmentType, val payload: Payload){
 }

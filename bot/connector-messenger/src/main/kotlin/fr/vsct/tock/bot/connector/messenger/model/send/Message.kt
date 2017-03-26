@@ -14,15 +14,12 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.webhook
+package fr.vsct.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import fr.vsct.tock.bot.connector.messenger.model.MessengerConnectorMessage
 
 /**
  *
  */
-data class FacebookError(val message: String?,
-                         val type: String?,
-                         val code: Int,
-                         @JsonProperty("fbtrace_id") val traceId: String?) {
+abstract class Message : MessengerConnectorMessage() {
 }

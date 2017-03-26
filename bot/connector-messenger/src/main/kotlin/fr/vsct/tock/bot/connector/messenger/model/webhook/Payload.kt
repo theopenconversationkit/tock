@@ -14,13 +14,12 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.send
+package fr.vsct.tock.bot.connector.messenger.model.webhook
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import fr.vsct.tock.bot.connector.messenger.json.webhook.PayloadDeserializer
 
-data class Element(val title: String,
-                   @JsonProperty("image_url") val imageUrl: String?,
-                   val subtitle: String?,
-                   val buttons: List<Button>?,
-                   @JsonProperty("item_url") val itemUrl: String?) {
+
+@JsonDeserialize(using = PayloadDeserializer::class)
+abstract class Payload() {
 }

@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
-data class Button (val type: String, val url: String?, val title: String, val payload: String?){
+abstract class Button (val type: ButtonType){
 
-    constructor(type: String, title: String, payload: String?): this(type, null, title, payload) {}
 }

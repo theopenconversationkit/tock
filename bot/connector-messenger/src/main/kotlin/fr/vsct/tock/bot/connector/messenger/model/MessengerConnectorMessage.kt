@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.send
+package fr.vsct.tock.bot.connector.messenger.model
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonIgnore
+import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.messenger.MessengerConnectorProvider
 
-data class Element(val title: String,
-                   @JsonProperty("image_url") val imageUrl: String?,
-                   val subtitle: String?,
-                   val buttons: List<Button>?,
-                   @JsonProperty("item_url") val itemUrl: String?) {
+/**
+ *
+ */
+abstract class MessengerConnectorMessage : ConnectorMessage {
+
+    override val connectorType: ConnectorType @JsonIgnore get() = MessengerConnectorProvider.connectorType
+
 }

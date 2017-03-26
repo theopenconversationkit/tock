@@ -16,13 +16,34 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.webhook
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import fr.vsct.tock.bot.connector.messenger.json.webhook.MessageDeserializer
 
-data class Message(val mid: String?,
-                   val seq: Number?,
-                   var text: String?,
-                   val attachments: List<InputAttachment>? = null,
-                   @JsonProperty("is_echo") val isEcho: Boolean = false) {
+@JsonDeserialize(using = MessageDeserializer::class)
+open class Message(open val mid: String,
+                   open val seq: Long,
+                   open var text: String? = null,
+                   open val attachments: List<Attachment> = emptyList()) {
 
-    
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other?.javaClass != javaClass) return false
+
+        other as Message
+
+        if (mid != other.mid) return false
+        if (seq != other.seq) return false
+        if (text != other.text) return false
+        if (attachments != other.attachments) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = mid.hashCode()
+        result = 31 * result + seq.hashCode()
+        result = 31 * result + (text?.hashCode() ?: 0)
+        result = 31 * result + attachments.hashCode()
+        return result
+    }
 }

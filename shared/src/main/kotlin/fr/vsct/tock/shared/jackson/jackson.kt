@@ -14,14 +14,16 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package fr.vsct.tock.shared.jackson
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import kotlin.reflect.KClass
 
 val mapper: ObjectMapper by lazy {
     val mapper = jacksonObjectMapper()
@@ -31,4 +33,10 @@ val mapper: ObjectMapper by lazy {
     mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
     mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true)
     mapper
+}
+
+fun <T : Any> JsonParser.readValueAs(klass: KClass<T>) = this.readValueAs(klass.java)
+
+inline fun <reified T : Any> JsonParser.readListValuesAs(): List<T> {
+    return readValueAs<List<T>>(object : TypeReference<List<T>>() {}) ?: emptyList()
 }

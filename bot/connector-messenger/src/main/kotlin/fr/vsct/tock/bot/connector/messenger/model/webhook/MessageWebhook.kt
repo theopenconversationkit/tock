@@ -16,6 +16,13 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.webhook
 
-//facebook can send empty attachments (ie attachments:[{}])
-data class InputAttachment (val type: String?, val title:String?, val url:String?, val payload: InputPayload?){
+import fr.vsct.tock.bot.connector.messenger.model.Recipient
+import fr.vsct.tock.bot.connector.messenger.model.Sender
+
+data class MessageWebhook(override val sender: Sender,
+                          override val recipient: Recipient,
+                          override val timestamp: Long,
+                          val message: Message) : Webhook() {
+
+
 }

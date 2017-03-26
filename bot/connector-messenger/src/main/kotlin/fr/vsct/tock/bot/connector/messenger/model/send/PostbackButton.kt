@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.webhook
+package fr.vsct.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
-data class FacebookResponse(@JsonProperty("recipient_id") val recipientId: String?,
-                            @JsonProperty("message_id") val messageId: String?,
-                            val error: FacebookError?) {
+/**
+ *
+ */
+data class PostbackButton(
+        //TODO check 1000 limit char
+        val payload: String,
+        //TODO check 20 limit char
+        val title: String) : Button(ButtonType.postback) {
 }
