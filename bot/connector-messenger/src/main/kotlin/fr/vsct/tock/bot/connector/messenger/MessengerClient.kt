@@ -23,6 +23,7 @@ import fr.vsct.tock.bot.connector.messenger.model.UserProfile
 import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.SendResponse
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
 import mu.KotlinLogging
 import okhttp3.OkHttpClient
@@ -81,7 +82,7 @@ class MessengerClient(val secretKey: String) {
             return graphApi.getUserProfile(recipient.id, token, "first_name,last_name,profile_pic,locale,timezone,gender")
                     .execute().body()
         } catch(e: Exception) {
-            logger.error(e.message, e)
+            logger.error(e)
             return UserProfile("", "", null, null, 0, null)
         }
     }
@@ -103,7 +104,7 @@ class MessengerClient(val secretKey: String) {
                 return response.body()
             }
         } catch(e: Exception) {
-            logger.error(e.message, e)
+            logger.error(e)
             throw ConnectorException(e.message ?: "")
         }
     }

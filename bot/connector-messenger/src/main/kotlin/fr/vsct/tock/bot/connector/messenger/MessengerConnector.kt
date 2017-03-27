@@ -30,6 +30,7 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType.bot
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.jackson.readValue
 import fr.vsct.tock.shared.vertx.vertx
@@ -82,7 +83,7 @@ class MessengerConnector(
                         context.response().end("Invalid verify token")
                     }
                 } catch(e: Throwable) {
-                    logger.error(e.message, e)
+                    logger.error(e)
                     context.fail(500)
                 }
             }
@@ -116,13 +117,13 @@ class MessengerConnector(
                                                             }
                                                         } catch(e: Throwable) {
                                                             try {
-                                                                logger.error(e.message, e)
+                                                                logger.error(e)
                                                                 controller.errorMessage(m.playerId(bot), applicationId, m.recipientId(bot)).let {
                                                                     send(it)
                                                                     endTypingAnswer(it)
                                                                 }
                                                             } catch(t: Throwable) {
-                                                                logger.error(e.message, e)
+                                                                logger.error(e)
                                                             }
                                                         }
                                                     }
@@ -130,17 +131,17 @@ class MessengerConnector(
                                                     logger.warn { "empty message for entry $entry" }
                                                 }
                                             } catch(e: Throwable) {
-                                                logger.error(e.message, e)
+                                                logger.error(e)
                                             }
                                         }
                                     } catch(e: Throwable) {
-                                        logger.error(e.message, e)
+                                        logger.error(e)
                                     } finally {
                                         it.complete()
                                     }
                                 }, false, {})
                             } catch(t: Throwable) {
-                                logger.error(t.message, t)
+                                logger.error(t)
                             }
                         }
                     } else {
@@ -148,12 +149,12 @@ class MessengerConnector(
                     }
 
                 } catch(e: Throwable) {
-                    logger.error(e.message, e)
+                    logger.error(e)
                 } finally {
                     try {
                         context.response().end()
                     } catch(e: Throwable) {
-                        logger.error(e.message, e)
+                        logger.error(e)
                     }
                 }
             }
@@ -178,7 +179,7 @@ class MessengerConnector(
                 logger.error { "unable to convert $action to message" }
             }
         } catch(e: Throwable) {
-            logger.error(e.message, e)
+            logger.error(e)
         }
     }
 
@@ -201,7 +202,7 @@ class MessengerConnector(
                     ZoneOffset.ofHours(userProfile.timezone),
                     if (userProfile.locale == null) defaultLocale else Locale(userProfile.locale))
         } catch(e: Exception) {
-            logger.error(e.message, e)
+            logger.error(e)
         }
         return UserPreferences()
     }

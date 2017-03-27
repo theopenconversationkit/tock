@@ -17,8 +17,6 @@
 package fr.vsct.tock.bot.engine
 
 import com.github.salomonbrys.kodein.instance
-import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.vertx.vertx
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.action.Action
@@ -26,6 +24,9 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
+import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 import mu.KotlinLogging
 
@@ -65,7 +66,7 @@ class ConnectorController(
                 bot.handle(action, userTimeline, this)
                 userTimelineDAO.save(userTimeline)
             } catch(t: Throwable) {
-                logger.error(t.message, t)
+                logger.error(t)
                 send(bot.errorActionFor(action))
             } finally {
                 userLock.releaseLock(id)
@@ -85,7 +86,7 @@ class ConnectorController(
                 })
             }
         } catch(t: Throwable) {
-            logger.error(t.message, t)
+            logger.error(t)
         }
     }
 
@@ -99,7 +100,7 @@ class ConnectorController(
                 logger.debug { "message sent: $action" }
                 connector.send(action)
             } catch(t: Throwable) {
-                logger.error(t.message, t)
+                logger.error(t)
             } finally {
                 it.complete()
             }

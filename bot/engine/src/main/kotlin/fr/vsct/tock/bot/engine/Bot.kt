@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.State
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserTimeline
+import fr.vsct.tock.shared.error
 import ft.vsct.tock.nlp.api.client.NlpClient
 import ft.vsct.tock.nlp.api.client.model.EntityValue
 import ft.vsct.tock.nlp.api.client.model.NlpQuery
@@ -150,7 +151,7 @@ class Bot(val botDefinition: BotDefinition) {
                 sentence.state.currentIntent = botDefinition.findIntent(nlpResult.intent)
                 sentence.state.copyEntityValues(sentence, nlpResult.entities)
             } catch(t: Throwable) {
-                logger.error(t.message, t)
+                logger.error(t)
             }
         }
     }

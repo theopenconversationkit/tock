@@ -18,8 +18,6 @@ package fr.vsct.tock.duckling.client
 
 import fr.vsct.tock.nlp.core.IntOpenRange
 import fr.vsct.tock.nlp.core.service.entity.EntityEvaluator
-import fr.vsct.tock.nlp.model.EntityCallContextForEntity
-import fr.vsct.tock.shared.name
 import fr.vsct.tock.nlp.entity.AmountOfMoneyValue
 import fr.vsct.tock.nlp.entity.DistanceValue
 import fr.vsct.tock.nlp.entity.EmailValue
@@ -34,6 +32,9 @@ import fr.vsct.tock.nlp.entity.date.DateEntityValue
 import fr.vsct.tock.nlp.entity.date.DateIntervalEntityValue
 import fr.vsct.tock.nlp.entity.temperature.TemperatureUnit
 import fr.vsct.tock.nlp.entity.temperature.TemperatureValue
+import fr.vsct.tock.nlp.model.EntityCallContextForEntity
+import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.name
 import mu.KotlinLogging
 import java.lang.Exception
 import java.time.Duration
@@ -85,7 +86,7 @@ internal object DucklingParser : EntityEvaluator {
                     text)
             values.firstOrNull()
         } catch(e: Exception) {
-            logger.error(e.message, e)
+            logger.error(e)
             null
         }
     }

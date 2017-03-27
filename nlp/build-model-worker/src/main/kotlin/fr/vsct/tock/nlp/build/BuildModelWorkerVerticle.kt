@@ -21,6 +21,7 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.deleted
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
+import fr.vsct.tock.shared.error
 import io.vertx.core.AbstractVerticle
 import mu.KotlinLogging
 import java.util.Locale
@@ -64,7 +65,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                         logger.info { "end model update" }
                     }
                 } catch(e: Throwable) {
-                    logger.error(e.message, e)
+                    logger.error(e)
                 } finally {
                     canAnalyse.set(true)
                 }
@@ -88,7 +89,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
 
             logger.info { "Model updated for ${app.name} and ${key.language}" }
         } catch(e: Throwable) {
-            logger.error(e.message, e)
+            logger.error(e)
         } finally {
             front.switchStatus(sentences, model)
         }

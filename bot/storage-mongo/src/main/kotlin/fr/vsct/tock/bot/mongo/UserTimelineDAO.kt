@@ -23,6 +23,7 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
+import fr.vsct.tock.shared.error
 import mu.KotlinLogging
 import org.litote.kmongo.MongoOperator.gt
 import org.litote.kmongo.MongoOperator.limit
@@ -96,7 +97,7 @@ object UserTimelineMongoDAO : UserTimelineDAO {
             ).firstOrNull()
             return dialog?.toDialog(storyDefinitionProvider)
         } catch(e: Exception) {
-            logger.error(e.message, e)
+            logger.error(e)
             null
         }
     }
