@@ -35,6 +35,8 @@ val mapper: ObjectMapper by lazy {
     mapper
 }
 
+fun <T : Any> ObjectMapper.readValue(content: String, valueType: KClass<T>): T = readValue(content, valueType.java)
+
 fun <T : Any> JsonParser.readValueAs(klass: KClass<T>) = this.readValueAs(klass.java)
 
 inline fun <reified T : Any> JsonParser.readListValuesAs(): List<T> {

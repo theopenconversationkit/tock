@@ -31,6 +31,7 @@ import fr.vsct.tock.bot.engine.user.PlayerType.bot
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.jackson.readValue
 import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 import mu.KotlinLogging
@@ -96,7 +97,7 @@ class MessengerConnector(
                         vertx.runOnContext {
                             try {
                                 logger.debug { "Facebook request input : $body" }
-                                val request = mapper.readValue(body, CallbackRequest::class.java)
+                                val request = mapper.readValue(body, CallbackRequest::class)
 
                                 vertx.executeBlocking<Void>({
                                     try {

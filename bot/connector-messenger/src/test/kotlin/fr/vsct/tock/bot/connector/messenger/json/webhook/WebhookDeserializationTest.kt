@@ -28,6 +28,7 @@ import fr.vsct.tock.bot.connector.messenger.model.webhook.Postback
 import fr.vsct.tock.bot.connector.messenger.model.webhook.PostbackWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Webhook
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.jackson.readValue
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -40,34 +41,34 @@ class WebhookDeserializationTest {
     fun testMessageWebhookDeserialization() {
         val m = MessageWebhook(Sender("1"), Recipient("2"), 1L, Message("aa", 2, "text"))
         val s = mapper.writeValueAsString(m)
-        assertEquals(m, mapper.readValue(s, Webhook::class.java))
+        assertEquals(m, mapper.readValue(s, Webhook::class))
     }
 
     @Test
     fun testMessageWebhookWithEmptyAttachmentDeserialization() {
         val m = MessageWebhook(Sender("1"), Recipient("2"), 1L, Message("aa", 2, "text"))
         val s = """{"sender":{"id":"1"},"recipient":{"id":"2"},"timestamp":1,"message":{"mid":"aa","seq":2,"text":"text","attachments":[{}]}}"""
-        assertEquals(m, mapper.readValue(s, Webhook::class.java))
+        assertEquals(m, mapper.readValue(s, Webhook::class))
     }
 
     @Test
     fun testMessageEchoWebhookDeserialization() {
         val m = MessageEchoWebhook(Sender("1"), Recipient("2"), 1L, MessageEcho("aa", 2, "text", appId = 123L))
         val s = mapper.writeValueAsString(m)
-        assertEquals(m, mapper.readValue(s, Webhook::class.java))
+        assertEquals(m, mapper.readValue(s, Webhook::class))
     }
 
     @Test
     fun testOptinWebhookDeserialization() {
         val m = OptinWebhook(Sender("1"), Recipient("2"), 1L, Optin("a"))
         val s = mapper.writeValueAsString(m)
-        assertEquals(m, mapper.readValue(s, Webhook::class.java))
+        assertEquals(m, mapper.readValue(s, Webhook::class))
     }
 
     @Test
     fun testPostbackWebhookDeserialization() {
         val m = PostbackWebhook(Sender("1"), Recipient("2"), 1L, Postback("a"))
         val s = mapper.writeValueAsString(m)
-        assertEquals(m, mapper.readValue(s, Webhook::class.java))
+        assertEquals(m, mapper.readValue(s, Webhook::class))
     }
 }

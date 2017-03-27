@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.engine.user
 
 import fr.vsct.tock.bot.mongo.DialogCol.AnyValueMongoWrapper
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.jackson.readValue
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -32,7 +33,7 @@ class DialogColDeserializationTest {
                 UserLocation::class.qualifiedName!!,
                 UserLocation(1.0, 2.0))
         val s = mapper.writeValueAsString(value)
-        val newValue = mapper.readValue(s, AnyValueMongoWrapper::class.java)
+        val newValue = mapper.readValue(s, AnyValueMongoWrapper::class)
         assertEquals(value, newValue)
     }
 

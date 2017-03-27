@@ -18,6 +18,8 @@ package fr.vsct.tock.shared.vertx
 
 import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.intProperty
+import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.jackson.readValue
 import fr.vsct.tock.shared.property
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.AsyncResult
@@ -42,7 +44,6 @@ import io.vertx.ext.web.handler.CorsHandler
 import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.handler.UserSessionHandler
 import io.vertx.ext.web.sstore.LocalSessionStore
-import fr.vsct.tock.shared.jackson.mapper
 import mu.KLogger
 import java.util.EnumSet
 
@@ -135,7 +136,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
         router.route("$rootPath/*").handler(authHandler)
 
         router.post(authenticatePath).handler { context ->
-            val request = mapper.readValue(context.bodyAsString, AuthenticateRequest::class.java)
+            val request = mapper.readValue(context.bodyAsString, AuthenticateRequest::class)
             val authInfo = JsonObject().put("username", request.email).put("password", request.password)
             authProvider.authenticate(authInfo, {
                 if (it.succeeded()) {
@@ -191,7 +192,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
                 }, false)
     }
 
-    protected inline fun <reified I, O> blockingWithBodyJson(method: HttpMethod, path: String, crossinline handler: (RoutingContext, I) -> O) {
+    protected inline fun <reified I : Any, O> blockingWithBodyJson(method: HttpMethod, path: String, crossinline handler: (RoutingContext, I) -> O) {
         blocking(method, path, {
             context ->
             val input = context.readJson<I>()
@@ -221,7 +222,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
         }
     }
 
-    protected inline fun <reified I, O> blockingJsonPost(path: String, crossinline handler: (RoutingContext, I) -> O) {
+    protected inline fun <reified I : Any, O> blockingJsonPost(path: String, crossinline handler: (RoutingContext, I) -> O) {
         blockingWithBodyJson<I, O>(POST, path, handler)
     }
 
@@ -253,8 +254,8 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
         return BodyHandler.create().setBodyLimit(1000000L).setMergeFormAttributes(false)
     }
 
-    inline fun <reified T> RoutingContext.readJson(): T {
-        return mapper.readValue(this.bodyAsString, T::class.java)
+    inline fun <reified T : Any> RoutingContext.readJson(): T {
+        return mapper.readValue(this.bodyAsString, T::class)
     }
 
     fun RoutingContext.success() {
