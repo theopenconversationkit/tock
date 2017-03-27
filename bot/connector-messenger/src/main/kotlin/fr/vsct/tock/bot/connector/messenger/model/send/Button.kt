@@ -16,6 +16,10 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
-abstract class Button (val type: ButtonType){
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import fr.vsct.tock.bot.connector.messenger.json.send.ButtonDeserializer
+
+@JsonDeserialize(using = ButtonDeserializer::class)
+abstract class Button(val type: ButtonType) {
 
 }

@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.connector.messenger.model.send
 /**
  *
  */
-data class OutputMessage(val attachment: Attachment) : Message() {
+//TODO check 640 char text limit https://developers.facebook.com/docs/messenger-platform/send-api-reference/text-message
+data class TextMessage(val text: String) : Message() {
 
 }

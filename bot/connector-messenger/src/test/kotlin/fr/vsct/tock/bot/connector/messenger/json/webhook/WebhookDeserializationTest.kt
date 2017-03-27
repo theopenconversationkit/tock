@@ -40,7 +40,6 @@ class WebhookDeserializationTest {
     fun testMessageWebhookDeserialization() {
         val m = MessageWebhook(Sender("1"), Recipient("2"), 1L, Message("aa", 2, "text"))
         val s = mapper.writeValueAsString(m)
-        println(s)
         assertEquals(m, mapper.readValue(s, Webhook::class.java))
     }
 

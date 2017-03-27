@@ -18,10 +18,10 @@ package fr.vsct.tock.bot.connector.messenger
 
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.send.Attachment
+import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
-import fr.vsct.tock.bot.connector.messenger.model.send.OutputMessage
-import fr.vsct.tock.bot.connector.messenger.model.send.OutputTextMessage
+import fr.vsct.tock.bot.connector.messenger.model.send.TextMessage
 import fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendAttachment
@@ -39,12 +39,12 @@ object SendActionConverter {
         return when (action) {
             is SendSentence ->
                 if (action.hasMessage(MessengerConnectorProvider.connectorType)) {
-                    action.message(MessengerConnectorProvider.connectorType) as OutputMessage
+                    action.message(MessengerConnectorProvider.connectorType) as AttachmentMessage
                 } else {
-                    OutputTextMessage(action.text ?: "")
+                    TextMessage(action.text ?: "")
                 }
 
-            is SendAttachment -> OutputMessage(
+            is SendAttachment -> AttachmentMessage(
                     Attachment(
                             AttachmentType.fromTockAttachmentType(action.type),
                             UrlPayload(action.url))

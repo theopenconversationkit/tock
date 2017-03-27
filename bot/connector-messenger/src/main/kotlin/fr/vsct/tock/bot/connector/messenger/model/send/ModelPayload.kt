@@ -21,5 +21,6 @@ import com.fasterxml.jackson.annotation.JsonProperty
 /**
  *
  */
-abstract class ModelPayload(@JsonProperty("template_type") val templateType: ModelType) : Payload() {
+abstract class ModelPayload(@get:JsonProperty("template_type") val templateType: ModelType) : Payload() {
+
 }

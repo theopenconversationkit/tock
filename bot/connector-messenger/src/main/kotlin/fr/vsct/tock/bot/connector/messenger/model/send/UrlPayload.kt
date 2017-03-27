@@ -19,5 +19,5 @@ package fr.vsct.tock.bot.connector.messenger.model.send
 /**
  *
  */
-data class UrlPayload(val url:String) : Payload() {
+data class UrlPayload(val url: String) : Payload() {
 }

@@ -16,6 +16,10 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import fr.vsct.tock.bot.connector.messenger.json.send.PayloadDeserializer
+
+@JsonDeserialize(using = PayloadDeserializer::class)
 abstract class Payload {
 
 }
