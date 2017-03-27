@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {Component, OnInit, Input} from "@angular/core";
-import {Sentence, SentenceStatus, SearchQuery} from "../model/nlp";
+import {Component, Input, OnDestroy, OnInit} from "@angular/core";
+import {SearchQuery, Sentence, SentenceStatus} from "../model/nlp";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {StateService} from "../core/state.service";
 
@@ -24,10 +24,10 @@ import {StateService} from "../core/state.service";
   templateUrl: './sentences-scroll.component.html',
   styleUrls: ['./sentences-scroll.component.css']
 })
-export class SentencesScrollComponent implements OnInit {
+export class SentencesScrollComponent implements OnInit, OnDestroy {
 
   @Input() filter: SentenceFilter;
-  @Input() title:string;
+  @Input() title: string;
 
   sentences: Array<Sentence> = [];
   cursor: number = 0;
@@ -35,11 +35,21 @@ export class SentencesScrollComponent implements OnInit {
   total: number = -1;
   loading: boolean = false;
 
+  private currentApplicationUnsuscriber: any;
+  private currentLocaleUnsuscriber: any;
+
   constructor(private state: StateService, private nlp: NlpService) {
   }
 
   ngOnInit() {
     this.load();
+    this.currentApplicationUnsuscriber = this.state.currentApplicationEmitter.subscribe(_ => this.refresh());
+    this.currentLocaleUnsuscriber = this.state.currentLocaleEmitter.subscribe(_ => this.refresh());
+  }
+
+  ngOnDestroy() {
+    this.currentApplicationUnsuscriber.unsubscribe();
+    this.currentLocaleUnsuscriber.unsubscribe();
   }
 
   refresh() {
@@ -69,7 +79,6 @@ export class SentencesScrollComponent implements OnInit {
           this.cursor = s.end;
           this.total = s.total;
           this.loading = false;
-          console.log(this.total);
         });
     }
   }
@@ -93,7 +102,7 @@ export class SentenceFilter {
     public status?: SentenceStatus[]) {
   }
 
-  clone() : SentenceFilter {
+  clone(): SentenceFilter {
     return new SentenceFilter(this.search, this.intentId, this.status);
   }
 }

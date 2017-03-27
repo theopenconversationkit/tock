@@ -14,30 +14,33 @@
  * limitations under the License.
  */
 
-import {Injectable} from "@angular/core";
+import {EventEmitter, Injectable} from "@angular/core";
 import {Application} from "../model/application";
 import {AuthService} from "./auth/auth.service";
 import {AuthListener} from "./auth/auth.listener";
-import {User, AuthenticateResponse} from "../model/auth";
+import {AuthenticateResponse, User} from "../model/auth";
 import {SettingsService} from "./settings.service";
 import {Entry} from "../model/commons";
 import {environment} from "../../environments/environment";
-import {NlpEngineType, EntityType} from "../model/nlp";
+import {EntityType, NlpEngineType} from "../model/nlp";
 
 @Injectable()
 export class StateService implements AuthListener {
 
-  static DEFAULT_LOCALE=  "en";
-  static DEFAULT_ENGINE=  new NlpEngineType("opennlp");
+  static DEFAULT_LOCALE = "en";
+  static DEFAULT_ENGINE = new NlpEngineType("opennlp");
 
   user: User;
   applications: Application[];
-  locales: Entry<string,string>[];
-  entityTypes:EntityType[];
+  locales: Entry<string, string>[];
+  entityTypes: EntityType[];
 
   currentApplication: Application;
-  currentLocale:string = StateService.DEFAULT_LOCALE;
-  currentEngine:NlpEngineType = StateService.DEFAULT_ENGINE;
+  currentLocale: string = StateService.DEFAULT_LOCALE;
+  currentEngine: NlpEngineType = StateService.DEFAULT_ENGINE;
+
+  currentApplicationEmitter: EventEmitter<Application> = new EventEmitter();
+  currentLocaleEmitter: EventEmitter<string> = new EventEmitter();
 
   constructor(private auth: AuthService, private settings: SettingsService) {
     this.auth.addListener(this);
@@ -47,16 +50,30 @@ export class StateService implements AuthListener {
     }
   }
 
-  findEntityTypeByName(name:string) {
+  changeApplication(application: Application) {
+    this.currentApplication = application;
+    this.currentApplicationEmitter.emit(this.currentApplication);
+  }
+
+  changeApplicationWithName(applicationName: string) {
+    this.changeApplication(this.applications.find(a => a.name === applicationName));
+  }
+
+  changeLocale(locale: string) {
+    this.currentLocale = locale;
+    this.currentLocaleEmitter.emit(locale);
+  }
+
+  findEntityTypeByName(name: string) {
     return this.entityTypes.find(e => e.name === name);
   }
 
-  localeName(code:string) : string {
+  localeName(code: string): string {
     return this.locales.find(l => l.first === code).second;
   }
 
   sortApplications() {
-    this.applications = this.applications.sort( (a,b) => a.name.localeCompare(b.name))
+    this.applications = this.applications.sort((a, b) => a.name.localeCompare(b.name))
   }
 
   findCurrentApplication(): Application {

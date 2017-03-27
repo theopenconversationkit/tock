@@ -29,7 +29,11 @@ export class AppComponent {
   }
 
   changeApplication(newApplicationName: string) {
-    this.state.currentApplication = this.state.applications.find(a => a.name === newApplicationName);
+    this.state.changeApplicationWithName(newApplicationName);
+  }
+
+  changeLocale(newLocale: string) {
+    this.state.changeLocale(newLocale);
   }
 
 }

@@ -32,5 +32,4 @@ export class InboxComponent implements OnInit {
 
   ngOnInit() {
   }
-
 }

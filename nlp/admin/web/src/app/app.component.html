@@ -47,6 +47,13 @@
                  [value]="app.name">{{ app.name }}</md-option>
     </md-select>
 
+    <md-select *ngIf="state.currentApplication"
+               (change)="changeLocale($event.value)"
+               [ngModel]="state.currentLocale">
+      <md-option *ngFor="let l of state.currentApplication.supportedLocales"
+                 [value]="l">{{ state.localeName(l) }}</md-option>
+    </md-select>
+
     <button *ngIf="auth.isLoggedIn()" class="tock-icon-button" (click)="auth.logout()" md-tooltip="Logout">
       <i class="material-icons tock-toolbar-menu">exit_to_app</i>
     </button>

@@ -35,7 +35,9 @@ export class ApplicationsComponent implements OnInit {
 
   selectApplication(app: Application) {
     this.state.currentApplication = app;
+    this.state.changeApplication(app);
     this.snackBar.open(`Application ${app.name} selected`, "Selection", {duration: 1000});
+
   }
 
 
