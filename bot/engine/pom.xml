@@ -36,7 +36,7 @@
         </dependency>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-nlp-api-client</artifactId>
+            <artifactId>nlp-api-client</artifactId>
         </dependency>
 
         <dependency>

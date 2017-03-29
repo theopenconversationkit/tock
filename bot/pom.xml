@@ -33,6 +33,8 @@
         <module>engine</module>
         <module>connector-messenger</module>
         <module>storage-mongo</module>
+
+        <module>framework</module>
     </modules>
 
     <dependencyManagement>
@@ -44,12 +46,12 @@
             </dependency>
             <dependency>
                 <groupId>fr.vsct.tock</groupId>
-                <artifactId>connector-messenger</artifactId>
+                <artifactId>tock-bot-connector-messenger</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>fr.vsct.tock</groupId>
-                <artifactId>storage-mongo</artifactId>
+                <artifactId>tock-bot-storage-mongo</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
