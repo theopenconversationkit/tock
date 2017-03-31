@@ -16,8 +16,7 @@
 
 package fr.vsct.tock.bot.connector.messenger
 
-import fr.vsct.tock.bot.connector.Connector
-import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.SenderAction.mark_seen
@@ -34,7 +33,6 @@ import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.jackson.readValue
 import fr.vsct.tock.shared.vertx.vertx
-import io.vertx.ext.web.Router
 import mu.KotlinLogging
 import org.apache.commons.codec.binary.Hex
 import java.lang.Exception
@@ -52,11 +50,10 @@ class MessengerConnector(
         pageId: String,
         val token: String,
         val verifyToken: String?,
-        val client: MessengerClient) : Connector {
+        val client: MessengerClient) : ConnectorBase(MessengerConnectorProvider.connectorType) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
-        private val initializedPath: MutableSet<String> = mutableSetOf()
         private val pageApplicationMap: MutableMap<String, String> = mutableMapOf()
         private val applicationTokenMap: MutableMap<String, String> = mutableMapOf()
     }
@@ -66,12 +63,9 @@ class MessengerConnector(
         applicationTokenMap.put(applicationId, token)
     }
 
-    override val connectorType: ConnectorType = MessengerConnectorProvider.connectorType
-
-
-    override fun register(controller: ConnectorController, router: Router) {
-        if (!initializedPath.contains(path)) {
-            initializedPath.add(path)
+    override fun register(controller: ConnectorController) {
+        controller.registerServices(path, { router ->
+            logger.info("deploy rest messenger connector services for root path $path ")
 
             //see https://developers.facebook.com/docs/graph-api/webhooks
             router.get(path).handler { context ->
@@ -158,7 +152,7 @@ class MessengerConnector(
                     }
                 }
             }
-        }
+        })
     }
 
     override fun send(action: Action) {

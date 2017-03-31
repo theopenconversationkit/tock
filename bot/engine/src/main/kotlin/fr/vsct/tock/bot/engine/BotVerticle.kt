@@ -1,0 +1,46 @@
+/*
+ * Copyright (C) 2017 VSCT
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package fr.vsct.tock.bot.engine
+
+import fr.vsct.tock.shared.vertx.WebVerticle
+import io.vertx.ext.web.Router
+import io.vertx.ext.web.RoutingContext
+import mu.KotlinLogging
+
+/**
+ *
+ */
+class BotVerticle : WebVerticle(KotlinLogging.logger {}) {
+
+    private val handlers: MutableMap<String, (Router) -> Unit> = mutableMapOf()
+
+    fun registerServices(rootPath: String, installer: (Router) -> Unit) {
+        if (!(handlers as Map<String, (Router) -> Unit>).containsKey(rootPath)) {
+            handlers.put(rootPath, installer)
+        } else {
+            logger.debug("path $rootPath already registered - skip")
+        }
+    }
+
+    override fun configure() {
+        handlers.forEach { it.value.invoke(router) }
+    }
+
+    override fun healthcheck(): (RoutingContext) -> Unit {
+        return { it.response().end() }
+    }
+}

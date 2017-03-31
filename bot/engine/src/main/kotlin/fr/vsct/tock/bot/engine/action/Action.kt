@@ -33,5 +33,4 @@ abstract class Action(val playerId: PlayerId,
                       val state: State = State(),
                       val botMetadata: BotMetadata = BotMetadata()) {
 
-
 }

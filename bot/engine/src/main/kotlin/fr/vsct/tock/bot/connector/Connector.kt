@@ -20,20 +20,20 @@ import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserPreferences
-import io.vertx.ext.web.Router
 
 /**
  *
  */
 interface Connector {
 
-    val connectorType : ConnectorType
+    val connectorType: ConnectorType
 
-    fun register(controller: ConnectorController, router: Router)
+    fun register(controller: ConnectorController)
 
     fun send(action: Action)
 
-    fun startTypingAnswer(action:Action)
+    fun startTypingAnswer(action: Action)
 
-    fun loadProfile(applicationId:String, userId: PlayerId): UserPreferences
+    fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences
+
 }

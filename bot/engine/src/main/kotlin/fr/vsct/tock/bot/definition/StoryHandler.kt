@@ -19,8 +19,16 @@ package fr.vsct.tock.bot.definition
 import fr.vsct.tock.bot.engine.BotBus
 
 /**
+ * Receive an analysed sentence or action, and send the answer.
  *
+ * Story handlers should usually not directly extend this class, but instead extend [StoryHandlerBase].
  */
 interface StoryHandler {
+
+    /**
+     * Receive the question from the the bus.
+     *
+     * @param bus the bus used to get the question and send the answer
+     */
     fun handle(bus: BotBus)
 }

@@ -20,11 +20,17 @@ import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.shared.mapNotNullValues
 
 /**
  *
  */
 object MessengerConnectorProvider : ConnectorProvider {
+
+    private const val PAGE_ID = "pageId"
+    private const val TOKEN = "token"
+    private const val VERIFY_TOKEN = "verifyToken"
+    private const val SECRET = "secret"
 
     override val connectorType: ConnectorType = ConnectorType("messenger")
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
@@ -32,10 +38,34 @@ object MessengerConnectorProvider : ConnectorProvider {
             return MessengerConnector(
                     applicationId,
                     path,
-                    parameters.getValue("pageId"),
-                    parameters.getValue("token"),
-                    parameters.get("verifyToken"),
-                    MessengerClient(parameters.getValue("secret")))
+                    parameters.getValue(PAGE_ID),
+                    parameters.getValue(TOKEN),
+                    parameters.get(VERIFY_TOKEN),
+                    MessengerClient(parameters.getValue(SECRET)))
         }
+    }
+
+    /**
+     * Create a new messenger connector configuration.
+     */
+    fun newConfiguration(
+            pageId: String,
+            pageToken: String,
+            applicationSecret: String,
+            webhookVerifyToken: String? = null,
+            applicationId: String = pageId,
+            path: String = "/messenger"): ConnectorConfiguration {
+
+
+        return ConnectorConfiguration(
+                applicationId,
+                path,
+                connectorType,
+                mapNotNullValues(
+                        PAGE_ID to pageId,
+                        TOKEN to pageToken,
+                        SECRET to applicationSecret,
+                        VERIFY_TOKEN to webhookVerifyToken
+                ))
     }
 }

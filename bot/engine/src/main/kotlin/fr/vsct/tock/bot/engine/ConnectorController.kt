@@ -33,10 +33,10 @@ import mu.KotlinLogging
 /**
  *
  */
-class ConnectorController(
-        private val bot: Bot,
+class ConnectorController internal constructor(
+        val bot: Bot,
         private val connector: Connector,
-        private val router: Router) {
+        private val verticle: BotVerticle) {
 
     companion object {
 
@@ -44,9 +44,9 @@ class ConnectorController(
 
         internal fun register(connector: Connector,
                               bot: Bot,
-                              router: Router) {
-            logger.info { "Register connector $connector with " }
-            connector.register(ConnectorController(bot, connector, router), router)
+                              verticle: BotVerticle) {
+            logger.info { "Register connector $connector for bot $bot" }
+            connector.register(ConnectorController(bot, connector, verticle))
         }
     }
 
@@ -76,7 +76,11 @@ class ConnectorController(
         }
     }
 
-    fun send(action: Action, delay: Long = 0) {
+    fun registerServices(rootPath: String, installer: (Router) -> Unit) {
+        verticle.registerServices(rootPath, installer)
+    }
+
+    internal fun send(action: Action, delay: Long = 0) {
         try {
             if (delay == 0L) {
                 sendAsynchronous(action)
@@ -114,4 +118,5 @@ class ConnectorController(
     internal fun startTypingAnswer(action: Action) {
         connector.startTypingAnswer(action)
     }
+
 }

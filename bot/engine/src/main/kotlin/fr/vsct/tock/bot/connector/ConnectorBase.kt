@@ -14,24 +14,13 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.dialog
-
-import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.definition.StoryDefinition
-import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.bot.engine.action.Action
+package fr.vsct.tock.bot.connector
 
 /**
  *
  */
-class Story(
-        val definition: StoryDefinition,
-        var currentIntent: Intent?,
-        val actions: MutableList<Action> = mutableListOf()) {
+abstract class ConnectorBase(override val connectorType: ConnectorType) : Connector {
 
-    val lastAction: Action? get() = actions.lastOrNull()
-
-    fun handle(bus: BotBus) = definition.storyHandler.handle(bus)
-
+    override fun toString(): String = connectorType.toString()
 
 }

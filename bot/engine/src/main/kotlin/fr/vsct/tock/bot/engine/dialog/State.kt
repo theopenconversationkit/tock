@@ -17,10 +17,7 @@
 package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.dialog.EntityStateValue.ArchivedEntityValue
 import fr.vsct.tock.bot.engine.user.UserLocation
-import ft.vsct.tock.nlp.api.client.model.EntityValue
 
 /**
  *
@@ -31,15 +28,8 @@ data class State(
         val context: MutableMap<String, Any> = mutableMapOf()) {
 
     companion object {
-        const val waitingForInputFlag = "tock_waiting_input"
         const val userLocationFlag = "tock_user_location"
     }
-
-    var waitingForInput: Boolean
-        get() = (context[waitingForInputFlag] as Boolean?) ?: false
-        set(value) {
-            context[waitingForInputFlag] = value
-        }
 
     var userLocation: UserLocation?
         get() = context[userLocationFlag] as UserLocation?

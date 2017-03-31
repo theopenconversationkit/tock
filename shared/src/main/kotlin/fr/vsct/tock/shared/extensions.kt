@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.shared
 
-fun String.namespace() : String = namespaceAndName().first
-fun String.name() : String = namespaceAndName().second
-fun String.namespaceAndName() : Pair<String,String> = this.split(":").let { it[0] to it[1] }
+fun String.namespace(): String = namespaceAndName().first
+fun String.name(): String = namespaceAndName().second
+fun String.namespaceAndName(): Pair<String, String> = this.split(":").let { it[0] to it[1] }
+
+fun <K, V> mapNotNullValues(vararg pairs: Pair<K, V?>): Map<K, V> = mapOf(*pairs).filterValues { it != null }.mapValues { it.value!! }

@@ -17,16 +17,36 @@
 package fr.vsct.tock.bot.definition
 
 /**
+ * The definition of a "Story".
+ * A story holds a list of actions of the same domain.
+ * The story provides a set of starter intents.
+ * When theses intents are detected, The story is started.
  *
+ * Story definitions should usually not directly extend this class, but instead extend [StoryDefinitionBase].
  */
 interface StoryDefinition {
 
-    val id:String
+    /**
+     * An unique identifier for a given bot.
+     */
+    val id: String
+
+    /**
+     * One or more intents that start the story.
+     * Usually, you don't have the same starter intent in two different story definition.
+     */
     val starterIntents: Set<Intent>
-    val intents : Set<Intent>
+
+    /**
+     * The complete list of intents supported by the story.
+     */
+    val intents: Set<Intent>
+
+    /**
+     * The story handler of the story.
+     */
     val storyHandler: StoryHandler
 
-    fun canWaitForInput(): Boolean = false
-    fun isStarterIntent(intent:Intent) = starterIntents.contains(intent)
+    fun isStarterIntent(intent: Intent) = starterIntents.contains(intent)
 
 }

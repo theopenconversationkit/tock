@@ -22,10 +22,10 @@ import fr.vsct.tock.bot.engine.dialog.Story
 /**
  *
  */
-data class UserTimeline(val playerId: PlayerId,
-                        val userPreferences: UserPreferences = UserPreferences(),
-                        val userState: UserState = UserState(),
-                        val dialogs: MutableList<Dialog> = mutableListOf()) {
+class UserTimeline(val playerId: PlayerId,
+                   val userPreferences: UserPreferences = UserPreferences(),
+                   val userState: UserState = UserState(),
+                   val dialogs: MutableList<Dialog> = mutableListOf()) {
 
     fun currentDialog(): Dialog? = dialogs.lastOrNull()
 

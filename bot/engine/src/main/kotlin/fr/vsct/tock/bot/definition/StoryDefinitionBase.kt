@@ -14,24 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.dialog
-
-import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.definition.StoryDefinition
-import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.bot.engine.action.Action
+package fr.vsct.tock.bot.definition
 
 /**
- *
+ * Base implementation of [StoryDefinition].
  */
-class Story(
-        val definition: StoryDefinition,
-        var currentIntent: Intent?,
-        val actions: MutableList<Action> = mutableListOf()) {
-
-    val lastAction: Action? get() = actions.lastOrNull()
-
-    fun handle(bus: BotBus) = definition.storyHandler.handle(bus)
-
+open class StoryDefinitionBase(override val id: String,
+                               override val storyHandler: StoryHandler,
+                               override val starterIntents: Set<Intent>,
+                               override val intents: Set<Intent> = starterIntents) : StoryDefinition {
 
 }

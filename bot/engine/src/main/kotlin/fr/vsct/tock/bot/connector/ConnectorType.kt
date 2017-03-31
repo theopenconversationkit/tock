@@ -16,8 +16,15 @@
 
 package fr.vsct.tock.bot.connector
 
+import fr.vsct.tock.bot.engine.UserInterfaceType
+
 /**
  *
  */
-data class ConnectorType(val id:String) {
+data class ConnectorType(val id: String,
+                         val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat) {
+
+    override fun toString(): String {
+        return id
+    }
 }

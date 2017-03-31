@@ -17,20 +17,51 @@
 package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserTimeline
+import fr.vsct.tock.bot.i18n.I18n
+import fr.vsct.tock.bot.i18n.I18nKeyProvider
+import fr.vsct.tock.bot.i18n.I18nLabelKey
 
 /**
  *
  */
-class BotBus(
-        val connector: ConnectorController,
+class BotBus internal constructor(
+        private val connector: ConnectorController,
         val userTimeline: UserTimeline,
         val dialog: Dialog,
         val story: Story,
-        val action: Action
+        val action: Action,
+        var i18nProvider: I18nKeyProvider
 ) {
+    private val bot = connector.bot
+    private val applicationId = action.applicationId
+    private val botId = action.recipientId
+    private val userId = action.playerId
+
+    private var currentDelay: Long = 0
+
+    private fun answer(action: Action, delay: Long = 0): BotBus {
+        currentDelay += delay
+        story.actions.add(action)
+        connector.send(action, currentDelay)
+        return this
+    }
+
+    fun end(action: Action, delay: Long = 0): BotBus {
+        action.botMetadata.lastAnswer = true
+        return answer(action, delay)
+    }
+
+    fun send(text: String, delay: Long = 0): BotBus {
+        return answer(SendSentence(botId, applicationId, userId, translate(text)), delay)
+    }
+
+    fun end(text: String, delay: Long = 0): BotBus {
+        return end(SendSentence(botId, applicationId, userId, translate(text)), delay)
+    }
 
     fun loadProfileIfNotSet() {
         with(userTimeline) {
@@ -45,5 +76,18 @@ class BotBus(
                 }
             }
         }
+    }
+
+    fun translate(text: String, vararg args: Any?): String {
+        if (text.isEmpty()) {
+            return ""
+        }
+        return translate(i18nProvider.i18nKeyFromLabel(text, *args))
+    }
+
+    fun translate(key: I18nLabelKey): String {
+        return I18n.translate(key,
+                userTimeline.userPreferences.locale,
+                connector.connectorType.userInterfaceType)
     }
 }

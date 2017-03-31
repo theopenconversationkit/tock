@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.definition
 
 /**
- *
+ * An intent definition.
  */
 data class Intent(val name: String) {
 

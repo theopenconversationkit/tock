@@ -14,24 +14,25 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.dialog
+package fr.vsct.tock.bot
 
-import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.definition.StoryDefinition
-import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.definition.BotDefinition
+import fr.vsct.tock.bot.definition.BotProvider
+import fr.vsct.tock.bot.definition.BotProviderBase
+import fr.vsct.tock.bot.engine.BotRepository
+import io.vertx.core.Vertx
 
 /**
- *
+ * Register a new bot.
  */
-class Story(
-        val definition: StoryDefinition,
-        var currentIntent: Intent?,
-        val actions: MutableList<Action> = mutableListOf()) {
+fun registerBot(botDefinition: BotDefinition) = registerBot(BotProviderBase(botDefinition))
 
-    val lastAction: Action? get() = actions.lastOrNull()
+/**
+ * Register a new bot.
+ */
+fun registerBot(botProvider: BotProvider) = BotRepository.registerBotProvider(botProvider)
 
-    fun handle(bus: BotBus) = definition.storyHandler.handle(bus)
-
-
-}
+/**
+ * Install the bot(s).
+ */
+fun installBots(vertx: Vertx = Vertx.vertx()) = BotRepository.installBots(vertx)

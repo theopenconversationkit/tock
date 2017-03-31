@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.shared
 
-import fr.vsct.tock.shared.property
 import java.util.Locale
 
 val defaultLocale = Locale(property("tock_default_locale", "en"))

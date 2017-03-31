@@ -25,44 +25,35 @@ import fr.vsct.tock.bot.i18n.I18nLabelKey
 import ft.vsct.tock.nlp.api.client.model.NlpEngineType
 
 /**
+ * The main interface of the bot.
  *
+ * New bots should usually not directly extend this class, but instead extend [BotDefinitionBase].
  */
 interface BotDefinition : I18nKeyProvider {
 
+    /**
+     * The main bot id. Have to be different for each bot.
+     */
     val botId: String
-    val namespace: String
-    val nlpApplication: String
-
-    val unknownStory: StoryDefinition
-
-    fun errorAction(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {
-        return SendSentence(
-                playerId,
-                applicationId,
-                recipientId,
-                "Technical error :( sorry!"
-        )
-    }
-
-    fun errorActionFor(userAction: Action): Action {
-        return errorAction(
-                userAction.recipientId,
-                userAction.applicationId,
-                userAction.playerId
-        )
-    }
 
     /**
-     * To manage deactivation.
+     * The namespace of the bot. Have to be the same namespace than the NLP models.
      */
-    val botDisabledStory: StoryDefinition?
+    val namespace: String
 
-    fun isDisabledIntent(intent: Intent?): Boolean = intent != null && botDisabledStory?.isStarterIntent(intent) ?: false
-    val botEnabledStory: StoryDefinition?
-    fun isEnabledIntent(intent: Intent?): Boolean = intent != null && botEnabledStory?.isStarterIntent(intent) ?: false
+    /**
+     * The name of the main nlp model.
+     */
+    val nlpModelName: String
 
-
+    /**
+     * The list of each stories.
+     */
     val stories: List<StoryDefinition>
+
+    /**
+     * The nlp engine currently used
+     */
     val engineType: NlpEngineType
 
 
@@ -82,6 +73,45 @@ interface BotDefinition : I18nKeyProvider {
             stories.find { it.isStarterIntent(i) } ?: unknownStory
         }
     }
+
+    /**
+     * The unknown story. Used where no valid intent is found.
+     */
+    val unknownStory: StoryDefinition
+
+    /**
+     * Called when error occurs. By default send "technical error".
+     */
+    fun errorAction(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {
+        return SendSentence(
+                playerId,
+                applicationId,
+                recipientId,
+                "Technical error :( sorry!"
+        )
+    }
+
+    /**
+     * Called when error occurs. By default send "technical error".
+     */
+    fun errorActionFor(userAction: Action): Action {
+        return errorAction(
+                userAction.recipientId,
+                userAction.applicationId,
+                userAction.playerId
+        )
+    }
+
+    /**
+     * To manage deactivation.
+     */
+    val botDisabledStory: StoryDefinition?
+
+    fun isDisabledIntent(intent: Intent?): Boolean = intent != null && botDisabledStory?.isStarterIntent(intent) ?: false
+
+    val botEnabledStory: StoryDefinition?
+
+    fun isEnabledIntent(intent: Intent?): Boolean = intent != null && botEnabledStory?.isStarterIntent(intent) ?: false
 
     override fun i18nKeyFromLabel(defaultLabel: String, vararg args: Any?): I18nLabelKey {
         val prefix = javaClass.kotlin.simpleName?.replace("Definition", "") ?: ""

@@ -63,7 +63,7 @@ class Bot(val botDefinition: BotDefinition) {
             val story = getStory(action, dialog)
             story.actions.add(action)
 
-            val bus = BotBus(connector, userTimeline, dialog, story, action)
+            val bus = BotBus(connector, userTimeline, dialog, story, action, botDefinition)
             bus.loadProfileIfNotSet()
 
             story.handle(bus)
@@ -128,7 +128,7 @@ class Bot(val botDefinition: BotDefinition) {
             return NlpQuery(
                     listOf(sentence.text!!),
                     botDefinition.namespace,
-                    botDefinition.nlpApplication,
+                    botDefinition.nlpModelName,
                     QueryContext(
                             userTimeline.userPreferences.locale,
                             sentence.playerId.id,
@@ -141,8 +141,7 @@ class Bot(val botDefinition: BotDefinition) {
         }
 
         logger.debug { "Parse sentence : $sentence" }
-        if (userTimeline.currentDialog()?.isWaitingForInput() ?: false
-                && sentence.text.isNullOrBlank()) {
+        if (sentence.text.isNullOrBlank()) {
             //do nothing
         } else {
             try {
@@ -192,5 +191,10 @@ class Bot(val botDefinition: BotDefinition) {
     fun errorActionFor(userAction: Action): Action {
         return botDefinition.errorActionFor(userAction)
     }
+
+    override fun toString(): String {
+        return "$botDefinition"
+    }
+
 
 }

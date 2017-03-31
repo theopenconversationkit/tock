@@ -19,10 +19,16 @@ package fr.vsct.tock.bot.definition
 import fr.vsct.tock.bot.engine.Bot
 
 /**
- *
+ * Provides a specific type of [BotDefinition].
+ * Custom provider should usually not directly extend this class, but instead extend [BotProviderBase].
  */
 interface BotProvider {
 
-    fun bot() : Bot
+    /**
+     * Provides the bot definition.
+     */
+    fun botDefinition(): BotDefinition
+
+    fun bot(): Bot = Bot(botDefinition())
 
 }
