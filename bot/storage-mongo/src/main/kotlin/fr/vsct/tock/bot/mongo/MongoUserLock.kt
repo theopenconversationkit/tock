@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot
+package fr.vsct.tock.bot.mongo
 
-import fr.vsct.tock.bot.definition.BotDefinition
-import fr.vsct.tock.bot.definition.BotProvider
-import fr.vsct.tock.bot.definition.BotProviderBase
-import fr.vsct.tock.bot.engine.BotRepository
-import io.vertx.core.Vertx
+import fr.vsct.tock.bot.engine.user.UserLock
 
 /**
- * Register a new bot.
+ *
  */
-fun registerBot(botDefinition: BotDefinition) = registerBot(BotProviderBase(botDefinition))
+object MongoUserLock : UserLock {
 
-/**
- * Register a new bot.
- */
-fun registerBot(botProvider: BotProvider) = BotRepository.registerBotProvider(botProvider)
+    override fun lock(userId: String): Boolean {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
 
-/**
- * Install the bot(s).
- */
-fun installBots(vertx: Vertx = Vertx.vertx()) = BotRepository.installBots(vertx)
+    override fun releaseLock(userId: String) {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    }
+}

@@ -14,15 +14,26 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.mongo
+package fr.vsct.tock.bot
 
-import com.github.salomonbrys.kodein.instance
-import com.mongodb.client.MongoDatabase
+import com.github.salomonbrys.kodein.Kodein
+import fr.vsct.tock.bot.mongo.botMongoModule
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.sharedModule
+import mu.KotlinLogging
 
 /**
  *
  */
-object MongoBotConfiguration {
-    val database: MongoDatabase by injector.instance(MONGO_DATABASE)
+object BotIoc {
+
+    private val logger = KotlinLogging.logger {}
+
+    fun setup() {
+        logger.debug { "Start bot injection" }
+        injector.inject(Kodein {
+            import(sharedModule)
+            import(botMongoModule)
+        })
+    }
 }

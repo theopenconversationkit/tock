@@ -38,7 +38,7 @@ object FrontIoc {
     private val logger = KotlinLogging.logger {}
 
     fun setup() {
-        logger.info { "Start nlp injection" }
+        logger.debug { "Start nlp injection" }
         injector.inject(Kodein {
             import(sharedModule)
             import(coreModule)

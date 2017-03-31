@@ -20,6 +20,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.mongodb.client.MongoDatabase
+import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.shared.getDatabase
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.bot.i18n.I18nDAO
@@ -30,4 +31,5 @@ val botMongoModule = Kodein.Module {
     bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
     bind<I18nDAO>() with provider { I18nMongoDAO }
     bind<UserTimelineDAO>() with provider { UserTimelineMongoDAO }
+    bind<UserLock>() with provider { MongoUserLock }
 }
