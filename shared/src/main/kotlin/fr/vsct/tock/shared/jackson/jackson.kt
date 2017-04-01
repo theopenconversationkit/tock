@@ -20,8 +20,11 @@ import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlin.reflect.KClass
 
@@ -42,3 +45,7 @@ fun <T : Any> JsonParser.readValueAs(klass: KClass<T>) = this.readValueAs(klass.
 inline fun <reified T : Any> JsonParser.readListValuesAs(): List<T> {
     return readValueAs<List<T>>(object : TypeReference<List<T>>() {}) ?: emptyList()
 }
+
+fun <T : Any> SimpleModule.addDeserializer(type: KClass<T>, deser: JsonDeserializer<out T>) = addDeserializer(type.java, deser)
+
+fun <T : Any> SimpleModule.addSerializer(type: KClass<T>, ser: JsonSerializer<in T>) = addSerializer(type.java, ser)

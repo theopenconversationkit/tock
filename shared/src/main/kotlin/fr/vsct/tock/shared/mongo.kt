@@ -16,12 +16,19 @@
 
 package fr.vsct.tock.shared
 
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
+import com.fasterxml.jackson.datatype.jsr310.deser.JSR310StringParsableDeserializer
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientURI
 import com.mongodb.client.MongoDatabase
+import fr.vsct.tock.shared.jackson.addDeserializer
+import fr.vsct.tock.shared.jackson.addSerializer
 import mu.KotlinLogging
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.util.KMongoConfiguration
+import java.time.ZoneId
+import java.time.ZoneOffset
 import kotlin.reflect.KClass
 
 private val logger = KotlinLogging.logger {}
@@ -39,11 +46,20 @@ internal val collectionBuilder: (KClass<*>) -> String = {
 
 val mongoClient: MongoClient by lazy {
     KMongoConfiguration.defaultCollectionNameBuilder = collectionBuilder
+
+    val tockModule = SimpleModule().apply {
+        addSerializer(ZoneId::class, ToStringSerializer(ZoneId::class.java))
+        addDeserializer(ZoneId::class, JSR310StringParsableDeserializer.ZONE_ID)
+        addSerializer(ZoneOffset::class, ToStringSerializer(ZoneOffset::class.java))
+        addDeserializer(ZoneOffset::class, JSR310StringParsableDeserializer.ZONE_OFFSET)
+    }
+
+    KMongoConfiguration.bsonMapper.registerModule(tockModule)
     KMongo.createClient(MongoClientURI("mongodb://localhost:27017"))
 }
 
 fun getDatabase(databaseNameProperty: String): MongoDatabase {
-    val databaseName = property(databaseNameProperty, databaseNameProperty)
+    val databaseName = property(databaseNameProperty, databaseNameProperty).replace("_mongo_db", "")
     logger.info("get database $databaseName")
     return mongoClient.getDatabase(databaseName)
 }
