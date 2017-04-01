@@ -149,7 +149,7 @@ class Bot(val botDefinition: BotDefinition) {
                 val response = nlpClient.parse(toNlpQuery())
                 val nlpResult = response.body()
                 if (nlpResult == null) {
-                    logger.error { "nlp error : ${response.errorBody()}" }
+                    logger.error { "nlp error : ${response.errorBody().string()}" }
                 } else {
                     sentence.state.currentIntent = botDefinition.findIntent(nlpResult.intent)
                     sentence.state.copyEntityValues(sentence, nlpResult.entities)
