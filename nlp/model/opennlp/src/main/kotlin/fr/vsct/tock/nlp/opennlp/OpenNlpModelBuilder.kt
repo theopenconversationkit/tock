@@ -25,11 +25,14 @@ import fr.vsct.tock.nlp.model.service.engine.EntityModelHolder
 import fr.vsct.tock.nlp.model.service.engine.IntentModelHolder
 import fr.vsct.tock.nlp.model.service.engine.NlpEngineModelBuilder
 import fr.vsct.tock.nlp.model.service.engine.TokenizerModelHolder
+import fr.vsct.tock.shared.mapNotNullValues
 import mu.KotlinLogging
 import opennlp.tools.ml.maxent.GIS
 import opennlp.tools.ml.maxent.GISModel
+import opennlp.tools.ml.model.AbstractDataIndexer.CUTOFF_PARAM
 import opennlp.tools.ml.model.Context
 import opennlp.tools.ml.model.Event
+import opennlp.tools.ml.model.OnePassRealValueDataIndexer
 import opennlp.tools.ml.model.TwoPassDataIndexer
 import opennlp.tools.namefind.BilouCodec
 import opennlp.tools.namefind.NameFinderME
@@ -62,10 +65,14 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
                     .map {
                         Event(it.intent.name, tokenizer.tokenize(tokenizerContext, it.text))
                     })
-            val twoPassDataIndexer = TwoPassDataIndexer()
-            twoPassDataIndexer.init(TrainingParameters(), null)
-            twoPassDataIndexer.index(events)
-            GIS.trainModel(1000, twoPassDataIndexer, false, false, null)
+            val dataIndexer = if (expressions.size < 100) OnePassRealValueDataIndexer() else TwoPassDataIndexer()
+            dataIndexer.init(
+                    TrainingParameters(
+                            mapNotNullValues(CUTOFF_PARAM to if (expressions.size < 1000) "1" else null)
+                    )
+                    , null)
+            dataIndexer.index(events)
+            GIS.trainModel(1000, dataIndexer, false, false, null)
         }
 
         return IntentModelHolder(context.application, model, Instant.now())
