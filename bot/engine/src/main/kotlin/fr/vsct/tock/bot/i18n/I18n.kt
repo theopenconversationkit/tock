@@ -35,7 +35,7 @@ object I18n {
     private val defaultInterface: UserInterfaceType = UserInterfaceType.textChat
 
     private val i18nDAO: I18nDAO by injector.instance()
-    private val translate: Translate by injector.instance()
+    private val translator: Translator by injector.instance()
 
     fun translate(key: I18nLabelKey, locale: Locale, userInterfaceType: UserInterfaceType): String {
         val storedLabel = i18nDAO.getLabelById(key.key)
@@ -95,13 +95,13 @@ object I18n {
         m.formatsByArgumentIndex.forEachIndexed { i, format ->
             if (format is ChoiceFormat) {
                 pattern = pattern.replace(format.toPattern(), "")
-                val choiceFormat = ChoiceFormat(format.limits, format.formats.map { translate.translate(it as String, source, target) }.toTypedArray())
+                val choiceFormat = ChoiceFormat(format.limits, format.formats.map { translator.translate(it as String, source, target) }.toTypedArray())
                 m.setFormatByArgumentIndex(i, choiceFormat)
                 choicePrefixList.add("{$i,choice,}")
             }
         }
         if (choicePrefixList.isEmpty()) {
-            return translate.translate(text, source, target)
+            return translator.translate(text, source, target)
         } else {
             var splitPattern = listOf(pattern)
             choicePrefixList.forEach { prefix ->
@@ -119,7 +119,7 @@ object I18n {
                 if (choicePrefixList.contains(it)) {
                     it
                 } else {
-                    translate.translate(it.replace("''", "'"), source, target)
+                    translator.translate(it.replace("''", "'"), source, target)
                 }
             }.joinToString(""))
             newMessage.formats = m.formats

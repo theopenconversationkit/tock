@@ -26,24 +26,23 @@
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>bot-framework</artifactId>
+    <artifactId>tock-bot-translator-noop</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-engine</artifactId>
         </dependency>
+
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-connector-messenger</artifactId>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test-junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-storage-mongo</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-translator-noop</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

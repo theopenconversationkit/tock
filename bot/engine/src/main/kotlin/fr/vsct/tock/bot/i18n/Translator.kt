@@ -21,7 +21,7 @@ import java.util.Locale
 /**
  *
  */
-interface Translate {
+interface Translator {
 
     fun translate(text: String, source: Locale, target: Locale): String
 

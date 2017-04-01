@@ -14,28 +14,17 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot
+package fr.vsct.tock.translator.noop
 
-import com.github.salomonbrys.kodein.Kodein
-import fr.vsct.tock.bot.mongo.botMongoModule
-import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.sharedModule
-import fr.vsct.tock.translator.noop.noOpTranslatorModule
-import mu.KotlinLogging
+import fr.vsct.tock.bot.i18n.Translator
+import java.util.Locale
+
 
 /**
  *
  */
-object BotIoc {
-
-    private val logger = KotlinLogging.logger {}
-
-    fun setup() {
-        logger.debug { "Start bot injection" }
-        injector.inject(Kodein {
-            import(sharedModule)
-            import(botMongoModule)
-            import(noOpTranslatorModule)
-        })
+object NoOpTranslator : Translator {
+    override fun translate(text: String, source: Locale, target: Locale): String {
+        return text
     }
 }
