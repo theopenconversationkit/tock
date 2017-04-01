@@ -17,17 +17,64 @@
 package fr.vsct.tock.bot.mongo
 
 import fr.vsct.tock.bot.engine.user.UserLock
+import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
+import fr.vsct.tock.shared.error
+import mu.KotlinLogging
+import org.litote.kmongo.findOneById
+import org.litote.kmongo.getCollection
+import org.litote.kmongo.updateOneById
+import java.lang.Exception
+import java.time.Instant
+import java.time.Instant.now
 
 /**
  *
  */
 object MongoUserLock : UserLock {
 
+    data class UserLock(val _id: String, val locked: Boolean = true, val date: Instant = now())
+
+    private val logger = KotlinLogging.logger {}
+
+    private val col = database.getCollection<UserLock>()
+
     override fun lock(userId: String): Boolean {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        try {
+            var lock = col.findOneById(userId)
+            return if (lock == null) {
+                lock = UserLock(userId)
+                col.insertOne(lock)
+                true
+            } else {
+                if (!lock.locked) {
+                    logger.debug { "lock user : $userId" }
+                    col.updateOneById(lock._id, UserLock(userId, true))
+                    true
+                } else if (lock.date.plusSeconds(30).isBefore(now())) {
+                    logger.warn { "lock user : $userId because lock date is too old" }
+                    col.updateOneById(lock._id, UserLock(userId, true))
+                    true
+                } else {
+                    false
+                }
+            }
+        } catch(e: Exception) {
+            logger.error(e)
+            return false
+        }
     }
 
     override fun releaseLock(userId: String) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        try {
+            logger.debug { "release lock for user : $userId" }
+            val lock = col.findOneById(userId)
+            if (lock != null) {
+                col.updateOneById(userId, UserLock(userId, false))
+            } else {
+                logger.warn { "lock deleted??? : $userId" }
+            }
+        } catch(e: Exception) {
+            logger.error(e)
+        }
     }
 }
