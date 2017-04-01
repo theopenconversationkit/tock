@@ -43,7 +43,7 @@ class NlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "http
         mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true)
 
         val retrofit = Retrofit.Builder()
-                .baseUrl(baseUrl)
+                .baseUrl("$baseUrl/rest/nlp/")
                 .addConverterFactory(JacksonConverterFactory.create(mapper)).build()
         nlpService = retrofit.create<NlpService>(NlpService::class.java)
     }
