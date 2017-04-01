@@ -22,6 +22,7 @@ import fr.vsct.tock.nlp.model.EntityCallContext
 import fr.vsct.tock.nlp.model.EntityContextKey
 import fr.vsct.tock.nlp.model.IntentContext
 import fr.vsct.tock.nlp.model.IntentContext.IntentContextKey
+import fr.vsct.tock.nlp.model.ModelNotInitializedException
 import fr.vsct.tock.nlp.model.TokenizerContext
 import fr.vsct.tock.nlp.model.service.storage.NlpEngineModelIO
 import fr.vsct.tock.shared.Runner
@@ -65,7 +66,7 @@ object NlpModelRepository {
             return IntentModelHolder(context.application, model, inputStream.updatedDate)
         }
 
-        error("no intent model found for ${context}")
+        throw ModelNotInitializedException("no intent model found for ${context}")
     }
 
     fun getEntityModelHodler(context: EntityCallContext, provider: NlpEngineProvider): EntityModelHolder? {

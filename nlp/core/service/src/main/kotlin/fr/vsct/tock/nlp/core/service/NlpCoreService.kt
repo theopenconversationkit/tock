@@ -28,13 +28,20 @@ import fr.vsct.tock.nlp.core.service.entity.EntityEvaluatorService
 import fr.vsct.tock.nlp.model.EntityBuildContextForIntent
 import fr.vsct.tock.nlp.model.EntityCallContextForIntent
 import fr.vsct.tock.nlp.model.IntentContext
+import fr.vsct.tock.nlp.model.ModelNotInitializedException
 import fr.vsct.tock.nlp.model.TokenizerContext
 import fr.vsct.tock.nlp.model.client.NlpClassifierClient
+import fr.vsct.tock.shared.error
+import mu.KotlinLogging
 
 /**
  *
  */
 object NlpCoreService : NlpCore {
+
+    private val logger = KotlinLogging.logger {}
+
+    private val unknownResult = ParsingResult(Intent.Companion.unknownIntent, emptyList(), 1.0, 1.0)
 
     private fun tokenize(context: CallContext, text: String): Array<String> {
         return NlpClassifierClient.tokenize(TokenizerContext(context), text)
@@ -43,24 +50,32 @@ object NlpCoreService : NlpCore {
     override fun parse(context: CallContext,
                        text: String,
                        intentSelector: (List<IntentRecognition>) -> IntentRecognition?): ParsingResult {
-        val tokens = tokenize(context, text)
-        val intents = NlpClassifierClient.classifyIntent(IntentContext(context), text, tokens)
-        val intent = intentSelector.invoke(intents)
+        try {
+            val tokens = tokenize(context, text)
+            val intents = NlpClassifierClient.classifyIntent(IntentContext(context), text, tokens)
+            val intent = intentSelector.invoke(intents)
 
-        if (intent == null) {
-            return ParsingResult(Intent.Companion.unknownIntent, emptyList(), 1.0, 1.0)
+            if (intent == null) {
+                return unknownResult
+            }
+
+            //TODO regexp et dedicated entity classifier
+
+            val entities = NlpClassifierClient.classifyEntities(EntityCallContextForIntent(context, intent.intent), text, tokens)
+            val evaluatedEntities = EntityEvaluatorService.evaluateEntities(context, text, entities)
+
+            return ParsingResult(
+                    intent.intent.name,
+                    evaluatedEntities.map { it.value },
+                    intent.probability,
+                    evaluatedEntities.map { it.probability }.average())
+        } catch(e: ModelNotInitializedException) {
+            logger.warn { "model not initialized : ${e.message}" }
+            return unknownResult
+        } catch(e: Exception) {
+            logger.error(e)
+            return unknownResult
         }
-
-        //TODO regexp et dedicated entity classifier
-
-        val entities = NlpClassifierClient.classifyEntities(EntityCallContextForIntent(context, intent.intent), text, tokens)
-        val evaluatedEntities = EntityEvaluatorService.evaluateEntities(context, text, entities)
-
-        return ParsingResult(
-                intent.intent.name,
-                evaluatedEntities.map { it.value },
-                intent.probability,
-                evaluatedEntities.map { it.probability }.average())
     }
 
     override fun updateIntentModel(context: BuildContext, expressions: List<SampleExpression>) {
