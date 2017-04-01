@@ -177,8 +177,8 @@ class MessengerConnector(
         }
     }
 
-    override fun startTypingAnswer(action: Action) {
-        client.sendAction(getToken(action), ActionRequest(Recipient(action.recipientId.id), typing_on))
+    override fun startTypingInAnswerTo(action: Action) {
+        client.sendAction(getToken(action), ActionRequest(Recipient(action.playerId.id), typing_on))
     }
 
     fun endTypingAnswer(action: Action) {

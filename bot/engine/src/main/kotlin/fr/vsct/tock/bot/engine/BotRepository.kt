@@ -18,7 +18,7 @@ package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.definition.BotProvider
-import io.vertx.core.Vertx
+import fr.vsct.tock.shared.vertx.vertx
 
 /**
  *
@@ -37,7 +37,7 @@ object BotRepository {
         botProviders.add(bot)
     }
 
-    fun installBots(vertx: Vertx = Vertx.vertx()) {
+    fun installBots() {
         val verticle = BotVerticle()
 
         ConnectorConfigurationRepository.getConfigurations().forEach { conf ->

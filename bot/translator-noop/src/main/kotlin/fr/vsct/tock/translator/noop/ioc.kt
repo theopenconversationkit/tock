@@ -14,26 +14,13 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector
+package fr.vsct.tock.translator.noop
 
-import fr.vsct.tock.bot.engine.ConnectorController
-import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.bot.engine.user.UserPreferences
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
+import fr.vsct.tock.bot.i18n.Translator
 
-/**
- *
- */
-interface Connector {
-
-    val connectorType: ConnectorType
-
-    fun register(controller: ConnectorController)
-
-    fun send(action: Action)
-
-    fun startTypingInAnswerTo(action: Action)
-
-    fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences
-
+val noOpTranslatorModule = Kodein.Module {
+    bind<Translator>() with provider { NoOpTranslator }
 }

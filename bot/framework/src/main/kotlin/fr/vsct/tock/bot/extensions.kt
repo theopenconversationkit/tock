@@ -35,7 +35,7 @@ fun registerBot(botProvider: BotProvider) = BotRepository.registerBotProvider(bo
 /**
  * Install the bot(s).
  */
-fun installBots(vertx: Vertx = Vertx.vertx()) {
+fun installBots() {
     BotIoc.setup()
-    BotRepository.installBots(vertx)
+    BotRepository.installBots()
 }

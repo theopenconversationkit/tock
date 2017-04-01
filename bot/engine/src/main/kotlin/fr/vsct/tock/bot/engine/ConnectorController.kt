@@ -115,8 +115,8 @@ class ConnectorController internal constructor(
         return connector.loadProfile(applicationId, playerId)
     }
 
-    internal fun startTypingAnswer(action: Action) {
-        connector.startTypingAnswer(action)
+    internal fun startTypingInAnswerTo(action: Action) {
+        connector.startTypingInAnswerTo(action)
     }
 
 }

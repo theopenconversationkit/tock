@@ -38,7 +38,7 @@ abstract class StoryHandlerBase : StoryHandler, I18nKeyProvider {
     final override fun handle(bus: BotBus) {
         bus.i18nProvider = this
         action(bus)
-        if (bus.story.lastAction?.botMetadata?.lastAnswer ?: false) {
+        if (!(bus.story.lastAction?.botMetadata?.lastAnswer ?: false)) {
             logger.warn { "No action sent or Bus.end not called" }
         }
     }

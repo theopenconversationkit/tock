@@ -55,7 +55,7 @@ class Bot(val botDefinition: BotDefinition) {
         }
 
         if (!userTimeline.userState.botDisabled) {
-            connector.startTypingAnswer(action)
+            connector.startTypingInAnswerTo(action)
             dialog.apply {
                 state.currentIntent = action.state.currentIntent
                 state.mergeEntityValues(action)
@@ -146,9 +146,14 @@ class Bot(val botDefinition: BotDefinition) {
         } else {
             try {
                 logger.debug { "Sending sentence '${sentence.text}' to NLP" }
-                val nlpResult = nlpClient.parse(toNlpQuery()).body()
-                sentence.state.currentIntent = botDefinition.findIntent(nlpResult.intent)
-                sentence.state.copyEntityValues(sentence, nlpResult.entities)
+                val response = nlpClient.parse(toNlpQuery())
+                val nlpResult = response.body()
+                if (nlpResult == null) {
+                    logger.error { "nlp error : ${response.errorBody()}" }
+                } else {
+                    sentence.state.currentIntent = botDefinition.findIntent(nlpResult.intent)
+                    sentence.state.copyEntityValues(sentence, nlpResult.entities)
+                }
             } catch(t: Throwable) {
                 logger.error(t)
             }
