@@ -16,12 +16,12 @@
 
 package fr.vsct.tock.bot.engine.action
 
-import fr.vsct.tock.shared.Dice
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.dialog.BotMetadata
 import fr.vsct.tock.bot.engine.dialog.State
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.shared.Dice
 import java.time.Instant
 
 /**
@@ -46,4 +46,10 @@ class SendSentence(
     fun hasMessage(type: ConnectorType): Boolean {
         return messages.any { it.connectorType == type }
     }
+
+    override fun toString(): String {
+        return "$text ${if (messages.isNotEmpty()) messages.toString() else ""}"
+    }
+
+
 }
