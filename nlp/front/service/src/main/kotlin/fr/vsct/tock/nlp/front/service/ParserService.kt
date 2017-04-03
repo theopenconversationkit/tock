@@ -21,10 +21,11 @@ import fr.vsct.tock.nlp.front.service.ApplicationConfigurationService.getIntentI
 import fr.vsct.tock.nlp.front.service.FrontRepository.config
 import fr.vsct.tock.nlp.front.service.FrontRepository.core
 import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
-import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.shared.Parser
-import fr.vsct.tock.nlp.front.shared.parser.QueryDescription
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
+import fr.vsct.tock.nlp.front.shared.parser.ParseResult
+import fr.vsct.tock.nlp.front.shared.parser.QueryDescription
+import java.util.Locale
 
 /**
  *
@@ -35,7 +36,21 @@ object ParserService : Parser {
         //TODO validate text ("no \n\r\t")
         with(query) {
             val application = config.getApplicationByNamespaceAndName(namespace, applicationName) ?: error("unknown application $namespace:$applicationName")
-            val callContext = CallContext(toApplication(application), context.language, context.engineType)
+
+            val language = application.supportedLocales.let {
+                if (it.contains(context.language)) {
+                    context.language
+                } else {
+                    val language = Locale(context.language.language)
+                    if (it.contains(language)) {
+                        language
+                    } else {
+                        error("Unsupported locale : ${context.language}")
+                    }
+                }
+            }
+
+            val callContext = CallContext(toApplication(application), language, context.engineType)
             //TODO multi query handling
             //TODO state handling
             val parseResult = core.parse(callContext, query.queries.first())
@@ -49,12 +64,11 @@ object ParserService : Parser {
 
             if (context.registerQuery) {
                 val intentId = getIntentIdForIntentName(result.intent)
-                val sentence = ClassifiedSentence(result, context.language, application._id!!, intentId)
+                val sentence = ClassifiedSentence(result, language, application._id!!, intentId)
                 config.save(sentence)
             }
 
             return result
         }
     }
-
 }
