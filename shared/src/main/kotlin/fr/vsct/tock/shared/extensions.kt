@@ -16,8 +16,13 @@
 
 package fr.vsct.tock.shared
 
+const val TOCK_NAMESPACE: String = "tock"
+
 fun String.namespace(): String = namespaceAndName().first
 fun String.name(): String = namespaceAndName().second
 fun String.namespaceAndName(): Pair<String, String> = this.split(":").let { it[0] to it[1] }
+
+fun String.withNamespace(namespace: String): String = if (contains(":")) this else "$namespace:$this"
+fun String.withoutNamespace(namespace: String): String = namespace().let { if (it == namespace) name() else this }
 
 fun <K, V> mapNotNullValues(vararg pairs: Pair<K, V?>): Map<K, V> = mapOf(*pairs).filterValues { it != null }.mapValues { it.value!! }

@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.core
 
+import fr.vsct.tock.shared.TOCK_NAMESPACE
 import java.util.Locale
 
 /**
@@ -26,7 +27,7 @@ data class Intent(val name: String,
                   val entitiesRegexp: Map<Locale, List<EntitiesRegexp>> = emptyMap()) {
 
     companion object {
-        val unknownIntent: String = "unknown"
+        val unknownIntent: String = "$TOCK_NAMESPACE:unknown"
     }
 
     fun getEntity(role: String): Entity = entities.firstOrNull { it.role == role } ?: error("Unknown entity $role")

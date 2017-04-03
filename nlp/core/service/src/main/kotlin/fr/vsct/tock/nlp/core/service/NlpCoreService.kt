@@ -18,6 +18,7 @@ package fr.vsct.tock.nlp.core.service
 
 import fr.vsct.tock.nlp.core.BuildContext
 import fr.vsct.tock.nlp.core.CallContext
+import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.IntentRecognition
 import fr.vsct.tock.nlp.core.NlpCore
@@ -62,7 +63,7 @@ object NlpCoreService : NlpCore {
             //TODO regexp et dedicated entity classifier
 
             val entities = NlpClassifierClient.classifyEntities(EntityCallContextForIntent(context, intent.intent), text, tokens)
-            val evaluatedEntities = EntityEvaluatorService.evaluateEntities(context, text, entities)
+            val evaluatedEntities = evaluateEntities(context, text, entities)
 
             return ParsingResult(
                     intent.intent.name,
@@ -76,6 +77,13 @@ object NlpCoreService : NlpCore {
             logger.error(e)
             return unknownResult
         }
+    }
+
+    override fun evaluateEntities(
+            context: CallContext,
+            text: String,
+            entities: List<EntityRecognition>): List<EntityRecognition> {
+        return EntityEvaluatorService.evaluateEntities(context, text, entities)
     }
 
     override fun updateIntentModel(context: BuildContext, expressions: List<SampleExpression>) {

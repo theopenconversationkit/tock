@@ -26,6 +26,8 @@ import fr.vsct.tock.nlp.front.service.storage.IntentDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.namespaceAndName
+import fr.vsct.tock.shared.withNamespace
 
 private val applicationDAO: ApplicationDefinitionDAO by injector.instance()
 private val entityTypeDAO: EntityTypeDefinitionDAO by injector.instance()
@@ -47,7 +49,9 @@ object ApplicationConfigurationService :
         FrontRepository.entityTypes.put(entityType.name, toEntityType(entityType))
     }
 
-    override fun getIntentIdForIntentName(name: String): String {
-        return if (name == unknownIntent) unknownIntent else intentDAO.getIntentByName(name)!!._id!!
+    override fun getIntentIdByQualifiedName(name: String): String {
+        return if (name == unknownIntent)
+            unknownIntent
+        else name.namespaceAndName().run { intentDAO.getIntentByNamespaceAndName(first, second)!!._id!! }
     }
 }

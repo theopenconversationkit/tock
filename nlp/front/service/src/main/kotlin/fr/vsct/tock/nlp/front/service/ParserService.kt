@@ -17,14 +17,19 @@
 package fr.vsct.tock.nlp.front.service
 
 import fr.vsct.tock.nlp.core.CallContext
-import fr.vsct.tock.nlp.front.service.ApplicationConfigurationService.getIntentIdForIntentName
+import fr.vsct.tock.nlp.core.EntityRecognition
+import fr.vsct.tock.nlp.core.EntityValue
 import fr.vsct.tock.nlp.front.service.FrontRepository.config
 import fr.vsct.tock.nlp.front.service.FrontRepository.core
 import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
 import fr.vsct.tock.nlp.front.shared.Parser
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
+import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.shared.parser.QueryDescription
+import fr.vsct.tock.shared.withoutNamespace
 import java.util.Locale
 
 /**
@@ -50,25 +55,66 @@ object ParserService : Parser {
                 }
             }
 
+            val q = query.queries.first()
+
+            val validatedSentence = config
+                    .search(
+                            SentencesQuery(
+                                    application._id!!,
+                                    language,
+                                    search = q,
+                                    status = setOf(validated, model),
+                                    onlyExactMatch = true
+                            ))
+                    .sentences
+                    .firstOrNull()
+
             val callContext = CallContext(toApplication(application), language, context.engineType)
+
+            if (validatedSentence != null && query.context.checkExistingQuery) {
+                val entityValues = core.evaluateEntities(
+                        callContext,
+                        q,
+                        validatedSentence.classification.entities.map {
+                            EntityRecognition(
+                                    EntityValue(
+                                            it.start,
+                                            it.end,
+                                            FrontRepository.toEntity(it.type, it.role)
+                                    ),
+                                    1.0
+                            )
+                        })
+                ParseResult(
+                        config.getIntentById(validatedSentence.classification.intentId)!!.shortQualifiedName(query.namespace),
+                        entityValues.map { it.value },
+                        1.0,
+                        1.0,
+                        q
+                )
+            }
+
             //TODO multi query handling
             //TODO state handling
-            val parseResult = core.parse(callContext, query.queries.first())
+            val parseResult = core.parse(callContext, q)
 
             val result = ParseResult(
-                    parseResult.intent,
+                    parseResult.intent.withoutNamespace(query.namespace),
                     parseResult.entities,
                     parseResult.intentProbability,
                     parseResult.entitiesProbability,
-                    query.queries.first())
+                    q)
 
             if (context.registerQuery) {
-                val intentId = getIntentIdForIntentName(result.intent)
+                val intentId = config.getIntentIdByQualifiedName(parseResult.intent)
                 val sentence = ClassifiedSentence(result, language, application._id!!, intentId)
-                config.save(sentence)
+                if (!sentence.hasSameContent(validatedSentence)) {
+                    config.save(sentence)
+                }
             }
 
             return result
         }
     }
+
 }

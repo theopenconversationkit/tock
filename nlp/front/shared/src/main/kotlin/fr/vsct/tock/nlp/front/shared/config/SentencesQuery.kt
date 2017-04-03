@@ -21,12 +21,13 @@ import java.util.Locale
 /**
  *
  */
-data class SentencesQuery(val applicationId:String,
+data class SentencesQuery(val applicationId: String,
                           val language: Locale,
-                          val start: Long ,
-                          val size: Int,
-                          val search: String?,
-                          val intentId: String?,
-                          val status:Set<ClassifiedSentenceStatus> = emptySet(),
-                          val notStatus : ClassifiedSentenceStatus? = ClassifiedSentenceStatus.deleted) {
+                          val start: Long = 0,
+                          val size: Int = 1,
+                          val search: String? = null,
+                          val intentId: String? = null,
+                          val status: Set<ClassifiedSentenceStatus> = emptySet(),
+                          val notStatus: ClassifiedSentenceStatus? = ClassifiedSentenceStatus.deleted,
+                          val onlyExactMatch: Boolean = false) {
 }

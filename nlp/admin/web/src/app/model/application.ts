@@ -58,7 +58,7 @@ export class Application {
 
 export class Intent {
 
-  public static unknown = "unknown";
+  public static unknown = "tock:unknown";
 
   constructor(public name: string,
     public namespace:string,

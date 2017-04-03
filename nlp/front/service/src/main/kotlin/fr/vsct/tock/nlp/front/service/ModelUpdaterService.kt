@@ -76,7 +76,7 @@ object ModelUpdaterService : ModelUpdater {
 
     private fun toIntent(intent: IntentDefinition): Intent {
         return Intent(
-                intent.name,
+                intent.qualifiedName,
                 intent.entities.map { Entity(entityTypes.getValue(it.entityTypeName), it.role) },
                 intent.entitiesRegexp)
     }

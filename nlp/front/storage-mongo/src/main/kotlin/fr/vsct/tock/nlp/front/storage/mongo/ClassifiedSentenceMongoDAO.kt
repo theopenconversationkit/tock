@@ -81,14 +81,14 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         with(query) {
             val filterStatus = listOfNotNull(
                     if (status.isEmpty()) null else status.map { "'$it'" }.joinToString(",", "${`in`}:[", "]"),
-                    if (notStatus == null) null else "${ne}:${notStatus!!.json}"
+                    if (status.isNotEmpty() || notStatus == null) null else "${ne}:${notStatus!!.json}"
             ).joinToString(",", "status:{", "}")
 
             val filter =
                     listOfNotNull(
                             "'applicationId':${applicationId.json}",
                             "'language':${language.json}",
-                            if (search.isNullOrBlank()) null else "'text':/${search!!.trim()}/i",
+                            if (search.isNullOrBlank()) null else if (query.onlyExactMatch) "'text':${search!!.json}" else "'text':/${search!!.trim()}/i",
                             if (intentId.isNullOrBlank()) null else "'classification.intentId':${intentId!!.json}",
                             if (filterStatus.isEmpty()) null else filterStatus
                     ).joinToString(",", "{", "}")

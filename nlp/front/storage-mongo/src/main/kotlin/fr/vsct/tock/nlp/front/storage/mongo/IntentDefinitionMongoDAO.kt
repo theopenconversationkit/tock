@@ -17,8 +17,6 @@
 package fr.vsct.tock.nlp.front.storage.mongo
 
 import com.mongodb.client.MongoCollection
-import com.mongodb.client.model.Filters
-import com.mongodb.client.model.UpdateOptions
 import fr.vsct.tock.nlp.front.service.storage.IntentDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
@@ -28,7 +26,6 @@ import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
-import org.litote.kmongo.replaceOne
 import org.litote.kmongo.save
 
 /**
@@ -46,8 +43,8 @@ object IntentDefinitionMongoDAO : IntentDefinitionDAO {
         return col.find("{'applications':${applicationId.json}}").toList()
     }
 
-    override fun getIntentByName(name: String): IntentDefinition? {
-        return col.findOne("{'name':${name.json}}")
+    override fun getIntentByNamespaceAndName(namespace: String, name: String): IntentDefinition? {
+        return col.findOne("{'name':${name.json},'namespace':${namespace.json}}")
     }
 
     override fun getIntentById(id: String): IntentDefinition? {

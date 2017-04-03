@@ -68,7 +68,7 @@ interface ApplicationConfiguration {
 
     fun getIntentsByApplicationId(applicationId: String): List<IntentDefinition>
 
-    fun getIntentByName(name: String): IntentDefinition?
+    fun getIntentByNamespaceAndName(namespace:String, name: String): IntentDefinition?
 
     fun getIntentById(id: String): IntentDefinition?
 
@@ -76,6 +76,7 @@ interface ApplicationConfiguration {
 
 
 
-    fun getIntentIdForIntentName(name:String) : String
+    fun getIntentIdByQualifiedName(name: String): String
+
 
 }

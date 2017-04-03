@@ -16,12 +16,14 @@
 
 package fr.vsct.tock.bot.definition
 
+import fr.vsct.tock.shared.TOCK_NAMESPACE
+
 /**
  * An intent definition.
  */
 data class Intent(val name: String) {
 
     companion object {
-        val unknown: Intent = Intent("unknown")
+        val unknown: Intent = Intent("$TOCK_NAMESPACE:unknown")
     }
 }

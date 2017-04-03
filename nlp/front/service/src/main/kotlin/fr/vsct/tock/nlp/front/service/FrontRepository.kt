@@ -53,22 +53,26 @@ internal object FrontRepository {
         ConcurrentHashMap(entityTypesWithoutSubEntities + entityTypesWithSubEntities)
     }
 
-    fun toEntityType(entityType : EntityTypeDefinition): EntityType {
+    fun toEntityType(entityType: EntityTypeDefinition): EntityType {
         return EntityType(entityType.name, entityType.subEntities.map { it.toEntity() })
     }
 
-    fun EntityDefinition.toEntity(): Entity {
-        return Entity(entityTypes.getValue(this.entityTypeName), this.role)
+    fun toEntity(type: String, role: String): Entity {
+        return Entity(entityTypes.getValue(type), role)
     }
 
     fun toApplication(applicationDefinition: ApplicationDefinition): Application {
         val intentDefinitions = config.getIntentsByApplicationId(applicationDefinition._id!!)
         val intents = intentDefinitions.map {
-            Intent(it.name,
+            Intent(it.qualifiedName,
                     it.entities.map { Entity(entityTypes.getValue(it.entityTypeName), it.role) },
                     it.entitiesRegexp.mapValues { it.value.map { EntitiesRegexp(it.regexp) } })
         }
         return Application(applicationDefinition.name, intents, applicationDefinition.supportedLocales)
+    }
+
+    fun EntityDefinition.toEntity(): Entity {
+        return toEntity(this.entityTypeName, this.role)
     }
 
 }

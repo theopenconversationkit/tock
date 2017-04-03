@@ -40,4 +40,14 @@ data class ClassifiedSentence(val text: String,
             Instant.now(),
             ClassifiedSentenceStatus.inbox,
             Classification(query, intentId))
+
+    /**
+     * Check if the sentence has the same content (status, creation & update dates excluded)
+     */
+    fun hasSameContent(sentence: ClassifiedSentence?): Boolean {
+        return this == sentence?.copy(
+                status = status,
+                creationDate = creationDate,
+                updateDate = updateDate)
+    }
 }

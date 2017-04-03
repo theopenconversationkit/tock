@@ -31,5 +31,18 @@ interface NlpCore {
 
     fun updateEntityModelForIntent(context: BuildContext, intent: Intent, expressions: List<SampleExpression>)
 
-    fun registeredNlpEngineTypes() : Set<NlpEngineType>
+    fun registeredNlpEngineTypes(): Set<NlpEngineType>
+
+    /**
+     * Evaluate entity values.
+     *
+     * @param context the call context
+     * @param text the query
+     * @param entities the not yet evaluated identified entities
+     *
+     */
+    fun evaluateEntities(
+            context: CallContext,
+            text: String,
+            entities: List<EntityRecognition>): List<EntityRecognition>
 }
