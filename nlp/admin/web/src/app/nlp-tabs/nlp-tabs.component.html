@@ -16,42 +16,12 @@
 
 <nav md-tab-nav-bar>
   <a md-tab-link
-     [routerLink]="['try']"
-     routerLinkActive #rla2="routerLinkActive"
-     [active]="rla2.isActive">
-    Try it
+     *ngFor="let link of tabLinks"
+     [routerLink]="link.link"
+     routerLinkActive #rla="routerLinkActive"
+     [active]="rla.isActive">
+    {{link.label}}
   </a>
-  <a md-tab-link
-     [routerLink]="['inbox']"
-     routerLinkActive #rla3="routerLinkActive"
-     [active]="rla3.isActive">
-    Inbox
-  </a>
-  <a md-tab-link
-     [routerLink]="['archive']"
-     routerLinkActive #rla4="routerLinkActive"
-     [active]="rla4.isActive">
-    Archive
-  </a>
-  <a md-tab-link
-     [routerLink]="['search']"
-     routerLinkActive #rla6="routerLinkActive"
-     [active]="rla6.isActive">
-    Search
-  </a>
-  <a md-tab-link
-     [routerLink]="['intents']"
-     routerLinkActive #rla5="routerLinkActive"
-     [active]="rla5.isActive">
-    Intents
-  </a>
-  <!--a md-tab-link
-     [routerLink]="['logs']"
-     routerLinkActive #rla7="routerLinkActive"
-     [active]="rla7.isActive"
-     (click)="selectChange()">
-    Logs
-  </a-->
 </nav>
 
 <router-outlet></router-outlet>

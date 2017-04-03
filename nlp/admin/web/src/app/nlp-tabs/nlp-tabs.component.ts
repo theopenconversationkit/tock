@@ -23,12 +23,22 @@ class TabLink {
   }
 }
 
+const tabs = [
+  new TabLink("try","Try it"),
+  new TabLink("inbox","Inbox"),
+  new TabLink("archive","Archive"),
+  new TabLink("search","Search"),
+  new TabLink("intents","Intents"),
+];
+
 @Component({
   selector: 'tock-nlp-tabs',
   templateUrl: './nlp-tabs.component.html',
   styleUrls: ['./nlp-tabs.component.css']
 })
 export class NlpTabsComponent implements OnInit {
+
+  tabLinks = tabs
 
   constructor(private router: Router) {
   }
