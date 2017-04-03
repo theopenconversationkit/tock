@@ -34,6 +34,7 @@ import {NlpService} from "./nlp.service";
 import {CreateEntityDialogComponent} from "../sentence-analysis/create-entity-dialog/create-entity-dialog.component";
 import {InfiniteScrollModule} from "angular2-infinite-scroll";
 import {SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.component";
+import {CreateIntentDialogComponent} from "../sentence-analysis/create-intent-dialog/create-intent-dialog.component";
 
 const routes: Routes = [
   {
@@ -101,6 +102,7 @@ export class NlpRoutingModule {
     HighlightComponent,
     SentenceAnalysisComponent,
     CreateEntityDialogComponent,
+    CreateIntentDialogComponent,
     SentencesScrollComponent
   ],
   exports: [],
@@ -109,7 +111,8 @@ export class NlpRoutingModule {
     ApplicationResolver
   ],
   entryComponents: [
-    CreateEntityDialogComponent
+    CreateEntityDialogComponent,
+    CreateIntentDialogComponent
   ]
 })
 export class NlpModule {

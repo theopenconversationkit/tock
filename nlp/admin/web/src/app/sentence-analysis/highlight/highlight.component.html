@@ -21,10 +21,6 @@
                             (touchend)="select()"
                             [id]="t.index">{{t.text}}</span></div>
 </md-card-title>
-<md-card-content>
-
-</md-card-content>
-
 <md-card-subtitle *ngIf="edited" class="highlight">
   <div *ngIf="intent">
     <button md-button *ngFor="let entity of intent.entities"

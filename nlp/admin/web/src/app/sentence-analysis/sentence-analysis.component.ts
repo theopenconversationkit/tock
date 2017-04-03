@@ -14,12 +14,14 @@
  * limitations under the License.
  */
 
-import {Component, OnInit, Input, Output} from "@angular/core";
-import {Sentence, ClassifiedEntity, SentenceStatus} from "../model/nlp";
+import {Component, Input, OnInit, Output} from "@angular/core";
+import {ClassifiedEntity, Sentence, SentenceStatus} from "../model/nlp";
 import {EventEmitter} from "@angular/common/src/facade/async";
 import {StateService} from "../core/state.service";
 import {Intent} from "../model/application";
 import {NlpService} from "../nlp-tabs/nlp.service";
+import {CreateIntentDialogComponent} from "./create-intent-dialog/create-intent-dialog.component";
+import {MdDialog} from "@angular/material";
 
 @Component({
   selector: 'tock-sentence-analysis',
@@ -31,9 +33,9 @@ export class SentenceAnalysisComponent implements OnInit {
   @Input() @Output() sentence: Sentence;
   @Output() closed = new EventEmitter();
 
-  intentCreation: boolean = false;
-
-  constructor(public state: StateService, private nlp: NlpService) {
+  constructor(public state: StateService,
+    private nlp: NlpService,
+    private dialog: MdDialog) {
   }
 
   ngOnInit() {
@@ -49,11 +51,19 @@ export class SentenceAnalysisComponent implements OnInit {
     //cleanup entities
     this.sentence.classification.entities = [];
     if (value === "newIntent") {
-      this.intentCreation = true;
+      let dialogRef = this.dialog.open(CreateIntentDialogComponent);
+      dialogRef.afterClosed().subscribe(result => {
+        if (result !== "cancel") {
+          this.createIntent(result.name);
+        } else {
+          this.sentence.classification.intentId = undefined;
+        }
+      });
     } else {
       this.sentence.classification.intentId = value;
+      this.sentence = this.sentence.clone();
     }
-    this.sentence = this.sentence.clone();
+
   }
 
   onLanguageChange(value) {
@@ -83,11 +93,10 @@ export class SentenceAnalysisComponent implements OnInit {
 
   }
 
-  createIntent(name) {
+  private createIntent(name) {
     this.nlp.saveIntent(new Intent(name, this.state.user.organization, [], [this.state.currentApplication._id], null)).subscribe(intent => {
       this.state.currentApplication.intents.push(intent);
       this.onIntentChange(intent._id);
-      this.intentCreation = false;
     });
   }
 

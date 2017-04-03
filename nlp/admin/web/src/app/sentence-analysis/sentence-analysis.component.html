@@ -24,12 +24,6 @@
         </md-option>
         <md-option value="newIntent">Create a new Intent</md-option>
       </md-select>
-      <div *ngIf="intentCreation">
-        <md-input-container>
-          <input mdInput placeholder="Intent name"  #intentName (keyup.enter)="createIntent(intentName.value)">
-        </md-input-container>
-        <button md-button color="primary" (click)="createIntent(intentName.value)">OK</button>
-      </div>
 
       <md-select placeholder="Language" [(ngModel)]="sentence.language" (change)="onLanguageChange($event.value)">
         <md-option *ngFor="let l of state.currentApplication.supportedLocales" [value]="l">
