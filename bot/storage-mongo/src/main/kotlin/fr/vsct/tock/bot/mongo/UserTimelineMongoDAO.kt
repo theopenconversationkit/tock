@@ -45,8 +45,8 @@ object UserTimelineMongoDAO : UserTimelineDAO {
 
     private val logger = KotlinLogging.logger {}
 
-    private val userTimelineCol = database.getCollection<UserTimelineCol>()
-    private val dialogCol = database.getCollection<DialogCol>()
+    private val userTimelineCol = database.getCollection<UserTimelineCol>("user_timeline")
+    private val dialogCol = database.getCollection<DialogCol>("dialog")
 
     init {
         userTimelineCol.createIndex("{playerId:1}", IndexOptions().unique(true))
