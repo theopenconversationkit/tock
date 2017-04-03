@@ -63,21 +63,6 @@ class BotBus internal constructor(
         return end(SendSentence(botId, applicationId, userId, translate(text)), delay)
     }
 
-    fun loadProfileIfNotSet() {
-        with(userTimeline) {
-            if (!userState.profileLoaded) {
-                val pref = connector.loadProfile(action.applicationId, action.playerId)
-                userState.profileLoaded = true
-                with(userPreferences) {
-                    firstName = pref.firstName
-                    lastName = pref.lastName
-                    email = pref.email
-                    timezone = pref.timezone
-                }
-            }
-        }
-    }
-
     fun translate(text: String, vararg args: Any?): String {
         if (text.isEmpty()) {
             return ""

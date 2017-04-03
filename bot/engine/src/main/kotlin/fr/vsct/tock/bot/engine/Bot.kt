@@ -46,7 +46,10 @@ class Bot(val botDefinition: BotDefinition) {
     private val nlpClient = NlpClient()
 
     fun handle(action: Action, userTimeline: UserTimeline, connector: ConnectorController) {
+        loadProfileIfNotSet(action, userTimeline, connector)
+
         val dialog = getDialog(action, userTimeline)
+
         parseAction(action, userTimeline, dialog, connector)
 
         if (botDefinition.isEnabledIntent(action.state.currentIntent)) {
@@ -64,7 +67,6 @@ class Bot(val botDefinition: BotDefinition) {
             story.actions.add(action)
 
             val bus = BotBus(connector, userTimeline, dialog, story, action, botDefinition)
-            bus.loadProfileIfNotSet()
 
             story.handle(bus)
         } else {
@@ -199,6 +201,16 @@ class Bot(val botDefinition: BotDefinition) {
 
     override fun toString(): String {
         return "$botDefinition"
+    }
+
+    private fun loadProfileIfNotSet(action: Action, userTimeline: UserTimeline, connector: ConnectorController) {
+        with(userTimeline) {
+            if (!userState.profileLoaded) {
+                val pref = connector.loadProfile(action.applicationId, userTimeline.playerId)
+                userState.profileLoaded = true
+                userPreferences.copy(pref)
+            }
+        }
     }
 
 
