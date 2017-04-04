@@ -41,9 +41,8 @@ internal object FrontRepository {
     val config = ApplicationConfigurationService
 
     val entityTypes: MutableMap<String, EntityType> by lazy {
-        val entityTypesDefinitionMap = config.getEntityTypes().map { it.name to it }.toMap().toMutableMap()
+        val entityTypesDefinitionMap = entityTypeDAO.getEntityTypes().map { it.name to it }.toMap().toMutableMap()
 
-        //register built-in entity types
         core.getEvaluatedEntityTypes().forEach {
             if (!entityTypesDefinitionMap.containsKey(it)) {
                 try {

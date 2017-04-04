@@ -68,6 +68,14 @@ export class Intent {
     Intent.sortEntities(entities);
   }
 
+  isUnknownIntent() : boolean {
+    return `${this.namespace}:${this.name}` === Intent.unknown;
+  }
+
+  containsEntity(name:string, role:string) : boolean {
+    return this.entities.some(e => e.entityTypeName === name && e.role === role)
+  }
+
   removeEntity(entity:EntityDefinition) {
     this.entities = this.entities.filter(e => e.entityTypeName !== entity.entityTypeName || e.role !== entity.role)
   }

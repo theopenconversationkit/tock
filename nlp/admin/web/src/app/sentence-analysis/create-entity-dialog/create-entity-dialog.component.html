@@ -14,15 +14,39 @@
   ~ limitations under the License.
   -->
 
-<h1 md-dialog-title>Create a New Entity</h1>
+<h1 md-dialog-title>Add Entity</h1>
 <div md-dialog-content>
-  <md-input-container>
-    <input mdInput placeholder="Entity Type"  [(ngModel)]="type">
-  </md-input-container>
-  <br>
-  <md-input-container>
-    <input mdInput placeholder="Role"  [(ngModel)]="role">
-  </md-input-container>
+
+  <p *ngIf="error" class="error">
+    {{error}}
+  </p>
+
+  <p>
+    Select existing Entity
+
+    <md-chip-list>
+      <md-chip *ngFor="let e of state.entityTypes" mdTooltip="Select entity" selected="{{e === entityType}}" (click)="onSelect(e)" [style.background-color]="e === entityType ? '' : e.entityColor()" color="primary">
+        {{e.qualifiedName(state.user)}}
+      </md-chip>
+    </md-chip-list>
+  </p>
+
+  <p>
+    Or create :
+
+    <md-input-container>
+      <input mdInput placeholder="Entity Type" [(ngModel)]="type" (keydown)="onTypeKeyDown($event)" (change)="onTypeChange()">
+    </md-input-container>
+  </p>
+
+  <p>
+    With role :
+
+    <md-input-container>
+      <input mdInput placeholder="Role" [(ngModel)]="role">
+    </md-input-container>
+  </p>
+
 </div>
 <div md-dialog-actions>
   <button md-button (click)="dialogRef.close('cancel')">Cancel</button>

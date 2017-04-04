@@ -15,10 +15,11 @@
   -->
 
 <md-card-title class="highlight-text">
-  <div *ngIf="tokens"><span *ngFor="let t of tokens"
+  <div *ngIf="tokens"
+       class="tokens"
+       (mouseup)="select()"
+       (touchend)="select()"><span *ngFor="let t of tokens"
                             [style.background]="t.color()"
-                            (mouseup)="select()"
-                            (touchend)="select()"
                             [id]="t.index">{{t.text}}</span></div>
 </md-card-title>
 <md-card-subtitle *ngIf="edited" class="highlight">

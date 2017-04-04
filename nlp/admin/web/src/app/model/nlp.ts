@@ -23,7 +23,7 @@ export class EntityDefinition {
   entityColor: string;
 
   constructor(public entityTypeName: string,
-              public role: string) {
+    public role: string) {
     this.qualifiedRole = qualifiedRole(entityTypeName, role);
     this.entityColor = entityColor(this.qualifiedRole)
   }
@@ -56,6 +56,14 @@ export class EntityType {
   constructor(public name: string, public description: string) {
   }
 
+  qualifiedName(user: User): string {
+    return qualifiedNameWithoutRole(user, this.name);
+  }
+
+  entityColor(): string {
+    return entityColor(this.name);
+  }
+
   static fromJSON(json?: any): EntityType {
 
     const value = Object.create(EntityType.prototype);
@@ -73,12 +81,12 @@ export class EntityType {
 export class Sentence {
 
   constructor(public text: string,
-              public language: string,
-              public applicationId: string,
-              public status: SentenceStatus,
-              public classification: Classification,
-              public creationDate: Date,
-              public updateDate: Date) {
+    public language: string,
+    public applicationId: string,
+    public status: SentenceStatus,
+    public classification: Classification,
+    public creationDate: Date,
+    public updateDate: Date) {
   }
 
   clone(): Sentence {
@@ -169,9 +177,9 @@ export class DateIntervalEntityValue {
 export class Classification {
 
   constructor(public intentId: string,
-              public entities: ClassifiedEntity[],
-              public intentProbability: number,
-              public entitiesProbability: number) {
+    public entities: ClassifiedEntity[],
+    public intentProbability: number,
+    public entitiesProbability: number) {
   }
 
   clone(): Classification {
@@ -195,10 +203,10 @@ export class ClassifiedEntity {
   entityColor: string;
 
   constructor(public type: string,
-              public role: string,
-              public start: number,
-              public end: number,
-              public value?: any) {
+    public role: string,
+    public start: number,
+    public end: number,
+    public value?: any) {
     this.qualifiedRole = qualifiedRole(type, role);
     this.entityColor = entityColor(this.qualifiedRole)
   }
@@ -250,10 +258,10 @@ export class NlpEngineType {
 export class ParseQuery extends ApplicationScopedQuery {
 
   constructor(public namespace: string,
-              public applicationName: string,
-              public language: string,
-              public query: string,
-              public engineType: NlpEngineType) {
+    public applicationName: string,
+    public language: string,
+    public query: string,
+    public engineType: NlpEngineType) {
     super(namespace, applicationName, language)
   }
 }
@@ -261,13 +269,13 @@ export class ParseQuery extends ApplicationScopedQuery {
 export class SearchQuery extends PaginatedQuery {
 
   constructor(public namespace: string,
-              public applicationName: string,
-              public language: string,
-              public start: number,
-              public size: number,
-              public search?: string,
-              public intentId?: string,
-              public status?: SentenceStatus[]) {
+    public applicationName: string,
+    public language: string,
+    public start: number,
+    public size: number,
+    public search?: string,
+    public intentId?: string,
+    public status?: SentenceStatus[]) {
     super(namespace, applicationName, language, start, size)
   }
 }
@@ -275,9 +283,9 @@ export class SearchQuery extends PaginatedQuery {
 export class SentencesResult {
 
   constructor(public sentences: Sentence[],
-              public total: number,
-              public start: number,
-              public end: number) {
+    public total: number,
+    public start: number,
+    public end: number) {
   }
 
   static fromJSON(json?: any): SentencesResult {
@@ -336,6 +344,8 @@ export function qualifiedRole(type: string, role: string): string {
   const split = type.split(":");
   if (role === split[1]) {
     return role;
+  } else if (role.length == 0) {
+    return split[1];
   } else {
     return `${split[1]}:${role}`;
   }
@@ -348,7 +358,19 @@ export function qualifiedName(user: User, type: string, role: string): string {
   } else {
     return qualifiedRole(type, role);
   }
+}
 
+export function qualifiedNameWithoutRole(user: User, type: string): string {
+  const split = type.split(":");
+  if (split[0] !== user.organization) {
+    return type;
+  } else {
+    return split[1];
+  }
+}
+
+export function entityNameFromQualifiedName(qualifiedName: string): string {
+  return qualifiedName.split(":")[1];
 }
 
 

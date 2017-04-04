@@ -28,6 +28,7 @@ import fr.vsct.tock.nlp.admin.model.CreateEntityQuery
 import fr.vsct.tock.nlp.admin.model.ParseQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
+import fr.vsct.tock.shared.name
 import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
@@ -157,7 +158,7 @@ class AdminVerticle : WebVerticle(KotlinLogging.logger {}) {
         blockingJsonGet("/entities") { front.getEntityTypes() }
 
         blockingJsonPost<CreateEntityQuery, EntityTypeDefinition?>("/entity/create") { context, query ->
-            val entityName = "${context.organization}:${query.type.toLowerCase()}"
+            val entityName = "${context.organization}:${query.type.toLowerCase().name()}"
             if (front.getEntityTypeByName(entityName) == null) {
                 val entityType = EntityTypeDefinition(entityName, "")
                 front.save(entityType)

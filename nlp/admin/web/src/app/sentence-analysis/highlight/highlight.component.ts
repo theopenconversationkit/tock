@@ -39,9 +39,9 @@ export class HighlightComponent implements OnInit, OnChanges {
   tokens: Token[];
 
   constructor(private nlp: NlpService,
-              private state: StateService,
-              private snackBar: MdSnackBar,
-              private dialog: MdDialog) {
+    private state: StateService,
+    private snackBar: MdSnackBar,
+    private dialog: MdDialog) {
     this.editable = true;
     this.edited = false;
     this.selectedStart = -1;
@@ -86,21 +86,19 @@ export class HighlightComponent implements OnInit, OnChanges {
     const selection = window.getSelection().getRangeAt(0);
     let start = selection.startOffset;
     let end = selection.endOffset;
-    if(selection.startContainer !== selection.endContainer) {
+    if (selection.startContainer !== selection.endContainer) {
       end = selection.startContainer.childNodes[0].textContent.length - start;
     } else {
-      if(start > end) {
+      if (start > end) {
         const tmp = start;
         start = end;
         end = tmp;
       }
     }
-    if(start === end) {
+    if (start === end) {
       return;
     }
     const span = selection.startContainer.parentElement;
-    const tokenIndex = Number(span.getAttribute("id"));
-    this.edited = true;
     this.selectedStart = -1;
     this.selectedEnd = -1;
     this.findSelected(span.parentNode, new SelectedResult(span, start, end));
@@ -108,24 +106,23 @@ export class HighlightComponent implements OnInit, OnChanges {
     if (this.sentence.overlapEntity(this.selectedStart, this.selectedEnd)) {
       //removehighlight is not ok as it could remove existing highligthing
       this.rebuild();
-    } else {
+    } else if (this.intent && !this.intent.isUnknownIntent()) {
       this.edited = true;
     }
 
   }
 
   addEntity() {
-    let dialogRef = this.dialog.open(CreateEntityDialogComponent);
+    let dialogRef = this.dialog.open(CreateEntityDialogComponent,
+      {
+        data: {
+          intent: this.intent
+        }
+      });
     dialogRef.afterClosed().subscribe(result => {
       if (result !== "cancel") {
-        let name = result.type;
-        if (name.indexOf(":") === -1) {
-          name = `${this.state.user.organization}:${name.toLowerCase()}`;
-        }
+        let name = result.name;
         let role = result.role;
-        if (!role || role.length === 0) {
-          role = name.split(":")[1];
-        }
         const existingEntityType = this.state.findEntityTypeByName(name);
         if (existingEntityType) {
           const entity = new EntityDefinition(name, role);
@@ -134,7 +131,7 @@ export class HighlightComponent implements OnInit, OnChanges {
             this.snackBar.open(`Entity Type ${entity.qualifiedRole} added`, "Entity added", {duration: 1000})
           );
         } else {
-          this.nlp.createEntityType(result.type).subscribe(e => {
+          this.nlp.createEntityType(name).subscribe(e => {
             if (e) {
               const entity = new EntityDefinition(e.name, role);
               this.intent.addEntity(entity);
@@ -143,7 +140,7 @@ export class HighlightComponent implements OnInit, OnChanges {
                 this.snackBar.open(`Entity Type ${entity.qualifiedRole} added`, "Entity added", {duration: 1000})
               );
             } else {
-              this.snackBar.open(`Error new try to create Entity Type ${result.type}`, "Error", {duration: 1000});
+              this.snackBar.open(`Error new try to create Entity Type ${name}`, "Error", {duration: 1000});
             }
           });
         }

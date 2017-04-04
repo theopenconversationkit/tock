@@ -27,12 +27,11 @@ import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.namespaceAndName
-import fr.vsct.tock.shared.withNamespace
 
-private val applicationDAO: ApplicationDefinitionDAO by injector.instance()
-private val entityTypeDAO: EntityTypeDefinitionDAO by injector.instance()
-private val intentDAO: IntentDefinitionDAO by injector.instance()
-private val sentenceDAO: ClassifiedSentenceDAO by injector.instance()
+val applicationDAO: ApplicationDefinitionDAO by injector.instance()
+val entityTypeDAO: EntityTypeDefinitionDAO by injector.instance()
+val intentDAO: IntentDefinitionDAO by injector.instance()
+val sentenceDAO: ClassifiedSentenceDAO by injector.instance()
 
 /**
  *
@@ -53,5 +52,14 @@ object ApplicationConfigurationService :
         return if (name == unknownIntent)
             unknownIntent
         else name.namespaceAndName().run { intentDAO.getIntentByNamespaceAndName(first, second)!!._id!! }
+    }
+
+    override fun getEntityTypes(): List<EntityTypeDefinition> {
+        //check entityTypes initialization
+        return if (FrontRepository.entityTypes.isEmpty()) {
+            emptyList()
+        } else {
+            entityTypeDAO.getEntityTypes()
+        }
     }
 }

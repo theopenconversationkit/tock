@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from "@angular/core";
 import {MdDialogRef} from "@angular/material";
-import {NlpService} from "../../nlp-tabs/nlp.service";
+import {StateService} from "../../core/state.service";
+import {Intent} from "../../model/application";
+import {entityNameFromQualifiedName, EntityType, qualifiedNameWithoutRole} from "../../model/nlp";
 
 @Component({
   selector: 'tock-create-entity-dialog',
@@ -25,18 +27,63 @@ import {NlpService} from "../../nlp-tabs/nlp.service";
 })
 export class CreateEntityDialogComponent implements OnInit {
 
-  type:string;
-  role:string;
+  intent: Intent;
+  entityType: EntityType;
+  type: string;
+  role: string;
 
-  constructor(public dialogRef: MdDialogRef<CreateEntityDialogComponent>) {
+  error: string;
+
+  constructor(public dialogRef: MdDialogRef<CreateEntityDialogComponent>,
+    public state: StateService) {
 
   }
 
   ngOnInit() {
+    this.intent = this.dialogRef.config.data.intent;
+  }
+
+  onSelect(entityType: EntityType) {
+    this.entityType = entityType;
+    this.type = qualifiedNameWithoutRole(this.state.user, entityType.name);
+    this.role = entityNameFromQualifiedName(entityType.name);
+  }
+
+  onTypeKeyDown(event) {
+    this.role = event.target.value + event.key;
+  }
+
+  onTypeChange() {
+    this.role = this.type;
   }
 
   save() {
-    this.dialogRef.close({type:this.type, role:this.role});
+    this.error = undefined;
+    let name = this.type;
+    if (!name || name.length === 0) {
+      if (this.entityType) {
+        name = this.entityType.name;
+      } else {
+        this.error = "Please select or create an entity";
+        return;
+      }
+    } else {
+      name = `${this.state.user.organization}:${name.trim().toLowerCase()}`;
+    }
+    let role = this.role;
+    if (!role || role.length === 0) {
+      role = entityNameFromQualifiedName(name);
+    } else {
+      role = role.trim().toLowerCase();
+    }
+
+    console.log(name);
+    console.log(role);
+    if (this.intent.containsEntity(name, role)) {
+      this.error = "Entity type/role already exists for this intent";
+    } else {
+      this.dialogRef.close({name: name, role: role});
+    }
   }
 
 }
