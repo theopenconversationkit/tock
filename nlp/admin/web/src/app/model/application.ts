@@ -76,6 +76,10 @@ export class Intent {
     return this.entities.some(e => e.entityTypeName === name && e.role === role)
   }
 
+  containsEntityRole(role:string) : boolean {
+    return this.entities.some(e => e.role === role)
+  }
+
   removeEntity(entity:EntityDefinition) {
     this.entities = this.entities.filter(e => e.entityTypeName !== entity.entityTypeName || e.role !== entity.role)
   }

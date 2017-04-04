@@ -67,7 +67,7 @@ export class CreateEntityDialogComponent implements OnInit {
         this.error = "Please select or create an entity";
         return;
       }
-    } else {
+    } else if (name.indexOf(':') === -1) {
       name = `${this.state.user.organization}:${name.trim().toLowerCase()}`;
     }
     let role = this.role;
@@ -77,10 +77,8 @@ export class CreateEntityDialogComponent implements OnInit {
       role = role.trim().toLowerCase();
     }
 
-    console.log(name);
-    console.log(role);
-    if (this.intent.containsEntity(name, role)) {
-      this.error = "Entity type/role already exists for this intent";
+    if (this.intent.containsEntityRole(role)) {
+      this.error = "Entity role already exists for this intent";
     } else {
       this.dialogRef.close({name: name, role: role});
     }

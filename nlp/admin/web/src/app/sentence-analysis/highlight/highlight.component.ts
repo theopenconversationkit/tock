@@ -87,6 +87,9 @@ export class HighlightComponent implements OnInit, OnChanges {
     let start = selection.startOffset;
     let end = selection.endOffset;
     if (selection.startContainer !== selection.endContainer) {
+      if(!selection.startContainer.childNodes[0]) {
+        return;
+      }
       end = selection.startContainer.childNodes[0].textContent.length - start;
     } else {
       if (start > end) {
