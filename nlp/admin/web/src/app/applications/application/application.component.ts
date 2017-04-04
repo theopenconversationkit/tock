@@ -53,24 +53,28 @@ export class ApplicationComponent implements OnInit {
           }
         } else {
           this.newApplication = true;
-          this.application = new Application("", this.state.user.organization, [], [this.state.currentLocale])
+          this.application = new Application("", this.state.user.organization, [], [])
         }
       }
     );
   }
 
   saveApplication() {
-    this.applicationService.saveApplication(this.application)
-      .subscribe(app => {
-        this.state.applications = this.state.applications.filter(a => a._id !== app._id);
-        this.state.applications.push(app);
-        this.state.currentApplication = app;
-        this.state.sortApplications();
-        this.snackBar.open(`Application ${app.name} saved`, "Save Application", {duration: 1000});
-        this.router.navigateByUrl("/applications")
-      }, error => {
-        this.snackBar.open(error, "Error", {});
-      });
+    if(this.application.supportedLocales.length === 0) {
+      this.snackBar.open(`Please choose at least one locale`, "ERROR", {duration: 5000});
+    } else {
+      this.applicationService.saveApplication(this.application)
+        .subscribe(app => {
+          this.state.applications = this.state.applications.filter(a => a._id !== app._id);
+          this.state.applications.push(app);
+          this.state.currentApplication = app;
+          this.state.sortApplications();
+          this.snackBar.open(`Application ${app.name} saved`, "Save Application", {duration: 1000});
+          this.router.navigateByUrl("/applications")
+        }, error => {
+          this.snackBar.open(error, "Error", {});
+        });
+    }
   }
 
   deleteApplication() {
