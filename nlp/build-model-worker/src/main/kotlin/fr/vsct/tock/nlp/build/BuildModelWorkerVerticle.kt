@@ -21,6 +21,7 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.deleted
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
+import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.shared.error
 import io.vertx.core.AbstractVerticle
 import mu.KotlinLogging
@@ -32,9 +33,45 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 class BuildModelWorkerVerticle : AbstractVerticle() {
 
-    private val logger = KotlinLogging.logger {}
 
     data class ModelRefreshKey(val applicationId: String, val language: Locale)
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+
+        fun updateAllModels() {
+            val front = FrontClient
+            front.getApplications().forEach { app ->
+                app.supportedLocales.forEach { locale ->
+                    updateModel(
+                            ModelRefreshKey(app._id!!, locale),
+                            front.search(SentencesQuery(app._id as String, locale, 0, Integer.MAX_VALUE, status = setOf(model))).sentences)
+                }
+            }
+        }
+
+        private fun updateModel(key: ModelRefreshKey, sentences: List<ClassifiedSentence>) {
+            val front = FrontClient
+            try {
+                val app = front.getApplicationById(key.applicationId)!!
+                logger.info { "start model update for ${app.name} and ${key.language}" }
+                logger.trace { "Sentences : ${sentences.map { it.text }}" }
+
+                front.registeredNlpEngineTypes().forEach { engineType ->
+                    front.updateIntentsModelForApplication(sentences, app, key.language, engineType)
+                    sentences.groupBy { it.classification.intentId }.forEach { intentId, sentences ->
+                        front.updateEntityModelForIntent(sentences, app, intentId, key.language, engineType)
+                    }
+                }
+
+                logger.info { "Model updated for ${app.name} and ${key.language}" }
+            } catch(e: Throwable) {
+                logger.error(e)
+            } finally {
+                front.switchStatus(sentences, model)
+            }
+        }
+    }
 
     override fun start() {
         val front = FrontClient
@@ -73,25 +110,5 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
         })
     }
 
-    private fun updateModel(key: ModelRefreshKey, sentences: List<ClassifiedSentence>) {
-        val front = FrontClient
-        try {
-            val app = front.getApplicationById(key.applicationId)!!
-            logger.info { "start model update for ${app.name} and ${key.language}" }
-            logger.trace { "Sentences : ${sentences.map { it.text }}" }
 
-            front.registeredNlpEngineTypes().forEach { engineType ->
-                front.updateIntentsModelForApplication(sentences, app, key.language, engineType)
-                sentences.groupBy { it.classification.intentId }.forEach { intentId, sentences ->
-                    front.updateEntityModelForIntent(sentences, app, intentId, key.language, engineType)
-                }
-            }
-
-            logger.info { "Model updated for ${app.name} and ${key.language}" }
-        } catch(e: Throwable) {
-            logger.error(e)
-        } finally {
-            front.switchStatus(sentences, model)
-        }
-    }
 }
