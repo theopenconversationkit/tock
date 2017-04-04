@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.bot.connector.messenger
 
-import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fr.vsct.tock.bot.connector.ConnectorException
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.UserProfile
@@ -89,7 +88,7 @@ class MessengerClient(val secretKey: String) {
 
     private fun <T> send(request: T, call: (T) -> Response<SendResponse>): SendResponse {
         try {
-            logger.debug { "Graph Request Input : ${jacksonObjectMapper().writeValueAsString(request)}" }
+            logger.debug { "Graph Request Input : ${mapper.writeValueAsString(request)}" }
             val response = call(request)
 
             if (!response.isSuccessful) {
@@ -100,7 +99,7 @@ class MessengerClient(val secretKey: String) {
                 logger.error { "Graph Request Error body : ${response.errorBody().string()}" }
                 throw ConnectorException(error)
             } else {
-                logger.debug { "Graph Request Output : ${jacksonObjectMapper().writeValueAsString(response.body())}" }
+                logger.debug { "Graph Request Output : ${mapper.writeValueAsString(response.body())}" }
                 return response.body()
             }
         } catch(e: Exception) {
