@@ -21,7 +21,7 @@ import {StateService} from "../core/state.service";
 import {Intent} from "../model/application";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {CreateIntentDialogComponent} from "./create-intent-dialog/create-intent-dialog.component";
-import {MdDialog} from "@angular/material";
+import {MdDialog, MdSnackBar} from "@angular/material";
 
 @Component({
   selector: 'tock-sentence-analysis',
@@ -35,6 +35,7 @@ export class SentenceAnalysisComponent implements OnInit {
 
   constructor(public state: StateService,
     private nlp: NlpService,
+    private snackBar: MdSnackBar,
     private dialog: MdDialog) {
   }
 
@@ -90,6 +91,16 @@ export class SentenceAnalysisComponent implements OnInit {
       .subscribe((s) => {
         this.closed.emit(this.sentence);
       });
+    //delete old language
+    if(this.sentence.language !== this.state.currentLocale) {
+      const s = this.sentence.clone();
+      s.language = this.state.currentLocale;
+      s.status = SentenceStatus.deleted;
+      this.nlp.updateSentence(s)
+        .subscribe((s) => {
+          this.snackBar.open(`Language change to ${this.state.localeName(this.sentence.language)}`, "Language change", {duration: 1000})
+        });
+    }
 
   }
 
