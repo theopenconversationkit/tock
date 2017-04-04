@@ -22,21 +22,20 @@ import fr.vsct.tock.bot.connector.messenger.model.UserProfile
 import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.SendResponse
+import fr.vsct.tock.shared.addJacksonConverter
+import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.retrofitBuilderWithTimeout
 import mu.KotlinLogging
-import okhttp3.OkHttpClient
 import retrofit2.Call
 import retrofit2.Response
-import retrofit2.Retrofit
-import retrofit2.converter.jackson.JacksonConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 import java.lang.Exception
-import java.util.concurrent.TimeUnit
 
 /**
  *
@@ -59,13 +58,11 @@ internal class MessengerClient(val secretKey: String) {
     private val graphApi: MessengerClient.GraphApi
 
     init {
-        val okHttpClient = OkHttpClient.Builder().readTimeout(30, TimeUnit.SECONDS).connectTimeout(30, TimeUnit.SECONDS).build()
-        val retrofit = Retrofit.Builder()
+        val retrofit = retrofitBuilderWithTimeout(30)
                 .baseUrl("https://graph.facebook.com")
-                .addConverterFactory(JacksonConverterFactory.create(mapper))
-                .client(okHttpClient)
+                .addJacksonConverter()
                 .build()
-        graphApi = retrofit.create<MessengerClient.GraphApi>(MessengerClient.GraphApi::class.java)
+        graphApi = retrofit.create(MessengerClient.GraphApi::class)
     }
 
     fun sendMessage(token: String, messageRequest: MessageRequest): SendResponse {

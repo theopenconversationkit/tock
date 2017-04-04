@@ -16,9 +16,11 @@
 
 package fr.vsct.tock.duckling.client
 
-import fr.vsct.tock.shared.property
-import io.vertx.core.json.JsonArray
+import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.property
+import fr.vsct.tock.shared.retrofitBuilderWithTimeout
+import io.vertx.core.json.JsonArray
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -55,12 +57,12 @@ internal object DucklingClient {
 
     init {
         jacksonConverterFactory = JacksonConverterFactory.create(mapper)
-        val retrofit = Retrofit.Builder()
+        val retrofit = retrofitBuilderWithTimeout(3)
                 .baseUrl(property("nlp_entities_url", "http://localhost:8889/"))
                 .addConverterFactory(RawJsonBodyConverterFactory)
                 .build()
 
-        service = retrofit.create<BuiltInEntitiesService>(BuiltInEntitiesService::class.java)
+        service = retrofit.create(BuiltInEntitiesService::class)
     }
 
     object JacksonJsonArrayConverter : Converter<ResponseBody, JSONValue> {

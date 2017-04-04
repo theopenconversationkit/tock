@@ -16,6 +16,25 @@
 
 package fr.vsct.tock.shared
 
+import fr.vsct.tock.shared.jackson.mapper
+import okhttp3.OkHttpClient
+import retrofit2.Retrofit
+import retrofit2.converter.jackson.JacksonConverterFactory
+import java.util.concurrent.TimeUnit
+import kotlin.reflect.KClass
+
 /**
  *
  */
+
+fun <T : Any> Retrofit.create(service: KClass<T>): T = create(service.java)
+
+fun retrofitBuilderWithTimeout(seconds: Int): Retrofit.Builder
+        = OkHttpClient.Builder().readTimeout(30, TimeUnit.SECONDS).connectTimeout(30, TimeUnit.SECONDS).build()
+        .let {
+            Retrofit.Builder().client(it)
+        }
+
+fun Retrofit.Builder.addJacksonConverter(): Retrofit.Builder = run {
+    addConverterFactory(JacksonConverterFactory.create(mapper))
+}
