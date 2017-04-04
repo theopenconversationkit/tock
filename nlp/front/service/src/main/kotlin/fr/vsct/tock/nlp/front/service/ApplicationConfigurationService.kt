@@ -54,12 +54,7 @@ object ApplicationConfigurationService :
         else name.namespaceAndName().run { intentDAO.getIntentByNamespaceAndName(first, second)!!._id!! }
     }
 
-    override fun getEntityTypes(): List<EntityTypeDefinition> {
-        //check entityTypes initialization
-        return if (FrontRepository.entityTypes.isEmpty()) {
-            emptyList()
-        } else {
-            entityTypeDAO.getEntityTypes()
-        }
+    override fun initData() {
+        FrontRepository.registerBuiltInEntities()
     }
 }

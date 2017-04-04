@@ -43,19 +43,6 @@ internal object FrontRepository {
     val entityTypes: MutableMap<String, EntityType> by lazy {
         val entityTypesDefinitionMap = entityTypeDAO.getEntityTypes().map { it.name to it }.toMap().toMutableMap()
 
-        core.getEvaluatedEntityTypes().forEach {
-            if (!entityTypesDefinitionMap.containsKey(it)) {
-                try {
-                    logger.debug { "save built-in entity type $it" }
-                    val entityType = EntityTypeDefinition(it, "built-in entity $it")
-                    config.save(entityType)
-                    entityTypesDefinitionMap.put(it, entityType)
-                } catch(e: Exception) {
-                    logger.warn("Fail to save built-in entity type $it", e)
-                }
-            }
-        }
-
         val entityTypesWithoutSubEntities = entityTypesDefinitionMap
                 .filterValues { it.subEntities.isEmpty() }
                 .mapValues { (_, v) -> toEntityType(v) }
@@ -90,6 +77,21 @@ internal object FrontRepository {
 
     fun EntityDefinition.toEntity(): Entity {
         return toEntity(this.entityTypeName, this.role)
+    }
+
+    fun registerBuiltInEntities() {
+        core.getEvaluatedEntityTypes().forEach {
+            if (!entityTypes.containsKey(it)) {
+                try {
+                    logger.debug { "save built-in entity type $it" }
+                    val entityType = EntityTypeDefinition(it, "built-in entity $it")
+                    config.save(entityType)
+                } catch(e: Exception) {
+                    logger.warn("Fail to save built-in entity type $it", e)
+                }
+            }
+        }
+
     }
 
 }

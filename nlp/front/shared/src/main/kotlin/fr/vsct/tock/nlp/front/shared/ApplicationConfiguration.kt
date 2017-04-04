@@ -49,14 +49,13 @@ interface ApplicationConfiguration {
 
     fun save(sentence: ClassifiedSentence)
 
-    fun search(query : SentencesQuery) : SentencesQueryResult
+    fun search(query: SentencesQuery): SentencesQueryResult
 
-    fun switchIntent(applicationId:String, oldIntentId: String, newIntentId:String)
+    fun switchIntent(applicationId: String, oldIntentId: String, newIntentId: String)
 
-    fun switchStatus(sentences:List<ClassifiedSentence>, newStatus: ClassifiedSentenceStatus)
+    fun switchStatus(sentences: List<ClassifiedSentence>, newStatus: ClassifiedSentenceStatus)
 
-    fun removeEntity(applicationId:String, intentId: String, entityType:String, role:String)
-
+    fun removeEntity(applicationId: String, intentId: String, entityType: String, role: String)
 
 
     fun save(entityType: EntityTypeDefinition)
@@ -68,15 +67,20 @@ interface ApplicationConfiguration {
 
     fun getIntentsByApplicationId(applicationId: String): List<IntentDefinition>
 
-    fun getIntentByNamespaceAndName(namespace:String, name: String): IntentDefinition?
+    fun getIntentByNamespaceAndName(namespace: String, name: String): IntentDefinition?
 
     fun getIntentById(id: String): IntentDefinition?
 
     fun save(intent: IntentDefinition)
 
 
-
     fun getIntentIdByQualifiedName(name: String): String
+
+
+    /**
+     * Load data in storage engine at startup.
+     */
+    fun initData()
 
 
 }
