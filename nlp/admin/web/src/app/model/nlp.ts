@@ -23,7 +23,7 @@ export class EntityDefinition {
   entityColor: string;
 
   constructor(public entityTypeName: string,
-    public role: string) {
+              public role: string) {
     this.qualifiedRole = qualifiedRole(entityTypeName, role);
     this.entityColor = entityColor(this.qualifiedRole)
   }
@@ -60,6 +60,10 @@ export class EntityType {
     return qualifiedNameWithoutRole(user, this.name);
   }
 
+  simpleName(): string {
+    return entityNameFromQualifiedName(this.name);
+  }
+
   entityColor(): string {
     return entityColor(this.name);
   }
@@ -81,12 +85,12 @@ export class EntityType {
 export class Sentence {
 
   constructor(public text: string,
-    public language: string,
-    public applicationId: string,
-    public status: SentenceStatus,
-    public classification: Classification,
-    public creationDate: Date,
-    public updateDate: Date) {
+              public language: string,
+              public applicationId: string,
+              public status: SentenceStatus,
+              public classification: Classification,
+              public creationDate: Date,
+              public updateDate: Date) {
   }
 
   clone(): Sentence {
@@ -177,9 +181,9 @@ export class DateIntervalEntityValue {
 export class Classification {
 
   constructor(public intentId: string,
-    public entities: ClassifiedEntity[],
-    public intentProbability: number,
-    public entitiesProbability: number) {
+              public entities: ClassifiedEntity[],
+              public intentProbability: number,
+              public entitiesProbability: number) {
   }
 
   clone(): Classification {
@@ -203,10 +207,10 @@ export class ClassifiedEntity {
   entityColor: string;
 
   constructor(public type: string,
-    public role: string,
-    public start: number,
-    public end: number,
-    public value?: any) {
+              public role: string,
+              public start: number,
+              public end: number,
+              public value?: any) {
     this.qualifiedRole = qualifiedRole(type, role);
     this.entityColor = entityColor(this.qualifiedRole)
   }
@@ -258,10 +262,10 @@ export class NlpEngineType {
 export class ParseQuery extends ApplicationScopedQuery {
 
   constructor(public namespace: string,
-    public applicationName: string,
-    public language: string,
-    public query: string,
-    public engineType: NlpEngineType) {
+              public applicationName: string,
+              public language: string,
+              public query: string,
+              public engineType: NlpEngineType) {
     super(namespace, applicationName, language)
   }
 }
@@ -269,13 +273,13 @@ export class ParseQuery extends ApplicationScopedQuery {
 export class SearchQuery extends PaginatedQuery {
 
   constructor(public namespace: string,
-    public applicationName: string,
-    public language: string,
-    public start: number,
-    public size: number,
-    public search?: string,
-    public intentId?: string,
-    public status?: SentenceStatus[]) {
+              public applicationName: string,
+              public language: string,
+              public start: number,
+              public size: number,
+              public search?: string,
+              public intentId?: string,
+              public status?: SentenceStatus[]) {
     super(namespace, applicationName, language, start, size)
   }
 }
@@ -283,9 +287,9 @@ export class SearchQuery extends PaginatedQuery {
 export class SentencesResult {
 
   constructor(public sentences: Sentence[],
-    public total: number,
-    public start: number,
-    public end: number) {
+              public total: number,
+              public start: number,
+              public end: number) {
   }
 
   static fromJSON(json?: any): SentencesResult {

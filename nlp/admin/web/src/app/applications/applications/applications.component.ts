@@ -27,17 +27,15 @@ import {StateService} from "../../core/state.service";
 export class ApplicationsComponent implements OnInit {
 
   constructor(private snackBar: MdSnackBar,
-    private state: StateService) {
+              private state: StateService) {
   }
 
   ngOnInit() {
   }
 
   selectApplication(app: Application) {
-    this.state.currentApplication = app;
     this.state.changeApplication(app);
     this.snackBar.open(`Application ${app.name} selected`, "Selection", {duration: 1000});
-
   }
 
 

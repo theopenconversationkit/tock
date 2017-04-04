@@ -52,7 +52,10 @@ export class StateService implements AuthListener {
 
   changeApplication(application: Application) {
     this.currentApplication = application;
-    this.currentApplicationEmitter.emit(this.currentApplication);
+    this.currentApplicationEmitter.emit(application);
+    if (application.supportedLocales.indexOf(this.currentLocale) === -1) {
+      this.changeLocale(application.supportedLocales[0])
+    }
   }
 
   changeApplicationWithName(applicationName: string) {
@@ -68,6 +71,10 @@ export class StateService implements AuthListener {
     return this.entityTypes.find(e => e.name === name);
   }
 
+  entityTypesSortedByName() : EntityType[] {
+    return this.entityTypes.sort((e1, e2) => e1.simpleName().localeCompare(e2.simpleName()));
+  }
+
   localeName(code: string): string {
     return this.locales.find(l => l.first === code).second;
   }
@@ -79,10 +86,10 @@ export class StateService implements AuthListener {
   findCurrentApplication(): Application {
     if (!this.currentApplication && this.applications) {
       if (this.settings.currentApplicationName) {
-        this.currentApplication = this.applications.find(a => a.name === this.settings.currentApplicationName);
+        this.changeApplication(this.applications.find(a => a.name === this.settings.currentApplicationName));
       }
       if (!this.currentApplication && this.applications.length != 0) {
-        this.currentApplication = this.applications[0];
+        this.changeApplication(this.applications[0]);
       }
     }
     return this.currentApplication;

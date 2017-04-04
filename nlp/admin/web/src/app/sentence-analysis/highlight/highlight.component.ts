@@ -39,9 +39,9 @@ export class HighlightComponent implements OnInit, OnChanges {
   tokens: Token[];
 
   constructor(private nlp: NlpService,
-    private state: StateService,
-    private snackBar: MdSnackBar,
-    private dialog: MdDialog) {
+              private state: StateService,
+              private snackBar: MdSnackBar,
+              private dialog: MdDialog) {
     this.editable = true;
     this.edited = false;
     this.selectedStart = -1;
@@ -87,7 +87,7 @@ export class HighlightComponent implements OnInit, OnChanges {
     let start = selection.startOffset;
     let end = selection.endOffset;
     if (selection.startContainer !== selection.endContainer) {
-      if(!selection.startContainer.childNodes[0]) {
+      if (!selection.startContainer.childNodes[0]) {
         return;
       }
       end = selection.startContainer.childNodes[0].textContent.length - start;
@@ -130,8 +130,10 @@ export class HighlightComponent implements OnInit, OnChanges {
         if (existingEntityType) {
           const entity = new EntityDefinition(name, role);
           this.intent.addEntity(entity);
-          this.nlp.saveIntent(this.intent).subscribe(i =>
-            this.snackBar.open(`Entity Type ${entity.qualifiedRole} added`, "Entity added", {duration: 1000})
+          this.nlp.saveIntent(this.intent).subscribe(_ => {
+              this.onSelect(entity);
+              this.snackBar.open(`Entity Type ${entity.qualifiedRole} added`, "Entity added", {duration: 1000})
+            }
           );
         } else {
           this.nlp.createEntityType(name).subscribe(e => {
@@ -139,11 +141,13 @@ export class HighlightComponent implements OnInit, OnChanges {
               const entity = new EntityDefinition(e.name, role);
               this.intent.addEntity(entity);
               this.state.entityTypes.push(e);
-              this.nlp.saveIntent(this.intent).subscribe(i =>
-                this.snackBar.open(`Entity Type ${entity.qualifiedRole} added`, "Entity added", {duration: 1000})
+              this.nlp.saveIntent(this.intent).subscribe(_ => {
+                  this.onSelect(entity);
+                  this.snackBar.open(`Entity Type ${entity.qualifiedRole} added`, "Entity added", {duration: 1000})
+                }
               );
             } else {
-              this.snackBar.open(`Error new try to create Entity Type ${name}`, "Error", {duration: 1000});
+              this.snackBar.open(`Error when creating Entity Type ${name}`, "Error", {duration: 1000});
             }
           });
         }
@@ -168,11 +172,13 @@ export class HighlightComponent implements OnInit, OnChanges {
   }
 
   onSelect(entity: EntityDefinition) {
-    this.edited = false;
-    const e = new ClassifiedEntity(entity.entityTypeName, entity.role, this.selectedStart, this.selectedEnd);
-    this.sentence.classification.entities.push(e);
-    this.sentence.classification.entities.sort((e1, e2) => e1.start - e2.start);
-    this.initTokens();
+    if (this.selectedStart < this.selectedEnd) {
+      this.edited = false;
+      const e = new ClassifiedEntity(entity.entityTypeName, entity.role, this.selectedStart, this.selectedEnd);
+      this.sentence.classification.entities.push(e);
+      this.sentence.classification.entities.sort((e1, e2) => e1.start - e2.start);
+      this.initTokens();
+    }
   }
 
   private findSelected(node, result) {

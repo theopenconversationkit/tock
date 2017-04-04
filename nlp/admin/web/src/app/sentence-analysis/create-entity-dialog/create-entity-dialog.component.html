@@ -25,7 +25,7 @@
     Select existing Entity
 
     <md-chip-list>
-      <md-chip *ngFor="let e of state.entityTypes" mdTooltip="Select entity" selected="{{e === entityType}}" (click)="onSelect(e)" [style.background-color]="e === entityType ? '' : e.entityColor()" color="primary">
+      <md-chip *ngFor="let e of state.entityTypesSortedByName()" mdTooltip="Select {{e.qualifiedName(state.user)}}" selected="{{e === entityType}}" (click)="onSelect(e)" [style.background-color]="e === entityType ? '' : e.entityColor()" color="primary">
         {{e.qualifiedName(state.user)}}
       </md-chip>
     </md-chip-list>

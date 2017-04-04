@@ -67,9 +67,8 @@ export class ApplicationComponent implements OnInit {
         .subscribe(app => {
           this.state.applications = this.state.applications.filter(a => a._id !== app._id);
           this.state.applications.push(app);
-          this.state.currentApplication = app;
-          this.state.currentLocale = app.supportedLocales[0];
           this.state.sortApplications();
+          this.state.changeApplication(app);
           this.snackBar.open(`Application ${app.name} saved`, "Save Application", {duration: 1000});
           if (this.newApplication && this.state.applications.length === 1) {
             this.router.navigateByUrl("/nlp/try");

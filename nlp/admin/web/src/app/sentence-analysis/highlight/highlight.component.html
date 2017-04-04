@@ -23,12 +23,16 @@
                             [id]="t.index">{{t.text}}</span></div>
 </md-card-title>
 <md-card-subtitle *ngIf="edited" class="highlight">
-  <div *ngIf="intent">
-    <button md-button *ngFor="let entity of intent.entities"
-            (click)="onSelect(entity)"
-            [style.background-color]="entity.entityColor">{{entity.qualifiedName(state.user)}}
-    </button>
-  </div>
+    <md-chip-list *ngIf="intent">
+      <md-chip *ngFor="let entity of intent.entities"
+               mdTooltip="Select {{entity.qualifiedName(state.user)}}"
+               selected="false"
+               (click)="onSelect(entity)"
+               [style.background-color]="entity.entityColor"
+               color="primary">
+        {{entity.qualifiedName(state.user)}}
+      </md-chip>
+    </md-chip-list>
   <br>
   <div>
     <button md-button (click)="addEntity()">

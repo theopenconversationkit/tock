@@ -25,7 +25,7 @@ import {Entry} from "../model/commons";
 export class ApplicationsService {
 
   constructor(private rest: RestService,
-    private state: StateService) {
+              private state: StateService) {
 
     this.locales().subscribe(locales => state.locales = locales);
   }
@@ -49,7 +49,7 @@ export class ApplicationsService {
           this.state.applications.splice(this.state.applications.indexOf(app), 1);
           if (this.state.currentApplication === app) {
             if (this.state.applications.length !== 0) {
-              this.state.currentApplication = this.state.applications[0];
+              this.state.changeApplication(this.state.applications[0]);
             } else {
               this.state.currentApplication = null;
             }
@@ -70,7 +70,7 @@ export class ApplicationsService {
     }
   }
 
-  locales(): Observable<Entry<string,string>[]> {
-    return this.rest.get(`/locales`, (m => Entry.fromJSONArray<string,string>(m)));
+  locales(): Observable<Entry<string, string>[]> {
+    return this.rest.get(`/locales`, (m => Entry.fromJSONArray<string, string>(m)));
   }
 }
