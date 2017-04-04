@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from "@angular/core";
-import {MdSnackBar, MdDialog} from "@angular/material";
+import {MdDialog, MdSnackBar} from "@angular/material";
 import {ActivatedRoute, Router} from "@angular/router";
 import {StateService} from "../../core/state.service";
 import {ApplicationsService} from "../applications.service";
@@ -35,11 +35,11 @@ export class ApplicationComponent implements OnInit {
   newLocale: string;
 
   constructor(private route: ActivatedRoute,
-    private snackBar: MdSnackBar,
-    private dialog: MdDialog,
-    private state: StateService,
-    private applicationService: ApplicationsService,
-    private router: Router) {
+              private snackBar: MdSnackBar,
+              private dialog: MdDialog,
+              private state: StateService,
+              private applicationService: ApplicationsService,
+              private router: Router) {
   }
 
   ngOnInit() {
@@ -60,7 +60,7 @@ export class ApplicationComponent implements OnInit {
   }
 
   saveApplication() {
-    if(this.application.supportedLocales.length === 0) {
+    if (this.application.supportedLocales.length === 0) {
       this.snackBar.open(`Please choose at least one locale`, "ERROR", {duration: 5000});
     } else {
       this.applicationService.saveApplication(this.application)
@@ -68,9 +68,15 @@ export class ApplicationComponent implements OnInit {
           this.state.applications = this.state.applications.filter(a => a._id !== app._id);
           this.state.applications.push(app);
           this.state.currentApplication = app;
+          this.state.currentLocale = app.supportedLocales[0];
           this.state.sortApplications();
           this.snackBar.open(`Application ${app.name} saved`, "Save Application", {duration: 1000});
-          this.router.navigateByUrl("/applications")
+          if (this.newApplication && this.state.applications.length === 1) {
+            this.router.navigateByUrl("/nlp/try");
+          }
+          else {
+            this.router.navigateByUrl("/applications");
+          }
         }, error => {
           this.snackBar.open(error, "Error", {});
         });
