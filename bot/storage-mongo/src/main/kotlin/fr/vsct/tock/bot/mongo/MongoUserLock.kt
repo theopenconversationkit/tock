@@ -30,7 +30,7 @@ import java.time.Instant.now
 /**
  *
  */
-object MongoUserLock : UserLock {
+internal object MongoUserLock : UserLock {
 
     data class UserLock(val _id: String, val locked: Boolean = true, val date: Instant = now())
 

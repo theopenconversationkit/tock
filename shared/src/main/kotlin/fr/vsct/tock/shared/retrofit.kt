@@ -14,17 +14,8 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.translator.noop
-
-import fr.vsct.tock.bot.i18n.Translator
-import java.util.Locale
-
+package fr.vsct.tock.shared
 
 /**
  *
  */
-internal object NoOpTranslator : Translator {
-    override fun translate(text: String, source: Locale, target: Locale): String {
-        return text
-    }
-}

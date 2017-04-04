@@ -47,11 +47,11 @@ import java.time.Instant.now
 /**
  *
  */
-class DialogCol(val playerIds: Set<PlayerId>,
-                var _id: String,
-                val state: StateMongoWrapper,
-                val stories: List<StoryMongoWrapper>,
-                val lastUpdateDate: Instant = now()) {
+internal class DialogCol(val playerIds: Set<PlayerId>,
+                         var _id: String,
+                         val state: StateMongoWrapper,
+                         val stories: List<StoryMongoWrapper>,
+                         val lastUpdateDate: Instant = now()) {
 
     companion object {
         private fun getActionWrapper(action: Action): ActionMongoWrapper {

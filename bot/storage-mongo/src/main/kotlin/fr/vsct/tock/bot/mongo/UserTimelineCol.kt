@@ -30,7 +30,7 @@ import fr.vsct.tock.bot.engine.user.UserState
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import java.time.Instant
 
-class UserTimelineCol(
+internal class UserTimelineCol(
         val _id: String,
         val playerId: PlayerId,
         val userPreferences: UserPreferences,

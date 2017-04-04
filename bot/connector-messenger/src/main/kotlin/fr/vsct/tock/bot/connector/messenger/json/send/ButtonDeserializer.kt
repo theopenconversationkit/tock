@@ -30,7 +30,7 @@ import mu.KotlinLogging
 /**
  *
  */
-class ButtonDeserializer : JsonDeserializer<Button>() {
+internal class ButtonDeserializer : JsonDeserializer<Button>() {
 
     companion object {
         private val logger = KotlinLogging.logger {}

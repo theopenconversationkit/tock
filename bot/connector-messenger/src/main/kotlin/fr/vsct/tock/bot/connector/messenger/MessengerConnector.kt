@@ -44,7 +44,7 @@ import javax.crypto.spec.SecretKeySpec
 /**
  *
  */
-class MessengerConnector(
+internal class MessengerConnector(
         applicationId: String,
         val path: String,
         pageId: String,

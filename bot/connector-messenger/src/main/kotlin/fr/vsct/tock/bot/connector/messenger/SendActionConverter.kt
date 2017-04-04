@@ -31,7 +31,7 @@ import mu.KotlinLogging
 /**
  *
  */
-object SendActionConverter {
+internal object SendActionConverter {
 
     private val logger = KotlinLogging.logger {}
 

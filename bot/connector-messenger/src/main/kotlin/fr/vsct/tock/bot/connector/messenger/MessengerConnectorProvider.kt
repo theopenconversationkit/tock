@@ -25,7 +25,7 @@ import fr.vsct.tock.shared.mapNotNullValues
 /**
  *
  */
-object MessengerConnectorProvider : ConnectorProvider {
+internal object MessengerConnectorProvider : ConnectorProvider {
 
     private const val PAGE_ID = "pageId"
     private const val TOKEN = "token"

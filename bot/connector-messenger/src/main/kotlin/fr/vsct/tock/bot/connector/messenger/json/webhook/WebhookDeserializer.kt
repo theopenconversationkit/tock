@@ -37,7 +37,7 @@ import mu.KotlinLogging
 /**
  *
  */
-class WebhookDeserializer : JsonDeserializer<Webhook>() {
+internal class WebhookDeserializer : JsonDeserializer<Webhook>() {
 
     companion object {
         private val logger = KotlinLogging.logger {}

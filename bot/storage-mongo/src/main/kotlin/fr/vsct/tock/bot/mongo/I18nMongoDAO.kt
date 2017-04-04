@@ -26,7 +26,7 @@ import org.litote.kmongo.save
 /**
  *
  */
-object I18nMongoDAO : I18nDAO {
+internal object I18nMongoDAO : I18nDAO {
 
     private val col = database.getCollection<I18nLabel>()
 

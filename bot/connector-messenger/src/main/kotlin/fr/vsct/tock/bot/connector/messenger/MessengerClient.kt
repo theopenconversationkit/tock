@@ -41,7 +41,7 @@ import java.util.concurrent.TimeUnit
 /**
  *
  */
-class MessengerClient(val secretKey: String) {
+internal class MessengerClient(val secretKey: String) {
 
     interface GraphApi {
 

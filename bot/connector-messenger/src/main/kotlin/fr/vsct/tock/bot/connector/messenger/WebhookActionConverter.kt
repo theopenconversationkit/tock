@@ -34,7 +34,7 @@ import mu.KotlinLogging
 /**
  *
  */
-object WebhookActionConverter {
+internal object WebhookActionConverter {
 
     private val logger = KotlinLogging.logger {}
 

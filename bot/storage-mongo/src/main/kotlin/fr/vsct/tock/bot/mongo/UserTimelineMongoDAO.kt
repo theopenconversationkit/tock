@@ -41,7 +41,7 @@ import java.time.Instant
 /**
  *
  */
-object UserTimelineMongoDAO : UserTimelineDAO {
+internal object UserTimelineMongoDAO : UserTimelineDAO {
 
     private val logger = KotlinLogging.logger {}
 

@@ -23,6 +23,6 @@ import fr.vsct.tock.shared.injector
 /**
  *
  */
-object MongoBotConfiguration {
+internal object MongoBotConfiguration {
     val database: MongoDatabase by injector.instance(MONGO_DATABASE)
 }

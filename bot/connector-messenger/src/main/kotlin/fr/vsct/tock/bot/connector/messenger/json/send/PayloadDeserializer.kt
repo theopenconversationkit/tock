@@ -34,7 +34,7 @@ import mu.KotlinLogging
 /**
  *
  */
-class PayloadDeserializer : JsonDeserializer<Payload>() {
+internal class PayloadDeserializer : JsonDeserializer<Payload>() {
 
     companion object {
         private val logger = KotlinLogging.logger {}

@@ -29,7 +29,7 @@ import mu.KotlinLogging
 /**
  *
  */
-class AttachmentDeserializer : JsonDeserializer<Attachment>() {
+internal class AttachmentDeserializer : JsonDeserializer<Attachment>() {
 
     companion object {
         private val logger = KotlinLogging.logger {}
