@@ -31,6 +31,7 @@ data class IntentDefinition(val name: String,
                             val entitiesRegexp: Map<Locale, List<EntitiesRegexp>> = emptyMap(),
                             val _id: String? = null) {
 
+    @Transient
     val qualifiedName : String = name.withNamespace(namespace)
 
     fun shortQualifiedName(defaultNamespace : String) = qualifiedName.withoutNamespace(defaultNamespace)

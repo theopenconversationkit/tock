@@ -20,6 +20,7 @@ import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.model.EntityCallContextForEntity
+import fr.vsct.tock.shared.toSet
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -34,6 +35,8 @@ object EntityEvaluatorService {
             providerByEntityType.put(it, provider)
         }
     }
+
+    fun getEvaluatedEntityTypes(): Set<String> = providerByEntityType.keys().toSet()
 
     private fun getEntityEvaluatorProvider(entityType: EntityType): EntityEvaluatorProvider? {
         return providerByEntityType[entityType.name]
@@ -54,7 +57,7 @@ object EntityEvaluatorService {
                         .toMap()
 
         return entitiesRecognition.map {
-            if(newEvaluatedEntities.containsKey(it)) {
+            if (newEvaluatedEntities.containsKey(it)) {
                 it.copy(value = it.value.copy(value = newEvaluatedEntities[it], evaluated = true))
             } else {
                 it

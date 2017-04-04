@@ -26,6 +26,7 @@ import fr.vsct.tock.nlp.core.client.NlpCoreClient
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
+import mu.KotlinLogging
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -33,12 +34,29 @@ import java.util.concurrent.ConcurrentHashMap
  */
 internal object FrontRepository {
 
+    private val logger = KotlinLogging.logger {}
+
     val core: NlpCore by lazy { NlpCoreClient }
 
     val config = ApplicationConfigurationService
 
     val entityTypes: MutableMap<String, EntityType> by lazy {
-        val entityTypesDefinitionMap = config.getEntityTypes().map { it.name to it }.toMap()
+        val entityTypesDefinitionMap = config.getEntityTypes().map { it.name to it }.toMap().toMutableMap()
+
+        //register built-in entity types
+        core.getEvaluatedEntityTypes().forEach {
+            if (!entityTypesDefinitionMap.containsKey(it)) {
+                try {
+                    logger.debug { "save built-in entity type $it" }
+                    val entityType = EntityTypeDefinition(it, "built-in entity $it")
+                    config.save(entityType)
+                    entityTypesDefinitionMap.put(it, entityType)
+                } catch(e: Exception) {
+                    logger.warn("Fail to save built-in entity type $it", e)
+                }
+            }
+        }
+
         val entityTypesWithoutSubEntities = entityTypesDefinitionMap
                 .filterValues { it.subEntities.isEmpty() }
                 .mapValues { (_, v) -> toEntityType(v) }

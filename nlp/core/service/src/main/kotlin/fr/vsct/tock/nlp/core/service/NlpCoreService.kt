@@ -97,4 +97,8 @@ object NlpCoreService : NlpCore {
     override fun registeredNlpEngineTypes(): Set<NlpEngineType> {
         return NlpClassifierClient.registeredNlpEngineTypes()
     }
+
+    override fun getEvaluatedEntityTypes(): Set<String> {
+        return EntityEvaluatorService.getEvaluatedEntityTypes()
+    }
 }

@@ -16,6 +16,9 @@
 
 package fr.vsct.tock.shared
 
+import java.util.Collections
+import java.util.Enumeration
+
 const val TOCK_NAMESPACE: String = "tock"
 
 fun String.namespace(): String = namespaceAndName().first
@@ -26,3 +29,5 @@ fun String.withNamespace(namespace: String): String = if (contains(":")) this el
 fun String.withoutNamespace(namespace: String): String = namespace().let { if (it == namespace) name() else this }
 
 fun <K, V> mapNotNullValues(vararg pairs: Pair<K, V?>): Map<K, V> = mapOf(*pairs).filterValues { it != null }.mapValues { it.value!! }
+
+fun <T> Enumeration<T>.toSet(): Set<T> = Collections.list(this).toSet()

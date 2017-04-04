@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.shared
 
+import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
 import com.fasterxml.jackson.datatype.jsr310.deser.JSR310StringParsableDeserializer
@@ -53,6 +54,9 @@ val mongoClient: MongoClient by lazy {
         addSerializer(ZoneOffset::class, ToStringSerializer(ZoneOffset::class.java))
         addDeserializer(ZoneOffset::class, JSR310StringParsableDeserializer.ZONE_OFFSET)
     }
+
+    KMongoConfiguration.bsonMapper.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
+    KMongoConfiguration.extendedJsonMapper.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
 
     KMongoConfiguration.bsonMapper.registerModule(tockModule)
     KMongo.createClient(MongoClientURI("mongodb://localhost:27017"))

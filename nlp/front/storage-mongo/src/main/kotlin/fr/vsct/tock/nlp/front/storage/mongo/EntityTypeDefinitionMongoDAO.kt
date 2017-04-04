@@ -17,11 +17,12 @@
 package fr.vsct.tock.nlp.front.storage.mongo
 
 import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.UpdateOptions
-import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
+import org.litote.kmongo.createIndex
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
@@ -32,7 +33,11 @@ import org.litote.kmongo.replaceOne
  */
 object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
 
-    private val col: MongoCollection<EntityTypeDefinition> by lazy { database.getCollection<EntityTypeDefinition>() }
+    private val col: MongoCollection<EntityTypeDefinition> by lazy {
+        val c = database.getCollection<EntityTypeDefinition>()
+        c.createIndex("{'name':1}", IndexOptions().unique(true))
+        c
+    }
 
     override fun save(entityType: EntityTypeDefinition) {
         col.replaceOne("{'name':${entityType.name.json}}", entityType, UpdateOptions().upsert(true))

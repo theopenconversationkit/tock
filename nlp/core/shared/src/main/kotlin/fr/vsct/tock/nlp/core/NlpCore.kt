@@ -40,9 +40,17 @@ interface NlpCore {
      * @param text the query
      * @param entities the not yet evaluated identified entities
      *
+     * @return the evaluated entities
      */
     fun evaluateEntities(
             context: CallContext,
             text: String,
             entities: List<EntityRecognition>): List<EntityRecognition>
+
+    /**
+     * Returns all (built-in) evaluated entities.
+     *
+     * @return the evaluated entity types (namespace:name)
+     */
+    fun getEvaluatedEntityTypes(): Set<String>
 }

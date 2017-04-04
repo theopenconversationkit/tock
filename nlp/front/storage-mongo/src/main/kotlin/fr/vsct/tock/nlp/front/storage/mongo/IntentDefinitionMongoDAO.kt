@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.storage.mongo
 
 import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.IndexOptions
 import fr.vsct.tock.nlp.front.service.storage.IntentDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
@@ -36,6 +37,7 @@ object IntentDefinitionMongoDAO : IntentDefinitionDAO {
     private val col: MongoCollection<IntentDefinition> by lazy {
         val c = database.getCollection<IntentDefinition>()
         c.createIndex("{'applications':1}")
+        c.createIndex("{'namespace':1,'name':1}", IndexOptions().unique(true))
         c
     }
 
