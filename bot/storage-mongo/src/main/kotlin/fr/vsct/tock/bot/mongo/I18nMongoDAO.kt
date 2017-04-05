@@ -16,8 +16,8 @@
 
 package fr.vsct.tock.bot.mongo
 
-import fr.vsct.tock.bot.i18n.I18nDAO
-import fr.vsct.tock.bot.i18n.I18nLabel
+import fr.vsct.tock.translator.I18nDAO
+import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection

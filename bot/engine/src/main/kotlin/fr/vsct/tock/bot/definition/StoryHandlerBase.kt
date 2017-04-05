@@ -17,9 +17,9 @@
 package fr.vsct.tock.bot.definition
 
 import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.bot.i18n.I18n
-import fr.vsct.tock.bot.i18n.I18nKeyProvider
-import fr.vsct.tock.bot.i18n.I18nLabelKey
+import fr.vsct.tock.translator.I18n
+import fr.vsct.tock.translator.I18nKeyProvider
+import fr.vsct.tock.translator.I18nLabelKey
 import mu.KotlinLogging
 
 /**

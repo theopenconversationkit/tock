@@ -22,28 +22,16 @@
 
     <parent>
         <groupId>fr.vsct.tock</groupId>
-        <artifactId>tock-bot</artifactId>
+        <artifactId>tock-translator</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>bot-framework</artifactId>
+    <artifactId>tock-translator-noop</artifactId>
 
     <dependencies>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-engine</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-connector-messenger</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-storage-mongo</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-translator-noop</artifactId>
+            <artifactId>tock-translator-core</artifactId>
         </dependency>
     </dependencies>
 

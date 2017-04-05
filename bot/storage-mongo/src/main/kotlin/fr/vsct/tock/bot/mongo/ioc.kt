@@ -23,7 +23,7 @@ import com.mongodb.client.MongoDatabase
 import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.shared.getDatabase
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
-import fr.vsct.tock.bot.i18n.I18nDAO
+import fr.vsct.tock.translator.I18nDAO
 
 internal val MONGO_DATABASE: String = "tock_bot_mongo_db"
 

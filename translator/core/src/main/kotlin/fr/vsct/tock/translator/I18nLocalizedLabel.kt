@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.i18n
+package fr.vsct.tock.translator
 
-import fr.vsct.tock.bot.engine.UserInterfaceType
 import java.util.Locale
 
 /**

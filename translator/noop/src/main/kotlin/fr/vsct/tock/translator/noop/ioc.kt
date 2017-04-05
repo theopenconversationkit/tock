@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector
+package fr.vsct.tock.translator.noop
 
-import fr.vsct.tock.translator.UserInterfaceType
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
+import fr.vsct.tock.translator.Translator
 
-/**
- *
- */
-data class ConnectorType(val id: String,
-                         val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat) {
-
-    override fun toString(): String {
-        return id
-    }
+val noOpTranslatorModule = Kodein.Module {
+    bind<Translator>() with provider { NoOpTranslator }
 }

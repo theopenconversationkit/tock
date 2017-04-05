@@ -29,8 +29,11 @@ import kotlin.reflect.KClass
 
 fun <T : Any> Retrofit.create(service: KClass<T>): T = create(service.java)
 
-fun retrofitBuilderWithTimeout(seconds: Int): Retrofit.Builder
-        = OkHttpClient.Builder().readTimeout(30, TimeUnit.SECONDS).connectTimeout(30, TimeUnit.SECONDS).build()
+fun retrofitBuilderWithTimeout(seconds: Long): Retrofit.Builder
+        = OkHttpClient.Builder()
+        .readTimeout(seconds, TimeUnit.SECONDS)
+        .connectTimeout(seconds, TimeUnit.SECONDS)
+        .build()
         .let {
             Retrofit.Builder().client(it)
         }

@@ -14,20 +14,19 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.i18n
+package fr.vsct.tock.translator
 
 import com.github.salomonbrys.kodein.instance
-import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.Dice
+import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
-import fr.vsct.tock.bot.engine.UserInterfaceType
 import java.text.ChoiceFormat
 import java.text.MessageFormat
 import java.util.Formatter
 import java.util.Locale
 
 /**
- *
+ * The main entry class of translator module.
  */
 object I18n {
 

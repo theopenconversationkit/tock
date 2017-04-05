@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.translator.noop
 
-import fr.vsct.tock.bot.i18n.Translator
+import fr.vsct.tock.translator.Translator
 import java.util.Locale
 
 

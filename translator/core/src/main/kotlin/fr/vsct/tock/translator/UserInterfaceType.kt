@@ -14,19 +14,13 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.i18n
+package fr.vsct.tock.translator
 
 /**
  *
  */
-interface I18nDAO {
+enum class UserInterfaceType {
 
-    fun getLabels(): List<I18nLabel>
-
-    fun getLabelById(id:String) : I18nLabel?
-
-    fun save(i18n: I18nLabel)
-
-    fun save(i18n: List<I18nLabel>)
+    textChat, voiceAssistant
 
 }

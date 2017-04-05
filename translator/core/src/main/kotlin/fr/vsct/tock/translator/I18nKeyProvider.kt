@@ -14,15 +14,20 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.i18n
-
-import java.util.Locale
+package fr.vsct.tock.translator
 
 /**
  *
  */
-interface Translator {
+interface I18nKeyProvider {
 
-    fun translate(text: String, source: Locale, target: Locale): String
+    fun i18nKeyFromLabel(defaultLabel: String, vararg args: Any?): I18nLabelKey
 
+    fun i18nKey(key: String, category: String, defaultLabel: String, vararg args: Any?): I18nLabelKey {
+        return I18nLabelKey(
+                key.toLowerCase(),
+                category.toLowerCase(),
+                defaultLabel,
+                *args)
+    }
 }

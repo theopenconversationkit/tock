@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.i18n
+package fr.vsct.tock.translator
 
 /**
  *
  */
-class I18nLabelKey(val key: String,
-                   val category: String,
-                   val defaultLabel: String,
-                   vararg val args: Any?) {
+interface I18nDAO {
+
+    fun getLabels(): List<I18nLabel>
+
+    fun getLabelById(id:String) : I18nLabel?
+
+    fun save(i18n: I18nLabel)
+
+    fun save(i18n: List<I18nLabel>)
+
 }

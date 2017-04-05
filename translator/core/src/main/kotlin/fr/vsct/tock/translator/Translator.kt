@@ -14,13 +14,15 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine
+package fr.vsct.tock.translator
+
+import java.util.Locale
 
 /**
- *
+ * The translator API translate one sentence from a source [Locale] to a target [Locale].
  */
-enum class UserInterfaceType {
+interface Translator {
 
-    textChat, voiceAssistant
+    fun translate(text: String, source: Locale, target: Locale): String
 
 }

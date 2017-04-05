@@ -14,13 +14,18 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.translator.noop
+package fr.vsct.tock.translator
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
-import fr.vsct.tock.bot.i18n.Translator
+import java.util.Locale
 
-val noOpTranslatorModule = Kodein.Module {
-    bind<Translator>() with provider { NoOpTranslator }
+/**
+ *
+ */
+data class I18nLabel(val _id: String, val category: String, val i18n: List<I18nLocalizedLabel>) {
+
+    fun findLabel(locale: Locale, userInterfaceType: UserInterfaceType): I18nLocalizedLabel?
+            = i18n.firstOrNull { it.locale == locale && it.interfaceType == userInterfaceType }
+
+    fun findLabel(locale: Locale): I18nLocalizedLabel? = i18n.firstOrNull { it.locale == locale }
+
 }

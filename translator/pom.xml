@@ -22,29 +22,28 @@
 
     <parent>
         <groupId>fr.vsct.tock</groupId>
-        <artifactId>tock-bot</artifactId>
+        <artifactId>tock-root</artifactId>
         <version>0.1-SNAPSHOT</version>
     </parent>
 
-    <artifactId>bot-framework</artifactId>
+    <artifactId>tock-translator</artifactId>
+    <packaging>pom</packaging>
+
+    <modules>
+        <module>core</module>
+        <module>noop</module>
+    </modules>
 
     <dependencies>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-engine</artifactId>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test-junit</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-connector-messenger</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-storage-mongo</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-translator-noop</artifactId>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
         </dependency>
     </dependencies>
-
 </project>

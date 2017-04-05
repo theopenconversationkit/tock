@@ -33,7 +33,6 @@
         <module>engine</module>
         <module>connector-messenger</module>
         <module>storage-mongo</module>
-        <module>translator-noop</module>
 
         <module>framework</module>
     </modules>
@@ -53,11 +52,6 @@
             <dependency>
                 <groupId>fr.vsct.tock</groupId>
                 <artifactId>tock-bot-storage-mongo</artifactId>
-                <version>${project.version}</version>
-            </dependency>
-            <dependency>
-                <groupId>fr.vsct.tock</groupId>
-                <artifactId>tock-bot-translator-noop</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>

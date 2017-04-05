@@ -21,9 +21,9 @@ import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserTimeline
-import fr.vsct.tock.bot.i18n.I18n
-import fr.vsct.tock.bot.i18n.I18nKeyProvider
-import fr.vsct.tock.bot.i18n.I18nLabelKey
+import fr.vsct.tock.translator.I18n
+import fr.vsct.tock.translator.I18nKeyProvider
+import fr.vsct.tock.translator.I18nLabelKey
 
 /**
  *

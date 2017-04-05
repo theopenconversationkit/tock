@@ -14,19 +14,24 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.i18n
+package fr.vsct.tock.translator
 
-import fr.vsct.tock.bot.engine.UserInterfaceType
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+import java.util.Formattable
+import java.util.Formatter
 import java.util.Locale
 
 /**
  *
  */
-data class I18nLabel(val _id: String, val category: String, val i18n: List<I18nLocalizedLabel>) {
+class DateTemplate(val date: ZonedDateTime?, val dateFormatter: DateTimeFormatter) : Formattable {
 
-    fun findLabel(locale: Locale, userInterfaceType: UserInterfaceType): I18nLocalizedLabel?
-            = i18n.firstOrNull { it.locale == locale && it.interfaceType == userInterfaceType }
+    fun format(locale: Locale): String {
+        return date?.format(dateFormatter.withLocale(locale)) ?: ""
+    }
 
-    fun findLabel(locale: Locale): I18nLocalizedLabel? = i18n.firstOrNull { it.locale == locale }
-
+    override fun formatTo(formatter: Formatter, flags: Int, width: Int, precision: Int) {
+        formatter.format(format(formatter.locale()))
+    }
 }
