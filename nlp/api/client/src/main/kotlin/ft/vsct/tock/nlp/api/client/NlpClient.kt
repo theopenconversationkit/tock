@@ -23,9 +23,12 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import ft.vsct.tock.nlp.api.client.model.NlpQuery
 import ft.vsct.tock.nlp.api.client.model.NlpResult
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
+import java.util.concurrent.TimeUnit
 
 /**
  *
@@ -44,7 +47,15 @@ class NlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "http
 
         val retrofit = Retrofit.Builder()
                 .baseUrl("$baseUrl/rest/nlp/")
-                .addConverterFactory(JacksonConverterFactory.create(mapper)).build()
+                .addConverterFactory(JacksonConverterFactory.create(mapper))
+                .client(
+                        OkHttpClient.Builder()
+                                .readTimeout(5, TimeUnit.SECONDS)
+                                .connectTimeout(5, TimeUnit.SECONDS)
+                                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                                .build()
+                )
+                .build()
         nlpService = retrofit.create<NlpService>(NlpService::class.java)
     }
 
