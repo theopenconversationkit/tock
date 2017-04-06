@@ -36,7 +36,7 @@ object ApplicationDefinitionMongoDAO : ApplicationDefinitionDAO {
 
     private val col: MongoCollection<ApplicationDefinition> by lazy {
         val c = database.getCollection<ApplicationDefinition>()
-        c.createIndex("{'name':1,'organization':1}", IndexOptions().unique(true))
+        c.createIndex("{'name':1,'namespace':1}", IndexOptions().unique(true))
         c
     }
 
