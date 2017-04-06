@@ -29,7 +29,10 @@ object ValueTypeIdResolverRepository {
 
     private val resolverMap = ConcurrentHashMap<String, KClass<out Value>>()
 
-    init {
+    /**
+     * Init default mappings.
+     */
+    fun initDefault() {
         registerType(DateEntityValue::class)
         registerType(DateIntervalEntityValue::class)
         registerType(NumberValue::class)
