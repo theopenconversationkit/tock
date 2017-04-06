@@ -23,6 +23,7 @@ import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import org.litote.kmongo.createIndex
+import org.litote.kmongo.deleteOne
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
@@ -49,5 +50,9 @@ object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
 
     override fun getEntityTypes(): List<EntityTypeDefinition> {
         return col.find().toList()
+    }
+
+    override fun deleteEntityTypeByName(name: String) {
+        col.deleteOne("{'name':${name.json}}")
     }
 }

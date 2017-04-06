@@ -42,18 +42,21 @@ export class ApplicationsService {
     return this.rest.post("/application", application, Application.fromJSON)
   }
 
-  deleteApplication(application: Application): Observable<any> {
+  deleteApplication(application: Application): Observable<boolean> {
     return this.rest.delete(`/application/${application._id}`)
-      .map(_ => {
-          const app = this.state.applications.find(app => app._id === application._id);
-          this.state.applications.splice(this.state.applications.indexOf(app), 1);
-          if (this.state.currentApplication === app) {
-            if (this.state.applications.length !== 0) {
-              this.state.changeApplication(this.state.applications[0]);
-            } else {
-              this.state.currentApplication = null;
+      .map(r => {
+          if (r) {
+            const app = this.state.applications.find(app => app._id === application._id);
+            this.state.applications.splice(this.state.applications.indexOf(app), 1);
+            if (this.state.currentApplication === app) {
+              if (this.state.applications.length !== 0) {
+                this.state.changeApplication(this.state.applications[0]);
+              } else {
+                this.state.currentApplication = null;
+              }
             }
           }
+          return r
         }
       );
   }

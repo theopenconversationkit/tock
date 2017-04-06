@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.service
 
 import com.github.salomonbrys.kodein.instance
+import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.Intent.Companion.unknownIntent
 import fr.vsct.tock.nlp.front.service.FrontRepository.toEntityType
 import fr.vsct.tock.nlp.front.service.storage.ApplicationDefinitionDAO
@@ -24,8 +25,11 @@ import fr.vsct.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import fr.vsct.tock.nlp.front.service.storage.IntentDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.namespaceAndName
 
 val applicationDAO: ApplicationDefinitionDAO by injector.instance()
@@ -43,15 +47,57 @@ object ApplicationConfigurationService :
         ClassifiedSentenceDAO by sentenceDAO,
         ApplicationConfiguration {
 
+    override fun deleteApplicationById(id: String) {
+        sentenceDAO.deleteSentencesByApplicationId(id)
+        val app = applicationDAO.getApplicationById(id)!!
+        intentDAO.getIntentsByApplicationId(id).forEach {
+            removeIntentFromApplication(app, it._id!!)
+        }
+        applicationDAO.deleteApplicationById(id)
+    }
+
+    override fun removeIntentFromApplication(
+            application: ApplicationDefinition,
+            intentId: String): Boolean {
+        val intent = intentDAO.getIntentById(intentId)!!
+        sentenceDAO.switchSentencesIntent(application._id!!, intentId, Intent.unknownIntent)
+        applicationDAO.save(application.copy(intents = application.intents - intentId))
+        val newIntent = intent.copy(applications = intent.applications - application._id!!)
+        return if (newIntent.applications.isEmpty()) {
+            intentDAO.deleteIntentById(intentId)
+            true
+        } else {
+            intentDAO.save(newIntent)
+            false
+        }
+    }
+
+    override fun removeEntityFromIntent(
+            application: ApplicationDefinition,
+            intent: IntentDefinition,
+            entityType: String,
+            role: String): Boolean {
+        sentenceDAO.removeEntityFromSentences(application._id!!, intent._id!!, entityType, role)
+        intentDAO.save(intent.copy(entities = intent.entities - intent.findEntity(entityType, role)!!))
+        //delete entity if same namespace and if not used by any intent
+        return if (application.namespace == entityType.namespace()
+                && intentDAO.getIntentsUsingEntity(entityType).isEmpty()) {
+            entityTypeDAO.deleteEntityTypeByName(entityType)
+            true
+        } else {
+            false
+        }
+    }
+
     override fun save(entityType: EntityTypeDefinition) {
         entityTypeDAO.save(entityType)
         FrontRepository.entityTypes.put(entityType.name, toEntityType(entityType))
     }
 
-    override fun getIntentIdByQualifiedName(name: String): String {
+    override fun getIntentIdByQualifiedName(name: String): String? {
         return if (name == unknownIntent)
             unknownIntent
-        else name.namespaceAndName().run { intentDAO.getIntentByNamespaceAndName(first, second)!!._id!! }
+        else name.namespaceAndName().run { intentDAO.getIntentByNamespaceAndName(first, second)?._id }
     }
 
     override fun initData() {

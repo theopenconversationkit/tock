@@ -34,9 +34,9 @@ export class SentenceAnalysisComponent implements OnInit {
   @Output() closed = new EventEmitter();
 
   constructor(public state: StateService,
-    private nlp: NlpService,
-    private snackBar: MdSnackBar,
-    private dialog: MdDialog) {
+              private nlp: NlpService,
+              private snackBar: MdSnackBar,
+              private dialog: MdDialog) {
   }
 
   ngOnInit() {
@@ -92,7 +92,7 @@ export class SentenceAnalysisComponent implements OnInit {
         this.closed.emit(this.sentence);
       });
     //delete old language
-    if(this.sentence.language !== this.state.currentLocale) {
+    if (this.sentence.language !== this.state.currentLocale) {
       const s = this.sentence.clone();
       s.language = this.state.currentLocale;
       s.status = SentenceStatus.deleted;
@@ -105,10 +105,14 @@ export class SentenceAnalysisComponent implements OnInit {
   }
 
   private createIntent(name) {
-    this.nlp.saveIntent(new Intent(name, this.state.user.organization, [], [this.state.currentApplication._id], null)).subscribe(intent => {
-      this.state.currentApplication.intents.push(intent);
-      this.onIntentChange(intent._id);
-    });
+    if (this.state.intentExists(name)) {
+      this.snackBar.open(`Intent ${name} already exists`, "Error", {duration: 5000})
+    } else {
+      this.nlp.saveIntent(new Intent(name, this.state.user.organization, [], [this.state.currentApplication._id], null)).subscribe(intent => {
+        this.state.currentApplication.intents.push(intent);
+        this.onIntentChange(intent._id);
+      });
+    }
   }
 
 }

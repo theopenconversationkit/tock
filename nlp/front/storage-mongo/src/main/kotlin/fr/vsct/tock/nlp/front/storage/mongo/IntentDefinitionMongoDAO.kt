@@ -22,6 +22,7 @@ import fr.vsct.tock.nlp.front.service.storage.IntentDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import org.litote.kmongo.createIndex
+import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
@@ -55,5 +56,13 @@ object IntentDefinitionMongoDAO : IntentDefinitionDAO {
 
     override fun save(intent: IntentDefinition) {
         col.save(intent)
+    }
+
+    override fun deleteIntentById(id: String) {
+        col.deleteOneById(id)
+    }
+
+    override fun getIntentsUsingEntity(entityType: String): List<IntentDefinition> {
+        return col.find("{'entities.entityTypeName':${entityType.json}}").toList()
     }
 }

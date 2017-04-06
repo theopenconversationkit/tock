@@ -34,7 +34,7 @@ export class CreateIntentDialogComponent implements OnInit {
   }
 
   save() {
-    this.dialogRef.close({name:this.name});
+    this.dialogRef.close({name:this.name.toLowerCase().trim()});
   }
 
 }

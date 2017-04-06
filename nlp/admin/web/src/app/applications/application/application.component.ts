@@ -94,8 +94,11 @@ export class ApplicationComponent implements OnInit {
       if (result === "delete") {
         this.applicationService.deleteApplication(this.application).subscribe(
           result => {
-            this.snackBar.open(`Application ${this.application.name} deleted`, "Delete Application", {duration: 1000});
-
+            if (result) {
+              this.snackBar.open(`Application ${this.application.name} deleted`, "Delete Application", {duration: 1000});
+            } else {
+              this.snackBar.open(`Delete Application ${this.application.name} failed`, "Error", {duration: 5000});
+            }
             this.router.navigateByUrl("/applications");
           });
       }

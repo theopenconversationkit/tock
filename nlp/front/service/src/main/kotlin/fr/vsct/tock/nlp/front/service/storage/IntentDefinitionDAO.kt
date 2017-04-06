@@ -30,4 +30,8 @@ interface IntentDefinitionDAO {
     fun getIntentById(id: String): IntentDefinition?
 
     fun save(intent: IntentDefinition)
+
+    fun deleteIntentById(id:String)
+
+    fun getIntentsUsingEntity(entityType:String) : List<IntentDefinition>
 }

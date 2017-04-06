@@ -16,19 +16,17 @@
 
 package fr.vsct.tock.nlp.admin
 
-import fr.vsct.tock.nlp.core.Intent
-import fr.vsct.tock.nlp.front.client.FrontClient
-import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
-import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
-import fr.vsct.tock.shared.vertx.BadRequestException
-import fr.vsct.tock.shared.vertx.UnauthorizedException
-import fr.vsct.tock.shared.vertx.WebVerticle
 import fr.vsct.tock.nlp.admin.model.ApplicationWithIntents
 import fr.vsct.tock.nlp.admin.model.CreateEntityQuery
 import fr.vsct.tock.nlp.admin.model.ParseQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
+import fr.vsct.tock.nlp.front.client.FrontClient
+import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.shared.name
+import fr.vsct.tock.shared.vertx.BadRequestException
+import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
@@ -69,7 +67,7 @@ class AdminVerticle : WebVerticle(KotlinLogging.logger {}) {
                 }
                 front.save(application.toApplication().copy(name = application.name.toLowerCase()))
             } else {
-                throw UnauthorizedException()
+                unauthorized()
             }
         }
 
@@ -78,34 +76,30 @@ class AdminVerticle : WebVerticle(KotlinLogging.logger {}) {
             if (it.organization == front.getApplicationById(id)?.namespace) {
                 front.deleteApplicationById(id)
             } else {
-                throw UnauthorizedException()
+                unauthorized()
             }
         }
 
-        blockingDelete("/application/:appId/intent/:intentId") {
+        blockingJsonDelete("/application/:appId/intent/:intentId") {
             val app = front.getApplicationById(it.pathParam("appId"))
             val intentId = it.pathParam("intentId")
-            val intent = front.getIntentById(intentId)!!
             if (it.organization == app?.namespace) {
-                front.switchIntent(app._id!!, intentId, Intent.unknownIntent)
-                front.save(app.copy(intents = app.intents - intentId))
-                front.save(intent.copy(applications = intent.applications - app._id!!))
+                front.removeIntentFromApplication(app, intentId)
             } else {
-                throw UnauthorizedException()
+                unauthorized()
             }
         }
 
-        blockingDelete("/application/:appId/intent/:intentId/entity/:entityType/:role") {
+        blockingJsonDelete("/application/:appId/intent/:intentId/entity/:entityType/:role") {
             val app = front.getApplicationById(it.pathParam("appId"))
             val intentId = it.pathParam("intentId")
             val entityType = it.pathParam("entityType")
             val role = it.pathParam("role")
             val intent = front.getIntentById(intentId)!!
-            if (it.organization == app?.namespace && it.organization == intent.namespace) {
-                front.removeEntity(app._id!!, intentId, entityType, role)
-                front.save(intent.copy(entities = intent.entities - intent.findEntity(entityType, role)!!))
+            if (intent.applications.size == 1 && it.organization == app?.namespace && it.organization == intent.namespace) {
+                front.removeEntityFromIntent(app, intent, entityType, role)
             } else {
-                throw UnauthorizedException()
+                unauthorized()
             }
         }
 
@@ -121,7 +115,7 @@ class AdminVerticle : WebVerticle(KotlinLogging.logger {}) {
             if (context.organization == query.namespace) {
                 admin.parseSentence(query)
             } else {
-                throw UnauthorizedException()
+                unauthorized()
             }
         }
 
@@ -129,7 +123,7 @@ class AdminVerticle : WebVerticle(KotlinLogging.logger {}) {
             if (context.organization == front.getApplicationById(s.applicationId)?.namespace) {
                 front.save(s.toClassifiedSentence())
             } else {
-                throw UnauthorizedException()
+                unauthorized()
             }
         }
 
@@ -137,21 +131,28 @@ class AdminVerticle : WebVerticle(KotlinLogging.logger {}) {
             if (context.organization == s.namespace) {
                 admin.searchSentences(s)
             } else {
-                throw UnauthorizedException()
+                unauthorized()
             }
         }
 
-
-
         blockingJsonPost("/intent") { context, intent: IntentDefinition ->
-            if (context.organization == intent.namespace) {
+            if (context.organization == intent.namespace
+                    && intent._id == front.getIntentIdByQualifiedName(intent.qualifiedName)) {
                 front.save(intent)
                 intent.applications.forEach {
                     front.save(front.getApplicationById(it)!!.let { it.copy(intents = it.intents + intent._id!!) })
                 }
                 intent
             } else {
-                throw UnauthorizedException()
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet("/intents") { context ->
+            front.getApplications().filter {
+                it.namespace == context.organization
+            }.map {
+                admin.getApplicationWithIntents(it)
             }
         }
 

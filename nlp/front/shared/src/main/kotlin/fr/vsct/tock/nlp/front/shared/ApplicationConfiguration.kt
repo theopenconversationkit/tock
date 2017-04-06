@@ -40,6 +40,15 @@ interface ApplicationConfiguration {
 
     fun getApplications(): List<ApplicationDefinition>
 
+    /**
+     * Remove intent from application.
+     *
+     * @return true if intent is also deleted, false either
+     */
+    fun removeIntentFromApplication(
+            application: ApplicationDefinition,
+            intentId: String): Boolean
+
 
     fun getSentences(intents: Set<String>, language: Locale, status: ClassifiedSentenceStatus): List<ClassifiedSentence>
 
@@ -51,11 +60,7 @@ interface ApplicationConfiguration {
 
     fun search(query: SentencesQuery): SentencesQueryResult
 
-    fun switchIntent(applicationId: String, oldIntentId: String, newIntentId: String)
-
-    fun switchStatus(sentences: List<ClassifiedSentence>, newStatus: ClassifiedSentenceStatus)
-
-    fun removeEntity(applicationId: String, intentId: String, entityType: String, role: String)
+    fun switchSentencesStatus(sentences: List<ClassifiedSentence>, newStatus: ClassifiedSentenceStatus)
 
 
     fun save(entityType: EntityTypeDefinition)
@@ -67,14 +72,22 @@ interface ApplicationConfiguration {
 
     fun getIntentsByApplicationId(applicationId: String): List<IntentDefinition>
 
-    fun getIntentByNamespaceAndName(namespace: String, name: String): IntentDefinition?
-
     fun getIntentById(id: String): IntentDefinition?
 
     fun save(intent: IntentDefinition)
 
+    fun getIntentIdByQualifiedName(name: String): String?
 
-    fun getIntentIdByQualifiedName(name: String): String
+    /**
+     * Remove entity from intent.
+     *
+     * @return true if the entity type is also deleted, false either.
+     */
+    fun removeEntityFromIntent(
+            application: ApplicationDefinition,
+            intent: IntentDefinition,
+            entityType: String,
+            role: String): Boolean
 
 
     /**

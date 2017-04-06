@@ -15,7 +15,7 @@
  */
 
 import {Injectable} from "@angular/core";
-import {Http, Headers, Response} from "@angular/http";
+import {Headers, Http, Response} from "@angular/http";
 import {Observable} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {Router} from "@angular/router";
@@ -28,7 +28,7 @@ export class RestService {
   private authToken: string;
 
   constructor(private http: Http,
-    private router: Router) {
+              private router: Router) {
     this.notAuthenticatedUrl = environment.serverUrl;
     this.url = `${environment.serverUrl}/admin`;
   }
@@ -62,15 +62,15 @@ export class RestService {
       .catch(this.handleError);
   }
 
-  delete<I>(path: string): Observable<any> {
+  delete<I>(path: string): Observable<boolean> {
     return this.http.delete(
       `${this.url}${path}`,
       {headers: this.headers()})
-      .map((res: Response) => (res.json() || {}))
+      .map((res: Response) => BooleanResponse.fromJSON(res.json() || {}).success)
       .catch(this.handleError);
   }
 
-  post<I,O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
+  post<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
     return this.http.post(
       `${this.url}${path}`,
       value ? JSON.stringify(value) : "{}",
@@ -79,7 +79,7 @@ export class RestService {
       .catch(this.handleError);
   }
 
-  postNotAuthenticated<I,O>(path: string, value: I, parseFunction: (value: any) => O): Observable<O> {
+  postNotAuthenticated<I, O>(path: string, value: I, parseFunction: (value: any) => O): Observable<O> {
     return this.http.post(`${this.notAuthenticatedUrl}${path}`, JSON.stringify(value), {headers: this.notAuthenticatedHeaders()})
       .map((res: Response) => parseFunction(res.json() || {}))
       .catch(this.handleError);
@@ -100,4 +100,16 @@ export class RestService {
     return Observable.throw(errMsg);
   }
 
+}
+
+export class BooleanResponse {
+  constructor(public success: boolean) {
+  }
+
+  static fromJSON(json: any): BooleanResponse {
+    const value = Object.create(BooleanResponse.prototype);
+    const result = Object.assign(value, json, {});
+
+    return result;
+  }
 }

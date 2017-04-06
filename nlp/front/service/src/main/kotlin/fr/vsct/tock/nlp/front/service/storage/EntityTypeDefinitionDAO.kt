@@ -28,4 +28,6 @@ interface EntityTypeDefinitionDAO {
     fun getEntityTypeByName(name: String): EntityTypeDefinition?
 
     fun getEntityTypes(): List<EntityTypeDefinition>
+
+    fun deleteEntityTypeByName(name: String)
 }

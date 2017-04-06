@@ -59,7 +59,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
             val email: String? = null,
             val organization: String? = null)
 
-    private data class SuccessResponse(val success: Boolean = true)
+    private data class BooleanResponse(val success: Boolean = true)
 
     class UserWithOrg(val user: String, val organization: String) : AbstractUser() {
         override fun doIsPermitted(permissionOrRole: String, handler: Handler<AsyncResult<Boolean>>) {
@@ -199,7 +199,19 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
 
             val result = handler.invoke(context, input)
 
-            if (result == null && method == POST) {
+            if (result == null) {
+                context.response().statusCode = 204
+            }
+            context.endJson(result)
+        })
+    }
+
+    protected fun <O> blockingWithoutBodyJson(method: HttpMethod, path: String, handler: (RoutingContext) -> O) {
+        blocking(method, path, {
+            context ->
+            val result = handler.invoke(context)
+
+            if (result == null) {
                 context.response().statusCode = 204
             }
             context.endJson(result)
@@ -233,6 +245,10 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
         }
     }
 
+    protected fun blockingJsonDelete(path: String, handler: (RoutingContext) -> Boolean) {
+        blockingWithoutBodyJson(DELETE, path, { BooleanResponse(handler.invoke(it)) })
+    }
+
     override fun stop(stopFuture: Future<Void>?) {
         server.close { e -> logger.info { "${this::class.simpleName} stopped result : ${e.succeeded()}" } }
     }
@@ -259,7 +275,11 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
     }
 
     fun RoutingContext.success() {
-        this.endJson(fr.vsct.tock.shared.vertx.WebVerticle.SuccessResponse())
+        this.endJson(true)
+    }
+
+    fun RoutingContext.endJson(success: Boolean) {
+        this.endJson(fr.vsct.tock.shared.vertx.WebVerticle.BooleanResponse(success))
     }
 
     fun RoutingContext.endJson(result: Any?) {
@@ -272,5 +292,9 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
     fun HttpServerResponse.endJson(result: Any?) {
         val output = mapper.writeValueAsString(result)
         this.putHeader("content-type", "application/json; charset=utf-8").end(output)
+    }
+
+    protected fun unauthorized(): Nothing {
+        throw UnauthorizedException()
     }
 }

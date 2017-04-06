@@ -27,7 +27,7 @@
           Entities :
         <span *ngFor="let e of i.entities">
         <span [style.background-color]="e.entityColor">{{e.qualifiedName(state.user)}}</span>
-        <button md-icon-button (click)="removeEntity(i, e)">
+        <button *ngIf="i.applications.length === 1" md-icon-button (click)="removeEntity(i, e)">
           <md-icon>remove_circle_outline</md-icon>
         </button>
         </span>

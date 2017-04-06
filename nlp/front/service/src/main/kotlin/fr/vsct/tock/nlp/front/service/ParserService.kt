@@ -106,7 +106,7 @@ object ParserService : Parser {
                     q)
 
             if (context.registerQuery) {
-                val intentId = config.getIntentIdByQualifiedName(parseResult.intent)
+                val intentId = config.getIntentIdByQualifiedName(parseResult.intent)!!
                 val sentence = ClassifiedSentence(result, language, application._id!!, intentId)
                 if (!sentence.hasSameContent(validatedSentence)) {
                     config.save(sentence)

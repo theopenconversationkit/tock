@@ -14,19 +14,19 @@
  * limitations under the License.
  */
 
-export class Entry<F,S> {
+export class Entry<F, S> {
   constructor(public first: F, public second: S) {
   }
 
-  static fromJSON<F,S>(json: any): Entry<F,S> {
+  static fromJSON<F, S>(json: any): Entry<F, S> {
     const value = Object.create(Entry.prototype);
     const result = Object.assign(value, json, {});
 
     return result;
   }
 
-  static fromJSONArray<F,S>(json?: Array<any>): Entry<F,S>[] {
-    return json ? json.map(m => Entry.fromJSON<F,S>(m)) : [];
+  static fromJSONArray<F, S>(json?: Array<any>): Entry<F, S>[] {
+    return json ? json.map(m => Entry.fromJSON<F, S>(m)) : [];
   }
 }
 

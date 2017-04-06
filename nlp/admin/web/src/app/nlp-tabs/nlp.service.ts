@@ -17,9 +17,9 @@
 import {Injectable} from "@angular/core";
 import {RestService} from "../core/rest/rest.service";
 import {StateService} from "../core/state.service";
-import {ParseQuery, Sentence, EntityType, SearchQuery, SentencesResult, EntityDefinition} from "../model/nlp";
+import {EntityDefinition, EntityType, ParseQuery, SearchQuery, Sentence, SentencesResult} from "../model/nlp";
 import {Observable} from "rxjs";
-import {Intent, Application} from "../model/application";
+import {Application, Intent} from "../model/application";
 
 @Injectable()
 export class NlpService {
@@ -37,11 +37,11 @@ export class NlpService {
     return this.rest.post("/intent", intent, Intent.fromJSON);
   }
 
-  removeIntent(application:Application, intent: Intent): Observable<Intent> {
+  removeIntent(application: Application, intent: Intent): Observable<boolean> {
     return this.rest.delete(`/application/${application._id}/intent/${intent._id}`);
   }
 
-  removeEntity(application:Application, intent: Intent, entity:EntityDefinition): Observable<Intent> {
+  removeEntity(application: Application, intent: Intent, entity: EntityDefinition): Observable<boolean> {
     return this.rest.delete(`/application/${application._id}/intent/${intent._id}/entity/${entity.entityTypeName}/${entity.role}`);
   }
 

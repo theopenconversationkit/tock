@@ -67,12 +67,17 @@ export class StateService implements AuthListener {
     this.currentLocaleEmitter.emit(locale);
   }
 
-  findEntityTypeByName(name: string) {
+  findEntityTypeByName(name: string): EntityType {
     return this.entityTypes.find(e => e.name === name);
   }
 
-  entityTypesSortedByName() : EntityType[] {
+  entityTypesSortedByName(): EntityType[] {
     return this.entityTypes.sort((e1, e2) => e1.simpleName().localeCompare(e2.simpleName()));
+  }
+
+  removeEntityTypeByName(name: string) {
+    const entityToRemove = this.findEntityTypeByName(name);
+    this.entityTypes.splice(this.entityTypes.indexOf(entityToRemove), 1)
   }
 
   localeName(code: string): string {
@@ -81,6 +86,17 @@ export class StateService implements AuthListener {
 
   sortApplications() {
     this.applications = this.applications.sort((a, b) => a.name.localeCompare(b.name))
+  }
+
+  intentExists(intentName: string): boolean {
+    for (let i = 0; i < this.applications.length; i++) {
+      for (let j = 0; j < this.applications[i].intents.length; j++) {
+        if (this.applications[i].intents[j].name === intentName) {
+          return true;
+        }
+      }
+    }
+    return false;
   }
 
   findCurrentApplication(): Application {

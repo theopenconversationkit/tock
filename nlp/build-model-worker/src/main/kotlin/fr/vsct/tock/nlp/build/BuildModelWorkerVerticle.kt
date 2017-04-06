@@ -68,7 +68,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
             } catch(e: Throwable) {
                 logger.error(e)
             } finally {
-                front.switchStatus(sentences, model)
+                front.switchSentencesStatus(sentences, model)
             }
         }
     }

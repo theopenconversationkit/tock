@@ -63,7 +63,7 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         return col.find("{'status':${status.json}}").toList()
     }
 
-    override fun switchStatus(sentences: List<ClassifiedSentence>, newStatus: ClassifiedSentenceStatus) {
+    override fun switchSentencesStatus(sentences: List<ClassifiedSentence>, newStatus: ClassifiedSentenceStatus) {
         sentences.forEach {
             save(it.copy(status = newStatus))
         }
@@ -71,6 +71,10 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     override fun deleteSentencesByStatus(status: ClassifiedSentenceStatus) {
         col.deleteMany("{'status':${status.json}}")
+    }
+
+    override fun deleteSentencesByApplicationId(applicationId: String) {
+        col.deleteMany("{'applicationId':${applicationId.json}}")
     }
 
     override fun save(sentence: ClassifiedSentence) {
@@ -104,11 +108,11 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     }
 
-    override fun switchIntent(applicationId: String, oldIntentId: String, newIntentId: String) {
+    override fun switchSentencesIntent(applicationId: String, oldIntentId: String, newIntentId: String) {
         col.updateMany("{'applicationId':${applicationId.json}, 'classification.intentId':${oldIntentId.json}}", "{${set}: {'classification.intentId':${newIntentId.json},'classification.entities':[],'status':'${inbox}'}}")
     }
 
-    override fun removeEntity(applicationId: String, intentId: String, entityType: String, role: String) {
+    override fun removeEntityFromSentences(applicationId: String, intentId: String, entityType: String, role: String) {
         col.updateMany("{'applicationId':${applicationId.json}, 'classification.intentId':${intentId.json}, 'classification.entities':{${elemMatch}:{'role':${role.json}}}}", "{${pull}:{'classification.entities':{'role':${role.json}}}}")
     }
 }

@@ -30,9 +30,9 @@ import {NlpService} from "../nlp-tabs/nlp.service";
 export class IntentsComponent implements OnInit {
 
   constructor(public state: StateService,
-    private nlp: NlpService,
-    private snackBar: MdSnackBar,
-    private dialog: MdDialog) {
+              private nlp: NlpService,
+              private snackBar: MdSnackBar,
+              private dialog: MdDialog) {
   }
 
   ngOnInit() {
@@ -52,7 +52,9 @@ export class IntentsComponent implements OnInit {
           result => {
             this.state.currentApplication.removeIntentById(intent._id);
             this.snackBar.open(`Intent ${intent.name} removed`, "Remove Intent", {duration: 1000});
-          });
+          },
+          _ => this.snackBar.open(`Delete Intent ${intent.name} failed`, "Error", {duration: 5000})
+        );
       }
     });
   }
@@ -69,8 +71,11 @@ export class IntentsComponent implements OnInit {
     dialogRef.afterClosed().subscribe(result => {
       if (result === "remove") {
         this.nlp.removeEntity(this.state.currentApplication, intent, entity).subscribe(
-          result => {
+          deleted => {
             this.state.currentApplication.intentById(intent._id).removeEntity(entity);
+            if (deleted) {
+              this.state.removeEntityTypeByName(entity.entityTypeName)
+            }
             this.snackBar.open(`Entity ${entityName} removed from intent`, "Remove Entity", {duration: 1000});
           });
       }

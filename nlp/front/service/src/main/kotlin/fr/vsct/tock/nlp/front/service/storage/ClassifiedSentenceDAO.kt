@@ -33,13 +33,15 @@ interface ClassifiedSentenceDAO {
 
     fun deleteSentencesByStatus(status: ClassifiedSentenceStatus)
 
+    fun deleteSentencesByApplicationId(applicationId: String)
+
     fun save(sentence: ClassifiedSentence)
 
     fun search(query : SentencesQuery) : SentencesQueryResult
 
-    fun switchIntent(applicationId:String, oldIntentId: String, newIntentId:String)
+    fun switchSentencesIntent(applicationId:String, oldIntentId: String, newIntentId:String)
 
-    fun switchStatus(sentences:List<ClassifiedSentence>, newStatus:ClassifiedSentenceStatus)
+    fun switchSentencesStatus(sentences:List<ClassifiedSentence>, newStatus:ClassifiedSentenceStatus)
 
-    fun removeEntity(applicationId:String, intentId: String, entityType:String, role:String)
+    fun removeEntityFromSentences(applicationId:String, intentId: String, entityType:String, role:String)
 }
