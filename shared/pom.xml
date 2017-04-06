@@ -103,6 +103,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>logging-interceptor</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>converter-jackson</artifactId>
             <scope>provided</scope>

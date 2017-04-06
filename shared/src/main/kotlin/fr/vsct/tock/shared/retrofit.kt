@@ -17,7 +17,9 @@
 package fr.vsct.tock.shared
 
 import fr.vsct.tock.shared.jackson.mapper
+import okhttp3.Interceptor
 import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.util.concurrent.TimeUnit
@@ -29,10 +31,14 @@ import kotlin.reflect.KClass
 
 fun <T : Any> Retrofit.create(service: KClass<T>): T = create(service.java)
 
-fun retrofitBuilderWithTimeout(seconds: Long): Retrofit.Builder
+fun retrofitBuilderWithTimeout(seconds: Long, vararg interceptors: Interceptor): Retrofit.Builder
         = OkHttpClient.Builder()
         .readTimeout(seconds, TimeUnit.SECONDS)
         .connectTimeout(seconds, TimeUnit.SECONDS)
+        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+        .apply {
+            interceptors.forEach { addInterceptor(it) }
+        }
         .build()
         .let {
             Retrofit.Builder().client(it)

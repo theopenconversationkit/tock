@@ -25,7 +25,6 @@ import fr.vsct.tock.bot.connector.messenger.model.send.SendResponse
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.error
-import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.retrofitBuilderWithTimeout
 import mu.KotlinLogging
 import retrofit2.Call
@@ -85,18 +84,11 @@ internal class MessengerClient(val secretKey: String) {
 
     private fun <T> send(request: T, call: (T) -> Response<SendResponse>): SendResponse {
         try {
-            logger.debug { "Graph Request Input : ${mapper.writeValueAsString(request)}" }
             val response = call(request)
 
             if (!response.isSuccessful) {
-                val error = response.message()
-                val errorCode = response.code()
-                logger.error { "Graph Request Error : $errorCode $error" }
-                logger.error { "Graph Request Error headers : ${response.headers()}" }
-                logger.error { "Graph Request Error body : ${response.errorBody().string()}" }
-                throw ConnectorException(error)
+                throw ConnectorException(response.message())
             } else {
-                logger.debug { "Graph Request Output : ${mapper.writeValueAsString(response.body())}" }
                 return response.body()
             }
         } catch(e: Exception) {

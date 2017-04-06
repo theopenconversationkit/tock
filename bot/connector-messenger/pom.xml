@@ -38,11 +38,14 @@
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-engine</artifactId>
         </dependency>
-
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>${commons-codec}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.squareup.okhttp3</groupId>
+            <artifactId>logging-interceptor</artifactId>
         </dependency>
 
         <dependency>

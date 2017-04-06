@@ -41,6 +41,7 @@
         <jackson>2.8.1</jackson>
         <vertx>3.4.1</vertx>
         <retrofit>2.1.0</retrofit>
+        <okhttp>3.3.0</okhttp>
 
         <junit>4.12</junit>
 
@@ -158,6 +159,11 @@
                 <groupId>com.squareup.retrofit2</groupId>
                 <artifactId>converter-jackson</artifactId>
                 <version>${retrofit}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.squareup.okhttp3</groupId>
+                <artifactId>logging-interceptor</artifactId>
+                <version>${okhttp}</version>
             </dependency>
 
             <dependency>
