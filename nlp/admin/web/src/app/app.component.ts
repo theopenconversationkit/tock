@@ -14,18 +14,35 @@
  * limitations under the License.
  */
 
-import {Component} from "@angular/core";
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AuthService} from "./core/auth/auth.service";
 import {StateService} from "./core/state.service";
+import {RestService} from "./core/rest/rest.service";
+import {MdSnackBar} from "@angular/material";
 
 @Component({
   selector: 'tock-root',
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.css']
 })
-export class AppComponent {
+export class AppComponent implements OnInit, OnDestroy {
 
-  constructor(private auth: AuthService, private state: StateService) {
+  private errorUnsuscriber: any;
+
+  constructor(public auth: AuthService,
+              private state: StateService,
+              private rest: RestService,
+              private snackBar: MdSnackBar) {
+  }
+
+  ngOnInit(): void {
+    this.errorUnsuscriber = this.rest.errorEmitter.subscribe(e =>
+      this.snackBar.open(`Server error : ${e}`, "Error", {duration: 5000})
+    )
+  }
+
+  ngOnDestroy(): void {
+    this.errorUnsuscriber.unsubscribe();
   }
 
   changeApplication(newApplicationName: string) {

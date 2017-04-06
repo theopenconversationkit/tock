@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Injectable} from "@angular/core";
+import {EventEmitter, Injectable} from "@angular/core";
 import {Headers, Http, Response} from "@angular/http";
 import {Observable} from "rxjs";
 import {environment} from "../../../environments/environment";
@@ -26,6 +26,8 @@ export class RestService {
   private url: string;
   private notAuthenticatedUrl: string;
   private authToken: string;
+
+  readonly errorEmitter: EventEmitter<string> = new EventEmitter();
 
   constructor(private http: Http,
               private router: Router) {
@@ -53,13 +55,13 @@ export class RestService {
   get<T>(path: string, parseFunction: (value: any) => T): Observable<T> {
     return this.http.get(`${this.url}${path}`, {headers: this.headers()})
       .map((res: Response) => parseFunction(res.json() || {}))
-      .catch(this.handleError);
+      .catch(e => RestService.handleError(this, e));
   }
 
   getArray<T>(path: string, parseFunction: (value: any) => T[]): Observable<T[]> {
     return this.http.get(`${this.url}${path}`, {headers: this.headers()})
       .map((res: Response) => parseFunction(res.json() || []))
-      .catch(this.handleError);
+      .catch(e => RestService.handleError(this, e));
   }
 
   delete<I>(path: string): Observable<boolean> {
@@ -67,7 +69,7 @@ export class RestService {
       `${this.url}${path}`,
       {headers: this.headers()})
       .map((res: Response) => BooleanResponse.fromJSON(res.json() || {}).success)
-      .catch(this.handleError);
+      .catch(e => RestService.handleError(this, e));
   }
 
   post<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
@@ -76,27 +78,27 @@ export class RestService {
       value ? JSON.stringify(value) : "{}",
       {headers: this.headers()})
       .map((res: Response) => parseFunction ? parseFunction(res.json() || {}) : (res.json() || {}))
-      .catch(this.handleError);
+      .catch(e => RestService.handleError(this, e));
   }
 
   postNotAuthenticated<I, O>(path: string, value: I, parseFunction: (value: any) => O): Observable<O> {
     return this.http.post(`${this.notAuthenticatedUrl}${path}`, JSON.stringify(value), {headers: this.notAuthenticatedHeaders()})
       .map((res: Response) => parseFunction(res.json() || {}))
-      .catch(this.handleError);
+      .catch(e => RestService.handleError(this, e));
   }
 
-  private handleError(error: Response | any) {
+  private static handleError(rest:RestService, error: Response | any) {
     let errMsg: string;
     if (error instanceof Response) {
       if (error.status == 403) {
-        this.router.navigateByUrl("/login");
+        rest.router.navigateByUrl("/login");
         return;
       }
       errMsg = `${error.status} - ${error.statusText || ''}`;
     } else {
       errMsg = error.message ? error.message : error.toString();
     }
-    console.error(errMsg);
+    rest.errorEmitter.emit(errMsg);
     return Observable.throw(errMsg);
   }
 

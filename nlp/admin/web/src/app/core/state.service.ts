@@ -39,8 +39,8 @@ export class StateService implements AuthListener {
   currentLocale: string = StateService.DEFAULT_LOCALE;
   currentEngine: NlpEngineType = StateService.DEFAULT_ENGINE;
 
-  currentApplicationEmitter: EventEmitter<Application> = new EventEmitter();
-  currentLocaleEmitter: EventEmitter<string> = new EventEmitter();
+  readonly currentApplicationEmitter: EventEmitter<Application> = new EventEmitter();
+  readonly currentLocaleEmitter: EventEmitter<string> = new EventEmitter();
 
   constructor(private auth: AuthService, private settings: SettingsService) {
     this.auth.addListener(this);

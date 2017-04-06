@@ -111,7 +111,7 @@ export class SentenceAnalysisComponent implements OnInit {
       this.nlp.saveIntent(new Intent(name, this.state.user.organization, [], [this.state.currentApplication._id], null)).subscribe(intent => {
         this.state.currentApplication.intents.push(intent);
         this.onIntentChange(intent._id);
-      });
+      }, _ => this.onIntentChange(Intent.unknown));
     }
   }
 
