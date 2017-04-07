@@ -38,7 +38,7 @@
         <kodein>3.2.0</kodein>
         <kmongo>3.3.5</kmongo>
         <fongo>2.0.6</fongo>
-        <jackson>2.8.1</jackson>
+        <jackson>2.8.7</jackson>
         <vertx>3.4.1</vertx>
         <retrofit>2.1.0</retrofit>
         <okhttp>3.3.0</okhttp>

@@ -16,8 +16,10 @@
 
 package ft.vsct.tock.nlp.api
 
+import fr.vsct.tock.nlp.entity.ValueResolverRepository
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.parser.QueryDescription
+import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
@@ -30,6 +32,9 @@ class NlpVerticle : WebVerticle(KotlinLogging.logger {}) {
     override val rootPath: String = "/rest/nlp"
 
     override fun configure() {
+        //init default mappings
+        ValueResolverRepository.initDefault(mapper)
+
         val front = FrontClient
 
         blockingJsonPost("/parse") { _, query: QueryDescription ->

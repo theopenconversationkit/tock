@@ -16,10 +16,10 @@
 
 package fr.vsct.tock.bot.engine.action
 
-import fr.vsct.tock.shared.Dice
+import fr.vsct.tock.bot.engine.dialog.ActionState
 import fr.vsct.tock.bot.engine.dialog.BotMetadata
-import fr.vsct.tock.bot.engine.dialog.State
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.shared.Dice
 import java.time.Instant
 
 /**
@@ -31,7 +31,7 @@ class SendChoice(playerId: PlayerId,
                  val choiceId: String,
                  id: String = Dice.newId(),
                  date: Instant = Instant.now(),
-                 state: State = State(),
+                 state: ActionState = ActionState(),
                  botMetadata: BotMetadata = BotMetadata()) : Action(playerId, recipientId, applicationId, id, date, state, botMetadata) {
 
 }

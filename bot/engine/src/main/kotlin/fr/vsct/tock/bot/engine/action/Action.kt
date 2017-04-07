@@ -16,10 +16,10 @@
 
 package fr.vsct.tock.bot.engine.action
 
-import fr.vsct.tock.shared.Dice
+import fr.vsct.tock.bot.engine.dialog.ActionState
 import fr.vsct.tock.bot.engine.dialog.BotMetadata
-import fr.vsct.tock.bot.engine.dialog.State
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.shared.Dice
 import java.time.Instant
 
 /**
@@ -30,7 +30,7 @@ abstract class Action(val playerId: PlayerId,
                       val applicationId: String,
                       val id: String = Dice.newId(),
                       val date: Instant = Instant.now(),
-                      val state: State = State(),
+                      val state: ActionState = ActionState(),
                       val botMetadata: BotMetadata = BotMetadata()) {
 
 }

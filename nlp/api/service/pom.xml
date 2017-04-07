@@ -37,6 +37,10 @@
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-nlp-front-client</artifactId>
         </dependency>
+        <dependency>
+            <groupId>fr.vsct.tock</groupId>
+            <artifactId>tock-nlp-entity-value</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>io.vertx</groupId>
@@ -47,6 +51,14 @@
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-nlp-front-ioc</artifactId>
             <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test-junit</artifactId>
         </dependency>
     </dependencies>
 

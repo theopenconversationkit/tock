@@ -21,7 +21,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import fr.vsct.tock.nlp.entity.ValueTypeIdResolverRepository
+import fr.vsct.tock.nlp.entity.ValueResolverRepository
 import ft.vsct.tock.nlp.api.client.model.NlpQuery
 import ft.vsct.tock.nlp.api.client.model.NlpResult
 import okhttp3.OkHttpClient
@@ -59,7 +59,7 @@ class NlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "http
                 .build()
         nlpService = retrofit.create<NlpService>(NlpService::class.java)
         //init default value mapping
-        ValueTypeIdResolverRepository.initDefault()
+        ValueResolverRepository.initDefault(mapper)
     }
 
     fun parse(request: NlpQuery): Response<NlpResult> {

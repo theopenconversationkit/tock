@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.State
@@ -59,10 +60,6 @@ class Bot(val botDefinition: BotDefinition) {
 
         if (!userTimeline.userState.botDisabled) {
             connector.startTypingInAnswerTo(action)
-            dialog.apply {
-                state.currentIntent = action.state.currentIntent
-                state.mergeEntityValues(action)
-            }
             val story = getStory(action, dialog)
             story.actions.add(action)
 
@@ -154,24 +151,16 @@ class Bot(val botDefinition: BotDefinition) {
                     logger.error { "nlp error : ${response.errorBody().string()}" }
                 } else {
                     sentence.state.currentIntent = botDefinition.findIntent(nlpResult.intent)
-                    sentence.state.copyEntityValues(sentence, nlpResult.entities)
+                    sentence.state.entityValues.addAll(nlpResult.entities)
+                    dialog.apply {
+                        state.currentIntent = sentence.state.currentIntent
+                        state.mergeEntityValues(sentence)
+                    }
                 }
             } catch(t: Throwable) {
                 logger.error(t)
             }
         }
-    }
-
-    private fun State.copyEntityValues(action: Action, values: List<EntityValue>) {
-        this.entityValues.putAll(
-                values.groupBy { it.entity.role }
-                        .mapValues {
-                            when (it.value.size) {
-                                1 -> EntityStateValue(action, it.value.first())
-                                else -> mergeEntityValues(action, it.value)
-                            }
-                        }
-        )
     }
 
     private fun mergeEntityValues(action: Action, newValues: List<EntityValue>, oldValues: EntityStateValue? = null): EntityStateValue {
@@ -181,7 +170,7 @@ class Bot(val botDefinition: BotDefinition) {
         } else {
             val newValue = newValues.first()
             oldValues.value = newValue
-            oldValues.history.add(EntityStateValue.ArchivedEntityValue(newValue, action))
+            oldValues.history.add(ArchivedEntityValue(newValue, action))
             oldValues
         }
     }
@@ -189,8 +178,9 @@ class Bot(val botDefinition: BotDefinition) {
     private fun State.mergeEntityValues(action: Action) {
         entityValues.putAll(
                 action.state.entityValues
+                        .groupBy { it.entity.role }
                         .mapValues {
-                            mergeEntityValues(action, listOf(it.value.value), entityValues.get(it.key))
+                            mergeEntityValues(action, it.value, entityValues.get(it.key))
                         }
         )
     }

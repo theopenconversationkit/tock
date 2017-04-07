@@ -20,9 +20,6 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonToken
-import com.fasterxml.jackson.core.TreeNode
-import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
@@ -34,6 +31,8 @@ import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.dialog.ActionState
+import fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue
 import fr.vsct.tock.bot.engine.dialog.BotMetadata
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
@@ -41,6 +40,7 @@ import fr.vsct.tock.bot.engine.dialog.State
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLocation
+import ft.vsct.tock.nlp.api.client.model.EntityValue
 import java.time.Instant
 import java.time.Instant.now
 
@@ -73,48 +73,63 @@ internal class DialogCol(val playerIds: Set<PlayerId>,
     )
 
     fun toDialog(storyDefinitionProvider: (String) -> StoryDefinition): Dialog {
-        return Dialog(
-                playerIds,
-                _id,
-                state.toState(),
-                stories.map { it.toStory(storyDefinitionProvider) }.toMutableList()
-        )
+        return stories.map { it.toStory(storyDefinitionProvider) }.let {
+            Dialog(
+                    playerIds,
+                    _id,
+                    state.toState(it.flatMap { it.actions }.map { it.id to it }.toMap()),
+                    it.toMutableList()
+            )
+        }
     }
 
-    class StateMongoWrapper(
+    data class StateMongoWrapper(
             var currentIntent: Intent?,
-            @JsonDeserialize(using = EntityStateValueDeserializer::class)
-            val entityValues: Map<String, EntityStateValue>,
+            @JsonDeserialize(contentAs = EntityStateValueWrapper::class)
+            val entityValues: Map<String, EntityStateValueWrapper>,
             val context: Map<String, AnyValueMongoWrapper>) {
 
 
         constructor(state: State) : this(
                 state.currentIntent,
-                state.entityValues,
+                state.entityValues.mapValues { EntityStateValueWrapper(it.value) },
                 state.context.map { e -> e.key to AnyValueMongoWrapper(e.value) }.toMap()
         )
 
-        fun toState(): State {
+        fun toState(actionsMap: Map<String, Action>): State {
             return State(
                     currentIntent,
-                    entityValues.toMutableMap(),
+                    entityValues.mapValues { it.value.toEntityStateValue(actionsMap) }.toMutableMap(),
                     context.toMutableMap())
         }
 
-        class EntityStateValueDeserializer : JsonDeserializer<Map<String, EntityStateValue>>() {
+    }
 
-            override fun deserialize(jp: JsonParser, context: DeserializationContext): Map<String, EntityStateValue> {
-                val mapper = jp.getCodec()
-                return if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
-                    mapper.readValue(jp, object : TypeReference<Map<String, EntityStateValue>>() {})
-                } else {
-                    //consume this stream
-                    mapper.readTree<TreeNode>(jp)
-                    emptyMap()
-                }
-            }
+    data class EntityStateValueWrapper(
+            val value: EntityValue,
+            val history: List<ArchivedEntityValueWrapper>) {
+
+        constructor(value: EntityStateValue) : this(value.value, value.history.map { ArchivedEntityValueWrapper(it) })
+
+        fun toEntityStateValue(actionsMap: Map<String, Action>): EntityStateValue {
+            return EntityStateValue(
+                    value,
+                    history.map { it.toArchivedEntityValue(actionsMap) }.toMutableList()
+            )
         }
+    }
 
+    class ArchivedEntityValueWrapper(
+            val entityValue: EntityValue,
+            val actionId: String?) {
+
+        constructor(value: ArchivedEntityValue) : this(value.entityValue, value.action?.id)
+
+        fun toArchivedEntityValue(actionsMap: Map<String, Action>): ArchivedEntityValue {
+            return ArchivedEntityValue(
+                    entityValue,
+                    actionsMap.get(actionId ?: ""))
+        }
     }
 
 
@@ -149,7 +164,7 @@ internal class DialogCol(val playerIds: Set<PlayerId>,
 
         lateinit var id: String
         lateinit var date: Instant
-        lateinit var state: StateMongoWrapper
+        lateinit var state: ActionState
         lateinit var botMetadata: BotMetadata
         lateinit var playerId: PlayerId
         lateinit var recipientId: PlayerId
@@ -159,7 +174,7 @@ internal class DialogCol(val playerIds: Set<PlayerId>,
         fun assignFrom(action: Action) {
             id = action.id
             date = action.date
-            state = StateMongoWrapper(action.state)
+            state = action.state
             botMetadata = action.botMetadata
             playerId = action.playerId
             recipientId = action.recipientId
@@ -187,7 +202,7 @@ internal class DialogCol(val playerIds: Set<PlayerId>,
                     messages.map { it.value as ConnectorMessage }.toMutableList(),
                     id,
                     date,
-                    state.toState(),
+                    state,
                     botMetadata)
         }
     }
@@ -207,7 +222,7 @@ internal class DialogCol(val playerIds: Set<PlayerId>,
                     choiceId,
                     id,
                     date,
-                    state.toState(),
+                    state,
                     botMetadata)
         }
     }
@@ -229,7 +244,7 @@ internal class DialogCol(val playerIds: Set<PlayerId>,
                     type,
                     id,
                     date,
-                    state.toState(),
+                    state,
                     botMetadata)
         }
     }
@@ -249,7 +264,7 @@ internal class DialogCol(val playerIds: Set<PlayerId>,
                     location,
                     id,
                     date,
-                    state.toState(),
+                    state,
                     botMetadata)
         }
     }

@@ -28,7 +28,4 @@ data class EntityStateValue(var value: EntityValue,
     constructor(action: Action, entityValue: EntityValue)
             : this(entityValue, mutableListOf(ArchivedEntityValue(entityValue, action)))
 
-    data class ArchivedEntityValue(
-            val entityValue: EntityValue,
-            val action: Action)
 }
