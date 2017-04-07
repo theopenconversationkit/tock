@@ -17,10 +17,10 @@
 package fr.vsct.tock.nlp.entity.date
 
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import fr.vsct.tock.nlp.entity.ValueTypeIdResolverRepository
+import fr.vsct.tock.nlp.entity.ValueResolverRepository
 
 val mapper = jacksonObjectMapper().apply {
-    ValueTypeIdResolverRepository.initDefault()
     findAndRegisterModules()
+    ValueResolverRepository.initDefault(this)
 }
 

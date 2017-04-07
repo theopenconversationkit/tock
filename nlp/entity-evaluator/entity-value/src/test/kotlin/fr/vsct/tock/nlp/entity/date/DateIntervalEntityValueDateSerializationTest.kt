@@ -33,7 +33,6 @@ class DateIntervalEntityValueDateSerializationTest {
                 DateEntityValue(ZonedDateTime.now(ZoneId.of("UTC")), DateEntityGrain.day),
                 DateEntityValue(ZonedDateTime.now(ZoneId.of("UTC")), DateEntityGrain.day))
         val s = mapper.writeValueAsString(v)
-        println(s)
         assertEquals(v, mapper.readValue(s, Value::class.java))
     }
 }

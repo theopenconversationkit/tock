@@ -17,12 +17,14 @@
 package fr.vsct.tock.nlp.entity
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.databind.annotation.JsonTypeResolver
+import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
 
 /**
- *
+ * It is recommended (but not mandatory) that values evaluated by EntityEvaluators
+ * implement this interface.
+ * Do not forget to call also [ValueResolverRepository#registerType] for each new value type.
  */
-@JsonTypeInfo(use= JsonTypeInfo.Id.NAME)
-@JsonTypeResolver(ValueTypeResolverBuilder::class)
+@JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
+@JsonTypeIdResolver(ValueTypeIdResolver::class)
 interface Value {
 }
