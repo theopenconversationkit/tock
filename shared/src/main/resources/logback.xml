@@ -15,7 +15,8 @@
   -->
 
 <configuration>
-    <!-- default logback file -->
+    <contextListener class="ch.qos.logback.classic.jul.LevelChangePropagator"/>
+
     <appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
         <encoder>
             <pattern>%d{yyyy-MM-dd'T'HH:mm:ss.SSS} [%thread] %-5level %logger - %msg%n</pattern>
@@ -27,6 +28,10 @@
     </logger>
 
     <logger name="io.netty" level="INFO">
+        <appender-ref ref="STDOUT"/>
+    </logger>
+
+    <logger name="okhttp3" level="INFO">
         <appender-ref ref="STDOUT"/>
     </logger>
 
