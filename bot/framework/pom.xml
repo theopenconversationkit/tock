@@ -30,6 +30,10 @@
 
     <dependencies>
         <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
+        </dependency>
+        <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-engine</artifactId>
         </dependency>

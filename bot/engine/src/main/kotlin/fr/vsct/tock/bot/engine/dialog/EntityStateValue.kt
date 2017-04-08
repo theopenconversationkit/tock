@@ -17,15 +17,19 @@
 package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.bot.engine.action.Action
-import ft.vsct.tock.nlp.api.client.model.EntityValue
 
 /**
  *
  */
-data class EntityStateValue(var value: EntityValue,
+data class EntityStateValue(var value: ContextValue,
                             val history: MutableList<ArchivedEntityValue> = mutableListOf()) {
 
-    constructor(action: Action, entityValue: EntityValue)
+    constructor(action: Action, entityValue: ContextValue)
             : this(entityValue, mutableListOf(ArchivedEntityValue(entityValue, action)))
 
+    fun changeValue(newValue: ContextValue, action: Action? = null): EntityStateValue {
+        value = newValue
+        history.add(ArchivedEntityValue(newValue, action))
+        return this
+    }
 }

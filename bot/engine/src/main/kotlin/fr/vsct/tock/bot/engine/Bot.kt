@@ -22,7 +22,7 @@ import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue
+import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.State
@@ -30,7 +30,6 @@ import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.shared.error
 import ft.vsct.tock.nlp.api.client.NlpClient
-import ft.vsct.tock.nlp.api.client.model.EntityValue
 import ft.vsct.tock.nlp.api.client.model.NlpQuery
 import ft.vsct.tock.nlp.api.client.model.QueryContext
 import ft.vsct.tock.nlp.api.client.model.QueryState
@@ -61,8 +60,6 @@ class Bot(val botDefinition: BotDefinition) {
         if (!userTimeline.userState.botDisabled) {
             connector.startTypingInAnswerTo(action)
             val story = getStory(action, dialog)
-            story.actions.add(action)
-
             val bus = BotBus(connector, userTimeline, dialog, story, action, botDefinition)
 
             story.handle(bus)
@@ -151,7 +148,7 @@ class Bot(val botDefinition: BotDefinition) {
                     logger.error { "nlp error : ${response.errorBody().string()}" }
                 } else {
                     sentence.state.currentIntent = botDefinition.findIntent(nlpResult.intent)
-                    sentence.state.entityValues.addAll(nlpResult.entities)
+                    sentence.state.entityValues.addAll(nlpResult.entities.map { ContextValue(nlpResult.retainedQuery, it) })
                     dialog.apply {
                         state.currentIntent = sentence.state.currentIntent
                         state.mergeEntityValues(sentence)
@@ -163,15 +160,13 @@ class Bot(val botDefinition: BotDefinition) {
         }
     }
 
-    private fun mergeEntityValues(action: Action, newValues: List<EntityValue>, oldValues: EntityStateValue? = null): EntityStateValue {
+    private fun mergeEntityValues(action: Action, newValues: List<ContextValue>, oldValue: EntityStateValue? = null): EntityStateValue {
         //TODO merge dates
-        return if (oldValues == null) {
+        return if (oldValue == null) {
             EntityStateValue(action, newValues.first())
         } else {
             val newValue = newValues.first()
-            oldValues.value = newValue
-            oldValues.history.add(ArchivedEntityValue(newValue, action))
-            oldValues
+            oldValue.changeValue(newValue, action)
         }
     }
 

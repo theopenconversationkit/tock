@@ -17,6 +17,7 @@
 package fr.vsct.tock.shared.vertx
 
 import fr.vsct.tock.shared.Runner
+import fr.vsct.tock.shared.devEnvironment
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Vertx
@@ -24,7 +25,13 @@ import io.vertx.core.VertxOptions
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
-val vertx = Vertx.vertx(VertxOptions().setMaxWorkerExecuteTime(1000 * 60L * 1000 * 1000000))
+val vertx = Vertx.vertx(
+        VertxOptions().apply {
+            setMaxWorkerExecuteTime(1000 * 60L * 1000 * 1000000)
+            if (devEnvironment) {
+                setWarningExceptionTime(1000L * 1000 * 1000000)
+            }
+        })
 
 fun <T> Vertx.blocking(blockingHandler: (Future<T>) -> Unit, resultHandler: (AsyncResult<T>) -> Unit) {
     this.executeBlocking(

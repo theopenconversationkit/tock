@@ -34,7 +34,8 @@ internal class UserTimelineCol(
         val _id: String,
         val playerId: PlayerId,
         val userPreferences: UserPreferences,
-        val userState: UserStateWrapper) {
+        val userState: UserStateWrapper,
+        val lastUpdateDate: Instant = Instant.now()) {
 
     constructor(timeline: UserTimeline) : this(
             timeline.playerId.id,

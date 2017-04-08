@@ -52,7 +52,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO {
         userTimelineCol.createIndex("{playerId:1}", IndexOptions().unique(true))
         dialogCol.createIndex("{playerIds:1}")
         userTimelineCol.createIndex("{lastUpdateDate:1}")
-        dialogCol.createIndex("{lastSentenceDate:1}")
+        dialogCol.createIndex("{lastUpdateDate:1}")
     }
 
     override fun save(userTimeline: UserTimeline) {
@@ -90,8 +90,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO {
         return try {
             val dialog = dialogCol.aggregate<DialogCol>(
                     pipeline = """[
-                                            {${match}:{userIds:${userId.json}, lastSentenceDate : {${gt} : ${Instant.now().minusSeconds(60 * 60 * 24).json}}}},
-                                            {${sort}:{lastSentenceDate:-1}},
+                                            {${match}:{playerIds:${userId.json}, lastUpdateDate : {${gt} : ${Instant.now().minusSeconds(60 * 60 * 24).json}}}},
+                                            {${sort}:{lastUpdateDate:-1}},
                                             {${limit}:1}
                                            ]"""
             ).firstOrNull()

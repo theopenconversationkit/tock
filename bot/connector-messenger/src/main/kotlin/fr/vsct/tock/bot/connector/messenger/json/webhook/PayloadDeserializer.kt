@@ -17,20 +17,20 @@
 package fr.vsct.tock.bot.connector.messenger.json.webhook
 
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
 import fr.vsct.tock.bot.connector.messenger.model.webhook.LocationPayload
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Payload
 import fr.vsct.tock.bot.connector.messenger.model.webhook.UrlPayload
 import fr.vsct.tock.bot.engine.user.UserLocation
+import fr.vsct.tock.shared.jackson.JacksonDeserializer
+import fr.vsct.tock.shared.jackson.read
 import fr.vsct.tock.shared.jackson.readValueAs
 import mu.KotlinLogging
 
 /**
  *
  */
-internal  class PayloadDeserializer : JsonDeserializer<Payload>() {
+internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -38,13 +38,17 @@ internal  class PayloadDeserializer : JsonDeserializer<Payload>() {
 
 
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Payload? {
-        var coordinates: UserLocation? = null
-        var url: String? = null
-        while (jp.nextValue() != JsonToken.END_OBJECT) {
-            when (jp.currentName) {
-                LocationPayload::coordinates.name -> coordinates = jp.readValueAs(UserLocation::class)
-                UrlPayload::url.name -> url = jp.valueAsString
-                else -> logger.warn { "Unsupported field : ${jp.currentName}" }
+        data class PayloadFields(
+                var coordinates: UserLocation? = null,
+                var url: String? = null)
+
+        val (coordinates, url) = jp.read<PayloadFields> { fields, name ->
+            with(fields) {
+                when (name) {
+                    LocationPayload::coordinates.name -> coordinates = jp.readValueAs(UserLocation::class)
+                    UrlPayload::url.name -> url = jp.valueAsString
+                    else -> unknownValue
+                }
             }
         }
 

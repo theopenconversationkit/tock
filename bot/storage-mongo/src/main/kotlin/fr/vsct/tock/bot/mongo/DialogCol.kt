@@ -34,13 +34,15 @@ import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.ActionState
 import fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue
 import fr.vsct.tock.bot.engine.dialog.BotMetadata
+import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.State
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLocation
-import ft.vsct.tock.nlp.api.client.model.EntityValue
+import fr.vsct.tock.shared.jackson.checkEndToken
+import fr.vsct.tock.shared.jackson.fieldNameWithValueReady
 import java.time.Instant
 import java.time.Instant.now
 
@@ -87,6 +89,7 @@ internal class DialogCol(val playerIds: Set<PlayerId>,
             var currentIntent: Intent?,
             @JsonDeserialize(contentAs = EntityStateValueWrapper::class)
             val entityValues: Map<String, EntityStateValueWrapper>,
+            @JsonDeserialize(contentAs = AnyValueMongoWrapper::class)
             val context: Map<String, AnyValueMongoWrapper>) {
 
 
@@ -106,7 +109,7 @@ internal class DialogCol(val playerIds: Set<PlayerId>,
     }
 
     data class EntityStateValueWrapper(
-            val value: EntityValue,
+            val value: ContextValue,
             val history: List<ArchivedEntityValueWrapper>) {
 
         constructor(value: EntityStateValue) : this(value.value, value.history.map { ArchivedEntityValueWrapper(it) })
@@ -120,7 +123,7 @@ internal class DialogCol(val playerIds: Set<PlayerId>,
     }
 
     class ArchivedEntityValueWrapper(
-            val entityValue: EntityValue,
+            val entityValue: ContextValue,
             val actionId: String?) {
 
         constructor(value: ArchivedEntityValue) : this(value.entityValue, value.action?.id)
@@ -270,23 +273,27 @@ internal class DialogCol(val playerIds: Set<PlayerId>,
     }
 
     @JsonDeserialize(using = AnyValueDeserializer::class)
-    data class AnyValueMongoWrapper(val className: String, val value: Any) {
+    data class AnyValueMongoWrapper(val klass: Class<*>, val value: Any) {
 
-        constructor(value: Any) : this(value::class.qualifiedName!!, value)
+        constructor(value: Any) : this(value::class.java, value)
     }
 
 
     class AnyValueDeserializer : JsonDeserializer<AnyValueMongoWrapper>() {
 
-        override fun deserialize(jp: JsonParser, context: DeserializationContext): AnyValueMongoWrapper {
-            jp.nextFieldName()
-            jp.nextValue()
-            val classValue = jp.text
-            jp.nextFieldName()
-            jp.nextValue()
-            val value = jp.readValueAs(Class.forName(classValue))
-
-            return AnyValueMongoWrapper(classValue, value)
+        override fun deserialize(jp: JsonParser, context: DeserializationContext): AnyValueMongoWrapper? {
+            var fieldName = jp.fieldNameWithValueReady()
+            if (fieldName != null) {
+                val classValue = jp.readValueAs(Class::class.java)!!
+                fieldName = jp.fieldNameWithValueReady()
+                if (fieldName != null) {
+                    val value = jp.readValueAs(classValue)!!
+                    jp.checkEndToken()
+                    return AnyValueMongoWrapper(classValue, value)
+                }
+            }
+            return null
         }
+
     }
 }

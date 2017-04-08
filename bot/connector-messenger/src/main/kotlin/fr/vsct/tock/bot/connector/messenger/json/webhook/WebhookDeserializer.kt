@@ -17,9 +17,7 @@
 package fr.vsct.tock.bot.connector.messenger.json.webhook
 
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.Sender
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Message
@@ -31,34 +29,42 @@ import fr.vsct.tock.bot.connector.messenger.model.webhook.OptinWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Postback
 import fr.vsct.tock.bot.connector.messenger.model.webhook.PostbackWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Webhook
+import fr.vsct.tock.shared.jackson.JacksonDeserializer
+import fr.vsct.tock.shared.jackson.read
 import fr.vsct.tock.shared.jackson.readValueAs
 import mu.KotlinLogging
 
 /**
  *
  */
-internal class WebhookDeserializer : JsonDeserializer<Webhook>() {
+internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
 
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Webhook? {
-        var sender: Sender? = null
-        var recipient: Recipient? = null
-        var timestamp: Long? = null
-        var message: Message? = null
-        var optin: Optin? = null
-        var postback: Postback? = null
-        while (jp.nextValue() != JsonToken.END_OBJECT) {
-            when (jp.currentName) {
-                Webhook::sender.name -> sender = jp.readValueAs(Sender::class)
-                Webhook::recipient.name -> recipient = jp.readValueAs(Recipient::class)
-                Webhook::timestamp.name -> timestamp = jp.longValue
-                MessageWebhook::message.name -> message = jp.readValueAs(Message::class)
-                OptinWebhook::optin.name -> optin = jp.readValueAs(Optin::class)
-                PostbackWebhook::postback.name -> postback = jp.readValueAs(Postback::class)
-                else -> logger.warn { "Unsupported field : ${jp.currentName}" }
+        data class WebhookFields(
+                var sender: Sender? = null,
+                var recipient: Recipient? = null,
+                var timestamp: Long? = null,
+                var message: Message? = null,
+                var optin: Optin? = null,
+                var postback: Postback? = null
+        )
+
+        val (sender, recipient, timestamp, message, optin, postback)
+                = jp.read<WebhookFields> { fields, name ->
+            with(fields) {
+                when (name) {
+                    Webhook::sender.name -> sender = jp.readValueAs(Sender::class)
+                    Webhook::recipient.name -> recipient = jp.readValueAs(Recipient::class)
+                    Webhook::timestamp.name -> timestamp = jp.longValue
+                    MessageWebhook::message.name -> message = jp.readValueAs(Message::class)
+                    OptinWebhook::optin.name -> optin = jp.readValueAs(Optin::class)
+                    PostbackWebhook::postback.name -> postback = jp.readValueAs(Postback::class)
+                    else -> unknownValue
+                }
             }
         }
 

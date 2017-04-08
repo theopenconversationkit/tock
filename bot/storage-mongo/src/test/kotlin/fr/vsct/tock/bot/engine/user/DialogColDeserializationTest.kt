@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.engine.user
 
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.mongo.DialogCol.AnyValueMongoWrapper
 import fr.vsct.tock.bot.mongo.DialogCol.EntityStateValueWrapper
 import fr.vsct.tock.bot.mongo.DialogCol.StateMongoWrapper
@@ -24,7 +25,6 @@ import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.jackson.readValue
 import ft.vsct.tock.nlp.api.client.model.Entity
 import ft.vsct.tock.nlp.api.client.model.EntityType
-import ft.vsct.tock.nlp.api.client.model.EntityValue
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -36,7 +36,7 @@ class DialogColDeserializationTest {
     @Test
     fun testAnyValueMongoWrapperSerialization() {
         val value = AnyValueMongoWrapper(
-                UserLocation::class.qualifiedName!!,
+                UserLocation::class.java,
                 UserLocation(1.0, 2.0))
         val s = mapper.writeValueAsString(value)
         val newValue = mapper.readValue(s, AnyValueMongoWrapper::class)
@@ -48,10 +48,11 @@ class DialogColDeserializationTest {
         val state = StateMongoWrapper(
                 Intent("test"),
                 mapOf("role" to EntityStateValueWrapper(
-                        EntityValue(
+                        ContextValue(
                                 0,
                                 1,
-                                Entity(EntityType("type"), "role")
+                                Entity(EntityType("type"), "role"),
+                                "content"
                         ),
                         emptyList()
                 )),

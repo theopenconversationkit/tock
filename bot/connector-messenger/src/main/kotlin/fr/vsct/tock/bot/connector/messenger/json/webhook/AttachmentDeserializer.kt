@@ -17,19 +17,19 @@
 package fr.vsct.tock.bot.connector.messenger.json.webhook
 
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Attachment
 import fr.vsct.tock.bot.connector.messenger.model.webhook.AttachmentType
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Payload
+import fr.vsct.tock.shared.jackson.JacksonDeserializer
+import fr.vsct.tock.shared.jackson.read
 import fr.vsct.tock.shared.jackson.readValueAs
 import mu.KotlinLogging
 
 /**
  *
  */
-internal class AttachmentDeserializer : JsonDeserializer<Attachment>() {
+internal class AttachmentDeserializer : JacksonDeserializer<Attachment>() {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -38,13 +38,17 @@ internal class AttachmentDeserializer : JsonDeserializer<Attachment>() {
 
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Attachment? {
         //facebook can send empty attachments (ie attachments:[{}])
-        var type: AttachmentType? = null
-        var payload: Payload? = null
-        while (jp.nextValue() != JsonToken.END_OBJECT) {
-            when (jp.currentName) {
-                Attachment::type.name -> type = jp.readValueAs(AttachmentType::class)
-                Attachment::payload.name -> payload = jp.readValueAs(Payload::class)
-                else -> logger.warn { "Unsupported field : ${jp.currentName}" }
+        data class AttachmentFields(
+                var type: AttachmentType? = null,
+                var payload: Payload? = null)
+
+        val (type, payload) = jp.read<AttachmentFields> { fields, name ->
+            with(fields) {
+                when (name) {
+                    Attachment::type.name -> type = jp.readValueAs(AttachmentType::class)
+                    Attachment::payload.name -> payload = jp.readValueAs(Payload::class)
+                    else -> unknownValue
+                }
             }
         }
 

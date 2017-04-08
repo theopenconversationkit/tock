@@ -17,12 +17,11 @@
 package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.bot.definition.Intent
-import ft.vsct.tock.nlp.api.client.model.EntityValue
 
 /**
  *
  */
 data class ActionState(
         var currentIntent: Intent? = null,
-        val entityValues: MutableList<EntityValue> = mutableListOf()) {
+        val entityValues: MutableList<ContextValue> = mutableListOf()) {
 }

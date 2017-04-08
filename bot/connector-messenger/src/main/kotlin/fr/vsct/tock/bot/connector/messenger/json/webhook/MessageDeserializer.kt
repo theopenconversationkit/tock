@@ -17,19 +17,19 @@
 package fr.vsct.tock.bot.connector.messenger.json.webhook
 
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Attachment
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Message
 import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageEcho
+import fr.vsct.tock.shared.jackson.JacksonDeserializer
+import fr.vsct.tock.shared.jackson.read
 import fr.vsct.tock.shared.jackson.readListValuesAs
 import mu.KotlinLogging
 
 /**
  *
  */
-internal class MessageDeserializer : JsonDeserializer<Message>() {
+internal class MessageDeserializer : JacksonDeserializer<Message>() {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -37,24 +37,28 @@ internal class MessageDeserializer : JsonDeserializer<Message>() {
 
 
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Message? {
-        var mid: String? = null
-        var seq: Long? = null
-        var text: String? = null
-        var attachments: List<Attachment>? = null
-        var isEcho: Boolean = false
-        var appId: Long? = null
-        var metadata: String? = null
+        data class MessageFields(var mid: String? = null,
+                                 var seq: Long? = null,
+                                 var text: String? = null,
+                                 var attachments: List<Attachment>? = null,
+                                 var isEcho: Boolean = false,
+                                 var appId: Long? = null,
+                                 var metadata: String? = null)
 
-        while (jp.nextValue() != JsonToken.END_OBJECT) {
-            when (jp.currentName) {
-                Message::mid.name -> mid = jp.valueAsString
-                Message::seq.name -> seq = jp.longValue
-                Message::text.name -> text = jp.valueAsString
-                Message::attachments.name -> attachments = jp.readListValuesAs<Attachment>().filterNotNull()
-                "is_echo" -> isEcho = jp.booleanValue
-                "app_id" -> appId = jp.longValue
-                MessageEcho::metadata.name -> metadata = jp.valueAsString
-                else -> logger.warn { "Unsupported field : ${jp.currentName}" }
+
+        val (mid, seq, text, attachments, isEcho, appId, metadata)
+                = jp.read<MessageFields> { fields, name ->
+            with(fields) {
+                when (name) {
+                    Message::mid.name -> mid = jp.valueAsString
+                    Message::seq.name -> seq = jp.longValue
+                    Message::text.name -> text = jp.valueAsString
+                    Message::attachments.name -> attachments = jp.readListValuesAs<Attachment>().filterNotNull()
+                    "is_echo" -> isEcho = jp.booleanValue
+                    "app_id" -> appId = jp.longValue
+                    MessageEcho::metadata.name -> metadata = jp.valueAsString
+                    else -> unknownValue
+                }
             }
         }
 

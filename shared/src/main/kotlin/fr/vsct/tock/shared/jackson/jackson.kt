@@ -18,6 +18,7 @@ package fr.vsct.tock.shared.jackson
 
 import com.fasterxml.jackson.annotation.JsonInclude
 import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonDeserializer
@@ -27,6 +28,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlin.reflect.KClass
+import kotlin.reflect.full.createInstance
 
 val mapper: ObjectMapper by lazy {
     val mapper = jacksonObjectMapper()
@@ -41,6 +43,44 @@ val mapper: ObjectMapper by lazy {
 fun <T : Any> ObjectMapper.readValue(content: String, valueType: KClass<T>): T = readValue(content, valueType.java)
 
 fun <T : Any> JsonParser.readValueAs(klass: KClass<T>) = this.readValueAs(klass.java)
+
+/**
+ * Returns the current field name, with the value ready to read.
+ *
+ * @return the field name, null if [JsonToken.END_OBJECT]
+ */
+fun JsonParser.fieldNameWithValueReady(): String? {
+    if (currentToken == JsonToken.END_OBJECT) {
+        return null
+    }
+    val firstToken = nextToken()
+    if (firstToken == JsonToken.END_OBJECT) {
+        return null
+    }
+    val fieldName = currentName
+    nextToken()
+    return fieldName
+}
+
+/**
+ */
+fun JsonParser.checkEndToken() {
+    if (currentToken != JsonToken.END_OBJECT) {
+        nextToken()
+        checkEndToken()
+    }
+}
+
+inline fun <reified FIELDS : Any> JsonParser.read(readValue: (FIELDS, String) -> Unit): FIELDS {
+    return FIELDS::class.createInstance().let { fields ->
+        while (true) {
+            fieldNameWithValueReady()?.apply {
+                readValue.invoke(fields, this)
+            } ?: break
+        }
+        fields
+    }
+}
 
 inline fun <reified T : Any> JsonParser.readListValuesAs(): List<T> {
     return readValueAs<List<T>>(object : TypeReference<List<T>>() {}) ?: emptyList()

@@ -16,9 +16,11 @@
 
 package fr.vsct.tock.bot.engine
 
+import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.translator.I18n
@@ -42,6 +44,9 @@ class BotBus internal constructor(
     private val userId = action.playerId
 
     private var currentDelay: Long = 0
+
+    val entities: Map<String, EntityStateValue> = dialog.state.entityValues
+    val intent: Intent? = dialog.state.currentIntent
 
     private fun answer(action: Action, delay: Long = 0): BotBus {
         currentDelay += delay

@@ -21,6 +21,5 @@ package fr.vsct.tock.bot.engine.user
  */
 data class PlayerId(
         val id: String,
-        val type: PlayerType = PlayerType.user,
-        val businessId: String = id) {
+        val type: PlayerType = PlayerType.user) {
 }
