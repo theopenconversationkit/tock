@@ -38,4 +38,23 @@ data class State(
             else context[userLocationFlag] = value
         }
 
+    fun setValue(role: String, value: ContextValue) {
+        entityValues[role] = EntityStateValue(value)
+    }
+
+    fun changeValue(role: String, newValue: ContextValue?) {
+        entityValues[role]?.changeValue(newValue)
+                ?: if (newValue != null) setValue(role, newValue)
+    }
+
+    fun removeAllEntityValues() {
+        entityValues.forEach {
+            changeValue(it.key, null)
+        }
+    }
+
+    fun removeValue(role: String) {
+        changeValue(role, null)
+    }
+
 }

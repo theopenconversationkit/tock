@@ -16,9 +16,11 @@
 
 package fr.vsct.tock.bot.engine
 
+import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.Story
@@ -43,15 +45,34 @@ class BotBus internal constructor(
     private val botId = action.recipientId
     private val userId = action.playerId
 
-    private var currentDelay: Long = 0
+    private val context: BusContext = BusContext()
 
     val entities: Map<String, EntityStateValue> = dialog.state.entityValues
     val intent: Intent? = dialog.state.currentIntent
 
+    fun changeEntityValue(role: String, newValue: ContextValue?) {
+        dialog.state.changeValue(role, newValue)
+    }
+
+    fun removeAllEntityValues() {
+        dialog.state.removeAllEntityValues()
+    }
+
+    fun removeEntityValue(role: String) {
+        dialog.state.removeValue(role)
+    }
+
+
     private fun answer(action: Action, delay: Long = 0): BotBus {
-        currentDelay += delay
+        context.currentDelay += delay
+        if (action is SendSentence) {
+            context.getMessage(connector.connectorType)?.let {
+                action.messages.add(it)
+            }
+        }
+
         story.actions.add(action)
-        connector.send(action, currentDelay)
+        connector.send(action, context.currentDelay)
         return this
     }
 
@@ -60,19 +81,51 @@ class BotBus internal constructor(
         return answer(action, delay)
     }
 
-    fun send(text: String, delay: Long = 0): BotBus {
-        return answer(SendSentence(botId, applicationId, userId, translate(text)), delay)
+    fun end(delay: Long = 0): BotBus {
+        return endPlainText(null, delay)
     }
 
-    fun end(text: String, delay: Long = 0): BotBus {
-        return end(SendSentence(botId, applicationId, userId, translate(text)), delay)
+    fun end(i18nText: String, delay: Long = 0, vararg i18nArgs: Any?): BotBus {
+        return endPlainText(translate(i18nText, i18nArgs), delay)
     }
 
-    fun translate(text: String, vararg args: Any?): String {
-        if (text.isEmpty()) {
+    fun end(i18nText: String, vararg i18nArgs: Any?): BotBus {
+        return endPlainText(translate(i18nText, i18nArgs))
+    }
+
+    fun endPlainText(plainText: String?, delay: Long = 0): BotBus {
+        return end(SendSentence(botId, applicationId, userId, plainText), delay)
+    }
+
+    fun send(i18nText: String, delay: Long = 0, vararg i18nArgs: Any?): BotBus {
+        return sendPlainText(translate(i18nText, i18nArgs), delay)
+    }
+
+    fun send(i18nText: String, vararg i18nArgs: Any?): BotBus {
+        return sendPlainText(translate(i18nText, i18nArgs))
+    }
+
+    fun send(delay: Long = 0): BotBus {
+        return sendPlainText(null, delay)
+    }
+
+    fun sendPlainText(plainText: String?, delay: Long = 0): BotBus {
+        return answer(SendSentence(botId, applicationId, userId, plainText), delay)
+    }
+
+
+    fun with(message: ConnectorMessage): BotBus {
+        context.addMessage(message)
+        return this
+    }
+
+
+    fun translate(text: String?, vararg args: Any?): String {
+        if (text.isNullOrBlank()) {
             return ""
+        } else {
+            return translate(i18nProvider.i18nKeyFromLabel(text!!, *args))
         }
-        return translate(i18nProvider.i18nKeyFromLabel(text, *args))
     }
 
     fun translate(key: I18nLabelKey): String {

@@ -20,5 +20,5 @@ package fr.vsct.tock.bot.connector.messenger.model.send
  *
  */
 //TODO check 640 char text limit
-data class ButtonPayload(val text: String, val buttons: List<Button>) : ModelPayload(ModelType.button) {
+data class ButtonPayload(val text: String, val buttons: List<Button>) : ModelPayload(PayloadType.button) {
 }

@@ -27,9 +27,9 @@ import mu.KotlinLogging
 private val logger = KotlinLogging.logger {}
 val vertx = Vertx.vertx(
         VertxOptions().apply {
-            setMaxWorkerExecuteTime(1000 * 60L * 1000 * 1000000)
+            maxWorkerExecuteTime = 1000 * 60L * 1000 * 1000000
             if (devEnvironment) {
-                setWarningExceptionTime(1000L * 1000 * 1000000)
+                warningExceptionTime = 1000L * 1000 * 1000000
             }
         })
 

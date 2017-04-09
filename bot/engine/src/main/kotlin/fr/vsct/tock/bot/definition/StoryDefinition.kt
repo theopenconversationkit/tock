@@ -49,4 +49,6 @@ interface StoryDefinition {
 
     fun isStarterIntent(intent: Intent) = starterIntents.contains(intent)
 
+    fun supportIntent(intent: Intent) = intents.contains(intent)
+
 }

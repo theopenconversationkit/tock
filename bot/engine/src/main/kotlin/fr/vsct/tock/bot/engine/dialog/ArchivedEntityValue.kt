@@ -20,5 +20,5 @@ import fr.vsct.tock.bot.engine.action.Action
 import ft.vsct.tock.nlp.api.client.model.EntityValue
 
 data class ArchivedEntityValue(
-        val entityValue: ContextValue,
+        val entityValue: ContextValue?,
         val action: Action?)

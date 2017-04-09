@@ -22,8 +22,10 @@ import fr.vsct.tock.bot.connector.messenger.model.send.Button
 import fr.vsct.tock.bot.connector.messenger.model.send.ButtonPayload
 import fr.vsct.tock.bot.connector.messenger.model.send.Element
 import fr.vsct.tock.bot.connector.messenger.model.send.GenericPayload
-import fr.vsct.tock.bot.connector.messenger.model.send.ModelType
+import fr.vsct.tock.bot.connector.messenger.model.send.ListElementStyle
+import fr.vsct.tock.bot.connector.messenger.model.send.ListPayload
 import fr.vsct.tock.bot.connector.messenger.model.send.Payload
+import fr.vsct.tock.bot.connector.messenger.model.send.PayloadType
 import fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload
 import fr.vsct.tock.shared.jackson.JacksonDeserializer
 import fr.vsct.tock.shared.jackson.read
@@ -42,20 +44,22 @@ internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
 
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Payload? {
         data class PayloadFields(
-                var templateType: ModelType? = null,
+                var templateType: PayloadType? = null,
                 var url: String? = null,
                 var text: String? = null,
                 var buttons: List<Button>? = null,
-                var elements: List<Element>? = null)
+                var elements: List<Element>? = null,
+                var topElementStyle: ListElementStyle? = null)
 
-        val (templateType, url, text, buttons, elements) = jp.read<PayloadFields> { fields, name ->
+        val (templateType, url, text, buttons, elements, topElementStyle) = jp.read<PayloadFields> { fields, name ->
             with(fields) {
                 when (name) {
-                    "template_type" -> templateType = jp.readValueAs(ModelType::class)
+                    "template_type" -> templateType = jp.readValueAs(PayloadType::class)
                     UrlPayload::url.name -> url = jp.valueAsString
                     GenericPayload::elements.name -> elements = jp.readListValuesAs()
                     ButtonPayload::buttons.name -> buttons = jp.readListValuesAs()
                     ButtonPayload::text.name -> text = jp.valueAsString
+                    "top_element_style" -> topElementStyle = jp.readValueAs(ListElementStyle::class)
                     else -> unknownValue
                 }
             }
@@ -63,13 +67,14 @@ internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
 
         return if (templateType != null) {
             when (templateType) {
-                ModelType.generic -> GenericPayload(elements ?: emptyList())
-                ModelType.button -> ButtonPayload(text ?: "", buttons ?: emptyList())
+                PayloadType.generic -> GenericPayload(elements ?: emptyList())
+                PayloadType.button -> ButtonPayload(text ?: "", buttons ?: emptyList())
+                PayloadType.list -> ListPayload(elements ?: emptyList(), topElementStyle, buttons)
             }
         } else if (url != null) {
             UrlPayload(url)
         } else {
-            logger.warn { "invalid message" }
+            logger.warn { "invalid payload" }
             null
         }
     }

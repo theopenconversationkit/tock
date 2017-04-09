@@ -19,5 +19,5 @@ package fr.vsct.tock.bot.connector.messenger.model.send
 /**
  *
  */
-data class GenericPayload(val elements : List<Element>) : ModelPayload(ModelType.generic) {
+data class GenericPayload(val elements : List<Element>) : ModelPayload(PayloadType.generic) {
 }

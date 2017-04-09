@@ -16,10 +16,15 @@
 
 package fr.vsct.tock.bot.engine.action
 
+import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.dialog.ActionState
 import fr.vsct.tock.bot.engine.dialog.BotMetadata
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.shared.Dice
+import java.net.URLDecoder.decode
+import java.net.URLEncoder.encode
+import java.nio.charset.StandardCharsets.UTF_8
 import java.time.Instant
 
 /**
@@ -28,10 +33,43 @@ import java.time.Instant
 class SendChoice(playerId: PlayerId,
                  applicationId: String,
                  recipientId: PlayerId,
-                 val choiceId: String,
+                 val intentName: String,
+                 val parameters: Map<String, String> = emptyMap(),
                  id: String = Dice.newId(),
                  date: Instant = Instant.now(),
                  state: ActionState = ActionState(),
                  botMetadata: BotMetadata = BotMetadata()) : Action(playerId, recipientId, applicationId, id, date, state, botMetadata) {
 
+    companion object {
+
+        fun encodeChoiceId(storyDefinition: StoryDefinition, parameters: Map<String, String> = emptyMap()): String {
+            return encodeChoiceId(storyDefinition.starterIntents.first(), parameters)
+        }
+
+        fun encodeChoiceId(intent: Intent, parameters: Map<String, String> = emptyMap()): String {
+            return StringBuilder().apply {
+                append(intent.name)
+                if (parameters.isNotEmpty()) {
+                    parameters.map { e ->
+                        "${encode(e.key, UTF_8.name())}=${encode(e.value, UTF_8.name())}"
+                    }.joinTo(this, "&", "?")
+                }
+            }.toString()
+        }
+
+        fun decodeChoiceId(id: String): Pair<String, Map<String, String>> {
+            val questionMarkIndex = id.indexOf("?")
+            return if (questionMarkIndex == -1) {
+                id to emptyMap()
+            } else {
+                id.substring(0, questionMarkIndex) to id.substring(questionMarkIndex + 1)
+                        .split("&")
+                        .map {
+                            it.split("=")
+                                    .let { decode(it[0], UTF_8.name()) to decode(it[1], UTF_8.name()) }
+                        }.toMap()
+            }
+        }
+
+    }
 }

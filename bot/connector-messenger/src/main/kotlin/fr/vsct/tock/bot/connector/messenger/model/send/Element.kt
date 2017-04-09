@@ -21,5 +21,5 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class Element(val title: String,
                    @JsonProperty("image_url") val imageUrl: String? = null,
                    val subtitle: String? = null,
-                   val buttons: List<Button> = emptyList()) {
+                   val buttons: List<Button>? = null) {
 }

@@ -30,6 +30,9 @@ import java.util.Locale
  */
 object I18n {
 
+    @Volatile
+    private var enabled: Boolean = false
+
     private val keyLabelRegex = "[^\\p{L}_]+".toRegex()
     private val defaultInterface: UserInterfaceType = UserInterfaceType.textChat
 
@@ -37,6 +40,9 @@ object I18n {
     private val translator: Translator by injector.instance()
 
     fun translate(key: I18nLabelKey, locale: Locale, userInterfaceType: UserInterfaceType): String {
+        if (!enabled) {
+            return formatMessage(key, key.defaultLabel, locale, userInterfaceType)
+        }
         val storedLabel = i18nDAO.getLabelById(key.key)
 
         val label = if (storedLabel != null) {
@@ -75,6 +81,10 @@ object I18n {
             }
         }
 
+        return formatMessage(key, label, locale, userInterfaceType)
+    }
+
+    private fun formatMessage(key: I18nLabelKey, label: String, locale: Locale, userInterfaceType: UserInterfaceType): String {
         if (key.args.isEmpty()) {
             return label
         }

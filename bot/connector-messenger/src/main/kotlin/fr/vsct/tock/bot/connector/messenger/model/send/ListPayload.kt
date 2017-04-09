@@ -19,8 +19,12 @@ package fr.vsct.tock.bot.connector.messenger.model.send
 import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
- *
+ * See [https://developers.facebook.com/docs/messenger-platform/send-api-reference/list-template]
  */
-abstract class ModelPayload(@get:JsonProperty("template_type") val templateType: PayloadType) : Payload() {
-
+data class ListPayload(
+        val elements: List<Element>,
+        @JsonProperty("top_element_style")
+        val topElementStyle: ListElementStyle?,
+        val buttons: List<Button>?
+) : ModelPayload(PayloadType.list) {
 }

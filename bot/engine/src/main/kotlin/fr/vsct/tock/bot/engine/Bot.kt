@@ -80,15 +80,17 @@ class Bot(val botDefinition: BotDefinition) {
 
     private fun getStory(action: Action, dialog: Dialog): Story {
         val newIntent = dialog.state.currentIntent
-        val storyDefinition = botDefinition.findStoryDefinition(newIntent?.name)
         val previousStory = dialog.stories.lastOrNull()
-        val story = if (previousStory == null || previousStory.currentIntent != newIntent) {
-            val newStory = Story(storyDefinition, newIntent)
-            dialog.stories.add(newStory)
-            newStory
-        } else {
-            previousStory
-        }
+        val story =
+                if (previousStory == null
+                        || (newIntent != null && !previousStory.definition.supportIntent(newIntent))) {
+                    val storyDefinition = botDefinition.findStoryDefinition(newIntent?.name)
+                    val newStory = Story(storyDefinition, newIntent)
+                    dialog.stories.add(newStory)
+                    newStory
+                } else {
+                    previousStory
+                }
         story.actions.add(action)
         return story
     }
@@ -99,7 +101,7 @@ class Bot(val botDefinition: BotDefinition) {
                             connector: ConnectorController) {
         when (action) {
             is SendChoice -> {
-                // do nothing
+                parseChoice(action, dialog)
             }
             is SendLocation -> {
                 //do nothing
@@ -114,6 +116,9 @@ class Bot(val botDefinition: BotDefinition) {
         }
     }
 
+    private fun parseChoice(choice: SendChoice, dialog: Dialog) {
+        dialog.state.currentIntent = botDefinition.findIntent(choice.intentName)
+    }
 
     private fun parseSentence(sentence: SendSentence,
                               userTimeline: UserTimeline,

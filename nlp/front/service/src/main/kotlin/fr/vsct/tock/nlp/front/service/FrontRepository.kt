@@ -41,6 +41,10 @@ internal object FrontRepository {
     val config = ApplicationConfigurationService
 
     val entityTypes: MutableMap<String, EntityType> by lazy {
+        loadEntityTypes()
+    }
+
+    private fun loadEntityTypes(): MutableMap<String, EntityType> {
         val entityTypesDefinitionMap = entityTypeDAO.getEntityTypes().map { it.name to it }.toMap().toMutableMap()
 
         val entityTypesWithoutSubEntities = entityTypesDefinitionMap
@@ -54,7 +58,18 @@ internal object FrontRepository {
                             v.name,
                             v.subEntities.map { Entity(entityTypesWithoutSubEntities[it.entityTypeName] ?: error("entity ${it.entityTypeName} not found"), it.role) })
                 }
-        ConcurrentHashMap(entityTypesWithoutSubEntities + entityTypesWithSubEntities)
+        return ConcurrentHashMap(entityTypesWithoutSubEntities + entityTypesWithSubEntities)
+                //try to reload and refresh the cache if not found
+                .withDefault {
+                    val newValues = loadEntityTypes()
+                    entityTypes.forEach { e ->
+                        if (!newValues.containsKey(e.key)) {
+                            entityTypes.remove(e.key)
+                        }
+                    }
+                    entityTypes.putAll(newValues)
+                    newValues.get(it)
+                } as (MutableMap<String, EntityType>)
     }
 
     fun toEntityType(entityType: EntityTypeDefinition): EntityType {

@@ -46,4 +46,10 @@ open class Message(open val mid: String,
         result = 31 * result + attachments.hashCode()
         return result
     }
+
+    override fun toString(): String {
+        return "Message(mid='$mid', seq=$seq, text=$text, attachments=$attachments)"
+    }
+
+
 }

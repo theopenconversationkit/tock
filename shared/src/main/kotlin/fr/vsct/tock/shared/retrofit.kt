@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.shared
 
+import com.fasterxml.jackson.databind.ObjectMapper
 import fr.vsct.tock.shared.jackson.mapper
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -44,6 +45,6 @@ fun retrofitBuilderWithTimeout(seconds: Long, vararg interceptors: Interceptor):
             Retrofit.Builder().client(it)
         }
 
-fun Retrofit.Builder.addJacksonConverter(): Retrofit.Builder = run {
-    addConverterFactory(JacksonConverterFactory.create(mapper))
+fun Retrofit.Builder.addJacksonConverter(objectMapper: ObjectMapper = mapper): Retrofit.Builder = run {
+    addConverterFactory(JacksonConverterFactory.create(objectMapper))
 }

@@ -21,15 +21,19 @@ import fr.vsct.tock.bot.engine.action.Action
 /**
  *
  */
-data class EntityStateValue(var value: ContextValue,
+data class EntityStateValue(var value: ContextValue?,
                             val history: MutableList<ArchivedEntityValue> = mutableListOf()) {
 
     constructor(action: Action, entityValue: ContextValue)
             : this(entityValue, mutableListOf(ArchivedEntityValue(entityValue, action)))
 
-    fun changeValue(newValue: ContextValue, action: Action? = null): EntityStateValue {
+    fun changeValue(newValue: ContextValue?, action: Action? = null): EntityStateValue {
         value = newValue
-        history.add(ArchivedEntityValue(newValue, action))
+        //do not change history if previous value is exactly the same
+        ArchivedEntityValue(newValue, action)
+                .takeIf { it != history.lastOrNull() }
+                ?.let { history.add(it) }
+
         return this
     }
 }

@@ -24,10 +24,10 @@ import ft.vsct.tock.nlp.api.client.model.EntityValue
  *
  */
 data class ContextValue(
-        val start: Int,
-        val end: Int,
+        val start: Int?,
+        val end: Int?,
         val entity: Entity,
-        val content: String,
+        val content: String?,
         var value: Value? = null,
         var evaluated: Boolean = false
 ) {
@@ -39,11 +39,19 @@ data class ContextValue(
             value.entity,
             sentence.substring(value.start, value.end),
             value.value,
-            value.evaluated
-    )
+            value.evaluated)
+
+    constructor(entity: Entity, value: Value?, content: String? = null)
+            : this(
+            null,
+            null,
+            entity,
+            content,
+            value,
+            true)
 
     override fun toString(): String {
-        return if (evaluated) value?.toString() ?: "null" else content
+        return if (evaluated) value?.toString() ?: "null" else content ?: "no content"
     }
 
     fun changeValue(newValue: Value?): ContextValue {

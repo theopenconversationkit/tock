@@ -56,11 +56,16 @@ internal object WebhookActionConverter {
                     }
                 }
             is PostbackWebhook ->
-                SendChoice(
-                        message.playerId(PlayerType.user),
-                        applicationId,
-                        message.recipientId(PlayerType.bot),
-                        message.postback.payload)
+                SendChoice.decodeChoiceId(message.postback.payload)
+                        .let { (intentName, parameters) ->
+                            SendChoice(
+                                    message.playerId(PlayerType.user),
+                                    applicationId,
+                                    message.recipientId(PlayerType.bot),
+                                    intentName,
+                                    parameters)
+                        }
+
             else -> {
                 logger.error { "unknown message $message" }
                 null

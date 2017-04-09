@@ -109,7 +109,7 @@ internal class DialogCol(val playerIds: Set<PlayerId>,
     }
 
     data class EntityStateValueWrapper(
-            val value: ContextValue,
+            val value: ContextValue?,
             val history: List<ArchivedEntityValueWrapper>) {
 
         constructor(value: EntityStateValue) : this(value.value, value.history.map { ArchivedEntityValueWrapper(it) })
@@ -123,7 +123,7 @@ internal class DialogCol(val playerIds: Set<PlayerId>,
     }
 
     class ArchivedEntityValueWrapper(
-            val entityValue: ContextValue,
+            val entityValue: ContextValue?,
             val actionId: String?) {
 
         constructor(value: ArchivedEntityValue) : this(value.entityValue, value.action?.id)
@@ -211,9 +211,10 @@ internal class DialogCol(val playerIds: Set<PlayerId>,
     }
 
     @JsonTypeName(value = "choice")
-    class SendChoiceMongoWrapper(val choiceId: String) : ActionMongoWrapper() {
+    class SendChoiceMongoWrapper(val intentName: String,
+                                 val parameters: Map<String, String>) : ActionMongoWrapper() {
 
-        constructor(choice: SendChoice) : this(choice.choiceId) {
+        constructor(choice: SendChoice) : this(choice.intentName, choice.parameters) {
             assignFrom(choice)
         }
 
@@ -222,7 +223,8 @@ internal class DialogCol(val playerIds: Set<PlayerId>,
                     playerId,
                     applicationId,
                     recipientId,
-                    choiceId,
+                    intentName,
+                    parameters,
                     id,
                     date,
                     state,

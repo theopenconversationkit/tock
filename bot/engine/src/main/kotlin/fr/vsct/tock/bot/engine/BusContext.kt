@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.send
+package fr.vsct.tock.bot.engine
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.connector.ConnectorType
 
 /**
  *
  */
-abstract class ModelPayload(@get:JsonProperty("template_type") val templateType: PayloadType) : Payload() {
+data class BusContext(
+        var currentDelay: Long = 0,
+        val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf()) {
 
+    fun addMessage(message: ConnectorMessage) {
+        connectorMessages.put(message.connectorType, message)
+    }
+
+    fun getMessage(type: ConnectorType): ConnectorMessage? = connectorMessages[type]
 }
