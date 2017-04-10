@@ -51,7 +51,7 @@ fun BotBus.withMessengerButtons(text: String, vararg buttons: Button): BotBus {
 }
 
 fun BotBus.withMessengerList(e1: Element, e2: Element, e3: Element? = null, e4: Element? = null, topElementStyle: ListElementStyle? = null, button: Button? = null): BotBus {
-    return withMessengerList(listOfNotNull(e1, e2, e3, e3), topElementStyle, button)
+    return withMessengerList(listOfNotNull(e1, e2, e3, e4), topElementStyle, button)
 }
 
 fun BotBus.withMessengerList(elements: List<Element>, topElementStyle: ListElementStyle? = null, button: Button? = null): BotBus {
