@@ -19,8 +19,8 @@ package fr.vsct.tock.translator.noop
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import fr.vsct.tock.translator.Translator
+import fr.vsct.tock.translator.TranslatorEngine
 
 val noOpTranslatorModule = Kodein.Module {
-    bind<Translator>() with provider { NoOpTranslator }
+    bind<TranslatorEngine>() with provider { NoOpTranslatorEngine }
 }
