@@ -19,7 +19,7 @@ package fr.vsct.tock.bot.definition
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.translator.I18n
+import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
 import ft.vsct.tock.nlp.api.client.model.NlpEngineType
@@ -115,6 +115,6 @@ interface BotDefinition : I18nKeyProvider {
 
     override fun i18nKeyFromLabel(defaultLabel: String, vararg args: Any?): I18nLabelKey {
         val prefix = javaClass.kotlin.simpleName?.replace("Definition", "") ?: ""
-        return i18nKey("${prefix}_${I18n.getKeyFromDefaultLabel(defaultLabel)}", prefix, defaultLabel, *args)
+        return i18nKey("${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}", prefix, defaultLabel, *args)
     }
 }

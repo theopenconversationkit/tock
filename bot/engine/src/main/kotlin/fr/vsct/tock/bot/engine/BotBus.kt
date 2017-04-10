@@ -25,7 +25,7 @@ import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserTimeline
-import fr.vsct.tock.translator.I18n
+import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
 
@@ -129,7 +129,7 @@ class BotBus internal constructor(
     }
 
     fun translate(key: I18nLabelKey): String {
-        return I18n.translate(key,
+        return Translator.translate(key,
                 userTimeline.userPreferences.locale,
                 connector.connectorType.userInterfaceType)
     }

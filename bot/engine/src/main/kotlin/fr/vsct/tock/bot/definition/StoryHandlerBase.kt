@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.definition
 
 import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.translator.I18n
+import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
 import mu.KotlinLogging
@@ -53,7 +53,7 @@ abstract class StoryHandlerBase : StoryHandler, I18nKeyProvider {
     override fun i18nKeyFromLabel(defaultLabel: String, vararg args: Any?): I18nLabelKey {
         val prefix = i18nKeyPrefix()
         return i18nKey(
-                "${prefix}_${I18n.getKeyFromDefaultLabel(defaultLabel)}",
+                "${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}",
                 prefix,
                 defaultLabel,
                 *args)

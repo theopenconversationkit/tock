@@ -14,17 +14,15 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.translator.noop
+package fr.vsct.tock.translator
 
-import fr.vsct.tock.translator.Translator
 import java.util.Locale
 
-
 /**
- *
+ * The translator API translate one sentence from a source [Locale] to a target [Locale].
  */
-internal object NoOpTranslator : Translator {
-    override fun translate(text: String, source: Locale, target: Locale): String {
-        return text
-    }
+interface TranslatorEngine {
+
+    fun translate(text: String, source: Locale, target: Locale): String
+
 }
