@@ -34,7 +34,7 @@
         <module>connector-messenger</module>
         <module>storage-mongo</module>
 
-        <module>framework</module>
+        <module>toolkit</module>
     </modules>
 
     <dependencyManagement>
