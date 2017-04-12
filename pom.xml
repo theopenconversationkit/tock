@@ -50,7 +50,9 @@
         <plugin.release>2.5.3</plugin.release>
         <plugin.gpg>1.6</plugin.gpg>
         <plugin.nexus-staging>1.6.7</plugin.nexus-staging>
-        <plugin.dokka.version>0.9.13</plugin.dokka.version>
+        <plugin.dokka>0.9.13</plugin.dokka>
+        <plugin.assembly>3.0.0</plugin.assembly>
+        <plugin.frontend>1.4</plugin.frontend>
     </properties>
 
     <modules>
@@ -307,7 +309,7 @@
             <plugin>
                 <groupId>org.jetbrains.dokka</groupId>
                 <artifactId>dokka-maven-plugin</artifactId>
-                <version>${plugin.dokka.version}</version>
+                <version>${plugin.dokka}</version>
                 <executions>
                     <execution>
                         <goals>
@@ -321,6 +323,19 @@
                 </configuration>
             </plugin>
         </plugins>
+        <pluginManagement>
+            <plugins>
+                <plugin>
+                    <artifactId>maven-assembly-plugin</artifactId>
+                    <version>${plugin.assembly}</version>
+                </plugin>
+                <plugin>
+                    <groupId>com.github.eirslett</groupId>
+                    <artifactId>frontend-maven-plugin</artifactId>
+                    <version>${plugin.frontend}</version>
+                </plugin>
+            </plugins>
+        </pluginManagement>
     </build>
 
     <inceptionYear>2017</inceptionYear>
@@ -341,7 +356,7 @@
             <name>Apache License, Version 2.0</name>
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
-            <comments />
+            <comments/>
         </license>
     </licenses>
 

@@ -30,7 +30,7 @@
 
     <properties>
         <duckling>0.4.13</duckling>
-	<duckling.basedir>${project.basedir}</duckling.basedir>
+        <duckling.basedir>${project.basedir}</duckling.basedir>
     </properties>
 
     <dependencies>
@@ -42,9 +42,31 @@
             <groupId>wit</groupId>
             <artifactId>duckling</artifactId>
             <scope>system</scope>
-	    <version>${duckling}</version>
+            <version>${duckling}</version>
             <systemPath>${duckling.basedir}/lib/duckling-${duckling}-standalone.jar</systemPath>
         </dependency>
     </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/assembly.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>
