@@ -29,6 +29,7 @@ import fr.vsct.tock.shared.vertx.BadRequestException
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.web.RoutingContext
+import io.vertx.ext.web.handler.StaticHandler
 import mu.KotlinLogging
 import java.util.Locale
 
@@ -168,6 +169,15 @@ class AdminVerticle : WebVerticle(KotlinLogging.logger {}) {
                 null
             }
         }
+
+        //for docker
+        router.route("/*").handler (StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot("/maven/dist"))
+        router.route().failureHandler { context ->
+            if (context.statusCode() == 404) {
+                context.response().putHeader("Location","/index.html").setStatusCode(200).end()
+            }
+        }
+
     }
 
     override fun healthcheck(): (RoutingContext) -> Unit {

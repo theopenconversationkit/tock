@@ -19,7 +19,7 @@ package fr.vsct.tock.duckling.service
 import fr.vsct.tock.shared.vertx.vertx
 
 /**
- *
+ * Server start class.
  */
 fun main(args: Array<String>) {
     vertx.deployVerticle(DucklingVerticle())

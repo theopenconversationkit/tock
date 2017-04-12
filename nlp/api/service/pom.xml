@@ -41,17 +41,16 @@
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-nlp-entity-value</artifactId>
         </dependency>
+        <dependency>
+            <groupId>fr.vsct.tock</groupId>
+            <artifactId>tock-nlp-front-ioc</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>io.vertx</groupId>
             <artifactId>vertx-web</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-nlp-front-ioc</artifactId>
-            <scope>test</scope>
-        </dependency>
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

@@ -59,7 +59,7 @@ val mongoClient: MongoClient by lazy {
     KMongoConfiguration.extendedJsonMapper.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
 
     KMongoConfiguration.bsonMapper.registerModule(tockModule)
-    KMongo.createClient(MongoClientURI("mongodb://localhost:27017"))
+    KMongo.createClient(MongoClientURI(property("tock_mongo_url", "mongodb://localhost:27017")))
 }
 
 fun getDatabase(databaseNameProperty: String): MongoDatabase {
