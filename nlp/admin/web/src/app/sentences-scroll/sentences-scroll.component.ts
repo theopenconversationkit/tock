@@ -28,6 +28,7 @@ export class SentencesScrollComponent implements OnInit, OnDestroy {
 
   @Input() filter: SentenceFilter;
   @Input() title: string;
+  @Input() displayArchiveButton:boolean =true;
 
   sentences: Array<Sentence> = [];
   cursor: number = 0;

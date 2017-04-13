@@ -16,17 +16,17 @@
 
 import {NgModule} from "@angular/core";
 import {CommonModule} from "@angular/common";
-import {MaterialModule} from "@angular/material";
 import {FormsModule} from "@angular/forms";
 import {HttpModule} from "@angular/http";
-import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.component';
+import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component";
+import {MaterialModule} from "@angular/material";
 
 @NgModule({
   imports: [CommonModule, MaterialModule],
   declarations: [ConfirmDialogComponent],
   providers: [],
   exports: [MaterialModule, FormsModule, HttpModule],
-  entryComponents : [
+  entryComponents: [
     ConfirmDialogComponent
   ]
 })

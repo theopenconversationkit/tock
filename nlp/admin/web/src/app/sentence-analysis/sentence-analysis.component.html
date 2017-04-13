@@ -47,7 +47,7 @@
   </md-card-content>
   <md-card-actions class="sentence-analysis-content">
     <button md-raised-button color="warn" (click)="onDelete()">Delete</button>
-    <button md-raised-button color="accent" (click)="onArchive()" [hidden]="!displayArchiveButton">Archive
+    <button md-raised-button color="accent" (click)="onArchive()" *ngIf="displayArchiveButton">Archive
     </button>
     <button md-raised-button color="primary" (click)="onValidate()">Validate</button>
   </md-card-actions>

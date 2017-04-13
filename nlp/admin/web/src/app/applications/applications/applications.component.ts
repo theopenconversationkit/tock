@@ -27,7 +27,7 @@ import {StateService} from "../../core/state.service";
 export class ApplicationsComponent implements OnInit {
 
   constructor(private snackBar: MdSnackBar,
-              private state: StateService) {
+              public state: StateService) {
   }
 
   ngOnInit() {
