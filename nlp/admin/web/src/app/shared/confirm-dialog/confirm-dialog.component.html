@@ -14,9 +14,9 @@
   ~ limitations under the License.
   -->
 
-<h1 md-dialog-title>{{dialogRef.config.data.title}}</h1>
-<div md-dialog-content>{{dialogRef.config.data.subtitle}}</div>
+<h1 md-dialog-title>{{dialogRef._containerInstance.dialogConfig.data.title}}</h1>
+<div md-dialog-content>{{dialogRef._containerInstance.dialogConfig.data.subtitle}}</div>
 <div md-dialog-actions>
   <button md-button (click)="dialogRef.close('cancel')">Cancel</button>
-  <button md-button (click)="dialogRef.close(dialogRef.config.data.action.toLowerCase())">{{dialogRef.config.data.action}}</button>
+  <button md-button (click)="dialogRef.close(dialogRef._containerInstance.dialogConfig.data.action.toLowerCase())">{{dialogRef._containerInstance.dialogConfig.data.action}}</button>
 </div>

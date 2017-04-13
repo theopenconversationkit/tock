@@ -40,7 +40,7 @@ export class CreateEntityDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.intent = this.dialogRef.config.data.intent;
+    this.intent = this.dialogRef._containerInstance.dialogConfig.data.intent;
   }
 
   onSelect(entityType: EntityType) {

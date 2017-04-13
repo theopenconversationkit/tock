@@ -25,7 +25,7 @@
     [infiniteScrollThrottle]="300"
     (scrolled)="onScroll()">
     <div *ngFor="let sentence of sentences">
-      <tock-sentence-analysis [sentence]="sentence" (closed)="onClose($event)"></tock-sentence-analysis>
+      <tock-sentence-analysis [sentence]="sentence" (closed)="onClose($event)" [displayArchiveButton]="displayArchiveButton"></tock-sentence-analysis>
     </div>
   </div>
 </div>

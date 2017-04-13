@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-import {Component, Input, OnInit, Output} from "@angular/core";
+import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {ClassifiedEntity, Sentence, SentenceStatus} from "../model/nlp";
-import {EventEmitter} from "@angular/common/src/facade/async";
 import {StateService} from "../core/state.service";
 import {Intent} from "../model/application";
 import {NlpService} from "../nlp-tabs/nlp.service";
@@ -31,6 +30,7 @@ import {MdDialog, MdSnackBar} from "@angular/material";
 export class SentenceAnalysisComponent implements OnInit {
 
   @Input() @Output() sentence: Sentence;
+  @Input() displayArchiveButton: boolean = true;
   @Output() closed = new EventEmitter();
 
   constructor(public state: StateService,

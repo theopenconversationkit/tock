@@ -30,7 +30,7 @@ export class AppComponent implements OnInit, OnDestroy {
   private errorUnsuscriber: any;
 
   constructor(public auth: AuthService,
-              private state: StateService,
+              public state: StateService,
               private rest: RestService,
               private snackBar: MdSnackBar) {
   }

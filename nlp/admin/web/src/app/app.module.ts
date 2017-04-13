@@ -21,6 +21,7 @@ import {Routes, RouterModule} from "@angular/router";
 import {BrowserModule} from "@angular/platform-browser";
 import {CoreModule} from "./core/core.module";
 import { SentencesScrollComponent } from './sentences-scroll/sentences-scroll.component';
+import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 const routes: Routes = [
   {path: '', redirectTo: '/nlp/inbox', pathMatch: 'full'},
@@ -46,6 +47,7 @@ export class AppRoutingModule {
   ],
   imports: [
     BrowserModule,
+    BrowserAnimationsModule,
     CoreModule,
     SharedModule,
     AppRoutingModule

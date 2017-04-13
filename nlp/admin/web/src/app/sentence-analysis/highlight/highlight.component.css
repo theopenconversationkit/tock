@@ -15,10 +15,11 @@
  */
 
 .highlight {
-  width:80%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top:20px;
+  text-align:center;
+}
+.inner-highlight {
+  display:inline-block;
+  margin-bottom:10px;
 }
 
 .highlight-text {

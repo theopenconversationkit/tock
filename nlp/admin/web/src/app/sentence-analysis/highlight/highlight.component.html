@@ -19,21 +19,21 @@
        class="tokens"
        (mouseup)="select()"
        (touchend)="select()"><span *ngFor="let t of tokens"
-                            [style.background]="t.color()"
-                            [id]="t.index">{{t.text}}</span></div>
+                                   [style.background]="t.color()"
+                                   [id]="t.index">{{t.text}}</span></div>
 </md-card-title>
+
 <md-card-subtitle *ngIf="edited" class="highlight">
-    <md-chip-list *ngIf="intent">
-      <md-chip *ngFor="let entity of intent.entities"
-               mdTooltip="Select {{entity.qualifiedName(state.user)}}"
-               selected="false"
-               (click)="onSelect(entity)"
-               [style.background-color]="entity.entityColor"
-               color="primary">
-        {{entity.qualifiedName(state.user)}}
-      </md-chip>
-    </md-chip-list>
-  <br>
+  <md-chip-list *ngIf="intent" class="inner-highlight">
+    <md-chip *ngFor="let entity of intent.entities"
+             mdTooltip="Select {{entity.qualifiedName(state.user)}}"
+             selected="false"
+             (click)="onSelect(entity)"
+             [style.background-color]="entity.entityColor"
+             color="primary">
+      {{entity.qualifiedName(state.user)}}
+    </md-chip>
+  </md-chip-list>
   <div>
     <button md-button (click)="addEntity()">
       <md-icon>add</md-icon>
