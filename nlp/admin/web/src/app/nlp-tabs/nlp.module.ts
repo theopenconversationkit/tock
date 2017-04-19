@@ -32,7 +32,7 @@ import {HighlightComponent} from "../sentence-analysis/highlight/highlight.compo
 import {SentenceAnalysisComponent} from "../sentence-analysis/sentence-analysis.component";
 import {NlpService} from "./nlp.service";
 import {CreateEntityDialogComponent} from "../sentence-analysis/create-entity-dialog/create-entity-dialog.component";
-import {InfiniteScrollModule} from "angular2-infinite-scroll";
+import {InfiniteScrollModule} from "ngx-infinite-scroll";
 import {SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.component";
 import {CreateIntentDialogComponent} from "../sentence-analysis/create-intent-dialog/create-intent-dialog.component";
 

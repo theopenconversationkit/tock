@@ -21,7 +21,7 @@
   <md-card-content *ngIf="application">
     <div>
       <md-input-container>
-        <input mdInput placeholder="New Application name" [(ngModel)]="application.name" (keyup.enter)="saveApplication()">
+        <input mdInput placeholder="New application name" [(ngModel)]="application.name" (keyup.enter)="saveApplication()">
       </md-input-container>
     </div>
     <div *ngIf="state.locales">
