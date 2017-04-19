@@ -3,6 +3,6 @@
  
 # Tock - The Open Conversation Kit
  
-Full documentation (fr only for now, en coming soon): [https://voyages-sncf-technologies.github.io/tock](https://voyages-sncf-technologies.github.io/tock)
+Full documentation (fr only for now, en coming soon): [https://voyages-sncf-technologies.github.io/tock](https://voyages-sncf-technologies.github.io/tock/index.html)
   
 **Warning**: this is an alpha quality release, use at your own risk
