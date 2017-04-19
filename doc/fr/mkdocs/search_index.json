@@ -1,0 +1,74 @@
+{
+    "docs": [
+        {
+            "location": "/", 
+            "text": "Bienvenue dans la documentation de Tock!\n\n\nTock\n (\nThe Open Conversation Kit\n) est une initiative visant \u00e0 promouvoir et \u00e0 faciliter la construction d\u2019agents conversationnels (ou bots). \n\n\nIl s\u2019agit d\u2019une boite \u00e0 outils qui met \u00e0 disposition tous les \u00e9l\u00e9ments n\u00e9cessaires pour construire des bots, qu'ils soient simple ou tr\u00e8s complexes. \n\n\nContrairement \u00e0 la plupart des autres solutions disponibles, il ne d\u00e9pend pas d\u2019API tierces (mais peut en int\u00e9grer ais\u00e9ment si n\u00e9cessaire)\u00a0: vous gardez le contr\u00f4le de vos donn\u00e9es et de vos algorithmes.\n\n\nL\u2019ensemble est  disponible en open-source sur github : \nhttps://github.com/voyages-sncf-technologies/tock\n sous la \nlicence Apache 2\n. \n\n\nPhilosophie du projet\n\n\nL\u2019effort principal porte sur l\u2019int\u00e9gration et l\u2019orchestration d\u2019outils open-source tiers. \n\n\nL\u2019approche se veut \u00e0 la fois humble, pragmatique et it\u00e9rative\u00a0: Tock ne red\u00e9veloppe pas d\u2019outil open-source existant mais privil\u00e9gie la r\u00e9utilisation. De nouvelles fonctionnalit\u00e9s unitaires sont par ailleurs ajout\u00e9es r\u00e9guli\u00e8rement. \n\n\nA ce jour, les librairies \nStanford CoreNLP\n, \nApache OpenNLP\n ou \nDuckling\n sont r\u00e9utilis\u00e9es et int\u00e9gr\u00e9es nativement.\n\n\nPar ailleurs, Tock met \u00e0 disposition les \u00e9l\u00e9ments manquants dans la panoplie open-source existante\u00a0: \n\n\n\n\n\n\nUne interface utilisateur permettant de d\u00e9finir des intentions ou des entit\u00e9s\n\n\n\n\n\n\nUn toolkit conversationnel pour g\u00e9rer le contexte des dialogues et l\u2019historique des conversations\n\n\n\n\n\n\nDivers connecteurs \u00e0 des plateformes tierces \n\n\n\n\n\n\n\n\nEtat du projet\n\n\nLe projet est en cours de passage en open-source. \n\n\nCertaines fonctionnalit\u00e9s de base ont d\u00e9j\u00e0 \u00e9t\u00e9 int\u00e9gr\u00e9es, de nombreuses autres vont l\u2019\u00eatre dans les mois qui viennent. \n\n\nA ce stade, Tock est consid\u00e9r\u00e9e comme \u00e9tant en version \u00ab\u00a0alpha\u00a0\u00bb\u00a0: aucune r\u00e9trocompatibilit\u00e9 n\u2019est garantie. \n\n\nTock dispose en interne d\u2019une importante batterie de tests, mais ces tests n\u2019ont pas \u00e9t\u00e9 pass\u00e9s en open-source car ils pr\u00e9sentent des adh\u00e9rences fortes au m\u00e9tier de \nvoyages-sncf.com\n. Ces tests seront migr\u00e9s provisoirement.\n\n\nTechnologies\n\n\nLa plateforme applicative se base sur la \nJVM\n.\n\n\nLe langage de r\u00e9f\u00e9rence est \nKotlin\n.\n\n\nLe reste de la stack applicative est constitu\u00e9e de \nVert.x\n et \nMongoDB\n, m\u00eame si pour l\u2019instant les applications sont essentiellement d\u00e9velopp\u00e9s en \u00ab blocking IO \u00bb. En cible, l\u2019approche \u00ab\u00a0fibers\u00a0\u00bb ( cf \nhttp://docs.paralleluniverse.co/quasar/\n) sera privil\u00e9gi\u00e9e.\n\n\nLes interfaces d'administration sont impl\u00e9ment\u00e9es en \nAngular\n/\nTypescript\n.\n\n\nLes diff\u00e9rents projets open-sourc\u00e9s\n\n\n\n\n\n\nLe projet principal se trouve sous licence \nApache OpenNLP\n : \nhttps://github.com/voyages-sncf-technologies/tock\n\n\n\n\n\n\nCependant une d\u00e9pendance optionnelle,  \nStanford CoreNLP\n, est sous licence \nGPL\n. \n Le code utilisant cette d\u00e9pendance se trouve donc dans un projet \u00e0 part, sous licence GPL : \nhttps://github.com/voyages-sncf-technologies/tock-corenlp\n\n\n\n\n\n\nEnfin deux autres projets sont mis \u00e0 disposition : \n\n\n\n\nLe projet contenant les images dockers : \nhttps://github.com/voyages-sncf-technologies/tock-docker\n\n\nLe projet contenant un exemple d'impl\u00e9mentation de bot : \nhttps://github.com/voyages-sncf-technologies/tock-bot-open-data", 
+            "title": "Tock - Documentation"
+        }, 
+        {
+            "location": "/#bienvenue-dans-la-documentation-de-tock", 
+            "text": "Tock  ( The Open Conversation Kit ) est une initiative visant \u00e0 promouvoir et \u00e0 faciliter la construction d\u2019agents conversationnels (ou bots).   Il s\u2019agit d\u2019une boite \u00e0 outils qui met \u00e0 disposition tous les \u00e9l\u00e9ments n\u00e9cessaires pour construire des bots, qu'ils soient simple ou tr\u00e8s complexes.   Contrairement \u00e0 la plupart des autres solutions disponibles, il ne d\u00e9pend pas d\u2019API tierces (mais peut en int\u00e9grer ais\u00e9ment si n\u00e9cessaire)\u00a0: vous gardez le contr\u00f4le de vos donn\u00e9es et de vos algorithmes.  L\u2019ensemble est  disponible en open-source sur github :  https://github.com/voyages-sncf-technologies/tock  sous la  licence Apache 2 .", 
+            "title": "Bienvenue dans la documentation de Tock!"
+        }, 
+        {
+            "location": "/#philosophie-du-projet", 
+            "text": "L\u2019effort principal porte sur l\u2019int\u00e9gration et l\u2019orchestration d\u2019outils open-source tiers.   L\u2019approche se veut \u00e0 la fois humble, pragmatique et it\u00e9rative\u00a0: Tock ne red\u00e9veloppe pas d\u2019outil open-source existant mais privil\u00e9gie la r\u00e9utilisation. De nouvelles fonctionnalit\u00e9s unitaires sont par ailleurs ajout\u00e9es r\u00e9guli\u00e8rement.   A ce jour, les librairies  Stanford CoreNLP ,  Apache OpenNLP  ou  Duckling  sont r\u00e9utilis\u00e9es et int\u00e9gr\u00e9es nativement.  Par ailleurs, Tock met \u00e0 disposition les \u00e9l\u00e9ments manquants dans la panoplie open-source existante\u00a0:     Une interface utilisateur permettant de d\u00e9finir des intentions ou des entit\u00e9s    Un toolkit conversationnel pour g\u00e9rer le contexte des dialogues et l\u2019historique des conversations    Divers connecteurs \u00e0 des plateformes tierces", 
+            "title": "Philosophie du projet"
+        }, 
+        {
+            "location": "/#etat-du-projet", 
+            "text": "Le projet est en cours de passage en open-source.   Certaines fonctionnalit\u00e9s de base ont d\u00e9j\u00e0 \u00e9t\u00e9 int\u00e9gr\u00e9es, de nombreuses autres vont l\u2019\u00eatre dans les mois qui viennent.   A ce stade, Tock est consid\u00e9r\u00e9e comme \u00e9tant en version \u00ab\u00a0alpha\u00a0\u00bb\u00a0: aucune r\u00e9trocompatibilit\u00e9 n\u2019est garantie.   Tock dispose en interne d\u2019une importante batterie de tests, mais ces tests n\u2019ont pas \u00e9t\u00e9 pass\u00e9s en open-source car ils pr\u00e9sentent des adh\u00e9rences fortes au m\u00e9tier de  voyages-sncf.com . Ces tests seront migr\u00e9s provisoirement.", 
+            "title": "Etat du projet"
+        }, 
+        {
+            "location": "/#technologies", 
+            "text": "La plateforme applicative se base sur la  JVM .  Le langage de r\u00e9f\u00e9rence est  Kotlin .  Le reste de la stack applicative est constitu\u00e9e de  Vert.x  et  MongoDB , m\u00eame si pour l\u2019instant les applications sont essentiellement d\u00e9velopp\u00e9s en \u00ab blocking IO \u00bb. En cible, l\u2019approche \u00ab\u00a0fibers\u00a0\u00bb ( cf  http://docs.paralleluniverse.co/quasar/ ) sera privil\u00e9gi\u00e9e.  Les interfaces d'administration sont impl\u00e9ment\u00e9es en  Angular / Typescript .", 
+            "title": "Technologies"
+        }, 
+        {
+            "location": "/#les-differents-projets-open-sources", 
+            "text": "Le projet principal se trouve sous licence  Apache OpenNLP  :  https://github.com/voyages-sncf-technologies/tock    Cependant une d\u00e9pendance optionnelle,   Stanford CoreNLP , est sous licence  GPL . \n Le code utilisant cette d\u00e9pendance se trouve donc dans un projet \u00e0 part, sous licence GPL :  https://github.com/voyages-sncf-technologies/tock-corenlp    Enfin deux autres projets sont mis \u00e0 disposition :    Le projet contenant les images dockers :  https://github.com/voyages-sncf-technologies/tock-docker  Le projet contenant un exemple d'impl\u00e9mentation de bot :  https://github.com/voyages-sncf-technologies/tock-bot-open-data", 
+            "title": "Les diff\u00e9rents projets open-sourc\u00e9s"
+        }, 
+        {
+            "location": "/pour-commencer/", 
+            "text": "Commencer \u00e0 utiliser Tock\n\n\nImages Docker\n\n\nDes images docker sont mises \u00e0 disposition pour faciliter le d\u00e9marrage\u00a0dans le respository github \nhttps://github.com/voyages-sncf-technologies/tock-docker\n.\n\n\nPour l'instant ces images dockers ne sont pas disponibles dans un repository public. Il faut donc les reconstruire en ligne de commande.\n\n\nPr\u00e9-requis\n\n\nLes derni\u00e8res versions de \nDocker\n et \nDocker Compose\n doivent \u00eatre install\u00e9es au pr\u00e9alable.\n\n\nPr\u00e9-requis pour construire les images\n\n\nAfin de construire les images dockers, vous aurez \u00e9galement besoin de \nMaven\n et \nGit\n.\n\n\nConstruction des images\n\n\n\n\nR\u00e9cup\u00e9rer le code source des images docker\n\n\n\n\n    git clone https://github.com/voyages-sncf-technologies/tock-docker.git\n\n\n\n\n\n\n\nConstruire les images\n\n\n\n\n    \ncd\n tock-docker\n    mvn package docker:build\n\n\n\n\n\nD\u00e9marrer l'interface d'administration\n\n\n    docker-compose up\n\n\n\n\n\nL'interface d'administration NLP est maintenant disponible sur le port 80 :\n\n\n\n\nIl est donc possible de commencer \u00e0 qualifier et \u00e0 cr\u00e9er des intentions et des entit\u00e9s : \n\n\n\n\nBot d'exemple bas\u00e9 sur des API Open Data\n\n\nUn bot d'exemple utilisant Tock est mis \u00e0 disposition\u00a0sur github : \nhttps://github.com/voyages-sncf-technologies/tock-bot-open-data\n.\n\n\nIl se base sur les \nAPI Open Data de la SNCF\n, et pr\u00e9sente des fonctionnalit\u00e9s minimales permettant de d\u00e9montrer l\u2019usage de Tock. \n\n\nCe bot sera bient\u00f4t disponible sur Facebook Messenger et les futures autres connecteurs mis \u00e0 disposition. L'interface d'administration d\u00e9di\u00e9e sera \u00e9galement disponible en lecture seule sur le web.", 
+            "title": "Pour commencer"
+        }, 
+        {
+            "location": "/pour-commencer/#commencer-a-utiliser-tock", 
+            "text": "", 
+            "title": "Commencer \u00e0 utiliser Tock"
+        }, 
+        {
+            "location": "/pour-commencer/#images-docker", 
+            "text": "Des images docker sont mises \u00e0 disposition pour faciliter le d\u00e9marrage\u00a0dans le respository github  https://github.com/voyages-sncf-technologies/tock-docker .  Pour l'instant ces images dockers ne sont pas disponibles dans un repository public. Il faut donc les reconstruire en ligne de commande.", 
+            "title": "Images Docker"
+        }, 
+        {
+            "location": "/pour-commencer/#pre-requis", 
+            "text": "Les derni\u00e8res versions de  Docker  et  Docker Compose  doivent \u00eatre install\u00e9es au pr\u00e9alable.", 
+            "title": "Pr\u00e9-requis"
+        }, 
+        {
+            "location": "/pour-commencer/#pre-requis-pour-construire-les-images", 
+            "text": "Afin de construire les images dockers, vous aurez \u00e9galement besoin de  Maven  et  Git .", 
+            "title": "Pr\u00e9-requis pour construire les images"
+        }, 
+        {
+            "location": "/pour-commencer/#construction-des-images", 
+            "text": "R\u00e9cup\u00e9rer le code source des images docker       git clone https://github.com/voyages-sncf-technologies/tock-docker.git   Construire les images        cd  tock-docker\n    mvn package docker:build", 
+            "title": "Construction des images"
+        }, 
+        {
+            "location": "/pour-commencer/#demarrer-linterface-dadministration", 
+            "text": "docker-compose up  L'interface d'administration NLP est maintenant disponible sur le port 80 :   Il est donc possible de commencer \u00e0 qualifier et \u00e0 cr\u00e9er des intentions et des entit\u00e9s :", 
+            "title": "D\u00e9marrer l'interface d'administration"
+        }, 
+        {
+            "location": "/pour-commencer/#bot-dexemple-base-sur-des-api-open-data", 
+            "text": "Un bot d'exemple utilisant Tock est mis \u00e0 disposition\u00a0sur github :  https://github.com/voyages-sncf-technologies/tock-bot-open-data .  Il se base sur les  API Open Data de la SNCF , et pr\u00e9sente des fonctionnalit\u00e9s minimales permettant de d\u00e9montrer l\u2019usage de Tock.   Ce bot sera bient\u00f4t disponible sur Facebook Messenger et les futures autres connecteurs mis \u00e0 disposition. L'interface d'administration d\u00e9di\u00e9e sera \u00e9galement disponible en lecture seule sur le web.", 
+            "title": "Bot d'exemple bas\u00e9 sur des API Open Data"
+        }
+    ]
+}
