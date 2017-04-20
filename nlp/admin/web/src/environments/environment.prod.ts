@@ -17,5 +17,5 @@
 export const environment = {
   production: true,
   autologin: true,
-  serverUrl:'http://localhost/rest'
+  serverUrl:'/rest'
 };
