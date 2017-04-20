@@ -170,11 +170,11 @@ class AdminVerticle : WebVerticle(KotlinLogging.logger {}) {
             }
         }
 
-        //for docker
-        router.route("/*").handler (StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot("/maven/dist"))
+        //serve statics in docker image
+        router.route("/*").handler(StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(verticleProperty("content_path", "/maven/dist")))
         router.route().failureHandler { context ->
             if (context.statusCode() == 404) {
-                context.response().putHeader("Location","/index.html").setStatusCode(200).end()
+                context.response().putHeader("Location", "/index.html").setStatusCode(200).end()
             }
         }
 

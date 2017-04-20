@@ -104,6 +104,8 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
 
     protected open val authenticatePath = "/rest/authenticate"
 
+    private val verticleName: String = this::class.simpleName!!
+
     abstract fun configure()
 
     abstract fun healthcheck(): (RoutingContext) -> Unit
@@ -159,8 +161,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
     protected open fun authProvider(): AuthProvider? = null
 
     protected open fun startServer(startFuture: Future<Void>) {
-        val verticleName = this::class.simpleName!!
-        val port = intProperty("${verticleName.toLowerCase()}_port", 8080)
+        val port = verticleIntProperty("port", 8080)
         server.requestHandler { r -> router.accept(r) }
                 .listen(port,
                         { r ->
@@ -173,6 +174,12 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
                             }
                         })
     }
+
+    private fun verticleProperty(propertyName: String) = "${verticleName.toLowerCase()}_$propertyName"
+
+    protected fun verticleIntProperty(propertyName: String, defaultValue: Int): Int = intProperty(verticleProperty(propertyName), defaultValue)
+
+    protected fun verticleProperty(propertyName: String, defaultValue: String): String = property(verticleProperty(propertyName), defaultValue)
 
     protected fun blocking(method: HttpMethod, path: String, handler: (RoutingContext) -> Unit) {
         router.route(method, "$rootPath$path")
@@ -250,7 +257,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
     }
 
     override fun stop(stopFuture: Future<Void>?) {
-        server.close { e -> logger.info { "${this::class.simpleName} stopped result : ${e.succeeded()}" } }
+        server.close { e -> logger.info { "$verticleName stopped result : ${e.succeeded()}" } }
     }
 
     private fun addDevCorsHandler() {
