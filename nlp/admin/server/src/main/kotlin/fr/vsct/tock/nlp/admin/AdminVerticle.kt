@@ -171,10 +171,18 @@ class AdminVerticle : WebVerticle(KotlinLogging.logger {}) {
         }
 
         //serve statics in docker image
-        router.route("/*").handler(StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(verticleProperty("content_path", "/maven/dist")))
+        val webRoot = verticleProperty("content_path", "/maven/dist")
+        router.route("/*").handler(StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(webRoot))
         router.route().failureHandler { context ->
             if (context.statusCode() == 404) {
-                context.response().putHeader("Location", "/index.html").setStatusCode(200).end()
+                context.vertx().fileSystem().readFile("$webRoot/index.html") {
+                    if (it.succeeded()) {
+                        context.response().end(it.result())
+                    } else {
+                        logger.warn { "Can't find $webRoot/index.html" }
+                        context.fail(it.cause())
+                    }
+                }
             }
         }
 
