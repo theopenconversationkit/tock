@@ -58,7 +58,7 @@ internal object DucklingClient {
     init {
         jacksonConverterFactory = JacksonConverterFactory.create(mapper)
         val retrofit = retrofitBuilderWithTimeout(3)
-                .baseUrl(property("nlp_entities_url", "http://localhost:8889/"))
+                .baseUrl("${property("nlp_entities_url", "http://localhost:8889")}/")
                 .addConverterFactory(RawJsonBodyConverterFactory)
                 .build()
 
