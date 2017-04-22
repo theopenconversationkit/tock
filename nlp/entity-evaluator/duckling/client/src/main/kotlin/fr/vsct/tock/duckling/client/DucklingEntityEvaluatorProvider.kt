@@ -22,7 +22,7 @@ import fr.vsct.tock.nlp.core.service.entity.EntityEvaluatorProvider
 /**
  *
  */
-object DucklingEntityEvaluatorProvider : EntityEvaluatorProvider {
+class DucklingEntityEvaluatorProvider : EntityEvaluatorProvider {
 
     //TODO
     //override fun getEntityClassifier(): EntityClassifier = DucklingClassifier

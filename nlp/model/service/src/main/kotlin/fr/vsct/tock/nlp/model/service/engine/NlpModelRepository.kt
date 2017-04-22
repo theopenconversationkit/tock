@@ -40,7 +40,7 @@ import java.util.concurrent.TimeUnit
 /**
  *
  */
-object NlpModelRepository {
+internal object NlpModelRepository {
 
     private val logger = KotlinLogging.logger {}
 

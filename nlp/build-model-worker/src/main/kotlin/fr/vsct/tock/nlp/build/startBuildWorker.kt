@@ -16,12 +16,18 @@
 
 package fr.vsct.tock.nlp.build
 
+import com.github.salomonbrys.kodein.Kodein
 import fr.vsct.tock.nlp.front.ioc.FrontIoc
 import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.core.DeploymentOptions
 
 fun main(args: Array<String>) {
-    FrontIoc.setup()
+    startBuildWorker()
+}
+
+fun startBuildWorker(vararg modules: Kodein.Module) {
+    FrontIoc.setup(*modules)
     vertx.deployVerticle(BuildModelWorkerVerticle(), DeploymentOptions().setWorker(true))
+
 }
 

@@ -14,17 +14,20 @@
  * limitations under the License.
  */
 
-package ft.vsct.tock.nlp.api
+package fr.vsct.tock.nlp.model.service.engine
 
-import com.github.salomonbrys.kodein.Kodein.Module
-import fr.vsct.tock.nlp.front.ioc.FrontIoc
-import fr.vsct.tock.shared.vertx.vertx
+import java.util.ServiceLoader
 
-fun main(args: Array<String>) {
-    startNlpService()
-}
 
-fun startNlpService(vararg modules: Module) {
-    FrontIoc.setup(*modules)
-    vertx.deployVerticle(NlpVerticle())
+/**
+ * Provides all supported nlp engines.
+ */
+internal object SupportedNlpEnginesProvider {
+
+    /**
+     * Returns the list of all supported [NlpEngineProvider].
+     */
+    fun engines(): List<NlpEngineProvider> {
+        return ServiceLoader.load(NlpEngineProvider::class.java).toList()
+    }
 }

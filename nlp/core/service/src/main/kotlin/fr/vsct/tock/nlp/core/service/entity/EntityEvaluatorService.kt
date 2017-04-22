@@ -20,23 +20,20 @@ import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.model.EntityCallContextForEntity
-import fr.vsct.tock.shared.toSet
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  *
  */
-object EntityEvaluatorService {
+internal object EntityEvaluatorService {
 
-    private val providerByEntityType = ConcurrentHashMap<String, EntityEvaluatorProvider>()
+    private val providerByEntityType: Map<String, EntityEvaluatorProvider> = SupportedEntityEvaluatorsProvider
+            .evaluators()
+            .flatMap { provider ->
+                provider.getSupportedEntityTypes().map { it to provider }
+            }
+            .toMap()
 
-    fun registerEntityServiceProvider(provider: EntityEvaluatorProvider) {
-        provider.getSupportedEntityTypes().forEach {
-            providerByEntityType.put(it, provider)
-        }
-    }
-
-    fun getEvaluatedEntityTypes(): Set<String> = providerByEntityType.keys().toSet()
+    fun getEvaluatedEntityTypes(): Set<String> = providerByEntityType.keys
 
     private fun getEntityEvaluatorProvider(entityType: EntityType): EntityEvaluatorProvider? {
         return providerByEntityType[entityType.name]

@@ -16,10 +16,15 @@
 
 package fr.vsct.tock.nlp.admin
 
+import com.github.salomonbrys.kodein.Kodein
 import fr.vsct.tock.nlp.front.ioc.FrontIoc
 import fr.vsct.tock.shared.vertx.vertx
 
 fun main(args: Array<String>) {
-    FrontIoc.setup()
+    startAdminServer()
+}
+
+fun startAdminServer(vararg modules: Kodein.Module) {
+    FrontIoc.setup(*modules)
     vertx.deployVerticle(AdminVerticle())
 }

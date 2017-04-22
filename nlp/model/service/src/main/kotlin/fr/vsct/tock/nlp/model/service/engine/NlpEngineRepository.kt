@@ -26,19 +26,14 @@ import fr.vsct.tock.nlp.model.IntentContext
 import fr.vsct.tock.nlp.model.Tokenizer
 import fr.vsct.tock.nlp.model.TokenizerContext
 import fr.vsct.tock.shared.ThreadSafe
-import java.util.concurrent.ConcurrentHashMap
 
 /**
  *
  */
 @ThreadSafe
-object NlpEngineRepository {
+internal object NlpEngineRepository {
 
-    private val repository = ConcurrentHashMap<NlpEngineType, NlpEngineProvider>()
-
-    fun registerEngineProvider(provider: NlpEngineProvider) {
-        repository.put(provider.type(), provider)
-    }
+    private val repository: Map<NlpEngineType, NlpEngineProvider> = SupportedNlpEnginesProvider.engines().associateBy { it.type() }
 
     fun registeredNlpEngineTypes(): Set<NlpEngineType> {
         return repository.keys

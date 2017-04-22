@@ -30,7 +30,7 @@ import fr.vsct.tock.nlp.model.service.engine.TokenizerModelHolder
 /**
  *
  */
-object OpenNlpEngineProvider : NlpEngineProvider {
+class OpenNlpEngineProvider : NlpEngineProvider {
 
     override fun type(): NlpEngineType {
         return NlpEngineType.opennlp

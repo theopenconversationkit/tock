@@ -17,16 +17,13 @@
 package fr.vsct.tock.nlp.front.ioc
 
 import com.github.salomonbrys.kodein.Kodein
-import fr.vsct.tock.duckling.client.DucklingEntityEvaluatorProvider
+import com.github.salomonbrys.kodein.Kodein.Module
 import fr.vsct.tock.nlp.core.service.coreModule
-import fr.vsct.tock.nlp.core.service.entity.EntityEvaluatorService
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.service.frontModule
 import fr.vsct.tock.nlp.front.storage.mongo.frontMongoModule
-import fr.vsct.tock.nlp.model.service.engine.NlpEngineRepository
 import fr.vsct.tock.nlp.model.service.modelModule
 import fr.vsct.tock.nlp.model.service.storage.mongo.modelMongoModule
-import fr.vsct.tock.nlp.opennlp.OpenNlpEngineProvider
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.sharedModule
 import mu.KotlinLogging
@@ -38,7 +35,7 @@ object FrontIoc {
 
     private val logger = KotlinLogging.logger {}
 
-    fun setup() {
+    fun setup(vararg modules: Module) {
         logger.debug { "Start nlp injection" }
         injector.inject(Kodein {
             import(sharedModule)
@@ -48,8 +45,10 @@ object FrontIoc {
             import(frontMongoModule)
             import(frontModule)
 
-            NlpEngineRepository.registerEngineProvider(OpenNlpEngineProvider)
-            EntityEvaluatorService.registerEntityServiceProvider(DucklingEntityEvaluatorProvider)
+            //load additional modules
+            modules.forEach {
+                import(it, allowOverride = true)
+            }
         })
         FrontClient.initData()
     }
