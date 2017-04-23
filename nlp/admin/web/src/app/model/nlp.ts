@@ -254,7 +254,17 @@ export enum SentenceStatus {
 
 export class NlpEngineType {
   constructor(public name: string) {
+  }
 
+  static fromJSON(json: any): NlpEngineType {
+    const value = Object.create(NlpEngineType.prototype);
+    const result = Object.assign(value, json, {});
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): NlpEngineType[] {
+    return json ? json.map(NlpEngineType.fromJSON) : [];
   }
 }
 

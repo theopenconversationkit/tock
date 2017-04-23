@@ -23,5 +23,5 @@ import fr.vsct.tock.nlp.core.NlpEngineType
  */
 interface NlpClassifier : Tokenizer, IntentClassifier, EntityClassifier, ModelBuilder {
 
-    fun registeredNlpEngineTypes() : Set<NlpEngineType>
+    fun supportedNlpEngineTypes(): Set<NlpEngineType>
 }

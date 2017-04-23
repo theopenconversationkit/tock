@@ -20,6 +20,7 @@ import {Application} from "../model/application";
 import {RestService} from "../core/rest/rest.service";
 import {StateService} from "../core/state.service";
 import {Entry} from "../model/commons";
+import {NlpEngineType} from "../model/nlp";
 
 @Injectable()
 export class ApplicationsService {
@@ -28,10 +29,15 @@ export class ApplicationsService {
               private state: StateService) {
 
     this.locales().subscribe(locales => state.locales = locales);
+    this.nlpEngineTypes().subscribe(engines => state.supportedNlpEngines = engines);
   }
 
   getApplications(): Observable<Application[]> {
     return this.rest.getArray("/applications", Application.fromJSONArray);
+  }
+
+  nlpEngineTypes(): Observable<NlpEngineType[]> {
+    return this.rest.getArray("/nlp-engines", NlpEngineType.fromJSONArray);
   }
 
   getApplicationById(id: string): Observable<Application> {

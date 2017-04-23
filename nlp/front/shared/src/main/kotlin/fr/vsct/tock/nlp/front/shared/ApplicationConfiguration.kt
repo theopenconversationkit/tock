@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.front.shared
 
+import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
@@ -89,11 +90,14 @@ interface ApplicationConfiguration {
             entityType: String,
             role: String): Boolean
 
+    /**
+     * Returns supported NLP engines.
+     */
+    fun getSupportedNlpEngineTypes(): Set<NlpEngineType>
 
     /**
      * Load data in storage engine at startup.
      */
     fun initData()
-
 
 }

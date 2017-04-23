@@ -16,16 +16,18 @@
 
 package fr.vsct.tock.nlp.front.shared.config
 
+import fr.vsct.tock.nlp.core.NlpEngineType
 import java.util.Locale
 
 /**
  *
  */
 data class ApplicationDefinition(val name: String,
-                                 val namespace:String,
+                                 val namespace: String,
                                  val intents: Set<String>,
                                  val supportedLocales: Set<Locale>,
                                  val intentStatesMap: Map<String, Set<String>> = emptyMap(),
-                                 val _id:String? = null) {
+                                 val nlpEngineType: NlpEngineType = NlpEngineType.opennlp,
+                                 val _id: String? = null) {
 
 }

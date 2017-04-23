@@ -14,23 +14,24 @@
  * limitations under the License.
  */
 
-import {EntityDefinition} from "./nlp";
+import {EntityDefinition, NlpEngineType} from "./nlp";
 
 export class Application {
 
   constructor(public name: string,
-    public namespace: string,
-    public intents: Intent[],
-    public supportedLocales: string[],
-    public _id?: string) {
+              public namespace: string,
+              public intents: Intent[],
+              public supportedLocales: string[],
+              public nlpEngineType: NlpEngineType,
+              public _id?: string) {
   }
 
   clone(): Application {
     return new Application(this.name
-      , this.namespace, this.intents.slice(0), this.supportedLocales.slice(0), this._id)
+      , this.namespace, this.intents.slice(0), this.supportedLocales.slice(0), this.nlpEngineType, this._id)
   }
 
-  removeIntentById(id:String) {
+  removeIntentById(id: String) {
     this.intents = this.intents.filter(i => i._id !== id)
   }
 
@@ -46,6 +47,7 @@ export class Application {
     const value = Object.create(Application.prototype);
     const result = Object.assign(value, json, {
       intents: Intent.fromJSONArray(json.intents),
+      nlpEngineType: NlpEngineType.fromJSON(json.nlpEngineType)
     });
 
     return result;
@@ -61,37 +63,37 @@ export class Intent {
   public static unknown = "tock:unknown";
 
   constructor(public name: string,
-    public namespace:string,
-    public entities: EntityDefinition[],
-    public applications: String[],
-    public _id:string) {
+              public namespace: string,
+              public entities: EntityDefinition[],
+              public applications: String[],
+              public _id: string) {
     Intent.sortEntities(entities);
   }
 
-  isUnknownIntent() : boolean {
+  isUnknownIntent(): boolean {
     return `${this.namespace}:${this.name}` === Intent.unknown;
   }
 
-  containsEntity(name:string, role:string) : boolean {
+  containsEntity(name: string, role: string): boolean {
     return this.entities.some(e => e.entityTypeName === name && e.role === role)
   }
 
-  containsEntityRole(role:string) : boolean {
+  containsEntityRole(role: string): boolean {
     return this.entities.some(e => e.role === role)
   }
 
-  removeEntity(entity:EntityDefinition) {
+  removeEntity(entity: EntityDefinition) {
     this.entities = this.entities.filter(e => e.entityTypeName !== entity.entityTypeName || e.role !== entity.role)
   }
 
-  addEntity(entity:EntityDefinition) {
-    if(!this.entities.some(e => e.entityTypeName === entity.entityTypeName && e.role === entity.role)) {
+  addEntity(entity: EntityDefinition) {
+    if (!this.entities.some(e => e.entityTypeName === entity.entityTypeName && e.role === entity.role)) {
       this.entities.push(entity);
       Intent.sortEntities(this.entities);
     }
   }
 
-  private static sortEntities(entities: EntityDefinition[]) : EntityDefinition[] {
+  private static sortEntities(entities: EntityDefinition[]): EntityDefinition[] {
     return entities.sort((e1, e2) => e1.role.localeCompare(e2.role));
   }
 
@@ -102,7 +104,6 @@ export class Intent {
     });
 
 
-
     return result;
   }
 
@@ -110,5 +111,4 @@ export class Intent {
     return json ? json.map(Intent.fromJSON) : [];
   }
 }
-
 

@@ -19,6 +19,7 @@ package fr.vsct.tock.nlp.front.service
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.Intent.Companion.unknownIntent
+import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.front.service.FrontRepository.toEntityType
 import fr.vsct.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import fr.vsct.tock.nlp.front.service.storage.ClassifiedSentenceDAO
@@ -98,6 +99,10 @@ object ApplicationConfigurationService :
         return if (name == unknownIntent)
             unknownIntent
         else name.namespaceAndName().run { intentDAO.getIntentByNamespaceAndName(first, second)?._id }
+    }
+
+    override fun getSupportedNlpEngineTypes(): Set<NlpEngineType> {
+        return FrontRepository.core.supportedNlpEngineTypes()
     }
 
     override fun initData() {

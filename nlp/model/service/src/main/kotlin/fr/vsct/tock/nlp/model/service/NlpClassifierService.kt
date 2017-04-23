@@ -39,7 +39,7 @@ import fr.vsct.tock.nlp.model.service.engine.NlpModelRepository.saveIntentModel
  */
 object NlpClassifierService : NlpClassifier {
 
-    override fun registeredNlpEngineTypes(): Set<NlpEngineType> {
+    override fun supportedNlpEngineTypes(): Set<NlpEngineType> {
         return NlpEngineRepository.registeredNlpEngineTypes()
     }
 

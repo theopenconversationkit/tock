@@ -16,34 +16,48 @@
 
 <md-card>
   <md-card-title>
-      <span *ngIf="applications.length !== 0">Applications</span>
+    <span *ngIf="applications.length !== 0">Applications</span>
   </md-card-title>
   <md-card-content *ngIf="application">
     <div>
       <md-input-container>
-        <input mdInput placeholder="New application name" [(ngModel)]="application.name" (keyup.enter)="saveApplication()">
+        <input mdInput placeholder="New application name" [(ngModel)]="application.name"
+               (keyup.enter)="saveApplication()">
       </md-input-container>
     </div>
     <div *ngIf="state.locales">
       <md-chip-list>
-        <md-chip *ngFor="let locale of application.supportedLocales" mdTooltip="Delete locale" selected="true" (click)="removeLocale(locale)" color="accent">
+        <md-chip *ngFor="let locale of application.supportedLocales" mdTooltip="Delete locale" selected="true"
+                 (click)="removeLocale(locale)" color="accent">
           {{state.localeName(locale)}}
         </md-chip>
       </md-chip-list>
     </div>
     <div>
-      <md-select (change)="addLocale($event.value)" [ngModel]="newLocale" placeholder="Add new locale" class="mat-chip-list-stacked select-locale">
+      <md-select (change)="addLocale($event.value)" [ngModel]="newLocale" placeholder="Add new locale"
+                 class="mat-chip-list-stacked select-locale">
         <md-option *ngFor="let locale of state.locales"
                    [value]="locale.first">{{ locale.second }}
         </md-option>
       </md-select>
     </div>
+    <div>
+      <label for="engines">NLP engine:</label>
+      <md-radio-group id="engines" [(ngModel)]="nlpEngineType">
+        <md-radio-button *ngFor="let engine of state.supportedNlpEngines" [value]="engine.name">
+          {{engine.name}}
+        </md-radio-button>
+      </md-radio-group>
+    </div>
   </md-card-content>
   <md-card-actions>
     <button *ngIf="applications.length !== 0" routerLink="/applications" md-button>Cancel</button>
-    <button *ngIf="!newApplication" md-raised-button (click)="deleteApplication()" color="warn">Delete Application</button>
-    <button *ngIf="newApplication" md-raised-button (click)="saveApplication()" color="primary">Create new Application</button>
-    <button *ngIf="!newApplication" md-raised-button (click)="saveApplication()" color="primary">Update Application</button>
+    <button *ngIf="!newApplication" md-raised-button (click)="deleteApplication()" color="warn">Delete Application
+    </button>
+    <button *ngIf="newApplication" md-raised-button (click)="saveApplication()" color="primary">Create new Application
+    </button>
+    <button *ngIf="!newApplication" md-raised-button (click)="saveApplication()" color="primary">Update Application
+    </button>
   </md-card-actions>
 </md-card>
 

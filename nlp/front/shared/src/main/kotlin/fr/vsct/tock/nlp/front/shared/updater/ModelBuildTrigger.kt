@@ -14,7 +14,10 @@
  * limitations under the License.
  */
 
-.select-locale {
-  padding-top:20px;
-  padding-bottom:20px;
+package fr.vsct.tock.nlp.front.shared.updater
+
+/**
+ *
+ */
+data class ModelBuildTrigger(val applicationId: String, val all: Boolean) {
 }

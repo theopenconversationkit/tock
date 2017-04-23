@@ -30,14 +30,15 @@ export class StateService implements AuthListener {
   static DEFAULT_LOCALE = "en";
   static DEFAULT_ENGINE = new NlpEngineType("opennlp");
 
+  locales: Entry<string, string>[];
+  supportedNlpEngines: NlpEngineType[];
+
   user: User;
   applications: Application[];
-  locales: Entry<string, string>[];
   entityTypes: EntityType[];
 
   currentApplication: Application;
   currentLocale: string = StateService.DEFAULT_LOCALE;
-  currentEngine: NlpEngineType = StateService.DEFAULT_ENGINE;
 
   readonly currentApplicationEmitter: EventEmitter<Application> = new EventEmitter();
   readonly currentLocaleEmitter: EventEmitter<string> = new EventEmitter();
@@ -48,6 +49,10 @@ export class StateService implements AuthListener {
     if (environment.autologin) {
       this.auth.login("password", new AuthenticateResponse(true, "admin@vsct.fr", "vsc"));
     }
+  }
+
+  currentEngine(): NlpEngineType {
+    return this.currentApplication.nlpEngineType;
   }
 
   changeApplication(application: Application) {

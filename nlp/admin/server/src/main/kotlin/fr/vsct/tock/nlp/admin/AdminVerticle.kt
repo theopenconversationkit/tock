@@ -24,6 +24,7 @@ import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.vertx.BadRequestException
 import fr.vsct.tock.shared.vertx.WebVerticle
@@ -66,7 +67,12 @@ class AdminVerticle : WebVerticle(KotlinLogging.logger {}) {
                 if (appWithSameName != null && appWithSameName._id != application._id) {
                     throw BadRequestException("Application with same name already exists")
                 }
-                front.save(application.toApplication().copy(name = application.name.toLowerCase()))
+                val newApp = front.save(application.toApplication().copy(name = application.name.toLowerCase()))
+                //trigger a full rebuild if nlp engine change
+                if (appWithSameName?.nlpEngineType != newApp.nlpEngineType) {
+                    front.save(ModelBuildTrigger(newApp._id!!, true))
+                }
+                ApplicationWithIntents(newApp, front.getIntentsByApplicationId(newApp._id!!))
             } else {
                 unauthorized()
             }
@@ -158,6 +164,8 @@ class AdminVerticle : WebVerticle(KotlinLogging.logger {}) {
         }
 
         blockingJsonGet("/entities") { front.getEntityTypes() }
+
+        blockingJsonGet("/nlp-engines") { front.getSupportedNlpEngineTypes() }
 
         blockingJsonPost<CreateEntityQuery, EntityTypeDefinition?>("/entity/create") { context, query ->
             val entityName = "${context.organization}:${query.type.toLowerCase().name()}"

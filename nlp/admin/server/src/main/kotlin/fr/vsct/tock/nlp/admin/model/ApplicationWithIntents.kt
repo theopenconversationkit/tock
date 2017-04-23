@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.admin.model
 
+import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import java.util.Locale
@@ -27,6 +28,7 @@ data class ApplicationWithIntents(val name: String,
                                   val namespace: String,
                                   val intents: List<IntentDefinition>,
                                   val supportedLocales: Set<Locale>,
+                                  val nlpEngineType: NlpEngineType,
                                   val _id: String? = null) {
 
     constructor(application: ApplicationDefinition, intents: List<IntentDefinition>) :
@@ -34,6 +36,7 @@ data class ApplicationWithIntents(val name: String,
                     application.namespace,
                     intents.sortedBy { it.name },
                     application.supportedLocales,
+                    application.nlpEngineType,
                     application._id!!)
 
     fun toApplication(): ApplicationDefinition {
@@ -43,6 +46,7 @@ data class ApplicationWithIntents(val name: String,
                 intents.map { it._id!! }.toSet(),
                 supportedLocales,
                 emptyMap(),
+                nlpEngineType,
                 _id
         )
     }

@@ -33,11 +33,12 @@ export class ApplicationComponent implements OnInit {
   application: Application;
   newApplication: boolean;
   newLocale: string;
+  nlpEngineType:string;
 
   constructor(private route: ActivatedRoute,
               private snackBar: MdSnackBar,
               private dialog: MdDialog,
-              private state: StateService,
+              public state: StateService,
               private applicationService: ApplicationsService,
               private router: Router) {
   }
@@ -53,8 +54,9 @@ export class ApplicationComponent implements OnInit {
           }
         } else {
           this.newApplication = true;
-          this.application = new Application("", this.state.user.organization, [], [])
+          this.application = new Application("", this.state.user.organization, [], [], StateService.DEFAULT_ENGINE)
         }
+        this.nlpEngineType = this.application.nlpEngineType.name;
       }
     );
   }
@@ -63,6 +65,7 @@ export class ApplicationComponent implements OnInit {
     if (this.application.supportedLocales.length === 0) {
       this.snackBar.open(`Please choose at least one locale`, "ERROR", {duration: 5000});
     } else {
+      this.application.nlpEngineType = this.state.supportedNlpEngines.find(e => e.name === this.nlpEngineType);
       this.applicationService.saveApplication(this.application)
         .subscribe(app => {
           this.state.applications = this.state.applications.filter(a => a._id !== app._id);

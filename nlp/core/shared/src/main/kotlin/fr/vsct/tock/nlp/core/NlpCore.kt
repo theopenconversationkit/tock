@@ -31,7 +31,7 @@ interface NlpCore {
 
     fun updateEntityModelForIntent(context: BuildContext, intent: Intent, expressions: List<SampleExpression>)
 
-    fun registeredNlpEngineTypes(): Set<NlpEngineType>
+    fun supportedNlpEngineTypes(): Set<NlpEngineType>
 
     /**
      * Evaluate entity values.

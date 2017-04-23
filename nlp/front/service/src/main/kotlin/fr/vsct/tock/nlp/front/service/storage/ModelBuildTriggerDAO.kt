@@ -14,7 +14,18 @@
  * limitations under the License.
  */
 
-.select-locale {
-  padding-top:20px;
-  padding-bottom:20px;
+package fr.vsct.tock.nlp.front.service.storage
+
+import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
+
+/**
+ *
+ */
+interface ModelBuildTriggerDAO {
+
+    fun save(trigger: ModelBuildTrigger)
+
+    fun deleteTriggersForApplicationId(applicationId: String)
+
+    fun getTriggers(): List<ModelBuildTrigger>
 }

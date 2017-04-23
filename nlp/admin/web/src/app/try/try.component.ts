@@ -38,7 +38,7 @@ export class TryComponent implements OnInit {
   onTry(value: string) {
     const app = this.state.currentApplication;
     const language = this.state.currentLocale;
-    this.nlp.parse(new ParseQuery(app.namespace, app.name, language, value, this.state.currentEngine)).subscribe(sentence => {
+    this.nlp.parse(new ParseQuery(app.namespace, app.name, language, value, this.state.currentEngine())).subscribe(sentence => {
       this.sentence = sentence;
     });
   }

@@ -19,26 +19,45 @@ package fr.vsct.tock.nlp.front.shared
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
-import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
 import java.util.Locale
 
 /**
- *
+ * Manage updates of NLP models (both intents and entity models).
  */
 interface ModelUpdater {
 
+    /**
+     * Update intents model.
+     */
     fun updateIntentsModelForApplication(
-            validatedSentences : List<ClassifiedSentence>,
+            validatedSentences: List<ClassifiedSentence>,
             application: ApplicationDefinition,
             language: Locale,
             engineType: NlpEngineType)
 
+    /**
+     * Update all entities model of intent.
+     */
     fun updateEntityModelForIntent(
-            validatedSentences : List<ClassifiedSentence>,
+            validatedSentences: List<ClassifiedSentence>,
             application: ApplicationDefinition,
             intentId: String,
             language: Locale,
             engineType: NlpEngineType)
 
-    fun registeredNlpEngineTypes(): Set<NlpEngineType>
+    /**
+     * Get all available triggers.
+     */
+    fun getTriggers(): List<ModelBuildTrigger>
+
+    /**
+     * Save the trigger.
+     */
+    fun save(trigger: ModelBuildTrigger)
+
+    /**
+     * Deleete all triggers for the specified application id.
+     */
+    fun deleteTriggersForApplicationId(applicationId: String)
 }

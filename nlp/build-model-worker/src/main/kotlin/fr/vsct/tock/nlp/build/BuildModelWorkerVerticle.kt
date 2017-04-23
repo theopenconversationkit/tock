@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.build
 
 import fr.vsct.tock.nlp.front.client.FrontClient
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.deleted
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
@@ -40,13 +41,15 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
         private val logger = KotlinLogging.logger {}
 
         fun updateAllModels() {
-            val front = FrontClient
-            front.getApplications().forEach { app ->
-                app.supportedLocales.forEach { locale ->
-                    updateModel(
-                            ModelRefreshKey(app._id!!, locale),
-                            front.search(SentencesQuery(app._id as String, locale, 0, Integer.MAX_VALUE, status = setOf(model))).sentences)
-                }
+            FrontClient.getApplications().forEach { updateApplicationModels(it) }
+        }
+
+        private fun updateApplicationModels(app: ApplicationDefinition) {
+            logger.debug { "Rebuild all models for application ${app.name} and nlp engine ${app.nlpEngineType.name}" }
+            app.supportedLocales.forEach { locale ->
+                updateModel(
+                        ModelRefreshKey(app._id!!, locale),
+                        FrontClient.search(SentencesQuery(app._id as String, locale, 0, Integer.MAX_VALUE, status = setOf(model))).sentences)
             }
         }
 
@@ -57,11 +60,9 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                 logger.info { "start model update for ${app.name} and ${key.language}" }
                 logger.trace { "Sentences : ${sentences.map { it.text }}" }
 
-                front.registeredNlpEngineTypes().forEach { engineType ->
-                    front.updateIntentsModelForApplication(sentences, app, key.language, engineType)
-                    sentences.groupBy { it.classification.intentId }.forEach { intentId, sentences ->
-                        front.updateEntityModelForIntent(sentences, app, intentId, key.language, engineType)
-                    }
+                front.updateIntentsModelForApplication(sentences, app, key.language, app.nlpEngineType)
+                sentences.groupBy { it.classification.intentId }.forEach { intentId, sentences ->
+                    front.updateEntityModelForIntent(sentences, app, intentId, key.language, app.nlpEngineType)
                 }
 
                 logger.info { "Model updated for ${app.name} and ${key.language}" }
@@ -100,6 +101,14 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                         }
                         front.deleteSentencesByStatus(deleted)
                         logger.info { "end model update" }
+                    } else {
+                        front.getTriggers()
+                                .groupBy { it.applicationId }
+                                .forEach {
+                                    //for now only full rebuild
+                                    front.deleteTriggersForApplicationId(it.key)
+                                    updateApplicationModels(front.getApplicationById(it.key)!!)
+                                }
                     }
                 } catch(e: Throwable) {
                     logger.error(e)

@@ -94,8 +94,8 @@ object NlpCoreService : NlpCore {
         NlpClassifierClient.buildAndSaveEntityModel(EntityBuildContextForIntent(context, intent), expressions)
     }
 
-    override fun registeredNlpEngineTypes(): Set<NlpEngineType> {
-        return NlpClassifierClient.registeredNlpEngineTypes()
+    override fun supportedNlpEngineTypes(): Set<NlpEngineType> {
+        return NlpClassifierClient.supportedNlpEngineTypes()
     }
 
     override fun getEvaluatedEntityTypes(): Set<String> {
