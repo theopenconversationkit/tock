@@ -27,6 +27,8 @@
     </parent>
 
     <artifactId>tock-nlp-entity-value</artifactId>
+    <name>Tock NLP Entity Values</name>
+    <description>Contains shared entity values classes</description>
 
     <dependencies>
         <dependency>

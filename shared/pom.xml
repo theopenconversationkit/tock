@@ -27,6 +27,8 @@
     </parent>
 
     <artifactId>tock-shared</artifactId>
+    <name>Tock Shared</name>
+    <description>Tock shared classes</description>
 
     <properties>
         <maven.jar.plugin>3.0.2</maven.jar.plugin>

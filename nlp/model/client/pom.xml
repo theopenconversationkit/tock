@@ -27,6 +27,8 @@
     </parent>
 
     <artifactId>tock-nlp-model-client</artifactId>
+    <name>Tock NLP Model Client</name>
+    <description>Client interface for Tock NLP Model</description>
 
     <dependencies>
         <dependency>

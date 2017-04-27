@@ -27,6 +27,8 @@
     </parent>
 
     <artifactId>tock-nlp-front-storage-mongo</artifactId>
+    <name>Tock NLP Front Mongo</name>
+    <description>Mongo storage implementation for Tock NLP Front</description>
 
     <dependencies>
         <dependency>

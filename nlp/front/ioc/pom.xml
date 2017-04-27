@@ -27,6 +27,8 @@
     </parent>
 
     <artifactId>tock-nlp-front-ioc</artifactId>
+    <name>Tock NLP Front Ioc</name>
+    <description>Contains Ioc configuration for Tock NLP</description>
 
     <dependencies>
         <dependency>

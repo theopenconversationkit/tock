@@ -27,6 +27,8 @@
     </parent>
 
     <artifactId>tock-nlp-model-shared</artifactId>
+    <name>Tock NLP Model Shared</name>
+    <description>Contains shared classes for Tock NLP Model</description>
 
     <dependencies>
         <dependency>

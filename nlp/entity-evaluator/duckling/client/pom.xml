@@ -27,6 +27,8 @@
     </parent>
 
     <artifactId>tock-nlp-duckling-client</artifactId>
+    <name>Duckling Entities Client</name>
+    <description>Client interface for Duckling Entities</description>
 
     <dependencies>
         <dependency>

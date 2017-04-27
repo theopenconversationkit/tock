@@ -27,11 +27,12 @@
     </parent>
 
     <artifactId>tock-bot-connector-messenger</artifactId>
+    <name>Tock Bot Messenger Connector</name>
+    <description>Connector for Facebook Messenger</description>
 
     <properties>
         <commons-codec>1.9</commons-codec>
     </properties>
-    
 
     <dependencies>
         <dependency>

@@ -27,6 +27,8 @@
     </parent>
 
     <artifactId>tock-nlp-api-service</artifactId>
+    <name>Nlp API Service</name>
+    <description>Services for Nlp API</description>
 
     <dependencies>
         <dependency>

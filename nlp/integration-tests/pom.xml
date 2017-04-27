@@ -27,6 +27,9 @@
     </parent>
 
     <artifactId>tock-nlp-integration-tests</artifactId>
+    <name>Tock NLP Integration Tests</name>
+    <description>Integration test for Tock NLP</description>
+
 
     <dependencies>
         <dependency>

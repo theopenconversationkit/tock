@@ -28,6 +28,8 @@
 
     <artifactId>tock-bot</artifactId>
     <packaging>pom</packaging>
+    <name>Tock NLP Bot</name>
+    <description>Root project for Tock NLP Bot</description>
 
     <modules>
         <module>engine</module>

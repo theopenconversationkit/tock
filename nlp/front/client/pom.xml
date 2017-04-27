@@ -27,6 +27,8 @@
     </parent>
 
     <artifactId>tock-nlp-front-client</artifactId>
+    <name>Tock NLP Front Client</name>
+    <description>Client interface for Tock NLP Front</description>
 
     <dependencies>
         <dependency>

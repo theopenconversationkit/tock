@@ -28,6 +28,8 @@
 
     <artifactId>tock-nlp-api</artifactId>
     <packaging>pom</packaging>
+    <name>Tock NLP API</name>
+    <description>Root project for Tock NLP API</description>
 
     <modules>
         <module>service</module>

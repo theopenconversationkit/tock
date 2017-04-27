@@ -27,6 +27,8 @@
     </parent>
 
     <artifactId>tock-nlp-core-client</artifactId>
+    <name>Tock NLP Core Client</name>
+    <description>Client interface for Tock NLP Client</description>
 
     <dependencies>
         <dependency>

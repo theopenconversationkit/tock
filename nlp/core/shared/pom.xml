@@ -27,5 +27,8 @@
     </parent>
 
     <artifactId>tock-nlp-core-shared</artifactId>
+    <name>Tock NLP Core Shared</name>
+    <description>Contains shared classes for Tock NLP Core</description>
+
 
 </project>

@@ -28,6 +28,8 @@
 
     <packaging>pom</packaging>
     <artifactId>tock-nlp-model</artifactId>
+    <name>Tock NLP Model</name>
+    <description>Root project for Tock NLP Model</description>
 
     <modules>
         <module>shared</module>

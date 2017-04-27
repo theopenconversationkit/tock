@@ -28,6 +28,8 @@
 
   <artifactId>tock-nlp-admin</artifactId>
   <packaging>pom</packaging>
+  <name>Tock NLP Admin</name>
+  <description>Root project for Tock NLP Admin</description>
 
   <modules>
     <module>server</module>

@@ -27,6 +27,8 @@
     </parent>
 
     <artifactId>bot-toolkit</artifactId>
+    <name>Tock Bot Toolkit</name>
+    <description>Bot Tooklkit - to build chatbots with ease</description>
 
     <dependencies>
         <dependency>

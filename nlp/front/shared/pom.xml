@@ -27,6 +27,9 @@
     </parent>
 
     <artifactId>tock-nlp-front-shared</artifactId>
+    <name>Tock NLP Front Shared</name>
+    <description>Contains shared classes for Tock NLP Front</description>
+
 
     <dependencies>
         <dependency>

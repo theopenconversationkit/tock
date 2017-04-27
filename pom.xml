@@ -23,6 +23,9 @@
     <artifactId>tock-root</artifactId>
     <version>0.1-SNAPSHOT</version>
     <packaging>pom</packaging>
+    <name>Tock</name>
+    <description>Tock, The Open Conversation Kit</description>
+    <url>https://voyages-sncf-technologies.github.io/tock</url>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>

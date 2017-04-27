@@ -28,6 +28,8 @@
 
     <artifactId>tock-nlp-entity-evaluator</artifactId>
     <packaging>pom</packaging>
+    <name>Tock NLP Entity Evaluators</name>
+    <description>Root project for Tock NLP Entity Evaluators</description>
 
     <modules>
         <module>entity-value</module>

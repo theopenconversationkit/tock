@@ -27,6 +27,8 @@
     </parent>
 
     <artifactId>tock-nlp-model-opennlp</artifactId>
+    <name>Tock NLP OpenNlp</name>
+    <description>OpenNlp implementation of Tock NLP Model</description>
 
     <properties>
         <opennlp>1.7.1</opennlp>

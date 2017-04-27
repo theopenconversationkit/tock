@@ -27,6 +27,8 @@
     </parent>
 
     <artifactId>tock-nlp-admin-server</artifactId>
+    <name>Tock NLP Admin Server</name>
+    <description>Web app server for Tock NLP Admin</description>
 
     <dependencies>
         <dependency>

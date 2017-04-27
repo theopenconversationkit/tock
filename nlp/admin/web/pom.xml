@@ -27,6 +27,8 @@
   </parent>
 
   <artifactId>tock-nlp-admin-web</artifactId>
+  <name>Tock NLP Admin Front</name>
+  <description>Web app front for Tock NLP Admin</description>
 
   <build>
     <plugins>

@@ -27,6 +27,8 @@
     </parent>
 
     <artifactId>tock-translator-core</artifactId>
+    <name>Translator Core</name>
+    <description>Translator core classes</description>
 
     <dependencies>
         <dependency>

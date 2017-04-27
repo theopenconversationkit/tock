@@ -28,6 +28,8 @@
 
     <artifactId>tock-nlp-duckling</artifactId>
     <packaging>pom</packaging>
+    <name>Duckling Entities</name>
+    <description>Root project for Duckling Entities</description>
 
     <modules>
         <module>service</module>

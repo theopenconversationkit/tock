@@ -27,6 +27,8 @@
     </parent>
 
     <artifactId>tock-nlp-build-model-worker</artifactId>
+    <name>Tock NLP Build Model Worker</name>
+    <description>Contains classes used to build NLP models</description>
 
     <dependencies>
         <dependency>

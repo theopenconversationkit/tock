@@ -28,6 +28,8 @@
 
     <artifactId>tock-nlp-front</artifactId>
     <packaging>pom</packaging>
+    <name>Tock NLP Front</name>
+    <description>Root project for Tock NLP Front</description>
 
     <modules>
         <module>shared</module>
