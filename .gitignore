@@ -4,6 +4,7 @@
 /dist
 /tmp
 target
+node_modules
 
 # IDEs and editors
 /.idea
