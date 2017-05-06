@@ -42,7 +42,8 @@
 
     <md-select *ngIf="state.currentApplication"
                (change)="changeApplication($event.value)"
-               [ngModel]="state.currentApplication.name">
+               [ngModel]="state.currentApplication.name"
+               class="select-application">
       <md-option *ngFor="let app of state.applications"
                  [value]="app.name">{{ app.name }}</md-option>
     </md-select>
