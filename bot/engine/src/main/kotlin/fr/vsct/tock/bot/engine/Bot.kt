@@ -29,9 +29,9 @@ import fr.vsct.tock.bot.engine.dialog.State
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.shared.error
-import ft.vsct.tock.nlp.api.client.model.NlpQuery
-import ft.vsct.tock.nlp.api.client.model.QueryContext
-import ft.vsct.tock.nlp.api.client.model.QueryState
+import fr.vsct.tock.nlp.api.client.model.NlpQuery
+import fr.vsct.tock.nlp.api.client.model.QueryContext
+import fr.vsct.tock.nlp.api.client.model.QueryState
 import mu.KotlinLogging
 import java.time.ZonedDateTime
 

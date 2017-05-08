@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.dialog
+package fr.vsct.tock.nlp.api.client.model
 
-import fr.vsct.tock.bot.engine.action.Action
+/**
+ *
+ */
+data class EntityType(val name: String,
+                      val subEntities: List<Entity> = emptyList()) {
 
-data class ArchivedEntityValue(
-        val entityValue: ContextValue?,
-        val action: Action?)
+}

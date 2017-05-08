@@ -17,8 +17,8 @@
 package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.nlp.entity.Value
-import ft.vsct.tock.nlp.api.client.model.Entity
-import ft.vsct.tock.nlp.api.client.model.EntityValue
+import fr.vsct.tock.nlp.api.client.model.Entity
+import fr.vsct.tock.nlp.api.client.model.EntityValue
 
 /**
  *

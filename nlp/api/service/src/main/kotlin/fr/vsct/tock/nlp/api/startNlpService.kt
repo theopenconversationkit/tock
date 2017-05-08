@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.dialog
+package fr.vsct.tock.nlp.api
 
-import fr.vsct.tock.bot.engine.action.Action
+import com.github.salomonbrys.kodein.Kodein.Module
+import fr.vsct.tock.nlp.front.ioc.FrontIoc
+import fr.vsct.tock.shared.vertx.vertx
 
-data class ArchivedEntityValue(
-        val entityValue: ContextValue?,
-        val action: Action?)
+fun main(args: Array<String>) {
+    startNlpService()
+}
+
+fun startNlpService(vararg modules: Module) {
+    FrontIoc.setup(*modules)
+    vertx.deployVerticle(NlpVerticle())
+}

@@ -14,10 +14,21 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.dialog
+package fr.vsct.tock.nlp.api.client.model
 
-import fr.vsct.tock.bot.engine.action.Action
+import java.time.ZoneOffset.UTC
+import java.time.ZonedDateTime
+import java.time.ZonedDateTime.now
+import java.util.Locale
 
-data class ArchivedEntityValue(
-        val entityValue: ContextValue?,
-        val action: Action?)
+/**
+ *
+ */
+data class QueryContext(val language: Locale,
+                        val clientId: String,
+                        val dialogId: String,
+                        val clientDevice: String? = null,
+                        val referenceDate: ZonedDateTime = now(UTC),
+                        val engineType: NlpEngineType = NlpEngineType.stanford,
+                        val registerQuery: Boolean = true) {
+}

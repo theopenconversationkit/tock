@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.dialog
+package fr.vsct.tock.nlp.api.client.model
 
-import fr.vsct.tock.bot.engine.action.Action
 
-data class ArchivedEntityValue(
-        val entityValue: ContextValue?,
-        val action: Action?)
+/**
+ *
+ */
+data class NlpResult(val intent: String,
+                     val entities: List<EntityValue>,
+                     val intentProbability: Double,
+                     val entitiesProbability: Double,
+                     val retainedQuery: String) {
+
+    fun firstValue(role: String): EntityValue? = entities.firstOrNull { it.entity.role == role }
+}

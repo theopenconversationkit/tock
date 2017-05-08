@@ -14,30 +14,31 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine
+package fr.vsct.tock.nlp.api.client
 
-import fr.vsct.tock.nlp.api.client.NlpClient
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
-import mu.KotlinLogging
-import java.io.InputStream
+import okhttp3.MultipartBody
+import retrofit2.Call
+import retrofit2.http.Body
+import retrofit2.http.GET
+import retrofit2.http.Multipart
+import retrofit2.http.POST
+import retrofit2.http.Part
 
 /**
- * Send NLP requests.
+ *
  */
-object Nlp {
+internal interface NlpService {
 
-    private val logger = KotlinLogging.logger {}
-    private val nlpClient = NlpClient()
+    @POST("parse")
+    fun parse(@Body query: NlpQuery): Call<NlpResult>
 
-    fun parse(request: NlpQuery): NlpResult? {
-        val response = nlpClient.parse(request)
-        val result = response.body()
-        if (result == null) {
-            logger.error { "nlp error : ${response.errorBody().string()}" }
-        }
-        return result
-    }
+    @Multipart
+    @POST("dump/import")
+    fun importNlpDump(@Part dump: MultipartBody.Part): Call<Boolean>
 
-    fun importNlpDump(stream: InputStream): Boolean = nlpClient.importNlpDump(stream).body()
+    @GET("healthcheck")
+    fun healthcheck(): Call<Void>
+
 }

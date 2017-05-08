@@ -14,10 +14,16 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.dialog
+package fr.vsct.tock.nlp.api.client.model
 
-import fr.vsct.tock.bot.engine.action.Action
 
-data class ArchivedEntityValue(
-        val entityValue: ContextValue?,
-        val action: Action?)
+/**
+ *
+ */
+data class NlpEngineType(val name: String) {
+
+    companion object {
+        val stanford = NlpEngineType("stanford")
+        val opennlp = NlpEngineType("opennlp")
+    }
+}

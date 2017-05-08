@@ -14,10 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.dialog
+package fr.vsct.tock.nlp.api.client.model
 
-import fr.vsct.tock.bot.engine.action.Action
+/**
+ *
+ */
+data class QueryState(val states: Set<String>) {
 
-data class ArchivedEntityValue(
-        val entityValue: ContextValue?,
-        val action: Action?)
+    companion object {
+        val noState = QueryState(emptySet())
+    }
+}

@@ -14,10 +14,20 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.dialog
+package fr.vsct.tock.nlp.api.client
 
-import fr.vsct.tock.bot.engine.action.Action
+import org.junit.Test
+import kotlin.test.assertTrue
 
-data class ArchivedEntityValue(
-        val entityValue: ContextValue?,
-        val action: Action?)
+
+/**
+ *
+ */
+class NlpClientIntegrationTest {
+
+    @Test
+    fun testImportNlpDump() {
+        val stream = NlpClient::class.java.getResourceAsStream("/dump.json")
+        assertTrue(NlpClient("http://localhost:8880").importNlpDump(stream).body())
+    }
+}

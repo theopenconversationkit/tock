@@ -22,7 +22,7 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
-import ft.vsct.tock.nlp.api.client.model.NlpEngineType
+import fr.vsct.tock.nlp.api.client.model.NlpEngineType
 
 /**
  * The main interface of the bot.
