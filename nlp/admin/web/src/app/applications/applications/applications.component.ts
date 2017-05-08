@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {saveAs} from "file-saver";
 import {Component, OnInit} from "@angular/core";
 import {Application} from "../../model/application";
 import {MdSnackBar} from "@angular/material";
@@ -42,14 +43,12 @@ export class ApplicationsComponent implements OnInit {
     this.snackBar.open(`Application ${app.name} selected`, "Selection", {duration: 1000});
   }
 
-  prepareDump(app: Application) {
-    this.applicationService.getApplicationDump(app)
-      .subscribe(blob => app.dumpUrl = window.URL.createObjectURL(blob));
-  }
-
   downloadDump(app: Application) {
-    window.open(app.dumpUrl);
-    app.dumpUrl = null;
+    this.applicationService.getApplicationDump(app)
+      .subscribe(blob => {
+        saveAs(blob, app.name + ".json");
+        this.snackBar.open(`Dump provided`, "Dump", {duration: 1000});
+      })
   }
 
   showUploadDumpPanel() {

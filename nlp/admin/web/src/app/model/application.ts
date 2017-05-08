@@ -18,8 +18,6 @@ import {EntityDefinition, NlpEngineType} from "./nlp";
 
 export class Application {
 
-  public dumpUrl: string;
-
   constructor(public name: string,
               public namespace: string,
               public intents: Intent[],

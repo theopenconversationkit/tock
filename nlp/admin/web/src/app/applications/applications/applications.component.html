@@ -38,11 +38,7 @@
           <span class="action-spacing"></span>
           <button routerLink="edit/{{app._id}}" md-mini-fab mdTooltip="Edit"><md-icon>edit</md-icon></button>
           <span class="action-spacing"></span>
-          <button (click)="prepareDump(app)" md-icon-button mdTooltip="Download an application dump"><md-icon>file_download</md-icon></button>
-          <div *ngIf="app.dumpUrl">
-            <span class="action-spacing"></span>
-            <button color="primary" md-button (click)="downloadDump(app)">Open the dump in a new tab <md-icon>attach_file</md-icon></button>
-          </div>
+          <button (click)="downloadDump(app)" md-icon-button mdTooltip="Download an application dump"><md-icon>file_download</md-icon></button>
         </md-list-item>
       </md-list>
     </span>
