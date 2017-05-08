@@ -23,7 +23,7 @@ import fr.vsct.tock.bot.connector.messenger.model.webhook.AttachmentType
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Payload
 import fr.vsct.tock.shared.jackson.JacksonDeserializer
 import fr.vsct.tock.shared.jackson.read
-import fr.vsct.tock.shared.jackson.readValueAs
+import fr.vsct.tock.shared.jackson.readValue
 import mu.KotlinLogging
 
 /**
@@ -45,8 +45,8 @@ internal class AttachmentDeserializer : JacksonDeserializer<Attachment>() {
         val (type, payload) = jp.read<AttachmentFields> { fields, name ->
             with(fields) {
                 when (name) {
-                    Attachment::type.name -> type = jp.readValueAs(AttachmentType::class)
-                    Attachment::payload.name -> payload = jp.readValueAs(Payload::class)
+                    Attachment::type.name -> type = jp.readValue()
+                    Attachment::payload.name -> payload = jp.readValue()
                     else -> unknownValue
                 }
             }

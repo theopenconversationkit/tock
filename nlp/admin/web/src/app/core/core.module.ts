@@ -20,11 +20,12 @@ import {SettingsService} from "./settings.service";
 import {CommonModule} from "@angular/common";
 import {RestModule} from "./rest/rest.module";
 import {StateService} from "./state.service";
+import {ApplicationService} from "./applications.service";
 @NgModule({
   imports: [CommonModule, RestModule, AuthModule],
   declarations: [],
   exports: [],
-  providers: [StateService, SettingsService]
+  providers: [StateService, SettingsService, ApplicationService]
 })
 export class CoreModule {
 

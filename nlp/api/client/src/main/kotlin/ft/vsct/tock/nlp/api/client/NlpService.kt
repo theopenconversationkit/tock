@@ -18,10 +18,13 @@ package ft.vsct.tock.nlp.api.client
 
 import ft.vsct.tock.nlp.api.client.model.NlpQuery
 import ft.vsct.tock.nlp.api.client.model.NlpResult
+import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 
 /**
  *
@@ -30,6 +33,10 @@ internal interface NlpService {
 
     @POST("parse")
     fun parse(@Body query: NlpQuery): Call<NlpResult>
+
+    @Multipart
+    @POST("dump/import")
+    fun importNlpDump(@Part dump: MultipartBody.Part): Call<Boolean>
 
     @GET("healthcheck")
     fun healthcheck(): Call<Void>

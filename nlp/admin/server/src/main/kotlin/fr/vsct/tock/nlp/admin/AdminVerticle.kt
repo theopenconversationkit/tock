@@ -22,6 +22,9 @@ import fr.vsct.tock.nlp.admin.model.ParseQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.front.client.FrontClient
+import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
+import fr.vsct.tock.nlp.front.shared.codec.ApplicationImportConfiguration
+import fr.vsct.tock.nlp.front.shared.codec.DumpType
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
@@ -60,6 +63,15 @@ class AdminVerticle : WebVerticle(KotlinLogging.logger {}) {
                     ?.takeIf { it.namespace == context.organization }
         }
 
+        blockingJsonGet("/application/dump/:id") {
+            val id = it.pathParam("id")
+            if (it.organization == front.getApplicationById(id)?.namespace) {
+                front.export(id, DumpType.full)
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonPost("/application") { context, application: ApplicationWithIntents ->
             if (context.organization == application.namespace
                     && (application._id == null || context.organization == front.getApplicationById(application._id)?.namespace)) {
@@ -70,12 +82,20 @@ class AdminVerticle : WebVerticle(KotlinLogging.logger {}) {
                 val newApp = front.save(application.toApplication().copy(name = application.name.toLowerCase()))
                 //trigger a full rebuild if nlp engine change
                 if (appWithSameName?.nlpEngineType != newApp.nlpEngineType) {
-                    front.save(ModelBuildTrigger(newApp._id!!, true))
+                    front.triggerBuild(ModelBuildTrigger(newApp._id!!, true))
                 }
                 ApplicationWithIntents(newApp, front.getIntentsByApplicationId(newApp._id!!))
             } else {
                 unauthorized()
             }
+        }
+
+        blockingUploadPost("/dump/application") { context, dump: ApplicationDump ->
+            front.import(context.organization, dump)
+        }
+
+        blockingUploadPost("/dump/application/:name") { context, dump: ApplicationDump ->
+            front.import(context.organization, dump, ApplicationImportConfiguration(context.pathParam("name")))
         }
 
         blockingDelete("/application/:id") {
@@ -182,15 +202,20 @@ class AdminVerticle : WebVerticle(KotlinLogging.logger {}) {
         val webRoot = verticleProperty("content_path", "/maven/dist")
         router.route("/*").handler(StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(webRoot))
         router.route().failureHandler { context ->
-            if (context.statusCode() == 404) {
+            val code = if (context.statusCode() > 0) context.statusCode() else 500
+            if (code == 404) {
                 context.vertx().fileSystem().readFile("$webRoot/index.html") {
                     if (it.succeeded()) {
                         context.response().end(it.result())
                     } else {
                         logger.warn { "Can't find $webRoot/index.html" }
-                        context.fail(it.cause())
+                        context.response().statusCode = code
+                        context.response().end()
                     }
                 }
+            } else {
+                context.response().statusCode = code
+                context.response().end()
             }
         }
 

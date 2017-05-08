@@ -16,13 +16,13 @@
 
 package fr.vsct.tock.bot.engine.user
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.mongo.DialogCol.AnyValueMongoWrapper
 import fr.vsct.tock.bot.mongo.DialogCol.EntityStateValueWrapper
 import fr.vsct.tock.bot.mongo.DialogCol.StateMongoWrapper
 import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.jackson.readValue
 import ft.vsct.tock.nlp.api.client.model.Entity
 import ft.vsct.tock.nlp.api.client.model.EntityType
 import org.junit.Test
@@ -39,7 +39,7 @@ class DialogColDeserializationTest {
                 UserLocation::class.java,
                 UserLocation(1.0, 2.0))
         val s = mapper.writeValueAsString(value)
-        val newValue = mapper.readValue(s, AnyValueMongoWrapper::class)
+        val newValue = mapper.readValue<AnyValueMongoWrapper>(s)
         assertEquals(value, newValue)
     }
 
@@ -59,7 +59,7 @@ class DialogColDeserializationTest {
                 emptyMap()
         )
         val s = mapper.writeValueAsString(state)
-        val newValue = mapper.readValue(s, StateMongoWrapper::class)
+        val newValue = mapper.readValue<StateMongoWrapper>(s)
         assertEquals(state, newValue)
     }
 

@@ -42,6 +42,7 @@ export class StateService implements AuthListener {
 
   readonly currentApplicationEmitter: EventEmitter<Application> = new EventEmitter();
   readonly currentLocaleEmitter: EventEmitter<string> = new EventEmitter();
+  readonly resetConfigurationEmitter: EventEmitter<boolean> = new EventEmitter();
 
   constructor(private auth: AuthService, private settings: SettingsService) {
     this.auth.addListener(this);
@@ -49,6 +50,10 @@ export class StateService implements AuthListener {
     if (environment.autologin) {
       this.auth.login("password", new AuthenticateResponse(true, "admin@vsct.fr", "vsc"));
     }
+  }
+
+  resetConfiguration() {
+    this.resetConfigurationEmitter.emit(true);
   }
 
   currentEngine(): NlpEngineType {

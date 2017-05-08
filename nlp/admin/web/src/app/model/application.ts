@@ -18,6 +18,8 @@ import {EntityDefinition, NlpEngineType} from "./nlp";
 
 export class Application {
 
+  public dumpUrl: string;
+
   constructor(public name: string,
               public namespace: string,
               public intents: Intent[],
@@ -112,3 +114,26 @@ export class Intent {
   }
 }
 
+export class ApplicationImportConfiguration {
+
+  constructor(public newApplicationName?: string) {
+
+  }
+}
+
+export class ApplicationImportReport {
+  constructor(public applicationsImported: string[],
+              public entitiesImported: string[],
+              public intentsImported: string[],
+              public sentencesImported: number,
+              public success: boolean,
+              public modified: boolean,
+              public errorMessage?: string) {
+  }
+
+  static fromJSON(json: any): ApplicationImportReport {
+    const value = Object.create(ApplicationImportReport.prototype);
+    const result = Object.assign(value, json, {});
+    return result;
+  }
+}

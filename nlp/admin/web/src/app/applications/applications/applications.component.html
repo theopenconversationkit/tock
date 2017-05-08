@@ -27,22 +27,36 @@
       <md-list>
         <md-list-item *ngFor="let app of state.applications">
           <button *ngIf="app._id === state.currentApplication._id" mdTooltip="Selected" disabled md-mini-fab><md-icon>label</md-icon></button>
-          <button *ngIf="app._id !== state.currentApplication._id" class="select-action" mdTooltip="Select" (click)="selectApplication(app)" md-mini-fab><md-icon>label_outline</md-icon></button>
+          <button *ngIf="app._id !== state.currentApplication._id" class="select-action" mdTooltip="Select"
+                  (click)="selectApplication(app)" md-mini-fab><md-icon>label_outline</md-icon></button>
           <span class="tock-name">{{app.name}}</span>
           <md-chip-list class="mat-chip-list-stacked locales">
             <md-chip *ngFor="let locale of app.supportedLocales" disabled="true" selected="true" color="accent">
                 {{state.localeName(locale)}}
             </md-chip>
           </md-chip-list>
+          <span class="action-spacing"></span>
           <button routerLink="edit/{{app._id}}" md-mini-fab mdTooltip="Edit"><md-icon>edit</md-icon></button>
+          <span class="action-spacing"></span>
+          <button (click)="prepareDump(app)" md-icon-button mdTooltip="Download an application dump"><md-icon>file_download</md-icon></button>
+          <div *ngIf="app.dumpUrl">
+            <span class="action-spacing"></span>
+            <button color="primary" md-button (click)="downloadDump(app)">Open the dump in a new tab <md-icon>attach_file</md-icon></button>
+          </div>
         </md-list-item>
       </md-list>
     </span>
     <p></p>
 
   </md-card-content>
-  <md-card-actions>
-    <button *ngIf="state.applications.length !== 0" md-raised-button routerLink="create" color="primary">Create new Application</button>
+  <md-card-actions *ngIf="state.applications.length !== 0 && !uploadDump">
+    <button (click)="showUploadDumpPanel()" md-button>
+      Upload Application Dump
+    </button>
+    <button md-raised-button routerLink="create" color="primary">Create New
+      Application
+    </button>
   </md-card-actions>
 </md-card>
 
+<tock-application-upload *ngIf="uploadDump" (closed)="uploadDump = false"></tock-application-upload>

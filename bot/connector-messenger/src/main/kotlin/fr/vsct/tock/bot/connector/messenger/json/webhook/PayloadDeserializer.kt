@@ -24,7 +24,7 @@ import fr.vsct.tock.bot.connector.messenger.model.webhook.UrlPayload
 import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.shared.jackson.JacksonDeserializer
 import fr.vsct.tock.shared.jackson.read
-import fr.vsct.tock.shared.jackson.readValueAs
+import fr.vsct.tock.shared.jackson.readValue
 import mu.KotlinLogging
 
 /**
@@ -45,7 +45,7 @@ internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
         val (coordinates, url) = jp.read<PayloadFields> { fields, name ->
             with(fields) {
                 when (name) {
-                    LocationPayload::coordinates.name -> coordinates = jp.readValueAs(UserLocation::class)
+                    LocationPayload::coordinates.name -> coordinates = jp.readValue()
                     UrlPayload::url.name -> url = jp.valueAsString
                     else -> unknownValue
                 }

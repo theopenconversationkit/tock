@@ -24,7 +24,7 @@ import fr.vsct.tock.bot.connector.messenger.model.send.Message
 import fr.vsct.tock.bot.connector.messenger.model.send.TextMessage
 import fr.vsct.tock.shared.jackson.JacksonDeserializer
 import fr.vsct.tock.shared.jackson.read
-import fr.vsct.tock.shared.jackson.readValueAs
+import fr.vsct.tock.shared.jackson.readValue
 import mu.KotlinLogging
 
 /**
@@ -45,7 +45,7 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
             with(fields) {
                 when (name) {
                     TextMessage::text.name -> text = jp.valueAsString
-                    AttachmentMessage::attachment.name -> attachment = jp.readValueAs(Attachment::class)
+                    AttachmentMessage::attachment.name -> attachment = jp.readValue()
                     else -> unknownValue
                 }
             }

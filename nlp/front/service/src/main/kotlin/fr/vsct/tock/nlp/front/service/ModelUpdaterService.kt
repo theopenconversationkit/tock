@@ -25,7 +25,7 @@ import fr.vsct.tock.nlp.core.sample.SampleContext
 import fr.vsct.tock.nlp.core.sample.SampleEntity
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 import fr.vsct.tock.nlp.front.service.FrontRepository.core
-import fr.vsct.tock.nlp.front.service.FrontRepository.entityTypes
+import fr.vsct.tock.nlp.front.service.FrontRepository.entityTypeByName
 import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
 import fr.vsct.tock.nlp.front.service.storage.ModelBuildTriggerDAO
 import fr.vsct.tock.nlp.front.shared.ModelUpdater
@@ -33,6 +33,7 @@ import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
 import fr.vsct.tock.shared.injector
 import java.util.Locale
 
@@ -45,13 +46,17 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
 
     private val config = ApplicationConfigurationService
 
+    override fun triggerBuild(trigger: ModelBuildTrigger) {
+        save(trigger)
+    }
+
     override fun updateIntentsModelForApplication(
             validatedSentences: List<ClassifiedSentence>,
             application: ApplicationDefinition,
             language: Locale,
             engineType: NlpEngineType) {
         val modelSentences = config.getSentences(application.intents, language, ClassifiedSentenceStatus.model)
-        val samples = (modelSentences + validatedSentences).map { SampleExpression(it.text, toIntent(it.classification.intentId), it.classification.entities.map { SampleEntity(Entity(entityTypes.getValue(it.type), it.role), it.start, it.end) }, SampleContext(language)) }
+        val samples = (modelSentences + validatedSentences).map { SampleExpression(it.text, toIntent(it.classification.intentId), it.classification.entities.map { SampleEntity(Entity(entityTypeByName(it.type), it.role), it.start, it.end) }, SampleContext(language)) }
         core.updateIntentModel(BuildContext(toApplication(application), language, engineType), samples)
     }
 
@@ -64,7 +69,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
         val i = toIntent(intentId)
         val modelSentences = config.getSentences(setOf(intentId), language, ClassifiedSentenceStatus.model)
         val samples = (modelSentences + validatedSentences).map {
-            SampleExpression(it.text, i, it.classification.entities.map { SampleEntity(Entity(entityTypes.getValue(it.type), it.role), it.start, it.end) }, SampleContext(language))
+            SampleExpression(it.text, i, it.classification.entities.map { SampleEntity(Entity(entityTypeByName(it.type), it.role), it.start, it.end) }, SampleContext(language))
         }
         core.updateEntityModelForIntent(BuildContext(toApplication(application), language, engineType), i, samples)
     }
@@ -78,7 +83,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
     private fun toIntent(intent: IntentDefinition): Intent {
         return Intent(
                 intent.qualifiedName,
-                intent.entities.map { Entity(entityTypes.getValue(it.entityTypeName), it.role) },
+                intent.entities.map { Entity(entityTypeByName(it.entityTypeName), it.role) },
                 intent.entitiesRegexp)
     }
 }

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Injectable} from "@angular/core";
+import {Injectable, OnDestroy} from "@angular/core";
 import {RestService} from "../core/rest/rest.service";
 import {StateService} from "../core/state.service";
 import {EntityDefinition, EntityType, ParseQuery, SearchQuery, Sentence, SentencesResult} from "../model/nlp";
@@ -22,11 +22,22 @@ import {Observable} from "rxjs";
 import {Application, Intent} from "../model/application";
 
 @Injectable()
-export class NlpService {
+export class NlpService implements OnDestroy {
+
+  private resetConfigurationUnsuscriber: any;
 
   constructor(private rest: RestService,
               private state: StateService) {
-    this.getEntityTypes().subscribe(types => state.entityTypes = types);
+    this.resetConfiguration();
+    this.resetConfigurationUnsuscriber = this.state.resetConfigurationEmitter.subscribe(_ => this.resetConfiguration());
+  }
+
+  ngOnDestroy(): void {
+    this.resetConfigurationUnsuscriber.unsubscribe();
+  }
+
+  resetConfiguration() {
+    this.getEntityTypes().subscribe(types => this.state.entityTypes = types);
   }
 
   parse(parseQuery: ParseQuery): Observable<Sentence> {

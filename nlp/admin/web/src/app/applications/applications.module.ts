@@ -17,12 +17,13 @@
 import {SharedModule} from "../shared/shared.module";
 import {CommonModule} from "@angular/common";
 import {NgModule} from "@angular/core";
-import {ApplicationsService} from "./applications.service";
 import {RouterModule, Routes} from "@angular/router";
 import {AuthGuard} from "../core/auth/auth.guard";
 import {ApplicationsComponent} from "./applications/applications.component";
 import {ApplicationsResolver} from "./applications.resolver";
 import {ApplicationComponent} from "./application/application.component";
+import {ApplicationUploadComponent} from "./application-upload/application-upload.component";
+import {FileUploadModule} from "ng2-file-upload";
 
 const routes: Routes = [
   {
@@ -57,18 +58,19 @@ export class ApplicationsRoutingModule {
   imports: [
     CommonModule,
     SharedModule,
-    ApplicationsRoutingModule
+    ApplicationsRoutingModule,
+    FileUploadModule
   ],
   declarations: [
     ApplicationsComponent,
-    ApplicationComponent
+    ApplicationComponent,
+    ApplicationUploadComponent
   ],
   providers: [
-    ApplicationsService,
     ApplicationsResolver
   ],
-  entryComponents : [
-  ]
+  entryComponents: []
 })
 export class ApplicationsModule {
+
 }

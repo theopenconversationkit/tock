@@ -17,7 +17,7 @@
 package fr.vsct.tock.nlp.front.shared.updater
 
 /**
- *
+ * Trigger NLP model build.
  */
 data class ModelBuildTrigger(val applicationId: String, val all: Boolean) {
 }

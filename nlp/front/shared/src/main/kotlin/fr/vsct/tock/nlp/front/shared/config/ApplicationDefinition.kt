@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.shared.config
 
 import fr.vsct.tock.nlp.core.NlpEngineType
+import fr.vsct.tock.shared.withNamespace
 import java.util.Locale
 
 /**
@@ -24,10 +25,13 @@ import java.util.Locale
  */
 data class ApplicationDefinition(val name: String,
                                  val namespace: String,
-                                 val intents: Set<String>,
-                                 val supportedLocales: Set<Locale>,
+                                 val intents: Set<String> = emptySet(),
+                                 val supportedLocales: Set<Locale> = emptySet(),
                                  val intentStatesMap: Map<String, Set<String>> = emptyMap(),
                                  val nlpEngineType: NlpEngineType = NlpEngineType.opennlp,
                                  val _id: String? = null) {
+
+    @Transient
+    val qualifiedName: String = name.withNamespace(namespace)
 
 }

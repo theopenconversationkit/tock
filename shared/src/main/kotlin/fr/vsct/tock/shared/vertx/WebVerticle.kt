@@ -16,10 +16,11 @@
 
 package fr.vsct.tock.shared.vertx
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.shared.devEnvironment
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.jackson.readValue
 import fr.vsct.tock.shared.property
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.AsyncResult
@@ -35,6 +36,7 @@ import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.auth.AbstractUser
 import io.vertx.ext.auth.AuthProvider
+import io.vertx.ext.web.FileUpload
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.BasicAuthHandler
@@ -45,6 +47,7 @@ import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.handler.UserSessionHandler
 import io.vertx.ext.web.sstore.LocalSessionStore
 import mu.KLogger
+import java.io.File
 import java.util.EnumSet
 
 /**
@@ -61,7 +64,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
 
     private data class BooleanResponse(val success: Boolean = true)
 
-    class UserWithOrg(val user: String, val organization: String) : AbstractUser() {
+    protected class UserWithOrg(val user: String, val organization: String) : AbstractUser() {
         override fun doIsPermitted(permissionOrRole: String, handler: Handler<AsyncResult<Boolean>>) {
             handler.handle(Future.succeededFuture(true))
         }
@@ -138,7 +141,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
         router.route("$rootPath/*").handler(authHandler)
 
         router.post(authenticatePath).handler { context ->
-            val request = mapper.readValue(context.bodyAsString, AuthenticateRequest::class)
+            val request = mapper.readValue<AuthenticateRequest>(context.bodyAsString)
             val authInfo = JsonObject().put("username", request.email).put("password", request.password)
             authProvider.authenticate(authInfo, {
                 if (it.succeeded()) {
@@ -192,23 +195,22 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
                             context.response().statusMessage = t.message
                             context.fail(t.code)
                         } else {
-                            logger.error(t) { t.message }
+                            logger.error(t)
                             context.fail(t)
                         }
                     }
                 }, false)
     }
 
-    protected inline fun <reified I : Any, O> blockingWithBodyJson(method: HttpMethod, path: String, crossinline handler: (RoutingContext, I) -> O) {
+    protected inline fun <reified I : Any, O> blockingWithBodyJson(
+            method: HttpMethod,
+            path: String,
+            crossinline handler: (RoutingContext, I) -> O) {
         blocking(method, path, {
             context ->
             val input = context.readJson<I>()
 
             val result = handler.invoke(context, input)
-
-            if (result == null) {
-                context.response().statusCode = 204
-            }
             context.endJson(result)
         })
     }
@@ -217,10 +219,6 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
         blocking(method, path, {
             context ->
             val result = handler.invoke(context)
-
-            if (result == null) {
-                context.response().statusCode = 204
-            }
             context.endJson(result)
         })
     }
@@ -229,7 +227,6 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
         blocking(GET, path, {
             context ->
             val result = handler.invoke(context)
-
             context.endJson(result)
         })
     }
@@ -238,6 +235,15 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
         blocking(POST, path) { context ->
             handler.invoke(context)
             context.success()
+        }
+    }
+
+    protected inline fun <reified F : Any, O> blockingUploadPost(path: String, crossinline handler: (RoutingContext, F) -> O) {
+        blocking(POST, path) { context ->
+            val upload = context.fileUploads().first()
+            val f = context.readJson<F>(upload)
+            val result = handler.invoke(context, f)
+            context.endJson(result)
         }
     }
 
@@ -277,8 +283,14 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
         return BodyHandler.create().setBodyLimit(1000000L).setMergeFormAttributes(false)
     }
 
+    // extension methods ->
+
     inline fun <reified T : Any> RoutingContext.readJson(): T {
-        return mapper.readValue(this.bodyAsString, T::class)
+        return mapper.readValue<T>(this.bodyAsString)
+    }
+
+    inline fun <reified T : Any> RoutingContext.readJson(upload: FileUpload): T {
+        return mapper.readValue<T>(File(upload.uploadedFileName()))
     }
 
     fun RoutingContext.success() {
@@ -297,11 +309,19 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
         get() = (this.user() as UserWithOrg).organization
 
     fun HttpServerResponse.endJson(result: Any?) {
-        val output = mapper.writeValueAsString(result)
-        this.putHeader("content-type", "application/json; charset=utf-8").end(output)
+        if (result == null) {
+            statusCode = 204
+        }
+        this.putHeader("content-type", "application/json; charset=utf-8")
+        if (result == null) {
+            end()
+        } else {
+            val output = mapper.writeValueAsString(result)
+            end(output)
+        }
     }
 
-    protected fun unauthorized(): Nothing {
+    fun unauthorized(): Nothing {
         throw UnauthorizedException()
     }
 }

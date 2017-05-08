@@ -29,7 +29,6 @@ import fr.vsct.tock.bot.engine.dialog.State
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.shared.error
-import ft.vsct.tock.nlp.api.client.NlpClient
 import ft.vsct.tock.nlp.api.client.model.NlpQuery
 import ft.vsct.tock.nlp.api.client.model.QueryContext
 import ft.vsct.tock.nlp.api.client.model.QueryState
@@ -42,8 +41,6 @@ import java.time.ZonedDateTime
 class Bot(val botDefinition: BotDefinition) {
 
     private val logger = KotlinLogging.logger {}
-
-    private val nlpClient = NlpClient()
 
     fun handle(action: Action, userTimeline: UserTimeline, connector: ConnectorController) {
         loadProfileIfNotSet(action, userTimeline, connector)
@@ -147,18 +144,15 @@ class Bot(val botDefinition: BotDefinition) {
         } else {
             try {
                 logger.debug { "Sending sentence '${sentence.text}' to NLP" }
-                val response = nlpClient.parse(toNlpQuery())
-                val nlpResult = response.body()
-                if (nlpResult == null) {
-                    logger.error { "nlp error : ${response.errorBody().string()}" }
-                } else {
-                    sentence.state.currentIntent = botDefinition.findIntent(nlpResult.intent)
-                    sentence.state.entityValues.addAll(nlpResult.entities.map { ContextValue(nlpResult.retainedQuery, it) })
-                    dialog.apply {
-                        state.currentIntent = sentence.state.currentIntent
-                        state.mergeEntityValues(sentence)
-                    }
-                }
+                Nlp.parse(toNlpQuery())
+                        ?.let { nlpResult ->
+                            sentence.state.currentIntent = botDefinition.findIntent(nlpResult.intent)
+                            sentence.state.entityValues.addAll(nlpResult.entities.map { ContextValue(nlpResult.retainedQuery, it) })
+                            dialog.apply {
+                                state.currentIntent = sentence.state.currentIntent
+                                state.mergeEntityValues(sentence)
+                            }
+                        }
             } catch(t: Throwable) {
                 logger.error(t)
             }
@@ -202,6 +196,5 @@ class Bot(val botDefinition: BotDefinition) {
             }
         }
     }
-
 
 }

@@ -54,7 +54,7 @@ interface ModelUpdater {
     /**
      * Save the trigger.
      */
-    fun save(trigger: ModelBuildTrigger)
+    fun triggerBuild(trigger: ModelBuildTrigger)
 
     /**
      * Deleete all triggers for the specified application id.

@@ -19,6 +19,7 @@ import {Headers, Http, Response} from "@angular/http";
 import {Observable} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {Router} from "@angular/router";
+import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 
 @Injectable()
 export class RestService {
@@ -26,6 +27,7 @@ export class RestService {
   private url: string;
   private notAuthenticatedUrl: string;
   private authToken: string;
+  private basicAuthToken: string;
 
   readonly errorEmitter: EventEmitter<string> = new EventEmitter();
 
@@ -37,12 +39,13 @@ export class RestService {
 
   setAuthToken(value: string) {
     this.authToken = value;
+    this.basicAuthToken = `Basic ${this.authToken}`
   }
 
   private headers(): Headers {
     const headers = this.notAuthenticatedHeaders();
 
-    headers.append('Authorization', `Basic ${this.authToken}`);
+    headers.append('Authorization', this.basicAuthToken);
     return headers;
   }
 
@@ -87,7 +90,24 @@ export class RestService {
       .catch(e => RestService.handleError(this, e));
   }
 
-  private static handleError(rest:RestService, error: Response | any) {
+  fileUploader(path: string): FileUploader {
+    const uploader = new FileUploader({removeAfterUpload: true});
+    this.setFileUploaderOptions(uploader, path);
+    return uploader;
+  }
+
+  setFileUploaderOptions(uploader: FileUploader, path: string) {
+    uploader.setOptions({url: `${this.url}${path}`, authToken: this.basicAuthToken});
+    uploader.onErrorItem =
+      (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+        uploader.removeFromQueue(item);
+        RestService.handleError(this, response ? response : `Error ${status}`);
+      };
+
+    return uploader;
+  }
+
+  private static handleError(rest: RestService, error: Response | any) {
     let errMsg: string;
     if (error instanceof Response) {
       if (error.status == 403) {

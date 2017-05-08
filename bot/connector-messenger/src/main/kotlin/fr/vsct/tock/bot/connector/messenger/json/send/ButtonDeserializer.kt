@@ -24,7 +24,7 @@ import fr.vsct.tock.bot.connector.messenger.model.send.PostbackButton
 import fr.vsct.tock.bot.connector.messenger.model.send.UrlButton
 import fr.vsct.tock.shared.jackson.JacksonDeserializer
 import fr.vsct.tock.shared.jackson.read
-import fr.vsct.tock.shared.jackson.readValueAs
+import fr.vsct.tock.shared.jackson.readValue
 import mu.KotlinLogging
 
 /**
@@ -46,7 +46,7 @@ internal class ButtonDeserializer : JacksonDeserializer<Button>() {
         val (type, url, title, payload) = jp.read<ButtonFields> { fields, name ->
             with(fields) {
                 when (name) {
-                    Button::type.name -> type = jp.readValueAs(ButtonType::class)
+                    Button::type.name -> type = jp.readValue()
                     UrlButton::url.name -> url = jp.valueAsString
                     UrlButton::title.name -> title = jp.valueAsString
                     PostbackButton::payload.name -> payload = jp.valueAsString

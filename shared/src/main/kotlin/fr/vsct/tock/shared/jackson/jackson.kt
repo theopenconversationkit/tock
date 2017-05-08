@@ -23,6 +23,7 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonSerializer
+import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.module.SimpleModule
@@ -37,12 +38,11 @@ val mapper: ObjectMapper by lazy {
     mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
     mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
     mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true)
+    mapper.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
     mapper
 }
 
-fun <T : Any> ObjectMapper.readValue(content: String, valueType: KClass<T>): T = readValue(content, valueType.java)
-
-fun <T : Any> JsonParser.readValueAs(klass: KClass<T>) = this.readValueAs(klass.java)
+inline fun <reified T : Any> JsonParser.readValue() = this.readValueAs(T::class.java)
 
 /**
  * Returns the current field name, with the value ready to read.
@@ -82,7 +82,7 @@ inline fun <reified FIELDS : Any> JsonParser.read(readValue: (FIELDS, String) ->
     }
 }
 
-inline fun <reified T : Any> JsonParser.readListValuesAs(): List<T> {
+inline fun <reified T : Any> JsonParser.readListValues(): List<T> {
     return readValueAs<List<T>>(object : TypeReference<List<T>>() {}) ?: emptyList()
 }
 

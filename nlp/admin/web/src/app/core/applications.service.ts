@@ -14,22 +14,38 @@
  * limitations under the License.
  */
 
-import {Injectable} from "@angular/core";
+import {Injectable, OnDestroy} from "@angular/core";
 import {Observable} from "rxjs";
-import {Application} from "../model/application";
+import {Application, ApplicationImportConfiguration} from "../model/application";
 import {RestService} from "../core/rest/rest.service";
 import {StateService} from "../core/state.service";
 import {Entry} from "../model/commons";
 import {NlpEngineType} from "../model/nlp";
+import {FileUploader} from "ng2-file-upload";
 
 @Injectable()
-export class ApplicationsService {
+export class ApplicationService implements OnDestroy {
+
+  private resetConfigurationUnsuscriber: any;
 
   constructor(private rest: RestService,
               private state: StateService) {
+    this.resetConfiguration();
+    this.resetConfigurationUnsuscriber = this.state.resetConfigurationEmitter.subscribe(_ => this.resetConfiguration());
+  }
 
-    this.locales().subscribe(locales => state.locales = locales);
-    this.nlpEngineTypes().subscribe(engines => state.supportedNlpEngines = engines);
+  ngOnDestroy(): void {
+    this.resetConfigurationUnsuscriber.unsubscribe();
+  }
+
+  resetConfiguration() {
+    this.locales().subscribe(locales => this.state.locales = locales);
+    this.nlpEngineTypes().subscribe(engines => this.state.supportedNlpEngines = engines);
+    this.getApplications().subscribe(applications => {
+      this.state.applications = applications;
+      this.state.currentApplication = null;
+      this.retrieveCurrentApplication();
+    });
   }
 
   getApplications(): Observable<Application[]> {
@@ -81,5 +97,19 @@ export class ApplicationsService {
 
   locales(): Observable<Entry<string, string>[]> {
     return this.rest.get(`/locales`, (m => Entry.fromJSONArray<string, string>(m)));
+  }
+
+  getApplicationDump(application: Application): Observable<Blob> {
+    return this.rest.get(`/application/dump/${application._id}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'}) ));
+  }
+
+  prepareApplicationDumpUploader(uploader: FileUploader, configuration: ApplicationImportConfiguration) {
+    let url: string;
+    if (configuration.newApplicationName) {
+      url = `/dump/application/${configuration.newApplicationName.trim()}`;
+    } else {
+      url = `/dump/application`;
+    }
+    this.rest.setFileUploaderOptions(uploader, url);
   }
 }

@@ -19,9 +19,10 @@ package fr.vsct.tock.nlp.front.service
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
+import fr.vsct.tock.nlp.front.shared.ApplicationCodec
+import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
 import fr.vsct.tock.nlp.front.shared.ModelUpdater
 import fr.vsct.tock.nlp.front.shared.Parser
-import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
 
 /**
  *
@@ -30,4 +31,5 @@ val frontModule = Kodein.Module {
     bind<ApplicationConfiguration>() with provider { ApplicationConfigurationService }
     bind<Parser>() with provider { ParserService }
     bind<ModelUpdater>() with provider { ModelUpdaterService }
+    bind<ApplicationCodec>() with provider { ApplicationCodecService }
 }

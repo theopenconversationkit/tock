@@ -15,15 +15,15 @@
  */
 
 import {Injectable} from "@angular/core";
-import {Resolve, ActivatedRouteSnapshot, RouterStateSnapshot} from "@angular/router";
+import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from "@angular/router";
 import {Application} from "../model/application";
-import {ApplicationsService} from "./applications.service";
 import {Observable} from "rxjs";
 import {StateService} from "../core/state.service";
+import {ApplicationService} from "../core/applications.service";
 @Injectable()
 export class ApplicationsResolver implements Resolve<Application[]> {
 
-  constructor(private appService: ApplicationsService, private state: StateService) {
+  constructor(private appService: ApplicationService, private state: StateService) {
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Application[]> {

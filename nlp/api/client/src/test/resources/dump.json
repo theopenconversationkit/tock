@@ -1,0 +1,377 @@
+{
+  "application": {
+    "name": "test",
+    "namespace": "vsc",
+    "intents": [
+      "590f86f5d7b6bb53132b759e",
+      "590f86f5d7b6bb53132b759f"
+    ],
+    "supportedLocales": [
+      "en"
+    ],
+    "intentStatesMap": {},
+    "nlpEngineType": {
+      "name": "opennlp"
+    },
+    "_id": "590f86f5d7b6bb53132b759d"
+  },
+  "entityTypes": [
+    {
+      "name": "duckling:datetime",
+      "description": "default datetime entity",
+      "subEntities": [],
+      "_id": "590e1faf134d26a86ee4c73f"
+    },
+    {
+      "name": "duckling:temperature",
+      "description": "built-in entity duckling:temperature",
+      "subEntities": [],
+      "_id": "590e1faf134d26a86ee4c741"
+    },
+    {
+      "name": "duckling:number",
+      "description": "built-in entity duckling:number",
+      "subEntities": [],
+      "_id": "590e1faf134d26a86ee4c743"
+    },
+    {
+      "name": "duckling:ordinal",
+      "description": "built-in entity duckling:ordinal",
+      "subEntities": [],
+      "_id": "590e1faf134d26a86ee4c745"
+    },
+    {
+      "name": "duckling:distance",
+      "description": "built-in entity duckling:distance",
+      "subEntities": [],
+      "_id": "590e1faf134d26a86ee4c747"
+    },
+    {
+      "name": "duckling:volume",
+      "description": "built-in entity duckling:volume",
+      "subEntities": [],
+      "_id": "590e1faf134d26a86ee4c749"
+    },
+    {
+      "name": "duckling:amount-of-money",
+      "description": "built-in entity duckling:amount-of-money",
+      "subEntities": [],
+      "_id": "590e1faf134d26a86ee4c74b"
+    },
+    {
+      "name": "duckling:duration",
+      "description": "built-in entity duckling:duration",
+      "subEntities": [],
+      "_id": "590e1faf134d26a86ee4c74d"
+    },
+    {
+      "name": "duckling:email",
+      "description": "built-in entity duckling:email",
+      "subEntities": [],
+      "_id": "590e1faf134d26a86ee4c74f"
+    },
+    {
+      "name": "duckling:url",
+      "description": "built-in entity duckling:url",
+      "subEntities": [],
+      "_id": "590e1faf134d26a86ee4c751"
+    },
+    {
+      "name": "duckling:phone-number",
+      "description": "built-in entity duckling:phone-number",
+      "subEntities": [],
+      "_id": "590e1faf134d26a86ee4c753"
+    },
+    {
+      "name": "vsc:location",
+      "description": "",
+      "subEntities": [],
+      "_id": "590e46d4134d26a86ee4cc8b"
+    },
+    {
+      "name": "vsc:locality",
+      "description": "custom locality entity type",
+      "subEntities": [],
+      "_id": "590f860076bfe7167142a8b0"
+    }
+  ],
+  "intents": [
+    {
+      "name": "travel",
+      "namespace": "vsc",
+      "applications": [
+        "590f86f5d7b6bb53132b759d"
+      ],
+      "entities": [
+        {
+          "entityTypeName": "vsc:locality",
+          "role": "locality"
+        },
+        {
+          "entityTypeName": "duckling:datetime",
+          "role": "datetime"
+        }
+      ],
+      "entitiesRegexp": {},
+      "_id": "590f86f5d7b6bb53132b759e"
+    },
+    {
+      "name": "weather",
+      "namespace": "vsc",
+      "applications": [
+        "590f86f5d7b6bb53132b759d"
+      ],
+      "entities": [
+        {
+          "entityTypeName": "vsc:locality",
+          "role": "locality"
+        }
+      ],
+      "entitiesRegexp": {},
+      "_id": "590f86f5d7b6bb53132b759f"
+    }
+  ],
+  "sentences": [
+    {
+      "text": "I want to go to Nice tomorrow",
+      "language": "en",
+      "applicationId": "590f86f5d7b6bb53132b759d",
+      "creationDate": "2017-05-07T20:43:33.826Z",
+      "updateDate": "2017-05-07T20:43:33.826Z",
+      "status": "model",
+      "classification": {
+        "intentId": "590f86f5d7b6bb53132b759e",
+        "entities": [
+          {
+            "type": "vsc:locality",
+            "role": "locality",
+            "start": 16,
+            "end": 20
+          },
+          {
+            "type": "duckling:datetime",
+            "role": "datetime",
+            "start": 21,
+            "end": 29
+          }
+        ]
+      }
+    },
+    {
+      "text": "I would like to go to New York the first of January",
+      "language": "en",
+      "applicationId": "590f86f5d7b6bb53132b759d",
+      "creationDate": "2017-05-07T20:43:34.014Z",
+      "updateDate": "2017-05-07T20:43:34.014Z",
+      "status": "model",
+      "classification": {
+        "intentId": "590f86f5d7b6bb53132b759e",
+        "entities": [
+          {
+            "type": "vsc:locality",
+            "role": "locality",
+            "start": 22,
+            "end": 30
+          },
+          {
+            "type": "duckling:datetime",
+            "role": "datetime",
+            "start": 31,
+            "end": 51
+          }
+        ]
+      }
+    },
+    {
+      "text": "Can I go to Madrid today?",
+      "language": "en",
+      "applicationId": "590f86f5d7b6bb53132b759d",
+      "creationDate": "2017-05-07T20:43:34.023Z",
+      "updateDate": "2017-05-07T20:43:34.023Z",
+      "status": "model",
+      "classification": {
+        "intentId": "590f86f5d7b6bb53132b759e",
+        "entities": [
+          {
+            "type": "vsc:locality",
+            "role": "locality",
+            "start": 12,
+            "end": 18
+          },
+          {
+            "type": "duckling:datetime",
+            "role": "datetime",
+            "start": 19,
+            "end": 24
+          }
+        ]
+      }
+    },
+    {
+      "text": "go to Paris tomorrow",
+      "language": "en",
+      "applicationId": "590f86f5d7b6bb53132b759d",
+      "creationDate": "2017-05-07T20:43:34.032Z",
+      "updateDate": "2017-05-07T20:43:34.032Z",
+      "status": "model",
+      "classification": {
+        "intentId": "590f86f5d7b6bb53132b759e",
+        "entities": [
+          {
+            "type": "vsc:locality",
+            "role": "locality",
+            "start": 6,
+            "end": 11
+          },
+          {
+            "type": "duckling:datetime",
+            "role": "datetime",
+            "start": 12,
+            "end": 20
+          }
+        ]
+      }
+    },
+    {
+      "text": "Let's travel to Rio",
+      "language": "en",
+      "applicationId": "590f86f5d7b6bb53132b759d",
+      "creationDate": "2017-05-07T20:43:34.036Z",
+      "updateDate": "2017-05-07T20:43:34.036Z",
+      "status": "model",
+      "classification": {
+        "intentId": "590f86f5d7b6bb53132b759e",
+        "entities": [
+          {
+            "type": "vsc:locality",
+            "role": "locality",
+            "start": 16,
+            "end": 19
+          }
+        ]
+      }
+    },
+    {
+      "text": "Can you give me the weather in Monaco please",
+      "language": "en",
+      "applicationId": "590f86f5d7b6bb53132b759d",
+      "creationDate": "2017-05-07T20:43:34.039Z",
+      "updateDate": "2017-05-07T20:43:34.039Z",
+      "status": "model",
+      "classification": {
+        "intentId": "590f86f5d7b6bb53132b759f",
+        "entities": [
+          {
+            "type": "vsc:locality",
+            "role": "locality",
+            "start": 31,
+            "end": 37
+          }
+        ]
+      }
+    },
+    {
+      "text": "Weather for New York?",
+      "language": "en",
+      "applicationId": "590f86f5d7b6bb53132b759d",
+      "creationDate": "2017-05-07T20:43:34.042Z",
+      "updateDate": "2017-05-07T20:43:34.042Z",
+      "status": "model",
+      "classification": {
+        "intentId": "590f86f5d7b6bb53132b759f",
+        "entities": [
+          {
+            "type": "vsc:locality",
+            "role": "locality",
+            "start": 12,
+            "end": 20
+          }
+        ]
+      }
+    },
+    {
+      "text": "Does it rain in Philadelphia?",
+      "language": "en",
+      "applicationId": "590f86f5d7b6bb53132b759d",
+      "creationDate": "2017-05-07T20:43:34.051Z",
+      "updateDate": "2017-05-07T20:43:34.051Z",
+      "status": "model",
+      "classification": {
+        "intentId": "590f86f5d7b6bb53132b759f",
+        "entities": [
+          {
+            "type": "vsc:locality",
+            "role": "locality",
+            "start": 16,
+            "end": 28
+          }
+        ]
+      }
+    },
+    {
+      "text": "Sunny in Barcelona?",
+      "language": "en",
+      "applicationId": "590f86f5d7b6bb53132b759d",
+      "creationDate": "2017-05-07T20:43:34.053Z",
+      "updateDate": "2017-05-07T20:43:34.053Z",
+      "status": "model",
+      "classification": {
+        "intentId": "590f86f5d7b6bb53132b759f",
+        "entities": [
+          {
+            "type": "vsc:locality",
+            "role": "locality",
+            "start": 9,
+            "end": 18
+          }
+        ]
+      }
+    },
+    {
+      "text": "Weather report for Toronto",
+      "language": "en",
+      "applicationId": "590f86f5d7b6bb53132b759d",
+      "creationDate": "2017-05-07T20:43:34.055Z",
+      "updateDate": "2017-05-07T20:43:34.055Z",
+      "status": "model",
+      "classification": {
+        "intentId": "590f86f5d7b6bb53132b759f",
+        "entities": [
+          {
+            "type": "vsc:locality",
+            "role": "locality",
+            "start": 19,
+            "end": 26
+          }
+        ]
+      }
+    },
+    {
+      "text": "I want to go to Paris tomorrow",
+      "language": "en",
+      "applicationId": "590f86f5d7b6bb53132b759d",
+      "creationDate": "2017-05-07T20:43:35.089Z",
+      "updateDate": "2017-05-07T20:43:35.089Z",
+      "status": "inbox",
+      "classification": {
+        "intentId": "590f86f5d7b6bb53132b759e",
+        "entities": [
+          {
+            "type": "vsc:locality",
+            "role": "locality",
+            "start": 16,
+            "end": 21
+          },
+          {
+            "type": "duckling:datetime",
+            "role": "datetime",
+            "start": 22,
+            "end": 30
+          }
+        ]
+      }
+    }
+  ],
+  "dumpType": "full",
+  "timestamp": "2017-05-07T20:51:50.888Z"
+}

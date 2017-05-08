@@ -23,7 +23,7 @@ import fr.vsct.tock.bot.connector.messenger.model.webhook.Message
 import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageEcho
 import fr.vsct.tock.shared.jackson.JacksonDeserializer
 import fr.vsct.tock.shared.jackson.read
-import fr.vsct.tock.shared.jackson.readListValuesAs
+import fr.vsct.tock.shared.jackson.readListValues
 import mu.KotlinLogging
 
 /**
@@ -53,7 +53,7 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
                     Message::mid.name -> mid = jp.valueAsString
                     Message::seq.name -> seq = jp.longValue
                     Message::text.name -> text = jp.valueAsString
-                    Message::attachments.name -> attachments = jp.readListValuesAs<Attachment>().filterNotNull()
+                    Message::attachments.name -> attachments = jp.readListValues<Attachment>().filterNotNull()
                     "is_echo" -> isEcho = jp.booleanValue
                     "app_id" -> appId = jp.longValue
                     MessageEcho::metadata.name -> metadata = jp.valueAsString

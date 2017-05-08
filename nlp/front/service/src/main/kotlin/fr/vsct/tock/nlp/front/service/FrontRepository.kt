@@ -72,19 +72,27 @@ internal object FrontRepository {
                 } as (MutableMap<String, EntityType>)
     }
 
+    fun entityTypeExists(name: String): Boolean {
+        return entityTypes.containsKey(name)
+    }
+
+    fun entityTypeByName(name: String): EntityType {
+        return entityTypes.getValue(name)
+    }
+
     fun toEntityType(entityType: EntityTypeDefinition): EntityType {
         return EntityType(entityType.name, entityType.subEntities.map { it.toEntity() })
     }
 
     fun toEntity(type: String, role: String): Entity {
-        return Entity(entityTypes.getValue(type), role)
+        return Entity(entityTypeByName(type), role)
     }
 
     fun toApplication(applicationDefinition: ApplicationDefinition): Application {
         val intentDefinitions = config.getIntentsByApplicationId(applicationDefinition._id!!)
         val intents = intentDefinitions.map {
             Intent(it.qualifiedName,
-                    it.entities.map { Entity(entityTypes.getValue(it.entityTypeName), it.role) },
+                    it.entities.map { Entity(entityTypeByName(it.entityTypeName), it.role) },
                     it.entitiesRegexp.mapValues { it.value.map { EntitiesRegexp(it.regexp) } })
         }
         return Application(applicationDefinition.name, intents, applicationDefinition.supportedLocales)
@@ -96,7 +104,7 @@ internal object FrontRepository {
 
     fun registerBuiltInEntities() {
         core.getEvaluatedEntityTypes().forEach {
-            if (!entityTypes.containsKey(it)) {
+            if (!entityTypeExists(it)) {
                 try {
                     logger.debug { "save built-in entity type $it" }
                     val entityType = EntityTypeDefinition(it, "built-in entity $it")

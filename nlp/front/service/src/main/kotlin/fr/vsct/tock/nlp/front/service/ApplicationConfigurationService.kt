@@ -96,8 +96,7 @@ object ApplicationConfigurationService :
     }
 
     override fun getIntentIdByQualifiedName(name: String): String? {
-        return if (name == unknownIntent)
-            unknownIntent
+        return if (name == unknownIntent) unknownIntent
         else name.namespaceAndName().run { intentDAO.getIntentByNamespaceAndName(first, second)?._id }
     }
 

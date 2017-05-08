@@ -1,0 +1,78 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<md-card *ngIf="configuration">
+  <md-card-title>Upload an Application Dump</md-card-title>
+  <md-card-content>
+
+    <div *ngIf="!report">
+      <p>
+        <md-input-container id="applicationName">
+          <input mdInput [(ngModel)]="configuration.newApplicationName" placeholder="Target Application Name">
+        </md-input-container>
+        (If empty, application name in dump will be used)
+      </p>
+      <p>
+        <label for="file">Please select a dump file:</label>
+        <input id="file" type="file" ng2FileSelect [uploader]="uploader"/>
+      </p>
+      <p>
+        Only new data will be imported. No existing data will be overrided.
+      </p>
+    </div>
+    <div *ngIf="report">
+      <h4 *ngIf="!report.modified">No new data found, so no data imported.</h4>
+      <div *ngIf="report.modified">
+        <h4>Successful Import Report:</h4>
+        <md-list *ngIf="report.applicationsImported.length !=0">
+          <h3 *ngIf="report.applicationsImported.length !=0" md-subheader>Applications imported</h3>
+          <md-list-item *ngFor="let app of report.applicationsImported">
+            <md-icon md-list-icon>apps</md-icon>
+            <h4 md-line>{{app}}</h4>
+          </md-list-item>
+          <md-divider></md-divider>
+          <h3 *ngIf="report.entitiesImported.length !=0" md-subheader>Entities imported</h3>
+          <md-list-item *ngFor="let entity of report.entitiesImported">
+            <md-icon md-list-icon>invert_colors</md-icon>
+            <h4 md-line>{{entity}}</h4>
+          </md-list-item>
+          <md-divider></md-divider>
+          <h3 *ngIf="report.intentsImported.length !=0" md-subheader>Intents imported</h3>
+          <md-list-item *ngFor="let intent of report.intentsImported">
+            <md-icon md-list-icon>merge_type</md-icon>
+            <h4 md-line>{{intent}}</h4>
+          </md-list-item>
+          <md-divider></md-divider>
+          <h3 *ngIf="report.sentencesImported !=0" md-subheader>Number of sentences imported</h3>
+          <md-list-item *ngIf="report.sentencesImported !=0">
+            <md-icon md-list-icon>speaker_notes</md-icon>
+            <h4 md-line>{{report.sentencesImported}}</h4>
+          </md-list-item>
+        </md-list>
+      </div>
+    </div>
+  </md-card-content>
+  <button (click)="cancel()" *ngIf="!report" md-button>
+    Cancel
+  </button>
+  <button (click)="upload()" *ngIf="!report" [disabled]="!uploader.getNotUploadedItems().length" md-raised-button color="primary">
+    Upload
+  </button>
+  <button (click)="close()" *ngIf="report" md-raised-button color="primary">
+    Hide dump report
+  </button>
+</md-card>
+

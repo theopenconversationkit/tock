@@ -18,9 +18,9 @@ import {Component, OnInit} from "@angular/core";
 import {MdDialog, MdSnackBar} from "@angular/material";
 import {ActivatedRoute, Router} from "@angular/router";
 import {StateService} from "../../core/state.service";
-import {ApplicationsService} from "../applications.service";
 import {Application} from "../../model/application";
 import {ConfirmDialogComponent} from "../../shared/confirm-dialog/confirm-dialog.component";
+import {ApplicationService} from "../../core/applications.service";
 
 @Component({
   selector: 'tock-application',
@@ -39,7 +39,7 @@ export class ApplicationComponent implements OnInit {
               private snackBar: MdSnackBar,
               private dialog: MdDialog,
               public state: StateService,
-              private applicationService: ApplicationsService,
+              private applicationService: ApplicationService,
               private router: Router) {
   }
 

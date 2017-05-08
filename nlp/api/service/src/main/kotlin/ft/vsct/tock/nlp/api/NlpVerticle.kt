@@ -18,6 +18,7 @@ package ft.vsct.tock.nlp.api
 
 import fr.vsct.tock.nlp.entity.ValueResolverRepository
 import fr.vsct.tock.nlp.front.client.FrontClient
+import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.nlp.front.shared.parser.QueryDescription
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.vertx.WebVerticle
@@ -39,6 +40,10 @@ class NlpVerticle : WebVerticle(KotlinLogging.logger {}) {
 
         blockingJsonPost("/parse") { _, query: QueryDescription ->
             front.parse(query)
+        }
+
+        blockingUploadPost("/dump/import") { _, dump: ApplicationDump ->
+            front.import(dump.application.namespace, dump).modified
         }
     }
 

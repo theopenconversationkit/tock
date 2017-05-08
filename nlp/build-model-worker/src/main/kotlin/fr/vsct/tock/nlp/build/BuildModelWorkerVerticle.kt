@@ -82,8 +82,8 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
             if (canAnalyse.get()) {
                 try {
                     canAnalyse.set(false)
-                    val validatedSentences = front.getSentences(validated)
-                    val deletedSentences = front.getSentences(deleted)
+                    val validatedSentences = front.getSentences(status = validated)
+                    val deletedSentences = front.getSentences(status = deleted)
                     if (validatedSentences.isNotEmpty()) {
                         logger.debug { "Sentences to update : ${validatedSentences.map { it.text }}" }
 

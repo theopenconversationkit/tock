@@ -29,8 +29,8 @@ import fr.vsct.tock.bot.connector.messenger.model.send.PayloadType
 import fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload
 import fr.vsct.tock.shared.jackson.JacksonDeserializer
 import fr.vsct.tock.shared.jackson.read
-import fr.vsct.tock.shared.jackson.readListValuesAs
-import fr.vsct.tock.shared.jackson.readValueAs
+import fr.vsct.tock.shared.jackson.readListValues
+import fr.vsct.tock.shared.jackson.readValue
 import mu.KotlinLogging
 
 /**
@@ -54,12 +54,12 @@ internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
         val (templateType, url, text, buttons, elements, topElementStyle) = jp.read<PayloadFields> { fields, name ->
             with(fields) {
                 when (name) {
-                    "template_type" -> templateType = jp.readValueAs(PayloadType::class)
+                    "template_type" -> templateType = jp.readValue()
                     UrlPayload::url.name -> url = jp.valueAsString
-                    GenericPayload::elements.name -> elements = jp.readListValuesAs()
-                    ButtonPayload::buttons.name -> buttons = jp.readListValuesAs()
+                    GenericPayload::elements.name -> elements = jp.readListValues()
+                    ButtonPayload::buttons.name -> buttons = jp.readListValues()
                     ButtonPayload::text.name -> text = jp.valueAsString
-                    "top_element_style" -> topElementStyle = jp.readValueAs(ListElementStyle::class)
+                    "top_element_style" -> topElementStyle = jp.readValue()
                     else -> unknownValue
                 }
             }

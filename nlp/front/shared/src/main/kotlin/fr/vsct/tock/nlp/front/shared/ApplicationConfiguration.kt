@@ -50,10 +50,12 @@ interface ApplicationConfiguration {
             application: ApplicationDefinition,
             intentId: String): Boolean
 
-
-    fun getSentences(intents: Set<String>, language: Locale, status: ClassifiedSentenceStatus): List<ClassifiedSentence>
-
-    fun getSentences(status: ClassifiedSentenceStatus): List<ClassifiedSentence>
+    /**
+     * Get the sentences with the specified criteria.
+     *
+     * @throws error if all parameters are null
+     */
+    fun getSentences(intents: Set<String>? = null, language: Locale? = null, status: ClassifiedSentenceStatus? = null): List<ClassifiedSentence>
 
     fun deleteSentencesByStatus(status: ClassifiedSentenceStatus)
 
@@ -74,6 +76,8 @@ interface ApplicationConfiguration {
     fun getIntentsByApplicationId(applicationId: String): List<IntentDefinition>
 
     fun getIntentById(id: String): IntentDefinition?
+
+    fun getIntentByNamespaceAndName(namespace:String, name:String): IntentDefinition?
 
     fun save(intent: IntentDefinition)
 

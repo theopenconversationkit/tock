@@ -31,7 +31,7 @@ import fr.vsct.tock.bot.connector.messenger.model.webhook.PostbackWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Webhook
 import fr.vsct.tock.shared.jackson.JacksonDeserializer
 import fr.vsct.tock.shared.jackson.read
-import fr.vsct.tock.shared.jackson.readValueAs
+import fr.vsct.tock.shared.jackson.readValue
 import mu.KotlinLogging
 
 /**
@@ -57,12 +57,12 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
                 = jp.read<WebhookFields> { fields, name ->
             with(fields) {
                 when (name) {
-                    Webhook::sender.name -> sender = jp.readValueAs(Sender::class)
-                    Webhook::recipient.name -> recipient = jp.readValueAs(Recipient::class)
+                    Webhook::sender.name -> sender = jp.readValue<Sender>()
+                    Webhook::recipient.name -> recipient = jp.readValue()
                     Webhook::timestamp.name -> timestamp = jp.longValue
-                    MessageWebhook::message.name -> message = jp.readValueAs(Message::class)
-                    OptinWebhook::optin.name -> optin = jp.readValueAs(Optin::class)
-                    PostbackWebhook::postback.name -> postback = jp.readValueAs(Postback::class)
+                    MessageWebhook::message.name -> message = jp.readValue()
+                    OptinWebhook::optin.name -> optin = jp.readValue()
+                    PostbackWebhook::postback.name -> postback = jp.readValue()
                     else -> unknownValue
                 }
             }

@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-.tock-name{
+.tock-name {
   padding-left: 20px;
 }
+
 .locales {
-  padding-right:10px;
-  padding-left:10px;
+  padding-right: 10px;
+  padding-left: 10px;
 }
+
 .select-action {
   background-color: aquamarine;
+}
+
+.action-spacing {
+  width: 10px;
 }

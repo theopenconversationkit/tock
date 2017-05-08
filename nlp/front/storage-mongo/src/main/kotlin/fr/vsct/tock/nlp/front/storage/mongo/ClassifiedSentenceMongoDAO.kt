@@ -55,12 +55,17 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         c
     }
 
-    override fun getSentences(intents: Set<String>, language: Locale, status: ClassifiedSentenceStatus): List<ClassifiedSentence> {
-        return col.find("{'language':${language.json},'status':${status.json},'classification.intentId':{\$in:${intents.json}}}").toList()
-    }
+    override fun getSentences(intents: Set<String>?, language: Locale?, status: ClassifiedSentenceStatus?): List<ClassifiedSentence> {
+        if (intents == null && language == null && status == null) {
+            error("at least one parameter should be not null")
+        }
+        val query = listOfNotNull(
+                if (intents != null) "'classification.intentId':{\$in:${intents.json}}" else null,
+                if (language != null) "'language':${language.json}" else null,
+                if (status != null) "'status':${status.json}" else null
+        ).joinToString(prefix = "{", postfix = "}")
 
-    override fun getSentences(status: ClassifiedSentenceStatus): List<ClassifiedSentence> {
-        return col.find("{'status':${status.json}}").toList()
+        return col.find(query).toList()
     }
 
     override fun switchSentencesStatus(sentences: List<ClassifiedSentence>, newStatus: ClassifiedSentenceStatus) {

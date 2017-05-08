@@ -20,7 +20,8 @@ import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.BotProviderBase
 import fr.vsct.tock.bot.engine.BotRepository
-import io.vertx.core.Vertx
+import fr.vsct.tock.bot.engine.Nlp
+import fr.vsct.tock.shared.resourceAsStream
 
 /**
  * Register a new bot.
@@ -38,4 +39,12 @@ fun registerBot(botProvider: BotProvider) = BotRepository.registerBotProvider(bo
 fun installBots() {
     BotIoc.setup()
     BotRepository.installBots()
+}
+
+/**
+ * Import a dump of a nlp model.
+ * @path the dump path in the classpath
+ */
+fun importNlpDump(path: String) {
+    Nlp.importNlpDump(resourceAsStream(path))
 }

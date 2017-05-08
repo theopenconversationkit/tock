@@ -18,6 +18,7 @@ import {Component, OnInit} from "@angular/core";
 import {Application} from "../../model/application";
 import {MdSnackBar} from "@angular/material";
 import {StateService} from "../../core/state.service";
+import {ApplicationService} from "../../core/applications.service";
 
 @Component({
   selector: 'tock-applications',
@@ -26,8 +27,11 @@ import {StateService} from "../../core/state.service";
 })
 export class ApplicationsComponent implements OnInit {
 
+  uploadDump: boolean = false;
+
   constructor(private snackBar: MdSnackBar,
-              public state: StateService) {
+              public state: StateService,
+              private applicationService: ApplicationService) {
   }
 
   ngOnInit() {
@@ -38,5 +42,18 @@ export class ApplicationsComponent implements OnInit {
     this.snackBar.open(`Application ${app.name} selected`, "Selection", {duration: 1000});
   }
 
+  prepareDump(app: Application) {
+    this.applicationService.getApplicationDump(app)
+      .subscribe(blob => app.dumpUrl = window.URL.createObjectURL(blob));
+  }
+
+  downloadDump(app: Application) {
+    window.open(app.dumpUrl);
+    app.dumpUrl = null;
+  }
+
+  showUploadDumpPanel() {
+    this.uploadDump = true;
+  }
 
 }

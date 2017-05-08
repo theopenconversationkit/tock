@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector.messenger
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
@@ -31,7 +32,6 @@ import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.jackson.readValue
 import fr.vsct.tock.shared.vertx.vertx
 import mu.KotlinLogging
 import org.apache.commons.codec.binary.Hex
@@ -92,7 +92,7 @@ internal class MessengerConnector(
                         vertx.runOnContext {
                             try {
                                 logger.debug { "Facebook request input : $body" }
-                                val request = mapper.readValue(body, CallbackRequest::class)
+                                val request = mapper.readValue<CallbackRequest>(body)
 
                                 vertx.executeBlocking<Void>({
                                     try {

@@ -24,15 +24,19 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fr.vsct.tock.nlp.entity.ValueResolverRepository
 import ft.vsct.tock.nlp.api.client.model.NlpQuery
 import ft.vsct.tock.nlp.api.client.model.NlpResult
+import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
+import okhttp3.RequestBody
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
+import java.io.ByteArrayOutputStream
+import java.io.InputStream
 import java.util.concurrent.TimeUnit
 
 /**
- *
+ * Wraps calls to the NLP stack.
  */
 class NlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "http://localhost:8888") {
 
@@ -62,10 +66,35 @@ class NlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "http
         ValueResolverRepository.initDefault(mapper)
     }
 
+    /**
+     * Analyse a sentence and returns the result.
+     */
     fun parse(request: NlpQuery): Response<NlpResult> {
         return nlpService.parse(request).execute()
     }
 
+    /**
+     * Import a NLP dump (configuration and sentences of the NLP model).
+     * @return true if NLP model is modified, false either
+     */
+    fun importNlpDump(stream: InputStream): Response<Boolean> {
+        val dump = ByteArrayOutputStream().apply {
+            var nRead: Int = 0
+            val data = ByteArray(2048)
+            while (nRead != -1) {
+                nRead = stream.read(data, 0, data.size)
+                if (nRead != -1)
+                    write(data, 0, Math.min(nRead, data.size))
+            }
+            flush()
+        }
+        val part = MultipartBody.Part.createFormData("dump", "dump", RequestBody.create(MultipartBody.FORM, dump.toByteArray()))
+        return nlpService.importNlpDump(part).execute()
+    }
+
+    /**
+     * Check the server is up.
+     */
     fun healthcheck(): Boolean {
         return nlpService.healthcheck().execute().isSuccessful
     }

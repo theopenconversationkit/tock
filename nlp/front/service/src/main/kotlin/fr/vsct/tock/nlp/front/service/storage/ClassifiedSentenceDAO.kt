@@ -27,9 +27,10 @@ import java.util.Locale
  */
 interface ClassifiedSentenceDAO {
 
-    fun getSentences(intents: Set<String>, language: Locale, status: ClassifiedSentenceStatus): List<ClassifiedSentence>
+    //TODO-KOTLIN skip strange Class Not Found error
+    fun getSentences(intents: Set<String>): List<ClassifiedSentence> = getSentences(intents, null, null)
 
-    fun getSentences(status: ClassifiedSentenceStatus): List<ClassifiedSentence>
+    fun getSentences(intents: Set<String>?, language: Locale?, status: ClassifiedSentenceStatus?): List<ClassifiedSentence>
 
     fun deleteSentencesByStatus(status: ClassifiedSentenceStatus)
 
@@ -37,11 +38,11 @@ interface ClassifiedSentenceDAO {
 
     fun save(sentence: ClassifiedSentence)
 
-    fun search(query : SentencesQuery) : SentencesQueryResult
+    fun search(query: SentencesQuery): SentencesQueryResult
 
-    fun switchSentencesIntent(applicationId:String, oldIntentId: String, newIntentId:String)
+    fun switchSentencesIntent(applicationId: String, oldIntentId: String, newIntentId: String)
 
-    fun switchSentencesStatus(sentences:List<ClassifiedSentence>, newStatus:ClassifiedSentenceStatus)
+    fun switchSentencesStatus(sentences: List<ClassifiedSentence>, newStatus: ClassifiedSentenceStatus)
 
-    fun removeEntityFromSentences(applicationId:String, intentId: String, entityType:String, role:String)
+    fun removeEntityFromSentences(applicationId: String, intentId: String, entityType: String, role: String)
 }
