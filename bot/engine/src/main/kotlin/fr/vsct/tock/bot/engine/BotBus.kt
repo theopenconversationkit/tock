@@ -25,9 +25,9 @@ import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserTimeline
-import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
+import fr.vsct.tock.translator.Translator
 
 /**
  *
@@ -49,6 +49,13 @@ class BotBus internal constructor(
 
     val entities: Map<String, EntityStateValue> = dialog.state.entityValues
     val intent: Intent? = dialog.state.currentIntent
+
+    /**
+     * Returns true if the current action has the specified entity role.
+     */
+    fun hasActionEntity(role: String): Boolean {
+        return action.hasEntity(role)
+    }
 
     fun changeEntityValue(role: String, newValue: ContextValue?) {
         dialog.state.changeValue(role, newValue)
@@ -118,7 +125,6 @@ class BotBus internal constructor(
         context.addMessage(message)
         return this
     }
-
 
     fun translate(text: String?, vararg args: Any?): String {
         if (text.isNullOrBlank()) {

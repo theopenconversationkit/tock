@@ -33,4 +33,8 @@ abstract class Action(val playerId: PlayerId,
                       val state: ActionState = ActionState(),
                       val botMetadata: BotMetadata = BotMetadata()) {
 
+    fun hasEntity(role: String): Boolean {
+        return state.getEntity(role).isNotEmpty()
+    }
+
 }

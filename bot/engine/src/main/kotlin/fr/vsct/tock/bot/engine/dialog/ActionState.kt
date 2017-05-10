@@ -24,4 +24,9 @@ import fr.vsct.tock.bot.definition.Intent
 data class ActionState(
         var currentIntent: Intent? = null,
         val entityValues: MutableList<ContextValue> = mutableListOf()) {
+
+    fun getEntity(role: String): List<ContextValue> {
+        return entityValues.filter { it.entity.role == role }
+    }
+
 }
