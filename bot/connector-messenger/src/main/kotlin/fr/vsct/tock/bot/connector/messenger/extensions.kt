@@ -26,6 +26,7 @@ import fr.vsct.tock.bot.connector.messenger.model.send.GenericPayload
 import fr.vsct.tock.bot.connector.messenger.model.send.ListElementStyle
 import fr.vsct.tock.bot.connector.messenger.model.send.ListPayload
 import fr.vsct.tock.bot.connector.messenger.model.send.PostbackButton
+import fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.BotBus
@@ -100,6 +101,20 @@ fun BotBus.withMessengerGeneric(elements: List<Element>): BotBus {
     return this
 }
 
+fun BotBus.withMessengerImage(imageUrl: String): BotBus {
+    with(AttachmentMessage(
+            Attachment(
+                    AttachmentType.image,
+                    UrlPayload(
+                            imageUrl
+                    )
+            )
+    )
+    )
+
+    return this
+}
+
 fun BotBus.messengerGenericElement(title: String, subtitle: String? = null, imageUrl: String? = null, buttons: List<Button>? = null): Element {
     if (title.length > 80) {
         logger.warn { "title $title has more than 80 chars" }
@@ -141,3 +156,5 @@ fun BotBus.messengerPostback(title: String, targetStory: StoryDefinition, vararg
 fun BotBus.messengerPostback(title: String, targetIntent: Intent, vararg parameters: Pair<String, String>): PostbackButton {
     return PostbackButton(SendChoice.encodeChoiceId(targetIntent, parameters.toMap()), translate(title))
 }
+
+
