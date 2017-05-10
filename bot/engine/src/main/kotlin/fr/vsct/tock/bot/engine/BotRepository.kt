@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.engine
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.shared.vertx.vertx
+import io.vertx.ext.web.Router
 
 /**
  *
@@ -37,7 +38,7 @@ object BotRepository {
         botProviders.add(bot)
     }
 
-    fun installBots() {
+    fun installBots(routerHandlers: List<(Router) -> Unit>) {
         val verticle = BotVerticle()
 
         ConnectorConfigurationRepository.getConfigurations().forEach { conf ->
@@ -50,6 +51,10 @@ object BotRepository {
                                     }
                                 }
                     }
+        }
+
+        routerHandlers.forEachIndexed { index, handler ->
+            verticle.registerServices("_handler_$index", handler)
         }
 
         vertx.deployVerticle(verticle)

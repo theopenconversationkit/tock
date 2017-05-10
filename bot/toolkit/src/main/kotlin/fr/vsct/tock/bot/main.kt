@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.definition.BotProviderBase
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.Nlp
 import fr.vsct.tock.shared.resourceAsStream
+import io.vertx.ext.web.Router
 
 /**
  * Register a new bot.
@@ -36,9 +37,9 @@ fun registerBot(botProvider: BotProvider) = BotRepository.registerBotProvider(bo
 /**
  * Install the bot(s).
  */
-fun installBots() {
+fun installBots(vararg routerHandlers: (Router) -> Unit) {
     BotIoc.setup()
-    BotRepository.installBots()
+    BotRepository.installBots(routerHandlers.toList())
 }
 
 /**
