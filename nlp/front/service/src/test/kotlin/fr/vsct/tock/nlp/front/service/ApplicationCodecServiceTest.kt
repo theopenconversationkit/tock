@@ -43,7 +43,7 @@ class ApplicationCodecServiceTest {
     }
 
     @Test
-    fun importExistingAppShouldNotCreateApp() {
+    fun import_existingApp_shouldNotCreateApp() {
         val app = ApplicationDefinition("test", "namespace", _id = "id")
         val mock: ApplicationConfiguration = mock() {
             on { getApplicationByNamespaceAndName(any(), any()) } doReturn app

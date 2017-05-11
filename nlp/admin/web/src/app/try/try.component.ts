@@ -15,9 +15,10 @@
  */
 
 import {Component, OnInit} from "@angular/core";
-import {Sentence, ParseQuery, SentenceStatus} from "../model/nlp";
+import {ParseQuery, Sentence} from "../model/nlp";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {StateService} from "../core/state.service";
+import {MdSnackBar} from "@angular/material";
 
 @Component({
   selector: 'tock-try',
@@ -29,7 +30,8 @@ export class TryComponent implements OnInit {
   sentence: Sentence;
 
   constructor(private nlp: NlpService,
-    private state: StateService) {
+              private state: StateService,
+              private snackBar: MdSnackBar) {
   }
 
   ngOnInit() {
@@ -38,9 +40,14 @@ export class TryComponent implements OnInit {
   onTry(value: string) {
     const app = this.state.currentApplication;
     const language = this.state.currentLocale;
-    this.nlp.parse(new ParseQuery(app.namespace, app.name, language, value, this.state.currentEngine())).subscribe(sentence => {
-      this.sentence = sentence;
-    });
+    const v = value.trim();
+    if (v.length == 0) {
+      this.snackBar.open(`Please enter a non-empty query`, "ERROR", {duration: 2000});
+    } else {
+      this.nlp.parse(new ParseQuery(app.namespace, app.name, language, v, this.state.currentEngine())).subscribe(sentence => {
+        this.sentence = sentence;
+      });
+    }
   }
 
   onClose() {

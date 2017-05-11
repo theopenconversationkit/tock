@@ -19,6 +19,7 @@ package fr.vsct.tock.nlp.front.service
 import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityValue
+import fr.vsct.tock.nlp.core.Intent.Companion.unknownIntent
 import fr.vsct.tock.nlp.front.service.FrontRepository.config
 import fr.vsct.tock.nlp.front.service.FrontRepository.core
 import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
@@ -30,15 +31,22 @@ import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.shared.parser.QueryDescription
 import fr.vsct.tock.shared.withoutNamespace
-import java.util.Locale
+import mu.KotlinLogging
+import java.util.*
 
 /**
  *
  */
 object ParserService : Parser {
 
+    private val logger = KotlinLogging.logger {}
+    private val tabCarriageRegexp = "[\\n\\r\\t]+".toRegex()
+
+    internal fun formatQuery(query: String): String {
+        return query.replace(tabCarriageRegexp, "").trim()
+    }
+
     override fun parse(query: QueryDescription): ParseResult {
-        //TODO validate text ("no \n\r\t")
         with(query) {
             val application = config.getApplicationByNamespaceAndName(namespace, applicationName) ?: error("unknown application $namespace:$applicationName")
 
@@ -55,7 +63,11 @@ object ParserService : Parser {
                 }
             }
 
-            val q = query.queries.first()
+            val q = formatQuery(query.queries.first())
+            if (q.isEmpty()) {
+                logger.warn { "empty query after format - $query" }
+                return ParseResult(unknownIntent, emptyList(), 0.0, 0.0, q)
+            }
 
             val validatedSentence = config
                     .search(
@@ -116,5 +128,4 @@ object ParserService : Parser {
             return result
         }
     }
-
 }

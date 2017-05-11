@@ -45,6 +45,7 @@ export class SearchComponent implements OnInit {
     if(this.filter.intentId === "-1") {
       this.filter.intentId = null;
     }
+    this.filter.search = this.filter.search.trim()
     this.scroll.refresh();
   }
 
