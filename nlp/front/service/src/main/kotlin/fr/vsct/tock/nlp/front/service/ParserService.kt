@@ -24,15 +24,17 @@ import fr.vsct.tock.nlp.front.service.FrontRepository.config
 import fr.vsct.tock.nlp.front.service.FrontRepository.core
 import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
 import fr.vsct.tock.nlp.front.shared.Parser
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.shared.parser.QueryDescription
+import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.withoutNamespace
 import mu.KotlinLogging
-import java.util.*
+import java.util.Locale
 
 /**
  *
@@ -46,24 +48,33 @@ object ParserService : Parser {
         return query.replace(tabCarriageRegexp, "").trim()
     }
 
+    internal fun findLanguage(application: ApplicationDefinition, locale: Locale): Locale {
+        return application.supportedLocales.let { locales ->
+            if (locales.contains(locale)) {
+                locale
+            } else {
+                val language = Locale(locale.language)
+                if (locales.contains(language)) {
+                    language
+                } else if (locales.contains(defaultLocale)) {
+                    logger.warn { "locale not found - $locale - use default $defaultLocale" }
+                    defaultLocale
+                } else {
+                    val first = locales.first()
+                    logger.warn { "locale not found - $locale - use first found $first" }
+                    first
+                }
+            }
+        }
+    }
+
     override fun parse(query: QueryDescription): ParseResult {
         with(query) {
             val application = config.getApplicationByNamespaceAndName(namespace, applicationName) ?: error("unknown application $namespace:$applicationName")
 
-            val language = application.supportedLocales.let {
-                if (it.contains(context.language)) {
-                    context.language
-                } else {
-                    val language = Locale(context.language.language)
-                    if (it.contains(language)) {
-                        language
-                    } else {
-                        error("Unsupported locale : ${context.language}")
-                    }
-                }
-            }
+            val language = findLanguage(application, context.language)
 
-            val q = formatQuery(query.queries.first())
+            val q = formatQuery(queries.first())
             if (q.isEmpty()) {
                 logger.warn { "empty query after format - $query" }
                 return ParseResult(unknownIntent, emptyList(), 0.0, 0.0, q)

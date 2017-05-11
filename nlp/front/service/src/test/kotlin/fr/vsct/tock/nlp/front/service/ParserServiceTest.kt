@@ -16,7 +16,11 @@
 
 package fr.vsct.tock.nlp.front.service
 
+import fr.vsct.tock.nlp.front.service.ParserService.formatQuery
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.shared.defaultLocale
 import org.junit.Test
+import java.util.Locale
 import kotlin.test.assertEquals
 
 /**
@@ -26,14 +30,34 @@ class ParserServiceTest {
 
     @Test
     fun formatQuery_shouldRemoveAllTabsAndCarriage() {
-        val parsed = ParserService.formatQuery("a \r d\n \td")
+        val parsed = formatQuery("a \r d\n \td")
         assertEquals("a  d d", parsed)
         println("a  d d")
     }
 
     @Test
     fun formatQuery_shouldTrim() {
-        val parsed = ParserService.formatQuery(" a \r d\n \t ")
+        val parsed = formatQuery(" a \r d\n \t ")
         assertEquals("a  d", parsed)
+    }
+
+    @Test
+    fun findLanguage_shouldReturnDefault_WhenLocaleParameterIsNotSupportedAndDefaultIsSupported() {
+        val locale = ParserService.findLanguage(
+                ApplicationDefinition("test", "test", supportedLocales = setOf(defaultLocale)),
+                Locale.JAPANESE
+        )
+
+        assertEquals(defaultLocale, locale)
+    }
+
+    @Test
+    fun findLanguage_shouldReturnFirstFound_WhenLocaleParameterIsNotSupportedAndDefaultIsNotSupported() {
+        val locale = ParserService.findLanguage(
+                ApplicationDefinition("test", "test", supportedLocales = setOf(Locale.ITALIAN)),
+                Locale.JAPANESE
+        )
+
+        assertEquals(Locale.ITALIAN, locale)
     }
 }
