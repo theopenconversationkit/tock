@@ -24,13 +24,12 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.util.concurrent.TimeUnit
-import kotlin.reflect.KClass
 
 /**
  *
  */
 
-fun <T : Any> Retrofit.create(service: KClass<T>): T = create(service.java)
+inline fun <reified T : Any> Retrofit.create(): T = create(T::class.java)
 
 fun retrofitBuilderWithTimeout(seconds: Long, vararg interceptors: Interceptor): Retrofit.Builder
         = OkHttpClient.Builder()

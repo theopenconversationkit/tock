@@ -61,7 +61,7 @@ internal class MessengerClient(val secretKey: String) {
                 .baseUrl("https://graph.facebook.com")
                 .addJacksonConverter()
                 .build()
-        graphApi = retrofit.create(MessengerClient.GraphApi::class)
+        graphApi = retrofit.create()
     }
 
     fun sendMessage(token: String, messageRequest: MessageRequest): SendResponse {

@@ -62,7 +62,7 @@ internal object DucklingClient {
                 .addConverterFactory(RawJsonBodyConverterFactory)
                 .build()
 
-        service = retrofit.create(BuiltInEntitiesService::class)
+        service = retrofit.create()
     }
 
     object JacksonJsonArrayConverter : Converter<ResponseBody, JSONValue> {
