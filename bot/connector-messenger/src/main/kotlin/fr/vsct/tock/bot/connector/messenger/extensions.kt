@@ -26,7 +26,7 @@ import fr.vsct.tock.bot.connector.messenger.model.send.GenericPayload
 import fr.vsct.tock.bot.connector.messenger.model.send.ListElementStyle
 import fr.vsct.tock.bot.connector.messenger.model.send.ListPayload
 import fr.vsct.tock.bot.connector.messenger.model.send.PostbackButton
-import fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload
+import fr.vsct.tock.bot.connector.messenger.model.send.UrlButton
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.BotBus
@@ -101,20 +101,6 @@ fun BotBus.withMessengerGeneric(elements: List<Element>): BotBus {
     return this
 }
 
-fun BotBus.withMessengerImage(imageUrl: String): BotBus {
-    with(AttachmentMessage(
-            Attachment(
-                    AttachmentType.image,
-                    UrlPayload(
-                            imageUrl
-                    )
-            )
-    )
-    )
-
-    return this
-}
-
 fun BotBus.messengerGenericElement(title: String, subtitle: String? = null, imageUrl: String? = null, buttons: List<Button>? = null): Element {
     if (title.length > 80) {
         logger.warn { "title $title has more than 80 chars" }
@@ -150,11 +136,31 @@ fun BotBus.messengerListElement(title: String, subtitle: String? = null, imageUr
 
 
 fun BotBus.messengerPostback(title: String, targetStory: StoryDefinition, vararg parameters: Pair<String, String>): PostbackButton {
-    return PostbackButton(SendChoice.encodeChoiceId(targetStory, parameters.toMap()), translate(title))
+    if (title.length > 20) {
+        logger.warn { "title $title has more than 20 chars" }
+    }
+    val payload = SendChoice.encodeChoiceId(targetStory, parameters.toMap())
+    if (title.length > 1000) {
+        logger.warn { "payload $payload has more than 1000 chars" }
+    }
+    return PostbackButton(payload, translate(title))
 }
 
 fun BotBus.messengerPostback(title: String, targetIntent: Intent, vararg parameters: Pair<String, String>): PostbackButton {
-    return PostbackButton(SendChoice.encodeChoiceId(targetIntent, parameters.toMap()), translate(title))
+    if (title.length > 20) {
+        logger.warn { "title $title has more than 20 chars" }
+    }
+    val payload = SendChoice.encodeChoiceId(targetIntent, parameters.toMap())
+    if (title.length > 1000) {
+        logger.warn { "payload $payload has more than 1000 chars" }
+    }
+    return PostbackButton(payload, translate(title))
 }
 
+fun BotBus.messengerUrl(title: String, url: String): UrlButton {
+    if (title.length > 20) {
+        logger.warn { "title $title has more than 20 chars" }
+    }
+    return UrlButton(url, title)
+}
 
