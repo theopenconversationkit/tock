@@ -93,11 +93,11 @@ class BotBus internal constructor(
     }
 
     fun end(i18nText: String, delay: Long = 0, vararg i18nArgs: Any?): BotBus {
-        return endPlainText(translate(i18nText, i18nArgs), delay)
+        return endPlainText(translate(i18nText, *i18nArgs), delay)
     }
 
     fun end(i18nText: String, vararg i18nArgs: Any?): BotBus {
-        return endPlainText(translate(i18nText, i18nArgs))
+        return endPlainText(translate(i18nText, *i18nArgs))
     }
 
     fun endPlainText(plainText: String?, delay: Long = 0): BotBus {
@@ -105,11 +105,11 @@ class BotBus internal constructor(
     }
 
     fun send(i18nText: String, delay: Long = 0, vararg i18nArgs: Any?): BotBus {
-        return sendPlainText(translate(i18nText, i18nArgs), delay)
+        return sendPlainText(translate(i18nText, *i18nArgs), delay)
     }
 
     fun send(i18nText: String, vararg i18nArgs: Any?): BotBus {
-        return sendPlainText(translate(i18nText, i18nArgs))
+        return sendPlainText(translate(i18nText, *i18nArgs))
     }
 
     fun send(delay: Long = 0): BotBus {
