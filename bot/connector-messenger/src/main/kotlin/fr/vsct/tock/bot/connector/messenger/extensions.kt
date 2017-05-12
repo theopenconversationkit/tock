@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.connector.messenger.model.send.ListElementStyle
 import fr.vsct.tock.bot.connector.messenger.model.send.ListPayload
 import fr.vsct.tock.bot.connector.messenger.model.send.PostbackButton
 import fr.vsct.tock.bot.connector.messenger.model.send.UrlButton
+import fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.BotBus
@@ -99,6 +100,43 @@ fun BotBus.withMessengerGeneric(elements: List<Element>): BotBus {
     )
 
     return this
+}
+
+fun BotBus.withMessengerAttachment(attachmentUrl: String, type: AttachmentType): BotBus {
+    return when (type) {
+        AttachmentType.image -> withMessengerImage(attachmentUrl)
+        AttachmentType.audio -> withMessengerAudio(attachmentUrl)
+        AttachmentType.video -> withMessengerVideo(attachmentUrl)
+        else -> {
+            logger.warn { "not supported attachment type $type" }
+            this
+        }
+    }
+}
+
+private fun BotBus.withMessengerAttachmentType(attachmentUrl: String, type: AttachmentType): BotBus {
+    with(AttachmentMessage(
+            Attachment(
+                    type,
+                    UrlPayload(
+                            attachmentUrl
+                    )
+            )
+    )
+    )
+    return this
+}
+
+fun BotBus.withMessengerImage(imageUrl: String): BotBus {
+    return withMessengerAttachmentType(imageUrl, AttachmentType.image)
+}
+
+fun BotBus.withMessengerAudio(audioUrl: String): BotBus {
+    return withMessengerAttachmentType(audioUrl, AttachmentType.audio)
+}
+
+fun BotBus.withMessengerVideo(videoUrl: String): BotBus {
+    return withMessengerAttachmentType(videoUrl, AttachmentType.video)
 }
 
 fun BotBus.messengerGenericElement(title: String, subtitle: String? = null, imageUrl: String? = null, buttons: List<Button>? = null): Element {
