@@ -37,7 +37,11 @@ interface IntOpenRange : Comparable<IntOpenRange> {
         return !(this.end <= start || this.start >= end)
     }
 
-    fun length(): Int = end - start
+    fun isSameRange(range: IntOpenRange) : Boolean {
+        return start == range.start && end == range.end
+    }
+
+    fun size(): Int = end - start
 
     fun textValue(originalText: String): String = originalText.substring(start, end)
 }

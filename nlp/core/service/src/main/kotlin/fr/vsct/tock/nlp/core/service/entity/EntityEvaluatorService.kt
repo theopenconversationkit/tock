@@ -19,7 +19,10 @@ package fr.vsct.tock.nlp.core.service.entity
 import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityType
+import fr.vsct.tock.nlp.model.EntityCallContext
 import fr.vsct.tock.nlp.model.EntityCallContextForEntity
+import fr.vsct.tock.nlp.model.EntityCallContextForIntent
+import fr.vsct.tock.nlp.model.EntityCallContextForSubEntities
 
 /**
  *
@@ -39,8 +42,25 @@ internal object EntityEvaluatorService {
         return providerByEntityType[entityType.name]
     }
 
+    fun classifyEntityTypes(context: EntityCallContext, text: String, tokens: Array<String>): List<EntityTypeRecognition> {
+        return when (context) {
+            is EntityCallContextForIntent -> classifyEntityTypesForIntent(context, text, tokens)
+            is EntityCallContextForEntity -> TODO()
+            is EntityCallContextForSubEntities -> TODO()
+        }
+    }
+
+    private fun classifyEntityTypesForIntent(context: EntityCallContextForIntent, text: String, tokens: Array<String>): List<EntityTypeRecognition> {
+        return context.intent
+                .entities
+                .mapNotNull { getEntityEvaluatorProvider(it.entityType) }
+                .distinct()
+                .mapNotNull { it.getEntityTypeClassifier() }
+                .flatMap { it.classifyEntities(context, text, tokens) }
+    }
+
     fun evaluateEntities(context: CallContext, text: String, entitiesRecognition: List<EntityRecognition>): List<EntityRecognition> {
-        val newEvaluatedEntities: Map<EntityRecognition, Any?> =
+        val newEvaluatedEntities: Map<EntityRecognition, EvaluationResult> =
                 entitiesRecognition
                         .filterNot { it.value.evaluated }
                         .mapNotNull {
@@ -55,7 +75,10 @@ internal object EntityEvaluatorService {
 
         return entitiesRecognition.map {
             if (newEvaluatedEntities.containsKey(it)) {
-                it.copy(value = it.value.copy(value = newEvaluatedEntities[it], evaluated = true))
+                val evaluation = newEvaluatedEntities[it]!!
+                it.copy(
+                        probability = if (evaluation.evaluated) (it.probability + evaluation.probability) / 2 else it.probability,
+                        value = it.value.copy(value = evaluation.value, evaluated = true))
             } else {
                 it
             }

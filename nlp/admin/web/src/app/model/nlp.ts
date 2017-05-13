@@ -99,9 +99,26 @@ export class Sentence {
 
   entityValue(entity: ClassifiedEntity): string {
     if (entity.value) {
-      return JSON.stringify(entity.value);
+      //clone the value
+      const cloned = JSON.parse(JSON.stringify(entity.value));
+      this.removeTypeForValue(cloned);
+
+      return JSON.stringify(cloned);
     } else {
       return this.entityText(entity);
+    }
+  }
+
+  private removeTypeForValue(v) {
+    if(v.constructor.name === "Object") {
+      for (let property in v) {
+        if (v.hasOwnProperty(property))
+          if (property == "@type") {
+            v["@type"] = undefined;
+          } else {
+            this.removeTypeForValue(v[property]);
+          }
+      }
     }
   }
 

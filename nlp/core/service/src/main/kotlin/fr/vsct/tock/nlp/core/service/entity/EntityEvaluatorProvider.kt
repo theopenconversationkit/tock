@@ -16,17 +16,15 @@
 
 package fr.vsct.tock.nlp.core.service.entity
 
-import fr.vsct.tock.nlp.model.EntityClassifier
-
 /**
- * Implement this interface to support new entity types.
+ * Implements this interface to support new entity types.
  * The implementation is loaded at runtime, using the java [java.util.ServiceLoader] - you need to provide a META-INF/services/xxx file.
  */
 interface EntityEvaluatorProvider {
 
     fun getSupportedEntityTypes(): Set<String>
 
-    fun getEntityClassifier(): EntityClassifier? = null
+    fun getEntityTypeClassifier(): EntityTypeClassifier? = null
 
     fun getEntityEvaluator(): EntityEvaluator? = null
 }

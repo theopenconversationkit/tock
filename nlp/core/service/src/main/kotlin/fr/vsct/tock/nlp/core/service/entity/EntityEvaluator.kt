@@ -19,9 +19,9 @@ package fr.vsct.tock.nlp.core.service.entity
 import fr.vsct.tock.nlp.model.EntityCallContextForEntity
 
 /**
- *
+ * Evaluate a text for the specified entity.
  */
 interface EntityEvaluator {
 
-    fun evaluate(context: EntityCallContextForEntity, text: String): Any?
+    fun evaluate(context: EntityCallContextForEntity, text: String): EvaluationResult
 }

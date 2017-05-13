@@ -20,7 +20,12 @@ package fr.vsct.tock.nlp.core
 /**
  *
  */
-data class EntityRecognition(val value: EntityValue, val probability: Double) {
+data class EntityRecognition(val value: EntityValue, val probability: Double) : IntOpenRange by value {
 
+    @Transient
     val entityType: EntityType = value.entity.entityType
+
+    @Transient
+    val role: String = value.entity.role
+
 }

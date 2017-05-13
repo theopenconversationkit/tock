@@ -26,6 +26,7 @@ import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.ParsingResult
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 import fr.vsct.tock.nlp.core.service.entity.EntityEvaluatorService
+import fr.vsct.tock.nlp.core.service.entity.EntityMergeService
 import fr.vsct.tock.nlp.model.EntityBuildContextForIntent
 import fr.vsct.tock.nlp.model.EntityCallContextForIntent
 import fr.vsct.tock.nlp.model.IntentContext
@@ -60,10 +61,7 @@ object NlpCoreService : NlpCore {
                 return unknownResult
             }
 
-            //TODO regexp et dedicated entity classifier
-
-            val entities = NlpClassifierClient.classifyEntities(EntityCallContextForIntent(context, intent.intent), text, tokens)
-            val evaluatedEntities = evaluateEntities(context, text, entities)
+            val evaluatedEntities = evaluateEntities(context, intent.intent, text, tokens)
 
             return ParsingResult(
                     intent.intent.name,
@@ -77,6 +75,18 @@ object NlpCoreService : NlpCore {
             logger.error(e)
             return unknownResult
         }
+    }
+
+    private fun evaluateEntities(context: CallContext, intent: Intent, text: String, tokens: Array<String>): List<EntityRecognition> {
+        //TODO regexp
+
+        //evaluate entities from intent entity model & dedicated entity models
+        val intentContext = EntityCallContextForIntent(context, intent)
+        val entities = NlpClassifierClient.classifyEntities(intentContext, text, tokens)
+        val evaluatedEntities = evaluateEntities(context, text, entities)
+        val classifiedEntityTypes = EntityEvaluatorService.classifyEntityTypes(intentContext, text, tokens)
+
+        return EntityMergeService.mergeEntityTypes(intent, evaluatedEntities, classifiedEntityTypes)
     }
 
     override fun evaluateEntities(

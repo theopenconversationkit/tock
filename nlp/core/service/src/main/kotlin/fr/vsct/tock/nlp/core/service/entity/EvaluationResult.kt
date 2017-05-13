@@ -14,20 +14,13 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.duckling.client
-
-import fr.vsct.tock.nlp.core.service.entity.EntityEvaluator
-import fr.vsct.tock.nlp.core.service.entity.EntityEvaluatorProvider
-import fr.vsct.tock.nlp.core.service.entity.EntityTypeClassifier
+package fr.vsct.tock.nlp.core.service.entity
 
 /**
  *
  */
-class DucklingEntityEvaluatorProvider : EntityEvaluatorProvider {
-
-    override fun getEntityTypeClassifier(): EntityTypeClassifier = DucklingParser
-
-    override fun getEntityEvaluator(): EntityEvaluator = DucklingParser
-
-    override fun getSupportedEntityTypes(): Set<String> = DucklingParser.entityTypes
+data class EvaluationResult(
+        val evaluated: Boolean,
+        val value: Any? = null,
+        val probability: Double = 1.0) {
 }

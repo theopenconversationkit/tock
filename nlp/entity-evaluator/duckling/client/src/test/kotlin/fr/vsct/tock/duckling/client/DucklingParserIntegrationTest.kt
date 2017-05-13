@@ -29,6 +29,6 @@ class DucklingParserIntegrationTest {
     @Test
     fun testParseNumber() {
         val v = DucklingParser.parse("en", "number", ZonedDateTime.now(), "12")
-        assertEquals(12, (v.first() as NumberValue).value)
+        assertEquals(12, (v.first().value as NumberValue).value)
     }
 }
