@@ -21,5 +21,5 @@ import java.time.Instant
 /**
  *
  */
-class EntityModelHolder(val nativeModel: Any, val lastUpdate: Instant) {
+class EntityModelHolder(val nativeModel: Any, val lastUpdate: Instant = Instant.now()) {
 }

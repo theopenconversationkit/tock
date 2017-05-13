@@ -47,28 +47,29 @@ internal class OpenNlpEntityClassifier(model: EntityModelHolder) : NlpEntityClas
             var entityProbability = 0.0
             var nbEntitySpans = 0
 
-
             return spans.mapIndexedNotNull { index, span ->
                 entityProbability += span.prob
                 nbEntitySpans++
                 val nextIndex = index + 1
-                if (nextIndex < spans.size && spans[nextIndex].type == span.type) {
+                if (nextIndex < spans.size
+                        && spans[nextIndex].type == span.type
+                        && span.end == spans[nextIndex].start) {
                     null
                 } else {
                     //reunify text
                     var t = text
                     var start = 0
-                    for (i in 0..span.start - 1) {
+                    val tokenStart = span.start - (0 until nbEntitySpans - 1).sumBy { spans[start - it].length() }
+                    for (i in 0 until tokenStart) {
                         val nextTokenIndex = tokens[i].length + t.indexOf(tokens[i])
                         start += nextTokenIndex
                         t = t.substring(nextTokenIndex)
                     }
 
-                    start += t.indexOf(tokens[span.start])
-                    var end = start + tokens[span.start].length
-                    t = t.substring(t.indexOf(tokens[span.start]) + tokens[span.start].length)
+                    var end = start
+                    start += t.indexOf(tokens[tokenStart])
 
-                    for (i in span.start + 1..span.end - 1) {
+                    for (i in tokenStart until span.end) {
                         val nextTokenIndex = tokens[i].length + t.indexOf(tokens[i])
                         end += nextTokenIndex
                         t = t.substring(nextTokenIndex)
