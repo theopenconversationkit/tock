@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, OnInit, ViewChild} from '@angular/core';
+import {Component, OnInit, ViewChild} from "@angular/core";
 import {SentenceFilter, SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.component";
 import {SentenceStatus} from "../model/nlp";
 import {StateService} from "../core/state.service";
@@ -26,26 +26,29 @@ import {StateService} from "../core/state.service";
 })
 export class SearchComponent implements OnInit {
 
-  filter : SentenceFilter = new SentenceFilter();
-  status : SentenceStatus;
+  filter: SentenceFilter = new SentenceFilter();
+  status: SentenceStatus;
 
   @ViewChild(SentencesScrollComponent) scroll;
 
-  constructor(public state: StateService) { }
+  constructor(public state: StateService) {
+  }
 
   ngOnInit() {
   }
 
   search() {
-    if(this.status) {
+    if (this.status) {
       this.filter.status = [this.status];
     } else {
       this.filter.status = [];
     }
-    if(this.filter.intentId === "-1") {
+    if (this.filter.intentId === "-1") {
       this.filter.intentId = null;
     }
-    this.filter.search = this.filter.search.trim()
+    if (this.filter.search) {
+      this.filter.search = this.filter.search.trim()
+    }
     this.scroll.refresh();
   }
 
