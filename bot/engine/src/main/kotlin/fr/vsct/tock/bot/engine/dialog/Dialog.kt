@@ -23,10 +23,10 @@ import fr.vsct.tock.shared.Dice
 /**
  *
  */
-class Dialog(val playerIds: Set<PlayerId>,
-             var id: String = Dice.newId(),
-             val state: State = State(),
-             val stories: MutableList<Story> = mutableListOf()) {
+data class Dialog(val playerIds: Set<PlayerId>,
+                  var id: String = Dice.newId(),
+                  val state: State = State(),
+                  val stories: MutableList<Story> = mutableListOf()) {
 
     fun currentStory(): Story? = stories.lastOrNull()
 

@@ -17,15 +17,19 @@
 package fr.vsct.tock.bot.engine.user
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.nhaarman.mockito_kotlin.mock
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.dialog.ContextValue
+import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.mongo.DialogCol
 import fr.vsct.tock.bot.mongo.DialogCol.AnyValueMongoWrapper
 import fr.vsct.tock.bot.mongo.DialogCol.EntityStateValueWrapper
 import fr.vsct.tock.bot.mongo.DialogCol.StateMongoWrapper
-import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.api.client.model.EntityType
+import fr.vsct.tock.shared.jackson.mapper
 import org.junit.Test
+import java.time.LocalDateTime
 import kotlin.test.assertEquals
 
 /**
@@ -34,7 +38,7 @@ import kotlin.test.assertEquals
 class DialogColDeserializationTest {
 
     @Test
-    fun testAnyValueMongoWrapperSerialization() {
+    fun serializeAndDeserializeAnyValueMongoWrapper_shouldLeftDataInchanged() {
         val value = AnyValueMongoWrapper(
                 UserLocation::class.java,
                 UserLocation(1.0, 2.0))
@@ -44,7 +48,7 @@ class DialogColDeserializationTest {
     }
 
     @Test
-    fun testStateMongoWrapperDeserializtion() {
+    fun serializeAndDeserializeStateMongoWrapper_shouldLeftDataInchanged() {
         val state = StateMongoWrapper(
                 Intent("test"),
                 mapOf("role" to EntityStateValueWrapper(
@@ -62,5 +66,17 @@ class DialogColDeserializationTest {
         val newValue = mapper.readValue<StateMongoWrapper>(s)
         assertEquals(state, newValue)
     }
+
+
+    @Test
+    fun serializeAndDeserializeDialog_shouldLeftDataInchanged() {
+        val dialog = Dialog(
+                emptySet(),
+                state = fr.vsct.tock.bot.engine.dialog.State(context = mutableMapOf("a" to LocalDateTime.now())))
+        val s = mapper.writeValueAsString(DialogCol(dialog))
+        val newValue = mapper.readValue<DialogCol>(s)
+        assertEquals(dialog, newValue.toDialog { mock() })
+    }
+
 
 }

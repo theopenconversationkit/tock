@@ -49,11 +49,11 @@ import java.time.Instant.now
 /**
  *
  */
-internal class DialogCol(val playerIds: Set<PlayerId>,
-                         var _id: String,
-                         val state: StateMongoWrapper,
-                         val stories: List<StoryMongoWrapper>,
-                         val lastUpdateDate: Instant = now()) {
+internal data class DialogCol(val playerIds: Set<PlayerId>,
+                              var _id: String,
+                              val state: StateMongoWrapper,
+                              val stories: List<StoryMongoWrapper>,
+                              val lastUpdateDate: Instant = now()) {
 
     companion object {
         private fun getActionWrapper(action: Action): ActionMongoWrapper {
@@ -103,7 +103,7 @@ internal class DialogCol(val playerIds: Set<PlayerId>,
             return State(
                     currentIntent,
                     entityValues.mapValues { it.value.toEntityStateValue(actionsMap) }.toMutableMap(),
-                    context.toMutableMap())
+                    context.mapValues { it.value.value }.toMutableMap())
         }
 
     }

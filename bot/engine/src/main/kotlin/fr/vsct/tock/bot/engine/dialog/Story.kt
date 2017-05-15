@@ -24,7 +24,7 @@ import fr.vsct.tock.bot.engine.action.Action
 /**
  *
  */
-class Story(
+data class Story(
         val definition: StoryDefinition,
         var currentIntent: Intent?,
         val actions: MutableList<Action> = mutableListOf()) {
