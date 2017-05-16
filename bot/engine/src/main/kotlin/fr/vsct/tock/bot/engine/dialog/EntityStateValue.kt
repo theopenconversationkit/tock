@@ -17,6 +17,8 @@
 package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.nlp.api.client.model.Entity
+import fr.vsct.tock.nlp.entity.Value
 
 /**
  *
@@ -26,6 +28,12 @@ data class EntityStateValue(var value: ContextValue?,
 
     constructor(action: Action, entityValue: ContextValue)
             : this(entityValue, mutableListOf(ArchivedEntityValue(entityValue, action)))
+
+    constructor(entity: Entity, value: Value) : this(ContextValue(entity, value))
+
+    fun changeValue(entity: Entity, newValue: Value?, action: Action? = null): EntityStateValue {
+        return changeValue(ContextValue(entity, newValue))
+    }
 
     fun changeValue(newValue: ContextValue?, action: Action? = null): EntityStateValue {
         value = newValue

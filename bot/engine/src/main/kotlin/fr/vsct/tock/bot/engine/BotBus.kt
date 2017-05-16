@@ -25,6 +25,8 @@ import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserTimeline
+import fr.vsct.tock.nlp.api.client.model.Entity
+import fr.vsct.tock.nlp.entity.Value
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
 import fr.vsct.tock.translator.Translator
@@ -57,16 +59,60 @@ class BotBus internal constructor(
         return action.hasEntity(role)
     }
 
+    /**
+     * Returns the current entity value for the specified role.
+     */
+    fun <T : Value> entityValue(role: String): T? {
+        @Suppress("UNCHECKED_CAST")
+        return entities[role]?.value?.value as T?
+    }
+
+    /**
+     * Update the current entity value in the dialog.
+     * @param role entity role
+     * @param newValue the new entity value
+     */
     fun changeEntityValue(role: String, newValue: ContextValue?) {
         dialog.state.changeValue(role, newValue)
     }
 
+
+    /**
+     * Update the current entity value in the dialog.
+     * @param entity the entity definition
+     * @param newValue the new entity value
+     */
+    fun changeEntityValue(entity: Entity, newValue: Value?) {
+        dialog.state.changeValue(entity, newValue)
+    }
+
+    /**
+     * Remove all current entity values.
+     */
     fun removeAllEntityValues() {
         dialog.state.removeAllEntityValues()
     }
 
+    /**
+     * Remove entity value for the specified role.
+     */
     fun removeEntityValue(role: String) {
         dialog.state.removeValue(role)
+    }
+
+    /**
+     * Returns the current context value.
+     */
+    fun <T : Any> contextValue(name: String): T? {
+        @Suppress("UNCHECKED_CAST")
+        return dialog.state.context[name] as T?
+    }
+
+    /**
+     * Update context value.
+     */
+    fun changeContextValue(name: String, value: Any?) {
+        if (value == null) dialog.state.context.remove(name) else dialog.state.context[name] = value
     }
 
 

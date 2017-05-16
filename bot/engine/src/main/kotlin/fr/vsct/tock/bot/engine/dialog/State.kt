@@ -18,6 +18,8 @@ package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.user.UserLocation
+import fr.vsct.tock.nlp.api.client.model.Entity
+import fr.vsct.tock.nlp.entity.Value
 
 /**
  *
@@ -40,6 +42,15 @@ data class State(
 
     fun setValue(role: String, value: ContextValue) {
         entityValues[role] = EntityStateValue(value)
+    }
+
+    fun setValue(entity: Entity, value: Value) {
+        entityValues[entity.role] = EntityStateValue(entity, value)
+    }
+
+    fun changeValue(entity: Entity, newValue: Value?) {
+        entityValues[entity.role]?.changeValue(entity, newValue)
+                ?: if (newValue != null) setValue(entity, newValue)
     }
 
     fun changeValue(role: String, newValue: ContextValue?) {
