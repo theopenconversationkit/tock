@@ -16,8 +16,9 @@
 
 package fr.vsct.tock.nlp.admin.model
 
-import fr.vsct.tock.nlp.core.EntityValue
+import fr.vsct.tock.nlp.entity.Value
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity
+import fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue
 
 /**
  *
@@ -26,16 +27,16 @@ data class ClassifiedEntityReport(val type: String,
                                   val role: String,
                                   val start: Int,
                                   val end: Int,
-                                  val value: Any?) {
+                                  val value: Value?) {
 
-    constructor(value: EntityValue) : this(
+    constructor(value: ParsedEntityValue) : this(
             value.entity.entityType.name,
             value.entity.role,
             value.start,
             value.end,
             value.value)
 
-    constructor(entity:ClassifiedEntity) : this(
+    constructor(entity: ClassifiedEntity) : this(
             entity.type,
             entity.role,
             entity.start,
@@ -43,7 +44,7 @@ data class ClassifiedEntityReport(val type: String,
             null
     )
 
-    fun toClassifiedEntity() : ClassifiedEntity {
+    fun toClassifiedEntity(): ClassifiedEntity {
         return ClassifiedEntity(type, role, start, end)
     }
 }

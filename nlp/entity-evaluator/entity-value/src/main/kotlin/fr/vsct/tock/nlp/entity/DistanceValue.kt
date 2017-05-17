@@ -19,5 +19,5 @@ package fr.vsct.tock.nlp.entity
 /**
  *
  */
-class DistanceValue(val value: Number, val unit:String) : Value {
+data class DistanceValue(val value: Number, val unit: String) : Value {
 }

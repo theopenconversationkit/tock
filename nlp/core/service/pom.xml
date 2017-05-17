@@ -25,7 +25,7 @@
     </parent>
 
     <artifactId>tock-nlp-core-service</artifactId>
-    <name>Nlp Core Service</name>
+    <name>Tock NLP Core Service</name>
     <description>Services for Nlp Core</description>
 
     <dependencies>

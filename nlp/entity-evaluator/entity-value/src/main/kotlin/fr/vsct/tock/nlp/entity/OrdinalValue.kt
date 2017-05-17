@@ -19,5 +19,5 @@ package fr.vsct.tock.nlp.entity
 /**
  *
  */
-class OrdinalValue(val value: Number) : Value {
+data class OrdinalValue(val value: Number) : Value {
 }

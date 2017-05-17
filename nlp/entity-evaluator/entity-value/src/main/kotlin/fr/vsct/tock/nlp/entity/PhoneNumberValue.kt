@@ -19,5 +19,5 @@ package fr.vsct.tock.nlp.entity
 /**
  *
  */
-class PhoneNumberValue(val value: String) : Value  {
+data class PhoneNumberValue(val value: String) : Value  {
 }

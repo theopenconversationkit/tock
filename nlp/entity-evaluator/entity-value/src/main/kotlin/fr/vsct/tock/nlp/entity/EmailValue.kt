@@ -19,5 +19,5 @@ package fr.vsct.tock.nlp.entity
 /**
  *
  */
-class EmailValue(val value: String) : Value  {
+data class EmailValue(val value: String) : Value  {
 }

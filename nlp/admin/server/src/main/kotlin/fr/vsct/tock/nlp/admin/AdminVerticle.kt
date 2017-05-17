@@ -21,7 +21,6 @@ import fr.vsct.tock.nlp.admin.model.CreateEntityQuery
 import fr.vsct.tock.nlp.admin.model.ParseQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
-import fr.vsct.tock.nlp.entity.ValueResolverRepository
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationImportConfiguration
@@ -29,7 +28,6 @@ import fr.vsct.tock.nlp.front.shared.codec.DumpType
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
-import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.vertx.BadRequestException
 import fr.vsct.tock.shared.vertx.WebVerticle
@@ -49,7 +47,6 @@ class AdminVerticle : WebVerticle(KotlinLogging.logger {}) {
     override fun authProvider(): AuthProvider? = authProvider
 
     override fun configure() {
-        ValueResolverRepository.initDefault(mapper)
         val front = FrontClient
         val admin = AdminService
 

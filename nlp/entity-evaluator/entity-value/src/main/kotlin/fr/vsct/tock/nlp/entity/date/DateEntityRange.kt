@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.front.shared.parser
+package fr.vsct.tock.nlp.entity.date
+
+import fr.vsct.tock.nlp.entity.Value
+import java.time.ZonedDateTime
 
 /**
- *
+ * Both [DateEntityValue] && [DateIntervalEntityValue] can be seen as date range.
  */
-data class ParseResult(val intent: String,
-                       val entities: List<ParsedEntityValue>,
-                       val intentProbability: Double,
-                       val entitiesProbability: Double,
-                       val retainedQuery: String) {
+interface DateEntityRange : Value {
 
-    fun firstValue(role: String): ParsedEntityValue? = entities.firstOrNull { it.entity.role == role }
+    fun start(): ZonedDateTime
+
+    fun end(): ZonedDateTime
 }

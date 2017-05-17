@@ -31,11 +31,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-nlp-entity-value</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>retrofit</artifactId>
         </dependency>

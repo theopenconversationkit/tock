@@ -21,5 +21,5 @@ import fr.vsct.tock.nlp.entity.Value
 /**
  *
  */
-class TemperatureValue(val value: Number, val unit: TemperatureUnit) : Value {
+data class TemperatureValue(val value: Number, val unit: TemperatureUnit) : Value {
 }

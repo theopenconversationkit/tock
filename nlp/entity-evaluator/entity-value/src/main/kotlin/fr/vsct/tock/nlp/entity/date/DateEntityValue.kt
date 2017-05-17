@@ -16,11 +16,18 @@
 
 package fr.vsct.tock.nlp.entity.date
 
-import fr.vsct.tock.nlp.entity.Value
 import java.time.ZonedDateTime
 
 /**
- *
+ * Wraps a [ZonedDateTime] with a [DateEntityGrain].
  */
-data class DateEntityValue(val date: ZonedDateTime, val grain: DateEntityGrain) : Value {
+data class DateEntityValue(val date: ZonedDateTime, val grain: DateEntityGrain) : DateEntityRange {
+
+    override fun start(): ZonedDateTime {
+        return date
+    }
+
+    override fun end(): ZonedDateTime {
+        return grain.calculateEnd(date)
+    }
 }

@@ -19,9 +19,6 @@ package fr.vsct.tock.bot.mongo
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
-import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.definition.Intent
@@ -41,8 +38,7 @@ import fr.vsct.tock.bot.engine.dialog.State
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLocation
-import fr.vsct.tock.shared.jackson.checkEndToken
-import fr.vsct.tock.shared.jackson.fieldNameWithValueReady
+import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import java.time.Instant
 import java.time.Instant.now
 
@@ -89,21 +85,21 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
             var currentIntent: Intent?,
             @JsonDeserialize(contentAs = EntityStateValueWrapper::class)
             val entityValues: Map<String, EntityStateValueWrapper>,
-            @JsonDeserialize(contentAs = AnyValueMongoWrapper::class)
-            val context: Map<String, AnyValueMongoWrapper>) {
+            @JsonDeserialize(contentAs = AnyValueWrapper::class)
+            val context: Map<String, AnyValueWrapper>) {
 
 
         constructor(state: State) : this(
                 state.currentIntent,
                 state.entityValues.mapValues { EntityStateValueWrapper(it.value) },
-                state.context.map { e -> e.key to AnyValueMongoWrapper(e.value) }.toMap()
+                state.context.map { e -> e.key to AnyValueWrapper(e.value) }.toMap()
         )
 
         fun toState(actionsMap: Map<String, Action>): State {
             return State(
                     currentIntent,
                     entityValues.mapValues { it.value.toEntityStateValue(actionsMap) }.toMutableMap(),
-                    context.mapValues { it.value.value }.toMutableMap())
+                    context.mapValues { it.value.value!! }.toMutableMap())
         }
 
     }
@@ -189,10 +185,10 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
 
     @JsonTypeName(value = "sentence")
     class SendSentenceMongoWrapper(val text: String?,
-                                   val messages: List<AnyValueMongoWrapper>)
+                                   val messages: List<AnyValueWrapper>)
         : ActionMongoWrapper() {
 
-        constructor(sentence: SendSentence) : this(sentence.text, sentence.messages.map { AnyValueMongoWrapper(it) }) {
+        constructor(sentence: SendSentence) : this(sentence.text, sentence.messages.map { AnyValueWrapper(it) }) {
             assignFrom(sentence)
         }
 
@@ -274,28 +270,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
         }
     }
 
-    @JsonDeserialize(using = AnyValueDeserializer::class)
-    data class AnyValueMongoWrapper(val klass: Class<*>, val value: Any) {
 
-        constructor(value: Any) : this(value::class.java, value)
-    }
-
-
-    class AnyValueDeserializer : JsonDeserializer<AnyValueMongoWrapper>() {
-
-        override fun deserialize(jp: JsonParser, context: DeserializationContext): AnyValueMongoWrapper? {
-            var fieldName = jp.fieldNameWithValueReady()
-            if (fieldName != null) {
-                val classValue = jp.readValueAs(Class::class.java)!!
-                fieldName = jp.fieldNameWithValueReady()
-                if (fieldName != null) {
-                    val value = jp.readValueAs(classValue)!!
-                    jp.checkEndToken()
-                    return AnyValueMongoWrapper(classValue, value)
-                }
-            }
-            return null
-        }
-
-    }
 }
+
+

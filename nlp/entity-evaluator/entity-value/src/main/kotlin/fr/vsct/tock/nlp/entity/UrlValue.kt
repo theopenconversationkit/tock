@@ -19,5 +19,5 @@ package fr.vsct.tock.nlp.entity
 /**
  *
  */
-class UrlValue(val value: String) : Value  {
+data class UrlValue(val value: String) : Value  {
 }

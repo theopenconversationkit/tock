@@ -25,7 +25,7 @@
     </parent>
 
     <artifactId>tock-nlp-front-service</artifactId>
-    <name>Nlp Front Service</name>
+    <name>Tock NLP Front Service</name>
     <description>Services for Nlp Front</description>
 
     <dependencies>

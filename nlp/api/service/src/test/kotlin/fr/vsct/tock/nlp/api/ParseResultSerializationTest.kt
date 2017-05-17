@@ -18,11 +18,10 @@ package fr.vsct.tock.nlp.api
 
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityType
-import fr.vsct.tock.nlp.core.EntityValue
-import fr.vsct.tock.nlp.entity.ValueResolverRepository
 import fr.vsct.tock.nlp.entity.date.DateEntityGrain
 import fr.vsct.tock.nlp.entity.date.DateEntityValue
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
+import fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue
 import fr.vsct.tock.shared.jackson.mapper
 import org.junit.Test
 import java.time.ZoneOffset
@@ -37,12 +36,10 @@ class ParseResultSerializationTest {
 
     @Test
     fun testEntityValueDeserialization() {
-        ValueResolverRepository.initDefault(mapper)
-
         val s = mapper.writeValueAsString(
                 ParseResult(
                         "test",
-                        listOf(EntityValue(
+                        listOf(ParsedEntityValue(
                                 0,
                                 1,
                                 Entity(EntityType("type"), "role"),

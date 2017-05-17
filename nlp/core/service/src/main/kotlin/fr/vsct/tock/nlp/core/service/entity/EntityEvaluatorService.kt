@@ -23,11 +23,15 @@ import fr.vsct.tock.nlp.model.EntityCallContext
 import fr.vsct.tock.nlp.model.EntityCallContextForEntity
 import fr.vsct.tock.nlp.model.EntityCallContextForIntent
 import fr.vsct.tock.nlp.model.EntityCallContextForSubEntities
+import fr.vsct.tock.shared.error
+import mu.KotlinLogging
 
 /**
  *
  */
 internal object EntityEvaluatorService {
+
+    private val logger = KotlinLogging.logger {}
 
     private val providerByEntityType: Map<String, EntityEvaluatorProvider> = SupportedEntityEvaluatorsProvider
             .evaluators()
@@ -56,7 +60,20 @@ internal object EntityEvaluatorService {
                 .mapNotNull { getEntityEvaluatorProvider(it.entityType) }
                 .distinct()
                 .mapNotNull { it.getEntityTypeClassifier() }
-                .flatMap { it.classifyEntities(context, text, tokens) }
+                .flatMap { classifyEntities(it, context, text, tokens) }
+    }
+
+    private fun classifyEntities(
+            classifier: EntityTypeClassifier,
+            context: EntityCallContext,
+            text: String,
+            tokens: Array<String>): List<EntityTypeRecognition> {
+        return try {
+            classifier.classifyEntities(context, text, tokens)
+        } catch(e: Exception) {
+            logger.error(e)
+            emptyList()
+        }
     }
 
     fun evaluateEntities(context: CallContext, text: String, entitiesRecognition: List<EntityRecognition>): List<EntityRecognition> {
@@ -67,7 +84,7 @@ internal object EntityEvaluatorService {
                             e ->
                             getEntityEvaluatorProvider(e.entityType)?.let {
                                 it.getEntityEvaluator()?.let { evaluator ->
-                                    e to evaluator.evaluate(EntityCallContextForEntity(context, e.entityType), e.value.textValue(text))
+                                    e to evaluate(evaluator, EntityCallContextForEntity(context, e.entityType), e.value.textValue(text))
                                 }
                             }
                         }
@@ -82,6 +99,17 @@ internal object EntityEvaluatorService {
             } else {
                 it
             }
+        }
+    }
+
+    fun evaluate(evaluator: EntityEvaluator,
+                 context: EntityCallContextForEntity,
+                 text: String): EvaluationResult {
+        return try {
+            evaluator.evaluate(context, text)
+        } catch(e: Exception) {
+            logger.error(e)
+            EvaluationResult(false)
         }
     }
 }

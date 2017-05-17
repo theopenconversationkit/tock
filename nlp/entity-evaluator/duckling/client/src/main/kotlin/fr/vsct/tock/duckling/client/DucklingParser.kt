@@ -41,7 +41,6 @@ import fr.vsct.tock.nlp.model.EntityCallContext
 import fr.vsct.tock.nlp.model.EntityCallContextForEntity
 import fr.vsct.tock.nlp.model.EntityCallContextForIntent
 import fr.vsct.tock.nlp.model.EntityCallContextForSubEntities
-import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.name
 import mu.KotlinLogging
 import java.lang.Exception
@@ -154,21 +153,16 @@ internal object DucklingParser : EntityEvaluator, EntityTypeClassifier {
     }
 
     override fun evaluate(context: EntityCallContextForEntity, text: String): EvaluationResult {
-        return try {
-            val values = parse(
-                    context.language.language,
-                    tockTypeToDucklingType(context.entityType),
-                    context.referenceDate,
-                    text)
-            val v = values.firstOrNull()
-            if (v == null) {
-                EvaluationResult(false)
-            } else {
-                EvaluationResult(true, v.value, if (v.start == 0 && v.end == text.length) 1.0 else 0.5)
-            }
-        } catch(e: Exception) {
-            logger.error(e)
+        val values = parse(
+                context.language.language,
+                tockTypeToDucklingType(context.entityType),
+                context.referenceDate,
+                text)
+        val v = values.firstOrNull()
+        return if (v == null) {
             EvaluationResult(false)
+        } else {
+            EvaluationResult(true, v.value, if (v.start == 0 && v.end == text.length) 1.0 else 0.5)
         }
     }
 

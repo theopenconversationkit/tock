@@ -34,4 +34,11 @@
         <module>client</module>
     </modules>
 
+    <dependencies>
+        <dependency>
+            <groupId>fr.vsct.tock</groupId>
+            <artifactId>tock-nlp-entity-value</artifactId>
+        </dependency>
+    </dependencies>
+
 </project>

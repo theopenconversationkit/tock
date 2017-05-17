@@ -19,5 +19,5 @@ package fr.vsct.tock.nlp.entity
 /**
  *
  */
-class VolumeValue(val value: Number, val unit:String) : Value {
+data class VolumeValue(val value: Number, val unit:String) : Value {
 }

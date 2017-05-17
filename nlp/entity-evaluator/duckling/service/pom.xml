@@ -25,7 +25,7 @@
     </parent>
 
     <artifactId>tock-nlp-duckling-service</artifactId>
-    <name>Duckling Entities Service</name>
+    <name>Tock Duckling Entities Service</name>
     <description>Services for Duckling Entities</description>
 
     <properties>

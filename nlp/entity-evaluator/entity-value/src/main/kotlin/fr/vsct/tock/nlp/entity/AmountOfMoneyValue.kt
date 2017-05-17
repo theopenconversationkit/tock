@@ -19,5 +19,5 @@ package fr.vsct.tock.nlp.entity
 /**
  *
  */
-class AmountOfMoneyValue(val value: Number, val unit:String) : Value {
+data class AmountOfMoneyValue(val value: Number, val unit:String) : Value {
 }

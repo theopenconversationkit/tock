@@ -25,7 +25,7 @@
     </parent>
 
     <artifactId>tock-nlp-model-service</artifactId>
-    <name>Nlp Model Service</name>
+    <name>Tock NLP Model Service</name>
     <description>Services for Nlp Model</description>
 
     <dependencies>

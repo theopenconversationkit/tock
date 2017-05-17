@@ -34,14 +34,4 @@ class DateEntityValueDateSerializationTest {
         assertEquals(v, mapper.readValue(s, Value::class.java))
     }
 
-    class WithNoTypedValue(val v: Any)
-
-    class WithTypedValue(val v: Value)
-
-    @Test
-    fun testSerializeAndDeserializeNoTypedValue() {
-        val v = WithNoTypedValue(DateEntityValue(ZonedDateTime.now(ZoneId.of("UTC")), DateEntityGrain.day))
-        val s = mapper.writeValueAsString(v)
-        assertEquals(v.v, mapper.readValue(s, WithTypedValue::class.java).v)
-    }
 }

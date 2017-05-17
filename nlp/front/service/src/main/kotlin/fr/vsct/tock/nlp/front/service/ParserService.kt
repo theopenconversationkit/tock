@@ -30,6 +30,7 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
+import fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue
 import fr.vsct.tock.nlp.front.shared.parser.QueryDescription
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.withoutNamespace
@@ -110,7 +111,7 @@ object ParserService : Parser {
                         })
                 ParseResult(
                         config.getIntentById(validatedSentence.classification.intentId)!!.shortQualifiedName(query.namespace),
-                        entityValues.map { it.value },
+                        entityValues.map { ParsedEntityValue(it.value) },
                         1.0,
                         1.0,
                         q
@@ -123,7 +124,7 @@ object ParserService : Parser {
 
             val result = ParseResult(
                     parseResult.intent.withoutNamespace(query.namespace),
-                    parseResult.entities,
+                    parseResult.entities.map { ParsedEntityValue(it) },
                     parseResult.intentProbability,
                     parseResult.entitiesProbability,
                     q)

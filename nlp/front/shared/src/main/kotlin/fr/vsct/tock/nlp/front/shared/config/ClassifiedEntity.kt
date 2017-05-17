@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.shared.config
 
 import fr.vsct.tock.nlp.core.EntityValue
+import fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue
 
 /**
  *
@@ -26,7 +27,7 @@ data class ClassifiedEntity(val type: String,
                             val start: Int,
                             val end: Int) {
 
-    constructor(value: EntityValue) : this(
+    constructor(value: ParsedEntityValue) : this(
             value.entity.entityType.name,
             value.entity.role,
             value.start,

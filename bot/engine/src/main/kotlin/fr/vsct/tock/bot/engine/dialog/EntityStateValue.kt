@@ -32,7 +32,7 @@ data class EntityStateValue(var value: ContextValue?,
     constructor(entity: Entity, value: Value) : this(ContextValue(entity, value))
 
     fun changeValue(entity: Entity, newValue: Value?, action: Action? = null): EntityStateValue {
-        return changeValue(ContextValue(entity, newValue))
+        return changeValue(ContextValue(entity, newValue), action)
     }
 
     fun changeValue(newValue: ContextValue?, action: Action? = null): EntityStateValue {

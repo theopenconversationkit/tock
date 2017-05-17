@@ -27,7 +27,7 @@
     <artifactId>tock-translator</artifactId>
     <packaging>pom</packaging>
     <name>Tock Translator</name>
-    <description>Toot project for translators</description>
+    <description>Root project for translators</description>
 
     <modules>
         <module>core</module>

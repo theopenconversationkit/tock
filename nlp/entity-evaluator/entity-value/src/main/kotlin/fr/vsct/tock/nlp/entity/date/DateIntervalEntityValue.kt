@@ -16,11 +16,19 @@
 
 package fr.vsct.tock.nlp.entity.date
 
-import fr.vsct.tock.nlp.entity.Value
+import java.time.ZonedDateTime
 
 /**
- *
+ * Date interval definition.
  */
 data class DateIntervalEntityValue(val date: DateEntityValue,
-                                   val toDate: DateEntityValue) : Value {
+                                   val toDate: DateEntityValue) : DateEntityRange {
+
+    override fun start(): ZonedDateTime {
+        return date.date
+    }
+
+    override fun end(): ZonedDateTime {
+        return toDate.grain.calculateEnd(toDate.date)
+    }
 }

@@ -17,13 +17,21 @@
 package fr.vsct.tock.nlp.entity.date
 
 import java.lang.Exception
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit.DAYS
+import java.time.temporal.ChronoUnit.HOURS
+import java.time.temporal.ChronoUnit.MINUTES
+import java.time.temporal.ChronoUnit.MONTHS
+import java.time.temporal.ChronoUnit.SECONDS
+import java.time.temporal.ChronoUnit.WEEKS
+import java.time.temporal.ChronoUnit.YEARS
 
 /**
  *
  */
 enum class DateEntityGrain(val time: Boolean) {
 
-    //the  order is important
+    //the order is important (duckling parsing)
     timezone(false),
     unknown(false),
     second(true),
@@ -36,13 +44,28 @@ enum class DateEntityGrain(val time: Boolean) {
     quarter(false),
     year(false);
 
-    fun from(s: String?): DateEntityGrain {
-        try {
-            return if (s == null) unknown else valueOf(s)
-        } catch (e: Exception) {
-            return unknown
+    companion object {
+        fun from(s: String?): DateEntityGrain {
+            try {
+                return if (s == null) unknown else valueOf(s)
+            } catch (e: Exception) {
+                return unknown
+            }
         }
+    }
 
+    fun calculateEnd(start: ZonedDateTime): ZonedDateTime {
+        return when (this) {
+            second -> start.plusSeconds(1).truncatedTo(SECONDS)
+            minute -> start.plusMinutes(1).truncatedTo(MINUTES)
+            hour -> start.plusHours(1).truncatedTo(HOURS)
+            day_of_week, day -> start.plusDays(1).truncatedTo(DAYS)
+            week -> start.plusWeeks(1).truncatedTo(WEEKS)
+            month -> start.plusMonths(1).truncatedTo(MONTHS)
+            quarter -> start.plusMonths(3).truncatedTo(MONTHS)
+            year -> start.plusYears(1).truncatedTo(YEARS)
+            else -> start
+        }
     }
 
 }

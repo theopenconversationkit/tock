@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.front.shared.parser
+package fr.vsct.tock.nlp.entity.date
+
+import org.junit.Test
+import java.time.LocalTime
+import java.time.ZonedDateTime
+import kotlin.test.assertEquals
 
 /**
  *
  */
-data class ParseResult(val intent: String,
-                       val entities: List<ParsedEntityValue>,
-                       val intentProbability: Double,
-                       val entitiesProbability: Double,
-                       val retainedQuery: String) {
+class DateEntityGrainTest {
 
-    fun firstValue(role: String): ParsedEntityValue? = entities.firstOrNull { it.entity.role == role }
+    @Test
+    fun calculateEnd_WithDayGrain_ReturnsTimeEqualsToLocalTimeMin() {
+        val now = ZonedDateTime.now()
+        val end = DateEntityGrain.day.calculateEnd(now)
+        assertEquals(now.plusDays(1).dayOfYear, end.dayOfYear)
+        assertEquals(LocalTime.MIN, end.toLocalTime())
+    }
 }

@@ -16,13 +16,7 @@
 
 package fr.vsct.tock.nlp.entity
 
-import com.fasterxml.jackson.core.JsonGenerator
-import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.SerializerProvider
-import com.fasterxml.jackson.databind.jsontype.TypeSerializer
-import com.fasterxml.jackson.databind.module.SimpleModule
-import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import fr.vsct.tock.nlp.entity.date.DateEntityValue
 import fr.vsct.tock.nlp.entity.date.DateIntervalEntityValue
 import fr.vsct.tock.nlp.entity.temperature.TemperatureValue
@@ -37,27 +31,22 @@ object ValueResolverRepository {
     private val idClassMap = ConcurrentHashMap<String, KClass<out Value>>()
     private val classIdMap = ConcurrentHashMap<KClass<out Value>, String>()
 
-    /**
-     * Init default mappings.
-     */
-    fun initDefault(mapper: ObjectMapper) {
-        mapper.subtypeResolver
-        //workarounds https://github.com/FasterXML/jackson-databind/issues/1594
-        mapper.copy().apply {
-            listOf(
-                    DateEntityValue::class,
-                    DateIntervalEntityValue::class,
-                    NumberValue::class,
-                    OrdinalValue::class,
-                    DistanceValue::class,
-                    TemperatureValue::class,
-                    VolumeValue::class,
-                    AmountOfMoneyValue::class,
-                    EmailValue::class,
-                    UrlValue::class,
-                    PhoneNumberValue::class)
-                    .forEach { registerType(mapper, this, it) }
-        }
+    init {
+        listOf(
+                DateEntityValue::class,
+                DateIntervalEntityValue::class,
+                NumberValue::class,
+                OrdinalValue::class,
+                DistanceValue::class,
+                TemperatureValue::class,
+                VolumeValue::class,
+                AmountOfMoneyValue::class,
+                EmailValue::class,
+                UrlValue::class,
+                PhoneNumberValue::class,
+                CustomValueWrapper::class
+        )
+                .forEach { registerType(it) }
     }
 
     /**
@@ -66,57 +55,33 @@ object ValueResolverRepository {
      * @mapper the jackson mapper
      * @kClass the class to register
      */
+    fun <T : Value> registerType(kClass: KClass<T>) {
+        kClass.simpleName!!
+                .replace("Value", "")
+                .decapitalize()
+                .apply {
+                    idClassMap.put(this, kClass)
+                    classIdMap.put(kClass, this)
+                }
+    }
+
+    @Deprecated("use without mapper parameter instead")
     fun <T : Value> registerType(mapper: ObjectMapper, kClass: KClass<T>) {
-        registerType(
-                mapper,
-                mapper.copy(),
-                kClass)
-    }
-
-    private fun <T : Value> registerType(
-            mapper: ObjectMapper,
-            mapperCopy: ObjectMapper,
-            kClass: KClass<T>) {
-        @Suppress("UNCHECKED_CAST")
-        registerType(
-                mapper,
-                mapperCopy.serializerProviderInstance.findTypedValueSerializer(kClass.java, false, null) as JsonSerializer<T>,
-                kClass)
-    }
-
-    private fun <T : Value> registerType(
-            mapper: ObjectMapper,
-            jsonSerializer: JsonSerializer<T>,
-            kClass: KClass<T>) {
-
-        //workarounds https://github.com/FasterXML/jackson-databind/issues/1594
-        val typeSerializer = mapper.serializerProviderInstance.findTypeSerializer(mapper.constructType(kClass.java))
-        val module = SimpleModule().addSerializer(
-                kClass.java,
-                @Suppress("UNCHECKED_CAST")
-                object : StdSerializer<T>(kClass::class.java as Class<T>) {
-
-                    override fun serialize(value: T, gen: JsonGenerator, provider: SerializerProvider) {
-                        jsonSerializer.serializeWithType(value, gen, provider, typeSerializer)
-                    }
-
-                    override fun serializeWithType(value: T, gen: JsonGenerator, serializers: SerializerProvider, typeSer: TypeSerializer) {
-                        jsonSerializer.serializeWithType(value, gen, serializers, typeSer)
-                    }
-                })
-        mapper.registerModule(module)
-
-        kClass.simpleName!!.apply {
-            idClassMap.put(this, kClass)
-            classIdMap.put(kClass, this)
-        }
+        registerType(kClass)
     }
 
     fun getType(id: String): KClass<out Value> {
-        return idClassMap.getValue(id)
+        return idClassMap[id] ?:
+                try {
+                    @Suppress("UNCHECKED_CAST")
+                    Class.forName(id) as KClass<out Value>
+                } catch(e: ClassNotFoundException) {
+                    error("Please call ValueResolverRepository#registerType during app initialization for $id")
+                }
     }
 
     fun <T : Value> getId(kClass: KClass<T>): String {
-        return classIdMap.getValue(kClass)
+        return classIdMap[kClass]
+                ?: kClass.qualifiedName!!
     }
 }

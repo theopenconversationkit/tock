@@ -25,7 +25,7 @@
     </parent>
 
     <artifactId>tock-translator-noop</artifactId>
-    <name>NoOp Translator </name>
+    <name>Tock NoOp Translator </name>
     <description>No operation translator implementation</description>
 
     <dependencies>
