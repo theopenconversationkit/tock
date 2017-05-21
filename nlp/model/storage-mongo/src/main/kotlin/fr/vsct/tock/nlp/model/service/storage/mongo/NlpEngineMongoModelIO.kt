@@ -25,10 +25,9 @@ import com.mongodb.client.gridfs.GridFSDownloadStream
 import com.mongodb.client.gridfs.model.GridFSFile
 import com.mongodb.client.gridfs.model.GridFSUploadOptions
 import com.mongodb.client.model.Filters
-import fr.vsct.tock.nlp.model.ClassifierContext
 import fr.vsct.tock.nlp.model.ClassifierContextKey
-import fr.vsct.tock.nlp.model.EntityContext
-import fr.vsct.tock.nlp.model.IntentContext
+import fr.vsct.tock.nlp.model.EntityContextKey
+import fr.vsct.tock.nlp.model.IntentContext.IntentContextKey
 import fr.vsct.tock.nlp.model.service.storage.NlpEngineModelIO
 import fr.vsct.tock.nlp.model.service.storage.NlpModelStream
 import fr.vsct.tock.shared.injector
@@ -49,67 +48,63 @@ object NlpEngineMongoModelIO : NlpEngineModelIO {
     private val entityBucket: GridFSBucket  by lazy { GridFSBuckets.create(database, "fs_entity") }
     private val intentBucket: GridFSBucket  by lazy { GridFSBuckets.create(database, "fs_intent") }
 
-    private fun <T : ClassifierContextKey> getGridFSFile(bucket: GridFSBucket, context: ClassifierContext<T>): GridFSFile? {
-        return context.key().let { key ->
-            try {
-                bucket.find(Filters.eq("metadata", key)).firstOrNull()
-            } catch(e: MongoGridFSException) {
-                logger.debug(e) { "no model exists for $context" }
-                null
-            }
+    private fun getGridFSFile(bucket: GridFSBucket, key: ClassifierContextKey): GridFSFile? {
+        return try {
+            bucket.find(Filters.eq("metadata", key)).firstOrNull()
+        } catch(e: MongoGridFSException) {
+            logger.debug(e) { "no model exists for $key" }
+            null
         }
     }
 
-    private fun <T : ClassifierContextKey> getDownloadStream(bucket: GridFSBucket, context: ClassifierContext<T>): GridFSDownloadStream? {
-        return getGridFSFile(bucket, context)?.let {
+    private fun getDownloadStream(bucket: GridFSBucket, key: ClassifierContextKey): GridFSDownloadStream? {
+        return getGridFSFile(bucket, key)?.let {
             bucket.openDownloadStream(it.id)
         }
     }
 
-    private fun <T : ClassifierContextKey> saveModel(bucket: GridFSBucket, context: ClassifierContext<T>, stream: InputStream) {
-        context.key().let { key ->
-            val newId = bucket.uploadFromStream(key.name(), stream, GridFSUploadOptions().metadata(Document.parse(key.json)))
-            //remove old versions
-            bucket.find(Filters.eq("metadata", key)).forEach {
-                if (it.objectId != newId) {
-                    logger.debug { "Remove file ${it.objectId} for $context" }
-                    bucket.delete(it.objectId)
-                }
+    private fun saveModel(bucket: GridFSBucket, key: ClassifierContextKey, stream: InputStream) {
+        val newId = bucket.uploadFromStream(key.name(), stream, GridFSUploadOptions().metadata(Document.parse(key.json)))
+        //remove old versions
+        bucket.find(Filters.eq("metadata", key)).forEach {
+            if (it.objectId != newId) {
+                logger.debug { "Remove file ${it.objectId} for $key" }
+                bucket.delete(it.objectId)
             }
         }
     }
 
-    private fun <T : ClassifierContextKey> getModelInputStream(bucket: GridFSBucket, context: ClassifierContext<T>): NlpModelStream? {
-        return getDownloadStream(bucket, context)?.let {
+    private fun getModelInputStream(bucket: GridFSBucket, key: ClassifierContextKey): NlpModelStream? {
+        return getDownloadStream(bucket, key)?.let {
             NlpModelStream(it, it.gridFSFile.uploadDate.toInstant())
         }
     }
 
-    private fun <T : ClassifierContextKey> getLastUpdate(bucket: GridFSBucket, context: ClassifierContext<T>): Instant? {
-        return getGridFSFile(bucket, context)?.uploadDate?.toInstant()
+    private fun getLastUpdate(bucket: GridFSBucket, key: ClassifierContextKey): Instant? {
+        return getGridFSFile(bucket, key)?.uploadDate?.toInstant()
     }
 
-    override fun getEntityModelInputStream(entityContext: EntityContext): NlpModelStream? {
-        return getModelInputStream(entityBucket, entityContext)
+    override fun getEntityModelInputStream(key: EntityContextKey): NlpModelStream? {
+        return getModelInputStream(entityBucket, key)
     }
 
-    override fun saveEntityModel(entityContext: EntityContext, stream: InputStream) {
-        saveModel(entityBucket, entityContext, stream)
+    override fun saveEntityModel(key: EntityContextKey, stream: InputStream) {
+        saveModel(entityBucket, key, stream)
     }
 
-    override fun getEntityModelLastUpdate(entityContext: EntityContext): Instant? {
-        return getLastUpdate(entityBucket, entityContext)
+    override fun getEntityModelLastUpdate(key: EntityContextKey): Instant? {
+        return getLastUpdate(entityBucket, key)
     }
 
-    override fun getIntentModelInputStream(intentContext: IntentContext): NlpModelStream? {
-        return getModelInputStream(intentBucket, intentContext)
+    override fun getIntentModelInputStream(key: IntentContextKey): NlpModelStream? {
+        return getModelInputStream(intentBucket, key)
     }
 
-    override fun saveIntentModel(intentContext: IntentContext, stream: InputStream) {
-        saveModel(intentBucket, intentContext, stream)
+    override fun saveIntentModel(key: IntentContextKey, stream: InputStream) {
+        saveModel(intentBucket, key, stream)
     }
 
-    override fun getIntentModelLastUpdate(intentContext: IntentContext): Instant? {
-        return getLastUpdate(intentBucket, intentContext)
+    override fun getIntentModelLastUpdate(key: IntentContextKey): Instant? {
+        return getLastUpdate(intentBucket, key)
     }
 }

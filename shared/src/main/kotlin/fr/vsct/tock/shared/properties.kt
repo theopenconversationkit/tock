@@ -20,4 +20,8 @@ fun property(name: String, defaultValue: String) : String = System.getenv(name) 
 
 fun intProperty(name: String, defaultValue: Int) : Int = System.getenv(name)?.toInt() ?: defaultValue
 
+fun longProperty(name: String, defaultValue: Long) : Long = System.getenv(name)?.toLong() ?: defaultValue
+
+fun booleanProperty(name: String, defaultValue: Boolean) : Boolean = System.getenv(name)?.toBoolean() ?: defaultValue
+
 val devEnvironment: Boolean = property("tock_env", "dev") == "dev"

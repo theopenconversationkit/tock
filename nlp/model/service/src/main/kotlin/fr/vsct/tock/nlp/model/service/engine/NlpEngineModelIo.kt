@@ -17,7 +17,6 @@
 package fr.vsct.tock.nlp.model.service.engine
 
 import fr.vsct.tock.nlp.model.service.storage.NlpModelStream
-import java.io.InputStream
 import java.io.OutputStream
 
 /**
@@ -25,17 +24,17 @@ import java.io.OutputStream
  */
 interface NlpEngineModelIo {
 
-    fun loadTokenizerModel(input : NlpModelStream) : Any
+    fun loadTokenizerModel(input: NlpModelStream): Any
 
-    fun loadIntentModel(input : NlpModelStream) : Any
+    fun loadIntentModel(input: NlpModelStream): Any
 
-    fun loadEntityModel(input : NlpModelStream) : Any
+    fun loadEntityModel(input: NlpModelStream): Any
 
 
-    fun copyTokenizerModel(model : Any, output : OutputStream)
+    fun copyTokenizerModel(model: Any, output: OutputStream)
 
-    fun copyIntentModel(model : Any, output : OutputStream)
+    fun copyIntentModel(model: Any, output: OutputStream)
 
-    fun copyEntityModel(model : Any, output : OutputStream)
+    fun copyEntityModel(model: Any, output: OutputStream)
 
 }

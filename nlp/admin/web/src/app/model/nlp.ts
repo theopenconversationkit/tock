@@ -113,7 +113,7 @@ export class Sentence {
     if(v.constructor.name === "Object") {
       for (let property in v) {
         if (v.hasOwnProperty(property))
-          if (property == "@type") {
+          if (property === "@type") {
             v["@type"] = undefined;
           } else {
             this.removeTypeForValue(v[property]);

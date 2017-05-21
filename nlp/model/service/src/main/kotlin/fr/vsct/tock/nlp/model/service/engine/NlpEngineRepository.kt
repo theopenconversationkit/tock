@@ -39,23 +39,23 @@ internal object NlpEngineRepository {
         return repository.keys
     }
 
-    private fun getProvider(nlpEngineType: NlpEngineType): NlpEngineProvider {
+    internal fun getProvider(nlpEngineType: NlpEngineType): NlpEngineProvider {
         return repository[nlpEngineType] ?: error("Unknown nlp engine type : $nlpEngineType")
     }
 
     fun getTokenizer(context: TokenizerContext): Tokenizer {
-        return getProvider(context.engineType).getTokenizer(NlpModelRepository.getTokenizerModelHodler(context))
+        return getProvider(context.engineType).getTokenizer(NlpModelRepository.getTokenizerModelHolder(context))
     }
 
     fun getIntentClassifier(context: IntentContext): IntentClassifier {
         return getProvider(context.engineType).let {
-            it.getIntentClassifier(NlpModelRepository.getIntentModelHodler(context, it))
+            it.getIntentClassifier(NlpModelRepository.getIntentModelHolder(context, it))
         }
     }
 
     fun getEntityClassifier(context: EntityCallContext): EntityClassifier? {
         return getProvider(context.engineType).let { provider ->
-            NlpModelRepository.getEntityModelHodler(context, provider)?.let { model ->
+            NlpModelRepository.getEntityModelHolder(context, provider)?.let { model ->
                 provider.getEntityClassifier(model)
             }
         }

@@ -16,22 +16,22 @@
 
 package fr.vsct.tock.nlp.model.service.storage
 
-import fr.vsct.tock.nlp.model.EntityContext
-import fr.vsct.tock.nlp.model.IntentContext
+import fr.vsct.tock.nlp.model.EntityContextKey
+import fr.vsct.tock.nlp.model.IntentContext.IntentContextKey
 import java.io.InputStream
 import java.time.Instant
 
 /**
- *
+ * To save, load and update model files.
  */
 interface NlpEngineModelIO {
 
-    fun getEntityModelInputStream(entityContext: EntityContext): NlpModelStream?
-    fun saveEntityModel(entityContext: EntityContext, stream: InputStream)
-    fun getEntityModelLastUpdate(entityContext: EntityContext): Instant?
+    fun getEntityModelInputStream(key: EntityContextKey): NlpModelStream?
+    fun saveEntityModel(key: EntityContextKey, stream: InputStream)
+    fun getEntityModelLastUpdate(key: EntityContextKey): Instant?
 
-    fun getIntentModelInputStream(intentContext: IntentContext): NlpModelStream?
-    fun saveIntentModel(intentContext: IntentContext, stream: InputStream)
-    fun getIntentModelLastUpdate(intentContext: IntentContext): Instant?
+    fun getIntentModelInputStream(key: IntentContextKey): NlpModelStream?
+    fun saveIntentModel(key: IntentContextKey, stream: InputStream)
+    fun getIntentModelLastUpdate(key: IntentContextKey): Instant?
 
 }

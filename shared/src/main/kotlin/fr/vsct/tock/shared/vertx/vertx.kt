@@ -18,11 +18,14 @@ package fr.vsct.tock.shared.vertx
 
 import fr.vsct.tock.shared.Runner
 import fr.vsct.tock.shared.devEnvironment
+import fr.vsct.tock.shared.error
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
 import mu.KotlinLogging
+import java.time.Duration
+import java.util.concurrent.Callable
 
 private val logger = KotlinLogging.logger {}
 val vertx = Vertx.vertx(
@@ -39,7 +42,7 @@ fun <T> Vertx.blocking(blockingHandler: (Future<T>) -> Unit, resultHandler: (Asy
                 try {
                     blockingHandler.invoke(future)
                 } catch(throwable: Throwable) {
-                    fr.vsct.tock.shared.vertx.logger.error(throwable) { throwable.message }
+                    logger.error(throwable) { throwable.message }
                     future.fail(throwable)
                 }
             },
@@ -48,7 +51,7 @@ fun <T> Vertx.blocking(blockingHandler: (Future<T>) -> Unit, resultHandler: (Asy
                 try {
                     resultHandler.invoke(it)
                 } catch(e: Throwable) {
-                    fr.vsct.tock.shared.vertx.logger.error(e) { e.message }
+                    logger.error(e) { e.message }
                 }
             })
 }
@@ -57,11 +60,41 @@ fun vertxRunner(): Runner {
     return object : Runner {
         override fun executeBlocking(runnable: () -> Unit) {
             vertx.blocking<Unit>({
-                runnable.invoke()
+                invoke(runnable)
                 it.complete()
             }, {})
         }
+
+        override fun <T> executeBlocking(blocking: Callable<T>, result: (T?) -> Unit) {
+            vertx.blocking<T>({
+                blocking.call()
+            }, {
+                if (it.succeeded()) {
+                    result.invoke(it.result())
+                } else {
+                    result.invoke(null)
+                }
+            })
+        }
+
+        override fun setPeriodic(initialDelay: Duration, delay: Duration, runnable: () -> Unit): Long {
+            return vertx.setTimer(initialDelay.toMillis()) {
+                invoke(runnable)
+                vertx.setPeriodic(delay.toMillis()) {
+                    invoke(runnable)
+                }
+            }
+        }
+
+        private fun invoke(runnable: () -> Unit) {
+            try {
+                runnable.invoke()
+            } catch(throwable: Throwable) {
+                logger.error(throwable)
+            }
+        }
     }
 }
+
 
 

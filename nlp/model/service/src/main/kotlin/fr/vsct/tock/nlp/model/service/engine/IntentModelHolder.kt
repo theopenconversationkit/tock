@@ -20,9 +20,9 @@ import fr.vsct.tock.nlp.core.Application
 import java.time.Instant
 
 /**
- *
+ * Holder of native intent model.
  */
-class IntentModelHolder(
+data class IntentModelHolder(
         val application: Application,
         val nativeModel: Any,
-        val lastUpdate: Instant)
+        override val lastUpdate: Instant) : UpdatableHolder

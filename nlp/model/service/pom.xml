@@ -33,6 +33,10 @@
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-nlp-model-shared</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
 
     </dependencies>
 

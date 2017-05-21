@@ -62,13 +62,13 @@ object NlpClassifierService : NlpClassifier {
 
     override fun buildAndSaveIntentModel(context: IntentContext, expressions: List<SampleExpression>) {
         val model = getModelBuilder(context).buildIntentModel(context, expressions)
-        saveIntentModel(context, model, getModelIo(context))
+        saveIntentModel(context.key(), model, getModelIo(context))
     }
 
     override fun buildAndSaveEntityModel(context: EntityBuildContext, expressions: List<SampleExpression>) {
         val exp = filterExpressionsForContext(context, expressions)
         val model = getModelBuilder(context).buildEntityModel(context, exp)
-        saveEntityModel(context, model, getModelIo(context))
+        saveEntityModel(context.key(), model, getModelIo(context))
     }
 
     private fun filterExpressionsForContext(context: EntityBuildContext, expressions: List<SampleExpression>): List<SampleExpression> {
