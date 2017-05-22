@@ -27,7 +27,7 @@ import fr.vsct.tock.nlp.core.Intent
 data class SampleExpression(val text: String,
                             val intent: Intent,
                             val entities: List<SampleEntity> = emptyList(),
-                            val context: SampleContext) {
+                            val context: SampleContext = SampleContext()) {
 
     fun entityValues(def: Entity): List<String> {
         return entities
