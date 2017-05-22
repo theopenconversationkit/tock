@@ -18,6 +18,7 @@ package fr.vsct.tock.translator
 
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.shared.Dice
+import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
 import java.text.ChoiceFormat
@@ -30,8 +31,12 @@ import java.util.Locale
  */
 object Translator {
 
+    /**
+     * Translator and i18n support is disabled by default.
+     * Set it to true if you want to enable i18n.
+     */
     @Volatile
-    private var enabled: Boolean = false
+    var enabled: Boolean = booleanProperty("tock_i18n_enabled", false)
 
     private val keyLabelRegex = "[^\\p{L}_]+".toRegex()
     private val defaultInterface: UserInterfaceType = UserInterfaceType.textChat
