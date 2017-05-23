@@ -109,7 +109,7 @@ object ParserService : Parser {
                                     1.0
                             )
                         })
-                ParseResult(
+                return ParseResult(
                         config.getIntentById(validatedSentence.classification.intentId)!!.shortQualifiedName(query.namespace),
                         entityValues.map { ParsedEntityValue(it.value) },
                         1.0,

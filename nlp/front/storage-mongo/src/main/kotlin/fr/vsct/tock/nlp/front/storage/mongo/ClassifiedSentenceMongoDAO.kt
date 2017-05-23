@@ -128,7 +128,7 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     listOfNotNull(
                             "'applicationId':${applicationId.json}",
                             "'language':${language.json}",
-                            if (search.isNullOrBlank()) null else if (query.onlyExactMatch) "'fullText':${search!!.json}" else "'fullText':/${search!!.trim()}/i",
+                            if (search.isNullOrBlank()) null else if (query.onlyExactMatch) "'text':${search!!.json}" else "'fullText':/${search!!.trim()}/i",
                             if (intentId.isNullOrBlank()) null else "'classification.intentId':${intentId!!.json}",
                             if (filterStatus.isEmpty()) null else filterStatus
                     ).joinToString(",", "{", "}")

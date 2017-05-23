@@ -31,6 +31,6 @@ data class ParseQuery(val query: String,
                 listOf(query),
                 namespace,
                 applicationName,
-                QueryContext(language, "admin", engineType = engineType, checkExistingQuery = false))
+                QueryContext(language, "admin", engineType = engineType, checkExistingQuery = true))
     }
 }
