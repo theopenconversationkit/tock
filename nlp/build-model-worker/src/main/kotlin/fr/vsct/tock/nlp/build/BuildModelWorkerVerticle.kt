@@ -34,7 +34,6 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 class BuildModelWorkerVerticle : AbstractVerticle() {
 
-
     data class ModelRefreshKey(val applicationId: String, val language: Locale)
 
     companion object {
@@ -107,7 +106,10 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                                 .forEach {
                                     //for now only full rebuild
                                     front.deleteTriggersForApplicationId(it.key)
-                                    updateApplicationModels(front.getApplicationById(it.key)!!)
+                                    front.getApplicationById(it.key)?.let {
+                                        updateApplicationModels(it)
+                                    } ?: logger.warn { "unknown application id trigger ${it.key} - skipped" }
+
                                 }
                     }
                 } catch(e: Throwable) {
