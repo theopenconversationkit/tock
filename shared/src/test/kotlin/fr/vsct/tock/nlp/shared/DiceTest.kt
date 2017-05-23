@@ -14,22 +14,21 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package fr.vsct.tock.nlp.shared
 
-import org.bson.types.ObjectId
-import java.util.Random
-import java.util.concurrent.ThreadLocalRandom
+import fr.vsct.tock.shared.Dice
+import org.junit.Test
+import kotlin.test.assertTrue
 
 /**
  *
  */
-object Dice {
+class DiceTest {
 
-    private fun random(): Random = ThreadLocalRandom.current()
-
-    fun <T> choose(list: List<T>): T {
-        return list[random().nextInt(list.size)]
+    @Test
+    fun newId_ShouldReturnAtLeats23CharsAndAtMost24() {
+        Dice.newId().apply {
+            assertTrue(length >= 23 && length <= 24)
+        }
     }
-
-    fun newId(): String = ObjectId().toHexString()
 }
