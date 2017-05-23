@@ -29,7 +29,7 @@ import mu.KotlinLogging
 /**
  *
  */
-internal object EntityEvaluatorService {
+internal object EntityCoreService : EntityCore {
 
     private val logger = KotlinLogging.logger {}
 
@@ -40,13 +40,13 @@ internal object EntityEvaluatorService {
             }
             .toMap()
 
-    fun getEvaluatedEntityTypes(): Set<String> = providerByEntityType.keys
+    override fun getEvaluatedEntityTypes(): Set<String> = providerByEntityType.keys
 
     private fun getEntityEvaluatorProvider(entityType: EntityType): EntityEvaluatorProvider? {
         return providerByEntityType[entityType.name]
     }
 
-    fun classifyEntityTypes(context: EntityCallContext, text: String, tokens: Array<String>): List<EntityTypeRecognition> {
+    override fun classifyEntityTypes(context: EntityCallContext, text: String, tokens: Array<String>): List<EntityTypeRecognition> {
         return when (context) {
             is EntityCallContextForIntent -> classifyEntityTypesForIntent(context, text, tokens)
             is EntityCallContextForEntity -> TODO()
@@ -76,7 +76,7 @@ internal object EntityEvaluatorService {
         }
     }
 
-    fun evaluateEntities(context: CallContext, text: String, entitiesRecognition: List<EntityRecognition>): List<EntityRecognition> {
+    override fun evaluateEntities(context: CallContext, text: String, entitiesRecognition: List<EntityRecognition>): List<EntityRecognition> {
         val newEvaluatedEntities: Map<EntityRecognition, EvaluationResult> =
                 entitiesRecognition
                         .filterNot { it.value.evaluated }

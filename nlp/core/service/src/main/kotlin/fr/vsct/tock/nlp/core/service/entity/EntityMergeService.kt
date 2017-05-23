@@ -26,7 +26,7 @@ import mu.KotlinLogging
 /**
  * Merge intent entity model results & dedicated entity models results.
  */
-internal object EntityMergeService {
+internal object EntityMergeService : EntityMerge {
 
     sealed class Weighted(val weight: Double, val range: IntOpenRange) : Comparable<Weighted> {
         override fun compareTo(other: Weighted): Int {
@@ -56,7 +56,7 @@ internal object EntityMergeService {
 
     private val logger = KotlinLogging.logger {}
 
-    fun mergeEntityTypes(
+    override fun mergeEntityTypes(
             intent: Intent,
             entities: List<EntityRecognition>,
             entityTypes: List<EntityTypeRecognition>): List<EntityRecognition> {

@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.core.service
 
+import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.BuildContext
 import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
@@ -25,15 +26,16 @@ import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.ParsingResult
 import fr.vsct.tock.nlp.core.sample.SampleExpression
-import fr.vsct.tock.nlp.core.service.entity.EntityEvaluatorService
-import fr.vsct.tock.nlp.core.service.entity.EntityMergeService
+import fr.vsct.tock.nlp.core.service.entity.EntityCore
+import fr.vsct.tock.nlp.core.service.entity.EntityMerge
 import fr.vsct.tock.nlp.model.EntityBuildContextForIntent
 import fr.vsct.tock.nlp.model.EntityCallContextForIntent
 import fr.vsct.tock.nlp.model.IntentContext
 import fr.vsct.tock.nlp.model.ModelNotInitializedException
+import fr.vsct.tock.nlp.model.NlpClassifier
 import fr.vsct.tock.nlp.model.TokenizerContext
-import fr.vsct.tock.nlp.model.client.NlpClassifierClient
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
 
 /**
@@ -45,8 +47,12 @@ object NlpCoreService : NlpCore {
 
     private val unknownResult = ParsingResult(Intent.Companion.unknownIntent, emptyList(), 1.0, 1.0)
 
+    private val entityCore: EntityCore by injector.instance()
+    private val entityMerge: EntityMerge by injector.instance()
+    private val nlpClassifier: NlpClassifier by injector.instance()
+
     private fun tokenize(context: CallContext, text: String): Array<String> {
-        return NlpClassifierClient.tokenize(TokenizerContext(context), text)
+        return nlpClassifier.tokenize(TokenizerContext(context), text)
     }
 
     override fun parse(context: CallContext,
@@ -54,14 +60,14 @@ object NlpCoreService : NlpCore {
                        intentSelector: (List<IntentRecognition>) -> IntentRecognition?): ParsingResult {
         try {
             val tokens = tokenize(context, text)
-            val intents = NlpClassifierClient.classifyIntent(IntentContext(context), text, tokens)
+            val intents = nlpClassifier.classifyIntent(IntentContext(context), text, tokens)
             val intent = intentSelector.invoke(intents)
 
             if (intent == null) {
                 return unknownResult
             }
 
-            val evaluatedEntities = evaluateEntities(context, intent.intent, text, tokens)
+            val evaluatedEntities = classifyAndEvaluate(context, intent.intent, text, tokens)
 
             return ParsingResult(
                     intent.intent.name,
@@ -77,38 +83,47 @@ object NlpCoreService : NlpCore {
         }
     }
 
-    private fun evaluateEntities(context: CallContext, intent: Intent, text: String, tokens: Array<String>): List<EntityRecognition> {
-        //TODO regexp
+    internal fun classifyAndEvaluate(
+            context: CallContext,
+            intent: Intent,
+            text: String,
+            tokens: Array<String>): List<EntityRecognition> {
+        return try {
+            //TODO regexp
 
-        //evaluate entities from intent entity model & dedicated entity models
-        val intentContext = EntityCallContextForIntent(context, intent)
-        val entities = NlpClassifierClient.classifyEntities(intentContext, text, tokens)
-        val evaluatedEntities = evaluateEntities(context, text, entities)
-        val classifiedEntityTypes = EntityEvaluatorService.classifyEntityTypes(intentContext, text, tokens)
+            //evaluate entities from intent entity model & dedicated entity models
+            val intentContext = EntityCallContextForIntent(context, intent)
+            val entities = nlpClassifier.classifyEntities(intentContext, text, tokens)
+            val evaluatedEntities = evaluateEntities(context, text, entities)
+            val classifiedEntityTypes = entityCore.classifyEntityTypes(intentContext, text, tokens)
 
-        return EntityMergeService.mergeEntityTypes(intent, evaluatedEntities, classifiedEntityTypes)
+            entityMerge.mergeEntityTypes(intent, evaluatedEntities, classifiedEntityTypes)
+        } catch(e: Exception) {
+            logger.error(e)
+            emptyList()
+        }
     }
 
     override fun evaluateEntities(
             context: CallContext,
             text: String,
             entities: List<EntityRecognition>): List<EntityRecognition> {
-        return EntityEvaluatorService.evaluateEntities(context, text, entities)
+        return entityCore.evaluateEntities(context, text, entities)
     }
 
     override fun updateIntentModel(context: BuildContext, expressions: List<SampleExpression>) {
-        NlpClassifierClient.buildAndSaveIntentModel(IntentContext(context), expressions)
+        nlpClassifier.buildAndSaveIntentModel(IntentContext(context), expressions)
     }
 
     override fun updateEntityModelForIntent(context: BuildContext, intent: Intent, expressions: List<SampleExpression>) {
-        NlpClassifierClient.buildAndSaveEntityModel(EntityBuildContextForIntent(context, intent), expressions)
+        nlpClassifier.buildAndSaveEntityModel(EntityBuildContextForIntent(context, intent), expressions)
     }
 
     override fun supportedNlpEngineTypes(): Set<NlpEngineType> {
-        return NlpClassifierClient.supportedNlpEngineTypes()
+        return nlpClassifier.supportedNlpEngineTypes()
     }
 
     override fun getEvaluatedEntityTypes(): Set<String> {
-        return EntityEvaluatorService.getEvaluatedEntityTypes()
+        return entityCore.getEvaluatedEntityTypes()
     }
 }
