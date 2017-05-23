@@ -103,11 +103,13 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
         vertx.createHttpServer()
     }
 
-    protected open val rootPath = ""
+    protected open val rootPath: String = ""
 
-    protected open val authenticatePath = "/rest/authenticate"
+    protected open val authenticatePath: String = "/rest/authenticate"
 
     private val verticleName: String = this::class.simpleName!!
+
+    protected open fun protectedPath(): String = rootPath
 
     abstract fun configure()
 
@@ -138,7 +140,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
         router.route().handler(UserSessionHandler.create(authProvider))
         val authHandler = BasicAuthHandler.create(authProvider)
 
-        router.route("$rootPath/*").handler(authHandler)
+        router.route("${protectedPath()}/*").handler(authHandler)
 
         router.post(authenticatePath).handler { context ->
             val request = mapper.readValue<AuthenticateRequest>(context.bodyAsString)
