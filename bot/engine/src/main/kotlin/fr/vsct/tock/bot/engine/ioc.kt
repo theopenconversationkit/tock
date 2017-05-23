@@ -14,30 +14,12 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot
-
-import botModule
 import com.github.salomonbrys.kodein.Kodein
-import fr.vsct.tock.bot.mongo.botMongoModule
-import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.sharedModule
-import fr.vsct.tock.translator.noop.noOpTranslatorModule
-import mu.KotlinLogging
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
+import fr.vsct.tock.bot.engine.Nlp
+import fr.vsct.tock.bot.engine.NlpService
 
-/**
- *
- */
-object BotIoc {
-
-    private val logger = KotlinLogging.logger {}
-
-    fun setup() {
-        logger.debug { "Start bot injection" }
-        injector.inject(Kodein {
-            import(sharedModule)
-            import(botModule)
-            import(botMongoModule)
-            import(noOpTranslatorModule)
-        })
-    }
+val botModule = Kodein.Module {
+    bind<NlpService>() with provider { Nlp }
 }

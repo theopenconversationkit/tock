@@ -14,27 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package fr.vsct.tock.bot.engine
 
-import org.bson.types.ObjectId
-import java.util.Random
-import java.util.UUID
-import java.util.concurrent.ThreadLocalRandom
+import fr.vsct.tock.bot.definition.BotDefinitionBase
 
-/**
- *
- */
-object Dice {
+class BotDefinitionTest
+    : BotDefinitionBase(
+        "test",
+        "namespace",
+        stories = emptyList()
+)
 
-    private fun random(): Random = ThreadLocalRandom.current()
-
-    fun <T> choose(list: List<T>): T {
-        return list[random().nextInt(list.size)]
-    }
-
-    fun newId(): String = try {
-        ObjectId().toHexString()
-    } catch(e: NoClassDefFoundError) {
-        UUID.randomUUID().toString()
-    }
-}

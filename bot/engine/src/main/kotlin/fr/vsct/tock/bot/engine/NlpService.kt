@@ -16,31 +16,30 @@
 
 package fr.vsct.tock.bot.engine
 
-import fr.vsct.tock.nlp.api.client.NlpClient
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
-import mu.KotlinLogging
 import java.io.InputStream
 
 /**
- * [NlpService] default implementation.
+ * Send NLP requests.
  */
-object Nlp : NlpService {
+interface NlpService {
 
-    private val logger = KotlinLogging.logger {}
-    private val nlpClient = NlpClient()
+    /**
+     * Analyse a sentence and returns the result.
+     */
+    fun parse(request: NlpQuery): NlpResult?
 
-    override fun parse(request: NlpQuery): NlpResult? {
-        val response = nlpClient.parse(request)
-        val result = response.body()
-        if (result == null) {
-            logger.error { "nlp error : ${response.errorBody().string()}" }
-        }
-        return result
-    }
+    /**
+     * Import a NLP dump (configuration and sentences of NLP model).
+     * @return true if NLP model is modified, false either
+     */
+    fun importNlpDump(stream: InputStream): Boolean
 
-    override fun importNlpDump(stream: InputStream): Boolean = nlpClient.importNlpDump(stream).body()
-
-    override fun importNlpPlainDump(dump: ApplicationDump): Boolean = nlpClient.importNlpPlainDump(dump).body()
+    /**
+     * Import a NLP dump (configuration and sentences of NLP model).
+     * @return true if NLP model is modified, false either
+     */
+    fun importNlpPlainDump(dump: ApplicationDump): Boolean
 }

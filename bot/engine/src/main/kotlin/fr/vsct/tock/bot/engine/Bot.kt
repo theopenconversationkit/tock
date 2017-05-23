@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.engine
 
+import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendAttachment
@@ -28,10 +29,11 @@ import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.State
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserTimeline
-import fr.vsct.tock.shared.error
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.QueryContext
 import fr.vsct.tock.nlp.api.client.model.QueryState
+import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
 import java.time.ZonedDateTime
 
@@ -41,6 +43,8 @@ import java.time.ZonedDateTime
 class Bot(val botDefinition: BotDefinition) {
 
     private val logger = KotlinLogging.logger {}
+
+    private val nlp: NlpService by injector.instance()
 
     fun handle(action: Action, userTimeline: UserTimeline, connector: ConnectorController) {
         loadProfileIfNotSet(action, userTimeline, connector)
@@ -66,13 +70,13 @@ class Bot(val botDefinition: BotDefinition) {
     }
 
     private fun getDialog(action: Action, userTimeline: UserTimeline): Dialog {
-        return if (userTimeline.currentDialog() == null) {
-            val newDialog = Dialog(setOf(userTimeline.playerId, action.recipientId))
-            userTimeline.dialogs.add(newDialog)
-            newDialog
-        } else {
-            userTimeline.currentDialog()!!
-        }
+        return userTimeline.currentDialog() ?: createDialog(action, userTimeline)
+    }
+
+    private fun createDialog(action: Action, userTimeline: UserTimeline): Dialog {
+        val newDialog = Dialog(setOf(userTimeline.playerId, action.recipientId))
+        userTimeline.dialogs.add(newDialog)
+        return newDialog
     }
 
     private fun getStory(action: Action, dialog: Dialog): Story {
@@ -139,12 +143,12 @@ class Bot(val botDefinition: BotDefinition) {
         }
 
         logger.debug { "Parse sentence : $sentence" }
-        if (sentence.text.isNullOrBlank()) {
+        if (userTimeline.userState.waitingRawInput || sentence.text.isNullOrBlank()) {
             //do nothing
         } else {
             try {
                 logger.debug { "Sending sentence '${sentence.text}' to NLP" }
-                Nlp.parse(toNlpQuery())
+                nlp.parse(toNlpQuery())
                         ?.let { nlpResult ->
                             sentence.state.currentIntent = botDefinition.findIntent(nlpResult.intent)
                             sentence.state.entityValues.addAll(nlpResult.entities.map { ContextValue(nlpResult.retainedQuery, it) })

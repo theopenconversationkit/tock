@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.engine.user
 
+import fr.vsct.tock.shared.longProperty
+import java.time.Duration
 import java.time.Instant
 import java.time.Instant.now
 
@@ -29,18 +31,39 @@ data class UserState(
     companion object {
         const val profileLoadedFlag = "tock_profile_loaded"
         const val botDisabledFlag = "tock_bot_disabled"
+        const val waitingRawInputFlag = "tock_waiting_raw_input"
     }
 
     var profileLoaded: Boolean
         get() = getFlag(profileLoadedFlag)?.toBoolean() ?: false
         set(value) {
-            setUnlimitedFlag(profileLoadedFlag, value.toString())
+            if (value)
+                setUnlimitedFlag(profileLoadedFlag, value.toString())
+            else removeFlag(profileLoadedFlag)
         }
 
     var botDisabled: Boolean
         get() = getFlag(botDisabledFlag)?.toBoolean() ?: false
         set(value) {
-            setFlag(botDisabledFlag, 60 * 24 * 5, value.toString())
+            if (value)
+                setFlag(
+                        botDisabledFlag,
+                        longProperty("tock_bot_disabled_duration_in_minutes", 60 * 24 * 5),
+                        value.toString()
+                )
+            else removeFlag(botDisabledFlag)
+        }
+
+    var waitingRawInput: Boolean
+        get() = getFlag(waitingRawInputFlag)?.toBoolean() ?: false
+        set(value) {
+            if (value)
+                setFlag(
+                        waitingRawInputFlag,
+                        Duration.ofSeconds(longProperty("tock_bot_waiting_raw_input_duration_in_seconds", 60)),
+                        value.toString()
+                )
+            else removeFlag(waitingRawInputFlag)
         }
 
     fun getFlag(flag: String): String? {
@@ -55,12 +78,12 @@ data class UserState(
     fun hasFlag(flag: String): Boolean
             = getFlag(flag) != null
 
-    fun setFlag(flag: String, value: String) {
-        flags[flag] = TimeBoxedFlag(value)
+    fun setFlag(flag: String, timeoutInMinutes: Long, value: String) {
+        setFlag(flag, Duration.ofMinutes(timeoutInMinutes), value)
     }
 
-    fun setFlag(flag: String, timeoutInMinutes: Long, value: String) {
-        flags[flag] = TimeBoxedFlag(value, now().plusSeconds(timeoutInMinutes * 60))
+    fun setFlag(flag: String, timeoutDuration: Duration, value: String) {
+        flags[flag] = TimeBoxedFlag(value, now().plus(timeoutDuration))
     }
 
     fun removeFlag(flag: String) {
