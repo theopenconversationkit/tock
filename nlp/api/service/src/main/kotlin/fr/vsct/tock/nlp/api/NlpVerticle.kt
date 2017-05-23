@@ -40,6 +40,11 @@ class NlpVerticle : WebVerticle(KotlinLogging.logger {}) {
         blockingUploadPost("/dump/import") { _, dump: ApplicationDump ->
             front.import(dump.application.namespace, dump).modified
         }
+
+        blockingJsonPost("/dump/import/plain") { _, dump: ApplicationDump ->
+            front.import(dump.application.namespace, dump).modified
+        }
+
     }
 
     override fun healthcheck(): (RoutingContext) -> Unit {

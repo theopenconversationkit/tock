@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
+import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
@@ -87,6 +88,16 @@ class NlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "http
         }
         val part = MultipartBody.Part.createFormData("dump", "dump", RequestBody.create(MultipartBody.FORM, dump.toByteArray()))
         return nlpService.importNlpDump(part).execute()
+    }
+
+    /**
+     * Import a NLP dump (configuration and sentences of the NLP model).
+     *
+     * @param dump the dump to import
+     * @return true if NLP model is modified, false either
+     */
+    fun importNlpPlainDump(dump: ApplicationDump): Response<Boolean> {
+        return nlpService.importNlpPlainDump(dump).execute()
     }
 
     /**

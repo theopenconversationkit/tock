@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.front.shared.config
+package fr.vsct.tock.nlp.api.client.model.dump
 
-import fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue
+import java.time.Instant
 
 /**
  *
  */
-data class ClassifiedEntity(val type: String,
-                            val role: String,
-                            val start: Int,
-                            val end: Int) {
+data class ApplicationDump(val application: ApplicationDefinition,
+                           val entityTypes: List<EntityTypeDefinition> = emptyList(),
+                           val intents: List<IntentDefinition> = emptyList(),
+                           val sentences: List<ClassifiedSentence> = emptyList(),
+                           val dumpType: DumpType = DumpType.full,
+                           val timestamp: Instant = Instant.now()) {
 
-    constructor(value: ParsedEntityValue) : this(
-            value.entity.entityType.name,
-            value.entity.role,
-            value.start,
-            value.end)
 }

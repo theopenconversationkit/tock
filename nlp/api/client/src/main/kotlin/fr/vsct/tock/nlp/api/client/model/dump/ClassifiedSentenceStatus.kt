@@ -14,21 +14,8 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.front.shared.config
+package fr.vsct.tock.nlp.api.client.model.dump
 
-import fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue
-
-/**
- *
- */
-data class ClassifiedEntity(val type: String,
-                            val role: String,
-                            val start: Int,
-                            val end: Int) {
-
-    constructor(value: ParsedEntityValue) : this(
-            value.entity.entityType.name,
-            value.entity.role,
-            value.start,
-            value.end)
+enum class ClassifiedSentenceStatus {
+    inbox, validated, model, deleted
 }

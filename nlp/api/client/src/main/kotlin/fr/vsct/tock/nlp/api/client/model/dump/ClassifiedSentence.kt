@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.front.shared.config
+package fr.vsct.tock.nlp.api.client.model.dump
 
-import fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue
+import java.time.Instant
+import java.util.Locale
 
 /**
  *
  */
-data class ClassifiedEntity(val type: String,
-                            val role: String,
-                            val start: Int,
-                            val end: Int) {
-
-    constructor(value: ParsedEntityValue) : this(
-            value.entity.entityType.name,
-            value.entity.role,
-            value.start,
-            value.end)
-}
+data class ClassifiedSentence(val text: String,
+                              val language: Locale,
+                              val applicationId: String,
+                              val creationDate: Instant,
+                              val updateDate: Instant,
+                              val status: ClassifiedSentenceStatus,
+                              val classification: Classification)

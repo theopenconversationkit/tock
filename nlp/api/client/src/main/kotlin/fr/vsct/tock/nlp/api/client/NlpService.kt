@@ -18,6 +18,7 @@ package fr.vsct.tock.nlp.api.client
 
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
+import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.Body
@@ -37,6 +38,9 @@ internal interface NlpService {
     @Multipart
     @POST("dump/import")
     fun importNlpDump(@Part dump: MultipartBody.Part): Call<Boolean>
+
+    @POST("dump/import/plain")
+    fun importNlpPlainDump(@Body dump: ApplicationDump): Call<Boolean>
 
     @GET("healthcheck")
     fun healthcheck(): Call<Void>

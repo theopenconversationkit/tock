@@ -16,7 +16,12 @@
 
 package fr.vsct.tock.nlp.api.client
 
+import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import com.fasterxml.jackson.module.kotlin.readValue
+import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
 import org.junit.Test
+import java.util.UUID
 import kotlin.test.assertTrue
 
 
@@ -25,9 +30,26 @@ import kotlin.test.assertTrue
  */
 class NlpClientIntegrationTest {
 
+    val dumpStream = NlpClient::class.java.getResourceAsStream("/dump.json")
+
     @Test
     fun testImportNlpDump() {
-        val stream = NlpClient::class.java.getResourceAsStream("/dump.json")
-        assertTrue(NlpClient("http://localhost:8880").importNlpDump(stream).body())
+        assertTrue(NlpClient("http://localhost:8880").importNlpDump(dumpStream).body())
+    }
+
+    @Test
+    fun testImportNlpPlainDump() {
+        val dump = jacksonObjectMapper()
+                .findAndRegisterModules()
+                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+                .readValue<ApplicationDump>(dumpStream)
+                .run {
+                    copy(
+                            application = application.copy(
+                                    _id = UUID.randomUUID().toString(),
+                                    name = UUID.randomUUID().toString())
+                    )
+                }
+        assertTrue(NlpClient("http://localhost:8880").importNlpPlainDump(dump).body())
     }
 }
