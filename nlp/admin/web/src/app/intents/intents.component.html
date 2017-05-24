@@ -16,24 +16,24 @@
 
 <md-card>
   <md-card-content>
-    <md-list>
-      <md-list-item *ngFor="let i of state.currentApplication.intents">
-        <h2 md-line>{{i.name}}
+    <table border="1" class="table">
+      <tr *ngFor="let i of state.currentApplication.intents">
+        <td>
+          {{i.name}}
           <button md-icon-button (click)="deleteIntent(i)">
             <md-icon>delete</md-icon>
           </button>
-        </h2>
-        <p md-line *ngIf="i.entities.length !== 0">
-          Entities :
-        <span *ngFor="let e of i.entities">
-        <span [style.background-color]="e.entityColor">{{e.qualifiedName(state.user)}}</span>
-        <button *ngIf="i.applications.length === 1" md-icon-button (click)="removeEntity(i, e)">
-          <md-icon>remove_circle_outline</md-icon>
-        </button>
-        </span>
-        </p>
-      </md-list-item>
-    </md-list>
+        </td>
+        <td>
+          <span *ngFor="let e of i.entities">
+          <span [style.background-color]="e.entityColor">{{e.qualifiedName(state.user)}}</span>
+          <button *ngIf="i.applications.length === 1" md-icon-button (click)="removeEntity(i, e)">
+            <md-icon>remove_circle_outline</md-icon>
+          </button>
+          </span>
+        </td>
+      </tr>
+    </table>
   </md-card-content>
 </md-card>
 

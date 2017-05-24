@@ -108,6 +108,7 @@ export class RestService {
   }
 
   private static handleError(rest: RestService, error: Response | any) {
+    console.error(error);
     let errMsg: string;
     if (error instanceof Response) {
       if (error.status == 403) {

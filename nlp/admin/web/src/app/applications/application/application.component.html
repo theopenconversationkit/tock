@@ -27,8 +27,11 @@
     </div>
     <div *ngIf="state.locales">
       <md-chip-list>
-        <md-chip *ngFor="let locale of application.supportedLocales" mdTooltip="Delete locale" selected="true"
-                 (click)="removeLocale(locale)" color="accent">
+        <md-chip *ngFor="let locale of application.supportedLocales"
+                 mdTooltip="Delete locale"
+                 [selected]="true"
+                 (click)="removeLocale(locale)"
+                 [color]="accent">
           {{state.localeName(locale)}}
         </md-chip>
       </md-chip-list>

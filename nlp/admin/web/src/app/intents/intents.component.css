@@ -20,3 +20,8 @@
 .mat-list >  .mat-list-item:nth-child(2n){
   background: linear-gradient(to right, #f2f2f2, white, rgba(0,0,0,0));
 }
+
+.table {
+  border-spacing: 0;
+  border-collapse: collapse;
+}

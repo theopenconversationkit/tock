@@ -37,6 +37,9 @@ export class EntityDefinition {
     const value = Object.create(EntityDefinition.prototype);
 
     const qualified = qualifiedRole(json.entityTypeName, json.role);
+    if (qualified == undefined) {
+      return undefined;
+    }
 
     const result = Object.assign(value, json, {
       qualifiedRole: qualified,
@@ -110,7 +113,7 @@ export class Sentence {
   }
 
   private removeTypeForValue(v) {
-    if(v.constructor.name === "Object") {
+    if (v.constructor.name === "Object") {
       for (let property in v) {
         if (v.hasOwnProperty(property))
           if (property === "@type") {
