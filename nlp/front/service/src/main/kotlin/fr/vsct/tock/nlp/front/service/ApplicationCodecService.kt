@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.service
 
 import com.github.salomonbrys.kodein.instance
+import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.front.service.FrontRepository.entityTypeExists
 import fr.vsct.tock.nlp.front.service.ModelUpdaterService.triggerBuild
 import fr.vsct.tock.nlp.front.shared.ApplicationCodec
@@ -84,7 +85,7 @@ object ApplicationCodecService : ApplicationCodec {
                     }
             val appId = app._id!!
 
-            val intentsIdsMap = dump.intents.map { i ->
+            var intentsIdsMap = dump.intents.map { i ->
                 var intent = config.getIntentByNamespaceAndName(i.namespace, i.name)
                 if (intent == null) {
                     intent = i.copy(_id = null, applications = setOf(appId))
@@ -103,12 +104,17 @@ object ApplicationCodecService : ApplicationCodec {
                     intentStatesMap = app.intentStatesMap + dump.application.intentStatesMap.mapKeys { intentsIdsMap[it.key]!! }
             ))
 
+            //add unknown intent to intent map
+            intentsIdsMap += (Intent.unknownIntent to Intent.unknownIntent)
+
             dump.sentences.forEach { s ->
                 if (config.search(SentencesQuery(appId, s.language, search = s.text, onlyExactMatch = true)).total == 0L) {
                     logger.debug { "Import sentence ${s.text}" }
                     val sentence = s.copy(
                             applicationId = appId,
-                            classification = s.classification.copy(intentId = intentsIdsMap[s.classification.intentId]!!))
+                            classification = s.classification.copy(
+                                    intentId = intentsIdsMap[s.classification.intentId]!!
+                            ))
                     report.add(sentence)
                     config.save(sentence)
                 }
