@@ -18,6 +18,7 @@ package fr.vsct.tock.duckling.client
 
 import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.retrofitBuilderWithTimeout
 import io.vertx.core.json.JsonArray
@@ -57,7 +58,7 @@ internal object DucklingClient {
 
     init {
         jacksonConverterFactory = JacksonConverterFactory.create(mapper)
-        val retrofit = retrofitBuilderWithTimeout(3)
+        val retrofit = retrofitBuilderWithTimeout(longProperty("tock_duckling_request_timeout_ms", 5000))
                 .baseUrl("${property("nlp_duckling_url", "http://localhost:8889")}/")
                 .addConverterFactory(RawJsonBodyConverterFactory)
                 .build()

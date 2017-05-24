@@ -50,19 +50,23 @@ class NlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "http
         mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
         mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true)
 
+        val timeout = longProperty("tock_nlp_client_request_timeout_ms", 20000)
         val retrofit = Retrofit.Builder()
                 .baseUrl("$baseUrl/rest/nlp/")
                 .addConverterFactory(JacksonConverterFactory.create(mapper))
                 .client(
                         OkHttpClient.Builder()
-                                .readTimeout(5, TimeUnit.SECONDS)
-                                .connectTimeout(5, TimeUnit.SECONDS)
+                                .readTimeout(timeout, TimeUnit.MILLISECONDS)
+                                .connectTimeout(timeout, TimeUnit.MILLISECONDS)
                                 .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                                 .build()
                 )
                 .build()
         nlpService = retrofit.create<NlpService>(NlpService::class.java)
     }
+
+    private fun longProperty(name: String, defaultValue: Long): Long = System.getenv(name)?.toLong() ?: defaultValue
+
 
     /**
      * Analyse a sentence and returns the result.

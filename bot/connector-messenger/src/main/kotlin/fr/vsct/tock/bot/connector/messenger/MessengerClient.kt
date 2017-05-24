@@ -25,6 +25,7 @@ import fr.vsct.tock.bot.connector.messenger.model.send.SendResponse
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeout
 import mu.KotlinLogging
 import retrofit2.Call
@@ -57,7 +58,7 @@ internal class MessengerClient(val secretKey: String) {
     private val graphApi: MessengerClient.GraphApi
 
     init {
-        val retrofit = retrofitBuilderWithTimeout(30)
+        val retrofit = retrofitBuilderWithTimeout(longProperty("tock_messenger_request_timeout_ms", 30000))
                 .baseUrl("https://graph.facebook.com")
                 .addJacksonConverter()
                 .build()

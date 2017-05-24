@@ -23,7 +23,7 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeUnit.MILLISECONDS
 
 /**
  *
@@ -31,10 +31,10 @@ import java.util.concurrent.TimeUnit
 
 inline fun <reified T : Any> Retrofit.create(): T = create(T::class.java)
 
-fun retrofitBuilderWithTimeout(seconds: Long, vararg interceptors: Interceptor): Retrofit.Builder
+fun retrofitBuilderWithTimeout(ms: Long, vararg interceptors: Interceptor): Retrofit.Builder
         = OkHttpClient.Builder()
-        .readTimeout(seconds, TimeUnit.SECONDS)
-        .connectTimeout(seconds, TimeUnit.SECONDS)
+        .readTimeout(ms, MILLISECONDS)
+        .connectTimeout(ms, MILLISECONDS)
         .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
         .apply {
             interceptors.forEach { addInterceptor(it) }
