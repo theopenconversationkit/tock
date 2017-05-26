@@ -103,7 +103,7 @@ internal object FrontRepository {
     }
 
     fun registerBuiltInEntities() {
-        core.getEvaluatedEntityTypes().forEach {
+        core.getEvaluableEntityTypes().forEach {
             if (!entityTypeExists(it)) {
                 try {
                     logger.debug { "save built-in entity type $it" }

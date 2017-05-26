@@ -23,9 +23,13 @@ import clojure.lang.PersistentVector
 import clojure.lang.RT
 import duckling.`core$load_BANG_`
 import duckling.`core$parse`
+import mu.KotlinLogging
 import org.joda.time.DateTime
+import org.joda.time.DateTimeZone
+import java.time.ZoneId
+import java.time.ZoneId.systemDefault
 import java.time.ZonedDateTime
-import java.util.Arrays
+import java.time.ZonedDateTime.now
 import java.util.Collections
 import java.util.HashMap
 
@@ -34,14 +38,16 @@ import java.util.HashMap
  */
 internal object DucklingBridge {
 
+    private val logger = KotlinLogging.logger {}
+
     private lateinit var referenceTime: Keyword
     private lateinit var start: Keyword
     private lateinit var grain: Keyword
     private lateinit var second: Keyword
     var initialized = false
 
-    private fun keyword(name: String) : Keyword = RT.keyword(null as String?, name)
-    private fun find(name: String) : Keyword = Keyword.find(null, name)
+    private fun keyword(name: String): Keyword = RT.keyword(null as String?, name)
+    private fun find(name: String): Keyword? = Keyword.find(null, name)
 
     fun initDuckling() {
         val require = Clojure.`var`("clojure.core", "require")
@@ -54,7 +60,7 @@ internal object DucklingBridge {
         grain = keyword("grain")
         second = keyword("second")
 
-        parse("en", "tomorrow", listOf("time"), ZonedDateTime.now())
+        parse("en", "tomorrow", listOf("time"), now(), systemDefault())
         initialized = true
     }
 
@@ -62,9 +68,20 @@ internal object DucklingBridge {
     fun parse(language: String,
               textToParse: String,
               dimensions: List<String>,
-              referenceDate: ZonedDateTime): Any {
+              referenceDate: ZonedDateTime,
+              referenceTimezone: ZoneId): Any {
         val dateMap = HashMap<Keyword?, Any?>()
-        dateMap.put(start, DateTime(referenceDate.toInstant().toEpochMilli()))
+        //set timezone for wit
+        val timezone = try {
+            if (referenceTimezone.id == "Z") DateTimeZone.UTC else DateTimeZone.forID(referenceTimezone.id)
+        } catch(e: Exception) {
+            logger.warn { "unrecognized timezone $referenceTimezone - use UTC" }
+            DateTimeZone.UTC
+        }
+        dateMap.put(
+                start,
+                DateTime(referenceDate.toInstant().toEpochMilli(), timezone)
+        )
         dateMap.put(grain, second)
         val dateClosureMap = PersistentArrayMap.create(dateMap)
         val context = PersistentArrayMap.create(Collections.singletonMap(referenceTime, dateClosureMap))

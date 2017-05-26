@@ -14,23 +14,27 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.admin.model
+package fr.vsct.tock.nlp.front.shared.value
 
-import fr.vsct.tock.nlp.core.NlpEngineType
-import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
-import fr.vsct.tock.nlp.front.shared.parser.QueryContext
+import fr.vsct.tock.nlp.entity.CustomValueWrapper
+import fr.vsct.tock.nlp.entity.Value
 
 /**
- *
+ * Transforms any instance in [Value] instance.
  */
-data class ParseQuery(val query: String,
-                      val engineType: NlpEngineType) : ApplicationScopedQuery() {
+object ValueTransformer {
 
-    fun toQuery(): ParseQuery {
-        return ParseQuery(
-                listOf(query),
-                namespace,
-                applicationName,
-                QueryContext(language, "admin", engineType = engineType, checkExistingQuery = true))
+    fun wrapValue(value: Any): Value {
+        return when (value) {
+            is Value -> value
+            else -> CustomValueWrapper(value)
+        }
+    }
+
+    fun wrapNullableValue(value: Any?): Value? {
+        return when (value) {
+            null -> null
+            else -> wrapValue(value)
+        }
     }
 }

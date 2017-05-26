@@ -20,8 +20,11 @@ import org.junit.Test
 import java.time.LocalDateTime
 import java.time.Month
 import java.time.ZoneId
-import java.time.ZonedDateTime
+import java.time.ZoneId.systemDefault
+import java.time.ZonedDateTime.now
+import java.time.ZonedDateTime.parse
 import java.time.format.DateTimeFormatter
+import java.time.temporal.ChronoUnit
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
@@ -36,24 +39,47 @@ class DucklingClientIntegrationTest {
 
     @Test
     fun testSimpleCall() {
-        val result = DucklingClient.parse("fr", listOf("time"), ZonedDateTime.now(), "10 août 2055")
+        val result = DucklingClient.parse("fr", listOf("time"), now(), systemDefault(), "10 août 2055")
         println(result)
-        assertEquals(LocalDateTime.of(2055, Month.AUGUST, 10, 0, 0).atZone(ZoneId.systemDefault()).withFixedOffsetZone(), ZonedDateTime.parse(result[0][":value"][":values"][0][":value"].string(), formatter))
+        assertEquals(LocalDateTime.of(2055, Month.AUGUST, 10, 0, 0).atZone(systemDefault()).withFixedOffsetZone(), parse(result[0][":value"][":values"][0][":value"].string(), formatter))
     }
 
     @Test
     fun testCallWithReferenceDate() {
-        val referenceDate = ZonedDateTime.now()
-        val result = DucklingClient.parse("fr", listOf("time"), referenceDate, "dans 1h")
+        val referenceDate = now()
+        val result = DucklingClient.parse("fr", listOf("time"), referenceDate, systemDefault(), "dans 1h")
         println(result)
-        assertEquals(referenceDate.plusHours(1).withSecond(0).withNano(0).withFixedOffsetZone(), ZonedDateTime.parse(result[0][":value"][":values"][0][":value"].string(), formatter))
+        assertEquals(referenceDate.plusHours(1).withSecond(0).withNano(0).withFixedOffsetZone(), parse(result[0][":value"][":values"][0][":value"].string(), formatter))
     }
 
     @Test
     fun testIntervalDate() {
-        val result = DucklingClient.parse("fr", listOf("time"), ZonedDateTime.now(), "du samedi 3 au dimanche 4 septembre")
+        val result = DucklingClient.parse("fr", listOf("time"), now(), systemDefault(), "du samedi 3 au dimanche 4 septembre")
         println(result)
-        assertEquals(3, ZonedDateTime.parse(result[0][":value"][":from"][":value"].string(), formatter).dayOfMonth)
+        assertEquals(3, parse(result[0][":value"][":from"][":value"].string(), formatter).dayOfMonth)
+    }
+
+    @Test
+    fun testCallWithDifferentTimezone() {
+        val zoneId = ZoneId.of("America/New_York")
+        val now = now()
+        val result = DucklingClient.parse("fr", listOf("time"), now, zoneId, "dans 1h")
+        println(result)
+        assertEquals(
+                now.withZoneSameInstant(zoneId).plusHours(1).toLocalDateTime().truncatedTo(ChronoUnit.MINUTES),
+                parse(result[0][":value"][":values"][0][":value"].string(), formatter).toLocalDateTime()
+        )
+    }
+
+    @Test
+    fun testCallWithTruncatedDay() {
+        val now = now().plusDays(1)
+        val result = DucklingClient.parse("fr", listOf("time"), now.truncatedTo(ChronoUnit.DAYS), systemDefault(), "le soir")
+        println(result)
+        assertEquals(
+                now.withHour(18).toLocalDateTime().truncatedTo(ChronoUnit.HOURS),
+                parse(result[0][":value"][":from"][":value"].string(), formatter).toLocalDateTime()
+        )
     }
 
     @Test

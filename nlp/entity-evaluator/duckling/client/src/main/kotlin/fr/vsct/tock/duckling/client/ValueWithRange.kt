@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.admin.model
+package fr.vsct.tock.duckling.client
 
-import fr.vsct.tock.nlp.core.NlpEngineType
-import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
-import fr.vsct.tock.nlp.front.shared.parser.QueryContext
+import fr.vsct.tock.nlp.core.IntOpenRange
+import fr.vsct.tock.nlp.entity.Value
 
-/**
- *
- */
-data class ParseQuery(val query: String,
-                      val engineType: NlpEngineType) : ApplicationScopedQuery() {
+internal data class ValueWithRange(override val start: Int,
+                                   override val end: Int,
+                                   val value: Value,
+                                   val type: String) : IntOpenRange {
 
-    fun toQuery(): ParseQuery {
-        return ParseQuery(
-                listOf(query),
-                namespace,
-                applicationName,
-                QueryContext(language, "admin", engineType = engineType, checkExistingQuery = true))
-    }
 }

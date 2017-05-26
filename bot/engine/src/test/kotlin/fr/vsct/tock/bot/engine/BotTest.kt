@@ -50,7 +50,7 @@ class BotTest {
         on { translate(any(), any(), any()) } doReturn ("ok")
     }
 
-    val nlp: NlpService = mock()
+    val nlp: NlpController = mock()
     val connector: Connector = mock {
         on { loadProfile(any(), any()) } doReturn (UserPreferences())
         on { connectorType } doReturn (ConnectorType("test"))
@@ -69,7 +69,7 @@ class BotTest {
 
     init {
         injector.inject(Kodein {
-            bind<NlpService>() with provider { nlp }
+            bind<NlpController>() with provider { nlp }
 
             bind<UserLock>() with provider { userLock }
             bind<UserTimelineDAO>() with provider { userTimelineDAO }
@@ -89,7 +89,7 @@ class BotTest {
                 ConnectorController(bot, connector, BotVerticle())
         )
 
-        verify(nlp).parse(any())
+        verify(nlp).parseSentence(any(), any(), any(), any(), any())
     }
 
     @Test
@@ -103,6 +103,6 @@ class BotTest {
                 ConnectorController(bot, connector, BotVerticle())
         )
 
-        verify(nlp, never()).parse(any())
+        verify(nlp, never()).parseSentence(any(), any(), any(), any(), any())
     }
 }

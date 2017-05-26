@@ -18,8 +18,8 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import fr.vsct.tock.bot.engine.Nlp
-import fr.vsct.tock.bot.engine.NlpService
+import fr.vsct.tock.bot.engine.NlpController
 
 val botModule = Kodein.Module {
-    bind<NlpService>() with provider { Nlp }
+    bind<NlpController>() with provider { Nlp }
 }

@@ -19,41 +19,42 @@ package fr.vsct.tock.nlp.front.shared.parser
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityValue
 import fr.vsct.tock.nlp.core.IntOpenRange
-import fr.vsct.tock.nlp.entity.CustomValueWrapper
 import fr.vsct.tock.nlp.entity.Value
+import fr.vsct.tock.nlp.front.shared.value.ValueTransformer.wrapNullableValue
 
 /**
- * The difference between this class and [fr.vsct.tock.nlp.core.EntityValue]
- * is that value is typed at [Value].
+ * This class is copied from [fr.vsct.tock.nlp.core.EntityValue], but
+ * [value] is typed at [Value].
  * This is basically a hack to avoid including [Value] notion in the core.
+ *
+ * There is also an additional boolean [mergeSupport] to indicate if value merge
+ * between two values or more of the same [Entity] is supported.
+ *
+ * A [probability] property is also added. It comes from [EntityRecognition]
  */
 data class ParsedEntityValue(override val start: Int,
                              override val end: Int,
                              val entity: Entity,
                              val value: Value? = null,
-                             val evaluated: Boolean = false) : IntOpenRange {
-
-    companion object {
-        private fun wrapWalue(value: Any?): Value? {
-            return when (value) {
-                null -> null
-                is Value -> value
-                else -> CustomValueWrapper(value)
-            }
-        }
-    }
+                             val evaluated: Boolean = false,
+                             val probability: Double = 1.0,
+                             val mergeSupport: Boolean = false) : IntOpenRange {
 
     constructor(start: Int,
                 end: Int,
                 entity: Entity,
                 value: Any? = null,
-                evaluated: Boolean = false) :
-            this(start, end, entity, wrapWalue(value), evaluated)
+                evaluated: Boolean = false,
+                probability: Double = 1.0,
+                mergeSupport: Boolean = false) :
+            this(start, end, entity, wrapNullableValue(value), evaluated, probability, mergeSupport)
 
-    constructor(entityValue: EntityValue) : this(
+    constructor(entityValue: EntityValue, probability: Double, mergeSupport: Boolean) : this(
             entityValue.start,
             entityValue.end,
             entityValue.entity,
             entityValue.value,
-            entityValue.evaluated)
+            entityValue.evaluated,
+            probability,
+            mergeSupport)
 }

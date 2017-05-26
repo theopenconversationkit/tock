@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.api.client.model
+package fr.vsct.tock.duckling.client
 
-import java.time.ZoneId
-import java.time.ZoneOffset.UTC
 import java.time.ZonedDateTime
-import java.time.ZonedDateTime.now
-import java.util.Locale
 
 /**
  *
  */
-data class QueryContext(val language: Locale,
-                        val clientId: String,
-                        val dialogId: String,
-                        val clientDevice: String? = null,
-                        val referenceDate: ZonedDateTime = now(UTC),
-                        val referenceTimezone: ZoneId = UTC,
-                        val engineType: NlpEngineType = NlpEngineType.stanford,
-                        val registerQuery: Boolean = true) {
+internal interface Parser {
+
+    fun parse(language: String, dimension: String, referenceDate: ZonedDateTime, textToParse: String): List<ValueWithRange>
 }

@@ -54,16 +54,30 @@ enum class DateEntityGrain(val time: Boolean) {
         }
     }
 
+    fun truncate(date: ZonedDateTime): ZonedDateTime {
+        return when (this) {
+            second -> date.truncatedTo(SECONDS)
+            minute -> date.truncatedTo(MINUTES)
+            hour -> date.truncatedTo(HOURS)
+            day_of_week, day -> date.truncatedTo(DAYS)
+            week -> date.truncatedTo(WEEKS)
+            month -> date.truncatedTo(MONTHS)
+            quarter -> date.truncatedTo(MONTHS)
+            year -> date.truncatedTo(YEARS)
+            else -> date
+        }
+    }
+
     fun calculateEnd(start: ZonedDateTime): ZonedDateTime {
         return when (this) {
-            second -> start.plusSeconds(1).truncatedTo(SECONDS)
-            minute -> start.plusMinutes(1).truncatedTo(MINUTES)
-            hour -> start.plusHours(1).truncatedTo(HOURS)
-            day_of_week, day -> start.plusDays(1).truncatedTo(DAYS)
-            week -> start.plusWeeks(1).truncatedTo(WEEKS)
-            month -> start.plusMonths(1).truncatedTo(MONTHS)
-            quarter -> start.plusMonths(3).truncatedTo(MONTHS)
-            year -> start.plusYears(1).truncatedTo(YEARS)
+            second -> truncate(start.plusSeconds(1))
+            minute -> truncate(start.plusMinutes(1))
+            hour -> truncate(start.plusHours(1))
+            day_of_week, day -> truncate(start.plusDays(1))
+            week -> truncate(start.plusWeeks(1))
+            month -> truncate(start.plusMonths(1))
+            quarter -> truncate(start.plusMonths(3))
+            year -> truncate(start.plusYears(1))
             else -> start
         }
     }

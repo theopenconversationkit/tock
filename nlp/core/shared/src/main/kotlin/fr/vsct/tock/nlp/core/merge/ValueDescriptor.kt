@@ -14,23 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.admin.model
-
-import fr.vsct.tock.nlp.core.NlpEngineType
-import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
-import fr.vsct.tock.nlp.front.shared.parser.QueryContext
+package fr.vsct.tock.nlp.core.merge
 
 /**
- *
+ * Contains all information about a value to help values merge.
  */
-data class ParseQuery(val query: String,
-                      val engineType: NlpEngineType) : ApplicationScopedQuery() {
-
-    fun toQuery(): ParseQuery {
-        return ParseQuery(
-                listOf(query),
-                namespace,
-                applicationName,
-                QueryContext(language, "admin", engineType = engineType, checkExistingQuery = true))
-    }
-}
+data class ValueDescriptor(
+        val value: Any,
+        val content: String? = null,
+        val initial: Boolean = false,
+        val position: Int? = null,
+        val probability: Double = 1.0)

@@ -19,6 +19,7 @@ package fr.vsct.tock.nlp.core.service.entity
 import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityType
+import fr.vsct.tock.nlp.core.merge.ValueDescriptor
 import fr.vsct.tock.nlp.model.EntityCallContext
 import fr.vsct.tock.nlp.model.EntityCallContextForEntity
 import fr.vsct.tock.nlp.model.EntityCallContextForIntent
@@ -33,17 +34,29 @@ internal object EntityCoreService : EntityCore {
 
     private val logger = KotlinLogging.logger {}
 
-    private val providerByEntityType: Map<String, EntityEvaluatorProvider> = SupportedEntityEvaluatorsProvider
-            .evaluators()
+    private val evaluatorProviders: List<EntityEvaluatorProvider>
+            = SupportedEntityEvaluatorsProvider.evaluators()
+
+    private val entityTypeProviderMap: Map<String, EntityEvaluatorProvider>
+            = evaluatorProviders
             .flatMap { provider ->
                 provider.getSupportedEntityTypes().map { it to provider }
             }
             .toMap()
 
-    override fun getEvaluatedEntityTypes(): Set<String> = providerByEntityType.keys
+    private val entityTypeWithValuesMergeSupport: Set<String>
+            = evaluatorProviders
+            .flatMap { provider ->
+                provider.getEntityTypesWithValuesMergeSupport()
+            }
+            .toSet()
+
+    override fun getEvaluableEntityTypes(): Set<String> = entityTypeProviderMap.keys
+
+    override fun supportValuesMerge(entityType: EntityType) = entityTypeWithValuesMergeSupport.contains(entityType.name)
 
     private fun getEntityEvaluatorProvider(entityType: EntityType): EntityEvaluatorProvider? {
-        return providerByEntityType[entityType.name]
+        return entityTypeProviderMap[entityType.name]
     }
 
     override fun classifyEntityTypes(context: EntityCallContext, text: String, tokens: Array<String>): List<EntityTypeRecognition> {
@@ -111,5 +124,9 @@ internal object EntityCoreService : EntityCore {
             logger.error(e)
             EvaluationResult(false)
         }
+    }
+
+    override fun mergeValues(context: EntityCallContextForEntity, values: List<ValueDescriptor>): ValueDescriptor? {
+        return getEntityEvaluatorProvider(context.entityType)?.getEntityEvaluator()?.merge(context, values)
     }
 }

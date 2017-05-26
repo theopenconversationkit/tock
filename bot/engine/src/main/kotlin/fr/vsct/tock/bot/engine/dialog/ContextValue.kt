@@ -16,9 +16,9 @@
 
 package fr.vsct.tock.bot.engine.dialog
 
-import fr.vsct.tock.nlp.entity.Value
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.api.client.model.EntityValue
+import fr.vsct.tock.nlp.entity.Value
 
 /**
  *
@@ -29,7 +29,9 @@ data class ContextValue(
         val entity: Entity,
         val content: String?,
         var value: Value? = null,
-        var evaluated: Boolean = false
+        var evaluated: Boolean = false,
+        var probability: Double = 1.0,
+        val mergeSupport: Boolean = false
 ) {
 
     constructor(sentence: String, value: EntityValue)
@@ -39,7 +41,9 @@ data class ContextValue(
             value.entity,
             sentence.substring(value.start, value.end),
             value.value,
-            value.evaluated)
+            value.evaluated,
+            value.probability,
+            value.mergeSupport)
 
     constructor(entity: Entity, value: Value?, content: String? = null)
             : this(

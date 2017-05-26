@@ -16,14 +16,18 @@
 
 package fr.vsct.tock.nlp.front.shared
 
+import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
+import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeResult
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
-import fr.vsct.tock.nlp.front.shared.parser.QueryDescription
+import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 
 /**
  *
  */
 interface Parser {
 
-    fun parse(query: QueryDescription): ParseResult
+    fun parse(query: ParseQuery): ParseResult
+
+    fun mergeValues(query: ValuesMergeQuery): ValuesMergeResult
 
 }

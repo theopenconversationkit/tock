@@ -18,13 +18,28 @@ package fr.vsct.tock.nlp.core.service.entity
 
 /**
  * Implements this interface to support new entity types.
- * The implementation is loaded at runtime, using the java [java.util.ServiceLoader] - you need to provide a META-INF/services/xxx file.
+ * The implementation is loaded at runtime, using the java [java.util.ServiceLoader]
+ * - you need to provide a META-INF/services/xxx file.
  */
 interface EntityEvaluatorProvider {
 
+    /**
+     * Returns the supported entity type names.
+     */
     fun getSupportedEntityTypes(): Set<String>
 
+    /**
+     * Returns the supported entity type names that also support values merge.
+     */
+    fun getEntityTypesWithValuesMergeSupport(): Set<String> = emptySet()
+
+    /**
+     * Returns the entity classifier - null by default.
+     */
     fun getEntityTypeClassifier(): EntityTypeClassifier? = null
 
+    /**
+     * Returns the entity evaluator - null by default.
+     */
     fun getEntityEvaluator(): EntityEvaluator? = null
 }

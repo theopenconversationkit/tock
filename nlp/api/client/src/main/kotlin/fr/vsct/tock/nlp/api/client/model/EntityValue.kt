@@ -26,6 +26,8 @@ data class EntityValue(
         val end: Int,
         val entity: Entity,
         val value: Value? = null,
-        val evaluated: Boolean = false) {
+        val evaluated: Boolean = false,
+        val probability: Double = 1.0,
+        val mergeSupport: Boolean = false) {
 
 }

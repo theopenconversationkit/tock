@@ -18,6 +18,7 @@ package fr.vsct.tock.nlp.front.ioc
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.Kodein.Module
+import fr.vsct.tock.duckling.client.ducklingModule
 import fr.vsct.tock.nlp.core.service.coreModule
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.service.frontModule
@@ -44,6 +45,7 @@ object FrontIoc {
             import(modelModule)
             import(frontMongoModule)
             import(frontModule)
+            import(ducklingModule)
 
             //load additional modules
             modules.forEach {

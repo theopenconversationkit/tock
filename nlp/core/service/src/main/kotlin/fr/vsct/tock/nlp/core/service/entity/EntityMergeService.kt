@@ -24,7 +24,7 @@ import fr.vsct.tock.nlp.core.service.entity.EntityMergeService.Weighted.Weighted
 import mu.KotlinLogging
 
 /**
- * Merge intent entity model results & dedicated entity models results.
+ * To merge intent entity model results & dedicated entity models results.
  */
 internal object EntityMergeService : EntityMerge {
 
@@ -40,7 +40,9 @@ internal object EntityMergeService : EntityMerge {
         class WeightedEntity(val entity: EntityRecognition) : Weighted(calculateWeight(entity), entity) {
             companion object {
                 fun calculateWeight(entity: EntityRecognition): Double {
-                    return entity.probability - if (entity.value.evaluated && entity.value.value == null) 0.5 else 0.0
+                    //if it's 100%, it's 100%
+                    return if (entity.probability == 1.0) 1.0
+                    else entity.probability - if (entity.value.evaluated && entity.value.value == null) 0.5 else 0.0
                 }
             }
         }

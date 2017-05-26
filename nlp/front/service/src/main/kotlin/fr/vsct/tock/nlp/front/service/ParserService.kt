@@ -29,9 +29,12 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
+import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
+import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeResult
+import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue
-import fr.vsct.tock.nlp.front.shared.parser.QueryDescription
+import fr.vsct.tock.nlp.front.shared.value.ValueTransformer
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.withoutNamespace
 import mu.KotlinLogging
@@ -69,11 +72,13 @@ object ParserService : Parser {
         }
     }
 
-    override fun parse(query: QueryDescription): ParseResult {
+    override fun parse(query: ParseQuery): ParseResult {
         with(query) {
             val application = config.getApplicationByNamespaceAndName(namespace, applicationName) ?: error("unknown application $namespace:$applicationName")
 
             val language = findLanguage(application, context.language)
+
+            val referenceDate = context.referenceDate.withZoneSameInstant(context.referenceTimezone)
 
             val q = formatQuery(queries.first())
             if (q.isEmpty()) {
@@ -93,7 +98,7 @@ object ParserService : Parser {
                     .sentences
                     .firstOrNull()
 
-            val callContext = CallContext(toApplication(application), language, context.engineType)
+            val callContext = CallContext(toApplication(application), language, context.engineType, referenceDate)
 
             if (validatedSentence != null && query.context.checkExistingQuery) {
                 val entityValues = core.evaluateEntities(
@@ -111,7 +116,7 @@ object ParserService : Parser {
                         })
                 return ParseResult(
                         config.getIntentById(validatedSentence.classification.intentId)!!.shortQualifiedName(query.namespace),
-                        entityValues.map { ParsedEntityValue(it.value) },
+                        entityValues.map { ParsedEntityValue(it.value, 1.0, core.supportValuesMerge(it.entityType)) },
                         1.0,
                         1.0,
                         q
@@ -124,7 +129,7 @@ object ParserService : Parser {
 
             val result = ParseResult(
                     parseResult.intent.withoutNamespace(query.namespace),
-                    parseResult.entities.map { ParsedEntityValue(it) },
+                    parseResult.entities.map { ParsedEntityValue(it.value, it.probability, core.supportValuesMerge(it.entityType)) },
                     parseResult.intentProbability,
                     parseResult.entitiesProbability,
                     q)
@@ -138,6 +143,22 @@ object ParserService : Parser {
             }
 
             return result
+        }
+    }
+
+    override fun mergeValues(query: ValuesMergeQuery): ValuesMergeResult {
+        with(query) {
+            val application = config.getApplicationByNamespaceAndName(namespace, applicationName) ?: error("unknown application $namespace:$applicationName")
+
+            val language = findLanguage(application, context.language)
+
+            val referenceDate = context.referenceDate.withZoneSameInstant(context.referenceTimezone)
+
+            val callContext = CallContext(toApplication(application), language, context.engineType, referenceDate)
+
+            val result = core.mergeValues(callContext, entity.entityType, values.map { it.toValueDescriptor() })
+
+            return ValuesMergeResult(ValueTransformer.wrapNullableValue(result?.value), result?.content)
         }
     }
 }

@@ -19,6 +19,7 @@ package fr.vsct.tock.nlp.front.shared.parser
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.NlpEngineType.Companion.opennlp
 import fr.vsct.tock.shared.Dice
+import java.time.ZoneId
 import java.time.ZoneOffset.UTC
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
@@ -32,6 +33,7 @@ data class QueryContext(val language: Locale,
                         val clientDevice: String? = null,
                         val dialogId: String = Dice.newId(),
                         val referenceDate: ZonedDateTime = now(UTC),
+                        val referenceTimezone: ZoneId = UTC,
                         val engineType: NlpEngineType = opennlp,
                         val registerQuery: Boolean = true,
                         /**

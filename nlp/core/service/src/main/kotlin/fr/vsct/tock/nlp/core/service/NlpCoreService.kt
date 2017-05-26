@@ -20,15 +20,18 @@ import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.BuildContext
 import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
+import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.IntentRecognition
 import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.ParsingResult
+import fr.vsct.tock.nlp.core.merge.ValueDescriptor
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 import fr.vsct.tock.nlp.core.service.entity.EntityCore
 import fr.vsct.tock.nlp.core.service.entity.EntityMerge
 import fr.vsct.tock.nlp.model.EntityBuildContextForIntent
+import fr.vsct.tock.nlp.model.EntityCallContextForEntity
 import fr.vsct.tock.nlp.model.EntityCallContextForIntent
 import fr.vsct.tock.nlp.model.IntentContext
 import fr.vsct.tock.nlp.model.ModelNotInitializedException
@@ -71,7 +74,7 @@ object NlpCoreService : NlpCore {
 
             return ParsingResult(
                     intent.intent.name,
-                    evaluatedEntities.map { it.value },
+                    evaluatedEntities,
                     intent.probability,
                     evaluatedEntities.map { it.probability }.average())
         } catch(e: ModelNotInitializedException) {
@@ -123,7 +126,15 @@ object NlpCoreService : NlpCore {
         return nlpClassifier.supportedNlpEngineTypes()
     }
 
-    override fun getEvaluatedEntityTypes(): Set<String> {
-        return entityCore.getEvaluatedEntityTypes()
+    override fun getEvaluableEntityTypes(): Set<String> {
+        return entityCore.getEvaluableEntityTypes()
+    }
+
+    override fun supportValuesMerge(entityType: EntityType): Boolean {
+        return entityCore.supportValuesMerge(entityType)
+    }
+
+    override fun mergeValues(context: CallContext, entityType: EntityType, values: List<ValueDescriptor>): ValueDescriptor? {
+        return entityCore.mergeValues(EntityCallContextForEntity(context, entityType), values)
     }
 }

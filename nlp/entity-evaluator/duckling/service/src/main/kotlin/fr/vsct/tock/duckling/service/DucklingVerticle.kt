@@ -27,6 +27,7 @@ import io.vertx.core.Future
 import io.vertx.ext.web.RoutingContext
 import fr.vsct.tock.shared.jackson.mapper
 import mu.KotlinLogging
+import java.time.ZoneId
 import java.time.ZonedDateTime
 
 /**
@@ -38,6 +39,7 @@ class DucklingVerticle : WebVerticle(KotlinLogging.logger {}) {
             val language: String,
             val dimensions: List<String>,
             val referenceDate: ZonedDateTime,
+            val referenceTimezone: ZoneId,
             val textToParse: String)
 
     class KeywordSerializer : JsonSerializer<Keyword>() {
@@ -54,7 +56,7 @@ class DucklingVerticle : WebVerticle(KotlinLogging.logger {}) {
         blockingJsonPost("/parse") {
             _, request: ParseRequest ->
             with(request) {
-                DucklingBridge.parse(language, textToParse, dimensions, referenceDate)
+                DucklingBridge.parse(language, textToParse, dimensions, referenceDate, referenceTimezone)
             }
         }
     }

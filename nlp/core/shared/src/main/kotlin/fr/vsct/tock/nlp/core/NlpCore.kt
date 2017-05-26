@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.core
 
+import fr.vsct.tock.nlp.core.merge.ValueDescriptor
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 
 /**
@@ -48,9 +49,19 @@ interface NlpCore {
             entities: List<EntityRecognition>): List<EntityRecognition>
 
     /**
-     * Returns all (built-in) evaluated entities.
+     * Returns all (built-in) evaluable entities.
      *
      * @return the evaluated entity types (namespace:name)
      */
-    fun getEvaluatedEntityTypes(): Set<String>
+    fun getEvaluableEntityTypes(): Set<String>
+
+    /**
+     * Does the given [EntityType] supports values merge?
+     */
+    fun supportValuesMerge(entityType: EntityType): Boolean
+
+    /**
+     * Merge two or more values for the given [EntityType].
+     */
+    fun mergeValues(context: CallContext, entityType: EntityType, values: List<ValueDescriptor>): ValueDescriptor?
 }

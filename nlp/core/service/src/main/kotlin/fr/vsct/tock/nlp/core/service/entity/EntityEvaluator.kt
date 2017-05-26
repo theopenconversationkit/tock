@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.core.service.entity
 
+import fr.vsct.tock.nlp.core.merge.ValueDescriptor
 import fr.vsct.tock.nlp.model.EntityCallContextForEntity
 
 /**
@@ -23,5 +24,18 @@ import fr.vsct.tock.nlp.model.EntityCallContextForEntity
  */
 interface EntityEvaluator {
 
+    /**
+     * Evaluates a text from the given entity context.
+     *
+     * @param context to know the entity to evaluate
+     * @param text the text to evaluate
+     * @return the evaluation result - with null [EvaluationResult.value] if no value found
+     */
     fun evaluate(context: EntityCallContextForEntity, text: String): EvaluationResult
+
+    /**
+     * Merge two or more [ValueDescriptor].
+     * Returns null if the merge is not applicable.
+     */
+    fun merge(context: EntityCallContextForEntity, values: List<ValueDescriptor>): ValueDescriptor? = null
 }

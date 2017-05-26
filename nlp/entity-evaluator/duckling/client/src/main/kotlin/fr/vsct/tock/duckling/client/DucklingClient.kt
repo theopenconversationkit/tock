@@ -32,6 +32,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import java.lang.reflect.Type
+import java.time.ZoneId
 import java.time.ZonedDateTime
 
 /**
@@ -42,9 +43,10 @@ internal object DucklingClient {
     data class ParseRequest(val language: String,
                             val dimensions: List<String>,
                             val referenceDate: ZonedDateTime,
+                            val referenceTimezone: ZoneId,
                             val textToParse: String)
 
-    interface BuiltInEntitiesService {
+    interface DucklingService {
 
         @POST("parse")
         fun parse(@Body request: ParseRequest): Call<JSONValue>
@@ -53,7 +55,7 @@ internal object DucklingClient {
         fun healthcheck(): Call<Void>
     }
 
-    private val service: BuiltInEntitiesService
+    private val service: DucklingService
     private val jacksonConverterFactory: JacksonConverterFactory
 
     init {
@@ -88,8 +90,13 @@ internal object DucklingClient {
         }
     }
 
-    fun parse(language: String, dimensions: List<String>, referenceDate: ZonedDateTime, textToParse: String): JSONValue {
-        return service.parse(ParseRequest(language, dimensions, referenceDate, textToParse)).execute().body()
+    fun parse(
+            language: String,
+            dimensions: List<String>,
+            referenceDate: ZonedDateTime,
+            referenceTimezone: ZoneId,
+            textToParse: String): JSONValue {
+        return service.parse(ParseRequest(language, dimensions, referenceDate, referenceTimezone, textToParse)).execute().body()
     }
 
     fun healthcheck(): Boolean {

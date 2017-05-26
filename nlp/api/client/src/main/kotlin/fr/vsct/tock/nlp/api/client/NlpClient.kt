@@ -24,6 +24,8 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
+import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
+import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
@@ -71,8 +73,15 @@ class NlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "http
     /**
      * Analyse a sentence and returns the result.
      */
-    fun parse(request: NlpQuery): Response<NlpResult> {
-        return nlpService.parse(request).execute()
+    fun parse(query: NlpQuery): Response<NlpResult> {
+        return nlpService.parse(query).execute()
+    }
+
+    /**
+     * Merge values and returns the result if found.
+     */
+    fun mergeValues(query: ValuesMergeQuery): Response<ValuesMergeResult> {
+        return nlpService.mergeValues(query).execute()
     }
 
     /**

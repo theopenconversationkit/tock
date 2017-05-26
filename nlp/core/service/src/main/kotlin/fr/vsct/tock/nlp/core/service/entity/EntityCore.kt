@@ -18,16 +18,43 @@ package fr.vsct.tock.nlp.core.service.entity
 
 import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
+import fr.vsct.tock.nlp.core.EntityType
+import fr.vsct.tock.nlp.core.merge.ValueDescriptor
 import fr.vsct.tock.nlp.model.EntityCallContext
+import fr.vsct.tock.nlp.model.EntityCallContextForEntity
 
 /**
  *
  */
 internal interface EntityCore {
 
-    fun getEvaluatedEntityTypes(): Set<String>
+    /**
+     * Returns all (built-in) evaluable entities.
+     *
+     * @return the evaluated entity types (namespace:name)
+     */
+    fun getEvaluableEntityTypes(): Set<String>
+
+    /**
+     * Does the given [EntityType] supports values merge?
+     */
+    fun supportValuesMerge(entityType: EntityType): Boolean
 
     fun classifyEntityTypes(context: EntityCallContext, text: String, tokens: Array<String>): List<EntityTypeRecognition>
 
+    /**
+     * Evaluate entity values.
+     *
+     * @param context the call context
+     * @param text the query
+     * @param entities the not yet evaluated identified entities
+     *
+     * @return the evaluated entities
+     */
     fun evaluateEntities(context: CallContext, text: String, entitiesRecognition: List<EntityRecognition>): List<EntityRecognition>
+
+    /**
+     * Merge two or more values for the given [context].
+     */
+    fun mergeValues(context: EntityCallContextForEntity, values: List<ValueDescriptor>): ValueDescriptor?
 }

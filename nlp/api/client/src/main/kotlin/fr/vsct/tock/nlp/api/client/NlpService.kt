@@ -19,6 +19,8 @@ package fr.vsct.tock.nlp.api.client
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
+import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
+import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
 import okhttp3.MultipartBody
 import retrofit2.Call
 import retrofit2.http.Body
@@ -34,6 +36,9 @@ internal interface NlpService {
 
     @POST("parse")
     fun parse(@Body query: NlpQuery): Call<NlpResult>
+
+    @POST("merge")
+    fun mergeValues(@Body query: ValuesMergeQuery): Call<ValuesMergeResult>
 
     @Multipart
     @POST("dump/import")

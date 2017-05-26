@@ -29,5 +29,7 @@ class DucklingEntityEvaluatorProvider : EntityEvaluatorProvider {
 
     override fun getEntityEvaluator(): EntityEvaluator = DucklingParser
 
-    override fun getSupportedEntityTypes(): Set<String> = DucklingParser.entityTypes
+    override fun getSupportedEntityTypes(): Set<String> = DucklingDimensions.entityTypes
+
+    override fun getEntityTypesWithValuesMergeSupport(): Set<String> = DucklingDimensions.mergeSupport
 }

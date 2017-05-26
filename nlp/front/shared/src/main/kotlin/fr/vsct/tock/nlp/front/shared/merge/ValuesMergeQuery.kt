@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.front.shared.parser
+package fr.vsct.tock.nlp.front.shared.merge
+
+import fr.vsct.tock.nlp.core.Entity
+import fr.vsct.tock.nlp.front.shared.parser.QueryContext
 
 /**
  *
  */
-class QueryDescription(val queries: List<String>,
-                       val namespace: String,
-                       val applicationName: String,
-                       val context: QueryContext,
-                       val state: QueryState = QueryState.noState) {
-}
+data class ValuesMergeQuery(
+        val namespace: String,
+        val applicationName: String,
+        val context: QueryContext,
+        val entity: Entity,
+        val values: List<ValueToMerge>)

@@ -23,19 +23,11 @@ import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
-import fr.vsct.tock.bot.engine.dialog.EntityStateValue
-import fr.vsct.tock.bot.engine.dialog.State
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserTimeline
-import fr.vsct.tock.nlp.api.client.model.NlpQuery
-import fr.vsct.tock.nlp.api.client.model.QueryContext
-import fr.vsct.tock.nlp.api.client.model.QueryState
-import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
-import java.time.ZonedDateTime
 
 /**
  *
@@ -44,7 +36,7 @@ class Bot(val botDefinition: BotDefinition) {
 
     private val logger = KotlinLogging.logger {}
 
-    private val nlp: NlpService by injector.instance()
+    private val nlp: NlpController by injector.instance()
 
     fun handle(action: Action, userTimeline: UserTimeline, connector: ConnectorController) {
         loadProfileIfNotSet(action, userTimeline, connector)
@@ -111,7 +103,7 @@ class Bot(val botDefinition: BotDefinition) {
                 //do nothing
             }
             is SendSentence -> {
-                parseSentence(action, userTimeline, dialog, connector)
+                nlp.parseSentence(action, userTimeline, dialog, connector, botDefinition)
             }
             else -> logger.warn { "${action::class.simpleName} not yet supported" }
         }
@@ -121,67 +113,6 @@ class Bot(val botDefinition: BotDefinition) {
         dialog.state.currentIntent = botDefinition.findIntent(choice.intentName)
     }
 
-    private fun parseSentence(sentence: SendSentence,
-                              userTimeline: UserTimeline,
-                              dialog: Dialog,
-                              connector: ConnectorController) {
-
-        fun toNlpQuery(): NlpQuery {
-            return NlpQuery(
-                    listOf(sentence.text!!),
-                    botDefinition.namespace,
-                    botDefinition.nlpModelName,
-                    QueryContext(
-                            userTimeline.userPreferences.locale,
-                            sentence.playerId.id,
-                            dialog.id,
-                            connector.connectorType.toString(),
-                            referenceDate = ZonedDateTime.now(userTimeline.userPreferences.timezone),
-                            engineType = botDefinition.engineType
-                    ),
-                    QueryState.noState)
-        }
-
-        logger.debug { "Parse sentence : $sentence" }
-        if (userTimeline.userState.waitingRawInput || sentence.text.isNullOrBlank()) {
-            //do nothing
-        } else {
-            try {
-                logger.debug { "Sending sentence '${sentence.text}' to NLP" }
-                nlp.parse(toNlpQuery())
-                        ?.let { nlpResult ->
-                            sentence.state.currentIntent = botDefinition.findIntent(nlpResult.intent)
-                            sentence.state.entityValues.addAll(nlpResult.entities.map { ContextValue(nlpResult.retainedQuery, it) })
-                            dialog.apply {
-                                state.currentIntent = sentence.state.currentIntent
-                                state.mergeEntityValues(sentence)
-                            }
-                        }
-            } catch(t: Throwable) {
-                logger.error(t)
-            }
-        }
-    }
-
-    private fun mergeEntityValues(action: Action, newValues: List<ContextValue>, oldValue: EntityStateValue? = null): EntityStateValue {
-        //TODO merge dates
-        return if (oldValue == null) {
-            EntityStateValue(action, newValues.first())
-        } else {
-            val newValue = newValues.first()
-            oldValue.changeValue(newValue, action)
-        }
-    }
-
-    private fun State.mergeEntityValues(action: Action) {
-        entityValues.putAll(
-                action.state.entityValues
-                        .groupBy { it.entity.role }
-                        .mapValues {
-                            mergeEntityValues(action, it.value, entityValues.get(it.key))
-                        }
-        )
-    }
 
     fun errorActionFor(userAction: Action): Action {
         return botDefinition.errorActionFor(userAction)
