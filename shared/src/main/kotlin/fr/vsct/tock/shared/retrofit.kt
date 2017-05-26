@@ -35,10 +35,10 @@ fun retrofitBuilderWithTimeout(ms: Long, vararg interceptors: Interceptor): Retr
         = OkHttpClient.Builder()
         .readTimeout(ms, MILLISECONDS)
         .connectTimeout(ms, MILLISECONDS)
-        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
         .apply {
             interceptors.forEach { addInterceptor(it) }
         }
+        .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
         .build()
         .let {
             Retrofit.Builder().client(it)
