@@ -14,19 +14,18 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package fr.vsct.tock.shared.cache
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
-import fr.vsct.tock.shared.cache.Cache
-import fr.vsct.tock.shared.cache.mongo.MongoCache
-import fr.vsct.tock.shared.vertx.vertxRunner
+/**
+ *
+ */
+internal interface Cache {
 
-val injector = KodeinInjector()
+    fun get(id: String, type: String): Any?
 
-val sharedModule = Kodein.Module {
-    bind<Runner>() with provider { vertxRunner() }
-    bind<Cache>() with provider { MongoCache }
+    fun put(id: String, type: String, data: Any)
+
+    fun getAll(type: String): Map<String, Any>
+
+    fun remove(id: String, type: String)
 }
