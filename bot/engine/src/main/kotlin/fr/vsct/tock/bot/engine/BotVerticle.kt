@@ -16,7 +16,9 @@
 
 package fr.vsct.tock.bot.engine
 
+import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.vertx.WebVerticle
+import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
@@ -28,12 +30,18 @@ class BotVerticle : WebVerticle(KotlinLogging.logger {}) {
 
     private val handlers: MutableMap<String, (Router) -> Unit> = mutableMapOf()
 
+    override fun authProvider(): AuthProvider? = authProvider
+
     fun registerServices(rootPath: String, installer: (Router) -> Unit) {
         if (!(handlers as Map<String, (Router) -> Unit>).containsKey(rootPath)) {
             handlers.put(rootPath, installer)
         } else {
             logger.debug("path $rootPath already registered - skip")
         }
+    }
+
+    override fun protectedPath(): String {
+        return property("tock_bot_protected_path", "/admin")
     }
 
     override fun configure() {

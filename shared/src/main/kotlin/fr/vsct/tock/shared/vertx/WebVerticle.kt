@@ -130,17 +130,18 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
     }
 
     private fun addAuth(authProvider: AuthProvider) {
-        router.route().handler(CookieHandler.create())
-        router.route().handler(SessionHandler.create(LocalSessionStore.create(vertx))
+        val protectedPath = "${protectedPath()}/*"
+        router.route(protectedPath).handler(CookieHandler.create())
+        router.route(protectedPath).handler(SessionHandler.create(LocalSessionStore.create(vertx))
                 .setSessionTimeout(6 * 60 * 60 * 1000 /*6h*/)
                 .setNagHttps(devEnvironment)
                 .setCookieHttpOnlyFlag(!devEnvironment)
                 .setCookieSecureFlag(!devEnvironment)
                 .setSessionCookieName("tock-session"))
-        router.route().handler(UserSessionHandler.create(authProvider))
+        router.route(protectedPath).handler(UserSessionHandler.create(authProvider))
         val authHandler = BasicAuthHandler.create(authProvider)
 
-        router.route("${protectedPath()}/*").handler(authHandler)
+        router.route(protectedPath).handler(authHandler)
 
         router.post(authenticatePath).handler { context ->
             val request = mapper.readValue<AuthenticateRequest>(context.bodyAsString)
@@ -156,7 +157,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
             })
         }
 
-        router.post("$rootPath/logout").handler {
+        router.post("${protectedPath()}/logout").handler {
             it.clearUser()
             it.success()
         }
