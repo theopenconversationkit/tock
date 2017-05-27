@@ -123,7 +123,8 @@ internal object DatesMerge {
             MergeGrain(false, day)
         } else if (oldValue.grain() > newValue.grain()
                 && oldValue.grain().calculateEnd(newValue.start()) >= newValue.end()) {
-            MergeGrain(false, oldValue.grainFromNow())
+            //MergeGrain(false, oldValue.grainFromNow())
+            null
         } else {
             null
         }
