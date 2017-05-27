@@ -32,6 +32,7 @@ import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.translator.I18nLabelKey
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
@@ -139,6 +140,10 @@ fun BotBus.withMessengerVideo(videoUrl: String): BotBus {
     return withMessengerAttachmentType(videoUrl, AttachmentType.video)
 }
 
+fun BotBus.messengerGenericElement(title: I18nLabelKey, subtitle: I18nLabelKey? = null, imageUrl: String? = null, buttons: List<Button>? = null): Element {
+    return messengerGenericElement(translate(title), translate(subtitle), imageUrl, buttons)
+}
+
 fun BotBus.messengerGenericElement(title: String, subtitle: String? = null, imageUrl: String? = null, buttons: List<Button>? = null): Element {
     if (title.length > 80) {
         logger.warn { "title $title has more than 80 chars" }
@@ -150,11 +155,19 @@ fun BotBus.messengerGenericElement(title: String, subtitle: String? = null, imag
         error("Number of buttons > 3 : $buttons")
     }
     return Element(
-            translate(title),
+            title,
             imageUrl,
-            translate(subtitle),
+            if (subtitle.isNullOrEmpty()) null else subtitle,
             buttons
     )
+}
+
+fun BotBus.messengerListElement(title: I18nLabelKey, subtitle: I18nLabelKey? = null, imageUrl: String? = null, button: Button? = null): Element {
+    return messengerListElement(
+            translate(title),
+            translate(subtitle),
+            imageUrl,
+            button)
 }
 
 fun BotBus.messengerListElement(title: String, subtitle: String? = null, imageUrl: String? = null, button: Button? = null): Element {
@@ -165,13 +178,12 @@ fun BotBus.messengerListElement(title: String, subtitle: String? = null, imageUr
         logger.warn { "subtitle $subtitle has more than 80 chars" }
     }
     return Element(
-            translate(title),
+            title,
             imageUrl,
-            translate(subtitle),
+            if (subtitle.isNullOrEmpty()) null else subtitle,
             if (button == null) null else listOf(button)
     )
 }
-
 
 fun BotBus.messengerPostback(title: String, targetStory: StoryDefinition, vararg parameters: Pair<String, String>): PostbackButton {
     if (title.length > 20) {
@@ -181,7 +193,7 @@ fun BotBus.messengerPostback(title: String, targetStory: StoryDefinition, vararg
     if (title.length > 1000) {
         logger.warn { "payload $payload has more than 1000 chars" }
     }
-    return PostbackButton(payload, translate(title))
+    return PostbackButton(payload, title)
 }
 
 fun BotBus.messengerPostback(title: String, targetIntent: Intent, vararg parameters: Pair<String, String>): PostbackButton {
@@ -192,7 +204,7 @@ fun BotBus.messengerPostback(title: String, targetIntent: Intent, vararg paramet
     if (title.length > 1000) {
         logger.warn { "payload $payload has more than 1000 chars" }
     }
-    return PostbackButton(payload, translate(title))
+    return PostbackButton(payload, title)
 }
 
 fun BotBus.messengerUrl(title: String, url: String): UrlButton {

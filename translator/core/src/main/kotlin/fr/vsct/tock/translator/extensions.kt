@@ -18,22 +18,7 @@ package fr.vsct.tock.translator
 
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAccessor
-import java.util.Formattable
-import java.util.Formatter
-import java.util.Locale
 
-/**
- *
- */
-class DateTemplate(val date: TemporalAccessor?, val dateFormatter: DateTimeFormatter) : Formattable {
-
-    fun format(locale: Locale): String {
-        return date?.let {
-            dateFormatter.withLocale(locale).format(it)
-        } ?: ""
-    }
-
-    override fun formatTo(formatter: Formatter, flags: Int, width: Int, precision: Int) {
-        formatter.format(format(formatter.locale()))
-    }
+infix fun TemporalAccessor?.by(formatter: DateTimeFormatter): DateTemplate {
+    return DateTemplate(this, formatter)
 }

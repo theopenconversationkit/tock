@@ -17,9 +17,9 @@
 package fr.vsct.tock.bot.definition
 
 import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
+import fr.vsct.tock.translator.Translator
 import mu.KotlinLogging
 
 /**
@@ -57,5 +57,12 @@ abstract class StoryHandlerBase : StoryHandler, I18nKeyProvider {
                 prefix,
                 defaultLabel,
                 *args)
+    }
+
+    /**
+     * Shortcut method for [i18nKeyFromLabel].
+     */
+    fun i18n(defaultLabel: String, vararg args: Any?): I18nLabelKey {
+        return i18nKeyFromLabel(defaultLabel, *args)
     }
 }

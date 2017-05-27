@@ -180,8 +180,9 @@ class BotBus internal constructor(
         }
     }
 
-    fun translate(key: I18nLabelKey): String {
-        return Translator.translate(key,
+    fun translate(key: I18nLabelKey?): String {
+        return if (key == null) ""
+        else Translator.translate(key,
                 userTimeline.userPreferences.locale,
                 connector.connectorType.userInterfaceType)
     }
