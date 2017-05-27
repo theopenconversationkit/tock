@@ -15,17 +15,18 @@
  */
 
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AuthService} from "./core/auth/auth.service";
-import {StateService} from "./core/state.service";
-import {RestService} from "./core/rest/rest.service";
+import {AuthService} from "tock-nlp-admin/src/app/core/auth/auth.service";
+import {StateService} from "tock-nlp-admin/src/app/core/state.service";
+import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
 import {MdSnackBar} from "@angular/material";
 
+
 @Component({
-  selector: 'tock-root',
-  templateUrl: './app.component.html',
-  styleUrls: ['./app.component.css']
+  selector: 'tock-bot-admin-root',
+  templateUrl: './bot-admin-app.component.html',
+  styleUrls: ['./bot-admin-app.component.css']
 })
-export class AppComponent implements OnInit, OnDestroy {
+export class BotAdminAppComponent implements OnInit, OnDestroy {
 
   private errorUnsuscriber: any;
 

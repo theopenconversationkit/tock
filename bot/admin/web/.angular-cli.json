@@ -1,7 +1,7 @@
 {
   "$schema": "./node_modules/@angular/cli/lib/config/schema.json",
   "project": {
-    "name": "admin"
+    "name": "web"
   },
   "apps": [
     {
@@ -17,17 +17,15 @@
       "test": "test.ts",
       "tsconfig": "tsconfig.app.json",
       "testTsconfig": "tsconfig.spec.json",
-      "prefix": "tock",
+      "prefix": "app",
       "styles": [
         "styles.css"
       ],
-      "scripts": [
-
-      ],
+      "scripts": [],
       "environmentSource": "environments/environment.ts",
       "environments": {
-        "prod": "environments/environment.ts",
-        "dev": "environments/environment.dev.ts"
+        "dev": "environments/environment.ts",
+        "prod": "environments/environment.prod.ts"
       }
     }
   ],

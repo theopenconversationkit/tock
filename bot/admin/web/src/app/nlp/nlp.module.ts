@@ -14,10 +14,18 @@
  * limitations under the License.
  */
 
-// prod is default to easier inclusion in bot-admin-web
+import {NlpModule} from "tock-nlp-admin/src/app/nlp-tabs/nlp.module";
+import {NgModule} from "@angular/core";
+import {SharedModule} from "tock-nlp-admin/src/app/shared/shared.module";
 
-export const environment = {
-  production: true,
-  autologin: true,
-  serverUrl:'/rest'
-};
+@NgModule({
+  declarations: [],
+  imports: [
+    SharedModule,
+    NlpModule
+  ],
+  providers: [],
+  bootstrap: []
+})
+export class BotNlpModule {
+}

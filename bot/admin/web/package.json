@@ -1,5 +1,5 @@
 {
-  "name": "tock-nlp-admin",
+  "name": "tock-bot-admin",
   "version": "0.0.0",
   "license": "MIT",
   "scripts": {
@@ -29,12 +29,12 @@
     "ng2-file-upload": "^1.2.1",
     "ngx-infinite-scroll": "^0.4.1",
     "rxjs": "^5.1.0",
-    "zone.js": "^0.8.4"
+    "zone.js": "^0.8.4",
+    "tock-nlp-admin": "file:${PWD}/../../../../nlp/admin/web"
   },
   "devDependencies": {
-    "@angular/cli": "^1.0.0",
-    "@angular/compiler-cli": "^4.0.2",
-    "@types/filesaver": "0.0.30",
+    "@angular/cli": "1.0.1",
+    "@angular/compiler-cli": "^4.0.0",
     "@types/jasmine": "2.5.38",
     "@types/node": "~6.0.60",
     "codelyzer": "~2.0.0",
@@ -43,12 +43,12 @@
     "karma": "~1.4.1",
     "karma-chrome-launcher": "~2.0.0",
     "karma-cli": "~1.0.1",
-    "karma-coverage-istanbul-reporter": "^0.2.0",
     "karma-jasmine": "~1.1.0",
     "karma-jasmine-html-reporter": "^0.2.2",
+    "karma-coverage-istanbul-reporter": "^0.2.0",
     "protractor": "~5.1.0",
     "ts-node": "~2.0.0",
-    "tslint": "~4.4.2",
-    "typescript": "~2.2.1"
+    "tslint": "~4.5.0",
+    "typescript": "~2.2.0"
   }
 }

@@ -34,13 +34,14 @@ import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.StaticHandler
+import mu.KLogger
 import mu.KotlinLogging
 import java.util.Locale
 
 /**
  *
  */
-class AdminVerticle : WebVerticle(KotlinLogging.logger {}) {
+open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticle(logger) {
 
     override val rootPath: String = "/rest/admin"
 

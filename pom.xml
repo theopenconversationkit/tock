@@ -58,6 +58,8 @@
         <plugin.dokka>0.9.13</plugin.dokka>
         <plugin.assembly>3.0.0</plugin.assembly>
         <plugin.frontend>1.4</plugin.frontend>
+
+        <node>v6.10.2</node>
     </properties>
 
     <modules>
@@ -111,6 +113,11 @@
             <dependency>
                 <groupId>fr.vsct.tock</groupId>
                 <artifactId>tock-translator-noop</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
+                <artifactId>tock-nlp-admin-server</artifactId>
                 <version>${project.version}</version>
             </dependency>
 

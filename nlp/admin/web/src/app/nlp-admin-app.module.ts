@@ -15,12 +15,11 @@
  */
 
 import {NgModule} from "@angular/core";
-import {AppComponent} from "./app.component";
+import {NlpAdminAppComponent} from "./nlp-admin-app.component";
 import {SharedModule} from "./shared/shared.module";
-import {Routes, RouterModule} from "@angular/router";
+import {RouterModule, Routes} from "@angular/router";
 import {BrowserModule} from "@angular/platform-browser";
 import {CoreModule} from "./core/core.module";
-import { SentencesScrollComponent } from './sentences-scroll/sentences-scroll.component';
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 const routes: Routes = [
@@ -38,22 +37,22 @@ const routes: Routes = [
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
 })
-export class AppRoutingModule {
+export class NlpAdminAppRoutingModule {
 }
 
 @NgModule({
   declarations: [
-    AppComponent
+    NlpAdminAppComponent
   ],
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
     CoreModule,
     SharedModule,
-    AppRoutingModule
+    NlpAdminAppRoutingModule
   ],
   providers: [],
-  bootstrap: [AppComponent]
+  bootstrap: [NlpAdminAppComponent]
 })
-export class AppModule {
+export class NlpAdminAppModule {
 }

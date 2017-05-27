@@ -1,0 +1,68 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<md-sidenav-container>
+  <md-sidenav #sidenav mode="side" class="tock-sidenav">
+    <button md-icon-button class="menu-close" #closeStartButton (click)="sidenav.close()">
+      <md-icon class="md-24">close</md-icon>
+    </button>
+    <p></p>
+    <md-list>
+      <md-list-item>
+        <a routerLink="/applications">Applications</a>
+      </md-list-item>
+      <md-list-item>
+        <a routerLink="/nlp/inbox">NLP</a>
+      </md-list-item>
+    </md-list>
+  </md-sidenav>
+
+  <md-toolbar color="primary">
+
+    <button md-button class="tock-menu-button" (click)="sidenav.toggle()">
+      <md-icon>menu</md-icon>
+    </button>
+
+    <a routerLink="/" class="tock-title">Tock Bot Administration</a>
+
+    <span class="fill-remaining-space"></span>
+
+    <md-select *ngIf="state.currentApplication"
+               (change)="changeApplication($event.value)"
+               [ngModel]="state.currentApplication.name"
+               class="select-application">
+      <md-option *ngFor="let app of state.applications"
+                 [value]="app.name">{{ app.name }}</md-option>
+    </md-select>
+
+    <md-select *ngIf="state.currentApplication"
+               (change)="changeLocale($event.value)"
+               [ngModel]="state.currentLocale">
+      <md-option *ngFor="let l of state.currentApplication.supportedLocales"
+                 [value]="l">{{ state.localeName(l) }}</md-option>
+    </md-select>
+
+    <button *ngIf="auth.isLoggedIn()" class="tock-icon-button" (click)="auth.logout()" md-tooltip="Logout">
+      <i class="material-icons tock-toolbar-menu">exit_to_app</i>
+    </button>
+
+  </md-toolbar>
+
+  <div>
+    <router-outlet></router-outlet>
+  </div>
+
+</md-sidenav-container>

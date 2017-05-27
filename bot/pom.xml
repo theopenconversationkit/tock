@@ -35,6 +35,8 @@
         <module>storage-mongo</module>
 
         <module>toolkit</module>
+
+        <module>admin</module>
     </modules>
 
     <dependencyManagement>

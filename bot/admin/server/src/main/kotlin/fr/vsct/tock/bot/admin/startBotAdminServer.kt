@@ -14,10 +14,17 @@
  * limitations under the License.
  */
 
-// prod is default to easier inclusion in bot-admin-web
+package fr.vsct.tock.bot.admin
 
-export const environment = {
-  production: true,
-  autologin: true,
-  serverUrl:'/rest'
-};
+import com.github.salomonbrys.kodein.Kodein
+import fr.vsct.tock.nlp.front.ioc.FrontIoc
+import fr.vsct.tock.shared.vertx.vertx
+
+fun main(args: Array<String>) {
+    startAdminServer()
+}
+
+fun startAdminServer(vararg modules: Kodein.Module) {
+    FrontIoc.setup(*modules)
+    vertx.deployVerticle(BotAdminVerticle())
+}

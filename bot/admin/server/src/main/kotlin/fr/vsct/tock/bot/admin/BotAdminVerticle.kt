@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-export const environment = {
-  production: true,
-  autologin: true,
-  serverUrl:'/rest'
-};
+package fr.vsct.tock.bot.admin
+
+import fr.vsct.tock.nlp.admin.AdminVerticle
+import mu.KotlinLogging
+
+/**
+ *
+ */
+class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
+
+    override fun configure() {
+        super.configure()
+
+    }
+}

@@ -20,13 +20,13 @@
 
   <parent>
     <groupId>fr.vsct.tock</groupId>
-    <artifactId>tock-nlp-admin</artifactId>
+    <artifactId>tock-bot-admin</artifactId>
     <version>0.2-SNAPSHOT</version>
   </parent>
 
-  <artifactId>tock-nlp-admin-web</artifactId>
-  <name>Tock NLP Admin Front</name>
-  <description>Web app front for Tock NLP Admin</description>
+  <artifactId>tock-bot-admin-web</artifactId>
+  <name>Tock Bot Admin Front</name>
+  <description>Web app front for Tock Bot Admin</description>
 
   <build>
     <plugins>
