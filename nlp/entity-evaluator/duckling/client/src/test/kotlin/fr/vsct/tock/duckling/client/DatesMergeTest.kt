@@ -84,6 +84,15 @@ internal class DatesMergeTest {
                 DateEntityValue(referenceTime.plusDays(1).withHour(23), DateEntityGrain.hour)
         )
 
+        val tomorrowAt8 = ValueDescriptor(
+                DateEntityValue(
+                        referenceTime.plusDays(1).withHour(20),
+                        DateEntityGrain.hour
+                ),
+                "demain à 20h",
+                false,
+                2)
+
         val inThreeDays =
                 DateEntityValue(
                         referenceTime.plusDays(3),
@@ -155,5 +164,17 @@ internal class DatesMergeTest {
     fun merge_shouldReturnsTheValueWithAdditionalValue_whenNewValueMatchesAdditionalRegex() {
         val result = DatesMerge.merge(context, listOf(tomorrow.copy(initial = true), twoDaysAfter))
         assertEquals(inThreeDays, result?.value)
+    }
+
+    @Test
+    fun merge_shouldReturnsTheValueOnly_whenInitialValueIsOfGreaterGrainButNewValueContainsAlsoInitialValueGrain() {
+        val result = DatesMerge.merge(context, listOf(tomorrow.copy(initial = true), tomorrowAt8))
+        assertEquals(tomorrowAt8.value, result?.value)
+    }
+
+    @Test
+    fun merge_shouldReturnsTheValueWithTheInitialDateValueAsReference_whenInitialValueIsOfSameGrainButGrainFromNowIsGreater() {
+        val result = DatesMerge.merge(context, listOf(tomorrowAt8.copy(initial = true), evening))
+        assertEquals(tomorrowInTheEvening, result?.value)
     }
 }

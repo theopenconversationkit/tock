@@ -52,6 +52,24 @@ enum class DateEntityGrain(val time: Boolean) {
                 return unknown
             }
         }
+
+        fun maxGrain(start: ZonedDateTime, end: ZonedDateTime): DateEntityGrain {
+            return if (start.plusSeconds(1) >= end) {
+                second
+            } else if (start.truncatedTo(MINUTES).plusMinutes(1) >= end.truncatedTo(MINUTES)) {
+                minute
+            } else if (start.truncatedTo(HOURS).plusHours(1) >= end.truncatedTo(HOURS)) {
+                hour
+            } else if (start.truncatedTo(DAYS).plusDays(1) >= end.truncatedTo(DAYS)) {
+                day
+            } else if (start.truncatedTo(DAYS).plusWeeks(1) >= end.truncatedTo(DAYS)) {
+                week
+            } else if (start.truncatedTo(MONTHS).plusMonths(1) >= end.truncatedTo(MONTHS)) {
+                month
+            } else {
+                year
+            }
+        }
     }
 
     fun truncate(date: ZonedDateTime): ZonedDateTime {

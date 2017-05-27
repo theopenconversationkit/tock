@@ -19,6 +19,7 @@ package fr.vsct.tock.duckling.client
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.merge.ValueDescriptor
 import fr.vsct.tock.nlp.entity.date.DateEntityGrain
+import fr.vsct.tock.nlp.entity.date.DateEntityGrain.day
 import fr.vsct.tock.nlp.entity.date.DateEntityRange
 import fr.vsct.tock.nlp.entity.date.DateEntityValue
 import fr.vsct.tock.nlp.entity.date.DateIntervalEntityValue
@@ -27,6 +28,7 @@ import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
 import java.time.ZonedDateTime
+import java.time.ZonedDateTime.now
 import java.util.Locale
 
 /**
@@ -38,6 +40,11 @@ internal object DatesMerge {
     private val logger = KotlinLogging.logger {}
 
     private val frenchAddRegex = ".*prochaine?$|.*suivante?$|.*qui suit$|.*(d')? ?apr[eèé]s$|.*plus tard$|.*derni[èe]re?$|.*pass[ée]e?$|.*pr[eé]c[eé]dente?$|.*(d')? ?avant$|.*plus t[oô]t$|lendemain|le lendemain|la veille|ce jour".toRegex()
+    private val frenchChangeHourRegex = ("(dans )?(le |la |en )?soir[ée]?e?" +
+            "|(dans )?((le|la) )?mat(in[ée]?e?)?" +
+            "|(dans )?(l' ?)?apr[eéè](s?[ \\-]?midi|m)" +
+            "|([aà]|vers|apr(e|è)s|[aà] partir de|avant|jusqu'[aà])? ?((([01]?\\d)|(2[0-3]))([:h]|heures?)?([0-5]\\d)?)(du|dans l[ae']? ?|au|en|l[ae'] ?|dès l?[ae']? ?|(en )?d[ée]but (de |d' ?)|(en )?fin (de |d' ?)|(en )?d[ée]but (d' ?|de ))?(mat(in[ée]?e?)|soir[ée]?e?|apr[eéè]s?[ \\-]?midi|journ[ée]e)?").toRegex()
+
 
     private val parser: Parser by injector.instance()
 
@@ -53,6 +60,9 @@ internal object DatesMerge {
                     else -> error("unsupported value $this")
                 }
             }
+
+    private fun ValueDescriptor.grainFromNow(): DateEntityGrain =
+            DateEntityGrain.maxGrain(now(), start())
 
     fun merge(context: EntityCallContextForEntity, values: List<ValueDescriptor>): ValueDescriptor? {
         return if (context.entityType.name != DucklingDimensions.datetimeEntityType) {
@@ -95,7 +105,7 @@ internal object DatesMerge {
                                      oldValue: ValueDescriptor,
                                      newValue: ValueDescriptor): ValueDescriptor {
         try {
-            val mergeGrain = hasToAdd(language, newValue) ?: mergeGrain(oldValue, newValue)
+            val mergeGrain = hasToAdd(language, newValue) ?: mergeGrain(language, oldValue, newValue)
             if (mergeGrain != null) {
                 return parseDate(language, referenceDateTime, oldValue, newValue, mergeGrain)
             }
@@ -106,11 +116,14 @@ internal object DatesMerge {
         return newValue
     }
 
-    private fun mergeGrain(oldValue: ValueDescriptor, newValue: ValueDescriptor): MergeGrain? {
+    private fun mergeGrain(language: Locale, oldValue: ValueDescriptor, newValue: ValueDescriptor): MergeGrain? {
         return if (oldValue.end() < ZonedDateTime.now()) {
             null
-        } else if (oldValue.grain() > newValue.grain()) {
-            MergeGrain(false, oldValue.grain())
+        } else if (language.language == "fr" && frenchChangeHourRegex.matches(newValue.content!!)) {
+            MergeGrain(false, day)
+        } else if (oldValue.grain() > newValue.grain()
+                && oldValue.grain().calculateEnd(newValue.start()) >= newValue.end()) {
+            MergeGrain(false, oldValue.grainFromNow())
         } else {
             null
         }
