@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.definition.BotProvider
+import fr.vsct.tock.bot.definition.StoryHandlerListener
 import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 
@@ -28,14 +29,18 @@ object BotRepository {
 
     internal val connectorProviders: MutableSet<ConnectorProvider> = mutableSetOf()
     private val botProviders: MutableSet<BotProvider> = mutableSetOf()
+    internal val storyHandlerListeners: MutableList<StoryHandlerListener> = mutableListOf()
 
     fun registerConnectorProvider(connectorProvider: ConnectorProvider) {
         connectorProviders.add(connectorProvider)
     }
 
-
     fun registerBotProvider(bot: BotProvider) {
         botProviders.add(bot)
+    }
+
+    fun registerStoryHandlerListener(listener: StoryHandlerListener) {
+        storyHandlerListeners.add(listener)
     }
 
     fun installBots(routerHandlers: List<(Router) -> Unit>) {

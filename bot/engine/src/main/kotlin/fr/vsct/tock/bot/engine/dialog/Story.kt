@@ -18,7 +18,9 @@ package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
+import fr.vsct.tock.bot.definition.StoryHandler
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.action.Action
 
 /**
@@ -31,7 +33,25 @@ data class Story(
 
     val lastAction: Action? get() = actions.lastOrNull()
 
-    fun handle(bus: BotBus) = definition.storyHandler.handle(bus)
+    private fun StoryHandler.sendStartEvent(bus: BotBus) {
+        BotRepository.storyHandlerListeners.forEach {
+            it.startAction(bus, this)
+        }
+    }
+
+    private fun StoryHandler.sendEndEvent(bus: BotBus) {
+        BotRepository.storyHandlerListeners.forEach {
+            it.endAction(bus, this)
+        }
+    }
+
+    fun handle(bus: BotBus) {
+        definition.storyHandler.apply {
+            sendStartEvent(bus)
+            handle(bus)
+            sendEndEvent(bus)
+        }
+    }
 
 
 }

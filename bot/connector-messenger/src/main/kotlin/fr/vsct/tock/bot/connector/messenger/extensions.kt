@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector.messenger
 
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.messenger.model.send.Attachment
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType
@@ -36,6 +37,11 @@ import fr.vsct.tock.translator.I18nLabelKey
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
+
+/**
+ * The messenger connector type.
+ */
+val messengerConnectorType = ConnectorType("messenger")
 
 /**
  * Add a button template [https://developers.facebook.com/docs/messenger-platform/send-api-reference/button-template]

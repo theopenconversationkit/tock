@@ -19,10 +19,10 @@ package fr.vsct.tock.bot.definition
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.translator.Translator
+import fr.vsct.tock.nlp.api.client.model.NlpEngineType
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
-import fr.vsct.tock.nlp.api.client.model.NlpEngineType
+import fr.vsct.tock.translator.Translator
 
 /**
  * The main interface of the bot.
@@ -56,6 +56,13 @@ interface BotDefinition : I18nKeyProvider {
      */
     val engineType: NlpEngineType
 
+    /**
+     * This is the method called by the bot.
+     * Overrides it if you need more control on intent choice.
+     */
+    fun findIntentForBot(intent: String, context: IntentContext): Intent {
+        return findIntent(intent)
+    }
 
     fun findIntent(intent: String): Intent {
         return stories.flatMap { it.intents }.find { it.name == intent } ?: Intent.unknown

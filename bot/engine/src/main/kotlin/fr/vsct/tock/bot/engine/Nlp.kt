@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.definition.BotDefinition
+import fr.vsct.tock.bot.definition.IntentContext
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.ContextValue
@@ -148,7 +149,10 @@ object Nlp : NlpController {
                     logger.debug { "Sending sentence '${sentence.text}' to NLP" }
                     parse(toNlpQuery())
                             ?.let { nlpResult ->
-                                sentence.state.currentIntent = botDefinition.findIntent(nlpResult.intent)
+                                sentence.state.currentIntent = botDefinition.findIntentForBot(
+                                        nlpResult.intent,
+                                        IntentContext(userTimeline, dialog, sentence)
+                                )
                                 sentence.state.entityValues.addAll(nlpResult.entities.map { ContextValue(nlpResult.retainedQuery, it) })
                                 dialog.apply {
                                     state.currentIntent = sentence.state.currentIntent

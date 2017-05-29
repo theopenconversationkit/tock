@@ -43,9 +43,9 @@ class BotBus internal constructor(
         var i18nProvider: I18nKeyProvider
 ) {
     private val bot = connector.bot
-    private val applicationId = action.applicationId
+    val applicationId = action.applicationId
     private val botId = action.recipientId
-    private val userId = action.playerId
+    val userId = action.playerId
 
     private val context: BusContext = BusContext()
 
