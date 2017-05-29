@@ -16,15 +16,18 @@
 
 package fr.vsct.tock.bot.engine.user
 
+import org.junit.Test
 import java.time.Instant
+import kotlin.test.assertTrue
 
 /**
  *
  */
-data class TimeBoxedFlag(val value: String,
-                         val expirationDate: Instant? = Instant.now()) {
+class TimeBoxedFlagTest {
 
-    fun isValid(): Boolean {
-        return expirationDate?.isAfter(Instant.now()) ?: true
+    @Test
+    fun isValid_shouldReturnsTrue_WhenExpirationDateIsAfterNow() {
+        val flag = TimeBoxedFlag("ok", Instant.now().plusSeconds(10))
+        assertTrue(flag.isValid())
     }
 }
