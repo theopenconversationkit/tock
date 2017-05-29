@@ -24,8 +24,10 @@ import fr.vsct.tock.bot.connector.messenger.model.send.SenderAction.mark_seen
 import fr.vsct.tock.bot.connector.messenger.model.send.SenderAction.typing_off
 import fr.vsct.tock.bot.connector.messenger.model.send.SenderAction.typing_on
 import fr.vsct.tock.bot.connector.messenger.model.webhook.CallbackRequest
+import fr.vsct.tock.bot.engine.BotRepository.requestTimer
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.monitoring.logError
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType.bot
 import fr.vsct.tock.bot.engine.user.UserPreferences
@@ -83,69 +85,69 @@ internal class MessengerConnector(
             }
 
             router.post(path).handler { context ->
+                val requestTimerData = requestTimer.start("messenger_webhook")
                 try {
                     val facebookHeader = context.request().getHeader("X-Hub-Signature")
                     logger.debug { "Facebook signature:  $facebookHeader" }
                     logger.debug { "Facebook headers:  ${context.request().headers().entries()}" }
                     val body = context.bodyAsString
                     if (facebookHeader != null && isSignedByFacebook(body, facebookHeader)) {
-                        vertx.runOnContext {
-                            try {
-                                logger.debug { "Facebook request input : $body" }
-                                val request = mapper.readValue<CallbackRequest>(body)
+                        try {
+                            logger.debug { "Facebook request input : $body" }
+                            val request = mapper.readValue<CallbackRequest>(body)
 
-                                vertx.executeBlocking<Void>({
-                                    try {
-                                        request.entry.forEach { entry ->
-                                            try {
-                                                if (entry.messaging?.isNotEmpty() ?: false) {
+                            vertx.executeBlocking<Void>({
+                                try {
+                                    request.entry.forEach { entry ->
+                                        try {
+                                            if (entry.messaging?.isNotEmpty() ?: false) {
 
-                                                    val applicationId = pageApplicationMap.getValue(entry.id)
-                                                    entry.messaging!!.forEach { m ->
+                                                val applicationId = pageApplicationMap.getValue(entry.id)
+                                                entry.messaging!!.forEach { m ->
+                                                    try {
+                                                        val action = WebhookActionConverter.toAction(m, applicationId)
+                                                        if (action != null) {
+                                                            controller.handle(action)
+                                                        } else {
+                                                            logger.logError("unable to convert $m to action", requestTimerData)
+                                                        }
+                                                    } catch(e: Throwable) {
                                                         try {
-                                                            val action = WebhookActionConverter.toAction(m, applicationId)
-                                                            if (action != null) {
-                                                                controller.handle(action)
-                                                            } else {
-                                                                logger.error { "unable to convert $m to action" }
+                                                            logger.logError(e, requestTimerData)
+                                                            controller.errorMessage(m.playerId(bot), applicationId, m.recipientId(bot)).let {
+                                                                send(it)
+                                                                endTypingAnswer(it)
                                                             }
-                                                        } catch(e: Throwable) {
-                                                            try {
-                                                                logger.error(e)
-                                                                controller.errorMessage(m.playerId(bot), applicationId, m.recipientId(bot)).let {
-                                                                    send(it)
-                                                                    endTypingAnswer(it)
-                                                                }
-                                                            } catch(t: Throwable) {
-                                                                logger.error(e)
-                                                            }
+                                                        } catch(t: Throwable) {
+                                                            logger.error(e)
                                                         }
                                                     }
-                                                } else {
-                                                    logger.warn { "empty message for entry $entry" }
                                                 }
-                                            } catch(e: Throwable) {
-                                                logger.error(e)
+                                            } else {
+                                                logger.warn { "empty message for entry $entry" }
                                             }
+                                        } catch(e: Throwable) {
+                                            logger.logError(e, requestTimerData)
                                         }
-                                    } catch(e: Throwable) {
-                                        logger.error(e)
-                                    } finally {
-                                        it.complete()
                                     }
-                                }, false, {})
-                            } catch(t: Throwable) {
-                                logger.error(t)
-                            }
+                                } catch(e: Throwable) {
+                                    logger.logError(e, requestTimerData)
+                                } finally {
+                                    it.complete()
+                                }
+                            }, false, {})
+                        } catch(t: Throwable) {
+                            logger.logError(t, requestTimerData)
                         }
                     } else {
-                        logger.error { "Not signed by facebook!!! : $facebookHeader \n $body" }
+                        logger.logError("Not signed by facebook!!! : $facebookHeader \n $body", requestTimerData)
                     }
 
                 } catch(e: Throwable) {
-                    logger.error(e)
+                    logger.logError(e, requestTimerData)
                 } finally {
                     try {
+                        requestTimer.end(requestTimerData)
                         context.response().end()
                     } catch(e: Throwable) {
                         logger.error(e)

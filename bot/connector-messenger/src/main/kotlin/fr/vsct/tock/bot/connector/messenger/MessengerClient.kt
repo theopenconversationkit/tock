@@ -22,9 +22,10 @@ import fr.vsct.tock.bot.connector.messenger.model.UserProfile
 import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.SendResponse
+import fr.vsct.tock.bot.engine.BotRepository.requestTimer
+import fr.vsct.tock.bot.engine.monitoring.logError
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.create
-import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeout
 import mu.KotlinLogging
@@ -74,16 +75,20 @@ internal class MessengerClient(val secretKey: String) {
     }
 
     fun getUserProfile(token: String, recipient: Recipient): UserProfile {
+        val requestTimerData = requestTimer.start("messenger_user_profile")
         try {
             return graphApi.getUserProfile(recipient.id, token, "first_name,last_name,profile_pic,locale,timezone,gender")
                     .execute().body()
         } catch(e: Exception) {
-            logger.error(e)
+            logger.logError(e, requestTimerData)
             return UserProfile("", "", null, null, 0, null)
+        } finally {
+            requestTimer.end(requestTimerData)
         }
     }
 
     private fun <T> send(request: T, call: (T) -> Response<SendResponse>): SendResponse {
+        val requestTimerData = requestTimer.start("messenger_send")
         try {
             val response = call(request)
 
@@ -93,8 +98,10 @@ internal class MessengerClient(val secretKey: String) {
                 return response.body()
             }
         } catch(e: Exception) {
-            logger.error(e)
+            logger.logError(e, requestTimerData)
             throw ConnectorException(e.message ?: "")
+        } finally {
+            requestTimer.end(requestTimerData)
         }
     }
 }
