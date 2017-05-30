@@ -25,7 +25,10 @@ data class I18nLabel(val _id: String, val category: String, val i18n: List<I18nL
 
     fun findLabel(locale: Locale, userInterfaceType: UserInterfaceType): I18nLocalizedLabel?
             = i18n.firstOrNull { it.locale == locale && it.interfaceType == userInterfaceType }
+            ?: i18n.firstOrNull { it.locale.language == locale.language && it.interfaceType == userInterfaceType }
 
-    fun findLabel(locale: Locale): I18nLocalizedLabel? = i18n.firstOrNull { it.locale == locale }
+    fun findLabel(locale: Locale): I18nLocalizedLabel?
+            = i18n.firstOrNull { it.locale == locale }
+            ?: i18n.firstOrNull { it.locale.language == locale.language }
 
 }
