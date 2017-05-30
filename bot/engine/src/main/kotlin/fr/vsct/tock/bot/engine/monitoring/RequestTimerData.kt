@@ -19,7 +19,8 @@ package fr.vsct.tock.bot.engine.monitoring
 /**
  *
  */
-open class RequestTimerData(val start: Long = System.currentTimeMillis(),
+open class RequestTimerData(val type: String,
+                            val start: Long = System.currentTimeMillis(),
                             var error: Boolean = false,
                             var message: String? = null,
                             var throwable: Throwable? = null) {

@@ -38,7 +38,7 @@ interface RequestTimer {
     /**
      * Called at the start of the request.
      */
-    fun start(type: String): RequestTimerData = RequestTimerData()
+    fun start(type: String): RequestTimerData = RequestTimerData(type)
 
     /**
      * Called when an an error is detected.
