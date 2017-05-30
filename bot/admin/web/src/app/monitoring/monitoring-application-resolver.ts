@@ -14,17 +14,18 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin
+import {Injectable} from "@angular/core";
+import {ApplicationResolver} from "tock-nlp-admin/src/app/nlp-tabs/application.resolver";
+import {ApplicationService}  from "tock-nlp-admin/src/app/core/applications.service"
+import {Router} from "@angular/router";
 
-import fr.vsct.tock.bot.BotIoc
-import fr.vsct.tock.nlp.front.ioc.FrontIoc
-import fr.vsct.tock.shared.vertx.vertx
+@Injectable()
+export class MonitoringApplicationResolver extends ApplicationResolver {
 
-fun main(args: Array<String>) {
-    startAdminServer()
-}
+  target:string = '/monitoring';
 
-fun startAdminServer() {
-    FrontIoc.setup(BotIoc.coreModules)
-    vertx.deployVerticle(BotAdminVerticle())
+  constructor(private app: ApplicationService, private r: Router) {
+    super(app, r)
+  }
+
 }

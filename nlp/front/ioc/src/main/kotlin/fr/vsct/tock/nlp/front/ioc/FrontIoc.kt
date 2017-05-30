@@ -36,20 +36,31 @@ object FrontIoc {
 
     private val logger = KotlinLogging.logger {}
 
+    val coreModules: List<Module> =
+            listOf(
+                    sharedModule,
+                    coreModule,
+                    modelMongoModule,
+                    modelModule,
+                    frontMongoModule,
+                    frontModule,
+                    ducklingModule
+            )
+
     fun setup(vararg modules: Module) {
+        setup(modules.toList())
+    }
+
+    fun setup(modules: List<Module>) {
         logger.debug { "Start nlp injection" }
         injector.inject(Kodein {
-            import(sharedModule)
-            import(coreModule)
-            import(modelMongoModule)
-            import(modelModule)
-            import(frontMongoModule)
-            import(frontModule)
-            import(ducklingModule)
+            coreModules.forEach { import(it) }
 
             //load additional modules
             modules.forEach {
-                import(it, allowOverride = true)
+                if (!coreModules.contains(it)) {
+                    import(it, allowOverride = true)
+                }
             }
         })
         FrontClient.initData()

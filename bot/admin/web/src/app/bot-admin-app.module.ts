@@ -15,6 +15,10 @@ const routes: Routes = [
   {
     path: 'applications',
     loadChildren: 'app/admin/admin.module#BotAdminModule'
+  },
+  {
+    path: 'monitoring',
+    loadChildren: 'app/monitoring/monitoring.module#BotMonitoringModule'
   }
 ];
 @NgModule({

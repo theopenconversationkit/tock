@@ -20,6 +20,8 @@ import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import fr.vsct.tock.bot.admin.dialog.ActionReport
+import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
@@ -79,6 +81,23 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                     it.toMutableList()
             )
         }
+    }
+
+    fun toDialogReport(): DialogReport {
+        return DialogReport(
+                stories.flatMap { it.actions }
+                        .map { it.toAction() }
+                        .mapNotNull {
+                            if (it is SendSentence)
+                                ActionReport(
+                                        it.playerId,
+                                        if (it.text.isNullOrBlank())
+                                            it.messages.firstOrNull()?.toString()
+                                        else it.text,
+                                        it.date)
+                            else null
+                        }
+        )
     }
 
     data class StateMongoWrapper(

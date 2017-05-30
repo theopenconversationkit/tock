@@ -33,6 +33,10 @@
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-nlp-admin-server</artifactId>
         </dependency>
+        <dependency>
+            <groupId>fr.vsct.tock</groupId>
+            <artifactId>bot-toolkit</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

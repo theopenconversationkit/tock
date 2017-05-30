@@ -15,7 +15,6 @@
  */
 
 import {Component, OnInit} from "@angular/core";
-import {Router} from "@angular/router";
 
 class TabLink {
   constructor(public link: string, public label: string) {
@@ -24,11 +23,11 @@ class TabLink {
 }
 
 const tabs = [
-  new TabLink("try","Try it"),
-  new TabLink("inbox","Inbox"),
-  new TabLink("archive","Archive"),
-  new TabLink("search","Search"),
-  new TabLink("intents","Intents"),
+  new TabLink("try", "Try it"),
+  new TabLink("inbox", "Inbox"),
+  new TabLink("archive", "Archive"),
+  new TabLink("search", "Search"),
+  new TabLink("intents", "Intents"),
 ];
 
 @Component({
@@ -38,9 +37,9 @@ const tabs = [
 })
 export class NlpTabsComponent implements OnInit {
 
-  tabLinks = tabs
+  tabLinks = tabs;
 
-  constructor(private router: Router) {
+  constructor() {
   }
 
   ngOnInit() {

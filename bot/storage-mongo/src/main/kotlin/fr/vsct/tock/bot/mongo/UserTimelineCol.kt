@@ -23,7 +23,10 @@ import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import fr.vsct.tock.bot.admin.user.UserReport
+import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.TimeBoxedFlag
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserState
@@ -35,6 +38,8 @@ internal class UserTimelineCol(
         val playerId: PlayerId,
         val userPreferences: UserPreferences,
         val userState: UserStateWrapper,
+        val applicationIds: MutableSet<String> = mutableSetOf(),
+        var lastActionText: String? = null,
         val lastUpdateDate: Instant = Instant.now()) {
 
     constructor(timeline: UserTimeline) : this(
@@ -42,7 +47,17 @@ internal class UserTimelineCol(
             timeline.playerId,
             timeline.userPreferences,
             UserStateWrapper(timeline.userState)
-    )
+    ) {
+        //register last action
+        timeline.dialogs.lastOrNull()?.currentStory()?.actions?.lastOrNull { it.playerId.type == PlayerType.user }?.let {
+            //TODO action other than send sentence
+            lastActionText = if (it is SendSentence) it.text else null
+        }
+        //register application id
+        timeline.dialogs.lastOrNull()?.currentStory()?.lastAction?.applicationId?.let {
+            applicationIds.add(it)
+        }
+    }
 
     fun toUserTimeline(): UserTimeline {
         return UserTimeline(
@@ -52,6 +67,15 @@ internal class UserTimelineCol(
         )
     }
 
+    fun toUserReport(): UserReport {
+        return UserReport(
+                playerId,
+                userPreferences,
+                userState.toUserState(),
+                lastUpdateDate,
+                lastActionText
+        )
+    }
 
     class UserStateWrapper(val creationDate: Instant = Instant.now(),
                            val lastUpdateDate: Instant = creationDate,

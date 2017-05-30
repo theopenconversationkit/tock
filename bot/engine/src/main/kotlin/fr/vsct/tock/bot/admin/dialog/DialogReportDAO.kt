@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin
+package fr.vsct.tock.bot.admin.dialog
 
-import fr.vsct.tock.bot.BotIoc
-import fr.vsct.tock.nlp.front.ioc.FrontIoc
-import fr.vsct.tock.shared.vertx.vertx
+import fr.vsct.tock.bot.engine.user.PlayerId
 
-fun main(args: Array<String>) {
-    startAdminServer()
-}
+/**
+ *
+ */
+interface DialogReportDAO {
 
-fun startAdminServer() {
-    FrontIoc.setup(BotIoc.coreModules)
-    vertx.deployVerticle(BotAdminVerticle())
+    fun lastDialog(playerId: PlayerId): DialogReport
 }

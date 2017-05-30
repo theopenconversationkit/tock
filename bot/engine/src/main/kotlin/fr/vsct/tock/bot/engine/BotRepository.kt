@@ -16,10 +16,14 @@
 
 package fr.vsct.tock.bot.engine
 
+import com.github.salomonbrys.kodein.instance
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.StoryHandlerListener
 import fr.vsct.tock.bot.engine.monitoring.RequestTimer
+import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 
@@ -27,6 +31,8 @@ import io.vertx.ext.web.Router
  *
  */
 object BotRepository {
+
+    private val botConfigurationDAO: BotApplicationConfigurationDAO by injector.instance()
 
     internal val connectorProviders: MutableSet<ConnectorProvider> = mutableSetOf()
     private val botProviders: MutableSet<BotProvider> = mutableSetOf()
@@ -58,7 +64,23 @@ object BotRepository {
                         connector(conf)
                                 .let { connector ->
                                     botProviders.forEach { botProvider ->
-                                        ConnectorController.register(connector, botProvider.bot(), verticle)
+                                        botProvider.bot().let { bot ->
+                                            //register bot configuration
+                                            with(bot.botDefinition) {
+                                                botConfigurationDAO.save(
+                                                        BotApplicationConfiguration(
+                                                                conf.applicationId,
+                                                                botId,
+                                                                namespace,
+                                                                nlpModelName,
+                                                                connector.connectorType)
+                                                )
+                                            }
+
+                                            //register connector
+                                            ConnectorController.register(connector, bot, verticle)
+                                        }
+
                                     }
                                 }
                     }

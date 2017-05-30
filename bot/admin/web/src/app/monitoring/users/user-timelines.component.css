@@ -1,0 +1,17 @@
+.lastUpdateDate {
+  font-style: italic;
+}
+.lastActionText {
+  color:lightseagreen;
+}
+.dialogs {
+  min-height:1000px;
+}
+
+.userAction {
+  color:lightseagreen;
+}
+
+.botAction {
+  color:brown;
+}

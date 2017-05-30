@@ -14,17 +14,30 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin
+import {Component, OnInit} from "@angular/core";
+class TabLink {
+  constructor(public link: string, public label: string) {
 
-import fr.vsct.tock.bot.BotIoc
-import fr.vsct.tock.nlp.front.ioc.FrontIoc
-import fr.vsct.tock.shared.vertx.vertx
-
-fun main(args: Array<String>) {
-    startAdminServer()
+  }
 }
 
-fun startAdminServer() {
-    FrontIoc.setup(BotIoc.coreModules)
-    vertx.deployVerticle(BotAdminVerticle())
+const tabs = [
+  new TabLink("users", "Users")
+];
+
+@Component({
+  selector: 'tock-monitoring-tabs',
+  templateUrl: './monitoring-tabs.component.html',
+  styleUrls: ['./monitoring-tabs.component.css']
+})
+export class MonitoringTabsComponent implements OnInit {
+
+  monitoringTabLinks = tabs;
+
+  constructor() {
+  }
+
+  ngOnInit() {
+  }
+
 }

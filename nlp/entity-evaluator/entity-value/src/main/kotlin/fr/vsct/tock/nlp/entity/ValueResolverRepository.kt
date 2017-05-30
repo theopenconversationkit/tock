@@ -16,11 +16,11 @@
 
 package fr.vsct.tock.nlp.entity
 
-import com.fasterxml.jackson.databind.ObjectMapper
 import fr.vsct.tock.nlp.entity.date.DateEntityValue
 import fr.vsct.tock.nlp.entity.date.DateIntervalEntityValue
 import fr.vsct.tock.nlp.entity.temperature.TemperatureValue
 import java.util.concurrent.ConcurrentHashMap
+import java.util.logging.Logger
 import kotlin.reflect.KClass
 
 /**
@@ -44,7 +44,8 @@ object ValueResolverRepository {
                 EmailValue::class,
                 UrlValue::class,
                 PhoneNumberValue::class,
-                CustomValueWrapper::class
+                CustomValueWrapper::class,
+                UnknownValue::class
         )
                 .forEach { registerType(it) }
     }
@@ -65,18 +66,15 @@ object ValueResolverRepository {
                 }
     }
 
-    @Deprecated("use without mapper parameter instead")
-    fun <T : Value> registerType(mapper: ObjectMapper, kClass: KClass<T>) {
-        registerType(kClass)
-    }
-
     fun getType(id: String): KClass<out Value> {
         return idClassMap[id] ?:
                 try {
                     @Suppress("UNCHECKED_CAST")
                     Class.forName(id) as KClass<out Value>
                 } catch(e: ClassNotFoundException) {
-                    error("Please call ValueResolverRepository#registerType during app initialization for $id")
+                    Logger.getLogger(Logger.GLOBAL_LOGGER_NAME)
+                            .severe("Please call ValueResolverRepository#registerType during app initialization for value of type $id")
+                    UnknownValue::class
                 }
     }
 

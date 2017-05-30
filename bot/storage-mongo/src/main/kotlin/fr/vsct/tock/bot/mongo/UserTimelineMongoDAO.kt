@@ -16,7 +16,15 @@
 
 package fr.vsct.tock.bot.mongo
 
+import com.github.salomonbrys.kodein.instance
 import com.mongodb.client.model.IndexOptions
+import com.mongodb.client.model.Sorts
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
+import fr.vsct.tock.bot.admin.dialog.DialogReport
+import fr.vsct.tock.bot.admin.user.UserReportDAO
+import fr.vsct.tock.bot.admin.user.UserReportQuery
+import fr.vsct.tock.bot.admin.user.UserReportQueryResult
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -24,13 +32,17 @@ import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
 import org.litote.kmongo.MongoOperator.gt
 import org.litote.kmongo.MongoOperator.limit
+import org.litote.kmongo.MongoOperator.lt
 import org.litote.kmongo.MongoOperator.match
 import org.litote.kmongo.MongoOperator.sort
 import org.litote.kmongo.aggregate
+import org.litote.kmongo.count
 import org.litote.kmongo.createIndex
+import org.litote.kmongo.find
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
@@ -41,9 +53,11 @@ import java.time.Instant
 /**
  *
  */
-internal object UserTimelineMongoDAO : UserTimelineDAO {
+internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogReportDAO {
 
     private val logger = KotlinLogging.logger {}
+
+    private val botConfiguration: BotApplicationConfigurationDAO by injector.instance()
 
     private val userTimelineCol = database.getCollection<UserTimelineCol>("user_timeline")
     private val dialogCol = database.getCollection<DialogCol>("dialog")
@@ -86,19 +100,51 @@ internal object UserTimelineMongoDAO : UserTimelineDAO {
         }
     }
 
-    private fun loadLastValidDialog(userId: PlayerId, storyDefinitionProvider: (String) -> StoryDefinition): Dialog? {
-        return try {
-            val dialog = dialogCol.aggregate<DialogCol>(
-                    pipeline = """[
+    private fun loadLastValidDialogCol(userId: PlayerId): DialogCol? {
+        return dialogCol.aggregate<DialogCol>(
+                pipeline = """[
                                             {${match}:{playerIds:${userId.json}, lastUpdateDate : {${gt} : ${Instant.now().minusSeconds(60 * 60 * 24).json}}}},
                                             {${sort}:{lastUpdateDate:-1}},
                                             {${limit}:1}
                                            ]"""
-            ).firstOrNull()
-            return dialog?.toDialog(storyDefinitionProvider)
+        ).firstOrNull()
+    }
+
+    private fun loadLastValidDialog(userId: PlayerId, storyDefinitionProvider: (String) -> StoryDefinition): Dialog? {
+        return try {
+            return loadLastValidDialogCol(userId)?.toDialog(storyDefinitionProvider)
         } catch(e: Exception) {
             logger.error(e)
             null
         }
+    }
+
+    override fun search(query: UserReportQuery): UserReportQueryResult {
+        with(query) {
+            val applicationsIds =
+                    botConfiguration
+                            .findByNamespaceAndNlpModel(query.namespace, query.nlpModel)
+                            .map { it.applicationId }
+                            .distinct()
+            val filter =
+                    listOfNotNull(
+                            "'applicationIds':{\$in:${applicationsIds.json}}",
+                            if (name.isNullOrBlank()) null else "'userPreferences.lastName':/${name!!.trim()}/i",
+                            if (from == null) null else "'lastUpdateDate':{$gt:${from!!.json}}",
+                            if (to == null) null else "'lastUpdateDate':{$lt:${to!!.json}}"
+                    ).joinToString(",", "{", "}")
+            val count = userTimelineCol.count(filter)
+            if (count > start) {
+                val list = userTimelineCol.find(filter)
+                        .skip(start.toInt()).limit(size).sort(Sorts.descending("_id")).toList()
+                return UserReportQueryResult(count, start, start + count, list.map { it.toUserReport() })
+            } else {
+                return UserReportQueryResult(0, 0, 0, emptyList())
+            }
+        }
+    }
+
+    override fun lastDialog(playerId: PlayerId): DialogReport {
+        return loadLastValidDialogCol(playerId)?.toDialogReport() ?: DialogReport()
     }
 }

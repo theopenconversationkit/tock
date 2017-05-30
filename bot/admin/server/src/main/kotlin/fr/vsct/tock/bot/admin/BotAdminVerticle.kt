@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.admin
 
+import fr.vsct.tock.bot.admin.model.DialogReportRequest
+import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.nlp.admin.AdminVerticle
 import mu.KotlinLogging
 
@@ -27,5 +29,20 @@ class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
     override fun configure() {
         super.configure()
 
+        blockingJsonPost("/users/search") { context, query: UserSearchQuery ->
+            if (context.organization == query.namespace) {
+                BotAdminService.searchUsers(query)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/dialogs/user") { context, query: DialogReportRequest ->
+            if (context.organization == query.namespace) {
+                BotAdminService.lastDialog(query.playerId)
+            } else {
+                unauthorized()
+            }
+        }
     }
 }

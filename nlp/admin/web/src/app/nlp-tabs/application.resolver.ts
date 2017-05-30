@@ -23,6 +23,8 @@ import {ApplicationService} from "../core/applications.service";
 @Injectable()
 export class ApplicationResolver implements Resolve<Application> {
 
+  target:string = '/applications';
+
   constructor(private appService: ApplicationService, private router: Router) {
   }
 
@@ -31,7 +33,7 @@ export class ApplicationResolver implements Resolve<Application> {
       if (app) {
         return app;
       } else {
-        this.router.navigate(['/applications']);
+        this.router.navigate([this.target]);
         return null;
       }
     });

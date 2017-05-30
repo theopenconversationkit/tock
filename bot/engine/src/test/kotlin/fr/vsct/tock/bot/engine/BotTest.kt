@@ -24,6 +24,7 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -45,6 +46,7 @@ class BotTest {
 
     val userLock: UserLock = mock()
     val userTimelineDAO: UserTimelineDAO = mock()
+    val botConfDAO: BotApplicationConfigurationDAO = mock()
     val i18nDAO: I18nDAO = mock()
     val translator: TranslatorEngine = mock {
         on { translate(any(), any(), any()) } doReturn ("ok")
@@ -75,6 +77,7 @@ class BotTest {
             bind<UserTimelineDAO>() with provider { userTimelineDAO }
             bind<I18nDAO>() with provider { i18nDAO }
             bind<TranslatorEngine>() with provider { translator }
+            bind<BotApplicationConfigurationDAO>() with provider { botConfDAO }
         })
     }
 

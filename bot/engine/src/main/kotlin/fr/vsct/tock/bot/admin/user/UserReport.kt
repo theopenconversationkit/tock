@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin
+package fr.vsct.tock.bot.admin.user
 
-import fr.vsct.tock.bot.BotIoc
-import fr.vsct.tock.nlp.front.ioc.FrontIoc
-import fr.vsct.tock.shared.vertx.vertx
+import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.UserPreferences
+import fr.vsct.tock.bot.engine.user.UserState
+import java.time.Instant
+import java.time.Instant.now
 
-fun main(args: Array<String>) {
-    startAdminServer()
-}
-
-fun startAdminServer() {
-    FrontIoc.setup(BotIoc.coreModules)
-    vertx.deployVerticle(BotAdminVerticle())
+/**
+ *
+ */
+data class UserReport(
+        val playerId: PlayerId,
+        val userPreferences: UserPreferences = UserPreferences(),
+        val userState: UserState = UserState(),
+        val lastUpdateDate: Instant = now(),
+        val lastActionText: String? = null
+) {
 }

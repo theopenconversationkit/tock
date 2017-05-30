@@ -120,6 +120,11 @@
                 <artifactId>tock-nlp-admin-server</artifactId>
                 <version>${project.version}</version>
             </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
+                <artifactId>bot-toolkit</artifactId>
+                <version>${project.version}</version>
+            </dependency>
 
             <dependency>
                 <groupId>io.vertx</groupId>

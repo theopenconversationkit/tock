@@ -14,17 +14,11 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin
+package fr.vsct.tock.bot.admin.user
 
-import fr.vsct.tock.bot.BotIoc
-import fr.vsct.tock.nlp.front.ioc.FrontIoc
-import fr.vsct.tock.shared.vertx.vertx
-
-fun main(args: Array<String>) {
-    startAdminServer()
-}
-
-fun startAdminServer() {
-    FrontIoc.setup(BotIoc.coreModules)
-    vertx.deployVerticle(BotAdminVerticle())
+data class UserReportQueryResult(
+        val total: Long,
+        val start: Long,
+        val end: Long,
+        val users: List<UserReport>) {
 }

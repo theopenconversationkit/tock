@@ -14,17 +14,22 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin
+package fr.vsct.tock.bot.admin.user
 
-import fr.vsct.tock.bot.BotIoc
-import fr.vsct.tock.nlp.front.ioc.FrontIoc
-import fr.vsct.tock.shared.vertx.vertx
+import java.time.ZonedDateTime
+import java.util.Locale
 
-fun main(args: Array<String>) {
-    startAdminServer()
-}
-
-fun startAdminServer() {
-    FrontIoc.setup(BotIoc.coreModules)
-    vertx.deployVerticle(BotAdminVerticle())
+/**
+ *
+ */
+data class UserReportQuery(
+        val namespace: String,
+        val nlpModel: String,
+        val language: Locale,
+        val start: Long = 0,
+        val size: Int = 1,
+        val name: String?,
+        val from: ZonedDateTime?,
+        val to: ZonedDateTime?
+) {
 }

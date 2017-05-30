@@ -18,6 +18,7 @@ package fr.vsct.tock.bot
 
 import botModule
 import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.Kodein.Module
 import fr.vsct.tock.bot.mongo.botMongoModule
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.sharedModule
@@ -31,13 +32,24 @@ object BotIoc {
 
     private val logger = KotlinLogging.logger {}
 
-    fun setup() {
+    val coreModules: List<Module> =
+            listOf(sharedModule, botModule, botMongoModule, noOpTranslatorModule)
+
+    fun setup(vararg modules: Module) {
+        setup(modules.toList())
+    }
+
+    fun setup(modules: List<Module>) {
         logger.debug { "Start bot injection" }
         injector.inject(Kodein {
-            import(sharedModule)
-            import(botModule)
-            import(botMongoModule)
-            import(noOpTranslatorModule)
+            coreModules.forEach { import(it) }
+
+            //load additional modules
+            modules.forEach {
+                import(it, allowOverride = true)
+            }
         })
     }
+
+
 }
