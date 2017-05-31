@@ -30,6 +30,7 @@
 
     <properties>
         <commons-codec>1.9</commons-codec>
+        <commons-lang>3.5</commons-lang>
     </properties>
 
     <dependencies>
@@ -41,6 +42,11 @@
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
             <version>${commons-codec}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-lang3</artifactId>
+            <version>${commons-lang}</version>
         </dependency>
         <dependency>
             <groupId>com.squareup.okhttp3</groupId>

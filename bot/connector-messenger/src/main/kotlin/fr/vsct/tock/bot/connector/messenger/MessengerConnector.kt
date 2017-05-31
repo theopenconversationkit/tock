@@ -37,9 +37,9 @@ import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.vertx.vertx
 import mu.KotlinLogging
 import org.apache.commons.codec.binary.Hex
+import org.apache.commons.lang3.LocaleUtils
 import java.lang.Exception
 import java.time.ZoneOffset
-import java.util.Locale
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
@@ -196,7 +196,14 @@ internal class MessengerConnector(
                     userProfile.lastName,
                     null,
                     ZoneOffset.ofHours(userProfile.timezone),
-                    if (userProfile.locale == null) defaultLocale else Locale(userProfile.locale))
+                    userProfile.locale?.let {
+                        try {
+                            LocaleUtils.toLocale(it)
+                        } catch(e: Exception) {
+                            logger.error(e)
+                            null
+                        }
+                    } ?: defaultLocale)
         } catch(e: Exception) {
             logger.error(e)
         }
