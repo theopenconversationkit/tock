@@ -23,6 +23,7 @@ import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.StoryHandlerListener
 import fr.vsct.tock.bot.engine.monitoring.RequestTimer
+import fr.vsct.tock.bot.engine.nlp.NlpListener
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
@@ -38,6 +39,7 @@ object BotRepository {
     internal val connectorProviders: MutableSet<ConnectorProvider> = mutableSetOf()
     private val botProviders: MutableSet<BotProvider> = mutableSetOf()
     internal val storyHandlerListeners: MutableList<StoryHandlerListener> = mutableListOf()
+    internal val nlpListeners: MutableList<NlpListener> = mutableListOf()
 
     /**
      * Request timer for connectors.
@@ -59,6 +61,10 @@ object BotRepository {
 
     fun registerStoryHandlerListener(listener: StoryHandlerListener) {
         storyHandlerListeners.add(listener)
+    }
+
+    fun registerNlpListener(listener: NlpListener) {
+        nlpListeners.add(listener)
     }
 
     fun installBots(routerHandlers: List<(Router) -> Unit>) {

@@ -20,7 +20,7 @@ import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.BotProviderBase
 import fr.vsct.tock.bot.engine.BotRepository
-import fr.vsct.tock.bot.engine.Nlp
+import fr.vsct.tock.bot.engine.nlp.Nlp
 import fr.vsct.tock.shared.resourceAsStream
 import io.vertx.ext.web.Router
 

@@ -30,7 +30,7 @@ fun KLogger.logError(message: String, data: RequestTimerData) {
 }
 
 /**
- * To time request received and sent.
+ * To track time for requests received and sent.
  * [start] and [end] are guaranteed to be called.
  */
 interface RequestTimer {

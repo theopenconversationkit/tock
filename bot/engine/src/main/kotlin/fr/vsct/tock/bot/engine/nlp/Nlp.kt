@@ -14,10 +14,12 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine
+package fr.vsct.tock.bot.engine.nlp
 
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.IntentContext
+import fr.vsct.tock.bot.engine.BotRepository
+import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.ContextValue
@@ -53,7 +55,57 @@ object Nlp : NlpController {
                                  val dialog: Dialog,
                                  val connector: ConnectorController,
                                  val botDefinition: BotDefinition) {
-        fun toQueryContext(): QueryContext {
+
+        fun parse() {
+            logger.debug { "Parse sentence : $sentence" }
+            if (userTimeline.userState.waitingRawInput || sentence.text.isNullOrBlank()) {
+                //do nothing
+            } else {
+                toNlpQuery().let { query ->
+                    try {
+                        logger.debug { "Sending sentence '${sentence.text}' to NLP" }
+                        parse(query)
+                                ?.let { nlpResult ->
+                                    listenNlpSuccessCall(query, nlpResult)
+                                    sentence.state.currentIntent = botDefinition.findIntentForBot(
+                                            nlpResult.intent,
+                                            IntentContext(userTimeline, dialog, sentence)
+                                    )
+                                    sentence.state.entityValues.addAll(nlpResult.entities.map { ContextValue(nlpResult.retainedQuery, it) })
+                                    dialog.apply {
+                                        state.currentIntent = sentence.state.currentIntent
+                                        state.mergeEntityValuesFromAction(sentence)
+                                    }
+                                } ?: listenNlpErrorCall(query, null)
+                    } catch(t: Throwable) {
+                        logger.error(t)
+                        listenNlpErrorCall(query, t)
+                    }
+                }
+            }
+        }
+
+        private fun listenNlpSuccessCall(query: NlpQuery, result: NlpResult) {
+            BotRepository.nlpListeners.forEach {
+                try {
+                    it.success(query, result)
+                } catch(e: Exception) {
+                    logger.error(e)
+                }
+            }
+        }
+
+        private fun listenNlpErrorCall(query: NlpQuery, throwable: Throwable?) {
+            BotRepository.nlpListeners.forEach {
+                try {
+                    it.error(query, throwable)
+                } catch(e: Exception) {
+                    logger.error(e)
+                }
+            }
+        }
+
+        private fun toQueryContext(): QueryContext {
             return QueryContext(
                     userTimeline.userPreferences.locale,
                     sentence.playerId.id,
@@ -65,16 +117,16 @@ object Nlp : NlpController {
             )
         }
 
-        fun toNlpQuery(): NlpQuery {
+        private fun toNlpQuery(): NlpQuery {
             return NlpQuery(
-                    listOf(sentence.text!!),
+                    listOf(sentence.text ?: ""),
                     botDefinition.namespace,
                     botDefinition.nlpModelName,
                     toQueryContext(),
                     QueryState.noState)
         }
 
-        fun mergeEntityValues(action: Action, newValues: List<ContextValue>, oldValue: EntityStateValue? = null): EntityStateValue {
+        private fun mergeEntityValues(action: Action, newValues: List<ContextValue>, oldValue: EntityStateValue? = null): EntityStateValue {
             val entity = newValues.first().entity
             val defaultNewValue = newValues.filter { it.value != null }.firstOrNull() ?: newValues.first()
             val eligibleToMergeValues = newValues.filter { it.mergeSupport && it.value != null }
@@ -96,7 +148,7 @@ object Nlp : NlpController {
             }
         }
 
-        fun mergeValues(
+        private fun mergeValues(
                 entity: Entity,
                 newValues: List<ContextValue>,
                 defaultNewValue: ContextValue,
@@ -130,7 +182,7 @@ object Nlp : NlpController {
             }
         }
 
-        fun State.mergeEntityValuesFromAction(action: Action) {
+        private fun State.mergeEntityValuesFromAction(action: Action) {
             entityValues.putAll(
                     action.state.entityValues
                             .groupBy { it.entity.role }
@@ -140,30 +192,24 @@ object Nlp : NlpController {
             )
         }
 
-        fun parse() {
-            logger.debug { "Parse sentence : $sentence" }
-            if (userTimeline.userState.waitingRawInput || sentence.text.isNullOrBlank()) {
-                //do nothing
-            } else {
-                try {
-                    logger.debug { "Sending sentence '${sentence.text}' to NLP" }
-                    parse(toNlpQuery())
-                            ?.let { nlpResult ->
-                                sentence.state.currentIntent = botDefinition.findIntentForBot(
-                                        nlpResult.intent,
-                                        IntentContext(userTimeline, dialog, sentence)
-                                )
-                                sentence.state.entityValues.addAll(nlpResult.entities.map { ContextValue(nlpResult.retainedQuery, it) })
-                                dialog.apply {
-                                    state.currentIntent = sentence.state.currentIntent
-                                    state.mergeEntityValuesFromAction(sentence)
-                                }
-                            }
-                } catch(t: Throwable) {
-                    logger.error(t)
-                }
+        private fun parse(request: NlpQuery): NlpResult? {
+            val response = nlpClient.parse(request)
+            val result = response.body()
+            if (result == null) {
+                logger.error { "nlp error : ${response.errorBody().string()}" }
             }
+            return result
         }
+
+        private fun mergeValues(request: ValuesMergeQuery): ValuesMergeResult? {
+            val response = nlpClient.mergeValues(request)
+            val result = response.body()
+            if (result == null) {
+                logger.error { "nlp error : ${response.errorBody().string()}" }
+            }
+            return result
+        }
+
     }
 
     override fun parseSentence(sentence: SendSentence,
@@ -172,24 +218,6 @@ object Nlp : NlpController {
                                connector: ConnectorController,
                                botDefinition: BotDefinition) {
         SentenceParser(sentence, userTimeline, dialog, connector, botDefinition).parse()
-    }
-
-    private fun parse(request: NlpQuery): NlpResult? {
-        val response = nlpClient.parse(request)
-        val result = response.body()
-        if (result == null) {
-            logger.error { "nlp error : ${response.errorBody().string()}" }
-        }
-        return result
-    }
-
-    private fun mergeValues(request: ValuesMergeQuery): ValuesMergeResult? {
-        val response = nlpClient.mergeValues(request)
-        val result = response.body()
-        if (result == null) {
-            logger.error { "nlp error : ${response.errorBody().string()}" }
-        }
-        return result
     }
 
     override fun importNlpDump(stream: InputStream): Boolean = nlpClient.importNlpDump(stream).body()

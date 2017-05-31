@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine
+package fr.vsct.tock.bot.engine.nlp
 
 import fr.vsct.tock.bot.definition.BotDefinition
+import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.user.UserTimeline
-import fr.vsct.tock.nlp.api.client.model.NlpQuery
-import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
-import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
-import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
 import java.io.InputStream
 
 /**

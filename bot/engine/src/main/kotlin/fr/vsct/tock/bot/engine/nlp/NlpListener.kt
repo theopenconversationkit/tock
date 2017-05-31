@@ -14,17 +14,24 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.definition
+package fr.vsct.tock.bot.engine.nlp
 
-import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.nlp.api.client.model.NlpQuery
+import fr.vsct.tock.nlp.api.client.model.NlpResult
 
 /**
- * To listen before and after action handling.
- * Need to be registered using [fr.vsct.tock.bot.engine.BotRepository.registerStoryHandlerListener].
+ * Used to monitor nlp request on bot side.
+ * Need to be registered using [fr.vsct.tock.bot.engine.BotRepository.registerNlpListener].
  */
-interface StoryHandlerListener {
+interface NlpListener {
 
-    fun startAction(botBus: BotBus, handler: StoryHandler)
+    /**
+     * Called when nlp request is successful.
+     */
+    fun success(query: NlpQuery, result: NlpResult)
 
-    fun endAction(botBus: BotBus, handler: StoryHandler)
+    /**
+     * Called when nlp request is throwing an error.
+     */
+    fun error(query: NlpQuery, throwable: Throwable?)
 }
