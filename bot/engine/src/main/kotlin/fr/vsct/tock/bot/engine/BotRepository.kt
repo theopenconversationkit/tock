@@ -26,6 +26,7 @@ import fr.vsct.tock.bot.engine.monitoring.RequestTimer
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
+import io.vertx.ext.web.RoutingContext
 
 /**
  *
@@ -42,6 +43,11 @@ object BotRepository {
      * Request timer for connectors.
      */
     var requestTimer: RequestTimer = object : RequestTimer {}
+
+    /**
+     * healthcheck handler to answer to GET /healthcheck.
+     */
+    var healthcheckHandler: (RoutingContext) -> Unit = { it.response().end() }
 
     fun registerConnectorProvider(connectorProvider: ConnectorProvider) {
         connectorProviders.add(connectorProvider)

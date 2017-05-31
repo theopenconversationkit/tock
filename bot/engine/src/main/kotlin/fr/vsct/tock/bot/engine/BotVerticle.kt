@@ -49,6 +49,6 @@ class BotVerticle : WebVerticle(KotlinLogging.logger {}) {
     }
 
     override fun healthcheck(): (RoutingContext) -> Unit {
-        return { it.response().end() }
+        return BotRepository.healthcheckHandler
     }
 }
