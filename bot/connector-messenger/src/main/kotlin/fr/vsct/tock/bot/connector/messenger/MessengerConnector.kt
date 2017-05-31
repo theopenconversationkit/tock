@@ -203,7 +203,9 @@ internal class MessengerConnector(
                             logger.error(e)
                             null
                         }
-                    } ?: defaultLocale)
+                    } ?: defaultLocale,
+                    userProfile.profilePic,
+                    userProfile.gender)
         } catch(e: Exception) {
             logger.error(e)
         }

@@ -22,7 +22,7 @@
       (scrolled)="onScroll()">
       <md-list>
         <md-list-item *ngFor="let user of users">
-          <img md-list-avatar src="/assets/images/people.png"
+          <img md-list-avatar src="{{user.userPreferences.picture ? user.userPreferences.picture : '/assets/images/people.png'}}"
                alt="{{user.userPreferences.firstName}} {{user.userPreferences.lastName}}">
           <h3 md-line> {{user.userPreferences.firstName}} {{user.userPreferences.lastName}}
             ({{user.userPreferences.locale}})</h3>

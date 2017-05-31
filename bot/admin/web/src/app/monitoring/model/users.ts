@@ -55,7 +55,7 @@ export class UserReport {
               public userPreferences: UserPreferences,
               public userState: UserState,
               public lastUpdateDate: Date,
-              public lastActionText?:string) {
+              public lastActionText?: string) {
   }
 
   static fromJSON(json?: any): UserReport {
@@ -82,7 +82,9 @@ export class UserPreferences {
               public lastName?: string,
               public email?: string,
               public timezone?: string,
-              public locale?: string) {
+              public locale?: string,
+              public picture?: string,
+              public gender?: string) {
 
   }
 
