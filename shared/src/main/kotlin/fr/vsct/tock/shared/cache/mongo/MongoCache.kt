@@ -19,6 +19,7 @@ package fr.vsct.tock.shared.cache.mongo
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.IndexOptions
+import com.mongodb.client.model.UpdateOptions
 import fr.vsct.tock.shared.cache.Cache
 import fr.vsct.tock.shared.getDatabase
 import org.litote.kmongo.createIndex
@@ -27,7 +28,7 @@ import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
-import org.litote.kmongo.save
+import org.litote.kmongo.replaceOne
 
 /**
  *
@@ -53,7 +54,10 @@ internal object MongoCache : Cache {
     }
 
     override fun put(id: String, type: String, data: Any) {
-        col.save(MongoCacheData.fromValue(id, type, data))
+        col.replaceOne(
+                "{id:${id.json}, type:${type.json}}",
+                MongoCacheData.fromValue(id, type, data),
+                UpdateOptions().upsert(true))
     }
 
     override fun remove(id: String, type: String) {

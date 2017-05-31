@@ -38,7 +38,13 @@ fun <T : Any> getOrCache(id: String, type: String, valueProvider: () -> T?): T? 
         null
     } ?:
             try {
-                valueProvider.invoke()?.apply { cache.put(id, type, this) }
+                valueProvider.invoke()?.apply {
+                    try {
+                        cache.put(id, type, this)
+                    } catch(e: Exception) {
+                        logger.error(e)
+                    }
+                }
             } catch(e: Exception) {
                 logger.error(e)
                 null
