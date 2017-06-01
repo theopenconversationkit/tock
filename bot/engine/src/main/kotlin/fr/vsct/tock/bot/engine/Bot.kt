@@ -98,7 +98,9 @@ class Bot(val botDefinition: BotDefinition) {
                 parseChoice(action, dialog)
             }
             is SendLocation -> {
-                //do nothing
+                botDefinition.userLocationStory?.let {
+                    dialog.state.currentIntent = it.starterIntents.first()
+                }
             }
             is SendAttachment -> {
                 //do nothing
@@ -113,7 +115,6 @@ class Bot(val botDefinition: BotDefinition) {
     private fun parseChoice(choice: SendChoice, dialog: Dialog) {
         dialog.state.currentIntent = botDefinition.findIntent(choice.intentName)
     }
-
 
     fun errorActionFor(userAction: Action): Action {
         return botDefinition.errorActionFor(userAction)

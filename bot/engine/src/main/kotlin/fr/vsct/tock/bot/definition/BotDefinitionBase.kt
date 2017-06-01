@@ -29,7 +29,8 @@ open class BotDefinitionBase(override val botId: String,
                              override val engineType: NlpEngineType = NlpEngineType.opennlp,
                              override val unknownStory: StoryDefinition = defaultUnknownStory,
                              override val botDisabledStory: StoryDefinition? = null,
-                             override val botEnabledStory: StoryDefinition? = null) : BotDefinition {
+                             override val botEnabledStory: StoryDefinition? = null,
+                             override val userLocationStory: StoryDefinition? = null) : BotDefinition {
 
     companion object {
         private val defaultUnknownStory =
