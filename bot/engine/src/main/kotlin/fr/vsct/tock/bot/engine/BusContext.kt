@@ -24,7 +24,8 @@ import fr.vsct.tock.bot.connector.ConnectorType
  */
 data class BusContext(
         var currentDelay: Long = 0,
-        val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf()) {
+        val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf(),
+        val contextMap: MutableMap<String, Any> = mutableMapOf()) {
 
     fun addMessage(message: ConnectorMessage) {
         connectorMessages.put(message.connectorType, message)

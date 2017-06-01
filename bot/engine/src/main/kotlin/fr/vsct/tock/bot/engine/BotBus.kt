@@ -101,7 +101,7 @@ class BotBus internal constructor(
     }
 
     /**
-     * Returns the current context value.
+     * Returns the persistent current context value.
      */
     fun <T : Any> contextValue(name: String): T? {
         @Suppress("UNCHECKED_CAST")
@@ -109,10 +109,28 @@ class BotBus internal constructor(
     }
 
     /**
-     * Update context value.
+     * Update persistent context value.
      */
     fun changeContextValue(name: String, value: Any?) {
         if (value == null) dialog.state.context.remove(name) else dialog.state.context[name] = value
+    }
+
+    /**
+     * Returns the non persistent current context value.
+     */
+    fun getBusContextValue(name: String): Any? {
+        return context.contextMap[name]
+    }
+
+    /**
+     * Update the non persistent current context value.
+     */
+    fun setBusContextValue(key: String, value: Any?) {
+        if (value == null) {
+            context.contextMap - key
+        } else {
+            context.contextMap.put(key, value)
+        }
     }
 
 
