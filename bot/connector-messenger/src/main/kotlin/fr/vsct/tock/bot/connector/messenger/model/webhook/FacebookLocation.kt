@@ -16,8 +16,14 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.webhook
 
+import fr.vsct.tock.bot.engine.user.UserLocation
+
 /**
  *
  */
-data class LocationPayload(val coordinates: FacebookLocation) : Payload() {
+data class FacebookLocation(val lat: Double, val long: Double) {
+
+    constructor(userLocation: UserLocation) : this(userLocation.lat, userLocation.lng)
+
+    fun toUserLocation(): UserLocation = UserLocation(lat, long)
 }

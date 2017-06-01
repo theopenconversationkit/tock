@@ -89,7 +89,7 @@ internal object WebhookActionConverter {
                 message.playerId(PlayerType.user),
                 applicationId,
                 message.recipientId(PlayerType.bot),
-                (attachment.payload as LocationPayload).coordinates
+                (attachment.payload as LocationPayload).coordinates.toUserLocation()
         )
     }
 

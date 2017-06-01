@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.connector.messenger.json.webhook
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
+import fr.vsct.tock.bot.connector.messenger.model.webhook.FacebookLocation
 import fr.vsct.tock.bot.connector.messenger.model.webhook.LocationPayload
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Payload
 import fr.vsct.tock.bot.connector.messenger.model.webhook.UrlPayload
@@ -53,7 +54,7 @@ internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
         }
 
         return if (coordinates != null) {
-            LocationPayload(coordinates)
+            LocationPayload(FacebookLocation(coordinates))
         } else if (url != null) {
             UrlPayload(url)
         } else {
