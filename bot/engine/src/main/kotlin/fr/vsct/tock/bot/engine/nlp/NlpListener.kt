@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.engine.nlp
 
+import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 
@@ -24,6 +25,13 @@ import fr.vsct.tock.nlp.api.client.model.NlpResult
  * Need to be registered using [fr.vsct.tock.bot.engine.BotRepository.registerNlpListener].
  */
 interface NlpListener {
+
+    /**
+     * Used to handle "secret" keywords.
+     *
+     * @return null if no keyword is detected. If not null the nlp call is not started and the returned intent is used.
+     */
+    fun handleKeyword(sentence: String): Intent? = null
 
     /**
      * Called when nlp request is successful.

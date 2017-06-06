@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.engine.nlp
 
 import fr.vsct.tock.bot.definition.BotDefinition
+import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentContext
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
@@ -61,6 +62,12 @@ object Nlp : NlpController {
             if (userTimeline.userState.waitingRawInput || sentence.text.isNullOrBlank()) {
                 //do nothing
             } else {
+                findKeyword(sentence.text)?.apply {
+                    sentence.state.currentIntent = this
+                    dialog.state.currentIntent = this
+                    return
+                }
+
                 toNlpQuery().let { query ->
                     try {
                         logger.debug { "Sending sentence '${sentence.text}' to NLP" }
@@ -83,6 +90,19 @@ object Nlp : NlpController {
                     }
                 }
             }
+        }
+
+        private fun findKeyword(sentence: String?): Intent? {
+            if (sentence != null) {
+                BotRepository.nlpListeners.forEach {
+                    try {
+                        it.handleKeyword(sentence)?.apply { return this }
+                    } catch(e: Exception) {
+                        logger.error(e)
+                    }
+                }
+            }
+            return null
         }
 
         private fun listenNlpSuccessCall(query: NlpQuery, result: NlpResult) {
