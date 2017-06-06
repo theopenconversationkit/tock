@@ -21,7 +21,7 @@
     <parent>
         <groupId>fr.vsct.tock</groupId>
         <artifactId>tock-bot</artifactId>
-        <version>0.2.2-SNAPSHOT</version>
+        <version>0.2.2</version>
     </parent>
 
     <artifactId>bot-toolkit</artifactId>
