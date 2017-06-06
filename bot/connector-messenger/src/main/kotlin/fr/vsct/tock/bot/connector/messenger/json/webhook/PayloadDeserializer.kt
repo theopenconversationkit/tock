@@ -22,7 +22,6 @@ import fr.vsct.tock.bot.connector.messenger.model.webhook.FacebookLocation
 import fr.vsct.tock.bot.connector.messenger.model.webhook.LocationPayload
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Payload
 import fr.vsct.tock.bot.connector.messenger.model.webhook.UrlPayload
-import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.shared.jackson.JacksonDeserializer
 import fr.vsct.tock.shared.jackson.read
 import fr.vsct.tock.shared.jackson.readValue
@@ -40,7 +39,7 @@ internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
 
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Payload? {
         data class PayloadFields(
-                var coordinates: UserLocation? = null,
+                var coordinates: FacebookLocation? = null,
                 var url: String? = null)
 
         val (coordinates, url) = jp.read<PayloadFields> { fields, name ->
@@ -54,7 +53,7 @@ internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
         }
 
         return if (coordinates != null) {
-            LocationPayload(FacebookLocation(coordinates))
+            LocationPayload(coordinates)
         } else if (url != null) {
             UrlPayload(url)
         } else {
