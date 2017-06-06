@@ -87,9 +87,14 @@ interface BotDefinition : I18nKeyProvider {
     val unknownStory: StoryDefinition
 
     /**
-     * The user location story. If it's null, current intent is used.
+     * The story that handles [fr.vsct.tock.bot.engine.action.SendLocation] action. If it's null, current intent is used.
      */
     val userLocationStory: StoryDefinition?
+
+    /**
+     * The story that handles [fr.vsct.tock.bot.engine.action.SendAttachment] action. If it's null, current intent is used.
+     */
+    val handleAttachmentStory: StoryDefinition?
 
     /**
      * Called when error occurs. By default send "technical error".

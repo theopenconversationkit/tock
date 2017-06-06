@@ -20,15 +20,33 @@ import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.Story
 
 /**
- *
+ * The user timeline - all dialogs and data of the user.
  */
 class UserTimeline(val playerId: PlayerId,
                    val userPreferences: UserPreferences = UserPreferences(),
                    val userState: UserState = UserState(),
                    val dialogs: MutableList<Dialog> = mutableListOf()) {
 
+    /**
+     * Returns the current dialog.
+     */
     fun currentDialog(): Dialog? = dialogs.lastOrNull()
 
+    /**
+     * Returns the current story.
+     */
     fun currentStory(): Story? = currentDialog()?.currentStory()
 
+    /**
+     * Does this timeline as at least one action of the bot?
+     */
+    fun containsBotAction(): Boolean {
+        return dialogs.any {
+            it.stories.any {
+                it.actions.any {
+                    it.playerId.type == PlayerType.bot
+                }
+            }
+        }
+    }
 }

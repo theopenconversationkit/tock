@@ -103,7 +103,7 @@ class Bot(val botDefinition: BotDefinition) {
                 parseLocation(action, dialog)
             }
             is SendAttachment -> {
-                //do nothing
+                parseAttachment(action, dialog)
             }
             is SendSentence -> {
                 nlp.parseSentence(action, userTimeline, dialog, connector, botDefinition)
@@ -111,6 +111,16 @@ class Bot(val botDefinition: BotDefinition) {
             else -> logger.warn { "${action::class.simpleName} not yet supported" }
         }
     }
+
+    private fun parseAttachment(location: SendAttachment, dialog: Dialog) {
+        botDefinition.handleAttachmentStory?.let {
+            it.starterIntents.first().let {
+                location.state.currentIntent = it
+                dialog.state.currentIntent = it
+            }
+        }
+    }
+
 
     private fun parseLocation(location: SendLocation, dialog: Dialog) {
         botDefinition.userLocationStory?.let {
