@@ -23,7 +23,18 @@ import fr.vsct.tock.bot.definition.StoryDefinition
  */
 interface UserTimelineDAO {
 
+    /**
+     * Save timeline.
+     */
     fun save(userTimeline: UserTimeline)
 
+    /**
+     * load with last dialog.
+     */
     fun loadWithLastValidDialog(userId: PlayerId, storyDefinitionProvider: (String) -> StoryDefinition): UserTimeline
+
+    /**
+     * Remove the timeline and the associated dialogs.
+     */
+    fun remove(playerId: PlayerId)
 }

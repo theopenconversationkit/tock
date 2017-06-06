@@ -58,6 +58,8 @@ class Bot(val botDefinition: BotDefinition) {
 
             story.handle(bus)
         } else {
+            //refresh intent flag
+            userTimeline.userState.botDisabled = true
             logger.debug { "bot is disabled" }
         }
     }

@@ -20,8 +20,8 @@ import com.github.salomonbrys.kodein.instance
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Sorts
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
-import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReport
+import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.admin.user.UserReportDAO
 import fr.vsct.tock.bot.admin.user.UserReportQuery
 import fr.vsct.tock.bot.admin.user.UserReportQueryResult
@@ -42,6 +42,8 @@ import org.litote.kmongo.MongoOperator.sort
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.count
 import org.litote.kmongo.createIndex
+import org.litote.kmongo.deleteMany
+import org.litote.kmongo.deleteOne
 import org.litote.kmongo.find
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
@@ -88,6 +90,11 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
         logger.trace { "timeline for user $userId : $timeline" }
         return timeline
+    }
+
+    override fun remove(playerId: PlayerId) {
+        dialogCol.deleteMany("{playerIds:${playerId.json}}")
+        userTimelineCol.deleteOne("{playerId:${playerId.json}}")
     }
 
     private fun loadWithoutDialogs(userId: PlayerId): UserTimeline {
