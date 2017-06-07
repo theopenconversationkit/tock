@@ -159,8 +159,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             val count = userTimelineCol.count(filter)
             if (count > start) {
                 val list = userTimelineCol.find(filter)
-                        .skip(start.toInt()).limit(size).sort(Sorts.descending("_id")).toList()
-                return UserReportQueryResult(count, start, start + count, list.map { it.toUserReport() })
+                        .skip(start.toInt()).limit(size).sort(Sorts.descending("lastUpdateDate")).toList()
+                return UserReportQueryResult(count, start, start + size, list.map { it.toUserReport() })
             } else {
                 return UserReportQueryResult(0, 0, 0, emptyList())
             }

@@ -24,6 +24,9 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import fr.vsct.tock.bot.admin.user.UserReport
+import fr.vsct.tock.bot.engine.action.SendAttachment
+import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
@@ -50,8 +53,13 @@ internal class UserTimelineCol(
     ) {
         //register last action
         timeline.dialogs.lastOrNull()?.currentStory()?.actions?.lastOrNull { it.playerId.type == PlayerType.user }?.let {
-            //TODO action other than send sentence
-            lastActionText = if (it is SendSentence) it.text else null
+            lastActionText = when (it) {
+                is SendSentence -> it.text
+                is SendChoice -> "(click) ${it.intentName}"
+                is SendAttachment -> "(send) ${it.url}"
+                is SendLocation -> "(send user location)"
+                else -> null
+            }
         }
         //register application id
         timeline.dialogs.lastOrNull()?.currentStory()?.lastAction?.applicationId?.let {

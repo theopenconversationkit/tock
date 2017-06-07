@@ -16,7 +16,11 @@
 
 package fr.vsct.tock.bot.admin.dialog
 
+import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.engine.action.ActionType
+import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.UserLocation
 import java.time.Instant
 
 /**
@@ -24,6 +28,14 @@ import java.time.Instant
  */
 data class ActionReport(
         val playerId: PlayerId,
-        val text: String?,
-        val date: Instant) {
+        val date: Instant,
+        val actionType: ActionType,
+        val text: String? = null,
+        val connectorMessages: List<ConnectorMessage>? = null,
+        val intent: String? = null,
+        val parameters: Map<String, String>? = null,
+        val url: String? = null,
+        val attachmentType: SendAttachment.AttachmentType? = null,
+        val userLocation: UserLocation? = null
+) {
 }

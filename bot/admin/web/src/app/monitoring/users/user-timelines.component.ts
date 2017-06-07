@@ -29,7 +29,6 @@ export class UserTimelinesComponent implements OnInit {
 
   filter: UserFilter = new UserFilter();
   users: UserReport[] = [];
-  userDialog: DialogReport;
 
   cursor: number = 0;
   pageSize: number = 10;
@@ -83,9 +82,6 @@ export class UserTimelinesComponent implements OnInit {
         this.cursor = r.end;
         this.total = r.total;
         this.loading = false;
-        if(!this.userDialog && this.users.length > 0) {
-           this.loadDialog(this.users[0]);
-        }
       });
     }
   }
@@ -104,9 +100,14 @@ export class UserTimelinesComponent implements OnInit {
       user.playerId);
   }
 
+  closeDialog(user: UserReport) {
+    user.displayDialogs = false;
+  }
+
   loadDialog(user: UserReport) {
+    user.displayDialogs = true;
     this.monitoring.dialogs(this.buildDialogQuery(user)).subscribe(r => {
-      this.userDialog = r;
+      user.userDialog = r;
     });
   }
 

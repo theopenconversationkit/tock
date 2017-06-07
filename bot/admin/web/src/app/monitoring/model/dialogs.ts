@@ -46,19 +46,40 @@ export class ActionReport {
 
   constructor(public playerId: PlayerId,
               public date: Date,
-              public text?: string) {
-
+              public actionType: ActionType,
+              public text?: string,
+              public connectorMessages?: any,
+              public intent?: string,
+              public parameters?: any,
+              public url?: string,
+              public attachmentType?: AttachmentType,
+              public userLocation?: any) {
   }
 
   isBot(): boolean {
     return this.playerId.type == PlayerType.bot;
   }
 
+  actionDisplay(): string {
+    switch (this.actionType) {
+      case ActionType.sentence:
+        return this.text ? this.text : JSON.stringify(this.connectorMessages);
+      case ActionType.choice:
+        return "(click) "+ this.intent + (JSON.stringify(this.parameters) === "{}" ? "" : "(" + JSON.stringify(this.parameters) + ")");
+      case ActionType.attachment:
+        return "Send: " + this.url;
+      case ActionType.location:
+        return JSON.stringify(this.userLocation);
+    }
+  }
+
   static fromJSON(json?: any): ActionReport {
     const value = Object.create(ActionReport.prototype);
 
     const result = Object.assign(value, json, {
-      playerId: PlayerId.fromJSON(json.playerId)
+      playerId: PlayerId.fromJSON(json.playerId),
+      actionType: ActionType[json.actionType],
+      attachmentType: AttachmentType[json.attachmentType]
     });
 
     return result;
@@ -67,5 +88,13 @@ export class ActionReport {
   static fromJSONArray(json?: Array<any>): ActionReport[] {
     return json ? json.map(ActionReport.fromJSON) : [];
   }
+}
+
+export enum ActionType {
+  sentence, choice, attachment, location
+}
+
+export enum  AttachmentType {
+  image, audio, video, file
 }
 

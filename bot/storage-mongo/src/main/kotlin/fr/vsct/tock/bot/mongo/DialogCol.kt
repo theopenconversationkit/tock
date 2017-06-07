@@ -26,6 +26,7 @@ import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.ActionType
 import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
@@ -88,14 +89,40 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                 stories.flatMap { it.actions }
                         .map { it.toAction() }
                         .mapNotNull {
-                            if (it is SendSentence)
-                                ActionReport(
-                                        it.playerId,
-                                        if (it.text.isNullOrBlank())
-                                            it.messages.firstOrNull()?.toString()
-                                        else it.text,
-                                        it.date)
-                            else null
+                            when (it) {
+                                is SendSentence ->
+                                    ActionReport(
+                                            it.playerId,
+                                            it.date,
+                                            ActionType.sentence,
+                                            it.text,
+                                            it.messages
+                                    )
+                                is SendChoice ->
+                                    ActionReport(
+                                            it.playerId,
+                                            it.date,
+                                            ActionType.choice,
+                                            intent = it.intentName,
+                                            parameters = it.parameters
+                                    )
+                                is SendAttachment ->
+                                    ActionReport(
+                                            it.playerId,
+                                            it.date,
+                                            ActionType.attachment,
+                                            url = it.url,
+                                            attachmentType = it.type
+                                    )
+                                is SendLocation ->
+                                    ActionReport(
+                                            it.playerId,
+                                            it.date,
+                                            ActionType.location,
+                                            userLocation = it.location
+                                    )
+                                else -> null
+                            }
                         }
         )
     }
