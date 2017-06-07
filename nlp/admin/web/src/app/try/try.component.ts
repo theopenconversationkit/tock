@@ -44,7 +44,7 @@ export class TryComponent implements OnInit {
     if (v.length == 0) {
       this.snackBar.open(`Please enter a non-empty query`, "ERROR", {duration: 2000});
     } else {
-      this.nlp.parse(new ParseQuery(app.namespace, app.name, language, v, this.state.currentEngine())).subscribe(sentence => {
+      this.nlp.parse(new ParseQuery(app.namespace, app.name, language, v)).subscribe(sentence => {
         this.sentence = sentence;
       });
     }

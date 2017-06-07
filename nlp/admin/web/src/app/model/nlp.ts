@@ -294,8 +294,7 @@ export class ParseQuery extends ApplicationScopedQuery {
   constructor(public namespace: string,
               public applicationName: string,
               public language: string,
-              public query: string,
-              public engineType: NlpEngineType) {
+              public query: string) {
     super(namespace, applicationName, language)
   }
 }

@@ -16,21 +16,19 @@
 
 package fr.vsct.tock.nlp.admin.model
 
-import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.nlp.front.shared.parser.QueryContext
 
 /**
  *
  */
-data class ParseQuery(val query: String,
-                      val engineType: NlpEngineType) : ApplicationScopedQuery() {
+data class ParseQuery(val query: String) : ApplicationScopedQuery() {
 
     fun toQuery(): ParseQuery {
         return ParseQuery(
                 listOf(query),
                 namespace,
                 applicationName,
-                QueryContext(language, "admin", engineType = engineType, checkExistingQuery = true))
+                QueryContext(language, "admin", checkExistingQuery = true))
     }
 }

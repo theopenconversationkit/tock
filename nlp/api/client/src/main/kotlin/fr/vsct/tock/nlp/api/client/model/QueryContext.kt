@@ -31,6 +31,7 @@ data class QueryContext(val language: Locale,
                         val clientDevice: String? = null,
                         val referenceDate: ZonedDateTime = now(UTC),
                         val referenceTimezone: ZoneId = UTC,
+                        @Deprecated("the engine is now defined by the application model")
                         val engineType: NlpEngineType = NlpEngineType.stanford,
                         val registerQuery: Boolean = true) {
 }

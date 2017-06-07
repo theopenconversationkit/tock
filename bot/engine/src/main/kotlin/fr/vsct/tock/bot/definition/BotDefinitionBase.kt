@@ -26,6 +26,7 @@ open class BotDefinitionBase(override val botId: String,
                              override val namespace: String,
                              override val stories: List<StoryDefinition>,
                              override val nlpModelName: String = botId,
+                             @Deprecated("the engine is now defined by the application model")
                              override val engineType: NlpEngineType = NlpEngineType.opennlp,
                              override val unknownStory: StoryDefinition = defaultUnknownStory,
                              override val botDisabledStory: StoryDefinition? = null,

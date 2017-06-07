@@ -98,7 +98,7 @@ object ParserService : Parser {
                     .sentences
                     .firstOrNull()
 
-            val callContext = CallContext(toApplication(application), language, context.engineType, referenceDate)
+            val callContext = CallContext(toApplication(application), language, application.nlpEngineType, referenceDate)
 
             if (validatedSentence != null && query.context.checkExistingQuery) {
                 val entityValues = core.evaluateEntities(
@@ -154,7 +154,7 @@ object ParserService : Parser {
 
             val referenceDate = context.referenceDate.withZoneSameInstant(context.referenceTimezone)
 
-            val callContext = CallContext(toApplication(application), language, context.engineType, referenceDate)
+            val callContext = CallContext(toApplication(application), language, application.nlpEngineType, referenceDate)
 
             val result = core.mergeValues(callContext, entity.entityType, values.map { it.toValueDescriptor() })
 

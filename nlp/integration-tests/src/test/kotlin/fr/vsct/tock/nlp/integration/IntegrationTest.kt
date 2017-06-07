@@ -18,13 +18,12 @@ package fr.vsct.tock.nlp.integration
 
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityType
-import fr.vsct.tock.nlp.core.NlpEngineType.Companion.opennlp
 import fr.vsct.tock.nlp.entity.date.DateEntityGrain
 import fr.vsct.tock.nlp.entity.date.DateEntityValue
 import fr.vsct.tock.nlp.front.client.FrontClient
+import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue
 import fr.vsct.tock.nlp.front.shared.parser.QueryContext
-import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import org.junit.BeforeClass
 import org.junit.Test
 import java.time.ZonedDateTime
@@ -45,7 +44,7 @@ class IntegrationTest {
 
     @Test
     fun testOpenNlpSimpleRequest() {
-        val result = FrontClient.parse(ParseQuery(listOf("I want to go to Paris tomorrow"), "vsc", "test", QueryContext(Locale.ENGLISH, "clientTest", engineType = opennlp)))
+        val result = FrontClient.parse(ParseQuery(listOf("I want to go to Paris tomorrow"), "vsc", "test", QueryContext(Locale.ENGLISH, "clientTest")))
         println(result)
         assertEquals("travel", result.intent)
         assertEquals(2, result.entities.size)

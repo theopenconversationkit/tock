@@ -54,6 +54,7 @@ interface BotDefinition : I18nKeyProvider {
     /**
      * The nlp engine currently used
      */
+    @Deprecated("the engine is now defined by the application model")
     val engineType: NlpEngineType
 
     /**
