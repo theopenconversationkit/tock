@@ -80,23 +80,36 @@ internal class UserTimelineCol(
     class UserStateWrapper(val creationDate: Instant = Instant.now(),
                            val lastUpdateDate: Instant = creationDate,
                            @JsonDeserialize(using = FlagsDeserializer::class)
-                           val flags: Map<String, TimeBoxedFlag>) {
-        constructor(state: UserState) : this(state.creationDate, Instant.now(), state.flags)
+                           val flags: Map<String, TimeBoxedFlagWrapper>) {
+        constructor(state: UserState) :
+                this(
+                        state.creationDate,
+                        Instant.now(),
+                        state.flags.mapValues { TimeBoxedFlagWrapper(it.value) }
+                )
 
         fun toUserState(): UserState {
             return UserState(
                     creationDate,
-                    flags.toMutableMap()
+                    flags.mapValues { it.value.toTimeBoxedFlag() }.toMutableMap()
             )
         }
     }
 
-    class FlagsDeserializer : JsonDeserializer<Map<String, TimeBoxedFlag>>() {
+    data class TimeBoxedFlagWrapper(val value: String,
+                                    val expirationDate: Instant? = Instant.now()) {
 
-        override fun deserialize(jp: JsonParser, context: DeserializationContext): Map<String, TimeBoxedFlag> {
+        constructor(flag: TimeBoxedFlag) : this(flag.value, flag.expirationDate)
+
+        fun toTimeBoxedFlag(): TimeBoxedFlag = TimeBoxedFlag(value, expirationDate)
+    }
+
+    class FlagsDeserializer : JsonDeserializer<Map<String, TimeBoxedFlagWrapper>>() {
+
+        override fun deserialize(jp: JsonParser, context: DeserializationContext): Map<String, TimeBoxedFlagWrapper> {
             val mapper = jp.getCodec()
             return if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
-                mapper.readValue(jp, object : TypeReference<Map<String, TimeBoxedFlag>>() {})
+                mapper.readValue(jp, object : TypeReference<Map<String, TimeBoxedFlagWrapper>>() {})
             } else {
                 //consume this stream
                 mapper.readTree<TreeNode>(jp)

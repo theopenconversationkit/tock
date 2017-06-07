@@ -38,7 +38,7 @@ class UserTimeline(val playerId: PlayerId,
     fun currentStory(): Story? = currentDialog()?.currentStory()
 
     /**
-     * Does this timeline as at least one action of the bot?
+     * Does this timeline has at least one answer of a bot?
      */
     fun containsBotAction(): Boolean {
         return dialogs.any {

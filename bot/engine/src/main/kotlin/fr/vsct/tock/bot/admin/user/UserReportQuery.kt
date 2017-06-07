@@ -28,8 +28,9 @@ data class UserReportQuery(
         val language: Locale,
         val start: Long = 0,
         val size: Int = 1,
-        val name: String?,
-        val from: ZonedDateTime?,
-        val to: ZonedDateTime?
+        val name: String? = null,
+        val from: ZonedDateTime? = null,
+        val to: ZonedDateTime? = null,
+        val flags: Map<String, String> = emptyMap()
 ) {
 }

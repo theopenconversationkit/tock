@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.admin.user
 
 /**
- *
+ * To search users, everywhere.
  */
 interface UserReportDAO {
 

@@ -34,10 +34,12 @@ import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
+import org.litote.kmongo.MongoOperator.and
 import org.litote.kmongo.MongoOperator.gt
 import org.litote.kmongo.MongoOperator.limit
 import org.litote.kmongo.MongoOperator.lt
 import org.litote.kmongo.MongoOperator.match
+import org.litote.kmongo.MongoOperator.or
 import org.litote.kmongo.MongoOperator.sort
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.count
@@ -51,6 +53,7 @@ import org.litote.kmongo.json
 import org.litote.kmongo.save
 import java.lang.Exception
 import java.time.Instant
+import java.time.Instant.now
 
 /**
  *
@@ -97,7 +100,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         userTimelineCol.deleteOne("{playerId:${playerId.json}}")
     }
 
-    private fun loadWithoutDialogs(userId: PlayerId): UserTimeline {
+    override fun loadWithoutDialogs(userId: PlayerId): UserTimeline {
         val timeline = userTimelineCol.findOneById(userId.id)
         return if (timeline == null) {
             logger.debug { "no timeline for user $userId" }
@@ -135,11 +138,24 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                             .distinct()
             val filter =
                     listOfNotNull(
-                            "'applicationIds':{\$in:${applicationsIds.json}}",
+                            "'applicationIds':{\$in:${applicationsIds.filter { it.isNotEmpty() }.json}}",
                             if (name.isNullOrBlank()) null else "'userPreferences.lastName':/${name!!.trim()}/i",
                             if (from == null) null else "'lastUpdateDate':{$gt:${from!!.json}}",
-                            if (to == null) null else "'lastUpdateDate':{$lt:${to!!.json}}"
-                    ).joinToString(",", "{", "}")
+                            if (to == null) null else "'lastUpdateDate':{$lt:${to!!.json}}",
+                            if (flags.isEmpty()) null
+                            else flags.flatMap {
+                                "userState.flags.${it.key}".let { key ->
+                                    listOf(
+                                            "{'$key.value':${it.value.json}}",
+                                            "{$or:[{'$key.expirationDate':{$gt:${now().json}}},{'$key.expirationDate':null}]}"
+                                    )
+                                }
+                            }.joinToString(",", "$and:[", "]")
+
+                    ).joinToString(",", "{$and:[", "]}") {
+                        "{$it}"
+                    }
+            logger.debug("user search query: $filter")
             val count = userTimelineCol.count(filter)
             if (count > start) {
                 val list = userTimelineCol.find(filter)
