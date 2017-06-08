@@ -16,16 +16,21 @@
 
 package fr.vsct.tock.bot.connector.messenger
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.connector.ConnectorException
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.UserProfile
 import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.SendResponse
+import fr.vsct.tock.bot.connector.messenger.model.send.SendResponseErrorContainer
 import fr.vsct.tock.bot.engine.BotRepository.requestTimer
 import fr.vsct.tock.bot.engine.monitoring.logError
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.create
+import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.intProperty
+import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeout
 import mu.KotlinLogging
@@ -57,6 +62,8 @@ internal class MessengerClient(val secretKey: String) {
 
     private val logger = KotlinLogging.logger {}
     private val graphApi: MessengerClient.GraphApi
+    private val nbRetriesLimit = intProperty("messenger_retries_on_error_limit", 1)
+    private val nbRetriesWaitInMs = longProperty("messenger_retries_on_error_wait_in_ms", 5000)
 
     init {
         val retrofit = retrofitBuilderWithTimeout(longProperty("tock_messenger_request_timeout_ms", 30000))
@@ -70,8 +77,13 @@ internal class MessengerClient(val secretKey: String) {
         return send(messageRequest, { graphApi.sendMessage(token, messageRequest).execute() })
     }
 
-    fun sendAction(token: String, actionRequest: ActionRequest): SendResponse {
-        return send(actionRequest, { graphApi.activateTyping(token, actionRequest).execute() })
+    fun sendAction(token: String, actionRequest: ActionRequest) {
+        try {
+            send(actionRequest, { graphApi.activateTyping(token, actionRequest).execute() })
+        } catch(e: Exception) {
+            //log and ignore
+            logger.error(e)
+        }
     }
 
     fun getUserProfile(token: String, recipient: Recipient): UserProfile {
@@ -88,11 +100,34 @@ internal class MessengerClient(val secretKey: String) {
     }
 
     private fun <T> send(request: T, call: (T) -> Response<SendResponse>): SendResponse {
+        return send(request, call, 0)
+    }
+
+    private fun <T> send(request: T, call: (T) -> Response<SendResponse>, nbTries: Int): SendResponse {
         val requestTimerData = requestTimer.start("messenger_send")
         try {
             val response = call(request)
 
             if (!response.isSuccessful) {
+                val error = response.message()
+                val errorCode = response.code()
+                logger.warn { "Messenger Error : $errorCode $error" }
+                val errorBody = response.errorBody().string()
+                logger.warn { "Messenger Error body : $errorBody" }
+
+                if (request is MessageRequest && nbTries <= nbRetriesLimit) {
+                    val errorContainer: SendResponseErrorContainer = mapper.readValue(errorBody)
+                    if (errorContainer.error != null) {
+                        //cf https://developers.facebook.com/docs/messenger-platform/send-api-reference/errors
+                        with(errorContainer.error) {
+                            if (code == 1200 || (code == 200 && errorSubcode == 1545041)) {
+                                logger.info { "Try to send again in $nbRetriesWaitInMs ms $request" }
+                                Thread.sleep(nbRetriesWaitInMs)
+                                return send(request, call, nbTries + 1)
+                            }
+                        }
+                    }
+                }
                 throw ConnectorException(response.message())
             } else {
                 return response.body()
