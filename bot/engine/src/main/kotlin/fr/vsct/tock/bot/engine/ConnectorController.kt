@@ -95,7 +95,9 @@ class ConnectorController internal constructor(
     }
 
     fun errorMessage(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {
-        return bot.botDefinition.errorAction(playerId, applicationId, recipientId)
+        val errorAction = bot.botDefinition.errorAction(playerId, applicationId, recipientId)
+        errorAction.botMetadata.lastAnswer = true
+        return errorAction
     }
 
     private fun sendAsynchronous(action: Action) {
