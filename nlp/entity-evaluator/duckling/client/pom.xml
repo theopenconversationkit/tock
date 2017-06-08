@@ -21,7 +21,7 @@
     <parent>
         <groupId>fr.vsct.tock</groupId>
         <artifactId>tock-nlp-duckling</artifactId>
-        <version>0.2.4</version>
+        <version>0.2.5-SNAPSHOT</version>
     </parent>
 
     <artifactId>tock-nlp-duckling-client</artifactId>
