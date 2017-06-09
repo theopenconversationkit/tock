@@ -20,8 +20,9 @@ import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.property
-import fr.vsct.tock.shared.retrofitBuilderWithTimeout
+import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import io.vertx.core.json.JsonArray
+import mu.KotlinLogging
 import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -55,12 +56,13 @@ internal object DucklingClient {
         fun healthcheck(): Call<Void>
     }
 
+    private val logger = KotlinLogging.logger {}
     private val service: DucklingService
     private val jacksonConverterFactory: JacksonConverterFactory
 
     init {
         jacksonConverterFactory = JacksonConverterFactory.create(mapper)
-        val retrofit = retrofitBuilderWithTimeout(longProperty("tock_duckling_request_timeout_ms", 5000))
+        val retrofit = retrofitBuilderWithTimeoutAndLogger(longProperty("tock_duckling_request_timeout_ms", 5000), logger)
                 .baseUrl("${property("nlp_duckling_url", "http://localhost:8889")}/")
                 .addConverterFactory(RawJsonBodyConverterFactory)
                 .build()

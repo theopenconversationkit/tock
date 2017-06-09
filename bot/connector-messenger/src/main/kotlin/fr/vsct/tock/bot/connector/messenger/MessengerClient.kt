@@ -32,7 +32,7 @@ import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
-import fr.vsct.tock.shared.retrofitBuilderWithTimeout
+import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 import retrofit2.Call
 import retrofit2.Response
@@ -66,7 +66,8 @@ internal class MessengerClient(val secretKey: String) {
     private val nbRetriesWaitInMs = longProperty("messenger_retries_on_error_wait_in_ms", 5000)
 
     init {
-        val retrofit = retrofitBuilderWithTimeout(longProperty("tock_messenger_request_timeout_ms", 30000))
+        val retrofit = retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_messenger_request_timeout_ms", 30000), logger)
                 .baseUrl("https://graph.facebook.com")
                 .addJacksonConverter()
                 .build()
