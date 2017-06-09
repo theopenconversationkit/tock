@@ -45,14 +45,14 @@ internal class UserTimelineCol(
         var lastActionText: String? = null,
         val lastUpdateDate: Instant = Instant.now()) {
 
-    constructor(timeline: UserTimeline) : this(
-            timeline.playerId.id,
-            timeline.playerId,
-            timeline.userPreferences,
-            UserStateWrapper(timeline.userState)
+    constructor(newTimeline: UserTimeline, oldTimeline: UserTimelineCol?) : this(
+            newTimeline.playerId.id,
+            newTimeline.playerId,
+            newTimeline.userPreferences,
+            UserStateWrapper(newTimeline.userState)
     ) {
         //register last action
-        timeline.dialogs.lastOrNull()?.currentStory()?.actions?.lastOrNull { it.playerId.type == PlayerType.user }?.let {
+        newTimeline.dialogs.lastOrNull()?.currentStory()?.actions?.lastOrNull { it.playerId.type == PlayerType.user }?.let {
             lastActionText = when (it) {
                 is SendSentence -> it.text
                 is SendChoice -> "(click) ${it.intentName}"
@@ -62,8 +62,11 @@ internal class UserTimelineCol(
             }
         }
         //register application id
-        timeline.dialogs.lastOrNull()?.currentStory()?.lastAction?.applicationId?.let {
-            applicationIds.add(it)
+        oldTimeline?.apply {
+            applicationIds.addAll(applicationIds)
+        }
+        newTimeline.dialogs.lastOrNull()?.currentStory()?.actions?.forEach {
+            applicationIds.add(it.applicationId)
         }
     }
 
