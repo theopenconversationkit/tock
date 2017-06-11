@@ -1,5 +1,5 @@
 export const environment = {
   production: true,
-  autologin: true,
+  autologin: false,
   serverUrl:'/rest'
 };

@@ -14,10 +14,8 @@
  * limitations under the License.
  */
 
-// prod is default to easier inclusion in bot-admin-web
-
 export const environment = {
-  production: true,
+  production: false,
   autologin: true,
-  serverUrl:'/rest'
+  serverUrl: 'http://localhost:8080/rest'
 };

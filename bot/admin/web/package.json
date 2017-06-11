@@ -9,7 +9,7 @@
     "test": "ng test",
     "lint": "ng lint",
     "e2e": "ng e2e",
-    "mavenbuild": "ng build --prod --aot"
+    "mavenbuild": "cp -f node_modules/tock-nlp-admin/src/environments/environment.prod.ts node_modules/tock-nlp-admin/src/environments/environment.ts && ng build --prod --aot"
   },
   "private": true,
   "dependencies": {
