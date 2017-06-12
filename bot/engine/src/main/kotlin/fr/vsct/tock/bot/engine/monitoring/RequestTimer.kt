@@ -17,16 +17,17 @@
 package fr.vsct.tock.bot.engine.monitoring
 
 import fr.vsct.tock.bot.engine.BotRepository
+import fr.vsct.tock.shared.error
 import mu.KLogger
 
 fun KLogger.logError(throwable: Throwable, data: RequestTimerData) {
     BotRepository.requestTimer.throwable(throwable, data)
-    error(throwable)
+    this.error(throwable)
 }
 
 fun KLogger.logError(message: String, data: RequestTimerData) {
     BotRepository.requestTimer.error(message, data)
-    error(message)
+    this.error(message)
 }
 
 /**
