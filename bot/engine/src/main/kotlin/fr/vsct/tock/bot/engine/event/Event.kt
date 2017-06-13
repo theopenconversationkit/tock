@@ -14,16 +14,23 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.webhook
+package fr.vsct.tock.bot.engine.event
 
-import fr.vsct.tock.bot.connector.messenger.model.Recipient
-import fr.vsct.tock.bot.connector.messenger.model.Sender
+import fr.vsct.tock.bot.engine.dialog.ActionState
+import fr.vsct.tock.shared.Dice
+import java.time.Instant
 
 /**
- *
+ * The base class for all events or actions.
  */
-data class OptinWebhook(override val sender: Sender?,
-                        override val recipient: Recipient,
-                        override val timestamp: Long,
-                        val optin: Optin) : Webhook() {
+abstract class Event(
+        val applicationId: String,
+        val id: String = Dice.newId(),
+        val date: Instant = Instant.now(),
+        val state: ActionState = ActionState()
+) {
+    fun hasEntity(role: String): Boolean {
+        return state.getEntity(role).isNotEmpty()
+    }
+
 }

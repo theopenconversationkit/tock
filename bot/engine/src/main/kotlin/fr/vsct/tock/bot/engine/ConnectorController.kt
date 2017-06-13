@@ -20,6 +20,7 @@ import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.engine.user.UserPreferences
@@ -56,7 +57,14 @@ class ConnectorController internal constructor(
 
     internal val connectorType: ConnectorType get() = connector.connectorType
 
-    fun handle(action: Action) {
+    fun handle(event: Event) {
+        when (event) {
+            is Action -> handleAction(event)
+            else -> bot.handleEvent(connector, event)
+        }
+    }
+
+    private fun handleAction(action: Action) {
         val playerId = action.playerId
         val id = playerId.id
 

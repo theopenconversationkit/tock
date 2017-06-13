@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.webhook
+package fr.vsct.tock.bot.definition
 
-import fr.vsct.tock.bot.connector.messenger.model.Recipient
-import fr.vsct.tock.bot.connector.messenger.model.Sender
+import fr.vsct.tock.bot.connector.Connector
+import fr.vsct.tock.bot.engine.Bot
+import fr.vsct.tock.bot.engine.event.Event
 
 /**
- *
+ * Base implementation of [EventListener].
  */
-data class OptinWebhook(override val sender: Sender?,
-                        override val recipient: Recipient,
-                        override val timestamp: Long,
-                        val optin: Optin) : Webhook() {
+open class EventListenerBase : EventListener {
+
+    override fun listenEvent(bot: Bot, connector: Connector, event: Event) {
+        //do nothing
+    }
 }

@@ -32,7 +32,8 @@ open class BotDefinitionBase(override val botId: String,
                              override val botDisabledStory: StoryDefinition? = null,
                              override val botEnabledStory: StoryDefinition? = null,
                              override val userLocationStory: StoryDefinition? = null,
-                             override val handleAttachmentStory: StoryDefinition? = null) : BotDefinition {
+                             override val handleAttachmentStory: StoryDefinition? = null,
+                             override val eventListener: EventListener = EventListenerBase()) : BotDefinition {
 
     companion object {
         private val defaultUnknownStory =

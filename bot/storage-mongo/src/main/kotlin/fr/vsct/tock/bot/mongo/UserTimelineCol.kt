@@ -62,8 +62,8 @@ internal class UserTimelineCol(
             }
         }
         //register application id
-        oldTimeline?.apply {
-            applicationIds.addAll(applicationIds)
+        oldTimeline?.let {
+            applicationIds.addAll(it.applicationIds)
         }
         newTimeline.dialogs.lastOrNull()?.currentStory()?.actions?.forEach {
             applicationIds.add(it.applicationId)

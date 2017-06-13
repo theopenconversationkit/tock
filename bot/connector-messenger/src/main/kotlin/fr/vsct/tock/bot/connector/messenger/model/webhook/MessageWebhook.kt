@@ -16,13 +16,23 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.webhook
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.Sender
+import fr.vsct.tock.shared.Dice
 
 data class MessageWebhook(override val sender: Sender,
                           override val recipient: Recipient,
                           override val timestamp: Long,
                           val message: Message) : Webhook() {
 
-
+    @JsonIgnore
+    fun getMessageId(): String =
+            message.mid.run {
+                if (isEmpty()) {
+                    Dice.newId()
+                } else {
+                    this
+                }
+            }
 }

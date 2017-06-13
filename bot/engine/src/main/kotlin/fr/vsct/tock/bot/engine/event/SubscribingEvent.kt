@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.webhook
-
-import fr.vsct.tock.bot.connector.messenger.model.Recipient
-import fr.vsct.tock.bot.connector.messenger.model.Sender
+package fr.vsct.tock.bot.engine.event
 
 /**
- *
+ * The "subscribe to application" event.
  */
-data class OptinWebhook(override val sender: Sender?,
-                        override val recipient: Recipient,
-                        override val timestamp: Long,
-                        val optin: Optin) : Webhook() {
+class SubscribingEvent(
+        /** usually a temporary id, but can be the real one too */
+        val userId: String,
+        /** an optional payload */
+        val payload: String? = null,
+        /** the application id */
+        applicationId: String
+) : Event(applicationId) {
 }

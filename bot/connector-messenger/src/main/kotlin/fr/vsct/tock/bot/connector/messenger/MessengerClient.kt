@@ -90,7 +90,7 @@ internal class MessengerClient(val secretKey: String) {
     fun getUserProfile(token: String, recipient: Recipient): UserProfile {
         val requestTimerData = requestTimer.start("messenger_user_profile")
         try {
-            return graphApi.getUserProfile(recipient.id, token, "first_name,last_name,profile_pic,locale,timezone,gender")
+            return graphApi.getUserProfile(recipient.id!!, token, "first_name,last_name,profile_pic,locale,timezone,gender")
                     .execute().body()
         } catch(e: Exception) {
             logger.logError(e, requestTimerData)

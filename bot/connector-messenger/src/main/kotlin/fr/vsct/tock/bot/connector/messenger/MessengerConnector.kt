@@ -20,6 +20,8 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
+import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
+import fr.vsct.tock.bot.connector.messenger.model.send.SendResponse
 import fr.vsct.tock.bot.connector.messenger.model.send.SenderAction.mark_seen
 import fr.vsct.tock.bot.connector.messenger.model.send.SenderAction.typing_off
 import fr.vsct.tock.bot.connector.messenger.model.send.SenderAction.typing_on
@@ -46,7 +48,7 @@ import javax.crypto.spec.SecretKeySpec
 /**
  *
  */
-internal class MessengerConnector(
+class MessengerConnector internal constructor(
         applicationId: String,
         val path: String,
         pageId: String,
@@ -105,11 +107,11 @@ internal class MessengerConnector(
                                                 val applicationId = pageApplicationMap.getValue(entry.id)
                                                 entry.messaging!!.forEach { m ->
                                                     try {
-                                                        val action = WebhookActionConverter.toAction(m, applicationId)
-                                                        if (action != null) {
-                                                            controller.handle(action)
+                                                        val event = WebhookActionConverter.toAction(m, applicationId)
+                                                        if (event != null) {
+                                                            controller.handle(event)
                                                         } else {
-                                                            logger.logError("unable to convert $m to action", requestTimerData)
+                                                            logger.logError("unable to convert $m to event", requestTimerData)
                                                         }
                                                     } catch(e: Throwable) {
                                                         try {
@@ -157,26 +159,67 @@ internal class MessengerConnector(
         })
     }
 
-    override fun send(action: Action) {
-        try {
-            val recipient = Recipient(action.recipientId.id)
-            val message = SendActionConverter.toMessageRequest(action)
+    /**
+     * Send an action to messenger.
+     *
+     * @param action the action to send
+     * @param transformAction method to transform the request before sending - default is identity
+     * @param postAction method (with token parameter) launched after successful call - default do nothing
+     */
+    fun sendAction(
+            action: Action,
+            transformAction: (MessageRequest) -> MessageRequest = { it },
+            postAction: (String) -> Unit = {}): SendResponse? {
+        return try {
+            var message = SendActionConverter.toMessageRequest(action)
             if (message != null) {
+                message = transformAction.invoke(message)
                 logger.debug { "message sent: $message to ${action.recipientId}" }
                 val token = getToken(action)
-                client.sendMessage(token, message)
-                if (action.botMetadata.lastAnswer) {
-                    client.sendAction(token, ActionRequest(recipient, typing_off))
-                    client.sendAction(token, ActionRequest(recipient, mark_seen))
-                } else {
-                    client.sendAction(token, ActionRequest(recipient, typing_on))
-                }
+                val response = client.sendMessage(token, message)
+                postAction.invoke(token)
+                response
             } else {
                 logger.error { "unable to convert $action to message" }
+                null
             }
         } catch(e: Throwable) {
             logger.error(e)
+            null
         }
+    }
+
+    /**
+     * Send the first action after an optin request, using the recipient.user_ref property.
+     * See https://developers.facebook.com/docs/messenger-platform/plugin-reference/checkbox-plugin#implementation for more details.
+     *
+     * @param action the action to send
+     * @return the real user id, null if error
+     */
+    fun sendActionAfterOptIn(action: Action): String? {
+        val response = sendAction(
+                action,
+                { request ->
+                    //need to use the user_ref here
+                    request.copy(recipient = Recipient(null, request.recipient.id))
+                })
+        return response?.recipientId
+    }
+
+    override fun send(action: Action) {
+        sendAction(
+                action,
+                postAction =
+                { token ->
+                    val recipient = Recipient(action.recipientId.id)
+                    if (action.botMetadata.lastAnswer) {
+                        client.sendAction(token, ActionRequest(recipient, typing_off))
+                        client.sendAction(token, ActionRequest(recipient, mark_seen))
+                    } else {
+                        client.sendAction(token, ActionRequest(recipient, typing_on))
+                    }
+                }
+        )
     }
 
     override fun startTypingInAnswerTo(action: Action) {
@@ -216,11 +259,11 @@ internal class MessengerConnector(
         return applicationTokenMap.getValue(action.applicationId)
     }
 
-    fun isSignedByFacebook(payload: String, facebookSignature: String): Boolean {
+    private fun isSignedByFacebook(payload: String, facebookSignature: String): Boolean {
         return "sha1=${sha1(payload, client.secretKey)}" == facebookSignature
     }
 
-    fun sha1(payload: String, key: String): String {
+    private fun sha1(payload: String, key: String): String {
         val k = SecretKeySpec(key.toByteArray(), "HmacSHA1")
         val mac = Mac.getInstance("HmacSHA1")
         mac.init(k)

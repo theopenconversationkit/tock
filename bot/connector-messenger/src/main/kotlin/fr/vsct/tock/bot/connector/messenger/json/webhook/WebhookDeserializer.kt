@@ -68,9 +68,18 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
             }
         }
 
-        if (sender == null || recipient == null || timestamp == null) {
-            logger.warn { "invalid webhook $sender $recipient $timestamp" }
+        if (recipient == null || timestamp == null) {
+            logger.warn { "invalid webhook $recipient $timestamp" }
             return null
+        }
+
+        if (sender == null) {
+            return if (optin != null) {
+                OptinWebhook(sender, recipient, timestamp, optin)
+            } else {
+                logger.warn { "invalid webhook - null sender" }
+                return null
+            }
         }
 
         return if (message != null) {

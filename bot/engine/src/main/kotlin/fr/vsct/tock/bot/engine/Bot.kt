@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.engine
 
 import com.github.salomonbrys.kodein.instance
+import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendAttachment
@@ -25,6 +26,7 @@ import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.Story
+import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.nlp.NlpController
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.shared.injector
@@ -138,12 +140,8 @@ class Bot(val botDefinition: BotDefinition) {
         }
     }
 
-    fun errorActionFor(userAction: Action): Action {
+    internal fun errorActionFor(userAction: Action): Action {
         return botDefinition.errorActionFor(userAction)
-    }
-
-    override fun toString(): String {
-        return "$botDefinition"
     }
 
     private fun loadProfileIfNotSet(action: Action, userTimeline: UserTimeline, connector: ConnectorController) {
@@ -154,6 +152,14 @@ class Bot(val botDefinition: BotDefinition) {
                 userPreferences.copy(pref)
             }
         }
+    }
+
+    internal fun handleEvent(connector: Connector, event: Event) {
+        botDefinition.eventListener.listenEvent(this, connector, event)
+    }
+
+    override fun toString(): String {
+        return "$botDefinition"
     }
 
 }

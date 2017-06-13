@@ -38,9 +38,9 @@ data class EntityStateValue(var value: ContextValue?,
     fun changeValue(newValue: ContextValue?, action: Action? = null): EntityStateValue {
         value = newValue
         //do not change history if previous value is exactly the same
-        ArchivedEntityValue(newValue, action)
-                .takeIf { it != history.lastOrNull() }
-                ?.let { history.add(it) }
+        if (history.lastOrNull()?.entityValue?.let { newValue != it } ?: true) {
+            history.add(ArchivedEntityValue(newValue, action))
+        }
 
         return this
     }

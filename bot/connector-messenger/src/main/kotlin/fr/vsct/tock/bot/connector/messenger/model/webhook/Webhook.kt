@@ -30,11 +30,16 @@ import fr.vsct.tock.bot.engine.user.PlayerType
 @JsonDeserialize(using = WebhookDeserializer::class)
 abstract class Webhook : MessengerConnectorMessage() {
 
-    abstract val sender: Sender
+    abstract val sender: Sender?
     abstract val recipient: Recipient
     abstract val timestamp: Long
 
-    fun playerId(playerType: PlayerType): PlayerId = PlayerId(sender.id, playerType)
+    fun playerId(playerType: PlayerType): PlayerId
+            = PlayerId(sender?.id ?: error("null sender field in webhook"), playerType)
 
-    fun recipientId(playerType: PlayerType): PlayerId = PlayerId(recipient.id, playerType)
+    fun recipientId(playerType: PlayerType): PlayerId
+            = PlayerId(
+            recipient.id ?: recipient.userRef ?: error("id or userRef must not be null"),
+            playerType
+    )
 }

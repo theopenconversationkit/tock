@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.engine.action
 
 import fr.vsct.tock.bot.engine.dialog.ActionState
 import fr.vsct.tock.bot.engine.dialog.BotMetadata
+import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.shared.Dice
 import java.time.Instant
@@ -27,14 +28,10 @@ import java.time.Instant
  */
 abstract class Action(val playerId: PlayerId,
                       val recipientId: PlayerId,
-                      val applicationId: String,
-                      val id: String = Dice.newId(),
-                      val date: Instant = Instant.now(),
-                      val state: ActionState = ActionState(),
-                      val botMetadata: BotMetadata = BotMetadata()) {
-
-    fun hasEntity(role: String): Boolean {
-        return state.getEntity(role).isNotEmpty()
-    }
+                      applicationId: String,
+                      id: String = Dice.newId(),
+                      date: Instant = Instant.now(),
+                      state: ActionState = ActionState(),
+                      val botMetadata: BotMetadata = BotMetadata()) : Event(applicationId, id, date, state) {
 
 }

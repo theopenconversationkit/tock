@@ -16,8 +16,13 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.webhook
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 /**
  *
  */
-data class Optin(val ref: String) {
+data class Optin(
+        val ref: String,
+        @JsonProperty("user_ref")
+        val userRef:String? = null) {
 }

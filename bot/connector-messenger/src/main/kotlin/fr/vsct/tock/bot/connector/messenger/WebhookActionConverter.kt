@@ -20,14 +20,16 @@ import fr.vsct.tock.bot.connector.messenger.model.webhook.Attachment
 import fr.vsct.tock.bot.connector.messenger.model.webhook.AttachmentType
 import fr.vsct.tock.bot.connector.messenger.model.webhook.LocationPayload
 import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageWebhook
+import fr.vsct.tock.bot.connector.messenger.model.webhook.OptinWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.PostbackWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.UrlPayload
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Webhook
-import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.bot.engine.event.SubscribingEvent
 import fr.vsct.tock.bot.engine.user.PlayerType
 import mu.KotlinLogging
 
@@ -38,7 +40,7 @@ internal object WebhookActionConverter {
 
     private val logger = KotlinLogging.logger {}
 
-    fun toAction(message: Webhook, applicationId: String): Action? {
+    fun toAction(message: Webhook, applicationId: String): Event? {
         return when (message) {
             is MessageWebhook ->
                 with(message.message) {
@@ -65,7 +67,13 @@ internal object WebhookActionConverter {
                                     intentName,
                                     parameters)
                         }
-
+            is OptinWebhook ->
+                SubscribingEvent(
+                        message.sender?.id ?: message.optin.userRef ?: error("optin webhook must have sender or optin.userRef defined"),
+                        message.optin.ref,
+                        // the recipient id is the page id, ie the tock application id
+                        message.recipient.id!!
+                )
             else -> {
                 logger.error { "unknown message $message" }
                 null
@@ -79,7 +87,8 @@ internal object WebhookActionConverter {
                 applicationId,
                 message.recipientId(PlayerType.bot),
                 message.message.text ?: "",
-                mutableListOf(message)
+                mutableListOf(message),
+                message.getMessageId()
         )
     }
 
@@ -89,7 +98,8 @@ internal object WebhookActionConverter {
                 message.playerId(PlayerType.user),
                 applicationId,
                 message.recipientId(PlayerType.bot),
-                (attachment.payload as LocationPayload).coordinates.toUserLocation()
+                (attachment.payload as LocationPayload).coordinates.toUserLocation(),
+                message.getMessageId()
         )
     }
 
@@ -100,7 +110,8 @@ internal object WebhookActionConverter {
                 applicationId,
                 message.recipientId(PlayerType.bot),
                 (attachment.payload as UrlPayload).url,
-                SendAttachment.AttachmentType.image
+                SendAttachment.AttachmentType.image,
+                message.getMessageId()
         )
     }
 }

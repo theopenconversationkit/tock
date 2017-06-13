@@ -98,6 +98,11 @@ interface BotDefinition : I18nKeyProvider {
     val handleAttachmentStory: StoryDefinition?
 
     /**
+     * To handle custom events. Default implementation does nothing.
+     */
+    val eventListener: EventListener
+
+    /**
      * Called when error occurs. By default send "technical error".
      */
     fun errorAction(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {
