@@ -40,17 +40,17 @@
         </encoder>
     </appender>
 
-    <logger name="org.mongodb.driver" level="INFO">
+    <logger name="org.mongodb.driver" level="INFO" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="io.netty" level="INFO">
+    <logger name="io.netty" level="INFO" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </logger>
 
-    <logger name="okhttp3" level="INFO">
+    <logger name="okhttp3" level="INFO" additivity="false">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="FILE"/>
     </logger>

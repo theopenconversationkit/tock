@@ -22,6 +22,8 @@ import fr.vsct.tock.bot.definition.StoryHandler
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.shared.error
+import mu.KotlinLogging
 
 /**
  *
@@ -31,25 +33,40 @@ data class Story(
         var currentIntent: Intent?,
         val actions: MutableList<Action> = mutableListOf()) {
 
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     val lastAction: Action? get() = actions.lastOrNull()
 
     private fun StoryHandler.sendStartEvent(bus: BotBus) {
         BotRepository.storyHandlerListeners.forEach {
-            it.startAction(bus, this)
+            try {
+                it.startAction(bus, this)
+            } catch(throwable: Throwable) {
+                logger.error(throwable)
+            }
         }
     }
 
     private fun StoryHandler.sendEndEvent(bus: BotBus) {
         BotRepository.storyHandlerListeners.forEach {
-            it.endAction(bus, this)
+            try {
+                it.endAction(bus, this)
+            } catch(throwable: Throwable) {
+                logger.error(throwable)
+            }
         }
     }
 
     fun handle(bus: BotBus) {
         definition.storyHandler.apply {
-            sendStartEvent(bus)
-            handle(bus)
-            sendEndEvent(bus)
+            try {
+                sendStartEvent(bus)
+                handle(bus)
+            } finally {
+                sendEndEvent(bus)
+            }
         }
     }
 
