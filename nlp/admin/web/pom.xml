@@ -84,6 +84,19 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <artifactId>maven-clean-plugin</artifactId>
+        <configuration>
+          <filesets>
+            <fileset>
+              <directory>node_modules</directory>
+            </fileset>
+            <fileset>
+              <directory>dist</directory>
+            </fileset>
+          </filesets>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 

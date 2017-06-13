@@ -57,6 +57,7 @@
         <plugin.dokka>0.9.13</plugin.dokka>
         <plugin.assembly>3.0.0</plugin.assembly>
         <plugin.frontend>1.4</plugin.frontend>
+        <plugin.clean>3.0.0</plugin.clean>
 
         <node>v6.10.2</node>
     </properties>
@@ -369,6 +370,11 @@
                     <groupId>com.github.eirslett</groupId>
                     <artifactId>frontend-maven-plugin</artifactId>
                     <version>${plugin.frontend}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${plugin.clean}</version>
                 </plugin>
             </plugins>
         </pluginManagement>
