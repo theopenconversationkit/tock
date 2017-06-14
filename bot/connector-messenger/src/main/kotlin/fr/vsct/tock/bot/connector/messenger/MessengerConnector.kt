@@ -42,6 +42,7 @@ import org.apache.commons.codec.binary.Hex
 import org.apache.commons.lang3.LocaleUtils
 import java.lang.Exception
 import java.time.ZoneOffset
+import java.util.concurrent.CopyOnWriteArraySet
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
 
@@ -51,7 +52,7 @@ import javax.crypto.spec.SecretKeySpec
 class MessengerConnector internal constructor(
         applicationId: String,
         val path: String,
-        pageId: String,
+        val pageId: String,
         val token: String,
         val verifyToken: String?,
         val client: MessengerClient) : ConnectorBase(MessengerConnectorProvider.connectorType) {
@@ -60,11 +61,17 @@ class MessengerConnector internal constructor(
         private val logger = KotlinLogging.logger {}
         private val pageApplicationMap: MutableMap<String, String> = mutableMapOf()
         private val applicationTokenMap: MutableMap<String, String> = mutableMapOf()
+        private val connectors: MutableSet<MessengerConnector> = CopyOnWriteArraySet<MessengerConnector>()
+
+        fun getConnectorByPageId(pageId: String): MessengerConnector? {
+            return connectors.find { it.pageId == pageId }
+        }
     }
 
     init {
         pageApplicationMap.put(pageId, applicationId)
         applicationTokenMap.put(applicationId, token)
+        connectors.add(this)
     }
 
     override fun register(controller: ConnectorController) {
