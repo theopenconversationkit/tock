@@ -17,6 +17,7 @@
 package fr.vsct.tock.shared.vertx
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.intProperty
@@ -270,7 +271,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
     }
 
     private fun addDevCorsHandler() {
-        if (devEnvironment) {
+        if (devEnvironment && booleanProperty("tock_web_use_default_dev_cors_handler", true)) {
             router.route().handler(corsHandler())
         }
     }
@@ -278,7 +279,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
     protected fun corsHandler(): CorsHandler {
         return CorsHandler.create("*")
                 .allowedMethods(EnumSet.of(GET, POST, DELETE, OPTIONS))
-                .allowedHeaders(setOf("Access-Control-Allow-Origin", "Authorization", "Content-Type"))
+                .allowedHeaders(setOf("X-Requested-With", "Access-Control-Allow-Origin", "Authorization", "Content-Type"))
                 .allowCredentials(true)
     }
 
