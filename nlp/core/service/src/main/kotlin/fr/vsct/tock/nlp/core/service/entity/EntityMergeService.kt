@@ -28,7 +28,7 @@ import mu.KotlinLogging
  */
 internal object EntityMergeService : EntityMerge {
 
-    sealed class Weighted(val weight: Double, val range: IntOpenRange) : Comparable<Weighted> {
+    sealed class Weighted(var weight: Double, val range: IntOpenRange) : Comparable<Weighted> {
         override fun compareTo(other: Weighted): Int {
             return weight.compareTo(other.weight)
         }
@@ -65,19 +65,40 @@ internal object EntityMergeService : EntityMerge {
         return if (entityTypes.isEmpty()) {
             entities
         } else {
-            //introduce weight
-            val all = entities.map { WeightedEntity(it) } + entityTypes.map { WeightedEntityType(it) }
+            //introduce weight and start by the highest value
+            val all = (entities.map { WeightedEntity(it) } + entityTypes.map { WeightedEntityType(it) })
+                    .sortedDescending()
 
             //need to trace those already viewed
             val viewed = mutableSetOf<Weighted>()
 
             all.map { e -> all.filter { e.overlap(it) }.sortedDescending() }
-                    //sorted by the most weighted
+                    //groups are sorted by the highest value of the group
                     .sortedBy { it.first() }
                     .mapNotNull { group ->
                         val stillAvailable = group - viewed
                         viewed.addAll(group)
-                        val first = stillAvailable.firstOrNull()
+                        //if one contains all the others, he has a bonus
+                        if (stillAvailable.size > 1) {
+                            var better = stillAvailable.first()
+                            var min = better.range.start
+                            var max = better.range.end
+                            stillAvailable.forEach {
+                                min = Math.min(min, it.range.start)
+                                max = Math.max(max, it.range.end)
+                                if (min == it.range.start && max == it.range.end) {
+                                    better = it
+                                }
+                            }
+                            if (min == better.range.start && max == better.range.end) {
+                                better.weight += 0.2
+                            }
+                        }
+                        val first = stillAvailable.sortedDescending().firstOrNull()
+                        //need to recheck overlap
+                        if (first != null) {
+                            viewed.addAll(all.filter { first.overlap(it) })
+                        }
                         when (first) {
                             null -> null
                             is WeightedEntity ->
