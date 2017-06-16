@@ -55,9 +55,15 @@ export class SentenceAnalysisComponent implements OnInit {
       let dialogRef = this.dialog.open(CreateIntentDialogComponent);
       dialogRef.afterClosed().subscribe(result => {
         if (result !== "cancel") {
-          this.createIntent(result.name);
-        } else {
+          if (this.createIntent(result.name)) {
+            return;
+          }
+        }
+        //we need to be sure the selected value has changed to avoid side effects
+        if(this.sentence.classification.intentId) {
           this.sentence.classification.intentId = undefined;
+        } else {
+          this.onIntentChange(Intent.unknown);
         }
       });
     } else {
@@ -72,7 +78,12 @@ export class SentenceAnalysisComponent implements OnInit {
   }
 
   onValidate() {
-    this.update(SentenceStatus.validated);
+    const intent = this.sentence.classification.intentId;
+    if(!intent || intent === Intent.unknown) {
+      this.snackBar.open(`Please select an intent first`, "Error", {duration: 3000});
+    } else {
+      this.update(SentenceStatus.validated);
+    }
   }
 
   onArchive() {
@@ -104,14 +115,18 @@ export class SentenceAnalysisComponent implements OnInit {
 
   }
 
-  private createIntent(name) {
+  private createIntent(name): boolean {
     if (this.state.intentExists(name)) {
-      this.snackBar.open(`Intent ${name} already exists`, "Error", {duration: 5000})
+      this.snackBar.open(`Intent ${name} already exists`, "Error", {duration: 5000});
+      return false
     } else {
-      this.nlp.saveIntent(new Intent(name, this.state.user.organization, [], [this.state.currentApplication._id], null)).subscribe(intent => {
-        this.state.currentApplication.intents.push(intent);
-        this.onIntentChange(intent._id);
-      }, _ => this.onIntentChange(Intent.unknown));
+      this.nlp.saveIntent(new Intent(name, this.state.user.organization, [], [this.state.currentApplication._id], null))
+        .subscribe(intent => {
+            this.state.currentApplication.intents.push(intent);
+            this.onIntentChange(intent._id);
+          },
+          _ => this.onIntentChange(Intent.unknown));
+      return true;
     }
   }
 
