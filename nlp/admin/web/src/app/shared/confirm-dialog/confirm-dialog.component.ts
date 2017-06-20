@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {Component} from "@angular/core";
-import {MdDialogRef} from "@angular/material";
+import {Component, Inject} from "@angular/core";
+import {MD_DIALOG_DATA, MdDialogRef} from "@angular/material";
 
 @Component({
   selector: 'tock-confirm-dialog',
@@ -24,7 +24,8 @@ import {MdDialogRef} from "@angular/material";
 })
 export class ConfirmDialogComponent {
 
-  constructor(public dialogRef: MdDialogRef<ConfirmDialogComponent>) {
+  constructor(public dialogRef: MdDialogRef<ConfirmDialogComponent>,
+              @Inject(MD_DIALOG_DATA) public data: any) {
 
   }
 
