@@ -20,12 +20,15 @@ import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.dialog.ActionState
 import fr.vsct.tock.bot.engine.dialog.BotMetadata
+import fr.vsct.tock.bot.engine.message.Message
+import fr.vsct.tock.bot.engine.message.Sentence
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.shared.Dice
 import java.time.Instant
 
 /**
- *
+ * The most important [Action] class.
+ * Could be a simple text, or a complex message using [ConnectorMessage].
  */
 class SendSentence(
         playerId: PlayerId,
@@ -47,9 +50,11 @@ class SendSentence(
         return messages.any { it.connectorType == type }
     }
 
+    override fun toMessage(): Message {
+        return Sentence(text, messages)
+    }
+
     override fun toString(): String {
         return "$text ${if (messages.isNotEmpty()) messages.toString() else ""}"
     }
-
-
 }

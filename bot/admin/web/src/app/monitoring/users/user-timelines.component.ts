@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {MonitoringService} from "../monitoring.service";
 import {UserReport, UserSearchQuery} from "../model/users";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
@@ -25,7 +25,7 @@ import {DialogReport, DialogReportRequest} from "../model/dialogs";
   templateUrl: './user-timelines.component.html',
   styleUrls: ['./user-timelines.component.css']
 })
-export class UserTimelinesComponent implements OnInit {
+export class UserTimelinesComponent implements OnInit, OnDestroy {
 
   filter: UserFilter = new UserFilter();
   users: UserReport[] = [];

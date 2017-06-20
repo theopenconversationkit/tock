@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot
 
+import fr.vsct.tock.bot.connector.rest.addRestConnector
+import fr.vsct.tock.bot.connector.rest.restConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.BotProviderBase
@@ -38,8 +40,26 @@ fun registerBot(botProvider: BotProvider) = BotRepository.registerBotProvider(bo
  * Install the bot(s).
  */
 fun installBots(vararg routerHandlers: (Router) -> Unit) {
+    install(routerHandlers.toList(), false)
+}
+
+/**
+ * Install the bot(s).
+ */
+fun installBotsAndAdminConnectors(vararg routerHandlers: (Router) -> Unit) {
+    install(routerHandlers.toList(), true)
+}
+
+private fun install(routerHandlers: List<(Router) -> Unit>, installRestConnectors: Boolean) {
     BotIoc.setup()
-    BotRepository.installBots(routerHandlers.toList())
+
+    BotRepository.installBots(routerHandlers.toList()) { conf ->
+        if (installRestConnectors && conf.connectorType != restConnectorType) {
+            addRestConnector(conf)
+        } else {
+            null
+        }
+    }
 }
 
 /**

@@ -17,8 +17,10 @@
 package fr.vsct.tock.bot.admin
 
 import fr.vsct.tock.bot.admin.model.DialogReportRequest
+import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.nlp.admin.AdminVerticle
+import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 import mu.KotlinLogging
 
 /**
@@ -40,6 +42,22 @@ class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
         blockingJsonPost("/dialogs/user") { context, query: DialogReportRequest ->
             if (context.organization == query.namespace) {
                 BotAdminService.lastDialog(query.playerId)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/configuration/bots") { context, query: ApplicationScopedQuery ->
+            if (context.organization == query.namespace) {
+                BotAdminService.getRestApplicationConfigurations(query.namespace)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/test/talk") { context, query: BotDialogRequest ->
+            if (context.organization == query.namespace) {
+                BotAdminService.talk(query)
             } else {
                 unauthorized()
             }

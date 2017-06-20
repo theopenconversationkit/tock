@@ -26,5 +26,8 @@ data class BotApplicationConfiguration(
         val botId: String,
         val namespace: String,
         val nlpModel: String,
-        val connectorType: ConnectorType) {
+        val connectorType: ConnectorType,
+        val name: String = applicationId,
+        val baseUrl: String? = null,
+        val _id: String? = null) {
 }

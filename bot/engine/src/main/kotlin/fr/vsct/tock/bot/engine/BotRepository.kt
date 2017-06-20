@@ -19,7 +19,10 @@ package fr.vsct.tock.bot.engine
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import fr.vsct.tock.bot.connector.Connector
+import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.StoryHandlerListener
 import fr.vsct.tock.bot.engine.monitoring.RequestTimer
@@ -67,32 +70,53 @@ object BotRepository {
         nlpListeners.add(listener)
     }
 
-    fun installBots(routerHandlers: List<(Router) -> Unit>) {
+    fun installBots(
+            routerHandlers: List<(Router) -> Unit>,
+            adminRestConnectorInstaller: (BotApplicationConfiguration) -> ConnectorConfiguration? = { null }
+    ) {
         val verticle = BotVerticle()
 
+        fun saveApplicationConfigurationAndRegister(
+                connector: Connector,
+                bot: Bot,
+                configuration: ConnectorConfiguration): BotApplicationConfiguration {
+            return with(bot.botDefinition) {
+                val conf = BotApplicationConfiguration(
+                        configuration.applicationId,
+                        botId,
+                        namespace,
+                        nlpModelName,
+                        configuration.type,
+                        configuration.getName(),
+                        configuration.getBaseUrl())
+                ConnectorController.register(connector, bot, verticle)
+
+                botConfigurationDAO.save(conf)
+            }
+        }
+
+        fun findConnectorProvider(connectorType: ConnectorType): ConnectorProvider {
+            return connectorProviders.first { it.connectorType == connectorType }
+        }
+
         ConnectorConfigurationRepository.getConfigurations().forEach { conf ->
-            connectorProviders.first { it.connectorType == conf.type }
+            findConnectorProvider(conf.type)
                     .apply {
                         connector(conf)
                                 .let { connector ->
                                     botProviders.forEach { botProvider ->
                                         botProvider.bot().let { bot ->
-                                            //register bot configuration
-                                            with(bot.botDefinition) {
-                                                botConfigurationDAO.save(
-                                                        BotApplicationConfiguration(
-                                                                conf.applicationId,
-                                                                botId,
-                                                                namespace,
-                                                                nlpModelName,
-                                                                connector.connectorType)
-                                                )
-                                            }
-
-                                            //register connector
-                                            ConnectorController.register(connector, bot, verticle)
+                                            val appConf = saveApplicationConfigurationAndRegister(connector, bot, conf)
+                                            //init rest built-in configuration if we need it
+                                            adminRestConnectorInstaller.invoke(appConf)
+                                                    ?.apply {
+                                                        saveApplicationConfigurationAndRegister(
+                                                                findConnectorProvider(type).connector(this),
+                                                                bot,
+                                                                this
+                                                        )
+                                                    }
                                         }
-
                                     }
                                 }
                     }

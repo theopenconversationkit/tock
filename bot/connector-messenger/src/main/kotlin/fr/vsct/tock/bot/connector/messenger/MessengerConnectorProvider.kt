@@ -54,13 +54,17 @@ internal object MessengerConnectorProvider : ConnectorProvider {
             applicationSecret: String,
             webhookVerifyToken: String? = null,
             applicationId: String = pageId,
-            path: String = "/messenger"): ConnectorConfiguration {
+            path: String = "/messenger",
+            name: String = applicationId,
+            baseUrl: String? = null): ConnectorConfiguration {
 
 
         return ConnectorConfiguration(
                 applicationId,
                 path,
                 connectorType,
+                name,
+                baseUrl,
                 mapNotNullValues(
                         PAGE_ID to pageId,
                         TOKEN to pageToken,

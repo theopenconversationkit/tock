@@ -20,8 +20,11 @@ import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.UpdateOptions
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import org.bson.types.ObjectId
 import org.litote.kmongo.createIndex
 import org.litote.kmongo.find
+import org.litote.kmongo.findOne
+import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
 import org.litote.kmongo.replaceOne
@@ -37,11 +40,21 @@ object BotApplicationConfigurationMongoDAO : BotApplicationConfigurationDAO {
         col.createIndex("{applicationId:1, botId:1}", IndexOptions().unique(true))
     }
 
-    override fun save(conf: BotApplicationConfiguration) {
-        col.replaceOne("{applicationId:${conf.applicationId.json}, botId:${conf.botId.json}}", conf, UpdateOptions().upsert(true))
+    override fun getConfigurationById(id: String): BotApplicationConfiguration? {
+        return col.findOneById(ObjectId(id))
     }
 
-    override fun findByNamespaceAndNlpModel(namespace: String, nlpModel: String): List<BotApplicationConfiguration> {
+    override fun save(conf: BotApplicationConfiguration): BotApplicationConfiguration {
+        val filter = "{applicationId:${conf.applicationId.json}, botId:${conf.botId.json}}"
+        col.replaceOne(filter, conf, UpdateOptions().upsert(true))
+        return col.findOne(filter)!!
+    }
+
+    override fun getConfigurationsByNamespaceAndNlpModel(namespace: String, nlpModel: String): List<BotApplicationConfiguration> {
         return col.find("{namespace:${namespace.json}, nlpModel:${nlpModel.json}}").toList()
+    }
+
+    override fun getConfigurations(): List<BotApplicationConfiguration> {
+        return col.find().toList()
     }
 }

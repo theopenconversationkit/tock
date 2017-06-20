@@ -48,7 +48,7 @@ object NlpCoreService : NlpCore {
 
     private val logger = KotlinLogging.logger {}
 
-    private val unknownResult = ParsingResult(Intent.Companion.unknownIntent, emptyList(), 1.0, 1.0)
+    private val unknownResult = ParsingResult(Intent.Companion.UNKNOWN_INTENT, emptyList(), 1.0, 1.0)
 
     private val entityCore: EntityCore by injector.instance()
     private val entityMerge: EntityMerge by injector.instance()

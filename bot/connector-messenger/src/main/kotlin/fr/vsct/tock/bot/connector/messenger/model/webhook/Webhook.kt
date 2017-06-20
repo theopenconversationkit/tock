@@ -21,6 +21,7 @@ import fr.vsct.tock.bot.connector.messenger.json.webhook.WebhookDeserializer
 import fr.vsct.tock.bot.connector.messenger.model.MessengerConnectorMessage
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.Sender
+import fr.vsct.tock.bot.engine.message.SentenceElement
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 
@@ -33,6 +34,10 @@ abstract class Webhook : MessengerConnectorMessage() {
     abstract val sender: Sender?
     abstract val recipient: Recipient
     abstract val timestamp: Long
+
+    override fun toSentenceElement(): SentenceElement? {
+        return null
+    }
 
     fun playerId(playerType: PlayerType): PlayerId
             = PlayerId(sender?.id ?: error("null sender field in webhook"), playerType)

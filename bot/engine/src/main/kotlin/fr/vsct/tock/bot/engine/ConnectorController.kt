@@ -89,6 +89,23 @@ class ConnectorController internal constructor(
     }
 
     internal fun send(action: Action, delay: Long = 0) {
+        if (connectorType.asynchronous) {
+            sendAsynchronous(action, delay)
+        } else {
+            sendSynchronous(action, delay)
+        }
+    }
+
+    private fun sendSynchronous(action: Action, delay: Long = 0) {
+        try {
+            logger.debug { "message sent: $action" }
+            connector.send(action)
+        } catch(t: Throwable) {
+            logger.error(t)
+        }
+    }
+
+    private fun sendAsynchronous(action: Action, delay: Long = 0) {
         try {
             if (delay == 0L) {
                 sendAsynchronous(action)
@@ -102,12 +119,6 @@ class ConnectorController internal constructor(
         }
     }
 
-    fun errorMessage(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {
-        val errorAction = bot.botDefinition.errorAction(playerId, applicationId, recipientId)
-        errorAction.botMetadata.lastAnswer = true
-        return errorAction
-    }
-
     private fun sendAsynchronous(action: Action) {
         vertx.executeBlocking<Void>({
             try {
@@ -119,6 +130,12 @@ class ConnectorController internal constructor(
                 it.complete()
             }
         }, false, {})
+    }
+
+    fun errorMessage(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {
+        val errorAction = bot.botDefinition.errorAction(playerId, applicationId, recipientId)
+        errorAction.botMetadata.lastAnswer = true
+        return errorAction
     }
 
     internal fun loadProfile(applicationId: String, playerId: PlayerId): UserPreferences {

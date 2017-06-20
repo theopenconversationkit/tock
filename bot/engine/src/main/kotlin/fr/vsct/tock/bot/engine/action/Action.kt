@@ -19,12 +19,13 @@ package fr.vsct.tock.bot.engine.action
 import fr.vsct.tock.bot.engine.dialog.ActionState
 import fr.vsct.tock.bot.engine.dialog.BotMetadata
 import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.shared.Dice
 import java.time.Instant
 
 /**
- *
+ * A user (or bot) action.
  */
 abstract class Action(val playerId: PlayerId,
                       val recipientId: PlayerId,
@@ -34,4 +35,5 @@ abstract class Action(val playerId: PlayerId,
                       state: ActionState = ActionState(),
                       val botMetadata: BotMetadata = BotMetadata()) : Event(applicationId, id, date, state) {
 
+    abstract fun toMessage(): Message
 }

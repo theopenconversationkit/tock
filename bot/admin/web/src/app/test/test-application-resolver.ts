@@ -14,12 +14,18 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.action
+import {Injectable} from "@angular/core";
+import {ApplicationResolver} from "tock-nlp-admin/src/app/nlp-tabs/application.resolver";
+import {ApplicationService}  from "tock-nlp-admin/src/app/core/applications.service"
+import {Router} from "@angular/router";
 
-/**
- *
- */
-enum class ActionType {
+@Injectable()
+export class TestApplicationResolver extends ApplicationResolver {
 
-    sentence, choice, attachment, location
+  target:string = '/test';
+
+  constructor(private app: ApplicationService, private r: Router) {
+    super(app, r)
+  }
+
 }

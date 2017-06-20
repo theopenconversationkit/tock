@@ -89,7 +89,7 @@ object Translator {
         return formatMessage(key, label, locale, userInterfaceType)
     }
 
-    private fun formatMessage(key: I18nLabelKey, label: String, locale: Locale, userInterfaceType: UserInterfaceType): String {
+    internal fun formatMessage(key: I18nLabelKey, label: String, locale: Locale, userInterfaceType: UserInterfaceType): String {
         if (key.args.isEmpty()) {
             return label
         }
@@ -163,9 +163,9 @@ object Translator {
     }
 
     fun completeAllLabels(i18n: List<I18nLabel>) {
-        val newI18n = i18n.map { i18n ->
-            val defaultValue = i18n.findLabel(defaultLocale, defaultInterface)
-            val newLabels = i18n.i18n.map {
+        val newI18n = i18n.map { i ->
+            val defaultValue = i.findLabel(defaultLocale, defaultInterface)
+            val newLabels = i.i18n.map {
                 if (defaultValue == null || it.validated || !it.label.isNullOrBlank() || (it.locale == defaultLocale && it.interfaceType == defaultInterface)) {
                     it
                 } else {
@@ -175,7 +175,7 @@ object Translator {
                         if (it.interfaceType == defaultInterface) {
                             it.copy(label = translate(defaultValue.label, defaultLocale, it.locale))
                         } else {
-                            val defaultInterfaceValue = i18n.findLabel(defaultLocale, it.interfaceType)
+                            val defaultInterfaceValue = i.findLabel(defaultLocale, it.interfaceType)
                             if (defaultInterfaceValue?.label.isNullOrBlank()) {
                                 it.copy(label = translate(defaultValue.label, defaultLocale, it.locale))
                             } else {
@@ -185,7 +185,7 @@ object Translator {
                     }
                 }
             }
-            i18n.copy(i18n = newLabels)
+            i.copy(i18n = newLabels)
         }
         i18nDAO.save(newI18n)
     }

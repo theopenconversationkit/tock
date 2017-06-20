@@ -15,6 +15,7 @@
  */
 import {ApplicationScopedQuery} from "tock-nlp-admin/src/app/model/commons";
 import {PlayerId, PlayerType} from "./users";
+import {AttachmentType, EventType} from "../../shared/configuration";
 
 export class DialogReportRequest extends ApplicationScopedQuery {
 
@@ -46,7 +47,7 @@ export class ActionReport {
 
   constructor(public playerId: PlayerId,
               public date: Date,
-              public actionType: ActionType,
+              public type: EventType,
               public text?: string,
               public connectorMessages?: any,
               public intent?: string,
@@ -61,14 +62,14 @@ export class ActionReport {
   }
 
   actionDisplay(): string {
-    switch (this.actionType) {
-      case ActionType.sentence:
+    switch (this.type) {
+      case EventType.sentence:
         return this.text ? this.text : JSON.stringify(this.connectorMessages);
-      case ActionType.choice:
-        return "(click) "+ this.intent + (JSON.stringify(this.parameters) === "{}" ? "" : "(" + JSON.stringify(this.parameters) + ")");
-      case ActionType.attachment:
+      case EventType.choice:
+        return "(click) " + this.intent + (JSON.stringify(this.parameters) === "{}" ? "" : "(" + JSON.stringify(this.parameters) + ")");
+      case EventType.attachment:
         return "Send: " + this.url;
-      case ActionType.location:
+      case EventType.location:
         return JSON.stringify(this.userLocation);
     }
   }
@@ -78,7 +79,7 @@ export class ActionReport {
 
     const result = Object.assign(value, json, {
       playerId: PlayerId.fromJSON(json.playerId),
-      actionType: ActionType[json.actionType],
+      type: EventType[json.type],
       attachmentType: AttachmentType[json.attachmentType]
     });
 
@@ -90,11 +91,4 @@ export class ActionReport {
   }
 }
 
-export enum ActionType {
-  sentence, choice, attachment, location
-}
-
-export enum  AttachmentType {
-  image, audio, video, file
-}
 

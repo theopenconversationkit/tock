@@ -19,7 +19,7 @@ package fr.vsct.tock.nlp.front.service
 import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityValue
-import fr.vsct.tock.nlp.core.Intent.Companion.unknownIntent
+import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
 import fr.vsct.tock.nlp.front.service.FrontRepository.config
 import fr.vsct.tock.nlp.front.service.FrontRepository.core
 import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
@@ -83,7 +83,7 @@ object ParserService : Parser {
             val q = formatQuery(queries.first())
             if (q.isEmpty()) {
                 logger.warn { "empty query after format - $query" }
-                return ParseResult(unknownIntent, emptyList(), 0.0, 0.0, q)
+                return ParseResult(UNKNOWN_INTENT, emptyList(), 0.0, 0.0, q)
             }
 
             val validatedSentence = config

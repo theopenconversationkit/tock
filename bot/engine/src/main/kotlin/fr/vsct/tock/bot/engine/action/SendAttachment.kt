@@ -18,12 +18,14 @@ package fr.vsct.tock.bot.engine.action
 
 import fr.vsct.tock.bot.engine.dialog.ActionState
 import fr.vsct.tock.bot.engine.dialog.BotMetadata
+import fr.vsct.tock.bot.engine.message.Attachment
+import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.shared.Dice
 import java.time.Instant
 
 /**
- *
+ * A simple attachment file sent.
  */
 class SendAttachment(playerId: PlayerId,
                      applicationId: String,
@@ -37,5 +39,9 @@ class SendAttachment(playerId: PlayerId,
 
     enum class AttachmentType {
         image, audio, video, file
+    }
+
+    override fun toMessage(): Message {
+        return Attachment(url, type)
     }
 }

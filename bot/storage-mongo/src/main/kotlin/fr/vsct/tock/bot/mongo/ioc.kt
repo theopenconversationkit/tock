@@ -28,7 +28,7 @@ import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.shared.getDatabase
 import fr.vsct.tock.translator.I18nDAO
 
-internal val MONGO_DATABASE: String = "tock_bot_mongo_db"
+internal const val MONGO_DATABASE: String = "tock_bot_mongo_db"
 
 val botMongoModule = Kodein.Module {
     bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }

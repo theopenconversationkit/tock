@@ -17,6 +17,10 @@ const routes: Routes = [
     loadChildren: 'app/admin/admin.module#BotAdminModule'
   },
   {
+    path: 'test',
+    loadChildren: 'app/test/test.module#BotTestModule'
+  },
+  {
     path: 'monitoring',
     loadChildren: 'app/monitoring/monitoring.module#BotMonitoringModule'
   }

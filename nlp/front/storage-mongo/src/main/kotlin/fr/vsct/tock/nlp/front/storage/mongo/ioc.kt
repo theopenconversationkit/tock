@@ -27,7 +27,7 @@ import fr.vsct.tock.nlp.front.service.storage.IntentDefinitionDAO
 import fr.vsct.tock.nlp.front.service.storage.ModelBuildTriggerDAO
 import fr.vsct.tock.shared.getDatabase
 
-internal val MONGO_DATABASE: String = "tock_front_mongo_db"
+internal const val MONGO_DATABASE: String = "tock_front_mongo_db"
 
 val frontMongoModule = Kodein.Module {
     bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }

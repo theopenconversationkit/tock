@@ -37,6 +37,10 @@
             <groupId>fr.vsct.tock</groupId>
             <artifactId>bot-toolkit</artifactId>
         </dependency>
+        <dependency>
+            <groupId>fr.vsct.tock</groupId>
+            <artifactId>tock-bot-connector-rest-client</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

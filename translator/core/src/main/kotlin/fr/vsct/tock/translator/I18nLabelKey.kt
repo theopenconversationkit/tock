@@ -22,5 +22,15 @@ package fr.vsct.tock.translator
 class I18nLabelKey(val key: String,
                    val category: String,
                    val defaultLabel: String,
-                   vararg val args: Any?) {
+                   val args: List<Any?> = emptyList()) {
+
+    constructor(key: String,
+                category: String,
+                defaultLabel: String,
+                vararg args: Any?) : this(key, category, defaultLabel, args.toList())
+
+    constructor(key: String,
+                category: String,
+                defaultLabel: String,
+                arg: Any?) : this(key, category, defaultLabel, listOf(arg))
 }

@@ -16,9 +16,35 @@
 
 package fr.vsct.tock.bot.connector
 
+import fr.vsct.tock.shared.mapNotNullValues
+
 data class ConnectorConfiguration(
         val applicationId: String,
         val path: String,
         val type: ConnectorType,
         val parameters: Map<String, String>) {
+
+    constructor(applicationId: String,
+                path: String,
+                type: ConnectorType,
+                applicationName: String,
+                baseUrl: String?,
+                parameters: Map<String, String> = emptyMap())
+            : this(
+            applicationId,
+            path,
+            type,
+            parameters + mapNotNullValues(
+                    APPLICATION_NAME to applicationName,
+                    BASE_URL to baseUrl
+            ))
+
+    companion object {
+        private const val APPLICATION_NAME: String = "_name"
+        private const val BASE_URL: String = "_base_url"
+    }
+
+    fun getName(): String = parameters.getOrDefault(APPLICATION_NAME, applicationId)
+
+    fun getBaseUrl(): String = parameters.getOrDefault(BASE_URL, "http://localhost")
 }

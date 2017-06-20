@@ -64,7 +64,7 @@ class NlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "http
                                 .build()
                 )
                 .build()
-        nlpService = retrofit.create<NlpService>(NlpService::class.java)
+        nlpService = retrofit.create(NlpService::class.java)
     }
 
     private fun longProperty(name: String, defaultValue: Long): Long = System.getenv(name)?.toLong() ?: defaultValue

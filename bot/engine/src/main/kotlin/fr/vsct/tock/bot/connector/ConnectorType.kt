@@ -22,7 +22,15 @@ import fr.vsct.tock.translator.UserInterfaceType
  *
  */
 data class ConnectorType(val id: String,
-                         val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat) {
+                         val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
+                         val asynchronous: Boolean = true) {
+
+    companion object {
+        /**
+         * Not a specific connector type.
+         */
+        val none: ConnectorType = ConnectorType("NONE")
+    }
 
     override fun toString(): String {
         return id

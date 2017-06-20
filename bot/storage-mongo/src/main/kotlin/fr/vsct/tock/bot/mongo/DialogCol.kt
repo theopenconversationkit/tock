@@ -26,7 +26,6 @@ import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.action.ActionType
 import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
@@ -39,6 +38,7 @@ import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.State
 import fr.vsct.tock.bot.engine.dialog.Story
+import fr.vsct.tock.bot.engine.event.EventType
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
@@ -94,7 +94,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                                     ActionReport(
                                             it.playerId,
                                             it.date,
-                                            ActionType.sentence,
+                                            EventType.sentence,
                                             it.text,
                                             it.messages
                                     )
@@ -102,7 +102,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                                     ActionReport(
                                             it.playerId,
                                             it.date,
-                                            ActionType.choice,
+                                            EventType.choice,
                                             intent = it.intentName,
                                             parameters = it.parameters
                                     )
@@ -110,7 +110,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                                     ActionReport(
                                             it.playerId,
                                             it.date,
-                                            ActionType.attachment,
+                                            EventType.attachment,
                                             url = it.url,
                                             attachmentType = it.type
                                     )
@@ -118,7 +118,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                                     ActionReport(
                                             it.playerId,
                                             it.date,
-                                            ActionType.location,
+                                            EventType.location,
                                             userLocation = it.location
                                     )
                                 else -> null

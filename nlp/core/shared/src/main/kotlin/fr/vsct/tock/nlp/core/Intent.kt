@@ -27,7 +27,7 @@ data class Intent(val name: String,
                   val entitiesRegexp: Map<Locale, List<EntitiesRegexp>> = emptyMap()) {
 
     companion object {
-        val unknownIntent: String = "$TOCK_NAMESPACE:unknown"
+        const val UNKNOWN_INTENT: String = "$TOCK_NAMESPACE:unknown"
     }
 
     fun getEntity(role: String): Entity = entities.firstOrNull { it.role == role } ?: error("Unknown entity $role")

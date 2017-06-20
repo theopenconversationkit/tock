@@ -44,11 +44,28 @@ fun addMessengerConnector(
          */
         applicationId: String = pageId,
         /**
-         * The http listening base path.
+         * The relative connector path.
          */
-        path: String = "/messenger") {
+        path: String = "/messenger",
+        /**
+         * The name of the application.
+         */
+        name: String = applicationId,
+        /**
+         * The base url for the connector path.
+         */
+        baseUrl: String? = null
+) {
 
     ConnectorConfigurationRepository.addConfiguration(
-            MessengerConnectorProvider.newConfiguration(pageId, pageToken, applicationSecret, webhookVerifyToken, applicationId, path))
+            MessengerConnectorProvider.newConfiguration(
+                    pageId,
+                    pageToken,
+                    applicationSecret,
+                    webhookVerifyToken,
+                    applicationId,
+                    path,
+                    name,
+                    baseUrl))
     BotRepository.registerConnectorProvider(MessengerConnectorProvider)
 }

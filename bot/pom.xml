@@ -31,6 +31,9 @@
 
     <modules>
         <module>engine</module>
+        <module>engine-jackson</module>
+        <module>connector-rest</module>
+        <module>connector-rest-client</module>
         <module>connector-messenger</module>
         <module>storage-mongo</module>
 
@@ -48,7 +51,22 @@
             </dependency>
             <dependency>
                 <groupId>fr.vsct.tock</groupId>
+                <artifactId>tock-bot-engine-jackson</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
                 <artifactId>tock-bot-connector-messenger</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
+                <artifactId>tock-bot-connector-rest</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
+                <artifactId>tock-bot-connector-rest-client</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

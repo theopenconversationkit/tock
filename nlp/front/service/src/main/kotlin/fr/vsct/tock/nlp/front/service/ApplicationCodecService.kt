@@ -105,7 +105,7 @@ object ApplicationCodecService : ApplicationCodec {
             ))
 
             //add unknown intent to intent map
-            intentsIdsMap += (Intent.unknownIntent to Intent.unknownIntent)
+            intentsIdsMap += (Intent.UNKNOWN_INTENT to Intent.UNKNOWN_INTENT)
 
             dump.sentences.forEach { s ->
                 if (config.search(SentencesQuery(appId, s.language, search = s.text, onlyExactMatch = true)).total == 0L) {

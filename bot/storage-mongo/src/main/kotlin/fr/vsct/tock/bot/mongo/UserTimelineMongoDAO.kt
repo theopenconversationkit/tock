@@ -134,7 +134,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         with(query) {
             val applicationsIds =
                     botConfiguration
-                            .findByNamespaceAndNlpModel(query.namespace, query.nlpModel)
+                            .getConfigurationsByNamespaceAndNlpModel(query.namespace, query.nlpModel)
                             .map { it.applicationId }
                             .distinct()
             val filter =

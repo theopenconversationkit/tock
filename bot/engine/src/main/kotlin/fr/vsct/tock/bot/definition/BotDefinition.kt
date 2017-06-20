@@ -136,8 +136,8 @@ interface BotDefinition : I18nKeyProvider {
 
     fun isEnabledIntent(intent: Intent?): Boolean = intent != null && botEnabledStory?.isStarterIntent(intent) ?: false
 
-    override fun i18nKeyFromLabel(defaultLabel: String, vararg args: Any?): I18nLabelKey {
+    override fun i18nKeyFromLabel(defaultLabel: String, args: List<Any?>): I18nLabelKey {
         val prefix = javaClass.kotlin.simpleName?.replace("Definition", "") ?: ""
-        return i18nKey("${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}", prefix, defaultLabel, *args)
+        return i18nKey("${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}", prefix, defaultLabel, args)
     }
 }

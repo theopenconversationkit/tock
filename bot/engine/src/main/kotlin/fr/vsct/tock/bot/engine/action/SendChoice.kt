@@ -20,6 +20,8 @@ import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.dialog.ActionState
 import fr.vsct.tock.bot.engine.dialog.BotMetadata
+import fr.vsct.tock.bot.engine.message.Choice
+import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.shared.Dice
 import java.net.URLDecoder.decode
@@ -28,7 +30,7 @@ import java.nio.charset.StandardCharsets.UTF_8
 import java.time.Instant
 
 /**
- *
+ * A user choice (click on a button or direct action).
  */
 class SendChoice(playerId: PlayerId,
                  applicationId: String,
@@ -71,5 +73,9 @@ class SendChoice(playerId: PlayerId,
             }
         }
 
+    }
+
+    override fun toMessage(): Message {
+        return Choice(intentName, parameters)
     }
 }

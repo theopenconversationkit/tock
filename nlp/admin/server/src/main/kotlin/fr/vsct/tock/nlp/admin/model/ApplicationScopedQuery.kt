@@ -21,7 +21,7 @@ import java.util.Locale
 /**
  *
  */
-abstract class ApplicationScopedQuery(val namespace: String ="",
+open class ApplicationScopedQuery(val namespace: String ="",
                                       val applicationName: String = "",
                                       val language: Locale =  Locale.ENGLISH) {
 }

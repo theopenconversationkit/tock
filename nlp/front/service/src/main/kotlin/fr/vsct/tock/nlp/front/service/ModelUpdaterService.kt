@@ -77,7 +77,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
     private fun toIntent(intentId: String): Intent {
         return config.getIntentById(intentId)?.let {
             toIntent(it)
-        } ?: Intent(Intent.Companion.unknownIntent, emptyList())
+        } ?: Intent(Intent.Companion.UNKNOWN_INTENT, emptyList())
     }
 
     private fun toIntent(intent: IntentDefinition): Intent {

@@ -18,13 +18,15 @@ package fr.vsct.tock.bot.engine.action
 
 import fr.vsct.tock.bot.engine.dialog.ActionState
 import fr.vsct.tock.bot.engine.dialog.BotMetadata
+import fr.vsct.tock.bot.engine.message.Location
+import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.shared.Dice
 import java.time.Instant
 
 /**
- *
+ * A user location transmission.
  */
 class SendLocation(playerId: PlayerId,
                    applicationId: String,
@@ -35,4 +37,7 @@ class SendLocation(playerId: PlayerId,
                    state: ActionState = ActionState(),
                    botMetadata: BotMetadata = BotMetadata()) : Action(playerId, recipientId, applicationId, id, date, state, botMetadata) {
 
+    override fun toMessage(): Message {
+        return Location(location)
+    }
 }

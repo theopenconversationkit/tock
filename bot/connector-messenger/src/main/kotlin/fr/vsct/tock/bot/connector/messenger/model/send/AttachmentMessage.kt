@@ -16,9 +16,15 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
+import fr.vsct.tock.bot.engine.message.SentenceElement
+
 /**
  *
  */
 data class AttachmentMessage(val attachment: Attachment) : Message() {
 
+    override fun toSentenceElement(): SentenceElement? {
+        //TODO
+        return null
+    }
 }

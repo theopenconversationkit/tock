@@ -35,7 +35,7 @@ import org.litote.kmongo.replaceOne
  */
 internal object MongoCache : Cache {
 
-    private val MONGO_DATABASE: String = "tock_cache_mongo_db"
+    private const val MONGO_DATABASE: String = "tock_cache_mongo_db"
 
     private val col: MongoCollection<MongoCacheData> by lazy {
         val database: MongoDatabase = getDatabase(MONGO_DATABASE)

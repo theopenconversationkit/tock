@@ -278,7 +278,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
 
     protected fun corsHandler(): CorsHandler {
         return CorsHandler.create("*")
-                .allowedMethods(EnumSet.of(GET, POST, DELETE, OPTIONS))
+                .allowedMethods(EnumSet.of(GET, POST, DELETE))
                 .allowedHeaders(setOf("X-Requested-With", "Access-Control-Allow-Origin", "Authorization", "Content-Type"))
                 .allowCredentials(true)
     }

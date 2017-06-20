@@ -17,15 +17,26 @@
 package fr.vsct.tock.bot.admin
 
 import com.github.salomonbrys.kodein.instance
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
+import fr.vsct.tock.bot.admin.model.BotDialogRequest
+import fr.vsct.tock.bot.admin.model.BotDialogResponse
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.user.UserReportDAO
 import fr.vsct.tock.bot.admin.user.UserReportQueryResult
+import fr.vsct.tock.bot.connector.rest.client.ConnectorRestClient
+import fr.vsct.tock.bot.connector.rest.client.model.ClientMessageRequest
+import fr.vsct.tock.bot.connector.rest.client.model.ClientSentence
+import fr.vsct.tock.bot.connector.rest.restConnectorType
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.nlp.front.client.FrontClient
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.vertx.UnauthorizedException
 import mu.KotlinLogging
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  *
@@ -37,12 +48,48 @@ object BotAdminService {
     val front = FrontClient
     val userReportDAO: UserReportDAO  by injector.instance()
     val dialogReportDAO: DialogReportDAO  by injector.instance()
+    val applicationConfigurationDAO: BotApplicationConfigurationDAO  by injector.instance()
+
+    val restConnectorClientCache: MutableMap<String, ConnectorRestClient> = ConcurrentHashMap()
 
     fun searchUsers(query: UserSearchQuery): UserReportQueryResult {
         return userReportDAO.search(query.toSearchQuery(query.namespace, query.applicationName))
     }
 
-    fun lastDialog(playerId:PlayerId): DialogReport {
+    fun lastDialog(playerId: PlayerId): DialogReport {
         return dialogReportDAO.lastDialog(playerId)
+    }
+
+    fun getRestApplicationConfigurations(namespace: String): List<BotApplicationConfiguration> {
+        return applicationConfigurationDAO
+                .getConfigurations()
+                .filter { it.namespace == namespace && it.connectorType == restConnectorType }
+    }
+
+    fun talk(request: BotDialogRequest): BotDialogResponse {
+        val conf = applicationConfigurationDAO.getConfigurationById(request.botApplicationConfigurationId)
+        if (conf?.namespace != request.namespace) {
+            throw UnauthorizedException()
+        }
+        return try {
+            val baseUrl = conf.baseUrl ?: "http://localhost"
+            val restClient = restConnectorClientCache.getOrPut(baseUrl) {
+                ConnectorRestClient(baseUrl)
+            }
+            val response = restClient.talk(conf.applicationId,
+                    ClientMessageRequest(
+                            "test_user",
+                            "test_bot",
+                            ClientSentence(request.text)))
+
+            if (response.isSuccessful) {
+                BotDialogResponse(response.body().messages)
+            } else {
+                BotDialogResponse(listOf(ClientSentence("technical error :(")))
+            }
+        } catch(throwable: Throwable) {
+            logger.error(throwable)
+            BotDialogResponse(listOf(ClientSentence("technical error :(")))
+        }
     }
 }

@@ -18,7 +18,7 @@ package fr.vsct.tock.nlp.front.service
 
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.Intent
-import fr.vsct.tock.nlp.core.Intent.Companion.unknownIntent
+import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.front.service.FrontRepository.toEntityType
 import fr.vsct.tock.nlp.front.service.storage.ApplicationDefinitionDAO
@@ -61,7 +61,7 @@ object ApplicationConfigurationService :
             application: ApplicationDefinition,
             intentId: String): Boolean {
         val intent = intentDAO.getIntentById(intentId)!!
-        sentenceDAO.switchSentencesIntent(application._id!!, intentId, Intent.unknownIntent)
+        sentenceDAO.switchSentencesIntent(application._id!!, intentId, Intent.UNKNOWN_INTENT)
         applicationDAO.save(application.copy(intents = application.intents - intentId))
         val newIntent = intent.copy(applications = intent.applications - application._id!!)
         return if (newIntent.applications.isEmpty()) {
@@ -96,7 +96,7 @@ object ApplicationConfigurationService :
     }
 
     override fun getIntentIdByQualifiedName(name: String): String? {
-        return if (name == unknownIntent) unknownIntent
+        return if (name == UNKNOWN_INTENT) UNKNOWN_INTENT
         else name.namespaceAndName().run { intentDAO.getIntentByNamespaceAndName(first, second)?._id }
     }
 

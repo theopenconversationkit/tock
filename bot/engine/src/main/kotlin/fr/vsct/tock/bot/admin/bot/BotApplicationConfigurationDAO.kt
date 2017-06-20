@@ -21,7 +21,11 @@ package fr.vsct.tock.bot.admin.bot
  */
 interface BotApplicationConfigurationDAO {
 
-    fun save(conf: BotApplicationConfiguration)
+    fun save(conf: BotApplicationConfiguration) : BotApplicationConfiguration
 
-    fun findByNamespaceAndNlpModel(namespace: String, nlpModel: String): List<BotApplicationConfiguration>
+    fun getConfigurationsByNamespaceAndNlpModel(namespace: String, nlpModel: String): List<BotApplicationConfiguration>
+
+    fun getConfigurations(): List<BotApplicationConfiguration>
+
+    fun getConfigurationById(id:String) : BotApplicationConfiguration?
 }

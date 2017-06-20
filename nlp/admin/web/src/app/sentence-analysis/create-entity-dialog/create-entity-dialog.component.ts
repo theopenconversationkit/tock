@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-import {MdDialogRef} from "@angular/material";
+import {Component, OnInit, Inject} from "@angular/core";
+import {MdDialogRef, MD_DIALOG_DATA} from "@angular/material";
 import {StateService} from "../../core/state.service";
 import {Intent} from "../../model/application";
 import {entityNameFromQualifiedName, EntityType, qualifiedNameWithoutRole} from "../../model/nlp";
@@ -34,13 +34,14 @@ export class CreateEntityDialogComponent implements OnInit {
 
   error: string;
 
-  constructor(public dialogRef: MdDialogRef<CreateEntityDialogComponent>,
-    public state: StateService) {
-
+  constructor(
+    public dialogRef: MdDialogRef<CreateEntityDialogComponent>,
+    public state: StateService,
+    @Inject(MD_DIALOG_DATA) private data: any) {
+    this.intent = data.intent;
   }
 
   ngOnInit() {
-    this.intent = this.dialogRef._containerInstance.dialogConfig.data.intent;
   }
 
   onSelect(entityType: EntityType) {

@@ -16,10 +16,21 @@
 
 package fr.vsct.tock.bot.connector
 
+import fr.vsct.tock.bot.engine.message.SentenceElement
+
 /**
- *
+ * Connector specific message format.
  */
 interface ConnectorMessage {
 
+    /**
+     * The connector type.
+     */
     val connectorType: ConnectorType
+
+    /**
+     * Transform into a generic [SentenceElement].
+     * @return the generic transformElement, null if unsupported
+     */
+    fun toSentenceElement(): SentenceElement?
 }
