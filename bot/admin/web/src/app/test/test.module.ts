@@ -24,6 +24,7 @@ import {BotDialogComponent} from "./dialog/bot-dialog.component";
 import {CommonModule} from "@angular/common";
 import {TestService} from "./test-service";
 import {BotMessageComponent} from "../shared/bot-message/bot-message.component";
+import {SentenceElementComponent} from "../shared/bot-message/sentence-element.component";
 
 const routes: Routes = [
   {
@@ -61,7 +62,8 @@ export class BotTestRoutingModule {
   declarations: [
     TestTabsComponent,
     BotDialogComponent,
-    BotMessageComponent
+    BotMessageComponent,
+    SentenceElementComponent
   ],
   exports: [],
   providers: [
