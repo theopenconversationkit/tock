@@ -16,6 +16,7 @@
 
 import {PaginatedQuery} from "tock-nlp-admin/src/app/model/commons";
 import {DialogReport} from "./dialogs";
+import {BotApplicationConfiguration} from "../../shared/configuration";
 
 export class UserSearchQuery extends PaginatedQuery {
 
@@ -54,7 +55,7 @@ export class UserReport {
 
   displayDialogs:boolean = false;
   userDialog: DialogReport;
-  applicationName:string;
+  botConfiguration:BotApplicationConfiguration;
 
   constructor(public playerId: PlayerId,
               public userPreferences: UserPreferences,

@@ -40,7 +40,7 @@
                src="{{user.userPreferences.picture ? user.userPreferences.picture : '/assets/images/people.png'}}"
                alt="{{user.userPreferences.firstName}} {{user.userPreferences.lastName}}">
           <md-card-title> {{user.userPreferences.firstName}} {{user.userPreferences.lastName}}
-            <span *ngIf="user.applicationName">[{{user.applicationName}}]</span> ({{user.userPreferences.locale}})
+            <span *ngIf="user.botConfiguration">[{{user.botConfiguration.name}} - {{user.botConfiguration.connectorType.id}}]</span> ({{user.userPreferences.locale}})
           </md-card-title>
           <md-card-subtitle>
             <span class="lastUpdateDate"> created the {{user.userState.creationDate | amDateFormat: 'YYYY-MM-DD'}} - updated {{user.lastUpdateDate | amTimeAgo}} </span>

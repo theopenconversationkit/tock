@@ -94,9 +94,9 @@ export class UserTimelinesComponent implements OnInit, OnDestroy {
           //set application name
           r.users.forEach(u => {
             if (u.applicationIds) {
-              const c = this.configurations.find(c => c.name && u.applicationIds.indexOf(c.applicationId) !== -1)
+              const c = this.configurations.find(c => u.applicationIds.indexOf(c.applicationId) !== -1)
               if (c) {
-                u.applicationName = c.name;
+                u.botConfiguration = c;
               }
             }
           });
