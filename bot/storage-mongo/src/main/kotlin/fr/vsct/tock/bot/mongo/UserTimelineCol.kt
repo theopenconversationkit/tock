@@ -81,6 +81,7 @@ internal class UserTimelineCol(
     fun toUserReport(): UserReport {
         return UserReport(
                 playerId,
+                applicationIds,
                 userPreferences,
                 userState.toUserState(),
                 lastUpdateDate,

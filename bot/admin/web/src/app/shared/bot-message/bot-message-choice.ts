@@ -21,11 +21,21 @@ import {Choice} from "../dialog-data";
   template: `
     <span *ngIf="user" mdTooltip="{{parameters()}}">[Choice] {{choice.intentName}}</span>
     <span *ngIf="!user" mdTooltip="{{parameters()}}">
-      <span *ngIf="title()">
-        <button  md-button color="primary">{{title()}}</button> 
+      <span *ngIf="url()">
+        <span *ngIf="title()">
+        <button (click)="redirect()" md-button color="warn">{{title()}}</button> 
       </span>
       <span *ngIf="!title()">
-        <button  md-button color="primary">{{choice.intentName}}</button>
+        <button (click)="redirect()" md-button color="warn">{{choice.intentName}}</button>
+      </span>
+      </span>
+      <span *ngIf="!url()">
+      <span *ngIf="title()">
+        <button md-button color="primary">{{title()}}</button> 
+      </span>
+      <span *ngIf="!title()">
+        <button md-button color="primary">{{choice.intentName}}</button>
+      </span>
       </span>
     </span>
   `
@@ -38,8 +48,16 @@ export class BotMessageChoiceComponent {
   @Input()
   user: boolean = false;
 
-  title() : String {
+  title(): String {
     return this.choice.parameters.get("_title");
+  }
+
+  url(): String {
+    return this.choice.parameters.get("_url");
+  }
+
+  redirect() {
+    window.open(this.url() as string, "_blank");
   }
 
   parameters(): string {
@@ -47,12 +65,16 @@ export class BotMessageChoiceComponent {
       return "";
     }
     let r = "";
-    if(this.title()) {
-      r += ("intent: " + this.choice.intentName)
+    const separator = " & ";
+    if (this.title() && !this.url()) {
+      r += ("intent = " + this.choice.intentName + separator)
     }
     this.choice.parameters.forEach((v, k) => {
-      if(k !== "_title") r += (k + ": " + v)
+      if (k !== "_title") r += (k + " = " + v + separator)
     });
-    return r;
+    if (r.endsWith(separator)) {
+      r = r.substring(0, r.length - separator.length);
+    }
+    return r.trim();
   }
 }

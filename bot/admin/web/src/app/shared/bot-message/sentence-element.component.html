@@ -41,9 +41,9 @@
               ({{entry.value}}) <span class="text-category">({{entry.key}})</span>
             </td>
           </tr>
-          <tr *ngIf="element.choices.length !== 0">
+          <tr *ngIf="e.choices.length !== 0">
             <td>
-              <tock-bot-message-choice *ngFor="let c of element.choices" [choice]="c" [user]="user"></tock-bot-message-choice>
+              <tock-bot-message-choice *ngFor="let c of e.choices" [choice]="c" [user]="user"></tock-bot-message-choice>
             </td>
           </tr>
         </table>

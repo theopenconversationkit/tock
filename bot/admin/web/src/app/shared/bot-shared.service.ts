@@ -18,10 +18,11 @@ import {Injectable, OnDestroy} from "@angular/core";
 import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {Observable} from "rxjs/Observable";
-import {BotDialogRequest, BotDialogResponse} from "./model/test";
+import {ApplicationScopedQuery} from "tock-nlp-admin/src/app/model/commons";
+import {BotApplicationConfiguration} from "./configuration";
 
 @Injectable()
-export class TestService implements OnDestroy {
+export class BotSharedService implements OnDestroy {
 
 
   constructor(private rest: RestService,
@@ -31,9 +32,8 @@ export class TestService implements OnDestroy {
   ngOnDestroy(): void {
   }
 
-  talk(query: BotDialogRequest): Observable<BotDialogResponse> {
-    return this.rest.post("/test/talk", query, BotDialogResponse.fromJSON);
+  configurations(query: ApplicationScopedQuery): Observable<BotApplicationConfiguration[]> {
+    return this.rest.post("/configuration/bots", query, BotApplicationConfiguration.fromJSONArray);
   }
-
 
 }

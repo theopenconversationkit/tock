@@ -24,6 +24,7 @@ import {BotMessageLocationComponent} from "./bot-message/bot-message-location";
 import {BotMessageAttachmentComponent} from "./bot-message/bot-message-attachment";
 import {MapToIterablePipe} from "./map-to-iterable.pipe";
 import {SharedModule} from "tock-nlp-admin/src/app/shared/shared.module";
+import {BotSharedService} from "./bot-shared.service";
 @NgModule({
   imports: [
     CommonModule,
@@ -39,7 +40,7 @@ import {SharedModule} from "tock-nlp-admin/src/app/shared/shared.module";
     MapToIterablePipe
   ],
   exports: [BotMessageComponent],
-  providers: [],
+  providers: [BotSharedService],
   entryComponents: []
 })
 export class BotSharedModule {

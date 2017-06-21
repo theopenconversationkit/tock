@@ -18,7 +18,10 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {MonitoringService} from "../monitoring.service";
 import {UserReport, UserSearchQuery} from "../model/users";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
-import {DialogReport, DialogReportRequest} from "../model/dialogs";
+import {DialogReportRequest} from "../model/dialogs";
+import {BotSharedService} from "../../shared/bot-shared.service";
+import {ApplicationScopedQuery} from "tock-nlp-admin/src/app/model/commons";
+import {BotApplicationConfiguration} from "../../shared/configuration";
 
 @Component({
   selector: 'tock-user-timelines',
@@ -38,7 +41,11 @@ export class UserTimelinesComponent implements OnInit, OnDestroy {
   private currentApplicationUnsuscriber: any;
   private currentLocaleUnsuscriber: any;
 
-  constructor(private state: StateService, private monitoring: MonitoringService) {
+  private configurations: BotApplicationConfiguration[];
+
+  constructor(private state: StateService,
+              private monitoring: MonitoringService,
+              private botShared: BotSharedService) {
   }
 
   ngOnInit() {
@@ -77,11 +84,27 @@ export class UserTimelinesComponent implements OnInit, OnDestroy {
   load() {
     if (!this.loading && (this.total === -1 || this.total > this.cursor)) {
       this.loading = true;
-      this.monitoring.users(this.buildUserSearchQuery()).subscribe(r => {
-        Array.prototype.push.apply(this.users, r.users);
-        this.cursor = r.end;
-        this.total = r.total;
-        this.loading = false;
+      this.botShared.configurations(new ApplicationScopedQuery(
+        this.state.currentApplication.namespace,
+        this.state.currentApplication.name,
+        this.state.currentLocale
+      )).subscribe(conf => {
+        this.configurations = conf;
+        this.monitoring.users(this.buildUserSearchQuery()).subscribe(r => {
+          //set application name
+          r.users.forEach(u => {
+            if (u.applicationIds) {
+              const c = this.configurations.find(c => c.name && u.applicationIds.indexOf(c.applicationId) !== -1)
+              if (c) {
+                u.applicationName = c.name;
+              }
+            }
+          });
+          Array.prototype.push.apply(this.users, r.users);
+          this.cursor = r.end;
+          this.total = r.total;
+          this.loading = false;
+        });
       });
     }
   }

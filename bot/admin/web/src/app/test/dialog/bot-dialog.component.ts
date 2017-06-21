@@ -21,6 +21,7 @@ import {ApplicationScopedQuery} from "tock-nlp-admin/src/app/model/commons";
 import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
 import {BotApplicationConfiguration} from "../../shared/configuration";
 import {BotDialogRequest, TestMessage} from "../model/test";
+import {BotSharedService} from "../../shared/bot-shared.service";
 
 @Component({
   selector: 'tock-bot-dialog',
@@ -43,7 +44,8 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 
   constructor(private state: StateService,
               private test: TestService,
-              private rest: RestService) {
+              private rest: RestService,
+              private botShared:BotSharedService) {
   }
 
   ngOnInit() {
@@ -89,7 +91,7 @@ export class BotDialogComponent implements OnInit, OnDestroy {
   }
 
   refresh() {
-    this.test.configurations(new ApplicationScopedQuery(
+    this.botShared.configurations(new ApplicationScopedQuery(
       this.state.currentApplication.namespace,
       this.state.currentApplication.name,
       this.state.currentLocale

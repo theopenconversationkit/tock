@@ -19,7 +19,7 @@ import {Component, Input} from "@angular/core";
 import {Attachment} from "../dialog-data";
 @Component({
   selector: 'tock-bot-message-attachment',
-  template: `<img *ngIf="attachment.isImage()" [src]="attachment.url" width="100" height="100"/>
+  template: `<img *ngIf="attachment.isImage()" [src]="attachment.url" width="191" height="100"/>
   <div *ngIf="!attachment.isImage()"><a [href]="attachment.url">(file)</a></div>`
 })
 export class BotMessageAttachmentComponent {

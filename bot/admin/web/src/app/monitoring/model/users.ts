@@ -54,11 +54,13 @@ export class UserReport {
 
   displayDialogs:boolean = false;
   userDialog: DialogReport;
+  applicationName:string;
 
   constructor(public playerId: PlayerId,
               public userPreferences: UserPreferences,
               public userState: UserState,
               public lastUpdateDate: Date,
+              public applicationIds:string[],
               public lastActionText?: string) {
   }
 
