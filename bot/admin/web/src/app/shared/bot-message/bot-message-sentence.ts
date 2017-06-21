@@ -15,16 +15,28 @@
  */
 
 import {Component, Input} from "@angular/core";
-import {BotMessage, SentenceElement} from "../dialog-data";
+import {Sentence} from "../dialog-data";
 @Component({
-  selector: 'tock-sentence-element',
-  templateUrl: './sentence-element.component.html',
-  styleUrls: ['./sentence-element.component.css']
+  selector: 'tock-bot-message-sentence',
+  template: `<div *ngIf="sentence.text">{{sentence.text}}</div>
+  <div *ngIf="!sentence.text">
+    <div *ngIf="sentence.messages.length === 1">
+      <tock-sentence-element [element]="sentence.messages[0]" [user]="user"></tock-sentence-element>
+    </div>
+    <div *ngIf="sentence.messages.length > 1">
+      <ul>
+        <li *ngFor="let e of sentence.messages">
+          ({{e.connectorType.id}})
+          <tock-sentence-element [element]="e" [user]="user"></tock-sentence-element>
+        </li>
+      </ul>
+    </div>
+  </div>`
 })
-export class SentenceElementComponent {
+export class BotMessageSentenceComponent {
 
   @Input()
-  element: SentenceElement;
+  sentence: Sentence;
 
   @Input()
   user: boolean = false;

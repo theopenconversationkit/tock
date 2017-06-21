@@ -1,0 +1,53 @@
+<div *ngIf="element">
+  <table *ngIf="!element.isEmptyElement()">
+    <tr *ngFor="let a of element.attachments">
+      <td>
+        <tock-bot-message-attachment [attachment]="a"></tock-bot-message-attachment>
+      </td>
+    </tr>
+    <tr *ngFor="let l of element.locations">
+      <td>
+        <tock-bot-message-location [location]="l"></tock-bot-message-location>
+      </td>
+    </tr>
+    <tr *ngFor="let entry of element.texts | mapToIterable">
+      <td>
+        ({{entry.value}}) <span class="text-category">({{entry.key}})</span>
+      </td>
+    </tr>
+    <tr *ngIf="element.choices.length !== 0">
+      <td>
+        <tock-bot-message-choice *ngFor="let c of element.choices" [choice]="c" [user]="user"></tock-bot-message-choice>
+      </td>
+    </tr>
+  </table>
+
+  <table *ngIf="element.subElements.length !== 0">
+    <tr>
+      <td *ngFor="let e of element.subElements">
+        <table>
+          <tr *ngFor="let a of e.attachments">
+            <td>
+              <tock-bot-message-attachment [attachment]="a"></tock-bot-message-attachment>
+            </td>
+          </tr>
+          <tr *ngFor="let l of e.locations">
+            <td>
+              <tock-bot-message-location [location]="l"></tock-bot-message-location>
+            </td>
+          </tr>
+          <tr *ngFor="let entry of e.texts | mapToIterable">
+            <td>
+              ({{entry.value}}) <span class="text-category">({{entry.key}})</span>
+            </td>
+          </tr>
+          <tr *ngIf="element.choices.length !== 0">
+            <td>
+              <tock-bot-message-choice *ngFor="let c of element.choices" [choice]="c" [user]="user"></tock-bot-message-choice>
+            </td>
+          </tr>
+        </table>
+      </td>
+    </tr>
+  </table>
+</div>

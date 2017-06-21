@@ -16,6 +16,11 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
+import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.audio
+import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.file
+import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.image
+import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.template
+import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.video
 import fr.vsct.tock.bot.engine.message.SentenceElement
 
 /**
@@ -24,7 +29,16 @@ import fr.vsct.tock.bot.engine.message.SentenceElement
 data class AttachmentMessage(val attachment: Attachment) : Message() {
 
     override fun toSentenceElement(): SentenceElement? {
-        //TODO
-        return null
+        return when (attachment.type) {
+            audio, file, image, video -> SentenceElement(
+                    this,
+                    attachments = listOf(
+                            fr.vsct.tock.bot.engine.message.Attachment(
+                                    (attachment.payload as UrlPayload).url,
+                                    attachment.type.toTockAttachmentType()
+                            ))
+            )
+            template -> attachment.payload.toSentenceElement()
+        }
     }
 }

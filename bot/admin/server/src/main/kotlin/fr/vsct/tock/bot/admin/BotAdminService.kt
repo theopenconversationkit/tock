@@ -34,6 +34,7 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.vertx.UnauthorizedException
 import mu.KotlinLogging
 import java.util.concurrent.ConcurrentHashMap
@@ -45,6 +46,7 @@ object BotAdminService {
 
     private val logger = KotlinLogging.logger {}
 
+    val defaultRestConnectorBaseUrl = property("tock_bot_admin_rest_default_base_url", "please set base url of the bot")
     val front = FrontClient
     val userReportDAO: UserReportDAO  by injector.instance()
     val dialogReportDAO: DialogReportDAO  by injector.instance()
@@ -72,7 +74,7 @@ object BotAdminService {
             throw UnauthorizedException()
         }
         return try {
-            val baseUrl = conf.baseUrl ?: "http://localhost"
+            val baseUrl = conf.baseUrl ?: defaultRestConnectorBaseUrl
             val restClient = restConnectorClientCache.getOrPut(baseUrl) {
                 ConnectorRestClient(baseUrl)
             }

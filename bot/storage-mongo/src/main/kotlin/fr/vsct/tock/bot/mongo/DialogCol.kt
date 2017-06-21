@@ -38,7 +38,6 @@ import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.State
 import fr.vsct.tock.bot.engine.dialog.Story
-import fr.vsct.tock.bot.engine.event.EventType
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
@@ -89,40 +88,10 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                 stories.flatMap { it.actions }
                         .map { it.toAction() }
                         .mapNotNull {
-                            when (it) {
-                                is SendSentence ->
-                                    ActionReport(
-                                            it.playerId,
-                                            it.date,
-                                            EventType.sentence,
-                                            it.text,
-                                            it.messages
-                                    )
-                                is SendChoice ->
-                                    ActionReport(
-                                            it.playerId,
-                                            it.date,
-                                            EventType.choice,
-                                            intent = it.intentName,
-                                            parameters = it.parameters
-                                    )
-                                is SendAttachment ->
-                                    ActionReport(
-                                            it.playerId,
-                                            it.date,
-                                            EventType.attachment,
-                                            url = it.url,
-                                            attachmentType = it.type
-                                    )
-                                is SendLocation ->
-                                    ActionReport(
-                                            it.playerId,
-                                            it.date,
-                                            EventType.location,
-                                            userLocation = it.location
-                                    )
-                                else -> null
-                            }
+                            ActionReport(
+                                    it.playerId,
+                                    it.date,
+                                    it.toMessage())
                         }
         )
     }

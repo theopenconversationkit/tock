@@ -26,5 +26,6 @@ data class ClientSentenceElement(
         //a qualified text map (ie "title" to "Ok computer", "subtitle" to "please listen")
         val texts: Map<String, String> = emptyMap(),
         val locations: List<ClientLocation> = emptyList(),
+        val metadata: Map<String, String> = emptyMap(),
         val subElements: List<ClientSentenceSubElement> = emptyList()) {
 }

@@ -16,19 +16,15 @@
 
 <div *ngIf="message">
   <div *ngIf="message.isAttachment()">
-    <img *ngIf="message.isImage()" src="message.url"/>
-    <div *ngIf="!message.isImage()"><a href="{{message.url}}">(file)</a></div>
+    <tock-bot-message-attachment [attachment]="message"></tock-bot-message-attachment>
   </div>
   <div *ngIf="message.isChoice()">
-    ({{message.intent}})
+    <tock-bot-message-choice [choice]="message" [user]="user"></tock-bot-message-choice>
   </div>
   <div *ngIf="message.isLocation()">
-    ({{message.location.lat}} - {{message.location.lng}}
+    <tock-bot-message-location [location]="message"></tock-bot-message-location>
   </div>
   <div *ngIf="message.isSentence()">
-    <div *ngIf="message.text">{{message.text}}</div>
-    <div *ngIf="!message.text">
-      [content not yet supported]
-    </div>
+    <tock-bot-message-sentence [sentence]="message" [user]="user"></tock-bot-message-sentence>
   </div>
 </div>

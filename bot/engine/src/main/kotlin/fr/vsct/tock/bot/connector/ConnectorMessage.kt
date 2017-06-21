@@ -29,8 +29,8 @@ interface ConnectorMessage {
     val connectorType: ConnectorType
 
     /**
-     * Transform into a generic [SentenceElement].
-     * @return the generic transformElement, null if unsupported
+     * Transforms this message into a generic [SentenceElement].
+     * @return the generic transformed element, null if unsupported
      */
     fun toSentenceElement(): SentenceElement?
 }

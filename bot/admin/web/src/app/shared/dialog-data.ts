@@ -15,6 +15,7 @@
  */
 
 import {AttachmentType, ConnectorType, EventType} from "./configuration";
+import {JsonUtils} from "../monitoring/model/json";
 export abstract class BotMessage {
 
   constructor(public eventType: EventType,
@@ -96,7 +97,7 @@ export class Choice extends BotMessage {
     const value = Object.create(Choice.prototype);
 
     const result = Object.assign(value, json, {
-      parameters: new Map(JSON.parse(json.parameters)),
+      parameters: JsonUtils.jsonToMap(json.parameters),
       eventType: EventType.choice
     });
 
@@ -173,7 +174,15 @@ export class SentenceElement {
               public choices: Choice[],
               public texts: Map<String, String>,
               public locations: Location[],
+              public metadata: Map<String, String>,
               public subElements: SentenceSubElement[],) {
+  }
+
+  isEmptyElement(): boolean {
+    return this.attachments.length === 0
+      && this.choices.length === 0
+      && this.locations.length === 0
+      && this.texts.size === 0
   }
 
   static fromJSON(json?: any): SentenceElement {
@@ -183,7 +192,8 @@ export class SentenceElement {
       connectorType: ConnectorType.fromJSON(json.connectorType),
       attachments: Attachment.fromJSONArray(json.attachments),
       choices: Choice.fromJSONArray(json.choices),
-      texts: new Map(JSON.parse(json.texts)),
+      texts: JsonUtils.jsonToMap(json.texts),
+      metadata: JsonUtils.jsonToMap(json.metadata),
       locations: Location.fromJSONArray(json.locations),
       subElements: SentenceSubElement.fromJSONArray(json.subElements),
     });
@@ -200,6 +210,7 @@ export class SentenceSubElement {
   constructor(public attachments: Attachment[],
               public choices: Choice[],
               public texts: Map<String, String>,
+              public metadata: Map<String, String>,
               public locations: Location[]) {
 
   }
@@ -210,7 +221,8 @@ export class SentenceSubElement {
     const result = Object.assign(value, json, {
       attachments: Attachment.fromJSONArray(json.attachments),
       choices: Choice.fromJSONArray(json.choices),
-      texts: new Map(JSON.parse(json.texts)),
+      texts: JsonUtils.jsonToMap(json.texts),
+      metadata: JsonUtils.jsonToMap(json.metadata),
       locations: Location.fromJSONArray(json.locations)
     });
 

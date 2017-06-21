@@ -15,7 +15,7 @@
  */
 import {ApplicationScopedQuery} from "tock-nlp-admin/src/app/model/commons";
 import {PlayerId, PlayerType} from "./users";
-import {AttachmentType, EventType} from "../../shared/configuration";
+import {BotMessage} from "../../shared/dialog-data";
 
 export class DialogReportRequest extends ApplicationScopedQuery {
 
@@ -47,31 +47,11 @@ export class ActionReport {
 
   constructor(public playerId: PlayerId,
               public date: Date,
-              public type: EventType,
-              public text?: string,
-              public connectorMessages?: any,
-              public intent?: string,
-              public parameters?: any,
-              public url?: string,
-              public attachmentType?: AttachmentType,
-              public userLocation?: any) {
+              public message: BotMessage) {
   }
 
   isBot(): boolean {
     return this.playerId.type == PlayerType.bot;
-  }
-
-  actionDisplay(): string {
-    switch (this.type) {
-      case EventType.sentence:
-        return this.text ? this.text : JSON.stringify(this.connectorMessages);
-      case EventType.choice:
-        return "(click) " + this.intent + (JSON.stringify(this.parameters) === "{}" ? "" : "(" + JSON.stringify(this.parameters) + ")");
-      case EventType.attachment:
-        return "Send: " + this.url;
-      case EventType.location:
-        return JSON.stringify(this.userLocation);
-    }
   }
 
   static fromJSON(json?: any): ActionReport {
@@ -79,8 +59,7 @@ export class ActionReport {
 
     const result = Object.assign(value, json, {
       playerId: PlayerId.fromJSON(json.playerId),
-      type: EventType[json.type],
-      attachmentType: AttachmentType[json.attachmentType]
+      message: BotMessage.fromJSON(json.message)
     });
 
     return result;

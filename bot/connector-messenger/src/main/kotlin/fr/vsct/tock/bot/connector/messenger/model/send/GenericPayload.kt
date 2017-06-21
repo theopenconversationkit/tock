@@ -16,8 +16,16 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
+import fr.vsct.tock.bot.engine.message.SentenceElement
+
 /**
  *
  */
-data class GenericPayload(val elements : List<Element>) : ModelPayload(PayloadType.generic) {
+data class GenericPayload(val elements: List<Element>) : ModelPayload(PayloadType.generic) {
+
+    override fun toSentenceElement(): SentenceElement? {
+        return SentenceElement(
+                subElements = elements.map { it.toSentenceSubElement() }
+        )
+    }
 }

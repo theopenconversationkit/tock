@@ -14,24 +14,16 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.send
+export class JsonUtils {
 
-import fr.vsct.tock.bot.engine.action.SendChoice
-import fr.vsct.tock.bot.engine.message.Choice
+  constructor() {
+  }
 
-/**
- *
- */
-data class PostbackButton(
-        val payload: String,
-        val title: String) : Button(ButtonType.postback) {
-
-    override fun toChoice(): Choice {
-        return SendChoice.decodeChoiceId(payload)
-                .let { (intent, params) ->
-                    Choice(
-                            intent,
-                            params + (SendChoice.TITLE_PARAMETER to title))
-                }
+  static jsonToMap(json?): Map<String, String> {
+    if (!json) {
+      return new Map<String,String>();
+    } else {
+      return new Map<String,String>((<any>Object).entries(json))
     }
+  }
 }

@@ -44,6 +44,10 @@ class SendChoice(playerId: PlayerId,
 
     companion object {
 
+        const val TITLE_PARAMETER = "_title"
+        const val URL_PARAMETER = "_url"
+        const val EXIT_INTENT = "_exit"
+
         fun encodeChoiceId(storyDefinition: StoryDefinition, parameters: Map<String, String> = emptyMap()): String {
             return encodeChoiceId(storyDefinition.starterIntents.first(), parameters)
         }

@@ -16,10 +16,23 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
+import fr.vsct.tock.bot.engine.action.SendChoice.Companion.EXIT_INTENT
+import fr.vsct.tock.bot.engine.action.SendChoice.Companion.TITLE_PARAMETER
+import fr.vsct.tock.bot.engine.action.SendChoice.Companion.URL_PARAMETER
+import fr.vsct.tock.bot.engine.message.Choice
+
 /**
  *
  */
-data class UrlButton(val url:String,
-                     //TODO check 20 limit char
-                     val title:String) : Button(ButtonType.web_url) {
+data class UrlButton(val url: String,
+                     val title: String) : Button(ButtonType.web_url) {
+
+    override fun toChoice(): Choice {
+        return Choice(
+                EXIT_INTENT,
+                mapOf(
+                        URL_PARAMETER to url,
+                        TITLE_PARAMETER to title
+                ))
+    }
 }

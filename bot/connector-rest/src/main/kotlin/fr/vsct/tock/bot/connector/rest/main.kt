@@ -57,8 +57,8 @@ fun addRestConnector(
 
 fun addRestConnector(botConfiguration: BotApplicationConfiguration): ConnectorConfiguration {
     return addRestConnector(
-            botConfiguration.applicationId,
-            "/rest/${botConfiguration.applicationId}",
+            "rest-${botConfiguration.applicationId}",
+            "/rest/rest-${botConfiguration.applicationId}",
             botConfiguration.name,
             botConfiguration.baseUrl)
 }

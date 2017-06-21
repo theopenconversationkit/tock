@@ -121,6 +121,16 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         ).firstOrNull()
     }
 
+    private fun loadLastDialogCol(userId: PlayerId): DialogCol? {
+        return dialogCol.aggregate<DialogCol>(
+                pipeline = """[
+                                            {${match}:{playerIds:${userId.json}}},
+                                            {${sort}:{lastUpdateDate:-1}},
+                                            {${limit}:1}
+                                           ]"""
+        ).firstOrNull()
+    }
+
     private fun loadLastValidDialog(userId: PlayerId, storyDefinitionProvider: (String) -> StoryDefinition): Dialog? {
         return try {
             return loadLastValidDialogCol(userId)?.toDialog(storyDefinitionProvider)
@@ -169,6 +179,6 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     }
 
     override fun lastDialog(playerId: PlayerId): DialogReport {
-        return loadLastValidDialogCol(playerId)?.toDialogReport() ?: DialogReport()
+        return loadLastDialogCol(playerId)?.toDialogReport() ?: DialogReport()
     }
 }

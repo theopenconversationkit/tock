@@ -22,5 +22,6 @@ package fr.vsct.tock.bot.engine.message
 data class SentenceSubElement(val attachments: List<Attachment> = emptyList(),
                               val choices: List<Choice> = emptyList(),
                               val texts: Map<String, String> = emptyMap(),
-                              val locations: List<Location> = emptyList()) {
+                              val locations: List<Location> = emptyList(),
+                              val metadata: Map<String, String> = emptyMap()) {
 }

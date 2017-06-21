@@ -16,9 +16,18 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
+import fr.vsct.tock.bot.engine.message.SentenceElement
+
 /**
  *
  */
 //TODO check 640 char text limit
 data class ButtonPayload(val text: String, val buttons: List<Button>) : ModelPayload(PayloadType.button) {
+
+    override fun toSentenceElement(): SentenceElement? {
+        return SentenceElement(
+                texts = mapOf(ButtonPayload::text.name to text),
+                choices = buttons.map { it.toChoice() }
+        )
+    }
 }

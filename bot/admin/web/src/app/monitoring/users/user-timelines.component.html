@@ -52,8 +52,14 @@
       <div *ngIf="user.userDialog.actions.length === 0">No dialog</div>
       <table *ngIf="user.userDialog.actions.length !== 0">
         <tr *ngFor="let action of user.userDialog.actions">
-          <td style="min-width:200px;"><span class="userAction" *ngIf="!action.isBot()" [md-tooltip]="action.date | amDateFormat: 'YYYY-MM-DD HH:mm:ss SSS'">{{action.actionDisplay()}}</span></td>
-          <td><span class="botAction" *ngIf="action.isBot()" [md-tooltip]="action.date | amDateFormat: 'YYYY-MM-DD HH:mm:ss SSS'">{{action.actionDisplay()}}</span></td>
+          <td style="min-width:200px;"><span class="userAction" *ngIf="!action.isBot()" [md-tooltip]="action.date | amDateFormat: 'YYYY-MM-DD HH:mm:ss SSS'">
+            <tock-bot-message [message]="action.message" [user]="true"></tock-bot-message>
+          </span>
+          </td>
+          <td><span class="botAction" *ngIf="action.isBot()" [md-tooltip]="action.date | amDateFormat: 'YYYY-MM-DD HH:mm:ss SSS'">
+            <tock-bot-message [message]="action.message"></tock-bot-message>
+          </span>
+          </td>
         </tr>
       </table>
     </md-card>

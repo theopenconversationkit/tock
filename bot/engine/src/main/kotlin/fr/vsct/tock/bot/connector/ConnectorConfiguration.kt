@@ -46,5 +46,5 @@ data class ConnectorConfiguration(
 
     fun getName(): String = parameters.getOrDefault(APPLICATION_NAME, applicationId)
 
-    fun getBaseUrl(): String = parameters.getOrDefault(BASE_URL, "http://localhost")
+    fun getBaseUrl(): String? = parameters.get(BASE_URL)
 }

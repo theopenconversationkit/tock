@@ -14,24 +14,20 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.send
 
-import fr.vsct.tock.bot.engine.action.SendChoice
-import fr.vsct.tock.bot.engine.message.Choice
+import {Component, Input} from "@angular/core";
+import {Attachment} from "../dialog-data";
+@Component({
+  selector: 'tock-bot-message-attachment',
+  template: `<img *ngIf="attachment.isImage()" [src]="attachment.url" width="100" height="100"/>
+  <div *ngIf="!attachment.isImage()"><a [href]="attachment.url">(file)</a></div>`
+})
+export class BotMessageAttachmentComponent {
 
-/**
- *
- */
-data class PostbackButton(
-        val payload: String,
-        val title: String) : Button(ButtonType.postback) {
-
-    override fun toChoice(): Choice {
-        return SendChoice.decodeChoiceId(payload)
-                .let { (intent, params) ->
-                    Choice(
-                            intent,
-                            params + (SendChoice.TITLE_PARAMETER to title))
-                }
-    }
+  @Input()
+  attachment: Attachment;
 }
+
+
+
+

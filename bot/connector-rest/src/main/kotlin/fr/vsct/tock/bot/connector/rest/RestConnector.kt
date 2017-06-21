@@ -101,8 +101,8 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
                         response.actions.map { it.toMessage() }
                 ))
                 logger.debug { "response : $r" }
-                response.context.response().end(r)
                 currentMessages.invalidate(action.recipientId)
+                response.context.response().end(r)
             }
         }
     }

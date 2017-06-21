@@ -30,4 +30,8 @@ enum class AttachmentType {
             return valueOf(type.name)
         }
     }
+
+    fun toTockAttachmentType(): SendAttachment.AttachmentType {
+        return SendAttachment.AttachmentType.valueOf(name)
+    }
 }

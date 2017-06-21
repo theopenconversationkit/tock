@@ -145,9 +145,7 @@ class BotBus internal constructor(
     private fun answer(action: Action, delay: Long = 0): BotBus {
         context.currentDelay += delay
         if (action is SendSentence) {
-            context.getMessage(connector.connectorType)?.let {
-                action.messages.add(it)
-            }
+            action.messages.addAll(context.connectorMessages.values)
         }
 
         story.actions.add(action)

@@ -14,24 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.send
+import {Component, Input} from "@angular/core";
+import {Location} from "../dialog-data";
+@Component({
+  selector: 'tock-bot-message-location',
+  template: `({{location.location.lat}} - {{location.location.lng}}`
+})
+export class BotMessageLocationComponent {
 
-import fr.vsct.tock.bot.engine.action.SendChoice
-import fr.vsct.tock.bot.engine.message.Choice
-
-/**
- *
- */
-data class PostbackButton(
-        val payload: String,
-        val title: String) : Button(ButtonType.postback) {
-
-    override fun toChoice(): Choice {
-        return SendChoice.decodeChoiceId(payload)
-                .let { (intent, params) ->
-                    Choice(
-                            intent,
-                            params + (SendChoice.TITLE_PARAMETER to title))
-                }
-    }
+  @Input()
+  location: Location;
 }

@@ -24,5 +24,8 @@ import {BotMessage} from "../dialog-data";
 export class BotMessageComponent {
 
   @Input()
-  message: BotMessage
+  message: BotMessage;
+
+  @Input()
+  user: boolean = false;
 }

@@ -14,24 +14,17 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.send
+import {Pipe, PipeTransform} from '@angular/core';
 
-import fr.vsct.tock.bot.engine.action.SendChoice
-import fr.vsct.tock.bot.engine.message.Choice
-
-/**
- *
- */
-data class PostbackButton(
-        val payload: String,
-        val title: String) : Button(ButtonType.postback) {
-
-    override fun toChoice(): Choice {
-        return SendChoice.decodeChoiceId(payload)
-                .let { (intent, params) ->
-                    Choice(
-                            intent,
-                            params + (SendChoice.TITLE_PARAMETER to title))
-                }
-    }
+@Pipe({
+  name: 'mapToIterable'
+})
+export class MapToIterablePipe implements PipeTransform  {
+  transform(map: Map<any,any>, args: any[] = null): any {
+    if (!map)
+      return null;
+    const r = [];
+    map.forEach((v, k) => r.push({'key': k, 'value': v}));
+    return r;
+  }
 }

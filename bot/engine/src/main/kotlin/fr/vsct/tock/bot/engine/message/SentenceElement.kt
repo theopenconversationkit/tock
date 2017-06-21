@@ -30,6 +30,7 @@ data class SentenceElement(
         //a qualified text map (ie "title" to "Ok computer", "subtitle" to "please listen")
         val texts: Map<String, String> = emptyMap(),
         val locations: List<Location> = emptyList(),
+        val metadata: Map<String, String> = emptyMap(),
         val subElements: List<SentenceSubElement> = emptyList()) {
 
     constructor(connectorMessage: ConnectorMessage,
@@ -37,6 +38,7 @@ data class SentenceElement(
                 choices: List<Choice> = emptyList(),
                 texts: Map<String, String> = emptyMap(),
                 locations: List<Location> = emptyList(),
+                metadata: Map<String, String> = emptyMap(),
                 subElements: List<SentenceSubElement> = emptyList()
     ) : this(
             connectorMessage.connectorType,
@@ -44,6 +46,7 @@ data class SentenceElement(
             choices,
             texts,
             locations,
+            metadata,
             subElements) {
         this.connectorMessage = connectorMessage
     }

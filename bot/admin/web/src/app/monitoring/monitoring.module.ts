@@ -25,6 +25,7 @@ import {MonitoringApplicationResolver} from "./monitoring-application-resolver";
 import {UserTimelinesComponent} from "./users/user-timelines.component";
 import {MonitoringService} from "./monitoring.service";
 import {MomentModule} from "angular2-moment";
+import {BotSharedModule} from "../shared/bot-shared.module";
 
 const routes: Routes = [
   {
@@ -59,7 +60,8 @@ export class MonitoringRoutingModule {
     SharedModule,
     MonitoringRoutingModule,
     InfiniteScrollModule,
-    MomentModule
+    MomentModule,
+    BotSharedModule
   ],
   declarations: [
     MonitoringTabsComponent,

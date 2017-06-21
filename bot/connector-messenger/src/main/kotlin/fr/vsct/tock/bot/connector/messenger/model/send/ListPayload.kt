@@ -17,6 +17,8 @@
 package fr.vsct.tock.bot.connector.messenger.model.send
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.shared.mapNotNullValues
 
 /**
  * See [https://developers.facebook.com/docs/messenger-platform/send-api-reference/list-template]
@@ -27,4 +29,12 @@ data class ListPayload(
         val topElementStyle: ListElementStyle?,
         val buttons: List<Button>?
 ) : ModelPayload(PayloadType.list) {
+
+    override fun toSentenceElement(): SentenceElement? {
+        return SentenceElement(
+                choices = buttons?.map { it.toChoice() } ?: emptyList(),
+                subElements = elements.map { it.toSentenceSubElement() },
+                metadata = mapNotNullValues(ListPayload::topElementStyle.name to topElementStyle?.name)
+        )
+    }
 }

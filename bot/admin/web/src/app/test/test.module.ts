@@ -23,8 +23,7 @@ import {TestApplicationResolver} from "./test-application-resolver";
 import {BotDialogComponent} from "./dialog/bot-dialog.component";
 import {CommonModule} from "@angular/common";
 import {TestService} from "./test-service";
-import {BotMessageComponent} from "../shared/bot-message/bot-message.component";
-import {SentenceElementComponent} from "../shared/bot-message/sentence-element.component";
+import {BotSharedModule} from "../shared/bot-shared.module";
 
 const routes: Routes = [
   {
@@ -57,13 +56,12 @@ export class BotTestRoutingModule {
   imports: [
     CommonModule,
     SharedModule,
-    BotTestRoutingModule
+    BotTestRoutingModule,
+    BotSharedModule
   ],
   declarations: [
     TestTabsComponent,
-    BotDialogComponent,
-    BotMessageComponent,
-    SentenceElementComponent
+    BotDialogComponent
   ],
   exports: [],
   providers: [

@@ -21,6 +21,8 @@ import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.EventType
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.shared.error
+import mu.KotlinLogging
 
 /**
  * Could be a simple text, or a complex message using [ConnectorMessage] constructor.
@@ -30,6 +32,10 @@ data class Sentence(
         val messages: MutableList<SentenceElement> = mutableListOf(),
         override val delay: Long = 0
 ) : Message {
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
     constructor(text: String?, messages: MutableList<ConnectorMessage> = mutableListOf())
             : this(text, messages.map { it.toSentenceElement() ?: SentenceElement(it) }.toMutableList())
@@ -44,6 +50,13 @@ data class Sentence(
                 applicationId,
                 recipientId,
                 text,
-                messages.mapNotNull { it.connectorMessage }.toMutableList())
+                messages.mapNotNull {
+                    try {
+                        it.connectorMessage
+                    } catch(e: Exception) {
+                        logger.error(e)
+                        null
+                    }
+                }.toMutableList())
     }
 }
