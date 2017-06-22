@@ -34,7 +34,6 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
         JsonSubTypes.Type(value = ClientSentence::class, name = "sentence")
 )
 abstract class ClientMessage(val eventType: ClientEventType,
-                             val delay: Long = 0L) {
-
+                             var delay: Long = 0L) {
 
 }

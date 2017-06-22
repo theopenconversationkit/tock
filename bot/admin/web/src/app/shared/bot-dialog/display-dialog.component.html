@@ -1,0 +1,37 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<md-card *ngIf="dialog" class="dialog">
+  <md-card-content>
+    <div *ngIf="dialog.actions.length === 0">No dialog</div>
+    <div *ngIf="dialog.actions.length !== 0">
+      <ng-content></ng-content>
+      <table>
+        <tr *ngFor="let action of dialog.actions">
+          <td style="min-width:200px;"><span class="userAction" *ngIf="!action.isBot()"
+                                             [md-tooltip]="action.date | amDateFormat: 'YYYY-MM-DD HH:mm:ss SSS'">
+            <tock-bot-message [message]="action.message" [user]="true"></tock-bot-message>
+          </span>
+          </td>
+          <td><span class="botAction" *ngIf="action.isBot()"
+                    [md-tooltip]="action.date | amDateFormat: 'YYYY-MM-DD HH:mm:ss SSS'">
+            <tock-bot-message [message]="action.message"></tock-bot-message>
+          </span>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </md-card-content>
+</md-card>

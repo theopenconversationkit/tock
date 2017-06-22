@@ -22,7 +22,8 @@ class TabLink {
 }
 
 const tabs = [
-  new TabLink("test", "Test the bot")
+  new TabLink("test", "Test the bot"),
+  new TabLink("plan", "Test Plans")
 ];
 
 @Component({

@@ -22,6 +22,7 @@ import com.github.salomonbrys.kodein.provider
 import com.mongodb.client.MongoDatabase
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
+import fr.vsct.tock.bot.admin.test.TestPlanDAO
 import fr.vsct.tock.bot.admin.user.UserReportDAO
 import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
@@ -37,5 +38,6 @@ val botMongoModule = Kodein.Module {
     bind<UserTimelineDAO>() with provider { UserTimelineMongoDAO }
     bind<UserReportDAO>() with provider { UserTimelineMongoDAO }
     bind<DialogReportDAO>() with provider { UserTimelineMongoDAO }
+    bind<TestPlanDAO>() with provider { TestPlanMongoDAO }
     bind<UserLock>() with provider { MongoUserLock }
 }

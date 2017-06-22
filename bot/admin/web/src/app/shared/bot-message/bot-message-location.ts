@@ -15,7 +15,7 @@
  */
 
 import {Component, Input} from "@angular/core";
-import {Location} from "../dialog-data";
+import {Location} from "../model/dialog-data";
 @Component({
   selector: 'tock-bot-message-location',
   template: `({{location.location.lat}} - {{location.location.lng}}`

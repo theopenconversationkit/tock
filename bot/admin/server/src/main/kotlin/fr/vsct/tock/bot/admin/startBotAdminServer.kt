@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.admin
 
 import fr.vsct.tock.bot.BotIoc
+import fr.vsct.tock.bot.jackson.BotEngineJacksonConfiguration
 import fr.vsct.tock.nlp.front.ioc.FrontIoc
 import fr.vsct.tock.shared.vertx.vertx
 
@@ -25,6 +26,10 @@ fun main(args: Array<String>) {
 }
 
 fun startAdminServer() {
+    //init jackson
+    BotEngineJacksonConfiguration.init()
+    //setup ioc
     FrontIoc.setup(BotIoc.coreModules)
+    //deploy verticle
     vertx.deployVerticle(BotAdminVerticle())
 }

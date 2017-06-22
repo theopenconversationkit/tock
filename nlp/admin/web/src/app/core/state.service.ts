@@ -20,7 +20,7 @@ import {AuthService} from "./auth/auth.service";
 import {AuthListener} from "./auth/auth.listener";
 import {AuthenticateResponse, User} from "../model/auth";
 import {SettingsService} from "./settings.service";
-import {Entry} from "../model/commons";
+import {ApplicationScopedQuery, Entry} from "../model/commons";
 import {environment} from "../../environments/environment";
 import {EntityType, NlpEngineType} from "../model/nlp";
 
@@ -129,6 +129,14 @@ export class StateService implements AuthListener {
     this.user = null;
     this.currentApplication = null;
     this.applications = null;
+  }
+
+  createApplicationScopedQuery(): ApplicationScopedQuery {
+    return new ApplicationScopedQuery(
+      this.currentApplication.namespace,
+      this.currentApplication.name,
+      this.currentLocale
+    )
   }
 
 }

@@ -15,7 +15,7 @@
  */
 
 import {Component, Input} from "@angular/core";
-import {Sentence} from "../dialog-data";
+import {Sentence} from "../model/dialog-data";
 @Component({
   selector: 'tock-bot-message-sentence',
   template: `<div *ngIf="sentence.text">{{sentence.text}}</div>

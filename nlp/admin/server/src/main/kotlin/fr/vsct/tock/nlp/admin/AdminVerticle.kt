@@ -28,6 +28,7 @@ import fr.vsct.tock.nlp.front.shared.codec.DumpType
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
+import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.vertx.BadRequestException
 import fr.vsct.tock.shared.vertx.WebVerticle
@@ -47,7 +48,7 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
 
     override fun authProvider(): AuthProvider? = authProvider
 
-    override fun configure() {
+    fun configureServices() {
         val front = FrontClient
         val admin = AdminService
 
@@ -198,28 +199,36 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
                 null
             }
         }
+    }
 
-        //serve statics in docker image
-        val webRoot = verticleProperty("content_path", "/maven/dist")
-        router.route("/*").handler(StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(webRoot))
-        router.route().failureHandler { context ->
-            val code = if (context.statusCode() > 0) context.statusCode() else 500
-            if (code == 404) {
-                context.vertx().fileSystem().readFile("$webRoot/index.html") {
-                    if (it.succeeded()) {
-                        context.response().end(it.result())
-                    } else {
-                        logger.warn { "Can't find $webRoot/index.html" }
-                        context.response().statusCode = code
-                        context.response().end()
+    fun configureStaticHandling() {
+        if (!devEnvironment) {
+            //serve statics in docker image
+            val webRoot = verticleProperty("content_path", "/maven/dist")
+            router.route("/*").handler(StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(webRoot))
+            router.route().failureHandler { context ->
+                val code = if (context.statusCode() > 0) context.statusCode() else 500
+                if (code == 404) {
+                    context.vertx().fileSystem().readFile("$webRoot/index.html") {
+                        if (it.succeeded()) {
+                            context.response().end(it.result())
+                        } else {
+                            logger.warn { "Can't find $webRoot/index.html" }
+                            context.response().statusCode = code
+                            context.response().end()
+                        }
                     }
+                } else {
+                    context.response().statusCode = code
+                    context.response().end()
                 }
-            } else {
-                context.response().statusCode = code
-                context.response().end()
             }
         }
+    }
 
+    override fun configure() {
+        configureServices()
+        configureStaticHandling()
     }
 
     override fun healthcheck(): (RoutingContext) -> Unit {

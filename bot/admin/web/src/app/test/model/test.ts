@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {BotMessage} from "app/shared/dialog-data";
+import {BotMessage, DialogReport} from "app/shared/model/dialog-data";
 import {ApplicationScopedQuery} from "tock-nlp-admin/src/app/model/commons";
 
 export class BotDialogRequest extends ApplicationScopedQuery {
@@ -52,4 +52,88 @@ export class TestMessage {
               public message?: BotMessage) {
 
   }
+}
+
+export class TestPlan {
+
+  public testPlanExecutions: TestPlanExecution[];
+  public botName: string;
+  public displayDialog: boolean;
+  public displayExecutions: boolean;
+
+  constructor(public dialogs: DialogReport[],
+              public name: string,
+              public applicationId: string,
+              public namespace: string,
+              public nlpModel: string,
+              public locale: string,
+              public botApplicationConfigurationId: string,
+              public _id?: string) {
+  }
+
+  static fromJSON(json?: any): TestPlan {
+    const value = Object.create(TestPlan.prototype);
+
+    const result = Object.assign(value, json, {
+      dialogs: DialogReport.fromJSONArray(json.dialogs),
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): TestPlan[] {
+    return json ? json.map(TestPlan.fromJSON) : [];
+  }
+
+}
+
+export class TestPlanExecution {
+
+  constructor(public testPlanId: string,
+              public dialogs: DialogExecutionReport[],
+              public nbErrors: number,
+              public date: Date,
+              public duration: Date,
+              public _id?: string) {
+  }
+
+  static fromJSON(json?: any): TestPlanExecution {
+    const value = Object.create(TestPlanExecution.prototype);
+
+    const result = Object.assign(value, json, {
+      dialogs: DialogExecutionReport.fromJSONArray(json.dialogs),
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): TestPlanExecution[] {
+    return json ? json.map(TestPlanExecution.fromJSON) : [];
+  }
+
+}
+
+export class DialogExecutionReport {
+
+  constructor(public dialogReportId: string,
+              public error: boolean,
+              public errorActionId?: string,
+              public returnedMessage?: BotMessage,
+              public errorMessag?: string) {
+  }
+
+  static fromJSON(json?: any): DialogExecutionReport {
+    const value = Object.create(DialogExecutionReport.prototype);
+
+    const result = Object.assign(value, json, {
+      returnedMessage: BotMessage.fromJSON(json.returnedMessage),
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): DialogExecutionReport[] {
+    return json ? json.map(DialogExecutionReport.fromJSON) : [];
+  }
+
 }

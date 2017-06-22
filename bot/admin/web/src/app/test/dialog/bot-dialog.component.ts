@@ -15,13 +15,14 @@
  */
 
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {TestService} from "../test-service";
+import {TestService} from "../test.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
-import {ApplicationScopedQuery} from "tock-nlp-admin/src/app/model/commons";
 import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
-import {BotApplicationConfiguration} from "../../shared/configuration";
 import {BotDialogRequest, TestMessage} from "../model/test";
-import {BotSharedService} from "../../shared/bot-shared.service";
+import {BotConfigurationService} from "../../core/bot-configuration.service";
+import {BotApplicationConfiguration} from "../../core/model/configuration";
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {ReplaySubject} from "rxjs/ReplaySubject";
 
 @Component({
   selector: 'tock-bot-dialog',
@@ -30,11 +31,6 @@ import {BotSharedService} from "../../shared/bot-shared.service";
 })
 export class BotDialogComponent implements OnInit, OnDestroy {
 
-  private currentApplicationUnsuscriber: any;
-  private currentLocaleUnsuscriber: any;
-  private errorUnsuscriber: any;
-
-  configurations: BotApplicationConfiguration[];
   currentConfigurationId: string;
 
   userMessage: string = "";
@@ -42,27 +38,36 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 
   loading: boolean;
 
+  private errorUnsuscriber: any;
+
   constructor(private state: StateService,
               private test: TestService,
               private rest: RestService,
-              private botShared:BotSharedService) {
+              public botConfiguration: BotConfigurationService) {
   }
 
   ngOnInit() {
     this.load();
-    this.currentApplicationUnsuscriber = this.state.currentApplicationEmitter.subscribe(_ => this.refresh());
-    this.currentLocaleUnsuscriber = this.state.currentLocaleEmitter.subscribe(_ => this.refresh());
     this.errorUnsuscriber = this.rest.errorEmitter.subscribe(e =>
       this.loading = false
     )
   }
 
   load() {
-    this.refresh()
+    this.botConfiguration.configurations
+      .subscribe(conf => {
+        if (conf.length !== 0) {
+          this.currentConfigurationId = conf[0]._id;
+        } else {
+          this.currentConfigurationId = null;
+        }
+      })
   }
 
-  changeConfiguration(applicationConfiguration: BotApplicationConfiguration) {
-
+  changeConfiguration(applicationConfigurationId: string) {
+    this.userMessage = "";
+    this.messages = [];
+    this.loading = false;
   }
 
   submit() {
@@ -90,22 +95,7 @@ export class BotDialogComponent implements OnInit, OnDestroy {
       });
   }
 
-  refresh() {
-    this.botShared.configurations(new ApplicationScopedQuery(
-      this.state.currentApplication.namespace,
-      this.state.currentApplication.name,
-      this.state.currentLocale
-    )).subscribe(conf => {
-      if (conf.length !== 0) {
-        this.currentConfigurationId = conf[0]._id;
-      }
-      this.configurations = conf;
-    })
-  }
-
   ngOnDestroy() {
-    this.currentApplicationUnsuscriber.unsubscribe();
-    this.currentLocaleUnsuscriber.unsubscribe();
     this.errorUnsuscriber.unsubscribe();
   }
 

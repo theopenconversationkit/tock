@@ -181,4 +181,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     override fun lastDialog(playerId: PlayerId): DialogReport {
         return loadLastDialogCol(playerId)?.toDialogReport() ?: DialogReport()
     }
+
+    override fun getDialog(id: String): DialogReport? {
+        return dialogCol.findOneById(id)?.toDialogReport()
+    }
 }

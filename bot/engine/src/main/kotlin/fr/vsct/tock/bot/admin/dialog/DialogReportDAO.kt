@@ -24,4 +24,6 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 interface DialogReportDAO {
 
     fun lastDialog(playerId: PlayerId): DialogReport
+
+    fun getDialog(id: String): DialogReport?
 }

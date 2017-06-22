@@ -15,7 +15,7 @@
  */
 
 import {Component, Input} from "@angular/core";
-import {Choice} from "../dialog-data";
+import {Choice} from "../model/dialog-data";
 @Component({
   selector: 'tock-bot-message-choice',
   template: `

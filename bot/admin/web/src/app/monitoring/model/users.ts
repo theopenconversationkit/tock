@@ -15,8 +15,9 @@
  */
 
 import {PaginatedQuery} from "tock-nlp-admin/src/app/model/commons";
-import {DialogReport} from "./dialogs";
-import {BotApplicationConfiguration} from "../../shared/configuration";
+import {BotApplicationConfiguration} from "../../core/model/configuration";
+import {TestPlan} from "../../test/model/test";
+import {DialogReport, PlayerId} from "../../shared/model/dialog-data";
 
 export class UserSearchQuery extends PaginatedQuery {
 
@@ -53,15 +54,16 @@ export class UserReportQueryResult {
 
 export class UserReport {
 
-  displayDialogs:boolean = false;
+  displayDialogs: boolean = false;
   userDialog: DialogReport;
-  botConfiguration:BotApplicationConfiguration;
+  botConfiguration: BotApplicationConfiguration;
+  testPlans: TestPlan[];
 
   constructor(public playerId: PlayerId,
               public userPreferences: UserPreferences,
               public userState: UserState,
               public lastUpdateDate: Date,
-              public applicationIds:string[],
+              public applicationIds: string[],
               public lastActionText?: string) {
   }
 
@@ -121,27 +123,7 @@ export class UserState {
 
 }
 
-export class PlayerId {
 
-  constructor(public id: string,
-              public type: PlayerType = PlayerType.user) {
-  }
-
-  static fromJSON(json?: any): PlayerId {
-    const value = Object.create(PlayerId.prototype);
-
-    const result = Object.assign(value, json, {
-      type: PlayerType[json.type],
-    });
-
-    return result;
-  }
-
-}
-
-export enum PlayerType {
-  user, bot
-}
 
 
 

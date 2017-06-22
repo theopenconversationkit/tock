@@ -15,7 +15,7 @@
  */
 
 import {Component, Input} from "@angular/core";
-import {BotMessage, SentenceElement} from "../dialog-data";
+import {BotMessage, SentenceElement} from "../model/dialog-data";
 @Component({
   selector: 'tock-sentence-element',
   templateUrl: './sentence-element.component.html',

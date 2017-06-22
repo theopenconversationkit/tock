@@ -19,9 +19,9 @@ import {MonitoringService} from "../monitoring.service";
 import {UserReport, UserSearchQuery} from "../model/users";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {DialogReportRequest} from "../model/dialogs";
-import {BotSharedService} from "../../shared/bot-shared.service";
-import {ApplicationScopedQuery} from "tock-nlp-admin/src/app/model/commons";
-import {BotApplicationConfiguration} from "../../shared/configuration";
+import {BotConfigurationService} from "../../core/bot-configuration.service";
+import {MdSnackBar} from "@angular/material";
+import {DialogReport} from "../../shared/model/dialog-data";
 
 @Component({
   selector: 'tock-user-timelines',
@@ -38,20 +38,15 @@ export class UserTimelinesComponent implements OnInit, OnDestroy {
   total: number = -1;
   loading: boolean = false;
 
-  private currentApplicationUnsuscriber: any;
-  private currentLocaleUnsuscriber: any;
-
-  private configurations: BotApplicationConfiguration[];
-
   constructor(private state: StateService,
               private monitoring: MonitoringService,
-              private botShared: BotSharedService) {
+              private botConfiguration: BotConfigurationService,
+              private snackBar: MdSnackBar) {
+    this.botConfiguration.configurations.subscribe(_ => this.refresh());
   }
 
   ngOnInit() {
     this.load();
-    this.currentApplicationUnsuscriber = this.state.currentApplicationEmitter.subscribe(_ => this.refresh());
-    this.currentLocaleUnsuscriber = this.state.currentLocaleEmitter.subscribe(_ => this.refresh());
   }
 
   private buildUserSearchQuery(): UserSearchQuery {
@@ -69,8 +64,6 @@ export class UserTimelinesComponent implements OnInit, OnDestroy {
   }
 
   ngOnDestroy() {
-    this.currentApplicationUnsuscriber.unsubscribe();
-    this.currentLocaleUnsuscriber.unsubscribe();
   }
 
   refresh() {
@@ -84,27 +77,21 @@ export class UserTimelinesComponent implements OnInit, OnDestroy {
   load() {
     if (!this.loading && (this.total === -1 || this.total > this.cursor)) {
       this.loading = true;
-      this.botShared.configurations(new ApplicationScopedQuery(
-        this.state.currentApplication.namespace,
-        this.state.currentApplication.name,
-        this.state.currentLocale
-      )).subscribe(conf => {
-        this.configurations = conf;
-        this.monitoring.users(this.buildUserSearchQuery()).subscribe(r => {
-          //set application name
-          r.users.forEach(u => {
-            if (u.applicationIds) {
-              const c = this.configurations.find(c => u.applicationIds.indexOf(c.applicationId) !== -1)
-              if (c) {
-                u.botConfiguration = c;
-              }
+      this.monitoring.users(this.buildUserSearchQuery()).subscribe(r => {
+        //set application name
+        const conf = this.botConfiguration.configurations.value;
+        r.users.forEach(u => {
+          if (u.applicationIds) {
+            const c = conf.find(c => u.applicationIds.indexOf(c.applicationId) !== -1);
+            if (c) {
+              u.botConfiguration = c;
             }
-          });
-          Array.prototype.push.apply(this.users, r.users);
-          this.cursor = r.end;
-          this.total = r.total;
-          this.loading = false;
+          }
         });
+        Array.prototype.push.apply(this.users, r.users);
+        this.cursor = r.end;
+        this.total = r.total;
+        this.loading = false;
       });
     }
   }
@@ -131,7 +118,17 @@ export class UserTimelinesComponent implements OnInit, OnDestroy {
     user.displayDialogs = true;
     this.monitoring.dialogs(this.buildDialogQuery(user)).subscribe(r => {
       user.userDialog = r;
+      this.monitoring.getTestPlansByNamespaceAndNlpModel().subscribe(r => user.testPlans = r);
     });
+  }
+
+  addDialogToTestPlan(planId: string, dialog: DialogReport) {
+    if (!planId) {
+      this.snackBar.open(`Please select a Plan first`, "Error", {duration: 3000});
+      return;
+    }
+    this.monitoring.addDialogToTestPlan(planId, dialog._id)
+      .subscribe(_ => this.snackBar.open(`Dialog added to plan`, "Dialog Added", {duration: 3000}));
   }
 
 }

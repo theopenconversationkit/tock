@@ -30,6 +30,7 @@
     <description>Root project for Tock Bot Admin</description>
 
     <modules>
+        <module>test</module>
         <module>server</module>
         <module>web</module>
     </modules>

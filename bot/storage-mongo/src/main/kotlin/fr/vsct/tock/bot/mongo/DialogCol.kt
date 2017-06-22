@@ -91,8 +91,10 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                             ActionReport(
                                     it.playerId,
                                     it.date,
-                                    it.toMessage())
-                        }
+                                    it.toMessage(),
+                                    it.id)
+                        },
+                _id
         )
     }
 

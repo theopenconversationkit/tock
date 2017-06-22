@@ -22,8 +22,10 @@ import {TestTabsComponent} from "./test-tabs.component";
 import {TestApplicationResolver} from "./test-application-resolver";
 import {BotDialogComponent} from "./dialog/bot-dialog.component";
 import {CommonModule} from "@angular/common";
-import {TestService} from "./test-service";
+import {TestService} from "./test.service";
 import {BotSharedModule} from "../shared/bot-shared.module";
+import {TestPlanComponent} from "./plan/test-plan.component";
+import {MomentModule} from "angular2-moment";
 
 const routes: Routes = [
   {
@@ -41,6 +43,10 @@ const routes: Routes = [
       {
         path: 'test',
         component: BotDialogComponent
+      },
+      {
+        path: 'plan',
+        component: TestPlanComponent
       }
     ]
   }
@@ -57,11 +63,13 @@ export class BotTestRoutingModule {
     CommonModule,
     SharedModule,
     BotTestRoutingModule,
-    BotSharedModule
+    BotSharedModule,
+    MomentModule
   ],
   declarations: [
     TestTabsComponent,
-    BotDialogComponent
+    BotDialogComponent,
+    TestPlanComponent
   ],
   exports: [],
   providers: [

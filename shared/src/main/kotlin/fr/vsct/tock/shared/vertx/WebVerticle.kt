@@ -30,7 +30,6 @@ import io.vertx.core.Handler
 import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpMethod.DELETE
 import io.vertx.core.http.HttpMethod.GET
-import io.vertx.core.http.HttpMethod.OPTIONS
 import io.vertx.core.http.HttpMethod.POST
 import io.vertx.core.http.HttpServer
 import io.vertx.core.http.HttpServerResponse
@@ -327,5 +326,9 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
 
     fun unauthorized(): Nothing {
         throw UnauthorizedException()
+    }
+
+    fun notFound(): Nothing {
+        throw NotFoundException()
     }
 }

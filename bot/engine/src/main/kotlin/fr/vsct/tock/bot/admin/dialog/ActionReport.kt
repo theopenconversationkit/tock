@@ -26,6 +26,7 @@ import java.time.Instant
 data class ActionReport(
         val playerId: PlayerId,
         val date: Instant,
-        val message: Message
+        val message: Message,
+        val id: String
 ) {
 }

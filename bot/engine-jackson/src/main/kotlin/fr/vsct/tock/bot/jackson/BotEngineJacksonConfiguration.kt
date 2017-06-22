@@ -26,6 +26,7 @@ import fr.vsct.tock.bot.engine.message.Location
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.message.Sentence
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.mongoJacksonModules
 
 /**
  *
@@ -53,7 +54,7 @@ object BotEngineJacksonConfiguration {
                 registerSubtypes(NamedType(Location::class.java, EventType.location.name))
                 mapper.registerModule(this)
             }
-
+            mongoJacksonModules.add(module)
         }
     }
 }

@@ -25,10 +25,13 @@ import {BotMessageAttachmentComponent} from "./bot-message/bot-message-attachmen
 import {MapToIterablePipe} from "./map-to-iterable.pipe";
 import {SharedModule} from "tock-nlp-admin/src/app/shared/shared.module";
 import {BotSharedService} from "./bot-shared.service";
+import {DisplayDialogComponent} from "./bot-dialog/display-dialog.component";
+import {MomentModule} from "angular2-moment";
 @NgModule({
   imports: [
     CommonModule,
-    SharedModule
+    SharedModule,
+    MomentModule,
   ],
   declarations: [
     BotMessageComponent,
@@ -37,9 +40,10 @@ import {BotSharedService} from "./bot-shared.service";
     BotMessageChoiceComponent,
     BotMessageLocationComponent,
     BotMessageAttachmentComponent,
-    MapToIterablePipe
+    MapToIterablePipe,
+    DisplayDialogComponent
   ],
-  exports: [BotMessageComponent],
+  exports: [BotMessageComponent, DisplayDialogComponent],
   providers: [BotSharedService],
   entryComponents: []
 })

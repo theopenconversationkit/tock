@@ -15,7 +15,7 @@
  */
 
 import {Component, Input} from "@angular/core";
-import {BotMessage} from "../dialog-data";
+import {BotMessage} from "../model/dialog-data";
 @Component({
   selector: 'tock-bot-message',
   templateUrl: './bot-message.component.html',

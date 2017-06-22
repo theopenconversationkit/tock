@@ -19,7 +19,9 @@ import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {UserReportQueryResult, UserSearchQuery} from "./model/users";
 import {Observable} from "rxjs/Observable";
-import {DialogReport, DialogReportRequest} from "./model/dialogs";
+import {DialogReportRequest} from "./model/dialogs";
+import {TestPlan} from "../test/model/test";
+import {DialogReport} from "../shared/model/dialog-data";
 
 @Injectable()
 export class MonitoringService implements OnDestroy {
@@ -37,8 +39,15 @@ export class MonitoringService implements OnDestroy {
   }
 
   dialogs(query: DialogReportRequest): Observable<DialogReport> {
-    return this.rest.post("/dialogs/user", query, DialogReport.fromJSON);
+    return this.rest.post("/user/dialogs", query, DialogReport.fromJSON);
   }
 
+  getTestPlansByNamespaceAndNlpModel(): Observable<TestPlan[]> {
+    return this.rest.post(`/application/plans`, this.state.createApplicationScopedQuery(), TestPlan.fromJSONArray);
+  }
+
+  addDialogToTestPlan(planId: string, dialogId: string): Observable<boolean> {
+    return this.rest.post(`/test/plan/${planId}/dialog/${dialogId}`, this.state.createApplicationScopedQuery());
+  }
 
 }

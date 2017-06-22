@@ -14,8 +14,59 @@
  * limitations under the License.
  */
 
-import {AttachmentType, ConnectorType, EventType} from "./configuration";
-import {JsonUtils} from "../monitoring/model/json";
+import {AttachmentType, ConnectorType, EventType} from "../../core/model/configuration";
+import {JsonUtils} from "../../monitoring/model/json";
+
+export class DialogReport {
+
+  displayActions:boolean;
+
+  constructor(public actions: ActionReport[],
+              public _id: string) {
+  }
+
+  static fromJSON(json?: any): DialogReport {
+    const value = Object.create(DialogReport.prototype);
+
+    const result = Object.assign(value, json, {
+      actions: ActionReport.fromJSONArray(json.actions)
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): DialogReport[] {
+    return json ? json.map(DialogReport.fromJSON) : [];
+  }
+}
+
+export class ActionReport {
+
+  constructor(public playerId: PlayerId,
+              public date: Date,
+              public message: BotMessage) {
+  }
+
+  isBot(): boolean {
+    return this.playerId.type == PlayerType.bot;
+  }
+
+  static fromJSON(json?: any): ActionReport {
+    const value = Object.create(ActionReport.prototype);
+
+    const result = Object.assign(value, json, {
+      playerId: PlayerId.fromJSON(json.playerId),
+      message: BotMessage.fromJSON(json.message)
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): ActionReport[] {
+    return json ? json.map(ActionReport.fromJSON) : [];
+  }
+}
+
 export abstract class BotMessage {
 
   constructor(public eventType: EventType,
@@ -39,6 +90,10 @@ export abstract class BotMessage {
   }
 
   static fromJSON(json?: any): BotMessage {
+    if(!json) {
+      return null;
+    }
+
     const eventType = EventType[json.eventType as string];
     switch (eventType) {
       case EventType.sentence :
@@ -232,5 +287,27 @@ export class SentenceSubElement {
   static fromJSONArray(json?: Array<any>): SentenceSubElement[] {
     return json ? json.map(SentenceSubElement.fromJSON) : [];
   }
+}
+
+export class PlayerId {
+
+  constructor(public id: string,
+              public type: PlayerType = PlayerType.user) {
+  }
+
+  static fromJSON(json?: any): PlayerId {
+    const value = Object.create(PlayerId.prototype);
+
+    const result = Object.assign(value, json, {
+      type: PlayerType[json.type],
+    });
+
+    return result;
+  }
+
+}
+
+export enum PlayerType {
+  user, bot
 }
 

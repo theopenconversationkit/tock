@@ -4,9 +4,9 @@
 .lastActionText {
   color:lightseagreen;
 }
-.userAction {
-  color:lightseagreen;
+
+
+.select-plan {
+  width: 200px;
 }
-.botAction {
-  color:brown;
-}
+

@@ -1,0 +1,131 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<md-card *ngIf="(botConfiguration.configurations|async).length ===0">
+  <h3>No bot configuration detected.</h3>
+</md-card>
+
+<md-card *ngIf="(botConfiguration.configurations|async).length !==0">
+  <md-card-title>Test Plans</md-card-title>
+  <md-card-subtitle>
+    <button md-button (click)="prepareCreateTestPlan()" color="primary">
+      <md-icon>create</md-icon>
+      Create a new Test Plan
+    </button>
+  </md-card-subtitle>
+  <md-card-content>
+    <div *ngIf="testPlanCreation">
+      <md-input-container class="input-text">
+        <input mdInput
+               placeholder="Test Plan name"
+               [(ngModel)]="testPlanName"
+               (keyup.enter)="createTestPlan()">
+      </md-input-container>
+      <md-select placeholder="Select a bot"
+                 [ngModel]="testBotConfigurationId"
+                 class="select-configuration">
+        <md-option *ngFor="let conf of (botConfiguration.configurations|async)"
+                   [value]="conf._id">{{ conf.name }}
+        </md-option>
+      </md-select>
+
+      <button md-button (click)="createTestPlan()" color="primary">Create</button>
+      <button md-button (click)="resetCreateTestPlan()">Cancel</button>
+    </div>
+
+    <div *ngIf="testPlans">
+      <md-card *ngFor="let p of testPlans">
+        <md-card-title>
+          Plan "{{p.name}}" - {{p.botName}}
+          <button *ngIf="p.dialogs.length !== 0" md-button (click)="exec(p)" color="primary">
+            <md-icon>launch</md-icon>
+            Launch
+          </button>
+          <button md-button (click)="deleteTestPlan(p)" color="warn">
+            <md-icon>delete</md-icon>
+            Delete
+          </button>
+        </md-card-title>
+        <md-card-subtitle>
+          {{p.dialogs.length}} Conversation{{p.dialogs.length < 2 ? '' : 's'}}
+          <span *ngIf="p.dialogs.length !== 0">
+          - <button *ngIf="!p.displayDialog" md-button (click)="showDialogs(p)">
+            <md-icon>visibility</md-icon>
+            Display Conversation{{p.dialogs.length < 2 ? '' : 's'}}
+          </button>
+            <button *ngIf="p.displayDialog" md-button (click)="hideDialogs(p)">
+            <md-icon>visibility_off</md-icon>
+            Hide Conversation{{p.dialogs.length < 2 ? '' : 's'}}
+          </button>
+            </span>
+          <span *ngIf="p.dialogs.length === 0">
+          - you can add dialogs via the Monitoring menu.
+            </span>
+        </md-card-subtitle>
+        <md-card-content>
+
+          <ol *ngIf="p.displayDialog">
+            <li *ngFor="let d of p.dialogs">
+               <span *ngIf="d.actions.length === 0">
+                 (no content)
+               </span>
+              <span *ngIf="d.actions.length !== 0">
+                 <tock-bot-message [message]="d.actions[0].message" [user]="true"></tock-bot-message>
+               </span>
+              ...
+              <button *ngIf="!d.displayActions" md-button (click)="d.displayActions=true">
+                <md-icon>visibility</md-icon>
+                Display all sentences
+              </button>
+              <button *ngIf="d.displayActions" md-button (click)="d.displayActions=false">
+                <md-icon>visibility_off</md-icon>
+                Hide all sentences
+              </button>
+              <tock-display-dialog *ngIf="d.displayActions" [dialog]="d"></tock-display-dialog>
+            </li>
+          </ol>
+
+          <button *ngIf="!p.displayExecutions" md-button (click)="showExecutions(p)">
+            <md-icon>slideshow</md-icon>
+            Show Executions
+          </button>
+          <button *ngIf="p.displayExecutions" md-button (click)="hideExecutions(p)">
+            <md-icon>slideshow</md-icon>
+            Hide Executions
+          </button>
+          <span *ngIf="p.displayExecutions">
+          <ol >
+            <li *ngFor="let e of p.testPlanExecutions">
+              <span *ngIf="e.nbErrors === 0">
+              <md-icon class="success">check_circle</md-icon>
+                success
+              </span>
+              <span *ngIf="e.nbErrors !== 0">
+                <md-icon class="error">error</md-icon>
+                {{e.nbErrors}} errors
+              </span>
+              - {{e.date | amDateFormat: "HH:mm:ss YYYY-MM-DD"}}
+              - duration: {{e.duration | amDuration : 'ms'}}
+            </li>
+          </ol>
+            </span>
+        </md-card-content>
+      </md-card>
+
+    </div>
+  </md-card-content>
+</md-card>
+

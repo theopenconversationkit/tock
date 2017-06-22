@@ -17,9 +17,6 @@
 import {Injectable, OnDestroy} from "@angular/core";
 import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
-import {Observable} from "rxjs/Observable";
-import {ApplicationScopedQuery} from "tock-nlp-admin/src/app/model/commons";
-import {BotApplicationConfiguration} from "./configuration";
 
 @Injectable()
 export class BotSharedService implements OnDestroy {
@@ -30,10 +27,6 @@ export class BotSharedService implements OnDestroy {
   }
 
   ngOnDestroy(): void {
-  }
-
-  configurations(query: ApplicationScopedQuery): Observable<BotApplicationConfiguration[]> {
-    return this.rest.post("/configuration/bots", query, BotApplicationConfiguration.fromJSONArray);
   }
 
 }

@@ -5,6 +5,7 @@ import {SharedModule} from "tock-nlp-admin/src/app/shared/shared.module";
 import {RouterModule, Routes} from "@angular/router";
 import {BotAdminAppComponent} from "./bot-admin-app.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {BotCoreModule} from "./core/bot-core.module";
 
 const routes: Routes = [
   {path: '', redirectTo: '/nlp/inbox', pathMatch: 'full'},
@@ -38,6 +39,7 @@ export class BotAdminAppRoutingModule {
     BrowserModule,
     BrowserAnimationsModule,
     CoreModule,
+    BotCoreModule,
     SharedModule,
     BotAdminAppRoutingModule
   ],

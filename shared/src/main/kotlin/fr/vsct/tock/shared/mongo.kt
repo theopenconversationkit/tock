@@ -17,9 +17,12 @@
 package fr.vsct.tock.shared
 
 import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.databind.Module
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
+import com.fasterxml.jackson.datatype.jsr310.deser.DurationDeserializer
 import com.fasterxml.jackson.datatype.jsr310.deser.JSR310StringParsableDeserializer
+import com.fasterxml.jackson.datatype.jsr310.ser.DurationSerializer
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientURI
 import com.mongodb.client.MongoDatabase
@@ -28,6 +31,7 @@ import fr.vsct.tock.shared.jackson.addSerializer
 import mu.KotlinLogging
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.util.KMongoConfiguration
+import java.time.Duration
 import java.time.ZoneId
 import java.time.ZoneOffset
 import kotlin.reflect.KClass
@@ -45,6 +49,8 @@ internal val collectionBuilder: (KClass<*>) -> String = {
             })
 }
 
+val mongoJacksonModules = mutableListOf<Module>()
+
 val mongoClient: MongoClient by lazy {
     KMongoConfiguration.defaultCollectionNameBuilder = collectionBuilder
 
@@ -53,12 +59,17 @@ val mongoClient: MongoClient by lazy {
         addDeserializer(ZoneId::class, JSR310StringParsableDeserializer.ZONE_ID)
         addSerializer(ZoneOffset::class, ToStringSerializer(ZoneOffset::class.java))
         addDeserializer(ZoneOffset::class, JSR310StringParsableDeserializer.ZONE_OFFSET)
+        addSerializer(Duration::class, DurationSerializer.INSTANCE)
+        addDeserializer(Duration::class, DurationDeserializer.INSTANCE)
     }
 
     KMongoConfiguration.bsonMapper.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
     KMongoConfiguration.extendedJsonMapper.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
 
     KMongoConfiguration.bsonMapper.registerModule(tockModule)
+    mongoJacksonModules.forEach {
+        KMongoConfiguration.bsonMapper.registerModule(it)
+    }
     KMongo.createClient(MongoClientURI(property("tock_mongo_url", "mongodb://localhost:27017")))
 }
 

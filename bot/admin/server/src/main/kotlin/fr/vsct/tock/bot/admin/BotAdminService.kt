@@ -32,6 +32,7 @@ import fr.vsct.tock.bot.connector.rest.client.model.ClientSentence
 import fr.vsct.tock.bot.connector.rest.restConnectorType
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.nlp.front.client.FrontClient
+import fr.vsct.tock.nlp.front.service.applicationDAO
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.property
@@ -54,6 +55,21 @@ object BotAdminService {
 
     val restConnectorClientCache: MutableMap<String, ConnectorRestClient> = ConcurrentHashMap()
 
+    fun getRestClient(conf : BotApplicationConfiguration) : ConnectorRestClient {
+        val baseUrl = conf.baseUrl ?: defaultRestConnectorBaseUrl
+        return  restConnectorClientCache.getOrPut(baseUrl) {
+            ConnectorRestClient(baseUrl)
+        }
+    }
+
+    fun getBotConfiguration(botApplicationConfigurationId : String, namespace:String) : BotApplicationConfiguration {
+        val conf = applicationConfigurationDAO.getConfigurationById(botApplicationConfigurationId)
+        if (conf?.namespace != namespace) {
+            throw UnauthorizedException()
+        }
+        return conf
+    }
+
     fun searchUsers(query: UserSearchQuery): UserReportQueryResult {
         return userReportDAO.search(query.toSearchQuery(query.namespace, query.applicationName))
     }
@@ -62,22 +78,21 @@ object BotAdminService {
         return dialogReportDAO.lastDialog(playerId)
     }
 
-    fun getRestApplicationConfigurations(namespace: String): List<BotApplicationConfiguration> {
+    fun getRestApplicationConfigurations(namespace: String, applicationName: String): List<BotApplicationConfiguration> {
+        val app = applicationDAO.getApplicationByNamespaceAndName(namespace, applicationName)
         return applicationConfigurationDAO
                 .getConfigurations()
-                .filter { it.namespace == namespace && it.connectorType == restConnectorType }
+                .filter {
+                    it.namespace == app?.namespace
+                            && it.nlpModel == app.name
+                            && it.connectorType == restConnectorType
+                }
     }
 
     fun talk(request: BotDialogRequest): BotDialogResponse {
-        val conf = applicationConfigurationDAO.getConfigurationById(request.botApplicationConfigurationId)
-        if (conf?.namespace != request.namespace) {
-            throw UnauthorizedException()
-        }
+        val conf = getBotConfiguration(request.botApplicationConfigurationId, request.namespace)
         return try {
-            val baseUrl = conf.baseUrl ?: defaultRestConnectorBaseUrl
-            val restClient = restConnectorClientCache.getOrPut(baseUrl) {
-                ConnectorRestClient(baseUrl)
-            }
+            val restClient = getRestClient(conf)
             val response = restClient.talk(conf.applicationId,
                     ClientMessageRequest(
                             "test_user",
