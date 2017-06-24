@@ -16,12 +16,16 @@
 
 package fr.vsct.tock.shared
 
-fun property(name: String, defaultValue: String) : String = System.getenv(name) ?: defaultValue
+private fun findProperty(name: String): String? {
+    return System.getProperty(name) ?: System.getenv(name)
+}
 
-fun intProperty(name: String, defaultValue: Int) : Int = System.getenv(name)?.toInt() ?: defaultValue
+fun property(name: String, defaultValue: String): String = findProperty(name) ?: defaultValue
 
-fun longProperty(name: String, defaultValue: Long) : Long = System.getenv(name)?.toLong() ?: defaultValue
+fun intProperty(name: String, defaultValue: Int): Int = findProperty(name)?.toInt() ?: defaultValue
 
-fun booleanProperty(name: String, defaultValue: Boolean) : Boolean = System.getenv(name)?.toBoolean() ?: defaultValue
+fun longProperty(name: String, defaultValue: Long): Long = findProperty(name)?.toLong() ?: defaultValue
+
+fun booleanProperty(name: String, defaultValue: Boolean): Boolean = findProperty(name)?.toBoolean() ?: defaultValue
 
 val devEnvironment: Boolean = property("tock_env", "dev") == "dev"
