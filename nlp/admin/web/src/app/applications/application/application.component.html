@@ -16,7 +16,7 @@
 
 <md-card>
   <md-card-title>
-    <span *ngIf="applications.length !== 0">Applications</span>
+    <span *ngIf="applications.length !== 0">NLP Application <span *ngIf="application && application?.name?.length !== 0">"{{application?.name}}"</span></span>
   </md-card-title>
   <md-card-content *ngIf="application">
     <div>
