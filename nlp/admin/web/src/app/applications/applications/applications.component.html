@@ -30,8 +30,8 @@
           <button *ngIf="app._id !== state.currentApplication._id" class="select-action" mdTooltip="Select"
                   (click)="selectApplication(app)" md-mini-fab><md-icon>label_outline</md-icon></button>
           <span class="tock-name">{{app.name}}</span>
-          <md-chip-list class="mat-chip-list-stacked locales">
-            <md-chip *ngFor="let locale of app.supportedLocales" disabled="true" selected="true" color="accent">
+          <md-chip-list class="locales">
+            <md-chip *ngFor="let locale of app.supportedLocales" disabled="true" selected="true">
                 {{state.localeName(locale)}}
             </md-chip>
           </md-chip-list>
