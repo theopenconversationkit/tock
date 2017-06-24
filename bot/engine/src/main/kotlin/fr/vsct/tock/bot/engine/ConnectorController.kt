@@ -27,6 +27,8 @@ import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.intProperty
+import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 import mu.KotlinLogging
@@ -42,6 +44,8 @@ class ConnectorController internal constructor(
     companion object {
 
         private val logger = KotlinLogging.logger {}
+        private val maxLockedAttempts = intProperty("tock_bot_mav_locked_attempts", 3)
+        private val lockedAttemptsWaitInMs = longProperty("tock_bot_locked_attempts_wait_in_ms", 200L)
 
         internal fun register(connector: Connector,
                               bot: Bot,
@@ -59,15 +63,16 @@ class ConnectorController internal constructor(
 
     fun handle(event: Event) {
         when (event) {
-            is Action -> handleAction(event)
+            is Action -> handleAction(event, 0)
             else -> bot.handleEvent(connector, event)
         }
     }
 
-    private fun handleAction(action: Action) {
+    private fun handleAction(action: Action, nbAttempts: Int) {
         val playerId = action.playerId
         val id = playerId.id
 
+        logger.debug { "try to lock $playerId" }
         if (userLock.lock(id)) {
             try {
                 val userTimeline = userTimelineDAO.loadWithLastValidDialog(action.playerId, { bot.botDefinition.findStoryDefinition(it) })
@@ -79,8 +84,24 @@ class ConnectorController internal constructor(
             } finally {
                 userLock.releaseLock(id)
             }
+        } else if (nbAttempts < maxLockedAttempts) {
+            logger.debug { "$playerId locked - wait" }
+            vertx.setTimer(lockedAttemptsWaitInMs, {
+                vertx.executeBlocking<Void>(
+                        {
+                            try {
+                                handleAction(action, nbAttempts + 1)
+                            } finally {
+                                it.complete()
+                            }
+                        },
+                        false,
+                        {
+                        })
+            })
+
         } else {
-            logger.debug { "$playerId locked - skip action $action" }
+            logger.debug { "$playerId locked for $maxLockedAttempts times - skip $action" }
         }
     }
 
