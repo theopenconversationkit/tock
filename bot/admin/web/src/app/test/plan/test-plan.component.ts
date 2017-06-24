@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from "@angular/core";
-import {TestPlan, TestPlanExecution} from "../model/test";
+import {TestPlan} from "../model/test";
 import {TestService} from "../test.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {MdSnackBar} from "@angular/material";
@@ -30,7 +30,6 @@ import {DialogReport} from "../../shared/model/dialog-data";
 export class TestPlanComponent implements OnInit {
 
   testPlans: TestPlan[];
-  testPlanExecutions: TestPlanExecution[];
 
   testPlanCreation: boolean;
   testPlanName: string;

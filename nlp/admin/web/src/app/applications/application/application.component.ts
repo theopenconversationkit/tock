@@ -77,12 +77,24 @@ export class ApplicationComponent implements OnInit {
             this.router.navigateByUrl("/nlp/try");
           }
           else {
-            this.router.navigateByUrl("/applications");
+            this.redirect();
           }
         }, error => {
           this.snackBar.open(error, "Error", {});
         });
     }
+  }
+
+  private redirect() {
+    let redirect = '../../';
+    if(this.newApplication) {
+      redirect = '../'
+    }
+    this.router.navigate([redirect], { relativeTo: this.route });
+  }
+
+  cancel() {
+    this.redirect();
   }
 
   deleteApplication() {
@@ -102,7 +114,7 @@ export class ApplicationComponent implements OnInit {
             } else {
               this.snackBar.open(`Delete Application ${this.application.name} failed`, "Error", {duration: 5000});
             }
-            this.router.navigateByUrl("/applications");
+            this.redirect();
           });
       }
     });

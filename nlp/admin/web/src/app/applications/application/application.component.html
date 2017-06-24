@@ -54,7 +54,7 @@
     </div>
   </md-card-content>
   <md-card-actions>
-    <button *ngIf="applications.length !== 0" routerLink="/applications" md-button>Cancel</button>
+    <button *ngIf="applications.length !== 0" (click)="cancel()" md-button>Cancel</button>
     <button *ngIf="!newApplication" md-raised-button (click)="deleteApplication()" color="warn">Delete Application
     </button>
     <button *ngIf="newApplication" md-raised-button (click)="saveApplication()" color="primary">Create new Application

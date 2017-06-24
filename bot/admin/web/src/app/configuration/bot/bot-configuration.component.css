@@ -14,21 +14,6 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.bot
-
-import fr.vsct.tock.bot.connector.ConnectorType
-
-/**
- *
- */
-data class BotApplicationConfiguration(
-        val applicationId: String,
-        val botId: String,
-        val namespace: String,
-        val nlpModel: String,
-        val connectorType: ConnectorType,
-        val name: String = applicationId,
-        val baseUrl: String? = null,
-        val manuallyModified: Boolean = false,
-        val _id: String? = null) {
+.conf {
+  margin-bottom: 10px;
 }

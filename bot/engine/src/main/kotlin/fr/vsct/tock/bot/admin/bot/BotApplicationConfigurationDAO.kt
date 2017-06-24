@@ -23,9 +23,15 @@ interface BotApplicationConfigurationDAO {
 
     fun save(conf: BotApplicationConfiguration) : BotApplicationConfiguration
 
+    fun updateIfNotManuallyModified(conf: BotApplicationConfiguration) : BotApplicationConfiguration
+
     fun getConfigurationsByNamespaceAndNlpModel(namespace: String, nlpModel: String): List<BotApplicationConfiguration>
 
     fun getConfigurations(): List<BotApplicationConfiguration>
 
     fun getConfigurationById(id:String) : BotApplicationConfiguration?
+
+    fun getConfigurationByApplicationIdAndBotId(applicationId:String, botId:String) : BotApplicationConfiguration?
+
+    fun delete(conf: BotApplicationConfiguration)
 }

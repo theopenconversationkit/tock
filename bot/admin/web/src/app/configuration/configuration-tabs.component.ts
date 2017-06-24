@@ -14,21 +14,31 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.bot
+import {Component, OnInit} from "@angular/core";
+class TabLink {
+  constructor(public link: string, public label: string) {
 
-import fr.vsct.tock.bot.connector.ConnectorType
+  }
+}
 
-/**
- *
- */
-data class BotApplicationConfiguration(
-        val applicationId: String,
-        val botId: String,
-        val namespace: String,
-        val nlpModel: String,
-        val connectorType: ConnectorType,
-        val name: String = applicationId,
-        val baseUrl: String? = null,
-        val manuallyModified: Boolean = false,
-        val _id: String? = null) {
+const tabs = [
+  new TabLink("nlp", "NLP Applications"),
+  new TabLink("bot", "Bot Configurations"),
+];
+
+@Component({
+  selector: 'tock-configuration-tabs',
+  templateUrl: './configuration-tabs.component.html',
+  styleUrls: ['./configuration-tabs.component.css']
+})
+export class ConfigurationTabsComponent implements OnInit {
+
+  configurationTabLinks = tabs;
+
+  constructor() {
+  }
+
+  ngOnInit() {
+  }
+
 }

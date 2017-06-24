@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.bot.admin
 
-import fr.vsct.tock.bot.admin.dialog.DialogReport
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.DialogReportRequest
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
@@ -54,10 +54,40 @@ class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
 
         blockingJsonPost("/configuration/bots") { context, query: ApplicationScopedQuery ->
             if (context.organization == query.namespace) {
-                BotAdminService.getRestApplicationConfigurations(query.namespace, query.applicationName)
+                BotAdminService.getApplicationConfigurations(query.namespace, query.applicationName)
             } else {
                 unauthorized()
             }
+        }
+
+        blockingJsonPost("/configuration/bot") { context, bot: BotApplicationConfiguration ->
+            if (context.organization == bot.namespace) {
+                if (bot._id != null) {
+                    val conf = BotAdminService.getApplicationConfigurationById(bot._id!!)
+                    if (conf == null || bot.namespace != conf.namespace || bot.botId != conf.botId || bot.applicationId != conf.applicationId) {
+                        unauthorized()
+                    }
+                } else {
+                    if (BotAdminService.getConfigurationByApplicationIdAndBotId(bot.applicationId, bot.botId) != null) {
+                        unauthorized()
+                    }
+                }
+                BotAdminService.saveApplicationConfiguration(bot)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonDelete("/configuration/bot/:confId") { context ->
+            BotAdminService.getApplicationConfigurationById(context.pathParam("confId"))
+                    ?.let {
+                        if (context.organization == it.namespace) {
+                            BotAdminService.deleteApplicationConfiguration(it)
+                            true
+                        } else {
+                            null
+                        }
+                    } ?: unauthorized()
         }
 
         blockingJsonPost("/test/talk") { context, query: BotDialogRequest ->
@@ -88,7 +118,7 @@ class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
             TestPlanService.removeTestPlan(context.loadTestPlan())
         }
 
-        blockingJsonPost("/test/plan/:planId/dialog/:dialogId") { context , _: ApplicationScopedQuery->
+        blockingJsonPost("/test/plan/:planId/dialog/:dialogId") { context, _: ApplicationScopedQuery ->
             TestPlanService.addDialogToTestPlan(context.loadTestPlan(), context.pathParam("dialogId"))
         }
 

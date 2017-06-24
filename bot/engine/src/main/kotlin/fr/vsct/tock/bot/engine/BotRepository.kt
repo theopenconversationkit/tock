@@ -91,7 +91,7 @@ object BotRepository {
                         configuration.getBaseUrl())
                 ConnectorController.register(connector, bot, verticle)
 
-                botConfigurationDAO.save(conf)
+                botConfigurationDAO.updateIfNotManuallyModified(conf)
             }
         }
 

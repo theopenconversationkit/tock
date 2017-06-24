@@ -22,6 +22,7 @@ export class BotApplicationConfiguration {
               public nlpModel: string,
               public connectorType: ConnectorType,
               public name: string,
+              public baseUrl?: string,
               public _id?: string) {
   }
 
@@ -47,6 +48,10 @@ export class ConnectorType {
               public asynchronous: boolean) {
   }
 
+  isRest() : boolean {
+    return this.id === "rest";
+  }
+
   static fromJSON(json?: any): ConnectorType {
     const value = Object.create(ConnectorType.prototype);
 
@@ -58,7 +63,7 @@ export class ConnectorType {
   }
 }
 
-enum UserInterfaceType {
+export enum UserInterfaceType {
   textChat, voiceAssistant
 }
 

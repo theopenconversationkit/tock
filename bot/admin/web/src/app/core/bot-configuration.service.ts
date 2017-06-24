@@ -28,7 +28,10 @@ export class BotConfigurationService implements OnInit, OnDestroy {
   private currentApplicationUnsuscriber: any;
   private currentLocaleUnsuscriber: any;
 
+  //only rest configurations
   configurations: BehaviorSubject<BotApplicationConfiguration[]> = new BehaviorSubject([]);
+  //all configurations
+  allConfigurations: BehaviorSubject<BotApplicationConfiguration[]> = new BehaviorSubject([]);
 
   constructor(private rest: RestService,
               private state: StateService) {
@@ -45,13 +48,24 @@ export class BotConfigurationService implements OnInit, OnDestroy {
     this.currentLocaleUnsuscriber.unsubscribe();
   }
 
-  private updateConfigurations() {
+  updateConfigurations() {
     this.getConfigurations(this.state.createApplicationScopedQuery())
-      .subscribe(c => this.configurations.next(c));
+      .subscribe(c => {
+        this.allConfigurations.next(c);
+        this.configurations.next(c.filter(c => c.connectorType.isRest()));
+      });
   }
 
   private getConfigurations(query: ApplicationScopedQuery): Observable<BotApplicationConfiguration[]> {
     return this.rest.post("/configuration/bots", query, BotApplicationConfiguration.fromJSONArray);
+  }
+
+  saveConfiguration(conf: BotApplicationConfiguration): Observable<any> {
+    return this.rest.post("/configuration/bot", conf);
+  }
+
+  deleteConfiguration(conf: BotApplicationConfiguration): Observable<boolean> {
+    return this.rest.delete(`/configuration/bot/${conf._id}`);
   }
 
 }

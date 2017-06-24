@@ -14,18 +14,18 @@
  * limitations under the License.
  */
 
-import {ApplicationsModule} from "tock-nlp-admin/src/app/applications/applications.module";
-import {NgModule} from "@angular/core";
-import {SharedModule} from "tock-nlp-admin/src/app/shared/shared.module";
+import {Injectable} from "@angular/core";
+import {ApplicationResolver} from "tock-nlp-admin/src/app/nlp-tabs/application.resolver";
+import {ApplicationService}  from "tock-nlp-admin/src/app/core/applications.service"
+import {Router} from "@angular/router";
 
-@NgModule({
-  declarations: [],
-  imports: [
-    SharedModule,
-    ApplicationsModule
-  ],
-  providers: [],
-  bootstrap: []
-})
-export class BotAdminModule {
+@Injectable()
+export class ConfigurationApplicationResolver extends ApplicationResolver {
+
+  target:string = '/configuration';
+
+  constructor(private app: ApplicationService, private r: Router) {
+    super(app, r)
+  }
+
 }

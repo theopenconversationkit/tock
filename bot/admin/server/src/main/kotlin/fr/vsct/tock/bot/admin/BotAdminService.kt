@@ -29,7 +29,6 @@ import fr.vsct.tock.bot.admin.user.UserReportQueryResult
 import fr.vsct.tock.bot.connector.rest.client.ConnectorRestClient
 import fr.vsct.tock.bot.connector.rest.client.model.ClientMessageRequest
 import fr.vsct.tock.bot.connector.rest.client.model.ClientSentence
-import fr.vsct.tock.bot.connector.rest.restConnectorType
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.service.applicationDAO
@@ -55,14 +54,14 @@ object BotAdminService {
 
     val restConnectorClientCache: MutableMap<String, ConnectorRestClient> = ConcurrentHashMap()
 
-    fun getRestClient(conf : BotApplicationConfiguration) : ConnectorRestClient {
-        val baseUrl = conf.baseUrl ?: defaultRestConnectorBaseUrl
-        return  restConnectorClientCache.getOrPut(baseUrl) {
+    fun getRestClient(conf: BotApplicationConfiguration): ConnectorRestClient {
+        val baseUrl = conf.baseUrl?.let { if (it.isBlank()) null else it } ?: defaultRestConnectorBaseUrl
+        return restConnectorClientCache.getOrPut(baseUrl) {
             ConnectorRestClient(baseUrl)
         }
     }
 
-    fun getBotConfiguration(botApplicationConfigurationId : String, namespace:String) : BotApplicationConfiguration {
+    fun getBotConfiguration(botApplicationConfigurationId: String, namespace: String): BotApplicationConfiguration {
         val conf = applicationConfigurationDAO.getConfigurationById(botApplicationConfigurationId)
         if (conf?.namespace != namespace) {
             throw UnauthorizedException()
@@ -78,14 +77,29 @@ object BotAdminService {
         return dialogReportDAO.lastDialog(playerId)
     }
 
-    fun getRestApplicationConfigurations(namespace: String, applicationName: String): List<BotApplicationConfiguration> {
+    fun deleteApplicationConfiguration(conf: BotApplicationConfiguration) {
+        applicationConfigurationDAO.delete(conf)
+    }
+
+    fun getApplicationConfigurationById(id: String): BotApplicationConfiguration? {
+        return applicationConfigurationDAO.getConfigurationById(id)
+    }
+
+    fun getConfigurationByApplicationIdAndBotId(applicationId: String, botId: String): BotApplicationConfiguration? {
+        return applicationConfigurationDAO.getConfigurationByApplicationIdAndBotId(applicationId, botId)
+    }
+
+    fun saveApplicationConfiguration(conf: BotApplicationConfiguration) {
+        applicationConfigurationDAO.save(conf.copy(manuallyModified = true))
+    }
+
+    fun getApplicationConfigurations(namespace: String, applicationName: String): List<BotApplicationConfiguration> {
         val app = applicationDAO.getApplicationByNamespaceAndName(namespace, applicationName)
         return applicationConfigurationDAO
                 .getConfigurations()
                 .filter {
                     it.namespace == app?.namespace
                             && it.nlpModel == app.name
-                            && it.connectorType == restConnectorType
                 }
     }
 
