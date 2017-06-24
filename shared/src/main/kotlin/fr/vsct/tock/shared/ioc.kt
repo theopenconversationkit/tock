@@ -27,6 +27,6 @@ import fr.vsct.tock.shared.vertx.vertxRunner
 val injector = KodeinInjector()
 
 val sharedModule = Kodein.Module {
-    bind<Runner>() with provider { vertxRunner() }
+    bind<Executor>() with provider { vertxRunner() }
     bind<Cache>() with provider { MongoCache }
 }

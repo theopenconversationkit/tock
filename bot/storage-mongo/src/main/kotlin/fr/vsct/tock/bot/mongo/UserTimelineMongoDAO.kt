@@ -99,6 +99,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     override fun remove(playerId: PlayerId) {
         dialogCol.deleteMany("{playerIds:${playerId.json}}")
         userTimelineCol.deleteOne("{playerId:${playerId.json}}")
+        MongoUserLock.deleteLock(playerId.id)
     }
 
     override fun loadWithoutDialogs(userId: PlayerId): UserTimeline {

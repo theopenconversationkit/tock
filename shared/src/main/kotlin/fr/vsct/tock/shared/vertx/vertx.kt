@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.shared.vertx
 
-import fr.vsct.tock.shared.Runner
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.error
 import io.vertx.core.AsyncResult
@@ -56,8 +56,19 @@ fun <T> Vertx.blocking(blockingHandler: (Future<T>) -> Unit, resultHandler: (Asy
             })
 }
 
-fun vertxRunner(): Runner {
-    return object : Runner {
+fun vertxRunner(): Executor {
+    return object : Executor {
+
+        override fun executeBlocking(delay: Duration, runnable: () -> Unit) {
+            if (delay.isZero) {
+                executeBlocking(runnable)
+            } else {
+                vertx.setTimer(delay.toMillis(), {
+                    executeBlocking(runnable)
+                })
+            }
+        }
+
         override fun executeBlocking(runnable: () -> Unit) {
             vertx.blocking<Unit>({
                 invoke(runnable)

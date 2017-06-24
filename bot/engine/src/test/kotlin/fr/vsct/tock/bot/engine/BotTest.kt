@@ -35,6 +35,7 @@ import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.TranslatorEngine
@@ -54,6 +55,7 @@ class BotTest {
     }
 
     val nlp: NlpController = mock()
+    val executor: Executor = mock()
     val connector: Connector = mock {
         on { loadProfile(any(), any()) } doReturn (UserPreferences())
         on { connectorType } doReturn (ConnectorType("test"))
@@ -69,11 +71,11 @@ class BotTest {
     val userTimeline = UserTimeline(
             PlayerId("id")
     )
-
+    
     init {
         injector.inject(Kodein {
             bind<NlpController>() with provider { nlp }
-
+            bind<Executor>() with provider { executor }
             bind<UserLock>() with provider { userLock }
             bind<UserTimelineDAO>() with provider { userTimelineDAO }
             bind<I18nDAO>() with provider { i18nDAO }

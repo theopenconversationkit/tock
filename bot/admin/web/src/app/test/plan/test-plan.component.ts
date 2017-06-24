@@ -20,6 +20,7 @@ import {TestService} from "../test.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {MdSnackBar} from "@angular/material";
 import {BotConfigurationService} from "app/core/bot-configuration.service";
+import {DialogReport} from "../../shared/model/dialog-data";
 
 @Component({
   selector: 'tock-bot-test-plan',
@@ -34,6 +35,8 @@ export class TestPlanComponent implements OnInit {
   testPlanCreation: boolean;
   testPlanName: string;
   testBotConfigurationId: string;
+
+  executePlan: boolean;
 
   constructor(private state: StateService,
               private test: TestService,
@@ -101,10 +104,22 @@ export class TestPlanComponent implements OnInit {
   }
 
   exec(plan: TestPlan) {
+    this.executePlan = true;
     this.test.runTestPlan(plan._id).subscribe(
       execution => {
+        this.executePlan = false;
+        this.showExecutions(plan);
         this.snackBar.open(`Plan ${plan.name} executed with ${execution.nbErrors === 0 ? 'success' : execution.nbErrors + ' errors'}`, "Execution", {duration: 2000})
       })
+  }
+
+  removeDialog(plan: TestPlan, dialog: DialogReport) {
+    this.test
+      .removeDialogFromTestPlan(plan._id, dialog.id)
+      .subscribe(_ => {
+        plan.dialogs = plan.dialogs.filter(d => d.id !== dialog.id);
+        this.snackBar.open(`Dialog removed`, "Removal", {duration: 2000})
+      });
   }
 
   showDialogs(plan: TestPlan) {
@@ -119,6 +134,8 @@ export class TestPlanComponent implements OnInit {
     this.test.getTestPlanExecutions(plan._id)
       .subscribe(e => {
         plan.testPlanExecutions = e;
+        //fill errors
+        e.forEach(e => e.dialogs.forEach(d => plan.fillDialogExecutionReport(d)));
         plan.displayExecutions = true;
       });
   }

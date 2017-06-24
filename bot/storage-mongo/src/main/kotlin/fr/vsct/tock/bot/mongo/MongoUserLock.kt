@@ -20,6 +20,7 @@ import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.shared.error
 import mu.KotlinLogging
+import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.updateOneById
@@ -73,6 +74,14 @@ internal object MongoUserLock : UserLock {
             } else {
                 logger.warn { "lock deleted??? : $userId" }
             }
+        } catch(e: Exception) {
+            logger.error(e)
+        }
+    }
+
+    fun deleteLock(userId: String) {
+        try {
+            col.deleteOneById(userId)
         } catch(e: Exception) {
             logger.error(e)
         }

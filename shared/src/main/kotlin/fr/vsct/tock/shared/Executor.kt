@@ -22,7 +22,15 @@ import java.util.concurrent.Callable
 /**
  * Manage async tasks.
  */
-interface Runner {
+interface Executor {
+
+    /**
+     * Execute a task to another thread.
+     *
+     * @delay delay the delay before run
+     * @param runnable the task to run
+     */
+    fun executeBlocking(delay: Duration, runnable: () -> Unit)
 
     /**
      * Execute a task to another thread.

@@ -43,8 +43,10 @@ import fr.vsct.tock.bot.engine.message.SentenceElement
 import fr.vsct.tock.bot.engine.message.SentenceSubElement
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
+import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.shared.Dice
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.translator.UserInterfaceType
@@ -62,6 +64,7 @@ object TestPlanService {
     private val testPlanDAO: TestPlanDAO by injector.instance()
     private val userTimelineDAO: UserTimelineDAO by injector.instance()
     private val dialogDAO: DialogReportDAO by injector.instance()
+    private val executor: Executor by injector.instance()
 
     fun getPlanExecutions(plan: TestPlan): List<TestPlanExecution> {
         return testPlanDAO.getPlanExecutions(plan._id!!)
@@ -80,7 +83,7 @@ object TestPlanService {
     }
 
     fun removeDialogFromTestPlan(plan: TestPlan, dialogId: String) {
-        saveTestPlan(plan.copy(dialogs = plan.dialogs.filter { it._id != dialogId }))
+        saveTestPlan(plan.copy(dialogs = plan.dialogs.filter { it.id != dialogId }))
     }
 
     fun addDialogToTestPlan(plan: TestPlan, dialogId: String) {
@@ -125,16 +128,32 @@ object TestPlanService {
         return ClientAttachmentType.valueOf(name)
     }
 
+    private fun ClientAttachmentType.toAttachmentType(): SendAttachment.AttachmentType {
+        return SendAttachment.AttachmentType.valueOf(name)
+    }
+
     private fun Location.toClientLocation(): ClientLocation {
         return ClientLocation(location?.let { ClientUserLocation(it.lat, it.lng) })
+    }
+
+    private fun ClientLocation.toLocation(): Location {
+        return Location(location?.let { UserLocation(it.lat, it.lng) })
     }
 
     private fun ConnectorType.toClientConnectorType(): ClientConnectorType {
         return ClientConnectorType(id, userInterfaceType.toClientUserInterfaceType(), asynchronous)
     }
 
+    private fun ClientConnectorType.toConnectorType(): ConnectorType {
+        return ConnectorType(id, userInterfaceType.toUserInterfaceType(), asynchronous)
+    }
+
     private fun UserInterfaceType.toClientUserInterfaceType(): ClientUserInterfaceType {
         return ClientUserInterfaceType.valueOf(name)
+    }
+
+    private fun ClientUserInterfaceType.toUserInterfaceType(): UserInterfaceType {
+        return UserInterfaceType.valueOf(name)
     }
 
     internal fun Message.toClientMessage(): ClientMessage {
@@ -143,6 +162,16 @@ object TestPlanService {
             is Choice -> ClientChoice(intentName, parameters)
             is Attachment -> ClientAttachment(url, type.toClientAttachmentType())
             is Location -> toClientLocation()
+            else -> error("unsupported message $this")
+        }
+    }
+
+    internal fun ClientMessage.toMessage(): Message {
+        return when (this) {
+            is ClientSentence -> Sentence(text, messages.map { it.toSentenceElement() }.toMutableList())
+            is ClientChoice -> Choice(intentName, parameters)
+            is ClientAttachment -> Attachment(url, type.toAttachmentType())
+            is ClientLocation -> toLocation()
             else -> error("unsupported message $this")
         }
     }
@@ -159,12 +188,34 @@ object TestPlanService {
         )
     }
 
+    private fun ClientSentenceElement.toSentenceElement(): SentenceElement {
+        return SentenceElement(
+                connectorType.toConnectorType(),
+                attachments.map { it.toMessage() as Attachment },
+                choices.map { it.toMessage() as Choice },
+                texts,
+                locations.map { it.toLocation() },
+                metadata,
+                subElements.map { it.toSentenceSubElement() }
+        )
+    }
+
     private fun SentenceSubElement.toClientSentenceSubElement(): ClientSentenceSubElement {
         return ClientSentenceSubElement(
                 attachments.map { it.toClientMessage() as ClientAttachment },
                 choices.map { it.toClientMessage() as ClientChoice },
                 texts,
                 locations.map { it.toClientLocation() },
+                metadata
+        )
+    }
+
+    private fun ClientSentenceSubElement.toSentenceSubElement(): SentenceSubElement {
+        return SentenceSubElement(
+                attachments.map { it.toMessage() as Attachment },
+                choices.map { it.toMessage() as Choice },
+                texts,
+                locations.map { it.toLocation() },
                 metadata
         )
     }
@@ -187,20 +238,24 @@ object TestPlanService {
                     val expectedMessage = expectedBotMessages.removeAt(0)
                     if (expectedMessage != it.message.toClientMessage()) {
                         return DialogExecutionReport(
-                                dialog._id,
+                                dialog.id,
                                 true,
                                 it.id,
-                                it.message)
+                                expectedMessage.toMessage())
                     }
                 }
             }
 
-            DialogExecutionReport(dialog._id)
+            DialogExecutionReport(dialog.id)
         } catch(e: Exception) {
             logger.error(e)
-            DialogExecutionReport(dialog._id, true, errorMessage = e.message)
+            DialogExecutionReport(dialog.id, true, errorMessage = e.message)
         } finally {
-            userTimelineDAO.remove(PlayerId(playerId, PlayerType.user))
+            //remove the timeline 1s after the last call, as some other methods in the bot can take time
+            executor.executeBlocking(Duration.ofSeconds(1)) {
+                userTimelineDAO.remove(PlayerId(playerId, PlayerType.user))
+            }
+
         }
     }
 

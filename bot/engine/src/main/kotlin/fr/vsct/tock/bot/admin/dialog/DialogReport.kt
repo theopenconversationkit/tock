@@ -23,6 +23,6 @@ import fr.vsct.tock.shared.Dice
  */
 data class DialogReport(
         val actions: List<ActionReport> = emptyList(),
-        val _id: String = Dice.newId()
+        val id: String = Dice.newId()
 ) {
 }

@@ -19,10 +19,10 @@ import {JsonUtils} from "../../monitoring/model/json";
 
 export class DialogReport {
 
-  displayActions:boolean;
+  displayActions: boolean;
 
   constructor(public actions: ActionReport[],
-              public _id: string) {
+              public id: string) {
   }
 
   static fromJSON(json?: any): DialogReport {
@@ -44,7 +44,8 @@ export class ActionReport {
 
   constructor(public playerId: PlayerId,
               public date: Date,
-              public message: BotMessage) {
+              public message: BotMessage,
+              public id: String) {
   }
 
   isBot(): boolean {
@@ -90,7 +91,7 @@ export abstract class BotMessage {
   }
 
   static fromJSON(json?: any): BotMessage {
-    if(!json) {
+    if (!json) {
       return null;
     }
 

@@ -24,8 +24,17 @@
 
 .success {
   color:green;
+  height:auto;
+  vertical-align: middle;
 }
 
 .error {
   color:red;
+  height:auto;
+  vertical-align: middle;
 }
+
+.botAction {
+  color:brown;
+}
+

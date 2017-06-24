@@ -71,6 +71,21 @@ export class TestPlan {
               public _id?: string) {
   }
 
+  fillDialogExecutionReport(report: DialogExecutionReport){
+    if(report.error) {
+      const d = this.dialogs.find(d => report.dialogReportId === d.id);
+      if (d) {
+        const aIndex = d.actions.findIndex(a => a.id === report.errorActionId);
+        if(aIndex === -1) {
+             report.dialogReport = new DialogReport(d.actions, d.id);
+        } else {
+             report.dialogReport = new DialogReport(d.actions.slice(0, Math.min(aIndex+1, d.actions.length)), d.id)
+        }
+        report.dialogReport.displayActions = true;
+      }
+    }
+  }
+
   static fromJSON(json?: any): TestPlan {
     const value = Object.create(TestPlan.prototype);
 
@@ -88,6 +103,8 @@ export class TestPlan {
 }
 
 export class TestPlanExecution {
+
+  displayExecution: boolean;
 
   constructor(public testPlanId: string,
               public dialogs: DialogExecutionReport[],
@@ -115,11 +132,13 @@ export class TestPlanExecution {
 
 export class DialogExecutionReport {
 
+  dialogReport:DialogReport;
+
   constructor(public dialogReportId: string,
               public error: boolean,
               public errorActionId?: string,
               public returnedMessage?: BotMessage,
-              public errorMessag?: string) {
+              public errorMessage?: string) {
   }
 
   static fromJSON(json?: any): DialogExecutionReport {

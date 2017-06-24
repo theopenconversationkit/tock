@@ -127,7 +127,7 @@ export class UserTimelinesComponent implements OnInit, OnDestroy {
       this.snackBar.open(`Please select a Plan first`, "Error", {duration: 3000});
       return;
     }
-    this.monitoring.addDialogToTestPlan(planId, dialog._id)
+    this.monitoring.addDialogToTestPlan(planId, dialog.id)
       .subscribe(_ => this.snackBar.open(`Dialog added to plan`, "Dialog Added", {duration: 3000}));
   }
 

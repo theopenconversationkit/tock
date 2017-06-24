@@ -16,14 +16,18 @@
 
 package fr.vsct.tock.nlp.shared
 
-import fr.vsct.tock.shared.Runner
+import fr.vsct.tock.shared.Executor
 import java.time.Duration
 import java.util.concurrent.Callable
 
 /**
  *
  */
-object TestRunner : Runner {
+object TestExecutor : Executor {
+
+    override fun executeBlocking(delay: Duration, runnable: () -> Unit) {
+        TODO()
+    }
 
     override fun executeBlocking(runnable: () -> Unit) {
         Thread(runnable).start()

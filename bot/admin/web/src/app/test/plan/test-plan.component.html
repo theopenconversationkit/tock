@@ -94,6 +94,10 @@
                 <md-icon>visibility_off</md-icon>
                 Hide all sentences
               </button>
+              <button md-button (click)="removeDialog(p, d)" color="warn">
+                <md-icon>delete</md-icon>
+                Remove dialog
+              </button>
               <tock-display-dialog *ngIf="d.displayActions" [dialog]="d"></tock-display-dialog>
             </li>
           </ol>
@@ -106,19 +110,50 @@
             <md-icon>slideshow</md-icon>
             Hide Executions
           </button>
+          <div *ngIf="executePlan"><br>
+            <img src="/assets/images/loading.gif" width="40px" height="40px"/>
+          </div>
+
           <span *ngIf="p.displayExecutions">
-          <ol >
+          <ol>
             <li *ngFor="let e of p.testPlanExecutions">
+              {{e.date | amDateFormat: "HH:mm:ss YYYY-MM-DD"}}
+              <button *ngIf="!e.displayExecution" md-button (click)="e.displayExecution=true">
+                <md-icon>visibility</md-icon>
+                Display details
+              </button>
+              <button *ngIf="e.displayExecution" md-button (click)="e.displayExecution=false">
+                <md-icon>visibility_off</md-icon>
+                Hide details
+              </button>
               <span *ngIf="e.nbErrors === 0">
-              <md-icon class="success">check_circle</md-icon>
-                success
+                <md-icon style="height:auto" class="success">check_circle</md-icon>
+                {{e.dialogs.length}} conversation{{e.dialogs.length < 2 ? "" :"s"}}
               </span>
               <span *ngIf="e.nbErrors !== 0">
                 <md-icon class="error">error</md-icon>
-                {{e.nbErrors}} errors
+                {{e.nbErrors}} error{{e.nbErrors ? "":"s"}} / {{e.dialogs.length}} conversation{{e.dialogs.length < 2 ? "" :"s"}}
               </span>
-              - {{e.date | amDateFormat: "HH:mm:ss YYYY-MM-DD"}}
-              - duration: {{e.duration | amDuration : 'ms'}}
+              <ol *ngIf="e.displayExecution">
+                <li *ngFor="let details of e.dialogs">
+                  <span *ngIf="!details.error"><md-icon class="success">check_circle</md-icon> Success</span>
+                  <span *ngIf="details.error">
+                       <md-icon class="error">error</md-icon>
+                       Error
+                       <span *ngIf="details.dialogReport">
+                         <h4>Expected dialog:</h4>
+                            <tock-display-dialog [dialog]="details.dialogReport"></tock-display-dialog>
+                            <span *ngIf="details.returnedMessage">
+                              <h4>But last answer was:</h4>
+                            <tock-bot-message class="botAction" [message]="details.returnedMessage"
+                                              [user]="false"></tock-bot-message>
+                            </span>
+                       </span>
+                       <span *ngIf="details.errorMessage">{{details.errorMessage}}</span>
+                    <br>
+                  </span>
+                </li>
+              </ol>
             </li>
           </ol>
             </span>

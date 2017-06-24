@@ -25,13 +25,14 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.longProperty
-import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 import mu.KotlinLogging
+import java.time.Duration
 
 /**
  *
@@ -55,7 +56,7 @@ class ConnectorController internal constructor(
         }
     }
 
-
+    private val executor: Executor by injector.instance()
     private val userLock: UserLock by injector.instance()
     private val userTimelineDAO: UserTimelineDAO by injector.instance()
 
@@ -86,19 +87,9 @@ class ConnectorController internal constructor(
             }
         } else if (nbAttempts < maxLockedAttempts) {
             logger.debug { "$playerId locked - wait" }
-            vertx.setTimer(lockedAttemptsWaitInMs, {
-                vertx.executeBlocking<Void>(
-                        {
-                            try {
-                                handleAction(action, nbAttempts + 1)
-                            } finally {
-                                it.complete()
-                            }
-                        },
-                        false,
-                        {
-                        })
-            })
+            executor.executeBlocking(Duration.ofMillis(lockedAttemptsWaitInMs)) {
+                handleAction(action, nbAttempts + 1)
+            }
 
         } else {
             logger.debug { "$playerId locked for $maxLockedAttempts times - skip $action" }
@@ -127,30 +118,10 @@ class ConnectorController internal constructor(
     }
 
     private fun sendAsynchronous(action: Action, delay: Long = 0) {
-        try {
-            if (delay == 0L) {
-                sendAsynchronous(action)
-            } else {
-                vertx.setTimer(delay, {
-                    sendAsynchronous(action)
-                })
-            }
-        } catch(t: Throwable) {
-            logger.error(t)
+        executor.executeBlocking(Duration.ofMillis(delay)) {
+            logger.debug { "message sent: $action" }
+            connector.send(action)
         }
-    }
-
-    private fun sendAsynchronous(action: Action) {
-        vertx.executeBlocking<Void>({
-            try {
-                logger.debug { "message sent: $action" }
-                connector.send(action)
-            } catch(t: Throwable) {
-                logger.error(t)
-            } finally {
-                it.complete()
-            }
-        }, false, {})
     }
 
     fun errorMessage(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {

@@ -26,7 +26,7 @@ import fr.vsct.tock.nlp.model.IntentContext.IntentContextKey
 import fr.vsct.tock.nlp.model.ModelNotInitializedException
 import fr.vsct.tock.nlp.model.TokenizerContext
 import fr.vsct.tock.nlp.model.service.storage.NlpEngineModelIO
-import fr.vsct.tock.shared.Runner
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.longProperty
@@ -53,7 +53,7 @@ internal object NlpModelRepository {
 
     private val modelIO: NlpEngineModelIO by injector.instance()
 
-    private val runner: Runner by injector.instance()
+    private val executor: Executor by injector.instance()
 
     private val intentModelsCache: Cache<IntentContextKey, TimeStampedModel>
             = CacheBuilder.newBuilder().softValues().build()
@@ -65,8 +65,8 @@ internal object NlpModelRepository {
         if (booleanProperty("tock_nlp_model_refresh", true)) {
             logger.info { "start refresh model thread" }
             //10 minutes by default
-            runner.setPeriodic(Duration.ofSeconds(longProperty("tock_nlp_model_refresh_rate", 10 * 60))) {
-                runner.executeBlocking {
+            executor.setPeriodic(Duration.ofSeconds(longProperty("tock_nlp_model_refresh_rate", 10 * 60))) {
+                executor.executeBlocking {
                     logger.debug { "start refresh model process" }
                     intentModelsCache.asMap().forEach { key, value ->
                         logger.trace { "check intent model $key" }
@@ -150,7 +150,7 @@ internal object NlpModelRepository {
         val pipedOutputStream = PipedOutputStream()
         val pipedInputStream = PipedInputStream(pipedOutputStream)
         val latch = CountDownLatch(1)
-        runner.executeBlocking {
+        executor.executeBlocking {
             pipedOutputStream.use {
                 try {
                     copy(it)
