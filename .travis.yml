@@ -1,11 +1,10 @@
 language: java
 jdk:
 - oraclejdk8
-install: true
 branches:
   only:
   - master
-script: mvn package test -B install
+script: mvn test -B -Dskip.npm -Dassembly.skipAssembly=true
 cache:
   directories:
   - "$HOME/.m2/repository"
