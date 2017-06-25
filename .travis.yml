@@ -1,9 +1,11 @@
 language: java
 jdk:
 - oraclejdk8
+install: true
 branches:
   only:
   - master
+script: mvn package test -B
 cache:
   directories:
   - "$HOME/.m2/repository"
