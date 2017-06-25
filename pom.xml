@@ -324,7 +324,6 @@
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <releaseProfiles>deploy</releaseProfiles>
                     <tagNameFormat>tock-@{project.version}</tagNameFormat>
-                    <preparationGoals>clean package dokka:javadocJar verify</preparationGoals>
                     <goals>package dokka:javadocJar deploy</goals>
                 </configuration>
             </plugin>
