@@ -458,6 +458,18 @@
                 <gpg.skip>false</gpg.skip>
             </properties>
         </profile>
+        <profile>
+            <id>travis-deploy</id>
+            <activation>
+                <property>
+                    <name>travis</name>
+                </property>
+            </activation>
+            <properties>
+                <gpg.skip>false</gpg.skip>
+                <skip.npm>true</skip.npm>
+            </properties>
+        </profile>
     </profiles>
 
 </project>
