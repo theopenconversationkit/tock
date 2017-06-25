@@ -53,6 +53,11 @@ export class BotConfigurationComponent implements OnInit {
     this.newApplicationConfiguration = null;
   }
 
+  refresh() {
+    this.botConfiguration.updateConfigurations();
+    this.snackBar.open(`Configurations reloaded`, "Refresh", {duration: 1000});
+  }
+
   create() {
     this.botConfiguration.saveConfiguration(this.newApplicationConfiguration)
       .subscribe(_ => {
