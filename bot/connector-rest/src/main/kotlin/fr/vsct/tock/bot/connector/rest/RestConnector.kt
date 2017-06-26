@@ -28,7 +28,6 @@ import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
-import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
 import io.vertx.ext.web.RoutingContext
@@ -81,6 +80,8 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
                                 } catch(t: Throwable) {
                                     logger.error(t)
                                 }
+                            } finally {
+                                sendAnswer(message.userId)
                             }
                         } catch(t: Throwable) {
                             logger.error(t)
@@ -90,29 +91,27 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
         })
     }
 
+    private fun sendAnswer(userId: String) {
+        val response = currentMessages.getIfPresent(userId)
+        if (response == null) {
+            logger.error { "no message registered for $userId" }
+        } else {
+            val r = mapper.writeValueAsString(MessageResponse(
+                    response.actions.map { it.toMessage() }
+            ))
+            logger.debug { "response : $r" }
+            currentMessages.invalidate(userId)
+            response.context.response().end(r)
+        }
+    }
+
     override fun send(action: Action) {
         val response = currentMessages.getIfPresent(action.recipientId.id)
         if (response == null) {
             logger.error { "no message registered for $action" }
         } else {
             response.actions.add(action)
-            if (action.botMetadata.lastAnswer) {
-                val r = mapper.writeValueAsString(MessageResponse(
-                        response.actions.map { it.toMessage() }
-                ))
-                logger.debug { "response : $r" }
-                currentMessages.invalidate(action.recipientId)
-                response.context.response().end(r)
-            }
         }
     }
 
-    override fun startTypingInAnswerTo(action: Action) {
-        //do nothing for now
-    }
-
-    override fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences {
-        //do nothing
-        return UserPreferences()
-    }
 }

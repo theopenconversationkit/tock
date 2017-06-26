@@ -32,8 +32,13 @@ interface Connector {
 
     fun send(action: Action)
 
-    fun startTypingInAnswerTo(action: Action)
+    fun startTypingInAnswerTo(action: Action) {
+        //default implementation does nothing
+    }
 
-    fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences
+    fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences {
+        //default implementation returns empty userPref
+        return UserPreferences()
+    }
 
 }

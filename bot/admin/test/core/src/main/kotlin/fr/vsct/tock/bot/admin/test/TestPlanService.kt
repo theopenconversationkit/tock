@@ -251,11 +251,7 @@ object TestPlanService {
             logger.error(e)
             DialogExecutionReport(dialog.id, true, errorMessage = e.message)
         } finally {
-            //remove the timeline 1s after the last call, as some other methods in the bot can take time
-            executor.executeBlocking(Duration.ofSeconds(1)) {
-                userTimelineDAO.remove(PlayerId(playerId, PlayerType.user))
-            }
-
+            userTimelineDAO.remove(PlayerId(playerId, PlayerType.user))
         }
     }
 
