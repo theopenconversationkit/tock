@@ -126,7 +126,7 @@ class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
             TestPlanService.addDialogToTestPlan(context.loadTestPlan(), context.pathParam("dialogId"))
         }
 
-        blockingJsonPost("/test/plan/:planId/dialog/delete/:dialogId") { context, testPlan: TestPlan ->
+        blockingJsonPost("/test/plan/:planId/dialog/delete/:dialogId") { context, _: ApplicationScopedQuery ->
             TestPlanService.removeDialogFromTestPlan(
                     context.loadTestPlan(),
                     context.pathParam("dialogId"))
