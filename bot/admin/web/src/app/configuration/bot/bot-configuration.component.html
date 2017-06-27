@@ -26,7 +26,7 @@
   </md-card-subtitle>
   <md-card-content>
     <div>
-      <div *ngIf="(botConfiguration.allConfigurations|async).length ===0">
+      <div *ngIf="(botConfiguration.configurations|async).length ===0">
         <h3>No bot configuration detected.</h3>
       </div>
 
@@ -55,7 +55,7 @@
         </md-card-actions>
       </md-card>
 
-      <md-card *ngFor="let conf of (botConfiguration.allConfigurations|async)" class="conf">
+      <md-card *ngFor="let conf of (botConfiguration.configurations|async)" class="conf">
         <md-input-container>
           <input mdInput placeholder="Configuration name" [(ngModel)]="conf.name">
         </md-input-container>

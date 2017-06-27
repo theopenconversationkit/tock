@@ -51,7 +51,7 @@ export class TestPlanComponent implements OnInit {
     this.test
       .getTestPlans()
       .subscribe(p => {
-        this.botConfiguration.configurations.subscribe(c => {
+        this.botConfiguration.restConfigurations.subscribe(c => {
           p.forEach(plan => {
             const conf = c.find(c => c._id === plan.botApplicationConfigurationId);
             if (conf) {
@@ -65,7 +65,7 @@ export class TestPlanComponent implements OnInit {
 
   prepareCreateTestPlan() {
     this.testPlanCreation = true;
-    this.testBotConfigurationId = this.botConfiguration.configurations.value[0]._id;
+    this.testBotConfigurationId = this.botConfiguration.restConfigurations.value[0]._id;
   }
 
   createTestPlan() {
@@ -73,7 +73,7 @@ export class TestPlanComponent implements OnInit {
       this.snackBar.open(`Please enter a valid name`, "Error", {duration: 5000});
       return;
     }
-    const conf = this.botConfiguration.configurations.value.find(c => c._id === this.testBotConfigurationId);
+    const conf = this.botConfiguration.restConfigurations.value.find(c => c._id === this.testBotConfigurationId);
     this.test.saveTestPlan(
       new TestPlan(
         [],

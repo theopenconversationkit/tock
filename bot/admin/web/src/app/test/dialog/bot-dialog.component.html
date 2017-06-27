@@ -20,15 +20,15 @@
   <md-card-content>
     <br>
     <div>
-      <div *ngIf="(botConfiguration.configurations|async).length ===0">
+      <div *ngIf="(botConfiguration.restConfigurations|async).length ===0">
         <h3>No bot configuration detected.</h3>
       </div>
-      <div *ngIf="(botConfiguration.configurations|async).length!==0">
+      <div *ngIf="(botConfiguration.restConfigurations|async).length!==0">
         <md-select (change)="changeConfiguration($event.value)"
                    placeholder="Select a bot"
                    [ngModel]="currentConfigurationId"
                    class="select-configuration">
-          <md-option *ngFor="let conf of (botConfiguration.configurations|async)"
+          <md-option *ngFor="let conf of (botConfiguration.restConfigurations|async)"
                      [value]="conf._id">{{ conf.name }}
           </md-option>
         </md-select>

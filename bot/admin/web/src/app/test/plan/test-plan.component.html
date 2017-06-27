@@ -14,11 +14,11 @@
   ~ limitations under the License.
   -->
 
-<md-card *ngIf="(botConfiguration.configurations|async).length ===0">
+<md-card *ngIf="(botConfiguration.restConfigurations|async).length ===0">
   <h3>No bot configuration detected.</h3>
 </md-card>
 
-<md-card *ngIf="(botConfiguration.configurations|async).length !==0">
+<md-card *ngIf="(botConfiguration.restConfigurations|async).length !==0">
   <md-card-title>Test Plans</md-card-title>
   <md-card-subtitle>
     <button md-button (click)="prepareCreateTestPlan()" color="primary">
@@ -37,7 +37,7 @@
       <md-select placeholder="Select a bot"
                  [ngModel]="testBotConfigurationId"
                  class="select-configuration">
-        <md-option *ngFor="let conf of (botConfiguration.configurations|async)"
+        <md-option *ngFor="let conf of (botConfiguration.restConfigurations|async)"
                    [value]="conf._id">{{ conf.name }}
         </md-option>
       </md-select>

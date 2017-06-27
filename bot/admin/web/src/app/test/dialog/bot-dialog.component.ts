@@ -68,6 +68,7 @@ export class BotDialogComponent implements OnInit, OnDestroy {
     this.userMessage = "";
     this.messages = [];
     this.loading = false;
+    this.currentConfigurationId = applicationConfigurationId;
   }
 
   submit() {

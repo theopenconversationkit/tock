@@ -29,9 +29,9 @@ export class BotConfigurationService implements OnInit, OnDestroy {
   private currentLocaleUnsuscriber: any;
 
   //only rest configurations
-  configurations: BehaviorSubject<BotApplicationConfiguration[]> = new BehaviorSubject([]);
+  restConfigurations: BehaviorSubject<BotApplicationConfiguration[]> = new BehaviorSubject([]);
   //all configurations
-  allConfigurations: BehaviorSubject<BotApplicationConfiguration[]> = new BehaviorSubject([]);
+  configurations: BehaviorSubject<BotApplicationConfiguration[]> = new BehaviorSubject([]);
 
   constructor(private rest: RestService,
               private state: StateService) {
@@ -51,8 +51,8 @@ export class BotConfigurationService implements OnInit, OnDestroy {
   updateConfigurations() {
     this.getConfigurations(this.state.createApplicationScopedQuery())
       .subscribe(c => {
-        this.allConfigurations.next(c);
-        this.configurations.next(c.filter(c => c.connectorType.isRest()));
+        this.configurations.next(c);
+        this.restConfigurations.next(c.filter(c => c.connectorType.isRest()));
       });
   }
 
