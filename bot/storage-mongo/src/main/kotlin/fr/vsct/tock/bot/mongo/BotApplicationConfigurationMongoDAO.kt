@@ -23,13 +23,13 @@ import fr.vsct.tock.shared.error
 import mu.KotlinLogging
 import org.bson.types.ObjectId
 import org.litote.kmongo.createIndex
+import org.litote.kmongo.deleteOne
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
-import org.litote.kmongo.replaceOne
 import org.litote.kmongo.save
 
 /**
@@ -62,7 +62,8 @@ object BotApplicationConfigurationMongoDAO : BotApplicationConfigurationDAO {
             //TODO remove object id hook
             logger.error(e)
             val filter = "{applicationId:${conf.applicationId.json}, botId:${conf.botId.json}}"
-            col.replaceOne(filter, conf)
+            col.deleteOne(filter)
+            col.insertOne(conf)
             col.findOne(filter)!!
         }
     }
