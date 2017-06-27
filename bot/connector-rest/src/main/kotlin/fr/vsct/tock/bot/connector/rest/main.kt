@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.connector.rest
 
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorConfigurationRepository
 
@@ -46,7 +47,7 @@ fun addRestConnector(
     val configuration = ConnectorConfiguration(
             applicationId,
             path,
-            restConnectorType,
+            ConnectorType.rest,
             name,
             baseUrl
     )

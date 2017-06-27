@@ -20,18 +20,34 @@
 
     <parent>
         <groupId>fr.vsct.tock</groupId>
-        <artifactId>tock-bot-admin</artifactId>
+        <artifactId>tock-bot-admin-test</artifactId>
         <version>0.2.8-SNAPSHOT</version>
     </parent>
 
-    <artifactId>tock-bot-admin-test</artifactId>
-    <packaging>pom</packaging>
-    <name>Tock Bot Admin Test</name>
-    <description>Root project for Tock Bot Admin Test</description>
+    <artifactId>tock-bot-admin-test-xray</artifactId>
+    <name>Tock Bot Admin Test Xray</name>
+    <description>Xray connector for Tock Bot Admin Test</description>
 
-    <modules>
-        <module>core</module>
-        <module>xray</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>fr.vsct.tock</groupId>
+            <artifactId>tock-bot-admin-test-core</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fr.vsct.tock</groupId>
+            <artifactId>tock-bot-engine-jackson</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test-junit</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
 
 </project>

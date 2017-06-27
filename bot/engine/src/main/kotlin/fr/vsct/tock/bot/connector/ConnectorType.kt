@@ -30,6 +30,10 @@ data class ConnectorType(val id: String,
          * Not a specific connector type.
          */
         val none: ConnectorType = ConnectorType("NONE")
+        /**
+         * built-in rest connector.
+         */
+        val rest: ConnectorType = ConnectorType("rest", asynchronous = false)
     }
 
     override fun toString(): String {

@@ -46,7 +46,7 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
         private val logger = KotlinLogging.logger {}
     }
 
-    override val connectorType: ConnectorType = restConnectorType
+    override val connectorType: ConnectorType = ConnectorType.rest
 
     private val currentMessages: Cache<String, Response> = CacheBuilder.newBuilder()
             .expireAfterWrite(1, TimeUnit.MINUTES)

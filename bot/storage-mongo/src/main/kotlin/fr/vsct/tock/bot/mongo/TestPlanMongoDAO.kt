@@ -20,6 +20,7 @@ import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanDAO
 import fr.vsct.tock.bot.admin.test.TestPlanExecution
 import org.litote.kmongo.createIndex
+import org.litote.kmongo.deleteMany
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.find
 import org.litote.kmongo.findOneById
@@ -46,6 +47,7 @@ object TestPlanMongoDAO : TestPlanDAO {
 
     override fun removeTestPlan(planId: String) {
         testPlanCol.deleteOneById(planId)
+        testPlanExecutionCol.deleteMany("{'testPlanId':${planId.json}}")
     }
 
     override fun save(testPlan: TestPlanExecution) {
@@ -65,6 +67,6 @@ object TestPlanMongoDAO : TestPlanDAO {
     }
 
     override fun getPlanExecutions(testPlanId: String): List<TestPlanExecution> {
-        return testPlanExecutionCol.find().sort("{date:-1}").toList()
+        return testPlanExecutionCol.find("{'testPlanId':${testPlanId.json}}").sort("{date:-1}").toList()
     }
 }

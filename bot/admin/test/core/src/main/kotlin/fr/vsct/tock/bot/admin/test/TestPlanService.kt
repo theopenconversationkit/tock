@@ -102,6 +102,11 @@ object TestPlanService {
         return testPlanDAO.getPlan(planId)
     }
 
+    fun saveAndRunTestPlan(client: ConnectorRestClient, plan: TestPlan): TestPlanExecution {
+        testPlanDAO.save(plan)
+        return runTestPlan(client, plan)
+    }
+
     fun runTestPlan(client: ConnectorRestClient, plan: TestPlan): TestPlanExecution {
         val start = Instant.now()
         val dialogs: MutableList<DialogExecutionReport> = mutableListOf()

@@ -16,8 +16,8 @@
 
 package fr.vsct.tock.bot
 
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.rest.addRestConnector
-import fr.vsct.tock.bot.connector.rest.restConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.BotProviderBase
@@ -54,7 +54,7 @@ private fun install(routerHandlers: List<(Router) -> Unit>, installRestConnector
     BotIoc.setup()
 
     BotRepository.installBots(routerHandlers.toList()) { conf ->
-        if (installRestConnectors && conf.connectorType != restConnectorType) {
+        if (installRestConnectors && conf.connectorType != ConnectorType.rest) {
             addRestConnector(conf)
         } else {
             null

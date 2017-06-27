@@ -81,19 +81,21 @@ object BotAdminService {
         applicationConfigurationDAO.delete(conf)
     }
 
-    fun getApplicationConfigurationById(id: String): BotApplicationConfiguration? {
+    fun getBotConfigurationById(id: String): BotApplicationConfiguration? {
         return applicationConfigurationDAO.getConfigurationById(id)
     }
 
-    fun getConfigurationByApplicationIdAndBotId(applicationId: String, botId: String): BotApplicationConfiguration? {
+    fun getBotConfigurationByApplicationIdAndBotId(applicationId: String, botId: String): BotApplicationConfiguration? {
         return applicationConfigurationDAO.getConfigurationByApplicationIdAndBotId(applicationId, botId)
     }
 
-    fun saveApplicationConfiguration(conf: BotApplicationConfiguration) {
-        applicationConfigurationDAO.save(conf.copy(manuallyModified = true))
+    fun getBotConfigurationsByNamespaceAndBotId(namespace: String, botId: String): List<BotApplicationConfiguration> {
+        return applicationConfigurationDAO
+                .getConfigurations()
+                .filter { it.namespace == namespace && it.botId == botId }
     }
 
-    fun getApplicationConfigurations(namespace: String, applicationName: String): List<BotApplicationConfiguration> {
+    fun getBotConfigurationsByNamespaceAndApplicationName(namespace: String, applicationName: String): List<BotApplicationConfiguration> {
         val app = applicationDAO.getApplicationByNamespaceAndName(namespace, applicationName)
         return applicationConfigurationDAO
                 .getConfigurations()
@@ -103,14 +105,18 @@ object BotAdminService {
                 }
     }
 
+    fun saveApplicationConfiguration(conf: BotApplicationConfiguration) {
+        applicationConfigurationDAO.save(conf.copy(manuallyModified = true))
+    }
+
     fun talk(request: BotDialogRequest): BotDialogResponse {
         val conf = getBotConfiguration(request.botApplicationConfigurationId, request.namespace)
         return try {
             val restClient = getRestClient(conf)
             val response = restClient.talk(conf.applicationId,
                     ClientMessageRequest(
-                            "test_user",
-                            "test_bot",
+                            "test_${conf._id}",
+                            "test_bot_${conf._id}",
                             ClientSentence(request.text)))
 
             if (response.isSuccessful) {

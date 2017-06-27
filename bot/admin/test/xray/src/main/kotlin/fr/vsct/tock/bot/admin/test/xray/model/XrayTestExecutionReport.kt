@@ -13,10 +13,20 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.bot.connector.rest
-import fr.vsct.tock.bot.connector.ConnectorType
+
+package fr.vsct.tock.bot.admin.test.xray.model
+
+import java.time.OffsetDateTime
 
 /**
- * The REST connector type.
+ *
  */
-val restConnectorType = ConnectorType("rest", asynchronous = false)
+data class XrayTestExecutionReport(
+        val testKey: String,
+        val start: OffsetDateTime,
+        val finish: OffsetDateTime,
+        val comment: String,
+        val status: XrayStatus,
+        val steps: List<XrayTestExecutionStepReport>
+) {
+}

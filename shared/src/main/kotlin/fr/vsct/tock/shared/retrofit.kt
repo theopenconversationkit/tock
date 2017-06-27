@@ -20,6 +20,7 @@ import com.fasterxml.jackson.databind.ObjectMapper
 import fr.vsct.tock.shared.jackson.mapper
 import mu.KLogger
 import mu.KotlinLogging
+import okhttp3.Credentials
 import okhttp3.Headers
 import okhttp3.Interceptor
 import okhttp3.OkHttpClient
@@ -71,6 +72,21 @@ fun retrofitBuilderWithTimeoutAndLogger(
         .let {
             Retrofit.Builder().client(it)
         }
+
+fun basicAuthInterceptor(login: String, password: String): Interceptor {
+    val credential = Credentials.basic(login, password)
+    return object : Interceptor {
+        override fun intercept(chain: Interceptor.Chain): Response {
+            val original = chain.request()
+
+            val requestBuilder = original.newBuilder()
+                    .header("Authorization", credential)
+
+            val request = requestBuilder.build()
+            return chain.proceed(request)
+        }
+    }
+}
 
 fun Retrofit.Builder.addJacksonConverter(objectMapper: ObjectMapper = mapper): Retrofit.Builder = run {
     addConverterFactory(JacksonConverterFactory.create(objectMapper))

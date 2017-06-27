@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.test
-
-import fr.vsct.tock.bot.engine.message.Message
-import java.time.Duration
-import java.time.Instant
+package fr.vsct.tock.bot.admin.test.xray.model
 
 /**
  *
  */
-data class DialogExecutionReport(
-        val dialogReportId: String,
-        val error: Boolean = false,
-        val errorActionId: String? = null,
-        val returnedMessage: Message? = null,
-        val errorMessage: String? = null,
-        val date: Instant = Instant.now(),
-        val duration: Duration = Duration.ZERO) {
+data class XrayTest(
+        val id: String,
+        val key: String,
+        val latestStatus: XrayStatus) {
 }
