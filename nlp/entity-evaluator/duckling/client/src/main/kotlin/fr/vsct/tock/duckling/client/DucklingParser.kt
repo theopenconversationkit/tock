@@ -104,18 +104,23 @@ internal object DucklingParser : EntityEvaluator, EntityTypeClassifier, Parser {
 
         val parseResult = DucklingClient.parse(language, dimensions.toList(), referenceDate, referenceDate.zone, textToParse)
 
-        return dimensions
-                .flatMap { parseDimension(parseResult, it) }
-                .map {
-                    EntityTypeRecognition(
-                            EntityTypeValue(
-                                    it.start,
-                                    it.end,
-                                    entityTypeMap.getValue(it.type),
-                                    it.value,
-                                    true),
-                            ducklingAveragePertinence)
-                }
+        return if (parseResult == null) {
+            logger.warn { "parsing error for $language $dimensions $textToParse" }
+            emptyList()
+        } else {
+            dimensions
+                    .flatMap { parseDimension(parseResult, it) }
+                    .map {
+                        EntityTypeRecognition(
+                                EntityTypeValue(
+                                        it.start,
+                                        it.end,
+                                        entityTypeMap.getValue(it.type),
+                                        it.value,
+                                        true),
+                                ducklingAveragePertinence)
+                    }
+        }
     }
 
     override fun evaluate(context: EntityCallContextForEntity, text: String): EvaluationResult {
@@ -135,7 +140,12 @@ internal object DucklingParser : EntityEvaluator, EntityTypeClassifier, Parser {
     override fun parse(language: String, dimension: String, referenceDate: ZonedDateTime, textToParse: String): List<ValueWithRange> {
         val parseResult = DucklingClient.parse(language, listOf(dimension), referenceDate, referenceDate.zone, textToParse)
 
-        return parseDimension(parseResult, dimension)
+        return if (parseResult == null) {
+            logger.warn { "parse error for $language $dimension $textToParse" }
+            emptyList()
+        } else {
+            parseDimension(parseResult, dimension)
+        }
     }
 
     private fun parseDimension(parseResult: JSONValue, dimension: String): List<ValueWithRange> {

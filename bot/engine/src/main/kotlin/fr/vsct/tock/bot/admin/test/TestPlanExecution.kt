@@ -27,6 +27,6 @@ data class TestPlanExecution(
         val dialogs: List<DialogExecutionReport>,
         val nbErrors: Int,
         val date: Instant = Instant.now(),
-        val duration: Duration,
+        val duration: Duration = Duration.ZERO,
         val _id: String? = null) {
 }

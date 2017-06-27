@@ -27,8 +27,8 @@ import fr.vsct.tock.nlp.model.service.engine.NlpEngineModelBuilder
 import fr.vsct.tock.nlp.model.service.engine.TokenizerModelHolder
 import fr.vsct.tock.shared.mapNotNullValues
 import mu.KotlinLogging
-import opennlp.tools.ml.maxent.GIS
 import opennlp.tools.ml.maxent.GISModel
+import opennlp.tools.ml.maxent.GISTrainer
 import opennlp.tools.ml.model.AbstractDataIndexer.CUTOFF_PARAM
 import opennlp.tools.ml.model.Context
 import opennlp.tools.ml.model.Event
@@ -72,7 +72,7 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
                     )
                     , null)
             dataIndexer.index(events)
-            GIS.trainModel(1000, dataIndexer, false, false, null)
+            GISTrainer().trainModel(1000, dataIndexer)
         }
 
         return IntentModelHolder(context.application, model, Instant.now())

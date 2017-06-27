@@ -87,14 +87,18 @@ internal class MessengerClient(val secretKey: String) {
         }
     }
 
+    private fun defaultUserProfile(): UserProfile {
+        return UserProfile("", "", null, null, 0, null)
+    }
+
     fun getUserProfile(token: String, recipient: Recipient): UserProfile {
         val requestTimerData = requestTimer.start("messenger_user_profile")
-        try {
-            return graphApi.getUserProfile(recipient.id!!, token, "first_name,last_name,profile_pic,locale,timezone,gender")
-                    .execute().body()
+        return try {
+            graphApi.getUserProfile(recipient.id!!, token, "first_name,last_name,profile_pic,locale,timezone,gender")
+                    .execute().body() ?: defaultUserProfile()
         } catch(e: Exception) {
             logger.logError(e, requestTimerData)
-            return UserProfile("", "", null, null, 0, null)
+            defaultUserProfile()
         } finally {
             requestTimer.end(requestTimerData)
         }
@@ -113,10 +117,10 @@ internal class MessengerClient(val secretKey: String) {
                 val error = response.message()
                 val errorCode = response.code()
                 logger.warn { "Messenger Error : $errorCode $error" }
-                val errorBody = response.errorBody().string()
+                val errorBody = response.errorBody()?.string()
                 logger.warn { "Messenger Error body : $errorBody" }
 
-                if (request is MessageRequest && nbTries <= nbRetriesLimit) {
+                if (request is MessageRequest && nbTries <= nbRetriesLimit && errorBody != null) {
                     val errorContainer: SendResponseErrorContainer = mapper.readValue(errorBody)
                     if (errorContainer.error != null) {
                         //cf https://developers.facebook.com/docs/messenger-platform/send-api-reference/errors
@@ -131,7 +135,7 @@ internal class MessengerClient(val secretKey: String) {
                 }
                 throw ConnectorException(response.message())
             } else {
-                return response.body()
+                return response.body() ?: throw ConnectorException("null body")
             }
         } catch(e: Exception) {
             logger.logError(e, requestTimerData)

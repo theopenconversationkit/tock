@@ -60,7 +60,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                 logger.trace { "Sentences : ${sentences.map { it.text }}" }
 
                 front.updateIntentsModelForApplication(sentences, app, key.language, app.nlpEngineType)
-                sentences.groupBy { it.classification.intentId }.forEach { intentId, sentences ->
+                sentences.groupBy { it.classification.intentId }.forEach { intentId, _ ->
                     front.updateEntityModelForIntent(sentences, app, intentId, key.language, app.nlpEngineType)
                 }
 

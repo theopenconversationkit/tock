@@ -26,14 +26,13 @@ import okhttp3.Interceptor
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
 import okhttp3.Response
-import okhttp3.internal.http.HttpEngine
+import okhttp3.internal.http.HttpHeaders
 import okhttp3.logging.HttpLoggingInterceptor
 import okio.Buffer
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.EOFException
 import java.nio.charset.StandardCharsets.UTF_8
-import java.nio.charset.UnsupportedCharsetException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
@@ -235,7 +234,7 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
 
         val tookMs = TimeUnit.NANOSECONDS.toMillis(System.nanoTime() - startNs)
 
-        val responseBody = response.body()
+        val responseBody = response.body()!!
         val contentLength = responseBody.contentLength()
         val bodySize = if (contentLength != -1L) contentLength.toString() + "-byte" else "unknown-length"
         logger.info("<-- " + response.code() + ' ' + response.message() + ' '
@@ -254,7 +253,7 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
                 i++
             }
 
-            if (!logBody || !HttpEngine.hasBody(response)) {
+            if (!logBody || !HttpHeaders.hasBody(response)) {
                 logger.info("<-- END HTTP")
             } else if (bodyEncoded(response.headers())) {
                 logger.info("<-- END HTTP (encoded body omitted)")
@@ -266,16 +265,7 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
                 var charset = UTF_8
                 val contentType = responseBody.contentType()
                 if (contentType != null) {
-                    try {
-                        charset = contentType.charset(UTF_8)
-                    } catch (e: UnsupportedCharsetException) {
-                        logger.info("")
-                        logger.info("Couldn't decode the response body; charset is likely malformed.")
-                        logger.info("<-- END HTTP")
-
-                        return response
-                    }
-
+                    charset = contentType.charset(UTF_8);
                 }
 
                 if (!isPlaintext(buffer)) {

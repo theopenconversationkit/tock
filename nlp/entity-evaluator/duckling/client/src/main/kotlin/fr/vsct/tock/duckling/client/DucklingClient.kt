@@ -83,11 +83,11 @@ internal object DucklingClient {
             return JacksonJsonArrayConverter
         }
 
-        override fun requestBodyConverter(type: Type, parameterAnnotations: Array<out Annotation>, methodAnnotations: Array<out Annotation>, retrofit: Retrofit): Converter<*, RequestBody> {
+        override fun requestBodyConverter(type: Type, parameterAnnotations: Array<out Annotation>, methodAnnotations: Array<out Annotation>, retrofit: Retrofit): Converter<*, RequestBody>? {
             return jacksonConverterFactory.requestBodyConverter(type, parameterAnnotations, methodAnnotations, retrofit)
         }
 
-        override fun stringConverter(type: Type, annotations: Array<out Annotation>, retrofit: Retrofit): Converter<*, String> {
+        override fun stringConverter(type: Type, annotations: Array<out Annotation>, retrofit: Retrofit): Converter<*, String>? {
             return jacksonConverterFactory.stringConverter(type, annotations, retrofit)
         }
     }
@@ -97,7 +97,7 @@ internal object DucklingClient {
             dimensions: List<String>,
             referenceDate: ZonedDateTime,
             referenceTimezone: ZoneId,
-            textToParse: String): JSONValue {
+            textToParse: String): JSONValue? {
         return service.parse(ParseRequest(language, dimensions, referenceDate, referenceTimezone, textToParse)).execute().body()
     }
 

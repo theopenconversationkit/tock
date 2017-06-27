@@ -132,8 +132,7 @@ object Nlp : NlpController {
                     dialog.id,
                     connector.connectorType.toString(),
                     referenceDate = ZonedDateTime.now(userTimeline.userPreferences.timezone),
-                    referenceTimezone = userTimeline.userPreferences.timezone,
-                    engineType = botDefinition.engineType
+                    referenceTimezone = userTimeline.userPreferences.timezone
             )
         }
 
@@ -216,7 +215,7 @@ object Nlp : NlpController {
             val response = nlpClient.parse(request)
             val result = response.body()
             if (result == null) {
-                logger.error { "nlp error : ${response.errorBody().string()}" }
+                logger.error { "nlp error : ${response.errorBody()?.string()}" }
             }
             return result
         }
@@ -225,7 +224,7 @@ object Nlp : NlpController {
             val response = nlpClient.mergeValues(request)
             val result = response.body()
             if (result == null) {
-                logger.error { "nlp error : ${response.errorBody().string()}" }
+                logger.error { "nlp error : ${response.errorBody()?.string()}" }
             }
             return result
         }
@@ -240,7 +239,7 @@ object Nlp : NlpController {
         SentenceParser(sentence, userTimeline, dialog, connector, botDefinition).parse()
     }
 
-    override fun importNlpDump(stream: InputStream): Boolean = nlpClient.importNlpDump(stream).body()
+    override fun importNlpDump(stream: InputStream): Boolean = nlpClient.importNlpDump(stream).body() ?: false
 
-    override fun importNlpPlainDump(dump: ApplicationDump): Boolean = nlpClient.importNlpPlainDump(dump).body()
+    override fun importNlpPlainDump(dump: ApplicationDump): Boolean = nlpClient.importNlpPlainDump(dump).body() ?: false
 }

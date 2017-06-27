@@ -29,7 +29,7 @@
     <description>Bot Connector for Facebook Messenger</description>
 
     <properties>
-        <commons-codec>1.9</commons-codec>
+        <commons-codec>1.10</commons-codec>
         <commons-lang>3.5</commons-lang>
     </properties>
 

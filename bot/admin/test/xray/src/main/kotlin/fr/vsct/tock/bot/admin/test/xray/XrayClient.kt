@@ -49,10 +49,10 @@ object XrayClient {
     }
 
     fun getTestPlanTests(testPlanKey: String): List<XrayTest>
-            = xray.getTestPlanTests(testPlanKey).execute().body()
+            = xray.getTestPlanTests(testPlanKey).execute().body() ?: emptyList()
 
     fun getTestSteps(testKey: String): List<XrayTestStep>
-            = xray.getTestSteps(testKey).execute().body()
+            = xray.getTestSteps(testKey).execute().body() ?: emptyList()
 
     fun sendTestExecution(execution: XrayTestExecution)
             = xray.sendTestExecution(execution).execute()

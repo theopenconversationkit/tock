@@ -251,7 +251,7 @@ object TestPlanService {
                                     botId,
                                     it.message.toClientMessage()
                             ))
-                    expectedBotMessages = answer.body().messages.toMutableList()
+                    expectedBotMessages = answer.body()?.messages?.toMutableList() ?: mutableListOf()
                 } else {
                     val expectedMessage = expectedBotMessages.removeAt(0)
                     if (expectedMessage != it.message.toClientMessage()) {

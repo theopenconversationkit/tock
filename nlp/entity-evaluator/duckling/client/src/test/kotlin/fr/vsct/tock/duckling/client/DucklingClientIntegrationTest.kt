@@ -41,7 +41,7 @@ class DucklingClientIntegrationTest {
     fun testSimpleCall() {
         val result = DucklingClient.parse("fr", listOf("time"), now(), systemDefault(), "10 août 2055")
         println(result)
-        assertEquals(LocalDateTime.of(2055, Month.AUGUST, 10, 0, 0).atZone(systemDefault()).withFixedOffsetZone(), parse(result[0][":value"][":values"][0][":value"].string(), formatter))
+        assertEquals(LocalDateTime.of(2055, Month.AUGUST, 10, 0, 0).atZone(systemDefault()).withFixedOffsetZone(), parse(result!![0][":value"][":values"][0][":value"].string(), formatter))
     }
 
     @Test
@@ -49,14 +49,14 @@ class DucklingClientIntegrationTest {
         val referenceDate = now()
         val result = DucklingClient.parse("fr", listOf("time"), referenceDate, systemDefault(), "dans 1h")
         println(result)
-        assertEquals(referenceDate.plusHours(1).withSecond(0).withNano(0).withFixedOffsetZone(), parse(result[0][":value"][":values"][0][":value"].string(), formatter))
+        assertEquals(referenceDate.plusHours(1).withSecond(0).withNano(0).withFixedOffsetZone(), parse(result!![0][":value"][":values"][0][":value"].string(), formatter))
     }
 
     @Test
     fun testIntervalDate() {
         val result = DucklingClient.parse("fr", listOf("time"), now(), systemDefault(), "du samedi 3 au dimanche 4 septembre")
         println(result)
-        assertEquals(3, parse(result[0][":value"][":from"][":value"].string(), formatter).dayOfMonth)
+        assertEquals(3, parse(result!![0][":value"][":from"][":value"].string(), formatter).dayOfMonth)
     }
 
     @Test
@@ -67,7 +67,7 @@ class DucklingClientIntegrationTest {
         println(result)
         assertEquals(
                 now.withZoneSameInstant(zoneId).plusHours(1).toLocalDateTime().truncatedTo(ChronoUnit.MINUTES),
-                parse(result[0][":value"][":values"][0][":value"].string(), formatter).toLocalDateTime()
+                parse(result!![0][":value"][":values"][0][":value"].string(), formatter).toLocalDateTime()
         )
     }
 
@@ -78,7 +78,7 @@ class DucklingClientIntegrationTest {
         println(result)
         assertEquals(
                 now.withHour(18).toLocalDateTime().truncatedTo(ChronoUnit.HOURS),
-                parse(result[0][":value"][":from"][":value"].string(), formatter).toLocalDateTime()
+                parse(result!![0][":value"][":from"][":value"].string(), formatter).toLocalDateTime()
         )
     }
 

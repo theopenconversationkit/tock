@@ -30,7 +30,6 @@ import fr.vsct.tock.bot.connector.rest.client.ConnectorRestClient
 import fr.vsct.tock.bot.connector.rest.client.model.ClientMessageRequest
 import fr.vsct.tock.bot.connector.rest.client.model.ClientSentence
 import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.service.applicationDAO
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
@@ -47,7 +46,6 @@ object BotAdminService {
     private val logger = KotlinLogging.logger {}
 
     val defaultRestConnectorBaseUrl = property("tock_bot_admin_rest_default_base_url", "please set base url of the bot")
-    val front = FrontClient
     val userReportDAO: UserReportDAO  by injector.instance()
     val dialogReportDAO: DialogReportDAO  by injector.instance()
     val applicationConfigurationDAO: BotApplicationConfigurationDAO  by injector.instance()
@@ -120,7 +118,7 @@ object BotAdminService {
                             ClientSentence(request.text)))
 
             if (response.isSuccessful) {
-                BotDialogResponse(response.body().messages)
+                BotDialogResponse(response.body()?.messages ?: emptyList())
             } else {
                 BotDialogResponse(listOf(ClientSentence("technical error :(")))
             }
