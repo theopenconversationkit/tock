@@ -35,4 +35,6 @@ interface Message {
     fun toAction(playerId: PlayerId,
                  applicationId: String,
                  recipientId: PlayerId): Action
+
+    fun toStringDisplay() = toString()
 }

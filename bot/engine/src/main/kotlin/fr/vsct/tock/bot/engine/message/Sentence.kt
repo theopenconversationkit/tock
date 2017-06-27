@@ -59,4 +59,8 @@ data class Sentence(
                     }
                 }.toMutableList())
     }
+
+    override fun toStringDisplay(): String {
+        return text ?: super.toStringDisplay()
+    }
 }

@@ -112,7 +112,7 @@ object TestPlanService {
         val dialogs: MutableList<DialogExecutionReport> = mutableListOf()
         var nbErrors: Int = 0
         plan.dialogs.forEach {
-            runDialog(client, plan.applicationId, it).run {
+            runDialog(client, plan, it).run {
                 dialogs.add(this)
                 if (error) {
                     nbErrors++
@@ -225,14 +225,27 @@ object TestPlanService {
         )
     }
 
-    private fun runDialog(client: ConnectorRestClient, appId: String, dialog: DialogReport): DialogExecutionReport {
+    private fun runDialog(
+            client: ConnectorRestClient,
+            testPlan: TestPlan,
+            dialog: DialogReport): DialogExecutionReport {
         val playerId = Dice.newId()
         val botId = Dice.newId()
         return try {
             var expectedBotMessages: MutableList<ClientMessage> = mutableListOf()
+            //send first action if specified
+            if (testPlan.startAction != null) {
+                client.talk(testPlan.applicationId,
+                        ClientMessageRequest(
+                                playerId,
+                                botId,
+                                testPlan.startAction!!.toClientMessage()
+                        ))
+            }
+
             dialog.actions.forEach {
                 if (it.playerId.type == PlayerType.user) {
-                    val answer = client.talk(appId,
+                    val answer = client.talk(testPlan.applicationId,
                             ClientMessageRequest(
                                     playerId,
                                     botId,

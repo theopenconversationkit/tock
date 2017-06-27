@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.admin.test.xray.model.XrayTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecution
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecutionInfo
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecutionReport
+import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecutionStepReport
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.message.Sentence
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -50,6 +51,7 @@ object XrayService {
     private val logger = KotlinLogging.logger {}
 
     private val testedBotId: String = property("tock_bot_test_botId", "please set a bot id to test")
+    private val startSentence: String = property("tock_bot_test_start_sentence", "")
     private val userId = PlayerId("testUser", PlayerType.user)
     private val botId = PlayerId("testBot", PlayerType.bot)
     private val instant = Instant.now()
@@ -90,28 +92,67 @@ object XrayService {
         }
     }
 
-    private fun executePlan(configuration: XrayExecutionConfiguration, testPlan: TestPlan) {
+    private fun executePlan(
+            configuration: XrayExecutionConfiguration,
+            testPlan: TestPlan) {
         val now = OffsetDateTime.now()
         val execution = TockTestClient.executeTestPlan(testPlan)
         val end = OffsetDateTime.now()
+
         val xrayExecution = XrayTestExecution(
                 XrayTestExecutionInfo(
-                        "${testPlan.name} automated execution",
-                        "started from batch",
+                        "${testPlan.name} - ${configuration.botConfiguration.name}",
+                        "Automatized Test Execution",
                         now,
                         end,
                         testPlan.name,
                         listOf(configuration.environment)
 
                 ),
-                execution.dialogs.map {
+                execution.dialogs.map { dialogReport ->
+                    val dialog = testPlan.dialogs.firstOrNull {
+                        it.id == dialogReport.dialogReportId
+                    }
+                    var stepViewed = false
                     XrayTestExecutionReport(
-                            it.dialogReportId,
-                            OffsetDateTime.ofInstant(it.date, defaultZoneId),
-                            OffsetDateTime.ofInstant(it.date, defaultZoneId).plus(it.duration),
-                            if (it.error) "Failed execution" else "Successful execution",
-                            if (it.error) XrayStatus.FAIL else XrayStatus.PASS,
-                            emptyList()
+                            dialogReport.dialogReportId,
+                            OffsetDateTime.ofInstant(dialogReport.date, defaultZoneId),
+                            OffsetDateTime.ofInstant(dialogReport.date, defaultZoneId).plus(dialogReport.duration),
+                            if (dialogReport.error) "Failed execution" else "Successful execution",
+                            if (dialogReport.error) XrayStatus.FAIL else XrayStatus.PASS,
+                            if (dialog == null) {
+                                emptyList()
+                            } else {
+                                dialog.actions.filter {
+                                    it.playerId.type == PlayerType.bot
+                                }.map {
+                                    val status = if (!dialogReport.error) {
+                                        XrayStatus.PASS
+                                    } else if (stepViewed) {
+                                        XrayStatus.TODO
+                                    } else if (dialogReport.errorActionId == it.id) {
+                                        stepViewed = true
+                                        XrayStatus.FAIL
+                                    } else {
+                                        XrayStatus.PASS
+                                    }
+                                    XrayTestExecutionStepReport(
+                                            when (status) {
+                                                XrayStatus.PASS -> "Test successful"
+                                                XrayStatus.TODO -> "Skipped"
+                                                XrayStatus.FAIL ->
+                                                    if (dialogReport.returnedMessage != null) {
+                                                        "TestFailed : ${dialogReport.returnedMessage?.toStringDisplay()}"
+                                                    } else if (dialogReport.errorMessage != null) {
+                                                        "TestFailed : ${dialogReport.errorMessage}"
+                                                    } else {
+                                                        "Test failed"
+                                                    }
+                                            },
+                                            status
+                                    )
+                                }
+                            }
                     )
                 }
         )
@@ -128,6 +169,7 @@ object XrayService {
                     botConfiguration.namespace,
                     botConfiguration.nlpModel,
                     botConfiguration._id!!,
+                    if (startSentence.isBlank()) null else Sentence(startSentence),
                     "planKey_${configuration.botConfiguration.applicationId}"
             )
         }

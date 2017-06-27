@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.admin.test
 
 import fr.vsct.tock.bot.admin.dialog.DialogReport
+import fr.vsct.tock.bot.engine.message.Message
 
 /**
  *
@@ -24,10 +25,11 @@ import fr.vsct.tock.bot.admin.dialog.DialogReport
 data class TestPlan(
         val dialogs: List<DialogReport>,
         val name: String,
-        val applicationId:String,
-        val namespace:String,
-        val nlpModel:String,
-        val botApplicationConfigurationId:String,
+        val applicationId: String,
+        val namespace: String,
+        val nlpModel: String,
+        val botApplicationConfigurationId: String,
+        val startAction: Message? = null,
         val _id: String? = null
 ) {
 }
