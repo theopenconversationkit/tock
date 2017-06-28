@@ -16,13 +16,10 @@
 
 package fr.vsct.tock.bot.engine.event
 
+import fr.vsct.tock.bot.engine.user.PlayerId
+
 /**
- *
+ * The "start of typing" event.
  */
-enum class EventType(val action: Boolean = true) {
-
-    sentence, choice, attachment, location,
-    subscribing(false),
-    typingOn(false), typingOff(false), markSeen(false)
-
+class TypingOnEvent(val recipientId: PlayerId, applicationId: String) : Event(applicationId) {
 }

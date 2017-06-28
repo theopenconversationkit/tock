@@ -26,6 +26,7 @@ import fr.vsct.tock.bot.connector.rest.model.MessageRequest
 import fr.vsct.tock.bot.connector.rest.model.MessageResponse
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.shared.error
@@ -105,12 +106,16 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
         }
     }
 
-    override fun send(action: Action) {
-        val response = currentMessages.getIfPresent(action.recipientId.id)
-        if (response == null) {
-            logger.error { "no message registered for $action" }
+    override fun send(event: Event) {
+        if (event is Action) {
+            val response = currentMessages.getIfPresent(event.recipientId.id)
+            if (response == null) {
+                logger.error { "no message registered for $event" }
+            } else {
+                response.actions.add(event)
+            }
         } else {
-            response.actions.add(action)
+            logger.trace { "unsupported event: $event" }
         }
     }
 

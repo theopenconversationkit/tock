@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.connector
 
 import fr.vsct.tock.bot.engine.ConnectorController
-import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserPreferences
 
@@ -30,11 +30,7 @@ interface Connector {
 
     fun register(controller: ConnectorController)
 
-    fun send(action: Action)
-
-    fun startTypingInAnswerTo(action: Action) {
-        //default implementation does nothing
-    }
+    fun send(event: Event)
 
     fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences {
         //default implementation returns empty userPref

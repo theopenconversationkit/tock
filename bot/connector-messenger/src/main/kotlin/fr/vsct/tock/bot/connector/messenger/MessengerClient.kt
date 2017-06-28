@@ -78,12 +78,13 @@ internal class MessengerClient(val secretKey: String) {
         return send(messageRequest, { graphApi.sendMessage(token, messageRequest).execute() })
     }
 
-    fun sendAction(token: String, actionRequest: ActionRequest) {
-        try {
+    fun sendAction(token: String, actionRequest: ActionRequest): SendResponse? {
+        return try {
             send(actionRequest, { graphApi.activateTyping(token, actionRequest).execute() })
         } catch(e: Exception) {
             //log and ignore
             logger.error(e)
+            null
         }
     }
 

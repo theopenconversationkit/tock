@@ -21,6 +21,7 @@ import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.bot.engine.event.TypingOnEvent
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.engine.user.UserPreferences
@@ -135,7 +136,7 @@ class ConnectorController internal constructor(
     }
 
     internal fun startTypingInAnswerTo(action: Action) {
-        connector.startTypingInAnswerTo(action)
+        connector.send(TypingOnEvent(action.playerId, action.applicationId))
     }
 
 }

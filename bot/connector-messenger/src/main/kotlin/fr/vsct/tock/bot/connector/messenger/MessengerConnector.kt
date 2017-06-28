@@ -29,6 +29,10 @@ import fr.vsct.tock.bot.connector.messenger.model.webhook.CallbackRequest
 import fr.vsct.tock.bot.engine.BotRepository.requestTimer
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.bot.engine.event.MarkSeenEvent
+import fr.vsct.tock.bot.engine.event.TypingOffEvent
+import fr.vsct.tock.bot.engine.event.TypingOnEvent
 import fr.vsct.tock.bot.engine.monitoring.logError
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType.bot
@@ -169,26 +173,40 @@ class MessengerConnector internal constructor(
     /**
      * Send an action to messenger.
      *
-     * @param action the action to send
-     * @param transformAction method to transform the request before sending - default is identity
-     * @param postAction method (with token parameter) launched after successful call - default do nothing
+     * @param event the action to send
+     * @param transformMessageRequest method to transform the [MessageRequest] before sending - default is identity
+     * @param postMessage method (with token parameter) launched after successful [MessageRequest] call - default do nothing
+     * @param transformActionRequest method to transform the [ActionRequest] before sending - default is identity
      */
-    fun sendAction(
-            action: Action,
-            transformAction: (MessageRequest) -> MessageRequest = { it },
-            postAction: (String) -> Unit = {}): SendResponse? {
+    fun sendEvent(
+            event: Event,
+            transformMessageRequest: (MessageRequest) -> MessageRequest = { it },
+            postMessage: (String) -> Unit = {},
+            transformActionRequest: (ActionRequest) -> ActionRequest = { it }): SendResponse? {
         return try {
-            var message = SendActionConverter.toMessageRequest(action)
-            if (message != null) {
-                message = transformAction.invoke(message)
-                logger.debug { "message sent: $message to ${action.recipientId}" }
-                val token = getToken(action)
-                val response = client.sendMessage(token, message)
-                postAction.invoke(token)
-                response
+            if (event is Action) {
+                var message = SendActionConverter.toMessageRequest(event)
+                if (message != null) {
+                    message = transformMessageRequest.invoke(message)
+                    logger.debug { "message sent: $message to ${event.recipientId}" }
+                    val token = getToken(event)
+                    val response = client.sendMessage(token, message)
+                    postMessage.invoke(token)
+                    response
+                } else {
+                    logger.error { "unable to convert $event to message" }
+                    null
+                }
             } else {
-                logger.error { "unable to convert $action to message" }
-                null
+                when (event) {
+                    is TypingOnEvent -> client.sendAction(getToken(event), transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_on)))
+                    is TypingOffEvent -> client.sendAction(getToken(event), transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_off)))
+                    is MarkSeenEvent -> client.sendAction(getToken(event), transformActionRequest(ActionRequest(Recipient(event.recipientId.id), mark_seen)))
+                    else -> {
+                        logger.warn { "unsupported event $event" }
+                        null
+                    }
+                }
             }
         } catch(e: Throwable) {
             logger.error(e)
@@ -203,34 +221,36 @@ class MessengerConnector internal constructor(
      * @param action the action to send
      * @return the real user id, null if error
      */
-    fun sendActionAfterOptIn(action: Action): String? {
-        val response = sendAction(
-                action,
-                { request ->
+    fun sendEventAfterOptIn(event: Event): String? {
+        val response = sendEvent(
+                event,
+                transformMessageRequest = { request ->
+                    //need to use the user_ref here
+                    request.copy(recipient = Recipient(null, request.recipient.id))
+                },
+                transformActionRequest = { request ->
                     //need to use the user_ref here
                     request.copy(recipient = Recipient(null, request.recipient.id))
                 })
         return response?.recipientId
     }
 
-    override fun send(action: Action) {
-        sendAction(
-                action,
-                postAction =
+    override fun send(event: Event) {
+        sendEvent(
+                event,
+                postMessage =
                 { token ->
-                    val recipient = Recipient(action.recipientId.id)
-                    if (action.botMetadata.lastAnswer) {
-                        client.sendAction(token, ActionRequest(recipient, typing_off))
-                        client.sendAction(token, ActionRequest(recipient, mark_seen))
-                    } else {
-                        client.sendAction(token, ActionRequest(recipient, typing_on))
+                    if (event is Action) {
+                        val recipient = Recipient(event.recipientId.id)
+                        if (event.botMetadata.lastAnswer) {
+                            client.sendAction(token, ActionRequest(recipient, typing_off))
+                            client.sendAction(token, ActionRequest(recipient, mark_seen))
+                        } else {
+                            client.sendAction(token, ActionRequest(recipient, typing_on))
+                        }
                     }
                 }
         )
-    }
-
-    override fun startTypingInAnswerTo(action: Action) {
-        client.sendAction(getToken(action), ActionRequest(Recipient(action.playerId.id), typing_on))
     }
 
     fun endTypingAnswer(action: Action) {
@@ -262,8 +282,8 @@ class MessengerConnector internal constructor(
         return UserPreferences()
     }
 
-    private fun getToken(action: Action): String {
-        return applicationTokenMap.getValue(action.applicationId)
+    private fun getToken(event: Event): String {
+        return applicationTokenMap.getValue(event.applicationId)
     }
 
     private fun isSignedByFacebook(payload: String, facebookSignature: String): Boolean {
