@@ -271,15 +271,20 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
 
     private fun addDevCorsHandler() {
         if (devEnvironment && booleanProperty("tock_web_use_default_dev_cors_handler", true)) {
-            router.route().handler(corsHandler())
+            router.route().handler(corsHandler("http://localhost:4200", true))
         }
     }
 
-    protected fun corsHandler(): CorsHandler {
-        return CorsHandler.create("*")
-                .allowedMethods(EnumSet.of(GET, POST, DELETE))
-                .allowedHeaders(setOf("X-Requested-With", "Access-Control-Allow-Origin", "Authorization", "Content-Type"))
-                .allowCredentials(true)
+    protected fun corsHandler(
+            origin: String = "*",
+            allowCredentials: Boolean = false,
+            allowedMethods: Set<HttpMethod> = EnumSet.of(GET, POST, DELETE),
+            allowedHeaders: Set<String> = listOfNotNull("X-Requested-With", "Access-Control-Allow-Origin", if(allowCredentials) "Authorization" else null, "Content-Type").toSet()
+            ): CorsHandler {
+        return CorsHandler.create(origin)
+                .allowedMethods(allowedMethods)
+                .allowedHeaders(allowedHeaders)
+                .allowCredentials(allowCredentials)
     }
 
     protected fun bodyHandler(): BodyHandler {
