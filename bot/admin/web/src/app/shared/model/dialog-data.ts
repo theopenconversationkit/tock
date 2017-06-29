@@ -70,24 +70,27 @@ export class ActionReport {
 
 export abstract class BotMessage {
 
-  constructor(public eventType: EventType,
+  eventType:string;
+
+  constructor(public eventTypeEnum: EventType,
               public delay: number) {
+    this.eventType =  EventType[eventTypeEnum];
   }
 
   isSentence(): boolean {
-    return this.eventType === EventType.sentence;
+    return this.eventTypeEnum === EventType.sentence;
   }
 
   isAttachment(): boolean {
-    return this.eventType === EventType.attachment;
+    return this.eventTypeEnum === EventType.attachment;
   }
 
   isChoice(): boolean {
-    return this.eventType === EventType.choice;
+    return this.eventTypeEnum === EventType.choice;
   }
 
   isLocation(): boolean {
-    return this.eventType === EventType.location;
+    return this.eventTypeEnum === EventType.location;
   }
 
   static fromJSON(json?: any): BotMessage {
@@ -106,7 +109,7 @@ export abstract class BotMessage {
       case EventType.location :
         return Location.fromJSON(json);
       default:
-        throw "unknown type : " + json.eventType
+        throw "unknown type : " + json.type
     }
   }
 
@@ -131,7 +134,7 @@ export class Attachment extends BotMessage {
 
     const result = Object.assign(value, json, {
       type: AttachmentType[json.type],
-      eventType: EventType.attachment
+      eventTypeEnum: EventType.attachment
     });
 
     return result;
@@ -154,7 +157,7 @@ export class Choice extends BotMessage {
 
     const result = Object.assign(value, json, {
       parameters: JsonUtils.jsonToMap(json.parameters),
-      eventType: EventType.choice
+      eventTypeEnum: EventType.choice
     });
 
     return result;
@@ -176,7 +179,7 @@ export class Location extends BotMessage {
 
     const result = Object.assign(value, json, {
       location: UserLocation.fromJSON(json.location),
-      eventType: EventType.location
+      eventTypeEnum: EventType.location
     });
 
     return result;
@@ -213,7 +216,7 @@ export class Sentence extends BotMessage {
 
     const result = Object.assign(value, json, {
       messages: SentenceElement.fromJSONArray(json.messages),
-      eventType: EventType.sentence
+      eventTypeEnum: EventType.sentence
     });
 
     return result;

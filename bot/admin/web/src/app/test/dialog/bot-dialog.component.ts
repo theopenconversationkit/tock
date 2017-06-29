@@ -20,9 +20,8 @@ import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
 import {BotDialogRequest, TestMessage} from "../model/test";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
-import {BotApplicationConfiguration} from "../../core/model/configuration";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
-import {ReplaySubject} from "rxjs/ReplaySubject";
+import {BotMessage, Sentence} from "../../shared/model/dialog-data";
+import {MdSnackBar} from "@angular/material";
 
 @Component({
   selector: 'tock-bot-dialog',
@@ -43,7 +42,8 @@ export class BotDialogComponent implements OnInit, OnDestroy {
   constructor(private state: StateService,
               private test: TestService,
               private rest: RestService,
-              public botConfiguration: BotConfigurationService) {
+              public botConfiguration: BotConfigurationService,
+              private snackBar: MdSnackBar) {
   }
 
   ngOnInit() {
@@ -54,7 +54,7 @@ export class BotDialogComponent implements OnInit, OnDestroy {
   }
 
   load() {
-    this.botConfiguration.configurations
+    this.botConfiguration.restConfigurations
       .subscribe(conf => {
         if (conf.length !== 0) {
           this.currentConfigurationId = conf[0]._id;
@@ -71,27 +71,39 @@ export class BotDialogComponent implements OnInit, OnDestroy {
     this.currentConfigurationId = applicationConfigurationId;
   }
 
+  onNewMessage(message: BotMessage) {
+    this.talk(message);
+  }
+
   submit() {
+    if (!this.currentConfigurationId) {
+      this.snackBar.open(`Please select a Bot first`, "Error", {duration: 3000});
+      return;
+    }
     let m = this.userMessage;
     if (!m || m.trim().length === 0) {
       return;
     }
     m = m.trim();
-    this.messages.push(new TestMessage(false, m));
+    this.talk(new Sentence(0, [], m));
+  }
+
+  private talk(message: BotMessage) {
+    this.messages.push(new TestMessage(false, message));
     this.userMessage = "";
     this.loading = true;
     this.test
       .talk(
         new BotDialogRequest(
           this.currentConfigurationId,
-          m,
+          message,
           this.state.currentApplication.namespace,
           this.state.currentApplication.name,
           this.state.currentLocale))
       .subscribe(r => {
         this.loading = false;
         r.messages.forEach(m => {
-          this.messages.push(new TestMessage(true, null, m));
+          this.messages.push(new TestMessage(true, m));
         });
       });
   }

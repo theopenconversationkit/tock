@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, Input} from "@angular/core";
+import {Component, EventEmitter, Input, Output} from "@angular/core";
 import {BotMessage} from "../model/dialog-data";
 @Component({
   selector: 'tock-bot-message',
@@ -26,6 +26,13 @@ export class BotMessageComponent {
   @Input()
   message: BotMessage;
 
+  @Output()
+  reply: EventEmitter<BotMessage> = new EventEmitter();
+
   @Input()
   user: boolean = false;
+
+  sendReply(message: BotMessage) {
+    this.reply.emit(message);
+  }
 }

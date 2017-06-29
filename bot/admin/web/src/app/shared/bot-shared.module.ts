@@ -19,7 +19,7 @@ import {NgModule} from "@angular/core";
 import {BotMessageComponent} from "./bot-message/bot-message.component";
 import {SentenceElementComponent} from "./bot-message/sentence-element.component";
 import {BotMessageSentenceComponent} from "./bot-message/bot-message-sentence";
-import {BotMessageChoiceComponent} from "./bot-message/bot-message-choice";
+import {BotMessageChoiceComponent} from "./bot-message/bot-message-choice.component";
 import {BotMessageLocationComponent} from "./bot-message/bot-message-location";
 import {BotMessageAttachmentComponent} from "./bot-message/bot-message-attachment";
 import {MapToIterablePipe} from "./map-to-iterable.pipe";

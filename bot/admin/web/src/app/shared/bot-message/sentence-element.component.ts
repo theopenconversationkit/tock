@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, Input} from "@angular/core";
+import {Component, EventEmitter, Input, Output} from "@angular/core";
 import {BotMessage, SentenceElement} from "../model/dialog-data";
 @Component({
   selector: 'tock-sentence-element',
@@ -28,4 +28,11 @@ export class SentenceElementComponent {
 
   @Input()
   user: boolean = false;
+
+  @Output()
+  sendMessage: EventEmitter<BotMessage> = new EventEmitter();
+
+  reply(message:BotMessage) {
+    this.sendMessage.emit(message);
+  }
 }

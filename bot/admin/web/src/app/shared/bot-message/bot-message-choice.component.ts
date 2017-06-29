@@ -14,31 +14,13 @@
  * limitations under the License.
  */
 
-import {Component, Input} from "@angular/core";
-import {Choice} from "../model/dialog-data";
+import {Component, EventEmitter, Input, Output} from "@angular/core";
+import {BotMessage, Choice} from "../model/dialog-data";
+
 @Component({
   selector: 'tock-bot-message-choice',
-  template: `
-    <span *ngIf="user" mdTooltip="{{parameters()}}">[Choice] {{choice.intentName}}</span>
-    <span *ngIf="!user" mdTooltip="{{parameters()}}">
-      <span *ngIf="url()">
-        <span *ngIf="title()">
-        <button (click)="redirect()" md-button color="warn">{{title()}}</button> 
-      </span>
-      <span *ngIf="!title()">
-        <button (click)="redirect()" md-button color="warn">{{choice.intentName}}</button>
-      </span>
-      </span>
-      <span *ngIf="!url()">
-      <span *ngIf="title()">
-        <button md-button color="primary">{{title()}}</button> 
-      </span>
-      <span *ngIf="!title()">
-        <button md-button color="primary">{{choice.intentName}}</button>
-      </span>
-      </span>
-    </span>
-  `
+  templateUrl: './bot-message-choice.component.html',
+  styleUrls: ['./bot-message-choice.component.css']
 })
 export class BotMessageChoiceComponent {
 
@@ -48,12 +30,24 @@ export class BotMessageChoiceComponent {
   @Input()
   user: boolean = false;
 
+  @Output()
+  sendMessage: EventEmitter<BotMessage> = new EventEmitter();
+
   title(): String {
     return this.choice.parameters.get("_title");
   }
 
   url(): String {
     return this.choice.parameters.get("_url");
+  }
+
+  click() {
+    if (this.url()) {
+      this.redirect()
+      //TODO emit redirect event
+    } else {
+      this.sendMessage.emit(new Choice(0, this.choice.intentName, this.choice.parameters));
+    }
   }
 
   redirect() {

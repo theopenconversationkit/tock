@@ -24,6 +24,7 @@ import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotDialogResponse
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
+import fr.vsct.tock.bot.admin.test.toClientMessage
 import fr.vsct.tock.bot.admin.user.UserReportDAO
 import fr.vsct.tock.bot.admin.user.UserReportQueryResult
 import fr.vsct.tock.bot.connector.rest.client.ConnectorRestClient
@@ -115,7 +116,7 @@ object BotAdminService {
                     ClientMessageRequest(
                             "test_${conf._id}",
                             "test_bot_${conf._id}",
-                            ClientSentence(request.text)))
+                            request.message.toClientMessage()))
 
             if (response.isSuccessful) {
                 BotDialogResponse(response.body()?.messages ?: emptyList())

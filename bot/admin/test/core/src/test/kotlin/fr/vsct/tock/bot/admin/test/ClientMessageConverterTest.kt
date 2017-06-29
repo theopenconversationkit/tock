@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.bot.admin.test
 
-import fr.vsct.tock.bot.admin.test.TestPlanService.toClientMessage
 import fr.vsct.tock.bot.connector.rest.client.model.ClientAttachment
 import fr.vsct.tock.bot.connector.rest.client.model.ClientAttachmentType
 import fr.vsct.tock.bot.engine.action.SendAttachment
@@ -27,7 +26,7 @@ import kotlin.test.assertEquals
 /**
  *
  */
-class TestPlanServiceTest {
+class ClientMessageConverterTest {
 
     @Test
     fun clientMessage_withMessageWithNotVoidDelay_mustBeEquals() {

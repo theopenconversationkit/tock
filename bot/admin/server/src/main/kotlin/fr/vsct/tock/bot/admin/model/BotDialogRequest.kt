@@ -16,12 +16,13 @@
 
 package fr.vsct.tock.bot.admin.model
 
+import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 
 /**
  *
  */
 data class BotDialogRequest(
-        val botApplicationConfigurationId:String,
-        val text:String) :ApplicationScopedQuery() {
+        val botApplicationConfigurationId: String,
+        val message: Message) : ApplicationScopedQuery() {
 }

@@ -20,7 +20,7 @@ import {ApplicationScopedQuery} from "tock-nlp-admin/src/app/model/commons";
 export class BotDialogRequest extends ApplicationScopedQuery {
 
   constructor(public botApplicationConfigurationId: string,
-              public text: string,
+              public message: BotMessage,
               public namespace: string,
               public applicationName: string,
               public language: string) {
@@ -48,7 +48,6 @@ export class BotDialogResponse {
 
 export class TestMessage {
   constructor(public bot: boolean,
-              public text?: string,
               public message?: BotMessage) {
 
   }
@@ -71,15 +70,15 @@ export class TestPlan {
               public _id?: string) {
   }
 
-  fillDialogExecutionReport(report: DialogExecutionReport){
-    if(report.error) {
+  fillDialogExecutionReport(report: DialogExecutionReport) {
+    if (report.error) {
       const d = this.dialogs.find(d => report.dialogReportId === d.id);
       if (d) {
         const aIndex = d.actions.findIndex(a => a.id === report.errorActionId);
-        if(aIndex === -1) {
-             report.dialogReport = new DialogReport(d.actions, d.id);
+        if (aIndex === -1) {
+          report.dialogReport = new DialogReport(d.actions, d.id);
         } else {
-             report.dialogReport = new DialogReport(d.actions.slice(0, Math.min(aIndex+1, d.actions.length)), d.id)
+          report.dialogReport = new DialogReport(d.actions.slice(0, Math.min(aIndex + 1, d.actions.length)), d.id)
         }
         report.dialogReport.displayActions = true;
       }
@@ -132,7 +131,7 @@ export class TestPlanExecution {
 
 export class DialogExecutionReport {
 
-  dialogReport:DialogReport;
+  dialogReport: DialogReport;
 
   constructor(public dialogReportId: string,
               public error: boolean,
