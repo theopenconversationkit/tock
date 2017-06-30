@@ -18,8 +18,7 @@ package fr.vsct.tock.bot.engine.action
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.engine.dialog.ActionState
-import fr.vsct.tock.bot.engine.dialog.BotMetadata
+import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.message.Sentence
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -28,7 +27,7 @@ import java.time.Instant
 
 /**
  * The most important [Action] class.
- * Could be a simple text, or a complex message using [ConnectorMessage].
+ * Could be a simple text, or a complex message using one or more [ConnectorMessage].
  */
 class SendSentence(
         playerId: PlayerId,
@@ -38,8 +37,9 @@ class SendSentence(
         val messages: MutableList<ConnectorMessage> = mutableListOf(),
         id: String = Dice.newId(),
         date: Instant = Instant.now(),
-        state: ActionState = ActionState(),
-        botMetadata: BotMetadata = BotMetadata()) : Action(playerId, recipientId, applicationId, id, date, state, botMetadata) {
+        state: EventState = EventState(),
+        metadata: ActionMetadata = ActionMetadata())
+    : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
 
 
     fun message(type: ConnectorType): ConnectorMessage? {

@@ -16,22 +16,10 @@
 
 package fr.vsct.tock.bot.engine.action
 
-import fr.vsct.tock.bot.engine.dialog.EventState
-import fr.vsct.tock.bot.engine.event.Event
-import fr.vsct.tock.bot.engine.message.Message
-import fr.vsct.tock.bot.engine.user.PlayerId
-import java.time.Instant
-
 /**
- * A user (or bot) action.
+ * To manage notification types.
  */
-abstract class Action(val playerId: PlayerId,
-                      val recipientId: PlayerId,
-                      applicationId: String,
-                      id: String,
-                      date: Instant,
-                      state: EventState,
-                      val metadata: ActionMetadata = ActionMetadata()) : Event(applicationId, id, date, state) {
+enum class ActionSignificance {
 
-    abstract fun toMessage(): Message
+    normal, high, urgent
 }

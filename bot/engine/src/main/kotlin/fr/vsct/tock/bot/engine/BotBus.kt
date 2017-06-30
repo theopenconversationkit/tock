@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.engine
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.ActionSignificance
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
@@ -144,6 +145,7 @@ class BotBus internal constructor(
 
     private fun answer(action: Action, delay: Long = 0): BotBus {
         context.currentDelay += delay
+        action.metadata.significance = context.significance
         if (action is SendSentence) {
             action.messages.addAll(context.connectorMessages.values)
         }
@@ -174,7 +176,7 @@ class BotBus internal constructor(
     }
 
     fun end(action: Action, delay: Long = 0): BotBus {
-        action.botMetadata.lastAnswer = true
+        action.metadata.lastAnswer = true
         return answer(action, delay)
     }
 
@@ -216,10 +218,16 @@ class BotBus internal constructor(
     }
 
 
+    fun with(significance: ActionSignificance): BotBus {
+        context.significance = significance
+        return this
+    }
+
     fun with(message: ConnectorMessage): BotBus {
         context.addMessage(message)
         return this
     }
+
 
     fun translate(text: String?, arg: Any?): String {
         if (text.isNullOrBlank()) {

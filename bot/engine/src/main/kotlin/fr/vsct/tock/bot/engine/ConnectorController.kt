@@ -127,7 +127,7 @@ class ConnectorController internal constructor(
 
     fun errorMessage(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {
         val errorAction = bot.botDefinition.errorAction(playerId, applicationId, recipientId)
-        errorAction.botMetadata.lastAnswer = true
+        errorAction.metadata.lastAnswer = true
         return errorAction
     }
 

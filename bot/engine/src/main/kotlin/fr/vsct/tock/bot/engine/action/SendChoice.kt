@@ -18,8 +18,7 @@ package fr.vsct.tock.bot.engine.action
 
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
-import fr.vsct.tock.bot.engine.dialog.ActionState
-import fr.vsct.tock.bot.engine.dialog.BotMetadata
+import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.message.Choice
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -39,8 +38,9 @@ class SendChoice(playerId: PlayerId,
                  val parameters: Map<String, String> = emptyMap(),
                  id: String = Dice.newId(),
                  date: Instant = Instant.now(),
-                 state: ActionState = ActionState(),
-                 botMetadata: BotMetadata = BotMetadata()) : Action(playerId, recipientId, applicationId, id, date, state, botMetadata) {
+                 state: EventState = EventState(),
+                 metadata: ActionMetadata = ActionMetadata())
+    : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
 
     companion object {
 

@@ -21,7 +21,7 @@ import fr.vsct.tock.bot.definition.Intent
 /**
  *
  */
-data class ActionState(
+data class EventState(
         var currentIntent: Intent? = null,
         val entityValues: MutableList<ContextValue> = mutableListOf()) {
 

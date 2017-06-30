@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.dialog
+package fr.vsct.tock.bot.engine.action
 
 /**
  *
  */
-data class BotMetadata(
-        /** Is it the last answer of the bot */
+data class ActionMetadata(
+        /** Is it the last answer of the bot. */
         var lastAnswer: Boolean = false,
-        val notUnderstood: Boolean = false) {
+        /** Significance deals with the notification level. */
+        var significance: ActionSignificance = ActionSignificance.normal) {
 }

@@ -21,6 +21,7 @@ import fr.vsct.tock.bot.connector.messenger.model.send.Attachment
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
+import fr.vsct.tock.bot.connector.messenger.model.send.NotificationType
 import fr.vsct.tock.bot.connector.messenger.model.send.TextMessage
 import fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload
 import fr.vsct.tock.bot.engine.action.Action
@@ -55,7 +56,11 @@ internal object SendActionConverter {
                 null
             }
         }?.let {
-            MessageRequest(Recipient(action.recipientId.id), it)
+            MessageRequest(
+                    Recipient(action.recipientId.id),
+                    it,
+                    NotificationType.toNotificationType(action)
+            )
         }
     }
 }

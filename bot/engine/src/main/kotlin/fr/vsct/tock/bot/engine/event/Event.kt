@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.bot.engine.event
 
-import fr.vsct.tock.bot.engine.dialog.ActionState
+import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.shared.Dice
 import java.time.Instant
 
@@ -27,7 +27,7 @@ abstract class Event(
         val applicationId: String,
         val id: String = Dice.newId(),
         val date: Instant = Instant.now(),
-        val state: ActionState = ActionState()
+        val state: EventState = EventState()
 ) {
     fun hasEntity(role: String): Boolean {
         return state.getEntity(role).isNotEmpty()

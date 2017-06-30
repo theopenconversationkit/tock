@@ -265,7 +265,7 @@ class MessengerConnector internal constructor(
                 { token ->
                     if (event is Action) {
                         val recipient = Recipient(event.recipientId.id)
-                        if (event.botMetadata.lastAnswer) {
+                        if (event.metadata.lastAnswer) {
                             client.sendAction(token, ActionRequest(recipient, typing_off))
                             client.sendAction(token, ActionRequest(recipient, mark_seen))
                         } else {

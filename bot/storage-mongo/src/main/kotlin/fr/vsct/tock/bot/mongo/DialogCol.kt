@@ -30,9 +30,9 @@ import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.dialog.ActionState
+import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue
-import fr.vsct.tock.bot.engine.dialog.BotMetadata
+import fr.vsct.tock.bot.engine.action.ActionMetadata
 import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
@@ -176,12 +176,12 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
             JsonSubTypes.Type(value = SendChoiceMongoWrapper::class, name = "choice"),
             JsonSubTypes.Type(value = SendAttachmentMongoWrapper::class, name = "attachment"),
             JsonSubTypes.Type(value = SendLocationMongoWrapper::class, name = "location"))
-    abstract class ActionMongoWrapper() {
+    abstract class ActionMongoWrapper {
 
         lateinit var id: String
         lateinit var date: Instant
-        lateinit var state: ActionState
-        lateinit var botMetadata: BotMetadata
+        lateinit var state: EventState
+        lateinit var botMetadata: ActionMetadata
         lateinit var playerId: PlayerId
         lateinit var recipientId: PlayerId
         lateinit var applicationId: String
@@ -191,7 +191,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
             id = action.id
             date = action.date
             state = action.state
-            botMetadata = action.botMetadata
+            botMetadata = action.metadata
             playerId = action.playerId
             recipientId = action.recipientId
             applicationId = action.applicationId

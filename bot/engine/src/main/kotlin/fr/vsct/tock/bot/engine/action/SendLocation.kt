@@ -16,8 +16,7 @@
 
 package fr.vsct.tock.bot.engine.action
 
-import fr.vsct.tock.bot.engine.dialog.ActionState
-import fr.vsct.tock.bot.engine.dialog.BotMetadata
+import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.message.Location
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -34,8 +33,9 @@ class SendLocation(playerId: PlayerId,
                    val location: UserLocation?,
                    id: String = Dice.newId(),
                    date: Instant = Instant.now(),
-                   state: ActionState = ActionState(),
-                   botMetadata: BotMetadata = BotMetadata()) : Action(playerId, recipientId, applicationId, id, date, state, botMetadata) {
+                   state: EventState = EventState(),
+                   metadata: ActionMetadata = ActionMetadata())
+    : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
 
     override fun toMessage(): Message {
         return Location(location)

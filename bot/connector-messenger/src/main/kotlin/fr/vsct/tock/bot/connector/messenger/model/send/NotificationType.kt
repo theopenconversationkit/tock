@@ -16,10 +16,24 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
+import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.ActionSignificance
+
 /**
- *
+ * cf [https://developers.facebook.com/docs/messenger-platform/send-api-reference#request]
  */
 enum class NotificationType {
 
-    REGULAR, SILENT_PUSH, NO_PUSH
+    REGULAR, SILENT_PUSH, NO_PUSH;
+
+    companion object {
+
+        fun toNotificationType(action: Action): NotificationType {
+            return when (action.metadata.significance) {
+                ActionSignificance.high -> SILENT_PUSH
+                ActionSignificance.urgent -> REGULAR
+                else -> NO_PUSH
+            }
+        }
+    }
 }
