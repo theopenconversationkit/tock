@@ -45,7 +45,7 @@ class MessageRequestDeserializationTest {
 
     @Test
     fun testMessageRequestWithUrlPayload() {
-        val m = MessageRequest(Recipient("2"), AttachmentMessage(Attachment(AttachmentType.image, UrlPayload("http://test/test.png"))))
+        val m = MessageRequest(Recipient("2"), AttachmentMessage(Attachment(AttachmentType.image, UrlPayload("http://test/test.png", null, null))))
         val s = mapper.writeValueAsString(m)
         println(s)
         assertEquals(m, mapper.readValue<MessageRequest>(s))

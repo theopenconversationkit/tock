@@ -20,11 +20,13 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
+import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.SendResponse
 import fr.vsct.tock.bot.connector.messenger.model.send.SenderAction.mark_seen
 import fr.vsct.tock.bot.connector.messenger.model.send.SenderAction.typing_off
 import fr.vsct.tock.bot.connector.messenger.model.send.SenderAction.typing_on
+import fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload
 import fr.vsct.tock.bot.connector.messenger.model.webhook.CallbackRequest
 import fr.vsct.tock.bot.engine.BotRepository.requestTimer
 import fr.vsct.tock.bot.engine.ConnectorController
@@ -191,6 +193,15 @@ class MessengerConnector internal constructor(
                     logger.debug { "message sent: $message to ${event.recipientId}" }
                     val token = getToken(event)
                     val response = client.sendMessage(token, message)
+                    if (response.attachmentId != null) {
+                        val m = message.message
+                        if (m is AttachmentMessage) {
+                            val payload = m.attachment.payload
+                            if (payload is UrlPayload && payload.url != null) {
+                                AttachmentCacheService.setAttachmentId(payload.url, response.attachmentId)
+                            }
+                        }
+                    }
                     postMessage.invoke(token)
                     response
                 } else {
@@ -211,6 +222,18 @@ class MessengerConnector internal constructor(
         } catch(e: Throwable) {
             logger.error(e)
             null
+        }
+    }
+
+    private fun handleAttachmentId(message: MessageRequest, response: SendResponse) {
+        if (response.attachmentId != null) {
+            val m = message.message
+            if (m is AttachmentMessage) {
+                val payload = m.attachment.payload
+                if (payload is UrlPayload && payload.url != null) {
+                    AttachmentCacheService.setAttachmentId(payload.url, response.attachmentId)
+                }
+            }
         }
     }
 

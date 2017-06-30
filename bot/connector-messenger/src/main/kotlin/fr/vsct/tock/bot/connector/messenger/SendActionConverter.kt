@@ -47,7 +47,8 @@ internal object SendActionConverter {
             is SendAttachment -> AttachmentMessage(
                     Attachment(
                             AttachmentType.fromTockAttachmentType(action.type),
-                            UrlPayload(action.url))
+                            UrlPayload.getUrlPayload(action.url)
+                    )
             )
             else -> {
                 logger.warn { "action not supported : $action " }

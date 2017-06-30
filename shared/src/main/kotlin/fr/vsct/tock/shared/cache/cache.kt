@@ -29,26 +29,42 @@ private val cache: Cache by injector.instance()
  * If no value exists, [valueProvider] provides the value to cache.
  * If [valueProvider] throws exception or returns null, no value is cached and null is returned.
  */
-@Suppress("UNCHECKED_CAST")
 fun <T : Any> getOrCache(id: String, type: String, valueProvider: () -> T?): T? {
-    return try {
-        cache.get(id, type) as T?
-    } catch (e: Exception) {
-        logger.error(e)
-        null
-    } ?:
+    return getFromCache(id, type)
+            ?:
             try {
                 valueProvider.invoke()?.apply {
-                    try {
-                        cache.put(id, type, this)
-                    } catch(e: Exception) {
-                        logger.error(e)
-                    }
+                    putInCache(id, type, this)
                 }
             } catch(e: Exception) {
                 logger.error(e)
                 null
             }
+}
+
+/**
+ * Returns the value for specified id and type.
+ * If no value exists, null is returned.
+ */
+fun <T : Any> getFromCache(id: String, type: String): T? {
+    return try {
+        @Suppress("UNCHECKED_CAST")
+        cache.get(id, type) as T?
+    } catch (e: Exception) {
+        logger.error(e)
+        null
+    }
+}
+
+/**
+ * Adds in cache the specified value.
+ */
+fun <T : Any> putInCache(id: String, type: String, value: T) {
+    try {
+        cache.put(id, type, value)
+    } catch(e: Exception) {
+        logger.error(e)
+    }
 }
 
 /**

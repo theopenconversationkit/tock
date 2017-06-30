@@ -34,7 +34,7 @@ data class AttachmentMessage(val attachment: Attachment) : Message() {
                     this,
                     attachments = listOf(
                             fr.vsct.tock.bot.engine.message.Attachment(
-                                    (attachment.payload as UrlPayload).url,
+                                    (attachment.payload as UrlPayload).url ?: "",
                                     attachment.type.toTockAttachmentType()
                             ))
             )

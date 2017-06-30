@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.send
+package fr.vsct.tock.bot.connector.messenger
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import fr.vsct.tock.shared.booleanProperty
 
-data class SendResponse(@JsonProperty("recipient_id") val recipientId: String,
-                        @JsonProperty("message_id") val messageId: String?,
-                        @JsonProperty("attachment_id") val attachmentId: String?) {
+/**
+ * To handle messenger behaviour.
+ */
+object MessengerConfiguration {
+
+    val reuseAttachmentByDefault: Boolean = booleanProperty("tock_bot_messenger_reuse_attachment", true)
 }

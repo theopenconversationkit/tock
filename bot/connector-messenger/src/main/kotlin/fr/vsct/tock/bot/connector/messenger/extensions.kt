@@ -121,16 +121,16 @@ fun BotBus.withMessengerAttachment(attachmentUrl: String, type: AttachmentType):
     }
 }
 
-private fun BotBus.withMessengerAttachmentType(attachmentUrl: String, type: AttachmentType): BotBus {
+private fun BotBus.withMessengerAttachmentType(
+        attachmentUrl: String,
+        type: AttachmentType,
+        useCache: Boolean = MessengerConfiguration.reuseAttachmentByDefault): BotBus {
     with(AttachmentMessage(
             Attachment(
                     type,
-                    UrlPayload(
-                            attachmentUrl
-                    )
+                    UrlPayload.getUrlPayload(attachmentUrl, useCache)
             )
-    )
-    )
+    ))
     return this
 }
 

@@ -46,16 +46,21 @@ internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
         data class PayloadFields(
                 var templateType: PayloadType? = null,
                 var url: String? = null,
+                var attachmentId: String? = null,
+                var isReusable: Boolean? = null,
                 var text: String? = null,
                 var buttons: List<Button>? = null,
                 var elements: List<Element>? = null,
                 var topElementStyle: ListElementStyle? = null)
 
-        val (templateType, url, text, buttons, elements, topElementStyle) = jp.read<PayloadFields> { fields, name ->
+        val (templateType, url, attachmentId, isReusable, text, buttons, elements, topElementStyle)
+                = jp.read<PayloadFields> { fields, name ->
             with(fields) {
                 when (name) {
                     "template_type" -> templateType = jp.readValue()
                     UrlPayload::url.name -> url = jp.valueAsString
+                    "is_reusable" -> isReusable = jp.valueAsBoolean
+                    "attachment_id" -> attachmentId = jp.valueAsString
                     GenericPayload::elements.name -> elements = jp.readListValues()
                     ButtonPayload::buttons.name -> buttons = jp.readListValues()
                     ButtonPayload::text.name -> text = jp.valueAsString
@@ -71,8 +76,8 @@ internal class PayloadDeserializer : JacksonDeserializer<Payload>() {
                 PayloadType.button -> ButtonPayload(text ?: "", buttons ?: emptyList())
                 PayloadType.list -> ListPayload(elements ?: emptyList(), topElementStyle, buttons)
             }
-        } else if (url != null) {
-            UrlPayload(url)
+        } else if (url != null || attachmentId != null) {
+            UrlPayload(url, attachmentId, isReusable)
         } else {
             logger.warn { "invalid payload" }
             null

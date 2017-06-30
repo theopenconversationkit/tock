@@ -16,8 +16,48 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
+import com.fasterxml.jackson.annotation.JsonProperty
+import fr.vsct.tock.bot.connector.messenger.AttachmentCacheService
+import fr.vsct.tock.bot.connector.messenger.MessengerConfiguration
+
 /**
  *
  */
-data class UrlPayload(val url: String) : Payload() {
+data class UrlPayload(
+        val url: String?,
+        @JsonProperty("attachment_id")
+        val attachmentId: String?,
+        @JsonProperty("is_reusable")
+        val reusable: Boolean?
+) : Payload() {
+
+    companion object {
+
+        /**
+         * Create an UrlPayload from an url.
+         * Uses default cache configuration.
+         * @param url the url
+         */
+        fun getUrlPayload(url: String): UrlPayload {
+            return getUrlPayload(url, MessengerConfiguration.reuseAttachmentByDefault)
+        }
+
+        /**
+         * Create an UrlPayload from an url.
+         * @param url the url
+         * @param useCache is cache is used?
+         */
+        fun getUrlPayload(url: String, useCache: Boolean): UrlPayload {
+            return if (useCache) {
+                val attachmentId = AttachmentCacheService.getAttachmentId(url)
+                if (attachmentId == null) {
+                    UrlPayload(url, null, true)
+                } else {
+                    UrlPayload(null, attachmentId, null)
+                }
+            } else {
+                UrlPayload(url, null, null)
+            }
+        }
+    }
 }
