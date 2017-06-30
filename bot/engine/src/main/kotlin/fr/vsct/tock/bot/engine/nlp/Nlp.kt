@@ -59,35 +59,32 @@ object Nlp : NlpController {
 
         fun parse() {
             logger.debug { "Parse sentence : $sentence" }
-            if (userTimeline.userState.waitingRawInput || sentence.text.isNullOrBlank()) {
-                //do nothing
-            } else {
-                findKeyword(sentence.text)?.apply {
-                    sentence.state.currentIntent = this
-                    dialog.state.currentIntent = this
-                    return
-                }
 
-                toNlpQuery().let { query ->
-                    try {
-                        logger.debug { "Sending sentence '${sentence.text}' to NLP" }
-                        parse(query)
-                                ?.let { nlpResult ->
-                                    listenNlpSuccessCall(query, nlpResult)
-                                    sentence.state.currentIntent = botDefinition.findIntentForBot(
-                                            nlpResult.intent,
-                                            IntentContext(userTimeline, dialog, sentence)
-                                    )
-                                    sentence.state.entityValues.addAll(nlpResult.entities.map { ContextValue(nlpResult.retainedQuery, it) })
-                                    dialog.apply {
-                                        state.currentIntent = sentence.state.currentIntent
-                                        state.mergeEntityValuesFromAction(sentence)
-                                    }
-                                } ?: listenNlpErrorCall(query, null)
-                    } catch(t: Throwable) {
-                        logger.error(t)
-                        listenNlpErrorCall(query, t)
-                    }
+            findKeyword(sentence.text)?.apply {
+                sentence.state.currentIntent = this
+                dialog.state.currentIntent = this
+                return
+            }
+
+            toNlpQuery().let { query ->
+                try {
+                    logger.debug { "Sending sentence '${sentence.text}' to NLP" }
+                    parse(query)
+                            ?.let { nlpResult ->
+                                listenNlpSuccessCall(query, nlpResult)
+                                sentence.state.currentIntent = botDefinition.findIntentForBot(
+                                        nlpResult.intent,
+                                        IntentContext(userTimeline, dialog, sentence)
+                                )
+                                sentence.state.entityValues.addAll(nlpResult.entities.map { ContextValue(nlpResult.retainedQuery, it) })
+                                dialog.apply {
+                                    state.currentIntent = sentence.state.currentIntent
+                                    state.mergeEntityValuesFromAction(sentence)
+                                }
+                            } ?: listenNlpErrorCall(query, null)
+                } catch(t: Throwable) {
+                    logger.error(t)
+                    listenNlpErrorCall(query, t)
                 }
             }
         }

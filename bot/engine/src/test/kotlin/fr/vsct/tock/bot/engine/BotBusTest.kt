@@ -16,12 +16,20 @@
 
 package fr.vsct.tock.bot.engine
 
-import fr.vsct.tock.bot.definition.BotDefinitionBase
+import com.nhaarman.mockito_kotlin.argForWhich
+import com.nhaarman.mockito_kotlin.verify
+import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.ActionSignificance
+import org.junit.Test
 
-class BotDefinitionTest
-    : BotDefinitionBase(
-        "test",
-        "namespace",
-        stories = emptyList()
-)
+/**
+ *
+ */
+class BotBusTest : BotEngineTest() {
 
+    @Test
+    fun withSignificance_hasToUpdateActionSignificance() {
+        bus.with(ActionSignificance.urgent).end()
+        verify(connector).send(argForWhich { this is Action && metadata.significance == ActionSignificance.urgent })
+    }
+}

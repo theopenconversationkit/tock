@@ -24,7 +24,9 @@ import fr.vsct.tock.shared.cache.Cache
 import fr.vsct.tock.shared.cache.mongo.MongoCache
 import fr.vsct.tock.shared.vertx.vertxRunner
 
-val injector = KodeinInjector()
+var tockInternalInjector = KodeinInjector()
+
+val injector: KodeinInjector get() = tockInternalInjector
 
 val sharedModule = Kodein.Module {
     bind<Executor>() with provider { vertxRunner() }

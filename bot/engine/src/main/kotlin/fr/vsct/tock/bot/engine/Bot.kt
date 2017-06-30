@@ -108,7 +108,9 @@ class Bot(val botDefinition: BotDefinition) {
                 parseAttachment(action, dialog)
             }
             is SendSentence -> {
-                nlp.parseSentence(action, userTimeline, dialog, connector, botDefinition)
+                if (!userTimeline.userState.waitingRawInput && !action.text.isNullOrBlank()) {
+                    nlp.parseSentence(action, userTimeline, dialog, connector, botDefinition)
+                }
             }
             else -> logger.warn { "${action::class.simpleName} not yet supported" }
         }
