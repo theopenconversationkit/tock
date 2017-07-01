@@ -22,7 +22,9 @@ import fr.vsct.tock.bot.admin.dialog.ActionReport
 import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.xray.model.XrayExecutionConfiguration
-import fr.vsct.tock.bot.admin.test.xray.model.XrayStatus
+import fr.vsct.tock.bot.admin.test.xray.model.XrayStatus.FAIL
+import fr.vsct.tock.bot.admin.test.xray.model.XrayStatus.PASS
+import fr.vsct.tock.bot.admin.test.xray.model.XrayStatus.TODO
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecution
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecutionInfo
@@ -71,30 +73,38 @@ object XrayService {
         )
     }
 
-    fun executePlans() {
-        try {
+    fun executePlans(): Boolean {
+        return try {
             TockTestClient.getBotConfigurations(testedBotId)
                     .filter { it.connectorType == ConnectorType.rest }
-                    .forEach {
+                    .map {
                         exec(XrayExecutionConfiguration(it))
                     }
+                    .all { it }
         } catch(t: Throwable) {
             logger.error(t)
+            false
         }
     }
 
-    private fun exec(configuration: XrayExecutionConfiguration) {
-        configuration.testPlanKeys.forEach { planKey ->
-            logger.info { "start plan $planKey execution" }
-            val testPlan = getTestPlan(configuration, planKey)
-            executePlan(configuration, testPlan)
-            logger.info { "plan $planKey executed" }
-        }
+    private fun exec(configuration: XrayExecutionConfiguration): Boolean {
+        return configuration
+                .testPlanKeys
+                .map { planKey ->
+                    logger.info { "start plan $planKey execution" }
+                    try {
+                        val testPlan = getTestPlan(configuration, planKey)
+                        executePlan(configuration, testPlan)
+                    } finally {
+                        logger.info { "plan $planKey executed" }
+                    }
+                }
+                .all { it }
     }
 
     private fun executePlan(
             configuration: XrayExecutionConfiguration,
-            testPlan: TestPlan) {
+            testPlan: TestPlan): Boolean {
         val now = OffsetDateTime.now()
         val execution = TockTestClient.executeTestPlan(testPlan)
         val end = OffsetDateTime.now()
@@ -119,7 +129,7 @@ object XrayService {
                             OffsetDateTime.ofInstant(dialogReport.date, defaultZoneId),
                             OffsetDateTime.ofInstant(dialogReport.date, defaultZoneId).plus(dialogReport.duration),
                             if (dialogReport.error) "Failed execution" else "Successful execution",
-                            if (dialogReport.error) XrayStatus.FAIL else XrayStatus.PASS,
+                            if (dialogReport.error) FAIL else PASS,
                             if (dialog == null) {
                                 emptyList()
                             } else {
@@ -127,20 +137,20 @@ object XrayService {
                                     it.playerId.type == PlayerType.bot
                                 }.map {
                                     val status = if (!dialogReport.error) {
-                                        XrayStatus.PASS
+                                        PASS
                                     } else if (stepViewed) {
-                                        XrayStatus.TODO
+                                        TODO
                                     } else if (dialogReport.errorActionId == it.id) {
                                         stepViewed = true
-                                        XrayStatus.FAIL
+                                        FAIL
                                     } else {
-                                        XrayStatus.PASS
+                                        PASS
                                     }
                                     XrayTestExecutionStepReport(
                                             when (status) {
-                                                XrayStatus.PASS -> "Test successful"
-                                                XrayStatus.TODO -> "Skipped"
-                                                XrayStatus.FAIL ->
+                                                PASS -> "Test successful"
+                                                TODO -> "Skipped"
+                                                FAIL ->
                                                     if (dialogReport.returnedMessage != null) {
                                                         "TestFailed : ${dialogReport.returnedMessage?.toStringDisplay()}"
                                                     } else if (dialogReport.errorMessage != null) {
@@ -157,6 +167,7 @@ object XrayService {
                 }
         )
         XrayClient.sendTestExecution(xrayExecution)
+        return xrayExecution.tests.all { it.status == PASS }
     }
 
     private fun getTestPlan(configuration: XrayExecutionConfiguration, planKey: String): TestPlan {

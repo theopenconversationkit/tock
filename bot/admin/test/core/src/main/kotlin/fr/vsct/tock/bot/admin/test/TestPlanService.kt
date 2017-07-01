@@ -26,7 +26,6 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.shared.Dice
-import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
@@ -43,7 +42,6 @@ object TestPlanService {
     private val testPlanDAO: TestPlanDAO by injector.instance()
     private val userTimelineDAO: UserTimelineDAO by injector.instance()
     private val dialogDAO: DialogReportDAO by injector.instance()
-    private val executor: Executor by injector.instance()
 
     fun getPlanExecutions(plan: TestPlan): List<TestPlanExecution> {
         return testPlanDAO.getPlanExecutions(plan._id!!)
@@ -123,7 +121,8 @@ object TestPlanService {
                         ClientMessageRequest(
                                 playerId,
                                 botId,
-                                testPlan.startAction!!.toClientMessage()
+                                testPlan.startAction!!.toClientMessage(),
+                                true
                         ))
             }
 
@@ -133,7 +132,8 @@ object TestPlanService {
                             ClientMessageRequest(
                                     playerId,
                                     botId,
-                                    it.message.toClientMessage()
+                                    it.message.toClientMessage(),
+                                    true
                             ))
                     expectedBotMessages = answer.body()?.messages?.toMutableList() ?: mutableListOf()
                 } else {

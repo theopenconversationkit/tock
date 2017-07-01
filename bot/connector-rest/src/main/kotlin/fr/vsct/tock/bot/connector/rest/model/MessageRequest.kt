@@ -24,5 +24,6 @@ import fr.vsct.tock.bot.engine.message.Message
 internal data class MessageRequest(
         val userId: String,
         val recipientId: String,
-        val message: Message) {
+        val message: Message,
+        val test: Boolean = false) {
 }

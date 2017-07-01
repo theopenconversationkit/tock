@@ -22,5 +22,6 @@ package fr.vsct.tock.bot.connector.rest.client.model
 data class ClientMessageRequest(
         val userId: String,
         val recipientId: String,
-        val message: ClientMessage) {
+        val message: ClientMessage,
+        val test: Boolean = false) {
 }

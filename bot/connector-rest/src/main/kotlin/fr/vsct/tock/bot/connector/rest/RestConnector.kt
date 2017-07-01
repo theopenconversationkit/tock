@@ -29,6 +29,7 @@ import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
+import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
 import io.vertx.ext.web.RoutingContext
@@ -41,7 +42,11 @@ import java.util.concurrent.TimeUnit
  */
 class RestConnector(val applicationId: String, val path: String) : Connector {
 
-    private data class Response(val context: RoutingContext, val actions: MutableList<Action> = CopyOnWriteArrayList())
+    private data class Response(
+            val context: RoutingContext,
+            val test: Boolean,
+            val actions: MutableList<Action> = CopyOnWriteArrayList()
+    )
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -65,7 +70,7 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
                         try {
                             val message: MessageRequest = mapper.readValue(context.bodyAsString)
                             try {
-                                currentMessages.put(message.userId, Response(context))
+                                currentMessages.put(message.userId, Response(context, message.test))
                                 controller.handle(message.message.toAction(
                                         PlayerId(message.userId, PlayerType.user),
                                         applicationId,
@@ -119,4 +124,11 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
         }
     }
 
+    override fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences {
+        //register user as test user if applicable
+        return super.loadProfile(applicationId, userId)
+                .apply {
+                    test = currentMessages.getIfPresent(userId.id)?.test ?: false
+                }
+    }
 }

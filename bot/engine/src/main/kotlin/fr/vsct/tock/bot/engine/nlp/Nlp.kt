@@ -129,7 +129,9 @@ object Nlp : NlpController {
                     dialog.id,
                     connector.connectorType.toString(),
                     referenceDate = ZonedDateTime.now(userTimeline.userPreferences.timezone),
-                    referenceTimezone = userTimeline.userPreferences.timezone
+                    referenceTimezone = userTimeline.userPreferences.timezone,
+                    test = userTimeline.userPreferences.test
+
             )
         }
 

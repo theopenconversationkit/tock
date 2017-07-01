@@ -16,9 +16,20 @@
 
 package fr.vsct.tock.bot.admin.test.xray
 
+import mu.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
+
 /**
  *
  */
 fun main(args: Array<String>) {
-    XrayService.executePlans()
+    logger.info { "Start tests" }
+    val result = XrayService.executePlans()
+    if (!result) {
+        logger.error { "At least one test fail" }
+        System.exit(1)
+    } else {
+        logger.info { "All tests pass" }
+    }
 }

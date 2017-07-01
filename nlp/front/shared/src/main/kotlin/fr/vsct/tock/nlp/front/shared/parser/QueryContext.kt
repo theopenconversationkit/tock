@@ -32,11 +32,12 @@ data class QueryContext(val language: Locale,
                         val dialogId: String = Dice.newId(),
                         val referenceDate: ZonedDateTime = now(UTC),
                         val referenceTimezone: ZoneId = UTC,
-                        val registerQuery: Boolean = true,
+                        val test: Boolean = false,
+                        val registerQuery: Boolean = !test,
                         /**
                          * If a query is already validated in the model,
                          * returns directly the result without using the NLP model if
                          * [checkExistingQuery] is true
                          */
-                        val checkExistingQuery: Boolean = true) {
+                        val checkExistingQuery: Boolean = !test) {
 }

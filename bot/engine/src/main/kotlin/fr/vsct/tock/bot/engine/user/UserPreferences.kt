@@ -30,7 +30,11 @@ data class UserPreferences(var firstName: String? = null,
                            var timezone: ZoneId = defaultZoneId,
                            var locale: Locale = defaultLocale,
                            var picture: String? = null,
-                           var gender: String? = null) {
+                           var gender: String? = null,
+                           /**
+                            * Is it a test user?
+                            */
+                           var test: Boolean = false) {
 
     fun copy(userPref: UserPreferences) {
         firstName = userPref.firstName
@@ -40,6 +44,7 @@ data class UserPreferences(var firstName: String? = null,
         locale = userPref.locale
         picture = userPref.picture
         gender = userPref.gender
+        test = userPref.test
     }
 
 }

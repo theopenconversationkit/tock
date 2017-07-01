@@ -19,7 +19,6 @@ package fr.vsct.tock.bot.definition
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.nlp.api.client.model.NlpEngineType
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
 import fr.vsct.tock.translator.Translator
@@ -50,12 +49,6 @@ interface BotDefinition : I18nKeyProvider {
      * The list of each stories.
      */
     val stories: List<StoryDefinition>
-
-    /**
-     * The nlp engine currently used
-     */
-    @Deprecated("the engine is now defined by the application model")
-    val engineType: NlpEngineType
 
     /**
      * This is the method called by the bot.
