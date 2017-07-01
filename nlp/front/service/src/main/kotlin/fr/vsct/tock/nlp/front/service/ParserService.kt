@@ -83,7 +83,7 @@ object ParserService : Parser {
             val q = formatQuery(queries.first())
             if (q.isEmpty()) {
                 logger.warn { "empty query after format - $query" }
-                return ParseResult(UNKNOWN_INTENT, emptyList(), 0.0, 0.0, q)
+                return ParseResult(UNKNOWN_INTENT, emptyList(), 0.0, 0.0, q, emptyMap())
             }
 
             val validatedSentence = config
@@ -119,24 +119,44 @@ object ParserService : Parser {
                         entityValues.map { ParsedEntityValue(it.value, 1.0, core.supportValuesMerge(it.entityType)) },
                         1.0,
                         1.0,
-                        q
+                        q,
+                        emptyMap()
                 )
             }
 
             //TODO multi query handling
             //TODO state handling
-            val parseResult = core.parse(callContext, q)
+            val otherIntents: MutableMap<String, Double> = mutableMapOf()
+            val parseResult = core.parse(callContext, q) { entities ->
+                entities.firstOrNull()?.apply {
+                    entities.subList(1, entities.size)
+                            .forEach { e ->
+                                if (e.probability > 0.1) {
+                                    otherIntents.put(e.intent.name, e.probability)
+                                }
+                            }
+                }
+            }
 
             val result = ParseResult(
                     parseResult.intent.withoutNamespace(query.namespace),
                     parseResult.entities.map { ParsedEntityValue(it.value, it.probability, core.supportValuesMerge(it.entityType)) },
                     parseResult.intentProbability,
                     parseResult.entitiesProbability,
-                    q)
+                    q,
+                    otherIntents
+            )
 
             if (context.registerQuery) {
                 val intentId = config.getIntentIdByQualifiedName(parseResult.intent)!!
-                val sentence = ClassifiedSentence(result, language, application._id!!, intentId)
+                val sentence = ClassifiedSentence(
+                        result,
+                        language,
+                        application._id!!,
+                        intentId,
+                        parseResult.intentProbability,
+                        parseResult.entitiesProbability
+                )
                 if (!sentence.hasSameContent(validatedSentence)) {
                     config.save(sentence)
                 }

@@ -15,7 +15,7 @@
  */
 
 import {AttachmentType, ConnectorType, EventType} from "../../core/model/configuration";
-import {JsonUtils} from "../../monitoring/model/json";
+import {JsonUtils} from "tock-nlp-admin/src/app/model/commons";
 
 export class DialogReport {
 

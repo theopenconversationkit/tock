@@ -14,16 +14,18 @@
  * limitations under the License.
  */
 
-export class JsonUtils {
+import {Pipe, PipeTransform} from '@angular/core';
 
-  constructor() {
-  }
-
-  static jsonToMap(json?): Map<String, String> {
-    if (!json) {
-      return new Map<String,String>();
-    } else {
-      return new Map<String,String>((<any>Object).entries(json))
-    }
+@Pipe({
+  name: 'mapToIterable'
+})
+export class MapToIterablePipe implements PipeTransform  {
+  transform(map: Map<any,any>, args: any[] = null): any {
+    if (!map)
+      return null;
+    const r = [];
+    console.log(map);
+    map.forEach((v, k) => r.push({'key': k, 'value': v}));
+    return r;
   }
 }

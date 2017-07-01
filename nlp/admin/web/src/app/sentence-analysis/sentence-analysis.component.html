@@ -18,7 +18,10 @@
   <tock-highlight [sentence]="sentence"></tock-highlight>
   <md-card-content>
     <div class="sentence-analysis-content">
-      <md-select placeholder="Intent" [ngModel]="sentence.classification.intentId" (change)="onIntentChange($event.value)">
+      <md-select class="intent"
+                 placeholder="Intent"
+                 [ngModel]="sentence.classification.intentId"
+                 (change)="onIntentChange($event.value)">
         <md-option *ngFor="let intent of state.currentApplication.intents" [value]="intent._id">
           {{intent.name}}
         </md-option>
@@ -30,12 +33,43 @@
           {{state.localeName(l)}}
         </md-option>
       </md-select>
-
+      <span *ngIf="displayProbabilities" class="probability">
+        <span *ngIf="displayProbabilities && sentence.classification.intentId"
+              md-tooltip="intent probability">
+           intent : {{sentence.classification.intentProbability | percent:'1.0-2'}}
+        </span>
+        <span *ngIf="displayProbabilities && sentence.classification.entities.length !== 0"
+              md-tooltip="entities probability">
+           , entities : {{sentence.classification.entitiesProbability | percent:'1.0-2'}}
+        </span>
+        <span *ngIf="displayProbabilities && sentence.classification.otherIntentsProbabilities?.size !== 0">
+           <button *ngIf="!sentence.classification.displayOtherIntents"
+                   (click)="sentence.classification.displayOtherIntents=true"
+                   md-icon-button
+                   md-tooltip="Display probability for other intents"><md-icon>expand_more</md-icon></button>
+           <div *ngIf="sentence.classification.displayOtherIntents" class="otherIntents">
+                  Probability for other intents:
+                  <ol style="overflow:auto">
+                    <li *ngFor="let i of sentence.classification.otherIntentsProbabilities | mapToIterable">
+                      <div style="float:left">{{i.key}} =</div><div style="float:right">&nbsp;{{i.value | percent:'1.0-2'}}</div>
+                    </li>
+                  </ol>
+                  <button md-icon-button
+                          (click)="sentence.classification.displayOtherIntents=false"
+                          md-tooltip="Hide probabilities"><md-icon>expand_less</md-icon></button>
+           </div>
+        </span>
+      </span>
 
       <md-list>
         <md-list-item *ngFor="let entity of sentence.classification.entities">
           <label [style.background-color]="entity.entityColor">{{entity.qualifiedName(state.user)}}</label>
           &nbsp;&nbsp;&nbsp;{{sentence.entityValue(entity)}}
+          <span *ngIf="displayProbabilities && entity.probability"
+                class="probability"
+                md-tooltip="Probability of entity recognition">
+               {{entity.probability | percent:'1.0-2'}}
+          </span>
           &nbsp;&nbsp;
           <button md-button color="warn" (click)="onDeleteEntity(entity)">
             <md-icon>delete</md-icon>

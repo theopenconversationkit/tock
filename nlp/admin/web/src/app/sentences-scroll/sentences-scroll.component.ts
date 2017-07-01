@@ -28,7 +28,8 @@ export class SentencesScrollComponent implements OnInit, OnDestroy {
 
   @Input() filter: SentenceFilter;
   @Input() title: string;
-  @Input() displayArchiveButton:boolean =true;
+  @Input() displayArchiveButton: boolean = true;
+  @Input() displayProbabilities: boolean = false;
 
   sentences: Array<Sentence> = [];
   cursor: number = 0;
@@ -99,8 +100,8 @@ export class SentencesScrollComponent implements OnInit, OnDestroy {
 
 export class SentenceFilter {
   constructor(public search?: string,
-    public intentId?: string,
-    public status?: SentenceStatus[]) {
+              public intentId?: string,
+              public status?: SentenceStatus[]) {
   }
 
   clone(): SentenceFilter {

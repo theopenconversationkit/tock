@@ -23,7 +23,8 @@ data class ParseResult(val intent: String,
                        val entities: List<ParsedEntityValue>,
                        val intentProbability: Double,
                        val entitiesProbability: Double,
-                       val retainedQuery: String) {
+                       val retainedQuery: String,
+                       val otherIntentsProbabilities: Map<String, Double>) {
 
     fun firstValue(role: String): ParsedEntityValue? = entities.firstOrNull { it.entity.role == role }
 }

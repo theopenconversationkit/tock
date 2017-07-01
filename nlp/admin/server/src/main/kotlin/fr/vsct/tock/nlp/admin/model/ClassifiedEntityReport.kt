@@ -27,20 +27,23 @@ data class ClassifiedEntityReport(val type: String,
                                   val role: String,
                                   val start: Int,
                                   val end: Int,
-                                  val value: Value?) {
+                                  val value: Value?,
+                                  val probability: Double?) {
 
     constructor(value: ParsedEntityValue) : this(
             value.entity.entityType.name,
             value.entity.role,
             value.start,
             value.end,
-            value.value)
+            value.value,
+            value.probability)
 
     constructor(entity: ClassifiedEntity) : this(
             entity.type,
             entity.role,
             entity.start,
             entity.end,
+            null,
             null
     )
 

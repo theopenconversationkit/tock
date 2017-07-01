@@ -16,10 +16,9 @@
 
 package fr.vsct.tock.nlp.admin.model
 
-import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
-import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import java.time.Instant
 import java.time.Instant.now
 import java.util.Locale
@@ -52,10 +51,20 @@ data class SentenceReport(val text: String,
             sentence.creationDate,
             sentence.updateDate,
             sentence.status,
-            ClassificationReport(sentence.classification)
+            ClassificationReport(sentence)
     )
 
     fun toClassifiedSentence(): ClassifiedSentence {
-        return ClassifiedSentence(text, language, applicationId, creationDate, updateDate, status, classification.toClassification())
+        return ClassifiedSentence(
+                text,
+                language,
+                applicationId,
+                creationDate,
+                updateDate,
+                status,
+                classification.toClassification(),
+                1.0,
+                1.0
+        )
     }
 }

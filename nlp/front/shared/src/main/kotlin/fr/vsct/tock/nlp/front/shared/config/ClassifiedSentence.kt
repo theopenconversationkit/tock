@@ -29,9 +29,17 @@ data class ClassifiedSentence(val text: String,
                               val creationDate: Instant,
                               val updateDate: Instant,
                               val status: ClassifiedSentenceStatus,
-                              val classification: Classification) {
+                              val classification: Classification,
+                              val lastIntentProbability: Double,
+                              val lastEntityProbability: Double) {
 
-    constructor(query: ParseResult, language: Locale, applicationId: String, intentId: String)
+    constructor(
+            query: ParseResult,
+            language: Locale,
+            applicationId: String,
+            intentId: String,
+            lastIntentProbability: Double,
+            lastEntityProbability: Double)
             : this(
             query.retainedQuery,
             language,
@@ -39,7 +47,10 @@ data class ClassifiedSentence(val text: String,
             Instant.now(),
             Instant.now(),
             ClassifiedSentenceStatus.inbox,
-            Classification(query, intentId))
+            Classification(query, intentId),
+            lastIntentProbability,
+            lastEntityProbability
+    )
 
     /**
      * Check if the sentence has the same content (status, creation & update dates excluded)
@@ -48,6 +59,8 @@ data class ClassifiedSentence(val text: String,
         return this == sentence?.copy(
                 status = status,
                 creationDate = creationDate,
-                updateDate = updateDate)
+                updateDate = updateDate,
+                lastIntentProbability = lastIntentProbability,
+                lastEntityProbability = lastEntityProbability)
     }
 }

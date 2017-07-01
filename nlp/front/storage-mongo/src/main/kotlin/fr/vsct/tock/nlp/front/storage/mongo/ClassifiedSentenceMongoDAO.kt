@@ -59,7 +59,9 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                                              val creationDate: Instant,
                                              val updateDate: Instant,
                                              val status: ClassifiedSentenceStatus,
-                                             val classification: Classification) {
+                                             val classification: Classification,
+                                             val lastIntentProbability: Double = 1.0,
+                                             val lastEntityProbability: Double = 1.0) {
 
         constructor(sentence: ClassifiedSentence) :
                 this(
@@ -70,11 +72,21 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                         sentence.creationDate,
                         sentence.updateDate,
                         sentence.status,
-                        sentence.classification
+                        sentence.classification,
+                        sentence.lastIntentProbability,
+                        sentence.lastEntityProbability
                 )
 
-        fun toSentence(): ClassifiedSentence
-                = ClassifiedSentence(fullText, language, applicationId, creationDate, updateDate, status, classification)
+        fun toSentence(): ClassifiedSentence = ClassifiedSentence(
+                fullText,
+                language,
+                applicationId,
+                creationDate,
+                updateDate,
+                status,
+                classification,
+                lastIntentProbability,
+                lastEntityProbability)
     }
 
     private val col: MongoCollection<ClassifiedSentenceCol> by lazy {

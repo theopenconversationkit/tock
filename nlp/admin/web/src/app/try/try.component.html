@@ -23,5 +23,8 @@
   </md-card-content>
 </md-card>
 <br>
-<tock-sentence-analysis *ngIf="sentence" [(sentence)]="sentence" (closed)="onClose()"></tock-sentence-analysis>
+<tock-sentence-analysis *ngIf="sentence"
+                        [(sentence)]="sentence"
+                        (closed)="onClose()"
+                        [displayProbabilities]="true"></tock-sentence-analysis>
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {ApplicationScopedQuery, PaginatedQuery} from "./commons";
+import {ApplicationScopedQuery, JsonUtils, PaginatedQuery} from "./commons";
 import {User} from "./auth";
 
 export class EntityDefinition {
@@ -200,20 +200,29 @@ export class DateIntervalEntityValue {
 
 export class Classification {
 
+  public displayOtherIntents: boolean;
+
   constructor(public intentId: string,
               public entities: ClassifiedEntity[],
               public intentProbability: number,
-              public entitiesProbability: number) {
+              public entitiesProbability: number,
+              public otherIntentsProbabilities: Map<string, number>) {
   }
 
   clone(): Classification {
-    return new Classification(this.intentId, this.entities.slice(0), this.intentProbability, this.entitiesProbability);
+    return new Classification(
+      this.intentId,
+      this.entities.slice(0),
+      this.intentProbability,
+      this.entitiesProbability,
+      this.otherIntentsProbabilities);
   }
 
   static fromJSON(json?: any): Classification {
     const value = Object.create(Classification.prototype);
     const result = Object.assign(value, json, {
-      entities: ClassifiedEntity.fromJSONArray(json.entities)
+      entities: ClassifiedEntity.fromJSONArray(json.entities),
+      otherIntentsProbabilities: JsonUtils.jsonToMap(json.otherIntentsProbabilities)
     });
 
     return result;
@@ -230,7 +239,8 @@ export class ClassifiedEntity {
               public role: string,
               public start: number,
               public end: number,
-              public value?: any) {
+              public value?: any,
+              public probability?: number) {
     this.qualifiedRole = qualifiedRole(type, role);
     this.entityColor = entityColor(this.qualifiedRole)
   }

@@ -30,6 +30,20 @@ export class Entry<F, S> {
   }
 }
 
+export class JsonUtils {
+
+  constructor() {
+  }
+
+  static jsonToMap<K,V>(json?): Map<K,V> {
+    if (!json) {
+      return new Map<K,V>();
+    } else {
+      return new Map<K,V>((<any>Object).entries(json))
+    }
+  }
+}
+
 export class ApplicationScopedQuery {
   constructor(public namespace: string,
               public applicationName: string,

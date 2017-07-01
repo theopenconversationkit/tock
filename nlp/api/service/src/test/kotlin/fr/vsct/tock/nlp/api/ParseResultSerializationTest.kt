@@ -48,9 +48,10 @@ class ParseResultSerializationTest {
                         )),
                         1.0,
                         1.0,
-                        "sentence"))
+                        "sentence",
+                        emptyMap()))
         assertEquals(
-                """{"intent":"test","entities":[{"start":0,"end":1,"entity":{"entityType":{"name":"type","subEntities":[]},"role":"role"},"value":{"@type":"dateEntity","date":"2017-04-01T00:00Z","grain":"day"},"evaluated":false,"probability":1.0,"mergeSupport":false}],"intentProbability":1.0,"entitiesProbability":1.0,"retainedQuery":"sentence"}""",
+                """{"intent":"test","entities":[{"start":0,"end":1,"entity":{"entityType":{"name":"type","subEntities":[]},"role":"role"},"value":{"@type":"dateEntity","date":"2017-04-01T00:00Z","grain":"day"},"evaluated":false,"probability":1.0,"mergeSupport":false}],"intentProbability":1.0,"entitiesProbability":1.0,"retainedQuery":"sentence","otherIntentsProbabilities":{}}""",
                 s)
     }
 }

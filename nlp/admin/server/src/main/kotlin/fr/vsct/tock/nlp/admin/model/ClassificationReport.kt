@@ -16,9 +16,9 @@
 
 package fr.vsct.tock.nlp.admin.model
 
-import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.shared.config.Classification
-import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
+import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 
 /**
  *
@@ -27,20 +27,23 @@ data class ClassificationReport(
         val intentId: String,
         val entities: List<ClassifiedEntityReport>,
         val intentProbability: Double,
-        val entitiesProbability: Double) {
+        val entitiesProbability: Double,
+        val otherIntentsProbabilities: Map<String, Double>) {
 
     constructor(query: ParseResult, intentId: String) : this(
             intentId,
             query.entities.map { ClassifiedEntityReport(it) },
             query.intentProbability,
-            query.entitiesProbability
+            query.entitiesProbability,
+            query.otherIntentsProbabilities
     )
 
-    constructor(classification: Classification) : this(
-            classification.intentId,
-            classification.entities.map { ClassifiedEntityReport(it) },
-            1.0,
-            1.0)
+    constructor(sentence: ClassifiedSentence) : this(
+            sentence.classification.intentId,
+            sentence.classification.entities.map { ClassifiedEntityReport(it) },
+            sentence.lastIntentProbability,
+            sentence.lastEntityProbability,
+            emptyMap())
 
     fun toClassification(): Classification {
         return Classification(intentId, entities.map { it.toClassifiedEntity() })

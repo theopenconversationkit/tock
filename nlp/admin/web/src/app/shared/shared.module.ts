@@ -20,12 +20,13 @@ import {FormsModule} from "@angular/forms";
 import {HttpModule} from "@angular/http";
 import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component";
 import {MaterialModule} from "@angular/material";
+import {MapToIterablePipe} from "./map-to-iterable.pipe";
 
 @NgModule({
   imports: [CommonModule, MaterialModule],
-  declarations: [ConfirmDialogComponent],
+  declarations: [ConfirmDialogComponent, MapToIterablePipe],
   providers: [],
-  exports: [MaterialModule, FormsModule, HttpModule],
+  exports: [MaterialModule, FormsModule, HttpModule, MapToIterablePipe],
   entryComponents: [
     ConfirmDialogComponent
   ]

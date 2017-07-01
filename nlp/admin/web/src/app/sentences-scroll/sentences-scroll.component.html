@@ -16,8 +16,16 @@
 
 <ng-content></ng-content>
 <div *ngIf="total !== -1">
-  <h1 *ngIf="total === 0">{{title}} is empty! <button md-button (click)="refresh()"><md-icon>refresh</md-icon></button></h1>
-  <h1 *ngIf="total !== 0"><span *ngIf="total > 10">Estimated</span> {{title}} size : {{total}} <button md-button (click)="refresh()"><md-icon>refresh</md-icon></button></h1>
+  <h1 *ngIf="total === 0">{{title}} is empty!
+    <button md-button (click)="refresh()">
+      <md-icon>refresh</md-icon>
+    </button>
+  </h1>
+  <h1 *ngIf="total !== 0"><span *ngIf="total > 10">Estimated</span> {{title}} size : {{total}}
+    <button md-button (click)="refresh()">
+      <md-icon>refresh</md-icon>
+    </button>
+  </h1>
   <p></p>
   <div
     infinite-scroll
@@ -25,7 +33,10 @@
     [infiniteScrollThrottle]="300"
     (scrolled)="onScroll()">
     <div *ngFor="let sentence of sentences">
-      <tock-sentence-analysis [sentence]="sentence" (closed)="onClose($event)" [displayArchiveButton]="displayArchiveButton"></tock-sentence-analysis>
+      <tock-sentence-analysis [sentence]="sentence"
+                              (closed)="onClose($event)"
+                              [displayArchiveButton]="displayArchiveButton"
+                              [displayProbabilities]="displayProbabilities"></tock-sentence-analysis>
     </div>
   </div>
 </div>

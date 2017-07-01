@@ -31,6 +31,7 @@ export class SentenceAnalysisComponent implements OnInit {
 
   @Input() @Output() sentence: Sentence;
   @Input() displayArchiveButton: boolean = true;
+  @Input() displayProbabilities: boolean = false;
   @Output() closed = new EventEmitter();
 
   constructor(public state: StateService,
@@ -60,7 +61,7 @@ export class SentenceAnalysisComponent implements OnInit {
           }
         }
         //we need to be sure the selected value has changed to avoid side effects
-        if(this.sentence.classification.intentId) {
+        if (this.sentence.classification.intentId) {
           this.sentence.classification.intentId = undefined;
         } else {
           this.onIntentChange(Intent.unknown);
@@ -79,7 +80,7 @@ export class SentenceAnalysisComponent implements OnInit {
 
   onValidate() {
     const intent = this.sentence.classification.intentId;
-    if(!intent || intent === Intent.unknown) {
+    if (!intent || intent === Intent.unknown) {
       this.snackBar.open(`Please select an intent first`, "Error", {duration: 3000});
     } else {
       this.update(SentenceStatus.validated);

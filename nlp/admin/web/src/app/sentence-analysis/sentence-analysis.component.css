@@ -25,10 +25,25 @@
 
 .sentence-analysis-content {
   padding-top: 15px;
+  overflow:auto;
 }
 .entity-list {
   width:40%;
   font-size: x-large;
   margin-left: auto;
   margin-right: auto;
+}
+
+.intent {
+  width:150px;
+}
+
+.probability {
+  font-style: italic;
+  font-size: smaller;
+  padding-left:10px;
+}
+
+.otherIntents {
+  float:right;
 }
