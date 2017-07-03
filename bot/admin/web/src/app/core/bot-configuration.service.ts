@@ -32,6 +32,8 @@ export class BotConfigurationService implements OnInit, OnDestroy {
   restConfigurations: BehaviorSubject<BotApplicationConfiguration[]> = new BehaviorSubject([]);
   //all configurations
   configurations: BehaviorSubject<BotApplicationConfiguration[]> = new BehaviorSubject([]);
+  //has rest configuration
+  hasRestConfigurations: BehaviorSubject<boolean> = new BehaviorSubject(false);
 
   constructor(private rest: RestService,
               private state: StateService) {
@@ -52,7 +54,9 @@ export class BotConfigurationService implements OnInit, OnDestroy {
     this.getConfigurations(this.state.createApplicationScopedQuery())
       .subscribe(c => {
         this.configurations.next(c);
-        this.restConfigurations.next(c.filter(c => c.connectorType.isRest()));
+        let rest = c.filter(c => c.connectorType.isRest());
+        this.restConfigurations.next(rest);
+        this.hasRestConfigurations.next(rest.length !== 0);
       });
   }
 

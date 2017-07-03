@@ -33,6 +33,7 @@ export class SentenceAnalysisComponent implements OnInit {
   @Input() displayArchiveButton: boolean = true;
   @Input() displayProbabilities: boolean = false;
   @Output() closed = new EventEmitter();
+  @Input() displayEntities: Boolean = true;
 
   constructor(public state: StateService,
               private nlp: NlpService,
@@ -71,7 +72,6 @@ export class SentenceAnalysisComponent implements OnInit {
       this.sentence.classification.intentId = value;
       this.sentence = this.sentence.clone();
     }
-
   }
 
   onLanguageChange(value) {

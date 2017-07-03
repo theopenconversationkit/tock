@@ -152,7 +152,7 @@ object XrayService {
                                                 TODO -> "Skipped"
                                                 FAIL ->
                                                     if (dialogReport.returnedMessage != null) {
-                                                        "TestFailed : ${dialogReport.returnedMessage?.toStringDisplay()}"
+                                                        "TestFailed : ${dialogReport.returnedMessage?.toPrettyString()}"
                                                     } else if (dialogReport.errorMessage != null) {
                                                         "TestFailed : ${dialogReport.errorMessage}"
                                                     } else {

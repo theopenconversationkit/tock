@@ -30,6 +30,23 @@ import fr.vsct.tock.translator.Translator
  */
 interface BotDefinition : I18nKeyProvider {
 
+    companion object {
+
+        fun findIntent(stories: List<StoryDefinition>, intent: String): Intent {
+            return stories.flatMap { it.intents }.find { it.name == intent } ?: Intent.unknown
+        }
+
+        fun findStoryDefinition(stories: List<StoryDefinition>, intent: String?, unknownStory: StoryDefinition): StoryDefinition {
+            return if (intent == null) {
+                unknownStory
+            } else {
+                val i = findIntent(stories, intent)
+                stories.find { it.isStarterIntent(i) } ?: unknownStory
+            }
+        }
+
+    }
+
     /**
      * The main bot id. Have to be different for each bot.
      */
@@ -59,7 +76,7 @@ interface BotDefinition : I18nKeyProvider {
     }
 
     fun findIntent(intent: String): Intent {
-        return stories.flatMap { it.intents }.find { it.name == intent } ?: Intent.unknown
+        return findIntent(stories, intent)
     }
 
     fun findStoryDefinition(intent: Intent?): StoryDefinition {
@@ -67,12 +84,7 @@ interface BotDefinition : I18nKeyProvider {
     }
 
     fun findStoryDefinition(intent: String?): StoryDefinition {
-        return if (intent == null) {
-            unknownStory
-        } else {
-            val i = findIntent(intent)
-            stories.find { it.isStarterIntent(i) } ?: unknownStory
-        }
+        return findStoryDefinition(stories, intent, unknownStory)
     }
 
     /**

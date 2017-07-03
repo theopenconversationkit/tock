@@ -25,6 +25,7 @@ import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.StoryHandlerListener
+import fr.vsct.tock.bot.engine.config.BotConfigurationSynchronizer
 import fr.vsct.tock.bot.engine.monitoring.RequestTimer
 import fr.vsct.tock.bot.engine.nlp.NlpListener
 import fr.vsct.tock.shared.injector
@@ -89,6 +90,7 @@ object BotRepository {
                         configuration.type,
                         configuration.getName(),
                         configuration.getBaseUrl())
+
                 ConnectorController.register(connector, bot, verticle)
 
                 botConfigurationDAO.updateIfNotManuallyModified(conf)
@@ -107,6 +109,8 @@ object BotRepository {
                                     botProviders.forEach { botProvider ->
                                         botProvider.bot().let { bot ->
                                             val appConf = saveApplicationConfigurationAndRegister(connector, bot, conf)
+                                            BotConfigurationSynchronizer.monitor(bot)
+
                                             //init rest built-in configuration if we need it
                                             adminRestConnectorInstaller.invoke(appConf)
                                                     ?.apply {

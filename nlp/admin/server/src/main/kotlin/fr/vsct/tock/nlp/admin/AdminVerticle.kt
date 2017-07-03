@@ -165,16 +165,7 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
         }
 
         blockingJsonPost("/intent") { context, intent: IntentDefinition ->
-            if (context.organization == intent.namespace
-                    && intent._id == front.getIntentIdByQualifiedName(intent.qualifiedName)) {
-                front.save(intent)
-                intent.applications.forEach {
-                    front.save(front.getApplicationById(it)!!.let { it.copy(intents = it.intents + intent._id!!) })
-                }
-                intent
-            } else {
-                unauthorized()
-            }
+            AdminService.createOrUpdateIntent(context.organization, intent) ?: unauthorized()
         }
 
         blockingJsonGet("/intents") { context ->

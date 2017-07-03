@@ -21,6 +21,7 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.mongodb.client.MongoDatabase
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.admin.test.TestPlanDAO
 import fr.vsct.tock.bot.admin.user.UserReportDAO
@@ -34,6 +35,7 @@ internal const val MONGO_DATABASE: String = "tock_bot_mongo_db"
 val botMongoModule = Kodein.Module {
     bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
     bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
+    bind<StoryDefinitionConfigurationDAO>() with provider { StoryDefinitionConfigurationMongoDAO }
     bind<I18nDAO>() with provider { I18nMongoDAO }
     bind<UserTimelineDAO>() with provider { UserTimelineMongoDAO }
     bind<UserReportDAO>() with provider { UserTimelineMongoDAO }

@@ -32,12 +32,23 @@ data class QueryContext(val language: Locale,
                         val dialogId: String = Dice.newId(),
                         val referenceDate: ZonedDateTime = now(UTC),
                         val referenceTimezone: ZoneId = UTC,
+                        /**
+                         * Is it a non regression test?
+                         */
                         val test: Boolean = false,
+                        /**
+                         * Should the query be saved in db if not already present?
+                         */
                         val registerQuery: Boolean = !test,
                         /**
                          * If a query is already validated in the model,
                          * returns directly the result without using the NLP model if
                          * [checkExistingQuery] is true
                          */
-                        val checkExistingQuery: Boolean = !test) {
+                        val checkExistingQuery: Boolean = !test,
+                        /**
+                         * Add this query in built-in stats.
+                         */
+                        val increaseQueryCounter: Boolean = !test
+) {
 }

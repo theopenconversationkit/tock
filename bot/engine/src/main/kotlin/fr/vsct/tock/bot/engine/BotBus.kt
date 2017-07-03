@@ -33,7 +33,9 @@ import fr.vsct.tock.nlp.entity.Value
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
 import fr.vsct.tock.translator.Translator
+import fr.vsct.tock.translator.UserInterfaceType
 import mu.KotlinLogging
+import java.util.Locale
 
 /**
  *
@@ -55,6 +57,8 @@ class BotBus internal constructor(
     val applicationId = action.applicationId
     internal val botId = action.recipientId
     val userId = action.playerId
+    val userLocale: Locale = userTimeline.userPreferences.locale
+    val userInterfaceType: UserInterfaceType = connector.connectorType.userInterfaceType
 
     private val context: BusContext = BusContext()
 

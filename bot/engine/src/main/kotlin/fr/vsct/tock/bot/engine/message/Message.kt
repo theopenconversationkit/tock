@@ -36,5 +36,8 @@ interface Message {
                  applicationId: String,
                  recipientId: PlayerId): Action
 
-    fun toStringDisplay() = toString()
+    /**
+     * Returns a human readable string representation of the message.
+     */
+    fun toPrettyString() = toString()
 }

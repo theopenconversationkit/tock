@@ -23,6 +23,7 @@ import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.admin.model.SentencesReport
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.shared.withNamespace
 
 /**
@@ -53,5 +54,18 @@ object AdminService {
     fun getApplicationWithIntents(application: ApplicationDefinition): ApplicationWithIntents {
         val intents = front.getIntentsByApplicationId(application._id!!).sortedBy { it.name }
         return ApplicationWithIntents(application, intents)
+    }
+
+    fun createOrUpdateIntent(namespace: String, intent: IntentDefinition): IntentDefinition? {
+        return if (namespace == intent.namespace
+                && intent._id == front.getIntentIdByQualifiedName(intent.qualifiedName)) {
+            front.save(intent)
+            intent.applications.forEach {
+                front.save(front.getApplicationById(it)!!.let { it.copy(intents = it.intents + intent._id!!) })
+            }
+            intent
+        } else {
+            null
+        }
     }
 }

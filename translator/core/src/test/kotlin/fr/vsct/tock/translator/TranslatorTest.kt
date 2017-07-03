@@ -27,8 +27,7 @@ class TranslatorTest {
 
     @Test
     fun formatMessage_shouldHandleWell_NullArgValue() {
-        val key = I18nLabelKey("key", "cat", "a {0}", null)
-        val result = Translator.formatMessage(key, "a {0}", defaultLocale, UserInterfaceType.textChat)
+        val result = Translator.formatMessage("a {0}", defaultLocale, UserInterfaceType.textChat, listOf(null))
         assertEquals("a ", result)
     }
 }

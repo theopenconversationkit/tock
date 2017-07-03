@@ -24,6 +24,7 @@ import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.config.BotDefinitionWrapper
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.event.Event
@@ -35,11 +36,13 @@ import mu.KotlinLogging
 /**
  *
  */
-class Bot(val botDefinition: BotDefinition) {
+class Bot(botDefinitionBase: BotDefinition) {
 
     private val logger = KotlinLogging.logger {}
 
     private val nlp: NlpController by injector.instance()
+
+    internal val botDefinition: BotDefinitionWrapper = BotDefinitionWrapper(botDefinitionBase)
 
     fun handle(action: Action, userTimeline: UserTimeline, connector: ConnectorController) {
         loadProfileIfNotSet(action, userTimeline, connector)

@@ -105,7 +105,7 @@ export class NlpRoutingModule {
     CreateIntentDialogComponent,
     SentencesScrollComponent
   ],
-  exports: [],
+  exports: [SentenceAnalysisComponent],
   providers: [
     NlpService,
     ApplicationResolver

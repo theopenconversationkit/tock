@@ -19,7 +19,6 @@ import {TestService} from "../test.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
 import {BotDialogRequest, TestMessage} from "../model/test";
-import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {BotMessage, Sentence} from "../../shared/model/dialog-data";
 import {MdSnackBar} from "@angular/material";
 
@@ -42,26 +41,13 @@ export class BotDialogComponent implements OnInit, OnDestroy {
   constructor(private state: StateService,
               private test: TestService,
               private rest: RestService,
-              public botConfiguration: BotConfigurationService,
               private snackBar: MdSnackBar) {
   }
 
   ngOnInit() {
-    this.load();
     this.errorUnsuscriber = this.rest.errorEmitter.subscribe(e =>
       this.loading = false
     )
-  }
-
-  load() {
-    this.botConfiguration.restConfigurations
-      .subscribe(conf => {
-        if (conf.length !== 0) {
-          this.currentConfigurationId = conf[0]._id;
-        } else {
-          this.currentConfigurationId = null;
-        }
-      })
   }
 
   changeConfiguration(applicationConfigurationId: string) {

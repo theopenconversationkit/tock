@@ -26,6 +26,7 @@ import {SharedModule} from "tock-nlp-admin/src/app/shared/shared.module";
 import {BotSharedService} from "./bot-shared.service";
 import {DisplayDialogComponent} from "./bot-dialog/display-dialog.component";
 import {MomentModule} from "angular2-moment";
+import {SelectBotComponent} from "./select-bot/select-bot.component";
 @NgModule({
   imports: [
     CommonModule,
@@ -39,9 +40,10 @@ import {MomentModule} from "angular2-moment";
     BotMessageChoiceComponent,
     BotMessageLocationComponent,
     BotMessageAttachmentComponent,
-    DisplayDialogComponent
+    DisplayDialogComponent,
+    SelectBotComponent
   ],
-  exports: [BotMessageComponent, DisplayDialogComponent],
+  exports: [BotMessageComponent, DisplayDialogComponent, SelectBotComponent],
   providers: [BotSharedService],
   entryComponents: []
 })

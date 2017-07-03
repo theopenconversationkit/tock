@@ -17,12 +17,18 @@
 package fr.vsct.tock.bot.admin
 
 import com.github.salomonbrys.kodein.instance
+import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
+import fr.vsct.tock.bot.admin.answer.SimpleAnswer
+import fr.vsct.tock.bot.admin.answer.SimpleAnswerConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
+import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotDialogResponse
+import fr.vsct.tock.bot.admin.model.CreateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.test.toClientMessage
 import fr.vsct.tock.bot.admin.user.UserReportDAO
@@ -30,13 +36,21 @@ import fr.vsct.tock.bot.admin.user.UserReportQueryResult
 import fr.vsct.tock.bot.connector.rest.client.ConnectorRestClient
 import fr.vsct.tock.bot.connector.rest.client.model.ClientMessageRequest
 import fr.vsct.tock.bot.connector.rest.client.model.ClientSentence
+import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.nlp.admin.AdminService
+import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.service.applicationDAO
+import fr.vsct.tock.nlp.front.shared.config.Classification
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.vertx.UnauthorizedException
 import mu.KotlinLogging
+import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -50,8 +64,9 @@ object BotAdminService {
     val userReportDAO: UserReportDAO  by injector.instance()
     val dialogReportDAO: DialogReportDAO  by injector.instance()
     val applicationConfigurationDAO: BotApplicationConfigurationDAO  by injector.instance()
-
+    val storyDefinitionDAO: StoryDefinitionConfigurationDAO by injector.instance()
     val restConnectorClientCache: MutableMap<String, ConnectorRestClient> = ConcurrentHashMap()
+    val front = FrontClient
 
     fun getRestClient(conf: BotApplicationConfiguration): ConnectorRestClient {
         val baseUrl = conf.baseUrl?.let { if (it.isBlank()) null else it } ?: defaultRestConnectorBaseUrl
@@ -94,6 +109,12 @@ object BotAdminService {
                 .filter { it.namespace == namespace && it.botId == botId }
     }
 
+    fun getBotConfigurationsByNamespaceAndBotConfigurationId(namespace: String, botConfigurationId: String): List<BotApplicationConfiguration> {
+        return applicationConfigurationDAO
+                .getConfigurations()
+                .filter { it.namespace == namespace && it._id == botConfigurationId }
+    }
+
     fun getBotConfigurationsByNamespaceAndApplicationName(namespace: String, applicationName: String): List<BotApplicationConfiguration> {
         val app = applicationDAO.getApplicationByNamespaceAndName(namespace, applicationName)
         return applicationConfigurationDAO
@@ -106,6 +127,57 @@ object BotAdminService {
 
     fun saveApplicationConfiguration(conf: BotApplicationConfiguration) {
         applicationConfigurationDAO.save(conf.copy(manuallyModified = true))
+    }
+
+    fun createBotIntent(
+            namespace: String,
+            request: CreateBotIntentRequest): IntentDefinition? {
+
+        val botConf = BotAdminService.getBotConfigurationsByNamespaceAndBotConfigurationId(namespace, request.botConfigurationId).firstOrNull()
+        return if (botConf != null) {
+            val nlpApplication = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)
+            val intentDefinition = AdminService.createOrUpdateIntent(
+                    namespace,
+                    IntentDefinition(
+                            request.intent,
+                            namespace,
+                            setOf(nlpApplication!!._id!!),
+                            emptySet()
+                    )
+            )
+            if (intentDefinition != null) {
+                storyDefinitionDAO.save(
+                        StoryDefinitionConfiguration(
+                                request.intent,
+                                botConf.botId,
+                                Intent(request.intent),
+                                AnswerConfigurationType.simple,
+                                listOf(
+                                        SimpleAnswerConfiguration(
+                                                listOf(SimpleAnswer(request.reply, 0))
+                                        ))
+                        )
+                )
+                request.firstSentences.forEach {
+                    front.save(
+                            ClassifiedSentence(
+                                    it,
+                                    request.language,
+                                    nlpApplication._id!!,
+                                    Instant.now(),
+                                    Instant.now(),
+                                    ClassifiedSentenceStatus.validated,
+                                    Classification(intentDefinition._id!!, emptyList()),
+                                    1.0,
+                                    1.0
+                            )
+                    )
+                }
+            }
+            intentDefinition
+        } else {
+            null
+        }
     }
 
     fun talk(request: BotDialogRequest): BotDialogResponse {

@@ -19,6 +19,12 @@ package fr.vsct.tock.bot.jackson
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.fasterxml.jackson.databind.module.SimpleModule
+import fr.vsct.tock.bot.admin.answer.AnswerConfiguration
+import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
+import fr.vsct.tock.bot.admin.answer.BuiltInAnswerConfiguration
+import fr.vsct.tock.bot.admin.answer.MessageAnswerConfiguration
+import fr.vsct.tock.bot.admin.answer.ScriptAnswerConfiguration
+import fr.vsct.tock.bot.admin.answer.SimpleAnswerConfiguration
 import fr.vsct.tock.bot.engine.event.EventType
 import fr.vsct.tock.bot.engine.message.Attachment
 import fr.vsct.tock.bot.engine.message.Choice
@@ -39,6 +45,12 @@ object BotEngineJacksonConfiguration {
             property = "eventType")
     private interface MixinMessage
 
+    @JsonTypeInfo(
+            use = JsonTypeInfo.Id.NAME,
+            include = JsonTypeInfo.As.EXISTING_PROPERTY,
+            property = "answerType")
+    private interface MixinAnswerConfiguration
+
     @Volatile
     private var module: SimpleModule? = null
 
@@ -52,6 +64,13 @@ object BotEngineJacksonConfiguration {
                 registerSubtypes(NamedType(Sentence::class.java, EventType.sentence.name))
                 registerSubtypes(NamedType(Choice::class.java, EventType.choice.name))
                 registerSubtypes(NamedType(Location::class.java, EventType.location.name))
+
+                setMixInAnnotation(AnswerConfiguration::class.java, MixinAnswerConfiguration::class.java)
+                registerSubtypes(NamedType(SimpleAnswerConfiguration::class.java, AnswerConfigurationType.simple.name))
+                registerSubtypes(NamedType(ScriptAnswerConfiguration::class.java, AnswerConfigurationType.script.name))
+                registerSubtypes(NamedType(MessageAnswerConfiguration::class.java, AnswerConfigurationType.message.name))
+                registerSubtypes(NamedType(BuiltInAnswerConfiguration::class.java, AnswerConfigurationType.builtin.name))
+
                 mapper.registerModule(this)
             }
             mongoJacksonModules.add(module)

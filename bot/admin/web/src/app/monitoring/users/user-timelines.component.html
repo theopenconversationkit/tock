@@ -64,7 +64,7 @@
         [dialog]="user.userDialog">
         <div *ngIf="user.userDialog.actions.length === 0">No dialog</div>
         <div *ngIf="user.userDialog.actions.length !== 0">
-          <div *ngIf="user.testPlans  && user.testPlans.length !== 0">
+          <div *ngIf="user.testPlans && user.testPlans.length !== 0">
             <md-select #selectedPlan
                        placeholder="Select a Test Plan"
                        class="select-plan">

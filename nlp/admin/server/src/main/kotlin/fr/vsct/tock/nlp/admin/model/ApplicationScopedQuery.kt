@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.admin.model
 
+import fr.vsct.tock.shared.defaultLocale
 import java.util.Locale
 
 /**
@@ -23,5 +24,5 @@ import java.util.Locale
  */
 open class ApplicationScopedQuery(val namespace: String = "",
                                   val applicationName: String = "",
-                                  val language: Locale = Locale.ENGLISH) {
+                                  val language: Locale = defaultLocale) {
 }

@@ -15,7 +15,7 @@
   -->
 
 <md-card class="sentence-analysis">
-  <tock-highlight [sentence]="sentence"></tock-highlight>
+  <tock-highlight *ngIf="displayEntities" [sentence]="sentence"></tock-highlight>
   <md-card-content>
     <div class="sentence-analysis-content">
       <md-select class="intent"
@@ -38,7 +38,7 @@
               md-tooltip="intent probability">
            intent : {{sentence.classification.intentProbability | percent:'1.0-2'}}
         </span>
-        <span *ngIf="displayProbabilities && sentence.classification.entities.length !== 0"
+        <span *ngIf="displayProbabilities && displayEntities && sentence.classification.entities.length !== 0"
               md-tooltip="entities probability">
            , entities : {{sentence.classification.entitiesProbability | percent:'1.0-2'}}
         </span>
@@ -51,7 +51,7 @@
                   Probability for other intents:
                   <ol style="overflow:auto">
                     <li *ngFor="let i of sentence.classification.otherIntentsProbabilities | mapToIterable">
-                      <div style="float:left">{{i.key}} =</div><div style="float:right">&nbsp;{{i.value | percent:'1.0-2'}}</div>
+                      <div style="float:left">{{i.key}}&nbsp;&nbsp;</div><div style="float:right">&nbsp;{{i.value | percent:'1.0-2'}}</div>
                     </li>
                   </ol>
                   <button md-icon-button
@@ -61,7 +61,7 @@
         </span>
       </span>
 
-      <md-list>
+      <md-list *ngIf="displayEntities">
         <md-list-item *ngFor="let entity of sentence.classification.entities">
           <label [style.background-color]="entity.entityColor">{{entity.qualifiedName(state.user)}}</label>
           &nbsp;&nbsp;&nbsp;{{sentence.entityValue(entity)}}
@@ -80,9 +80,8 @@
     </div>
   </md-card-content>
   <md-card-actions class="sentence-analysis-content">
-    <button md-raised-button color="warn" (click)="onDelete()">Delete</button>
-    <button md-raised-button color="accent" (click)="onArchive()" *ngIf="displayArchiveButton">Archive
-    </button>
-    <button md-raised-button color="primary" (click)="onValidate()">Validate</button>
+      <button md-raised-button color="warn" (click)="onDelete()">Delete</button>
+      <button md-raised-button color="accent" (click)="onArchive()" *ngIf="displayArchiveButton">Archive</button>
+      <button md-raised-button color="primary" (click)="onValidate()">Validate</button>
   </md-card-actions>
 </md-card>

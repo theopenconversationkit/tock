@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.admin
 
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
+import fr.vsct.tock.bot.admin.model.CreateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.DialogReportRequest
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.test.TestPlan
@@ -162,6 +163,10 @@ class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
             } else {
                 unauthorized()
             }
+        }
+
+        blockingJsonPost("/bot/intent") { context, query: CreateBotIntentRequest ->
+            BotAdminService.createBotIntent(context.organization, query) ?: unauthorized()
         }
 
         configureStaticHandling()

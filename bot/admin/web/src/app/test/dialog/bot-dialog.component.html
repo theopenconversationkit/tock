@@ -20,18 +20,8 @@
   <md-card-content>
     <br>
     <div>
-      <div *ngIf="(botConfiguration.restConfigurations|async).length ===0">
-        <h3>No bot configuration detected.</h3>
-      </div>
-      <div *ngIf="(botConfiguration.restConfigurations|async).length!==0">
-        <md-select (change)="changeConfiguration($event.value)"
-                   placeholder="Select a bot"
-                   [ngModel]="currentConfigurationId"
-                   class="select-configuration">
-          <md-option *ngFor="let conf of (botConfiguration.restConfigurations|async)"
-                     [value]="conf._id">{{ conf.name }}
-          </md-option>
-        </md-select>
+      <tock-select-bot [(configurationId)]="currentConfigurationId"
+                       (configurationIdChange)="changeConfiguration($event)">
         <br><br><br>
         <table *ngIf="messages.length !==0">
           <tr *ngFor="let m of messages">
@@ -59,7 +49,7 @@
                  (keyup.enter)="submit()">
         </md-input-container>
         <button md-button (click)="submit()">GO</button>
-      </div>
+      </tock-select-bot>
     </div>
   </md-card-content>
 </md-card>

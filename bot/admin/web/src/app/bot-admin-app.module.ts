@@ -18,6 +18,10 @@ const routes: Routes = [
     loadChildren: 'app/configuration/configuration.module#BotConfigurationModule'
   },
   {
+    path: 'bot',
+    loadChildren: 'app/bot/bot.module#BotModule'
+  },
+  {
     path: 'test',
     loadChildren: 'app/test/test.module#BotTestModule'
   },

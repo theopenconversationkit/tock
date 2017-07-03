@@ -60,7 +60,7 @@ data class Sentence(
                 }.toMutableList())
     }
 
-    override fun toStringDisplay(): String {
-        return text ?: super.toStringDisplay()
+    override fun toPrettyString(): String {
+        return text ?: super.toPrettyString()
     }
 }

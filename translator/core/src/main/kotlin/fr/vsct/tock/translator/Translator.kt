@@ -46,29 +46,12 @@ object Translator {
 
     fun translate(key: I18nLabelKey, locale: Locale, userInterfaceType: UserInterfaceType): String {
         if (!enabled) {
-            return formatMessage(key, key.defaultLabel, locale, userInterfaceType)
+            return formatMessage(key.defaultLabel, locale, userInterfaceType, key.args)
         }
         val storedLabel = i18nDAO.getLabelById(key.key)
 
         val label = if (storedLabel != null) {
-            val localizedLabel = storedLabel.findLabel(locale, userInterfaceType)
-            if (localizedLabel != null) {
-                if (localizedLabel.alternatives.isEmpty()) {
-                    localizedLabel.label
-                } else {
-                    Dice.choose(listOf(localizedLabel.label) + localizedLabel.alternatives)
-                }
-            } else {
-                val labelWithoutUserInterface = storedLabel.findLabel(locale)
-                if (labelWithoutUserInterface != null) {
-                    i18nDAO.save(storedLabel.copy(i18n = storedLabel.i18n + labelWithoutUserInterface.copy(interfaceType = userInterfaceType, validated = false)))
-                    labelWithoutUserInterface.label
-                } else {
-                    val newLabel = translate(key.defaultLabel, defaultLocale, locale)
-                    i18nDAO.save(storedLabel.copy(i18n = storedLabel.i18n + I18nLocalizedLabel(locale, userInterfaceType, newLabel)))
-                    newLabel
-                }
-            }
+            getLabel(storedLabel, key.defaultLabel, locale, userInterfaceType)
         } else {
             val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, key.defaultLabel)
             if (locale != defaultLocale) {
@@ -86,15 +69,39 @@ object Translator {
             }
         }
 
-        return formatMessage(key, label, locale, userInterfaceType)
+        return formatMessage(label, locale, userInterfaceType, key.args)
     }
 
-    internal fun formatMessage(key: I18nLabelKey, label: String, locale: Locale, userInterfaceType: UserInterfaceType): String {
-        if (key.args.isEmpty()) {
+    private fun getLabel(i18nLabel: I18nLabel,
+                         defaultLabel: String,
+                         locale: Locale,
+                         userInterfaceType: UserInterfaceType): String {
+        val localizedLabel = i18nLabel.findLabel(locale, userInterfaceType)
+        return if (localizedLabel != null) {
+            if (localizedLabel.alternatives.isEmpty()) {
+                localizedLabel.label
+            } else {
+                Dice.choose(listOf(localizedLabel.label) + localizedLabel.alternatives)
+            }
+        } else {
+            val labelWithoutUserInterface = i18nLabel.findLabel(locale)
+            if (labelWithoutUserInterface != null) {
+                i18nDAO.save(i18nLabel.copy(i18n = i18nLabel.i18n + labelWithoutUserInterface.copy(interfaceType = userInterfaceType, validated = false)))
+                labelWithoutUserInterface.label
+            } else {
+                val newLabel = translate(defaultLabel, defaultLocale, locale)
+                i18nDAO.save(i18nLabel.copy(i18n = i18nLabel.i18n + I18nLocalizedLabel(locale, userInterfaceType, newLabel)))
+                newLabel
+            }
+        }
+    }
+
+    internal fun formatMessage(label: String, locale: Locale, userInterfaceType: UserInterfaceType, args: List<Any?>): String {
+        if (args.isEmpty()) {
             return label
         }
         return MessageFormat(escapeQuotes(label), locale).format(
-                key.args.map { formatArg(it, locale, userInterfaceType) }.toTypedArray(),
+                args.map { formatArg(it, locale, userInterfaceType) }.toTypedArray(),
                 StringBuffer(),
                 null).toString()
     }
