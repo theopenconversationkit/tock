@@ -22,7 +22,7 @@ import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
-private val cache: Cache by injector.instance()
+private val cache: TockCache by injector.instance()
 
 /**
  * Returns the value for specified id and type.
