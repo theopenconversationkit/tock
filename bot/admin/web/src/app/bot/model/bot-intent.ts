@@ -14,6 +14,9 @@
  * limitations under the License.
  */
 
+import {PaginatedQuery} from "tock-nlp-admin/src/app/model/commons";
+import {Sentence} from "tock-nlp-admin/src/app/model/nlp";
+
 export class CreateBotIntentRequest {
 
   constructor(public botConfigurationId: string,
@@ -23,4 +26,142 @@ export class CreateBotIntentRequest {
               public reply: string) {
   }
 
+}
+
+export class BotIntentSearchQuery extends PaginatedQuery {
+
+  constructor(public namespace: string,
+              public applicationName: string,
+              public language: string,
+              public start: number,
+              public size: number) {
+    super(namespace, applicationName, language, start, size)
+  }
+
+}
+
+export class BotIntent {
+
+  constructor(public storyDefinition: StoryDefinitionConfiguration,
+              public firstSentences: Sentence[]) {
+
+  }
+
+  static fromJSON(json: any): BotIntent {
+    const value = Object.create(BotIntent.prototype);
+    const result = Object.assign(value, json, {
+      storyDefinition: StoryDefinitionConfiguration.fromJSON(json.storyDefinition),
+      firstSentences: Sentence.fromJSONArray(json.firstSentences)
+    });
+
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): BotIntent[] {
+    return json ? json.map(BotIntent.fromJSON) : [];
+  }
+}
+
+export class StoryDefinitionConfiguration {
+
+  constructor(public storyId: string,
+              public botId: string,
+              public intent: IntentName,
+              public currentType: AnswerConfigurationType,
+              public answers: AnswerConfiguration[],
+              public _id: string) {
+
+  }
+
+  simpleAnswer() : SimpleAnswerConfiguration {
+    return this.answers[0] as SimpleAnswerConfiguration;
+  }
+
+  static fromJSON(json: any): StoryDefinitionConfiguration {
+    const value = Object.create(StoryDefinitionConfiguration.prototype);
+    const result = Object.assign(value, json, {
+      intent: IntentName.fromJSON(json.intent),
+      currentType: AnswerConfigurationType[json.currentType],
+      answers: AnswerConfiguration.fromJSONArray(json.answers)
+    });
+
+    return result;
+  }
+}
+
+export enum  AnswerConfigurationType {
+  simple,
+  message,
+  script,
+  builtin
+}
+
+export class IntentName {
+  constructor(public name: string) {
+  }
+
+  static fromJSON(json: any): IntentName {
+    const value = Object.create(IntentName.prototype);
+    const result = Object.assign(value, json, {});
+    return result;
+  }
+}
+
+export abstract class AnswerConfiguration {
+
+  constructor(public answerType: AnswerConfigurationType) {
+  }
+
+  static fromJSON(json: any): AnswerConfiguration {
+    const value = Object.create(AnswerConfiguration.prototype);
+
+    if (!json) {
+      return null;
+    }
+
+    const answerType = AnswerConfigurationType[json.answerType as string];
+    switch (answerType) {
+      case AnswerConfigurationType.simple :
+        return SimpleAnswerConfiguration.fromJSON(json);
+      default:
+        throw "unknown type : " + json.type
+    }
+  }
+
+  static fromJSONArray(json?: Array<any>): AnswerConfiguration[] {
+    return json ? json.map(AnswerConfiguration.fromJSON) : [];
+  }
+}
+
+export abstract class SimpleAnswerConfiguration extends AnswerConfiguration {
+
+  constructor(public answers: SimpleAnswer[]) {
+    super(AnswerConfigurationType.simple)
+  }
+
+  static fromJSON(json: any): SimpleAnswerConfiguration {
+    const value = Object.create(SimpleAnswerConfiguration.prototype);
+    const result = Object.assign(value, json, {
+      answers: SimpleAnswer.fromJSONArray(json.answers)
+    });
+    return result;
+  }
+}
+
+export abstract class SimpleAnswer {
+
+  constructor(public text: string,
+              public delay: number) {
+  }
+
+  static fromJSON(json: any): SimpleAnswer {
+    const value = Object.create(SimpleAnswer.prototype);
+    const result = Object.assign(value, json, {});
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): SimpleAnswer[] {
+    return json ? json.map(SimpleAnswer.fromJSON) : [];
+  }
 }

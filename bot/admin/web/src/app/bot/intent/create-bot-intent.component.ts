@@ -65,7 +65,7 @@ export class CreateBotIntentComponent {
   initIntentName(value: string) {
     const appName = this.state.currentApplication.name;
     const underscoreIndex = appName.indexOf("_");
-    const prefix = underscoreIndex === -1 ? appName.substring(0, Math.min(underscoreIndex, 5)) : appName.substring(0, Math.min(appName.length, 3));
+    const prefix = underscoreIndex !== -1 ? appName.substring(0, Math.min(underscoreIndex, 5)) : appName.substring(0, Math.min(appName.length, 5));
     const v = NormalizeUtil.normalize(value.trim().toLowerCase());
     let candidate = prefix + "_" + v.substring(0, Math.min(value.length, 10));
     let count = 1;
@@ -91,7 +91,7 @@ export class CreateBotIntentComponent {
       )
     ).subscribe(intent => {
       this.state.currentApplication.intents.push(intent);
-      this.snackBar.open(`New answer saved`, "Answer Saved", {duration: 3000});
+      this.snackBar.open(`New answer saved for language ${this.state.currentLocale}`, "Answer Saved", {duration: 3000});
       this.onClose();
       this.newSentence._focusInput();
     });
@@ -101,6 +101,7 @@ export class CreateBotIntentComponent {
     this.sentence = null;
     this.reply = null;
     this.intent = null;
+    this.text = null;
   }
 
 }

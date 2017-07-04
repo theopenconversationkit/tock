@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.bot
+package fr.vsct.tock.bot.admin.model
+
+import fr.vsct.tock.nlp.admin.model.PaginatedQuery
 
 /**
  *
  */
-interface StoryDefinitionConfigurationDAO {
-
-    fun getStoryDefinitionById(id: String): StoryDefinitionConfiguration?
-
-    fun getStoryDefinitions(botId: String): List<StoryDefinitionConfiguration>
-
-    fun save(story: StoryDefinitionConfiguration)
-
-    fun delete(story: StoryDefinitionConfiguration)
+class BotIntentSearchRequest : PaginatedQuery() {
 }

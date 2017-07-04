@@ -14,12 +14,45 @@
  * limitations under the License.
  */
 
-import {Component} from "@angular/core";
+import {Component, OnInit} from "@angular/core";
+import {BotService} from "../bot-service";
+import {MdSnackBar} from "@angular/material";
+import {NlpService} from "tock-nlp-admin/src/app/nlp-tabs/nlp.service";
+import {StateService} from "tock-nlp-admin/src/app/core/state.service";
+import {BotIntent, BotIntentSearchQuery} from "../model/bot-intent";
+
 @Component({
   selector: 'tock-search-bot-intent',
   templateUrl: './search-bot-intent.component.html',
   styleUrls: ['./search-bot-intent.component.css']
 })
-export class SearchBotIntentComponent {
+export class SearchBotIntentComponent implements OnInit {
 
+  intents: BotIntent[];
+
+  constructor(private nlp: NlpService,
+              private state: StateService,
+              private bot: BotService,
+              private snackBar: MdSnackBar) {
+  }
+
+  ngOnInit(): void {
+    this.bot.getBotIntents(
+      new BotIntentSearchQuery(
+        this.state.currentApplication.namespace,
+        this.state.currentApplication.name,
+        this.state.currentLocale,
+        0,
+        10
+      )).subscribe(intents => this.intents = intents)
+  }
+
+  delete(intent:BotIntent) {
+    this.bot.deleteBotIntent(intent.storyDefinition._id)
+      .subscribe(_ => {
+        this.state.currentApplication.removeIntentByNamespaceAndName(this.state.currentApplication.namespace, intent.storyDefinition.intent.name);
+        this.ngOnInit();
+        this.snackBar.open(`Answer deleted`, "Delete", {duration: 2000})
+      });
+  }
 }

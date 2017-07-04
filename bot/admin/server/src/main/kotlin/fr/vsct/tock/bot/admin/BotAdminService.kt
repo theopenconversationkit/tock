@@ -28,6 +28,8 @@ import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotDialogResponse
+import fr.vsct.tock.bot.admin.model.BotIntent
+import fr.vsct.tock.bot.admin.model.BotIntentSearchRequest
 import fr.vsct.tock.bot.admin.model.CreateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.test.toClientMessage
@@ -39,12 +41,14 @@ import fr.vsct.tock.bot.connector.rest.client.model.ClientSentence
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.nlp.admin.AdminService
+import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.service.applicationDAO
 import fr.vsct.tock.nlp.front.shared.config.Classification
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.property
@@ -115,7 +119,7 @@ object BotAdminService {
                 .filter { it.namespace == namespace && it._id == botConfigurationId }
     }
 
-    fun getBotConfigurationsByNamespaceAndApplicationName(namespace: String, applicationName: String): List<BotApplicationConfiguration> {
+    fun getBotConfigurationsByNamespaceAndNlpModel(namespace: String, applicationName: String): List<BotApplicationConfiguration> {
         val app = applicationDAO.getApplicationByNamespaceAndName(namespace, applicationName)
         return applicationConfigurationDAO
                 .getConfigurations()
@@ -129,11 +133,53 @@ object BotAdminService {
         applicationConfigurationDAO.save(conf.copy(manuallyModified = true))
     }
 
+    fun loadBotIntents(request: BotIntentSearchRequest): List<BotIntent> {
+        val botConf = getBotConfigurationsByNamespaceAndNlpModel(request.namespace, request.applicationName).firstOrNull()
+        return if (botConf == null) {
+            emptyList()
+        } else {
+            storyDefinitionDAO
+                    .getStoryDefinitions(botConf.botId)
+                    .map {
+                        val nlpApplication = front.getApplicationByNamespaceAndName(request.namespace, botConf.nlpModel)
+                        val intent = front.getIntentByNamespaceAndName(request.namespace, it.intent.name)
+                        val query = SentencesQuery(
+                                nlpApplication!!._id!!,
+                                request.language,
+                                size = 3,
+                                intentId = intent!!._id)
+                        val sentences =
+                                front.search(query)
+                                        .sentences
+                                        .map {
+                                            SentenceReport(it)
+                                        }
+                        BotIntent(it, sentences)
+                    }
+        }
+    }
+
+    fun deleteBotIntent(namespace: String, storyDefinitionId: String): Boolean {
+        val story = storyDefinitionDAO.getStoryDefinitionById(storyDefinitionId)
+        if (story != null) {
+            val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()
+            if (botConf != null) {
+                val nlpApplication = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)
+                val intent = front.getIntentByNamespaceAndName(namespace, story.intent.name)
+                if (intent != null) {
+                    front.removeIntentFromApplication(nlpApplication!!, intent._id!!)
+                }
+                storyDefinitionDAO.delete(story)
+            }
+        }
+        return false
+    }
+
     fun createBotIntent(
             namespace: String,
             request: CreateBotIntentRequest): IntentDefinition? {
 
-        val botConf = BotAdminService.getBotConfigurationsByNamespaceAndBotConfigurationId(namespace, request.botConfigurationId).firstOrNull()
+        val botConf = getBotConfigurationsByNamespaceAndBotConfigurationId(namespace, request.botConfigurationId).firstOrNull()
         return if (botConf != null) {
             val nlpApplication = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)
             val intentDefinition = AdminService.createOrUpdateIntent(

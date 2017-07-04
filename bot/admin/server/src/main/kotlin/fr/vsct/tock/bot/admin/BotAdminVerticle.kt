@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.admin
 
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
+import fr.vsct.tock.bot.admin.model.BotIntentSearchRequest
 import fr.vsct.tock.bot.admin.model.CreateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.DialogReportRequest
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
@@ -59,7 +60,7 @@ class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
 
         blockingJsonPost("/configuration/bots") { context, query: ApplicationScopedQuery ->
             if (context.organization == query.namespace) {
-                BotAdminService.getBotConfigurationsByNamespaceAndApplicationName(query.namespace, query.applicationName)
+                BotAdminService.getBotConfigurationsByNamespaceAndNlpModel(query.namespace, query.applicationName)
             } else {
                 unauthorized()
             }
@@ -167,6 +168,18 @@ class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
 
         blockingJsonPost("/bot/intent") { context, query: CreateBotIntentRequest ->
             BotAdminService.createBotIntent(context.organization, query) ?: unauthorized()
+        }
+
+        blockingJsonPost("/bot/intents/search") { context, request: BotIntentSearchRequest ->
+            if (context.organization == request.namespace) {
+                BotAdminService.loadBotIntents(request)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonDelete("/bot/intent/:intentId") { context ->
+            BotAdminService.deleteBotIntent(context.organization, context.pathParam("intentId"))
         }
 
         configureStaticHandling()

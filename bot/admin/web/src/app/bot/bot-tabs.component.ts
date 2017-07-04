@@ -23,7 +23,7 @@ class TabLink {
 
 const tabs = [
   new TabLink("intent-create", "Add new Answer"),
-  new TabLink("intent-search", "Search")
+  new TabLink("intent-search", "Search Answers")
 ];
 
 @Component({

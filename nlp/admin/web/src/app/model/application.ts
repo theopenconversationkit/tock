@@ -31,8 +31,12 @@ export class Application {
       , this.namespace, this.intents.slice(0), this.supportedLocales.slice(0), this.nlpEngineType, this._id)
   }
 
-  removeIntentById(id: String) {
+  removeIntentById(id: string) {
     this.intents = this.intents.filter(i => i._id !== id)
+  }
+
+  removeIntentByNamespaceAndName(namespace: string, name: string) {
+    this.intents = this.intents.filter(i => i.namespace !== namespace || i.name !== name)
   }
 
   intentById(id: string): Intent {

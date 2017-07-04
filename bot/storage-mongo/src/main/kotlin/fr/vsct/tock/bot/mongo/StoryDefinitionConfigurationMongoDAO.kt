@@ -22,6 +22,7 @@ import mu.KotlinLogging
 import org.litote.kmongo.createIndex
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.find
+import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
 import org.litote.kmongo.save
@@ -37,6 +38,10 @@ object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurationDAO {
 
     init {
         col.createIndex("{botId:1}")
+    }
+
+    override fun getStoryDefinitionById(id: String): StoryDefinitionConfiguration? {
+        return col.findOneById(id)
     }
 
     override fun getStoryDefinitions(botId: String): List<StoryDefinitionConfiguration> {

@@ -17,7 +17,7 @@
 import {Injectable} from "@angular/core";
 import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
-import {CreateBotIntentRequest} from "./model/bot-intent";
+import {BotIntent, BotIntentSearchQuery, CreateBotIntentRequest} from "./model/bot-intent";
 import {Intent} from "tock-nlp-admin/src/app/model/application";
 import {Observable} from "rxjs/Observable";
 
@@ -30,5 +30,13 @@ export class BotService {
 
   newBotIntent(request: CreateBotIntentRequest): Observable<Intent> {
     return this.rest.post("/bot/intent", request, Intent.fromJSON);
+  }
+
+  getBotIntents(request: BotIntentSearchQuery): Observable<BotIntent[]> {
+    return this.rest.post("/bot/intents/search", request, BotIntent.fromJSONArray);
+  }
+
+  deleteBotIntent(storyDefinitionId: string): Observable<boolean> {
+    return this.rest.delete(`/bot/intent/${storyDefinitionId}`);
   }
 }

@@ -894,7 +894,7 @@ export class NormalizeUtil {
   static normalize(s: string): string {
     return s.replace(/[^A-Za-z0-9\[\] ]/g, function (a) {
       return NormalizeUtil.latinMap[a] || a
-    })
+    }).replace(/[^\w\s]/gi, '');
   };
 
 }
