@@ -48,7 +48,7 @@ internal object SendActionConverter {
             is SendAttachment -> AttachmentMessage(
                     Attachment(
                             AttachmentType.fromTockAttachmentType(action.type),
-                            UrlPayload.getUrlPayload(action.url)
+                            UrlPayload.getUrlPayload(action.applicationId, action.url)
                     )
             )
             else -> {

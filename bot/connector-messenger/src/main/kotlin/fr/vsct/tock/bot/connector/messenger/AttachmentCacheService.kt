@@ -29,13 +29,13 @@ object AttachmentCacheService {
     private val logger = KotlinLogging.logger {}
     private val cacheType = "messenger_cache_url"
 
-    fun getAttachmentId(url: String): String? {
+    fun getAttachmentId(applicationId:String, url: String): String? {
         logger.trace { "get attachment from cache $url" }
-        return getFromCache(url, cacheType)
+        return getFromCache("${applicationId}_$url", cacheType)
     }
 
-    fun setAttachmentId(url: String, attachmentId: String) {
+    fun setAttachmentId(applicationId:String, url: String, attachmentId: String) {
         logger.trace { "set attachment in cache $url $attachmentId" }
-        putInCache(url, cacheType, attachmentId)
+        putInCache("${applicationId}_$url", cacheType, attachmentId)
     }
 }

@@ -36,20 +36,22 @@ data class UrlPayload(
         /**
          * Create an UrlPayload from an url.
          * Uses default cache configuration.
+         * @param applicationId the applicationId
          * @param url the url
          */
-        fun getUrlPayload(url: String): UrlPayload {
-            return getUrlPayload(url, MessengerConfiguration.reuseAttachmentByDefault)
+        fun getUrlPayload(applicationId: String, url: String): UrlPayload {
+            return getUrlPayload(applicationId, url, MessengerConfiguration.reuseAttachmentByDefault)
         }
 
         /**
          * Create an UrlPayload from an url.
+         * @param applicationId the applicationId
          * @param url the url
          * @param useCache is cache is used?
          */
-        fun getUrlPayload(url: String, useCache: Boolean): UrlPayload {
+        fun getUrlPayload(applicationId: String, url: String, useCache: Boolean): UrlPayload {
             return if (useCache) {
-                val attachmentId = AttachmentCacheService.getAttachmentId(url)
+                val attachmentId = AttachmentCacheService.getAttachmentId(applicationId, url)
                 if (attachmentId == null) {
                     UrlPayload(url, null, true)
                 } else {

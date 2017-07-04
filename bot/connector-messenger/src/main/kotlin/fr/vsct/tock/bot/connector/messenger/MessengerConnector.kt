@@ -198,7 +198,7 @@ class MessengerConnector internal constructor(
                         if (m is AttachmentMessage) {
                             val payload = m.attachment.payload
                             if (payload is UrlPayload && payload.url != null) {
-                                AttachmentCacheService.setAttachmentId(payload.url, response.attachmentId)
+                                AttachmentCacheService.setAttachmentId(event.applicationId, payload.url, response.attachmentId)
                             }
                         }
                     }
@@ -222,18 +222,6 @@ class MessengerConnector internal constructor(
         } catch(e: Throwable) {
             logger.error(e)
             null
-        }
-    }
-
-    private fun handleAttachmentId(message: MessageRequest, response: SendResponse) {
-        if (response.attachmentId != null) {
-            val m = message.message
-            if (m is AttachmentMessage) {
-                val payload = m.attachment.payload
-                if (payload is UrlPayload && payload.url != null) {
-                    AttachmentCacheService.setAttachmentId(payload.url, response.attachmentId)
-                }
-            }
         }
     }
 
