@@ -20,7 +20,7 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.UpdateOptions
-import fr.vsct.tock.shared.cache.Cache
+import fr.vsct.tock.shared.cache.TockCache
 import fr.vsct.tock.shared.getDatabase
 import org.litote.kmongo.createIndex
 import org.litote.kmongo.deleteOne
@@ -33,7 +33,7 @@ import org.litote.kmongo.replaceOne
 /**
  *
  */
-internal object MongoCache : Cache {
+internal object MongoCache : TockCache {
 
     private const val MONGO_DATABASE: String = "tock_cache_mongo_db"
 

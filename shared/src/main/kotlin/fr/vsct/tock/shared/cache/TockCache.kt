@@ -19,7 +19,7 @@ package fr.vsct.tock.shared.cache
 /**
  *
  */
-internal interface Cache {
+internal interface TockCache {
 
     fun get(id: String, type: String): Any?
 
