@@ -32,9 +32,9 @@ data class SentenceElementConfiguration(
         val texts: Map<String, I18nLabelKey> = emptyMap(),
         val locations: List<LocationConfiguration> = emptyList(),
         val metadata: Map<String, String> = emptyMap(),
-        val subElements: List<SentenceSubElementConfiguration> = emptyList()) {
+        val subElements: List<SentenceSubElementConfiguration> = emptyList(),
+        @Transient private val connectorMessage: ConnectorMessage? = null) {
 
-    @Transient
-    internal var connectorMessage: ConnectorMessage? = null
+    internal fun findConnectorMessage() = connectorMessage
 
 }

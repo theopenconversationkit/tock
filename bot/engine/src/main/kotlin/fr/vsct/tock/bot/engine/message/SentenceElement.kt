@@ -31,7 +31,9 @@ data class SentenceElement(
         val texts: Map<String, String> = emptyMap(),
         val locations: List<Location> = emptyList(),
         val metadata: Map<String, String> = emptyMap(),
-        val subElements: List<SentenceSubElement> = emptyList()) {
+        val subElements: List<SentenceSubElement> = emptyList(),
+        @Transient private val connectorMessage: ConnectorMessage? = null
+) {
 
     constructor(connectorMessage: ConnectorMessage,
                 attachments: List<Attachment> = emptyList(),
@@ -47,12 +49,10 @@ data class SentenceElement(
             texts,
             locations,
             metadata,
-            subElements) {
-        this.connectorMessage = connectorMessage
+            subElements,
+            connectorMessage) {
     }
 
-    @Transient
-    internal var connectorMessage: ConnectorMessage? = null
-
+    internal fun findConnectorMessage() = connectorMessage
 
 }

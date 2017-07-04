@@ -52,7 +52,7 @@ data class Sentence(
                 text,
                 messages.mapNotNull {
                     try {
-                        it.connectorMessage
+                        it.findConnectorMessage()
                     } catch(e: Exception) {
                         logger.error(e)
                         null

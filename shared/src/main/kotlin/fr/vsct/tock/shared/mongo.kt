@@ -63,12 +63,9 @@ val mongoClient: MongoClient by lazy {
         addDeserializer(Duration::class, DurationDeserializer.INSTANCE)
     }
 
-    KMongoConfiguration.bsonMapper.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
-    KMongoConfiguration.extendedJsonMapper.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
-
-    KMongoConfiguration.bsonMapper.registerModule(tockModule)
+    KMongoConfiguration.registerBsonModule(tockModule)
     mongoJacksonModules.forEach {
-        KMongoConfiguration.bsonMapper.registerModule(it)
+        KMongoConfiguration.registerBsonModule(it)
     }
     KMongo.createClient(MongoClientURI(property("tock_mongo_url", "mongodb://localhost:27017")))
 }
