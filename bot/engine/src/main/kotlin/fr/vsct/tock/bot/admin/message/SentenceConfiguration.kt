@@ -55,7 +55,7 @@ data class SentenceConfiguration(
                 if (text != null) Translator.translate(text, locale, userInterfaceType) else null,
                 messages.mapNotNull {
                     try {
-                        it.connectorMessage
+                        it.findConnectorMessage()
                     } catch(e: Exception) {
                         logger.error(e)
                         null
