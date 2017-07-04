@@ -21,7 +21,7 @@
     <parent>
         <groupId>fr.vsct.tock</groupId>
         <artifactId>tock-nlp-core</artifactId>
-        <version>0.2.10-SNAPSHOT</version>
+        <version>0.3.0</version>
     </parent>
 
     <artifactId>tock-nlp-core-service</artifactId>

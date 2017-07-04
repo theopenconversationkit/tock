@@ -21,7 +21,7 @@
     <parent>
         <groupId>fr.vsct.tock</groupId>
         <artifactId>tock-nlp-api</artifactId>
-        <version>0.2.10-SNAPSHOT</version>
+        <version>0.3.0</version>
     </parent>
 
     <artifactId>nlp-api-client</artifactId>
