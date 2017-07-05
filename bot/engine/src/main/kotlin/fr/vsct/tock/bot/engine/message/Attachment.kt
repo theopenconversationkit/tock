@@ -43,4 +43,8 @@ data class Attachment(
                 type
         )
     }
+
+    override fun toPrettyString(): String {
+        return "{$eventType:$url,$type}"
+    }
 }

@@ -32,14 +32,13 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
 val mapper: ObjectMapper by lazy {
-    val mapper = jacksonObjectMapper()
-    mapper.findAndRegisterModules()
-    mapper.configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-    mapper.setSerializationInclusion(JsonInclude.Include.NON_NULL)
-    mapper.configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-    mapper.configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true)
-    mapper.configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
-    mapper
+    jacksonObjectMapper()
+            .findAndRegisterModules()
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+            .configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true)
+            .configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
 }
 
 inline fun <reified T : Any> JsonParser.readValue() = this.readValueAs(T::class.java)

@@ -31,7 +31,7 @@ import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecutionInfo
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecutionReport
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecutionStepReport
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.engine.message.Sentence
+import fr.vsct.tock.bot.engine.message.parser.MessageParser
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.jackson.BotEngineJacksonConfiguration
@@ -180,7 +180,7 @@ object XrayService {
                     botConfiguration.namespace,
                     botConfiguration.nlpModel,
                     botConfiguration._id!!,
-                    if (startSentence.isBlank()) null else Sentence(startSentence),
+                    if (startSentence.isBlank()) null else MessageParser.parse(startSentence).first(),
                     "planKey_${configuration.botConfiguration.applicationId}"
             )
         }
@@ -191,8 +191,8 @@ object XrayService {
         return DialogReport(
                 steps.flatMap {
                     listOfNotNull(
-                            if (it.data.raw.isBlank()) null else ActionReport(userId, instant, Sentence(it.data.raw), "u${it.id}"),
-                            if (it.result.raw.isBlank()) null else ActionReport(botId, instant, Sentence(it.result.raw), "b${it.id}")
+                            if (it.data.raw.isBlank()) null else ActionReport(userId, instant, MessageParser.parse(it.data.raw).first(), "u${it.id}"),
+                            if (it.result.raw.isBlank()) null else ActionReport(botId, instant, MessageParser.parse(it.result.raw).first(), "b${it.id}")
                     )
                 }, test.key)
     }

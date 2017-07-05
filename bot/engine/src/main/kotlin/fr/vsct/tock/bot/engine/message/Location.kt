@@ -41,4 +41,7 @@ data class Location(val location: UserLocation?,
         )
     }
 
+    override fun toPrettyString(): String {
+        return "{$eventType:${location?.lat},${location?.lng}}"
+    }
 }

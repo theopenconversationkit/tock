@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.engine.message
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.event.EventType
+import fr.vsct.tock.bot.engine.message.parser.MessageParser.mapToString
 import fr.vsct.tock.bot.engine.user.PlayerId
 
 /**
@@ -42,5 +43,9 @@ data class Choice(
                 intentName,
                 parameters
         )
+    }
+
+    override fun toPrettyString(): String {
+        return "{$eventType:$intentName,${mapToString(parameters)}}"
     }
 }

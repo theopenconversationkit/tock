@@ -20,6 +20,7 @@ import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.EventType
+import fr.vsct.tock.bot.engine.message.parser.MessageParser.elementsToString
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.shared.error
 import mu.KotlinLogging
@@ -61,6 +62,6 @@ data class Sentence(
     }
 
     override fun toPrettyString(): String {
-        return text ?: super.toPrettyString()
+        return text ?: "{$eventType:${elementsToString(messages)}}"
     }
 }
