@@ -23,6 +23,7 @@ import fr.vsct.tock.nlp.front.client.FrontClient.import
 import fr.vsct.tock.nlp.front.client.FrontClient.updateEntityModelForIntent
 import fr.vsct.tock.nlp.front.client.FrontClient.updateIntentsModelForApplication
 import fr.vsct.tock.nlp.front.ioc.FrontIoc
+import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.resource
 import java.util.Locale
@@ -32,19 +33,24 @@ import java.util.Locale
  */
 object IntegrationConfiguration {
 
-    fun init() {
+    fun loadDump(nlpEngineType: NlpEngineType): ApplicationDump {
+        val dump: ApplicationDump = mapper.readValue(resource("/dump.json"))
+        return dump.copy(application = dump.application.copy(nlpEngineType = nlpEngineType))
+    }
+
+    fun init(nlpEngineType: NlpEngineType) {
         FrontIoc.setup()
 
         println("Start model initialization")
-        val report = import("vsc", mapper.readValue(resource("/dump.json")))
+        val report = import("vsc", loadDump(nlpEngineType))
 
         if (report.modified) {
             val application = FrontClient.getApplicationByNamespaceAndName("vsc", "test")!!
             val travelIntentId = FrontClient.getIntentIdByQualifiedName("vsc:travel")!!
             val weatherIntentId = FrontClient.getIntentIdByQualifiedName("vsc:weather")!!
-            updateIntentsModelForApplication(emptyList(), application, Locale.ENGLISH, NlpEngineType.opennlp)
-            updateEntityModelForIntent(emptyList(), application, travelIntentId, Locale.ENGLISH, NlpEngineType.opennlp)
-            updateEntityModelForIntent(emptyList(), application, weatherIntentId, Locale.ENGLISH, NlpEngineType.opennlp)
+            updateIntentsModelForApplication(emptyList(), application, Locale.ENGLISH, nlpEngineType)
+            updateEntityModelForIntent(emptyList(), application, travelIntentId, Locale.ENGLISH, nlpEngineType)
+            updateEntityModelForIntent(emptyList(), application, weatherIntentId, Locale.ENGLISH, nlpEngineType)
         }
 
         println("End model initialization")

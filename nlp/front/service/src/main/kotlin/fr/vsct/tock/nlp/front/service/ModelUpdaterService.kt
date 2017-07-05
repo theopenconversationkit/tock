@@ -21,9 +21,6 @@ import fr.vsct.tock.nlp.core.BuildContext
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.NlpEngineType
-import fr.vsct.tock.nlp.core.sample.SampleContext
-import fr.vsct.tock.nlp.core.sample.SampleEntity
-import fr.vsct.tock.nlp.core.sample.SampleExpression
 import fr.vsct.tock.nlp.front.service.FrontRepository.core
 import fr.vsct.tock.nlp.front.service.FrontRepository.entityTypeByName
 import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
@@ -56,7 +53,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
             language: Locale,
             engineType: NlpEngineType) {
         val modelSentences = config.getSentences(application.intents, language, ClassifiedSentenceStatus.model)
-        val samples = (modelSentences + validatedSentences).map { SampleExpression(it.text, toIntent(it.classification.intentId), it.classification.entities.map { SampleEntity(Entity(entityTypeByName(it.type), it.role), it.start, it.end) }, SampleContext(language)) }
+        val samples = (modelSentences + validatedSentences).map { it.toSampleExpression({ toIntent(it) }, { entityTypeByName(it) }) }
         core.updateIntentModel(BuildContext(toApplication(application), language, engineType), samples)
     }
 
@@ -69,7 +66,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
         val i = toIntent(intentId)
         val modelSentences = config.getSentences(setOf(intentId), language, ClassifiedSentenceStatus.model)
         val samples = (modelSentences + validatedSentences).map {
-            SampleExpression(it.text, i, it.classification.entities.map { SampleEntity(Entity(entityTypeByName(it.type), it.role), it.start, it.end) }, SampleContext(language))
+            it.toSampleExpression({ i }, { entityTypeByName(it) })
         }
         core.updateEntityModelForIntent(BuildContext(toApplication(application), language, engineType), i, samples)
     }

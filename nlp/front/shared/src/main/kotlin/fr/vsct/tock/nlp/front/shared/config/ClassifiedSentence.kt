@@ -16,6 +16,12 @@
 
 package fr.vsct.tock.nlp.front.shared.config
 
+import fr.vsct.tock.nlp.core.Entity
+import fr.vsct.tock.nlp.core.EntityType
+import fr.vsct.tock.nlp.core.Intent
+import fr.vsct.tock.nlp.core.sample.SampleContext
+import fr.vsct.tock.nlp.core.sample.SampleEntity
+import fr.vsct.tock.nlp.core.sample.SampleExpression
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import java.time.Instant
 import java.util.Locale
@@ -62,5 +68,21 @@ data class ClassifiedSentence(val text: String,
                 updateDate = updateDate,
                 lastIntentProbability = lastIntentProbability,
                 lastEntityProbability = lastEntityProbability)
+    }
+
+    /**
+     * Build an expression from this sentence.
+     *
+     * @param intentProvider intent id -> intent provider
+     * @param entityTypeProvider entity type name -> entity type provider
+     */
+    fun toSampleExpression(intentProvider: (String) -> Intent, entityTypeProvider: (String) -> EntityType): SampleExpression {
+        return SampleExpression(
+                text,
+                intentProvider.invoke(classification.intentId),
+                classification.entities.map {
+                    SampleEntity(Entity(entityTypeProvider.invoke(it.type), it.role), it.start, it.end)
+                },
+                SampleContext(language))
     }
 }
