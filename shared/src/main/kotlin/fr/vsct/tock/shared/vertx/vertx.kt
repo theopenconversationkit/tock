@@ -90,9 +90,9 @@ fun vertxRunner(): Executor {
 
         override fun setPeriodic(initialDelay: Duration, delay: Duration, runnable: () -> Unit): Long {
             return vertx.setTimer(initialDelay.toMillis()) {
-                invoke(runnable)
+                executeBlocking(runnable)
                 vertx.setPeriodic(delay.toMillis()) {
-                    invoke(runnable)
+                    executeBlocking(runnable)
                 }
             }
         }

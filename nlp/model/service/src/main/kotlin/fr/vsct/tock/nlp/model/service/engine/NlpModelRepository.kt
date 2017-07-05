@@ -66,29 +66,27 @@ internal object NlpModelRepository {
             logger.info { "start refresh model thread" }
             //10 minutes by default
             executor.setPeriodic(Duration.ofSeconds(longProperty("tock_nlp_model_refresh_rate", 10 * 60))) {
-                executor.executeBlocking {
-                    logger.debug { "start refresh model process" }
-                    intentModelsCache.asMap().forEach { key, value ->
-                        logger.trace { "check intent model $key" }
-                        if (modelIO.getIntentModelLastUpdate(key) != value.lastUpdate) {
-                            logger.info { "refresh intent model for $key" }
-                            intentModelsCache.put(key,
-                                    loadIntentModel(
-                                            key,
-                                            NlpEngineRepository.getProvider(key.nlpEngineType))
-                            )
-                        }
+                logger.debug { "start refresh model process" }
+                intentModelsCache.asMap().forEach { key, value ->
+                    logger.trace { "check intent model $key" }
+                    if (modelIO.getIntentModelLastUpdate(key) != value.lastUpdate) {
+                        logger.info { "refresh intent model for $key" }
+                        intentModelsCache.put(key,
+                                loadIntentModel(
+                                        key,
+                                        NlpEngineRepository.getProvider(key.nlpEngineType))
+                        )
                     }
-                    entityModelsCache.asMap().forEach { key, value ->
-                        logger.trace { "check entity model $key" }
-                        if (modelIO.getEntityModelLastUpdate(key) != value.lastUpdate) {
-                            logger.info { "refresh entity model for $key" }
-                            entityModelsCache.put(key,
-                                    loadEntityModel(
-                                            key,
-                                            NlpEngineRepository.getProvider(key.nlpEngineType))
-                            )
-                        }
+                }
+                entityModelsCache.asMap().forEach { key, value ->
+                    logger.trace { "check entity model $key" }
+                    if (modelIO.getEntityModelLastUpdate(key) != value.lastUpdate) {
+                        logger.info { "refresh entity model for $key" }
+                        entityModelsCache.put(key,
+                                loadEntityModel(
+                                        key,
+                                        NlpEngineRepository.getProvider(key.nlpEngineType))
+                        )
                     }
                 }
             }
