@@ -128,7 +128,7 @@ object XrayService {
                             dialogReport.dialogReportId,
                             OffsetDateTime.ofInstant(dialogReport.date, defaultZoneId),
                             OffsetDateTime.ofInstant(dialogReport.date, defaultZoneId).plus(dialogReport.duration),
-                            if (dialogReport.error) "Failed execution" else "Successful execution",
+                            if (dialogReport.error) "Failed execution ${dialogReport.errorMessage}" else "Successful execution",
                             if (dialogReport.error) FAIL else PASS,
                             if (dialog == null) {
                                 emptyList()
@@ -190,9 +190,9 @@ object XrayService {
         val steps = XrayClient.getTestSteps(test.key)
         return DialogReport(
                 steps.flatMap {
-                    listOf(
-                            ActionReport(userId, instant, Sentence(it.data.raw), "u${it.id}"),
-                            ActionReport(botId, instant, Sentence(it.result.raw), "b${it.id}")
+                    listOfNotNull(
+                            if (it.data.raw.isBlank()) null else ActionReport(userId, instant, Sentence(it.data.raw), "u${it.id}"),
+                            if (it.result.raw.isBlank()) null else ActionReport(botId, instant, Sentence(it.result.raw), "b${it.id}")
                     )
                 }, test.key)
     }
