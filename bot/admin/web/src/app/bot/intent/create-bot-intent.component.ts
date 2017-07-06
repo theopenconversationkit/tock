@@ -54,7 +54,7 @@ export class CreateBotIntentComponent {
     if (v.length == 0) {
       this.snackBar.open(`Please enter a non-empty sentence`, "ERROR", {duration: 2000});
     } else {
-      this.nlp.parse(new ParseQuery(app.namespace, app.name, language, v)).subscribe(sentence => {
+      this.nlp.parse(new ParseQuery(app.namespace, app.name, language, v, true)).subscribe(sentence => {
         this.sentence = sentence;
         this.initIntentName(v);
         setTimeout(_ => this.newReply._focusInput(), 100);
