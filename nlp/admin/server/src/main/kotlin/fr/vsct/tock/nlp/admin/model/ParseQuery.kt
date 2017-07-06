@@ -22,13 +22,17 @@ import fr.vsct.tock.nlp.front.shared.parser.QueryContext
 /**
  *
  */
-data class ParseQuery(val query: String) : ApplicationScopedQuery() {
+data class ParseQuery(val query: String, val checkExistingQuery: Boolean = true) : ApplicationScopedQuery() {
 
     fun toQuery(): ParseQuery {
         return ParseQuery(
                 listOf(query),
                 namespace,
                 applicationName,
-                QueryContext(language, "admin", checkExistingQuery = true))
+                QueryContext(
+                        language,
+                        "admin",
+                        checkExistingQuery = checkExistingQuery
+                ))
     }
 }

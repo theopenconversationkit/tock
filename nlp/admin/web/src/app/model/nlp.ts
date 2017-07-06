@@ -304,7 +304,8 @@ export class ParseQuery extends ApplicationScopedQuery {
   constructor(public namespace: string,
               public applicationName: string,
               public language: string,
-              public query: string) {
+              public query: string,
+              public checkExistingQuery: boolean) {
     super(namespace, applicationName, language)
   }
 }

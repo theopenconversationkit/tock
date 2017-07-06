@@ -20,6 +20,7 @@
       <input mdInput placeholder="Write some text"  #tryIt (keyup.enter)="onTry(tryIt.value)">
     </md-input-container>
     <button md-button (click)="onTry(tryIt.value)">GO</button>
+    <md-checkbox [(ngModel)]="skipCache" md-tooltip="Force NLP model query (skip cache)">skip cache</md-checkbox>
   </md-card-content>
 </md-card>
 <br>

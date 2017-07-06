@@ -24,7 +24,6 @@ export class MapToIterablePipe implements PipeTransform  {
     if (!map)
       return null;
     const r = [];
-    console.log(map);
     map.forEach((v, k) => r.push({'key': k, 'value': v}));
     return r;
   }
