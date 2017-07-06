@@ -30,7 +30,6 @@ import mu.KotlinLogging
 import opennlp.tools.ml.maxent.GISModel
 import opennlp.tools.ml.maxent.GISTrainer
 import opennlp.tools.ml.model.AbstractDataIndexer.CUTOFF_PARAM
-import opennlp.tools.ml.model.Context
 import opennlp.tools.ml.model.Event
 import opennlp.tools.ml.model.OnePassRealValueDataIndexer
 import opennlp.tools.ml.model.TwoPassDataIndexer
@@ -49,6 +48,7 @@ import java.time.Instant
 internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
 
     private val logger = KotlinLogging.logger {}
+    private val minExpSizeToBuild = 2
 
     override fun buildTokenizerModel(context: TokenizerContext, expressions: List<SampleExpression>): TokenizerModelHolder {
         return TokenizerModelHolder(context.language)
@@ -58,8 +58,8 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
         val tokenizer = OpenNlpTokenizer(TokenizerModelHolder(context.language))
         val tokenizerContext = TokenizerContext(context)
 
-        val model = if (expressions.isEmpty()) {
-            GISModel(arrayOf<Context>(), arrayOf<String>(), arrayOf<String>())
+        val model = if (expressions.size < minExpSizeToBuild) {
+            GISModel(arrayOf(), arrayOf(), arrayOf())
         } else {
             val events = ObjectStreamUtils.createObjectStream(expressions
                     .map {
@@ -78,54 +78,63 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
         return IntentModelHolder(context.application, model, Instant.now())
     }
 
-    override fun buildEntityModel(context: EntityBuildContext, expressions: List<SampleExpression>): EntityModelHolder {
-        val tokenizer = OpenNlpTokenizer(TokenizerModelHolder(context.language))
-        val tokenizerContext = TokenizerContext(context)
+    override fun buildEntityModel(context: EntityBuildContext, expressions: List<SampleExpression>): EntityModelHolder? {
+        val model = if (expressions.size < minExpSizeToBuild) {
+            null
+        } else {
+            val tokenizer = OpenNlpTokenizer(TokenizerModelHolder(context.language))
+            val tokenizerContext = TokenizerContext(context)
 
-        val spanEntityMap = mutableMapOf<Span, SampleEntity>()
+            val spanEntityMap = mutableMapOf<Span, SampleEntity>()
 
-        val trainingEvents = expressions.mapNotNull {
-            expression ->
-            val text = expression.text
-            val tokens = tokenizer.tokenize(tokenizerContext, text)
-            val spans = expression.entities.mapNotNull {
-                e ->
-                val start = if (e.start == 0) 0 else tokenizer.tokenize(tokenizerContext, text.substring(0, e.start)).size
-                val end = start + tokenizer.tokenize(tokenizerContext, text.substring(e.start, e.end)).size
-                if (start >= tokens.size || end > tokens.size) {
-                    null
+            var entityCount = 0;
+            val trainingEvents = expressions.mapNotNull {
+                expression ->
+                val text = expression.text
+                val tokens = tokenizer.tokenize(tokenizerContext, text)
+                val spans = expression.entities.mapNotNull {
+                    e ->
+                    val start = if (e.start == 0) 0 else tokenizer.tokenize(tokenizerContext, text.substring(0, e.start)).size
+                    val end = start + tokenizer.tokenize(tokenizerContext, text.substring(e.start, e.end)).size
+                    if (start >= tokens.size || end > tokens.size) {
+                        null
+                    } else {
+                        entityCount++
+                        val roleSpan = Span(start, end, e.definition.role)
+                        spanEntityMap.put(roleSpan, e)
+                        roleSpan
+                    }
+                }.toTypedArray().sortedArray()
+
+                if (spans.size == expression.entities.size) {
+                    NameSample(tokens,
+                            spans,
+                            false
+                    )
                 } else {
-                    val roleSpan = Span(start, end, e.definition.role)
-                    spanEntityMap.put(roleSpan, e)
-                    roleSpan
+                    logger.error { "error with $text when reunify entities" }
+                    null
                 }
-            }.toTypedArray().sortedArray()
+            }
 
-            if (spans.size == expression.entities.size) {
-                NameSample(tokens,
-                        spans,
-                        false
-                )
-            } else {
-                logger.error { "error with $text when reunify entities" }
+            if (entityCount < minExpSizeToBuild) {
                 null
+            } else {
+                val params = TrainingParameters()
+
+                params.put(TrainingParameters.ITERATIONS_PARAM, Integer.toString(200))
+                params.put(TrainingParameters.CUTOFF_PARAM, Integer.toString(0))
+                //params.put(BeamSearch.BEAM_SIZE_PARAMETER, Integer.toString(5));
+
+                NameFinderME.train(
+                        context.language.language,
+                        null,
+                        ObjectStreamUtils.createObjectStream(trainingEvents),
+                        params,
+                        TokenNameFinderFactory(null, null, BilouCodec()))
             }
         }
 
-
-        val params = TrainingParameters()
-
-        params.put(TrainingParameters.ITERATIONS_PARAM, Integer.toString(200))
-        params.put(TrainingParameters.CUTOFF_PARAM, Integer.toString(0))
-        //params.put(BeamSearch.BEAM_SIZE_PARAMETER, Integer.toString(5));
-
-        val model = NameFinderME.train(
-                context.language.language,
-                null,
-                ObjectStreamUtils.createObjectStream(trainingEvents),
-                params,
-                TokenNameFinderFactory(null, null, BilouCodec()))
-
-        return EntityModelHolder(OpenNlpNameFinderME(model), Instant.now())
+        return if (model == null) null else EntityModelHolder(OpenNlpNameFinderME(model), Instant.now())
     }
 }

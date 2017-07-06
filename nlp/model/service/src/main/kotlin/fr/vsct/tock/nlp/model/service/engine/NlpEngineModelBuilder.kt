@@ -30,6 +30,6 @@ interface NlpEngineModelBuilder {
 
     fun buildIntentModel(context: IntentContext, expressions: List<SampleExpression>): IntentModelHolder
 
-    fun buildEntityModel(context: EntityBuildContext, expressions: List<SampleExpression>): EntityModelHolder
+    fun buildEntityModel(context: EntityBuildContext, expressions: List<SampleExpression>): EntityModelHolder?
 
 }
