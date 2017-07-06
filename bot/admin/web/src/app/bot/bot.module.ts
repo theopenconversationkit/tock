@@ -23,11 +23,11 @@ import {AuthGuard} from "tock-nlp-admin/src/app/core/auth/auth.guard";
 import {BotSharedModule} from "../shared/bot-shared.module";
 import {MomentModule} from "angular2-moment";
 import {CreateBotIntentComponent} from "./intent/create-bot-intent.component";
-import {BotApplicationResolver} from "./bot-application-resolver";
 import {BotService} from "./bot-service";
 import {BotTabsComponent} from "./bot-tabs.component";
 import {SearchBotIntentComponent} from "./intent/search-bot-intent.component";
 import {NlpModule} from "tock-nlp-admin/src/app/nlp-tabs/nlp.module"
+import {ApplicationResolver} from "tock-nlp-admin/src/app/core/application.resolver";
 
 const routes: Routes = [
   {
@@ -35,7 +35,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     component: BotTabsComponent,
     resolve: {
-      application: BotApplicationResolver
+      application: ApplicationResolver
     },
     children: [
       {
@@ -77,8 +77,7 @@ export class BotRoutingModule {
   ],
   exports: [],
   providers: [
-    BotService,
-    BotApplicationResolver
+    BotService
   ],
   entryComponents: []
 })

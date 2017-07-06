@@ -23,7 +23,7 @@ import {ApplicationComponent} from "tock-nlp-admin/src/app/applications/applicat
 import {AuthGuard} from "tock-nlp-admin/src/app/core/auth/auth.guard";
 import {BotConfigurationComponent} from "./bot/bot-configuration.component";
 import {ConfigurationTabsComponent} from "./configuration-tabs.component";
-import {ConfigurationApplicationResolver} from "./configuration-application-resolver";
+import {ApplicationsResolver} from "tock-nlp-admin/src/app/applications/applications.resolver";
 import {CommonModule} from "@angular/common";
 import {BotSharedModule} from "../shared/bot-shared.module";
 
@@ -33,7 +33,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     component: ConfigurationTabsComponent,
     resolve: {
-      application: ConfigurationApplicationResolver
+      application: ApplicationsResolver
     },
     children: [
       {
@@ -42,7 +42,10 @@ const routes: Routes = [
       },
       {
         path: 'bot',
-        component: BotConfigurationComponent
+        component: BotConfigurationComponent,
+        resolve: {
+          application: ApplicationsResolver
+        }
       },
       {
         path: 'nlp',
@@ -83,9 +86,7 @@ export class BotConfigurationRoutingModule {
     BotConfigurationRoutingModule,
     ApplicationsModule
   ],
-  providers: [
-    ConfigurationApplicationResolver
-  ],
+  providers: [],
   bootstrap: []
 })
 export class BotConfigurationModule {

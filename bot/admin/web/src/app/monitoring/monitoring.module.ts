@@ -21,11 +21,12 @@ import {InfiniteScrollModule} from "ngx-infinite-scroll";
 import {SharedModule} from "tock-nlp-admin/src/app/shared/shared.module";
 import {AuthGuard} from "tock-nlp-admin/src/app/core/auth/auth.guard";
 import {MonitoringTabsComponent} from "./monitoring-tabs.component";
-import {MonitoringApplicationResolver} from "./monitoring-application-resolver";
+import {ApplicationResolver} from "tock-nlp-admin/src/app/core/application.resolver";
 import {UserTimelinesComponent} from "./users/user-timelines.component";
 import {MonitoringService} from "./monitoring.service";
 import {BotSharedModule} from "../shared/bot-shared.module";
 import {MomentModule} from "angular2-moment";
+
 
 const routes: Routes = [
   {
@@ -33,7 +34,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     component: MonitoringTabsComponent,
     resolve: {
-      application: MonitoringApplicationResolver
+      application: ApplicationResolver
     },
     children: [
       {
@@ -69,8 +70,7 @@ export class MonitoringRoutingModule {
   ],
   exports: [],
   providers: [
-    MonitoringService,
-    MonitoringApplicationResolver
+    MonitoringService
   ],
   entryComponents: []
 })

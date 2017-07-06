@@ -15,17 +15,9 @@
  */
 
 import {Injectable} from "@angular/core";
-import {ApplicationResolver} from "tock-nlp-admin/src/app/nlp-tabs/application.resolver";
-import {ApplicationService}  from "tock-nlp-admin/src/app/core/applications.service"
-import {Router} from "@angular/router";
 
 @Injectable()
-export class TestApplicationResolver extends ApplicationResolver {
+export class ApplicationConfig {
 
-  target:string = '/test';
-
-  constructor(private app: ApplicationService, private r: Router) {
-    super(app, r)
-  }
-
+  configurationUrl: string;
 }

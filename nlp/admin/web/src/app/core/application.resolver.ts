@@ -18,14 +18,15 @@ import {Injectable} from "@angular/core";
 import {ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot} from "@angular/router";
 import {Observable} from "rxjs";
 import {Application} from "../model/application";
-import {ApplicationService} from "../core/applications.service";
+import {ApplicationService} from "./applications.service";
+import {ApplicationConfig} from "./application.config";
 
 @Injectable()
 export class ApplicationResolver implements Resolve<Application> {
 
-  target:string = '/applications';
-
-  constructor(private appService: ApplicationService, private router: Router) {
+  constructor(private config: ApplicationConfig,
+              private appService: ApplicationService,
+              private router: Router) {
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Application> {
@@ -33,7 +34,7 @@ export class ApplicationResolver implements Resolve<Application> {
       if (app) {
         return app;
       } else {
-        this.router.navigate([this.target]);
+        this.router.navigateByUrl(this.config.configurationUrl);
         return null;
       }
     });

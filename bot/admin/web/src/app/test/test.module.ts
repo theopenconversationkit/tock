@@ -19,7 +19,7 @@ import {NgModule} from "@angular/core";
 import {SharedModule} from "tock-nlp-admin/src/app/shared/shared.module";
 import {AuthGuard} from "tock-nlp-admin/src/app/core/auth/auth.guard";
 import {TestTabsComponent} from "./test-tabs.component";
-import {TestApplicationResolver} from "./test-application-resolver";
+import {ApplicationResolver} from "tock-nlp-admin/src/app/core/application.resolver";
 import {BotDialogComponent} from "./dialog/bot-dialog.component";
 import {CommonModule} from "@angular/common";
 import {TestService} from "./test.service";
@@ -33,7 +33,7 @@ const routes: Routes = [
     canActivate: [AuthGuard],
     component: TestTabsComponent,
     resolve: {
-      application: TestApplicationResolver
+      application: ApplicationResolver
     },
     children: [
       {
@@ -73,8 +73,7 @@ export class BotTestRoutingModule {
   ],
   exports: [],
   providers: [
-    TestService,
-    TestApplicationResolver
+    TestService
   ],
   entryComponents: []
 })

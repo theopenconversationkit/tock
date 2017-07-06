@@ -21,11 +21,20 @@ import {CommonModule} from "@angular/common";
 import {RestModule} from "./rest/rest.module";
 import {StateService} from "./state.service";
 import {ApplicationService} from "./applications.service";
+import {ApplicationConfig} from "./application.config";
+import {ApplicationResolver} from "./application.resolver";
+
 @NgModule({
   imports: [CommonModule, RestModule, AuthModule],
   declarations: [],
-  exports: [],
-  providers: [StateService, SettingsService, ApplicationService]
+  providers: [
+    {provide: ApplicationConfig, useValue: {configurationUrl: "/applications"}},
+    StateService,
+    SettingsService,
+    ApplicationService,
+    ApplicationResolver
+  ],
+  exports: []
 })
 export class CoreModule {
 

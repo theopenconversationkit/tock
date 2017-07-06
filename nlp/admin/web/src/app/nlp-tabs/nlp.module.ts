@@ -27,7 +27,6 @@ import {LogsComponent} from "../logs/logs.component";
 import {CommonModule} from "@angular/common";
 import {AuthGuard} from "../core/auth/auth.guard";
 import {ApplicationsModule} from "../applications/applications.module";
-import {ApplicationResolver} from "./application.resolver";
 import {HighlightComponent} from "../sentence-analysis/highlight/highlight.component";
 import {SentenceAnalysisComponent} from "../sentence-analysis/sentence-analysis.component";
 import {NlpService} from "./nlp.service";
@@ -35,6 +34,7 @@ import {CreateEntityDialogComponent} from "../sentence-analysis/create-entity-di
 import {InfiniteScrollModule} from "ngx-infinite-scroll";
 import {SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.component";
 import {CreateIntentDialogComponent} from "../sentence-analysis/create-intent-dialog/create-intent-dialog.component";
+import {ApplicationResolver} from "../core/application.resolver";
 
 const routes: Routes = [
   {
@@ -105,10 +105,11 @@ export class NlpRoutingModule {
     CreateIntentDialogComponent,
     SentencesScrollComponent
   ],
-  exports: [SentenceAnalysisComponent],
+  exports: [
+    SentenceAnalysisComponent
+  ],
   providers: [
-    NlpService,
-    ApplicationResolver
+    NlpService
   ],
   entryComponents: [
     CreateEntityDialogComponent,

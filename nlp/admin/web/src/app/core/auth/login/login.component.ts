@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, OnInit, ViewChild, AfterViewInit} from "@angular/core";
+import {Component, OnInit, ViewChild} from "@angular/core";
 import {MdInputContainer} from "@angular/material";
 import {AuthService} from "../auth.service";
 import {Router} from "@angular/router";
@@ -24,7 +24,7 @@ import {Router} from "@angular/router";
   templateUrl: './login.component.html',
   styleUrls: ['./login.component.css']
 })
-export class LoginComponent implements OnInit, AfterViewInit {
+export class LoginComponent implements OnInit {
 
   email: string;
   password: string;
@@ -37,10 +37,6 @@ export class LoginComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-  }
-
-
-  ngAfterViewInit(): void {
     this.emailInput._focusInput();
   }
 
