@@ -26,12 +26,14 @@
         {{s.text}}
       </li>
     </ul>
-    <h2>The reply is:</h2>
-    <h3>&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;{{intent.storyDefinition.simpleAnswer().answers[0].text}}</h3>
+    <md-input-container class="sentence-input" #newReplyContainer>
+        <input mdInput [(ngModel)]="intent.storyDefinition.textAnswer" placeholder="The reply is" #newReply (keyup.enter)="update(intent)">
+      </md-input-container>
     <div class="intent-mention">(intent : {{intent.storyDefinition.intent.name}})</div>
   </md-card-content>
   <md-card-actions>
     <button md-button (click)="delete(intent)" color="warn">Delete</button>
+    <button md-raised-button (click)="update(intent)" color="primary">Update</button>
   </md-card-actions>
 </md-card>
 </span>

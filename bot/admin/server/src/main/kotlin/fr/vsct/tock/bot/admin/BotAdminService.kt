@@ -31,6 +31,7 @@ import fr.vsct.tock.bot.admin.model.BotDialogResponse
 import fr.vsct.tock.bot.admin.model.BotIntent
 import fr.vsct.tock.bot.admin.model.BotIntentSearchRequest
 import fr.vsct.tock.bot.admin.model.CreateBotIntentRequest
+import fr.vsct.tock.bot.admin.model.UpdateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.test.toClientMessage
 import fr.vsct.tock.bot.admin.user.UserReportDAO
@@ -140,21 +141,26 @@ object BotAdminService {
         } else {
             storyDefinitionDAO
                     .getStoryDefinitions(botConf.botId)
-                    .map {
+                    .mapNotNull {
                         val nlpApplication = front.getApplicationByNamespaceAndName(request.namespace, botConf.nlpModel)
                         val intent = front.getIntentByNamespaceAndName(request.namespace, it.intent.name)
-                        val query = SentencesQuery(
-                                nlpApplication!!._id!!,
-                                request.language,
-                                size = 3,
-                                intentId = intent!!._id)
-                        val sentences =
-                                front.search(query)
-                                        .sentences
-                                        .map {
-                                            SentenceReport(it)
-                                        }
-                        BotIntent(it, sentences)
+                        if (intent != null) {
+                            val query = SentencesQuery(
+                                    nlpApplication!!._id!!,
+                                    request.language,
+                                    size = 3,
+                                    intentId = intent._id)
+                            val sentences =
+                                    front.search(query)
+                                            .sentences
+                                            .map {
+                                                SentenceReport(it)
+                                            }
+                            BotIntent(it, sentences)
+                        } else {
+                            logger.warn { "unknown intent: ${request.namespace} ${it.intent.name} - skipped" }
+                            null
+                        }
                     }
         }
     }
@@ -221,6 +227,24 @@ object BotAdminService {
                 }
             }
             intentDefinition
+        } else {
+            null
+        }
+    }
+
+    fun updateBotIntent(
+            namespace: String,
+            request: UpdateBotIntentRequest): IntentDefinition? {
+
+        val storyDefinition = storyDefinitionDAO.getStoryDefinitionById(request.storyDefinitionId)
+        val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, storyDefinition!!.botId).firstOrNull()
+        return if (botConf != null) {
+            storyDefinitionDAO.save(
+                    storyDefinition.copy(answers = listOf(
+                            SimpleAnswerConfiguration(
+                                    listOf(SimpleAnswer(request.reply, 0))
+                            ))))
+            front.getIntentByNamespaceAndName(namespace, storyDefinition.intent.name)
         } else {
             null
         }

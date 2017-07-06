@@ -19,7 +19,7 @@ import {BotService} from "../bot-service";
 import {MdSnackBar} from "@angular/material";
 import {NlpService} from "tock-nlp-admin/src/app/nlp-tabs/nlp.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
-import {BotIntent, BotIntentSearchQuery} from "../model/bot-intent";
+import {BotIntent, BotIntentSearchQuery, UpdateBotIntentRequest} from "../model/bot-intent";
 
 @Component({
   selector: 'tock-search-bot-intent',
@@ -44,15 +44,31 @@ export class SearchBotIntentComponent implements OnInit {
         this.state.currentLocale,
         0,
         10
-      )).subscribe(intents => this.intents = intents)
+      )).subscribe(intents => {
+      this.intents = intents;
+      this.intents.forEach(i => i.storyDefinition.initTextAnswer());
+    })
   }
 
-  delete(intent:BotIntent) {
+  delete(intent: BotIntent) {
     this.bot.deleteBotIntent(intent.storyDefinition._id)
       .subscribe(_ => {
         this.state.currentApplication.removeIntentByNamespaceAndName(this.state.currentApplication.namespace, intent.storyDefinition.intent.name);
         this.ngOnInit();
         this.snackBar.open(`Answer deleted`, "Delete", {duration: 2000})
+      });
+  }
+
+  update(intent: BotIntent) {
+    console.log(intent);
+    this.bot.updateBotIntent(
+      new UpdateBotIntentRequest(
+        intent.storyDefinition._id,
+        intent.storyDefinition.textAnswer
+      ))
+      .subscribe(_ => {
+        this.ngOnInit();
+        this.snackBar.open(`Answer updated`, "Update", {duration: 2000})
       });
   }
 }

@@ -28,6 +28,14 @@ export class CreateBotIntentRequest {
 
 }
 
+export class UpdateBotIntentRequest {
+
+  constructor(public storyDefinitionId: string,
+              public reply: string) {
+  }
+
+}
+
 export class BotIntentSearchQuery extends PaginatedQuery {
 
   constructor(public namespace: string,
@@ -65,6 +73,8 @@ export class BotIntent {
 
 export class StoryDefinitionConfiguration {
 
+  textAnswer:string;
+
   constructor(public storyId: string,
               public botId: string,
               public intent: IntentName,
@@ -72,6 +82,10 @@ export class StoryDefinitionConfiguration {
               public answers: AnswerConfiguration[],
               public _id: string) {
 
+  }
+
+  initTextAnswer() {
+    this.textAnswer = this.simpleAnswer().answers[0].text;
   }
 
   simpleAnswer() : SimpleAnswerConfiguration {
