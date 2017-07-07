@@ -22,6 +22,7 @@ import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.property
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.AsyncResult
@@ -185,6 +186,8 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
 
     protected fun verticleIntProperty(propertyName: String, defaultValue: Int): Int = intProperty(verticleProperty(propertyName), defaultValue)
 
+    protected fun verticleLongProperty(propertyName: String, defaultValue: Long): Long = longProperty(verticleProperty(propertyName), defaultValue)
+
     protected fun verticleProperty(propertyName: String, defaultValue: String): String = property(verticleProperty(propertyName), defaultValue)
 
     protected fun blocking(method: HttpMethod, path: String, handler: (RoutingContext) -> Unit) {
@@ -279,8 +282,8 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
             origin: String = "*",
             allowCredentials: Boolean = false,
             allowedMethods: Set<HttpMethod> = EnumSet.of(GET, POST, DELETE),
-            allowedHeaders: Set<String> = listOfNotNull("X-Requested-With", "Access-Control-Allow-Origin", if(allowCredentials) "Authorization" else null, "Content-Type").toSet()
-            ): CorsHandler {
+            allowedHeaders: Set<String> = listOfNotNull("X-Requested-With", "Access-Control-Allow-Origin", if (allowCredentials) "Authorization" else null, "Content-Type").toSet()
+    ): CorsHandler {
         return CorsHandler.create(origin)
                 .allowedMethods(allowedMethods)
                 .allowedHeaders(allowedHeaders)
@@ -288,7 +291,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
     }
 
     protected fun bodyHandler(): BodyHandler {
-        return BodyHandler.create().setBodyLimit(1000000L).setMergeFormAttributes(false)
+        return BodyHandler.create().setBodyLimit(verticleLongProperty("body_limit", 1000000L)).setMergeFormAttributes(false)
     }
 
     // extension methods ->
