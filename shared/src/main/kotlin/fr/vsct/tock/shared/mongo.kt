@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.shared
 
-import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.Module
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
@@ -24,6 +23,7 @@ import com.fasterxml.jackson.datatype.jsr310.deser.DurationDeserializer
 import com.fasterxml.jackson.datatype.jsr310.deser.JSR310StringParsableDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.DurationSerializer
 import com.mongodb.MongoClient
+import com.mongodb.MongoClientOptions
 import com.mongodb.MongoClientURI
 import com.mongodb.client.MongoDatabase
 import fr.vsct.tock.shared.jackson.addDeserializer
@@ -67,7 +67,13 @@ val mongoClient: MongoClient by lazy {
     mongoJacksonModules.forEach {
         KMongoConfiguration.registerBsonModule(it)
     }
-    KMongo.createClient(MongoClientURI(property("tock_mongo_url", "mongodb://localhost:27017")))
+    KMongo.createClient(
+            MongoClientURI(
+                    property("tock_mongo_url", "mongodb://localhost:27017"),
+                    MongoClientOptions.builder()
+                            .socketKeepAlive(booleanProperty("tock_mongo_keep_alive", true))
+            )
+    )
 }
 
 fun getDatabase(databaseNameProperty: String): MongoDatabase {
