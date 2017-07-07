@@ -18,7 +18,7 @@ const routes: Routes = [
     loadChildren: 'app/configuration/configuration.module#BotConfigurationModule'
   },
   {
-    path: 'bot',
+    path: 'build',
     loadChildren: 'app/bot/bot.module#BotModule'
   },
   {
