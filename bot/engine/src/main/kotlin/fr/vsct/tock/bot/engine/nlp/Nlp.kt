@@ -185,11 +185,13 @@ object Nlp : NlpController {
                                         it.start,
                                         it.probability)
                             } + listOfNotNull(
-                                    if (initialValue == null) null
-                                    else ValueToMerge(
-                                            initialValue.value!!.value!!,
-                                            initialValue.value!!.content,
-                                            true)
+                                    initialValue
+                                            ?.value
+                                            ?.let { value ->
+                                                value.value?.let {
+                                                    ValueToMerge(it, value.content, true)
+                                                }
+                                            }
                             )
                     )
             )
