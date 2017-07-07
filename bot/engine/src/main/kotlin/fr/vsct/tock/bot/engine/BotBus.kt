@@ -20,6 +20,7 @@ import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionSignificance
+import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
@@ -31,6 +32,7 @@ import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
+import fr.vsct.tock.shared.defaultZoneId
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
 import fr.vsct.tock.translator.Translator
@@ -66,6 +68,18 @@ class BotBus internal constructor(
 
     val entities: Map<String, EntityStateValue> = dialog.state.entityValues
     val intent: Intent? = dialog.state.currentIntent
+
+    /**
+     * Returns the value of the specified choice parameter, null if the user action is not a [SendChoice]
+     * or if this parameter is not set.
+     */
+    fun paramChoice(paramName: String): String? {
+        return if (action is SendChoice) {
+            action.parameters[paramName]
+        } else {
+            null
+        }
+    }
 
     /**
      * Returns true if the current action has the specified entity role.
