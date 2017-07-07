@@ -17,7 +17,6 @@
 package fr.vsct.tock.nlp.model.service
 
 import fr.vsct.tock.nlp.core.EntityRecognition
-import fr.vsct.tock.nlp.core.IntentRecognition
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 import fr.vsct.tock.nlp.model.EntityBuildContext
@@ -26,6 +25,7 @@ import fr.vsct.tock.nlp.model.EntityBuildContextForIntent
 import fr.vsct.tock.nlp.model.EntityBuildContextForSubEntities
 import fr.vsct.tock.nlp.model.EntityCallContext
 import fr.vsct.tock.nlp.model.IntentContext
+import fr.vsct.tock.nlp.core.IntentClassification
 import fr.vsct.tock.nlp.model.NlpClassifier
 import fr.vsct.tock.nlp.model.TokenizerContext
 import fr.vsct.tock.nlp.model.service.engine.NlpEngineRepository
@@ -47,7 +47,7 @@ object NlpClassifierService : NlpClassifier {
         return NlpEngineRepository.getTokenizer(context).tokenize(context, text)
     }
 
-    override fun classifyIntent(context: IntentContext, text: String, tokens: Array<String>): List<IntentRecognition> {
+    override fun classifyIntent(context: IntentContext, text: String, tokens: Array<String>): IntentClassification {
         return NlpEngineRepository.getIntentClassifier(context).classifyIntent(context, text, tokens)
     }
 

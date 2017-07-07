@@ -26,7 +26,8 @@ interface NlpCore {
 
     fun parse(context: CallContext,
               text: String,
-              intentSelector: (List<IntentRecognition>) -> IntentRecognition? = { it.firstOrNull() }): ParsingResult
+              intentSelector: (IntentClassification) -> Pair<Intent, Double>? = { if (it.hasNext()) it.next() to it.probability() else null })
+            : ParsingResult
 
     fun updateIntentModel(context: BuildContext, expressions: List<SampleExpression>)
 

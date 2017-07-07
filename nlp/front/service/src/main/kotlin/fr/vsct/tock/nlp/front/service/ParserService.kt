@@ -127,15 +127,18 @@ object ParserService : Parser {
             //TODO multi query handling
             //TODO state handling
             val otherIntents: MutableMap<String, Double> = mutableMapOf()
-            val parseResult = core.parse(callContext, q) { intents ->
-                intents.firstOrNull()?.apply {
-                    intents.subList(1, intents.size)
-                            .forEach { e ->
-                                if (e.probability > 0.1) {
-                                    otherIntents.put(e.intent.name, e.probability)
-                                }
+            val parseResult = core.parse(callContext, q) {
+                //select first
+                if (it.hasNext()) it.next() to it.probability() else null
+                        .apply {
+                            //and take all other intents where probability is greater than 0.1
+                            while (it.hasNext()) {
+                                (it.next() to it.probability())
+                                        .takeIf { (_, prob) -> prob > 0.1 }
+                                        ?.let { (intent, prob) -> otherIntents.put(intent.name, prob) }
+                                        ?: break
                             }
-                }
+                        }
             }
 
             val result = ParseResult(

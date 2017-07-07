@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.nlp.model
 
-import fr.vsct.tock.nlp.core.IntentRecognition
+import fr.vsct.tock.nlp.core.IntentClassification
 import fr.vsct.tock.shared.ThreadSafe
 
 /**
@@ -25,5 +25,5 @@ import fr.vsct.tock.shared.ThreadSafe
 @ThreadSafe
 interface IntentClassifier {
 
-    fun classifyIntent(context: IntentContext, text: String, tokens: Array<String>): List<IntentRecognition>
+    fun classifyIntent(context: IntentContext, text: String, tokens: Array<String>): IntentClassification
 }

@@ -22,7 +22,7 @@ import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.Intent
-import fr.vsct.tock.nlp.core.IntentRecognition
+import fr.vsct.tock.nlp.core.IntentClassification
 import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.ParsingResult
@@ -60,22 +60,22 @@ object NlpCoreService : NlpCore {
 
     override fun parse(context: CallContext,
                        text: String,
-                       intentSelector: (List<IntentRecognition>) -> IntentRecognition?): ParsingResult {
+                       intentSelector: (IntentClassification) -> Pair<Intent, Double>?): ParsingResult {
         try {
             val tokens = tokenize(context, text)
             val intents = nlpClassifier.classifyIntent(IntentContext(context), text, tokens)
-            val intent = intentSelector.invoke(intents)
+            val (intent, probability) = intentSelector.invoke(intents) ?: null to null
 
-            if (intent == null) {
+            if (intent == null || probability == null) {
                 return unknownResult
             }
 
-            val evaluatedEntities = classifyAndEvaluate(context, intent.intent, text, tokens)
+            val evaluatedEntities = classifyAndEvaluate(context, intent, text, tokens)
 
             return ParsingResult(
-                    intent.intent.name,
+                    intent.name,
                     evaluatedEntities,
-                    intent.probability,
+                    probability,
                     evaluatedEntities.map { it.probability }.average())
         } catch(e: ModelNotInitializedException) {
             logger.warn { "model not initialized : ${e.message}" }

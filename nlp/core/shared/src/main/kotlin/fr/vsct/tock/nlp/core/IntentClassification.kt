@@ -16,9 +16,14 @@
 
 package fr.vsct.tock.nlp.core
 
-
 /**
- *
+ * Sorted by probability - the first is the better.
  */
-data class IntentRecognition(val intent: Intent, val probability: Double) {
+interface IntentClassification : Iterator<Intent> {
+
+    /**
+     * Returns the probability [0..1] of the current intent.
+     */
+    fun probability(): Double
+
 }

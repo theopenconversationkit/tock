@@ -16,7 +16,8 @@
 
 package fr.vsct.tock.nlp.opennlp
 
-import fr.vsct.tock.nlp.core.IntentRecognition
+import fr.vsct.tock.nlp.core.Intent
+import fr.vsct.tock.nlp.core.IntentClassification
 import fr.vsct.tock.nlp.model.IntentContext
 import fr.vsct.tock.nlp.model.service.engine.IntentModelHolder
 import fr.vsct.tock.nlp.model.service.engine.NlpIntentClassifier
@@ -27,13 +28,29 @@ import opennlp.tools.ml.model.AbstractModel
  */
 internal class OpenNlpIntentClassifier(model: IntentModelHolder) : NlpIntentClassifier(model) {
 
-    override fun classifyIntent(context: IntentContext, text: String, tokens: Array<String>): List<IntentRecognition> {
-        with(model) {
+    override fun classifyIntent(context: IntentContext, text: String, tokens: Array<String>): IntentClassification {
+        return with(model) {
             val openNlpModel = nativeModel as AbstractModel
             val outcomes = openNlpModel.eval(tokens)
-            return outcomes.mapIndexed { i, d ->
-                IntentRecognition(application.getIntent(openNlpModel.getOutcome(i)), d)
-            }.sortedByDescending { it.probability }
+                    .mapIndexed { index, d -> index to d }
+                    .sortedByDescending { it.second }
+                    .iterator()
+
+            object : IntentClassification {
+
+                var probability = 0.0
+
+                override fun probability(): Double = probability
+
+                override fun hasNext(): Boolean = outcomes.hasNext()
+
+                override fun next(): Intent {
+                    return outcomes.next().let { (index, proba) ->
+                        probability = proba
+                        application.getIntent(openNlpModel.getOutcome(index))
+                    }
+                }
+            }
         }
     }
 }
