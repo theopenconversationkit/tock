@@ -18,9 +18,10 @@ package fr.vsct.tock.bot.admin.test.xray
 
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer
-import fr.vsct.tock.bot.admin.dialog.ActionReport
-import fr.vsct.tock.bot.admin.dialog.DialogReport
+import fr.vsct.tock.bot.admin.test.TestActionReport
+import fr.vsct.tock.bot.admin.test.TestDialogReport
 import fr.vsct.tock.bot.admin.test.TestPlan
+import fr.vsct.tock.bot.admin.test.xray.model.XrayAttachment
 import fr.vsct.tock.bot.admin.test.xray.model.XrayExecutionConfiguration
 import fr.vsct.tock.bot.admin.test.xray.model.XrayStatus.FAIL
 import fr.vsct.tock.bot.admin.test.xray.model.XrayStatus.PASS
@@ -174,7 +175,7 @@ object XrayService {
         val tests = XrayClient.getTestPlanTests(planKey)
         return with(configuration) {
             TestPlan(
-                    tests.map { getDialogReport(it) },
+                    tests.map { getDialogReport(configuration, it) },
                     planKey,
                     botConfiguration.applicationId,
                     botConfiguration.namespace,
@@ -186,15 +187,32 @@ object XrayService {
         }
     }
 
-    private fun getDialogReport(test: XrayTest): DialogReport {
+    private fun getDialogReport(configuration: XrayExecutionConfiguration, test: XrayTest): TestDialogReport {
         val steps = XrayClient.getTestSteps(test.key)
-        return DialogReport(
+        return TestDialogReport(
                 steps.flatMap {
                     listOfNotNull(
-                            if (it.data.raw.isBlank()) null else ActionReport(userId, instant, MessageParser.parse(it.data.raw).first(), "u${it.id}"),
-                            if (it.result.raw.isBlank()) null else ActionReport(botId, instant, MessageParser.parse(it.result.raw).first(), "b${it.id}")
+                            parseStepData(configuration, it.id, userId, it.data.raw, it.attachments.firstOrNull { it.fileName == "user.message" }),
+                            parseStepData(configuration, it.id, botId, it.result.raw, it.attachments.firstOrNull { it.fileName == "bot.message" })
                     )
                 }, test.key)
+    }
+
+    private fun parseStepData(configuration: XrayExecutionConfiguration, stepId: Long, playerId: PlayerId, raw: String?, attachment: XrayAttachment?): TestActionReport? {
+        val message = if (attachment != null) {
+            XrayClient.getAttachmentToString(attachment)
+        } else {
+            raw
+        }
+        return message
+                .takeUnless { it.isNullOrBlank() }
+                ?.run {
+                    TestActionReport(
+                            playerId,
+                            instant,
+                            MessageParser.parse(replace("\${botUrl}", configuration.botUrl)),
+                            "${if (playerId.type == PlayerType.bot) "b" else "u"}${stepId}")
+                }
     }
 
 }

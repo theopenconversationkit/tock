@@ -83,7 +83,7 @@
                  (no content)
                </span>
               <span *ngIf="d.actions.length !== 0">
-                 <tock-bot-message [message]="d.actions[0].message" [user]="true"></tock-bot-message>
+                 <tock-bot-message [message]="d.actions[0].messages[0]" [user]="true"></tock-bot-message>
                </span>
               ...
               <button *ngIf="!d.displayActions" md-button (click)="d.displayActions=true">
@@ -98,7 +98,7 @@
                 <md-icon>delete</md-icon>
                 Remove dialog
               </button>
-              <tock-display-dialog *ngIf="d.displayActions" [dialog]="d"></tock-display-dialog>
+              <tock-display-dialog *ngIf="d.displayActions" [dialog]="d.toDialogReport()"></tock-display-dialog>
             </li>
           </ol>
 

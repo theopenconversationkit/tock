@@ -19,10 +19,8 @@ package fr.vsct.tock.bot.admin.test.xray.model
 /**
  *
  */
-data class XrayTestStep(
+data class XrayAttachment(
         val id: Long,
-        val index: Int,
-        val data: XrayTestStepData,
-        val result: XrayTestStepData,
-        val attachments: List<XrayAttachment>) {
+        val fileName: String
+) {
 }

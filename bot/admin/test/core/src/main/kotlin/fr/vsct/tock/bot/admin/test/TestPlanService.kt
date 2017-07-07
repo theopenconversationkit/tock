@@ -17,11 +17,12 @@
 package fr.vsct.tock.bot.admin.test
 
 import com.github.salomonbrys.kodein.instance
-import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.connector.rest.client.ConnectorRestClient
+import fr.vsct.tock.bot.connector.rest.client.model.ClientConnectorType
 import fr.vsct.tock.bot.connector.rest.client.model.ClientMessage
 import fr.vsct.tock.bot.connector.rest.client.model.ClientMessageRequest
+import fr.vsct.tock.bot.connector.rest.client.model.ClientSentence
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
@@ -64,7 +65,7 @@ object TestPlanService {
     }
 
     fun addDialogToTestPlan(plan: TestPlan, dialogId: String) {
-        saveTestPlan(plan.copy(dialogs = plan.dialogs + dialogDAO.getDialog(dialogId)!!))
+        saveTestPlan(plan.copy(dialogs = plan.dialogs + TestDialogReport(dialogDAO.getDialog(dialogId)!!)))
     }
 
     fun removeTestPlan(plan: TestPlan) {
@@ -110,7 +111,7 @@ object TestPlanService {
     private fun runDialog(
             client: ConnectorRestClient,
             testPlan: TestPlan,
-            dialog: DialogReport): DialogExecutionReport {
+            dialog: TestDialogReport): DialogExecutionReport {
         val playerId = Dice.newId()
         val botId = Dice.newId()
         return try {
@@ -132,13 +133,20 @@ object TestPlanService {
                             ClientMessageRequest(
                                     playerId,
                                     botId,
-                                    it.message.toClientMessage(),
+                                    it.findFirstMessage().toClientMessage(),
                                     true
                             ))
                     expectedBotMessages = answer.body()?.messages?.toMutableList() ?: mutableListOf()
                 } else {
+                    if (expectedBotMessages.isEmpty()) {
+                        return DialogExecutionReport(
+                                dialog.id,
+                                true,
+                                it.id,
+                                errorMessage = "(no answer but one expected)")
+                    }
                     val expectedMessage = expectedBotMessages.removeAt(0)
-                    if (expectedMessage != it.message.toClientMessage()) {
+                    if (!expectedMessage.deepEquals(it)) {
                         return DialogExecutionReport(
                                 dialog.id,
                                 true,
@@ -154,6 +162,22 @@ object TestPlanService {
             DialogExecutionReport(dialog.id, true, errorMessage = e.message)
         } finally {
             userTimelineDAO.remove(PlayerId(playerId, PlayerType.user))
+        }
+    }
+
+    private fun ClientMessage.deepEquals(action: TestActionReport): Boolean {
+        return action.messages.any {
+            deepEquals(it.toClientMessage())
+        }
+    }
+
+    private fun ClientMessage.deepEquals(message: ClientMessage): Boolean {
+        return if (message is ClientSentence && this is ClientSentence) {
+            message.copy(
+                    messages = message.messages.map { it.copy(connectorType = ClientConnectorType.none) }.toMutableList()
+            ) == copy(messages = messages.map { it.copy(connectorType = ClientConnectorType.none) }.toMutableList())
+        } else {
+            message == this
         }
     }
 

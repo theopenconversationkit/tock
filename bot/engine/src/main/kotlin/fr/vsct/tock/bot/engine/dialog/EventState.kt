@@ -23,7 +23,8 @@ import fr.vsct.tock.bot.definition.Intent
  */
 data class EventState(
         var currentIntent: Intent? = null,
-        val entityValues: MutableList<ContextValue> = mutableListOf()) {
+        val entityValues: MutableList<ContextValue> = mutableListOf(),
+        var testEvent: Boolean = false) {
 
     fun getEntity(role: String): List<ContextValue> {
         return entityValues.filter { it.entity.role == role }

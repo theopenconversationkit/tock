@@ -16,20 +16,29 @@
 
 package fr.vsct.tock.bot.admin.test
 
-import fr.vsct.tock.bot.admin.dialog.DialogReport
+import fr.vsct.tock.bot.admin.dialog.ActionReport
 import fr.vsct.tock.bot.engine.message.Message
+import fr.vsct.tock.bot.engine.user.PlayerId
+import java.time.Instant
 
 /**
  *
  */
-data class TestPlan(
-        val dialogs: List<TestDialogReport>,
-        val name: String,
-        val applicationId: String,
-        val namespace: String,
-        val nlpModel: String,
-        val botApplicationConfigurationId: String,
-        val startAction: Message? = null,
-        val _id: String? = null
+data class TestActionReport(
+        val playerId: PlayerId,
+        val date: Instant,
+        val messages: List<Message>,
+        val id: String
 ) {
+
+    constructor(playerId: PlayerId,
+                date: Instant,
+                message: Message,
+                id: String) : this(playerId, date, listOf(message), id)
+
+    constructor(report: ActionReport) : this(report.playerId, report.date, report.message, report.id)
+
+    fun findFirstMessage(): Message {
+        return messages.first()
+    }
 }

@@ -19,5 +19,5 @@ package fr.vsct.tock.bot.admin.test.xray.model
 /**
  *
  */
-data class XrayTestStepData(val raw:String) {
+data class XrayTestStepData(val raw:String?) {
 }

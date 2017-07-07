@@ -18,7 +18,8 @@ package fr.vsct.tock.bot.connector.messenger.model.send
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import fr.vsct.tock.bot.connector.messenger.AttachmentCacheService
-import fr.vsct.tock.bot.connector.messenger.MessengerConfiguration
+import fr.vsct.tock.bot.connector.messenger.MessengerConfiguration.reuseAttachmentByDefault
+import fr.vsct.tock.bot.engine.action.SendAttachment
 
 /**
  *
@@ -39,8 +40,12 @@ data class UrlPayload(
          * @param applicationId the applicationId
          * @param url the url
          */
-        fun getUrlPayload(applicationId: String, url: String): UrlPayload {
-            return getUrlPayload(applicationId, url, MessengerConfiguration.reuseAttachmentByDefault)
+        fun getUrlPayload(attachment: SendAttachment): UrlPayload {
+            return getUrlPayload(
+                    attachment.applicationId,
+                    attachment.url,
+                    reuseAttachmentByDefault && !attachment.state.testEvent
+            )
         }
 
         /**

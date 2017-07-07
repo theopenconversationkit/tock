@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {BotMessage, DialogReport} from "app/shared/model/dialog-data";
+import {ActionReport, BotMessage, DialogReport, PlayerId, PlayerType} from "app/shared/model/dialog-data";
 import {ApplicationScopedQuery} from "tock-nlp-admin/src/app/model/commons";
 
 export class BotDialogRequest extends ApplicationScopedQuery {
@@ -60,7 +60,7 @@ export class TestPlan {
   public displayDialog: boolean;
   public displayExecutions: boolean;
 
-  constructor(public dialogs: DialogReport[],
+  constructor(public dialogs: TestDialogReport[],
               public name: string,
               public applicationId: string,
               public namespace: string,
@@ -76,9 +76,9 @@ export class TestPlan {
       if (d) {
         const aIndex = d.actions.findIndex(a => a.id === report.errorActionId);
         if (aIndex === -1) {
-          report.dialogReport = new DialogReport(d.actions, d.id);
+          report.dialogReport = new DialogReport(d.actions.map(d => d.toActionReport()), d.id);
         } else {
-          report.dialogReport = new DialogReport(d.actions.slice(0, Math.min(aIndex + 1, d.actions.length)), d.id)
+          report.dialogReport = new DialogReport(d.actions.slice(0, Math.min(aIndex + 1, d.actions.length)).map(d => d.toActionReport()), d.id);
         }
         report.dialogReport.displayActions = true;
       }
@@ -89,7 +89,7 @@ export class TestPlan {
     const value = Object.create(TestPlan.prototype);
 
     const result = Object.assign(value, json, {
-      dialogs: DialogReport.fromJSONArray(json.dialogs),
+      dialogs: TestDialogReport.fromJSONArray(json.dialogs),
     });
 
     return result;
@@ -154,4 +154,63 @@ export class DialogExecutionReport {
     return json ? json.map(DialogExecutionReport.fromJSON) : [];
   }
 
+}
+
+export class TestDialogReport {
+
+  displayActions: boolean;
+
+  constructor(public actions: TestActionReport[],
+              public id: string) {
+  }
+
+  toDialogReport() : DialogReport {
+    return new DialogReport(this.actions.map(d => d.toActionReport()), this.id);
+  }
+
+  static fromJSON(json?: any): TestDialogReport {
+    const value = Object.create(TestDialogReport.prototype);
+
+    const result = Object.assign(value, json, {
+      actions: TestActionReport.fromJSONArray(json.actions)
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): TestDialogReport[] {
+    return json ? json.map(TestDialogReport.fromJSON) : [];
+  }
+}
+
+export class TestActionReport {
+
+  constructor(public playerId: PlayerId,
+              public date: Date,
+              public messages: BotMessage[],
+              public id: String) {
+  }
+
+  toActionReport(): ActionReport {
+    return new ActionReport(this.playerId, this.date, this.messages[0], this.id);
+  }
+
+  isBot(): boolean {
+    return this.playerId.type == PlayerType.bot;
+  }
+
+  static fromJSON(json?: any): TestActionReport {
+    const value = Object.create(TestActionReport.prototype);
+
+    const result = Object.assign(value, json, {
+      playerId: PlayerId.fromJSON(json.playerId),
+      messages: BotMessage.fromJSONArray(json.messages)
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): TestActionReport[] {
+    return json ? json.map(TestActionReport.fromJSON) : [];
+  }
 }

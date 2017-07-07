@@ -23,4 +23,11 @@ data class ClientConnectorType(
         val id: String,
         val userInterfaceType: ClientUserInterfaceType,
         val asynchronous: Boolean) {
+
+    companion object {
+        /**
+         * Not a specific connector type.
+         */
+        val none: ClientConnectorType = ClientConnectorType("NONE", ClientUserInterfaceType.textChat, false)
+    }
 }

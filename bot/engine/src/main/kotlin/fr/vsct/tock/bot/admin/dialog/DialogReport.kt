@@ -25,4 +25,5 @@ data class DialogReport(
         val actions: List<ActionReport> = emptyList(),
         val id: String = Dice.newId()
 ) {
+
 }

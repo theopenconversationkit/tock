@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.test.xray.model
+package fr.vsct.tock.bot.admin.test
+
+import fr.vsct.tock.bot.admin.dialog.DialogReport
+import fr.vsct.tock.shared.Dice
 
 /**
  *
  */
-data class XrayTestStep(
-        val id: Long,
-        val index: Int,
-        val data: XrayTestStepData,
-        val result: XrayTestStepData,
-        val attachments: List<XrayAttachment>) {
+data class TestDialogReport(
+        val actions: List<TestActionReport> = emptyList(),
+        val id: String = Dice.newId()
+) {
+
+    constructor(dialog: DialogReport) : this(dialog.actions.map { TestActionReport(it) }, dialog.id)
 }

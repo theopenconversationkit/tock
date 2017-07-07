@@ -39,4 +39,7 @@ interface XrayApi {
 
     @POST("/rest/raven/1.0/import/execution")
     fun sendTestExecution(@Body execution: XrayTestExecution): Call<ResponseBody>
+
+    @GET("/plugins/servlet/raven/attachment/{id}/{fileName}")
+    fun getAttachment(@Path("id") id: Long, @Path("fileName") fileName: String): Call<ResponseBody>
 }

@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.admin.test.xray
 
+import fr.vsct.tock.bot.admin.test.xray.model.XrayAttachment
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecution
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestStep
@@ -57,4 +58,6 @@ object XrayClient {
     fun sendTestExecution(execution: XrayTestExecution)
             = xray.sendTestExecution(execution).execute()
 
+    fun getAttachmentToString(attachment: XrayAttachment): String
+            = xray.getAttachment(attachment.id, attachment.fileName).execute().body()?.string() ?: "error : empty jira attachment"
 }

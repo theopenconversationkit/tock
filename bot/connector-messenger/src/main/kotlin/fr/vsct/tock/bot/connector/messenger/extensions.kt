@@ -128,7 +128,7 @@ private fun BotBus.withMessengerAttachmentType(
     with(AttachmentMessage(
             Attachment(
                     type,
-                    UrlPayload.getUrlPayload(applicationId, attachmentUrl, useCache)
+                    UrlPayload.getUrlPayload(applicationId, attachmentUrl, useCache && !userPreferences.test)
             )
     ))
     return this

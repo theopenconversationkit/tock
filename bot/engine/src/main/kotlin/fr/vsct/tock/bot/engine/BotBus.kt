@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.message.MessagesList
+import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
@@ -57,7 +58,8 @@ class BotBus internal constructor(
     val applicationId = action.applicationId
     internal val botId = action.recipientId
     val userId = action.playerId
-    val userLocale: Locale = userTimeline.userPreferences.locale
+    val userPreferences: UserPreferences = userTimeline.userPreferences
+    val userLocale: Locale = userPreferences.locale
     val userInterfaceType: UserInterfaceType = connector.connectorType.userInterfaceType
 
     private val context: BusContext = BusContext()
@@ -153,6 +155,7 @@ class BotBus internal constructor(
         if (action is SendSentence) {
             action.messages.addAll(context.connectorMessages.values)
         }
+        action.state.testEvent = userPreferences.test
 
         story.actions.add(action)
         connector.send(action, context.currentDelay)

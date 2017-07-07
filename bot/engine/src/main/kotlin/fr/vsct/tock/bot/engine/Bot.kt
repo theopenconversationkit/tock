@@ -156,6 +156,7 @@ class Bot(botDefinitionBase: BotDefinition) {
                 userState.profileLoaded = true
                 userPreferences.copy(pref)
             }
+            action.state.testEvent = userPreferences.test
         }
     }
 
