@@ -20,6 +20,7 @@ import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityValue
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
+import fr.vsct.tock.nlp.core.ParsingResult
 import fr.vsct.tock.nlp.front.service.FrontRepository.config
 import fr.vsct.tock.nlp.front.service.FrontRepository.core
 import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
@@ -154,9 +155,9 @@ object ParserService : Parser {
                     otherIntents
             )
 
-            if (context.registerQuery) {
+            fun toClassifiedSentence(): ClassifiedSentence {
                 val intentId = config.getIntentIdByQualifiedName(parseResult.intent)!!
-                val sentence = ClassifiedSentence(
+                return ClassifiedSentence(
                         result,
                         language,
                         application._id!!,
@@ -164,13 +165,41 @@ object ParserService : Parser {
                         parseResult.intentProbability,
                         parseResult.entitiesProbability
                 )
-                if (!sentence.hasSameContent(validatedSentence)) {
-                    config.save(sentence)
+            }
+
+            if (context.registerQuery) {
+                toClassifiedSentence().apply {
+                    if (!hasSameContent(validatedSentence)) {
+                        config.save(this)
+                    }
+                }
+            }
+
+            //check cache for test
+            if (context.test && validatedSentence != null) {
+                if (validatedSentence.hasSameContent(toClassifiedSentence())) {
+                    error("[TEST MODE] validated sentence do not produce same output than nlp model for query $q")
                 }
             }
 
             return result
         }
+    }
+
+    private fun toClassifiedSentence(
+            application: ApplicationDefinition,
+            language: Locale,
+            parseResult: ParsingResult,
+            result: ParseResult): ClassifiedSentence {
+        val intentId = config.getIntentIdByQualifiedName(parseResult.intent)!!
+        return ClassifiedSentence(
+                result,
+                language,
+                application._id!!,
+                intentId,
+                parseResult.intentProbability,
+                parseResult.entitiesProbability
+        )
     }
 
     override fun mergeValues(query: ValuesMergeQuery): ValuesMergeResult {
