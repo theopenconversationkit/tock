@@ -51,13 +51,15 @@ object XrayClient {
                 .create()
     }
 
-    fun getTestPlanTests(testPlanKey: String): List<XrayTest>
-            = xray.getTestPlanTests(testPlanKey).execute().body() ?: emptyList()
+    fun getTestPlanTests(testPlanKey: String): List<XrayTest> {
+        val tests = xray.getTestsOfTestPlan(testPlanKey).execute().body() ?: error("no test in $testPlanKey")
+        return xray.getTests(tests.map { it.key }).execute().body() ?: error("unable to get tests for $tests")
+    }
 
     fun getTestSteps(testKey: String): List<XrayTestStep>
-            = xray.getTestSteps(testKey).execute().body() ?: emptyList()
+            = xray.getTestSteps(testKey).execute().body() ?: error("no test steps for $testKey")
 
-    fun sendTestExecution(execution: XrayTestExecution) : Response<ResponseBody>
+    fun sendTestExecution(execution: XrayTestExecution): Response<ResponseBody>
             = xray.sendTestExecution(execution).execute()
 
     fun getAttachmentToString(attachment: XrayAttachment): String

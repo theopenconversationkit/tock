@@ -25,6 +25,7 @@ import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
+import retrofit2.http.Query
 
 /**
  *
@@ -32,7 +33,10 @@ import retrofit2.http.Path
 interface XrayApi {
 
     @GET("/rest/raven/1.0/api/testplan/{testPlanKey}/test")
-    fun getTestPlanTests(@Path("testPlanKey") testPlanKey: String): Call<List<XrayTest>>
+    fun getTestsOfTestPlan(@Path("testPlanKey") testPlanKey: String): Call<List<XrayTest>>
+
+    @GET("/rest/raven/1.0/api/test")
+    fun getTests(@Query("keys") testKeys: List<String>): Call<List<XrayTest>>
 
     @GET("/rest/raven/1.0/api/test/{testKey}/step")
     fun getTestSteps(@Path("testKey") testKey: String): Call<List<XrayTestStep>>

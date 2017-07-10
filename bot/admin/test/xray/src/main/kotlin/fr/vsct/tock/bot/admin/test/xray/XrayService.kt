@@ -129,7 +129,7 @@ object XrayService {
                             dialogReport.dialogReportId,
                             OffsetDateTime.ofInstant(dialogReport.date, defaultZoneId),
                             OffsetDateTime.ofInstant(dialogReport.date, defaultZoneId).plus(dialogReport.duration),
-                            if (dialogReport.error) "Failed execution ${dialogReport.errorMessage}" else "Successful execution",
+                            if (dialogReport.error) "Failed execution ${dialogReport.errorMessage ?: ""}" else "Successful execution",
                             if (dialogReport.error) FAIL else PASS,
                             if (dialog == null) {
                                 emptyList()
@@ -180,7 +180,9 @@ object XrayService {
         val tests = XrayClient.getTestPlanTests(planKey)
         return with(configuration) {
             TestPlan(
-                    tests.map { getDialogReport(configuration, it) },
+                    tests
+                            .filter { it.supportConf(configuration.botConfiguration.name) }
+                            .map { getDialogReport(configuration, it) },
                     planKey,
                     botConfiguration.applicationId,
                     botConfiguration.namespace,

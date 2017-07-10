@@ -19,11 +19,9 @@ package fr.vsct.tock.bot.admin.test.xray.model
 /**
  *
  */
-data class XrayTest(
-        val key: String,
-        val precondition: List<XrayPrecondition> = emptyList()) {
+data class XrayPrecondition(val preconditionKey: String, val condition:String?) {
 
-    fun supportConf(conf: String): Boolean {
-        return precondition.isEmpty() || precondition.any { it.supportConf(conf) }
+    fun supportConf(conf:String) : Boolean {
+        return condition.isNullOrBlank() || condition?.split(",")?.contains(conf) ?: true
     }
 }
