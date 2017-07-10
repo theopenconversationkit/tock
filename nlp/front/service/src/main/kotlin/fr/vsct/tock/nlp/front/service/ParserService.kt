@@ -129,7 +129,11 @@ object ParserService : Parser {
             val otherIntents: MutableMap<String, Double> = mutableMapOf()
             val parseResult = core.parse(callContext, q) {
                 //select first
-                if (it.hasNext()) it.next() to it.probability() else null
+                if (it.hasNext()) {
+                    it.next() to it.probability()
+                } else {
+                    null
+                }
                         .apply {
                             //and take all other intents where probability is greater than 0.1
                             while (it.hasNext()) {
