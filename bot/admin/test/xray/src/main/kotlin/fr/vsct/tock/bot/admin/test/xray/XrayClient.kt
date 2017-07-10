@@ -26,6 +26,8 @@ import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import okhttp3.ResponseBody
+import retrofit2.Response
 
 /**
  *
@@ -55,7 +57,7 @@ object XrayClient {
     fun getTestSteps(testKey: String): List<XrayTestStep>
             = xray.getTestSteps(testKey).execute().body() ?: emptyList()
 
-    fun sendTestExecution(execution: XrayTestExecution)
+    fun sendTestExecution(execution: XrayTestExecution) : Response<ResponseBody>
             = xray.sendTestExecution(execution).execute()
 
     fun getAttachmentToString(attachment: XrayAttachment): String

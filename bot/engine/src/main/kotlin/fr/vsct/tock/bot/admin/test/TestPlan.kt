@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.bot.admin.test
 
-import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.engine.message.Message
 
 /**

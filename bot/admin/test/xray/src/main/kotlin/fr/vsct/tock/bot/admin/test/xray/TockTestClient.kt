@@ -49,10 +49,10 @@ object TockTestClient {
     }
 
     fun executeTestPlan(testPlan: TestPlan): TestPlanExecution {
-        return tock.executeTestPlan(testPlan).execute().body() ?: TestPlanExecution(testPlan._id!!, emptyList(), 0)
+        return tock.executeTestPlan(testPlan).execute().body() ?: TestPlanExecution(testPlan._id!!, emptyList(), 1)
     }
 
     fun getBotConfigurations(botId: String): List<BotApplicationConfiguration> {
-        return tock.getBotConfigurations(botId).execute().body() ?: emptyList()
+        return tock.getBotConfigurations(botId).execute().body() ?: error("not bot configuration")
     }
 }

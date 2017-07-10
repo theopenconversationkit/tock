@@ -167,8 +167,13 @@ object XrayService {
                     )
                 }
         )
-        XrayClient.sendTestExecution(xrayExecution)
-        return xrayExecution.tests.all { it.status == PASS }
+        return if (
+        XrayClient.sendTestExecution(xrayExecution).isSuccessful
+                && execution.nbErrors == 0) {
+            xrayExecution.tests.all { it.status == PASS }
+        } else {
+            false
+        }
     }
 
     private fun getTestPlan(configuration: XrayExecutionConfiguration, planKey: String): TestPlan {
