@@ -16,12 +16,18 @@
 
 package fr.vsct.tock.bot.admin.dialog
 
+import fr.vsct.tock.bot.engine.user.PlayerId
+import java.util.Locale
+
 /**
  *
  */
-interface DialogReportDAO {
-
-    fun search(query: DialogReportQuery): DialogReportQueryResult
-
-    fun getDialog(id: String): DialogReport?
+data class DialogReportQuery(val namespace: String,
+                             val nlpModel: String,
+                             val language: Locale,
+                             val start: Long = 0,
+                             val size: Int = 1,
+                             val playerId: PlayerId? = null,
+                             val text: String? = null,
+                             val dialogId:String?) {
 }

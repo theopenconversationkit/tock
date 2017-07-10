@@ -324,9 +324,17 @@ export class SearchQuery extends PaginatedQuery {
   }
 }
 
-export class SentencesResult {
+export interface PaginatedResult<T> {
 
-  constructor(public sentences: Sentence[],
+  rows: T[];
+  total: number;
+  start: number;
+  end: number;
+}
+
+export class SentencesResult implements PaginatedResult<Sentence> {
+
+  constructor(public rows: Sentence[],
               public total: number,
               public start: number,
               public end: number) {
@@ -336,10 +344,74 @@ export class SentencesResult {
     const value = Object.create(SentencesResult.prototype);
 
     const result = Object.assign(value, json, {
-      sentences: Sentence.fromJSONArray(json.sentences),
+      rows: Sentence.fromJSONArray(json.sentences),
     });
 
     return result;
+  }
+}
+
+export class SearchLogsQuery extends PaginatedQuery {
+
+  constructor(public namespace: string,
+              public applicationName: string,
+              public language: string,
+              public start: number,
+              public size: number,
+              public search?: string) {
+    super(namespace, applicationName, language, start, size)
+  }
+}
+
+export class LogsResult implements PaginatedResult<Log> {
+
+  constructor(public rows: Log[],
+              public total: number,
+              public start: number,
+              public end: number) {
+  }
+
+  static fromJSON(json?: any): LogsResult {
+    const value = Object.create(LogsResult.prototype);
+
+    const result = Object.assign(value, json, {
+      rows: Log.fromJSONArray(json.logs),
+    });
+
+    return result;
+  }
+}
+
+export class Log {
+
+  constructor(public sentence: Sentence,
+              public dialogId:string,
+              public intent: string,
+              public request: string,
+              public response: string,
+              public date: Date) {
+  }
+
+  requestDetails(): string {
+    return JSON.stringify(this.request, null, 2);
+  }
+
+  responseDetails(): string {
+    return JSON.stringify(this.response, null, 2);
+  }
+
+  static fromJSON(json?: any): Log {
+    const value = Object.create(Log.prototype);
+
+    const result = Object.assign(value, json, {
+      sentence: Sentence.fromJSON(json.sentence),
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): Log[] {
+    return json ? json.map(Log.fromJSON) : [];
   }
 }
 

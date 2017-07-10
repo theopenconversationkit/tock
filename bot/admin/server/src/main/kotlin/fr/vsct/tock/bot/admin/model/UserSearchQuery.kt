@@ -28,7 +28,7 @@ data class UserSearchQuery(
         val from: ZonedDateTime?,
         val to: ZonedDateTime?) : PaginatedQuery() {
 
-    fun toSearchQuery(namespace: String, nlpModel: String): UserReportQuery {
-        return UserReportQuery(namespace, nlpModel, language, start, size, name, from, to)
+    fun toUserReportQuery(): UserReportQuery {
+        return UserReportQuery(namespace, applicationName, language, start, size, name, from, to)
     }
 }

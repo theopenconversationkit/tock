@@ -21,6 +21,8 @@ import {Intent} from "../model/application";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {CreateIntentDialogComponent} from "./create-intent-dialog/create-intent-dialog.component";
 import {MdDialog, MdSnackBar} from "@angular/material";
+import {ApplicationConfig} from "../core/application.config";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'tock-sentence-analysis',
@@ -38,7 +40,9 @@ export class SentenceAnalysisComponent implements OnInit {
   constructor(public state: StateService,
               private nlp: NlpService,
               private snackBar: MdSnackBar,
-              private dialog: MdDialog) {
+              private dialog: MdDialog,
+              public config: ApplicationConfig,
+              private router: Router) {
   }
 
   ngOnInit() {
@@ -95,6 +99,17 @@ export class SentenceAnalysisComponent implements OnInit {
 
   onDelete() {
     this.update(SentenceStatus.deleted);
+  }
+
+  displayDialogs() {
+    this.router.navigate(
+      [this.config.displayDialogUrl],
+      {
+        queryParams: {
+          text: this.sentence.text
+        }
+      }
+    );
   }
 
   private update(status: SentenceStatus) {

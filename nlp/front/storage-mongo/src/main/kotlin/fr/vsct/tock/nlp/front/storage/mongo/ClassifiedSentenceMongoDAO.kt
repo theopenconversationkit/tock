@@ -77,16 +77,17 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                         sentence.lastEntityProbability
                 )
 
-        fun toSentence(): ClassifiedSentence = ClassifiedSentence(
-                fullText,
-                language,
-                applicationId,
-                creationDate,
-                updateDate,
-                status,
-                classification,
-                lastIntentProbability,
-                lastEntityProbability)
+        fun toSentence(): ClassifiedSentence =
+                ClassifiedSentence(
+                        fullText,
+                        language,
+                        applicationId,
+                        creationDate,
+                        updateDate,
+                        status,
+                        classification,
+                        lastIntentProbability,
+                        lastEntityProbability)
     }
 
     private val col: MongoCollection<ClassifiedSentenceCol> by lazy {
@@ -153,7 +154,6 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 return SentencesQueryResult(0, emptyList())
             }
         }
-
     }
 
     override fun switchSentencesIntent(applicationId: String, oldIntentId: String, newIntentId: String) {

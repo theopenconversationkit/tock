@@ -16,11 +16,19 @@
 
 package fr.vsct.tock.bot.admin.model
 
+import fr.vsct.tock.bot.admin.dialog.DialogReportQuery
 import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
+import fr.vsct.tock.nlp.admin.model.PaginatedQuery
 
 /**
  *
  */
-data class DialogReportRequest(val playerId:PlayerId) : ApplicationScopedQuery() {
+data class DialogsSearchQuery(
+        val playerId: PlayerId?,
+        val text: String?,
+        val dialogId: String?) : PaginatedQuery() {
+
+    fun toDialogReportQuery(): DialogReportQuery {
+        return DialogReportQuery(namespace, applicationName, language, start, size, playerId, text, dialogId)
+    }
 }

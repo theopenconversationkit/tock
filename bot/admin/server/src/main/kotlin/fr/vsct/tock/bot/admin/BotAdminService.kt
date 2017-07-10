@@ -24,13 +24,14 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
-import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
+import fr.vsct.tock.bot.admin.dialog.DialogReportQueryResult
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotDialogResponse
 import fr.vsct.tock.bot.admin.model.BotIntent
 import fr.vsct.tock.bot.admin.model.BotIntentSearchRequest
 import fr.vsct.tock.bot.admin.model.CreateBotIntentRequest
+import fr.vsct.tock.bot.admin.model.DialogsSearchQuery
 import fr.vsct.tock.bot.admin.model.UpdateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.test.toClientMessage
@@ -40,7 +41,6 @@ import fr.vsct.tock.bot.connector.rest.client.ConnectorRestClient
 import fr.vsct.tock.bot.connector.rest.client.model.ClientMessageRequest
 import fr.vsct.tock.bot.connector.rest.client.model.ClientSentence
 import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.nlp.admin.AdminService
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.front.client.FrontClient
@@ -89,11 +89,11 @@ object BotAdminService {
     }
 
     fun searchUsers(query: UserSearchQuery): UserReportQueryResult {
-        return userReportDAO.search(query.toSearchQuery(query.namespace, query.applicationName))
+        return userReportDAO.search(query.toUserReportQuery())
     }
 
-    fun lastDialog(playerId: PlayerId): DialogReport {
-        return dialogReportDAO.lastDialog(playerId)
+    fun search(query: DialogsSearchQuery): DialogReportQueryResult {
+        return dialogReportDAO.search(query.toDialogReportQuery())
     }
 
     fun deleteApplicationConfiguration(conf: BotApplicationConfiguration) {

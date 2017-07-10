@@ -19,9 +19,9 @@ package fr.vsct.tock.bot.admin.dialog
 /**
  *
  */
-interface DialogReportDAO {
-
-    fun search(query: DialogReportQuery): DialogReportQueryResult
-
-    fun getDialog(id: String): DialogReport?
+data class DialogReportQueryResult(
+        val total: Long,
+        val start: Long,
+        val end: Long,
+        val dialogs: List<DialogReport>) {
 }

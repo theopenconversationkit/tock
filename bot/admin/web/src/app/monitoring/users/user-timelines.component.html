@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-
+<div class="users">
 <div *ngIf="total !== -1">
   <h1 *ngIf="total === 0">No user yet!
     <button md-button (click)="refresh()">
@@ -32,8 +32,7 @@
     [infiniteScrollDistance]="2"
     [infiniteScrollThrottle]="300"
     (scrolled)="onScroll()">
-    <div
-      *ngFor="let user of users">
+    <div *ngFor="let user of data">
       <md-card>
         <md-card-header>
           <img md-card-avatar
@@ -49,17 +48,19 @@
         </md-card-header>
         <md-card-content>
           <span *ngIf="user.lastActionText" class="lastActionText"> &quot; {{user.lastActionText}} &quot;</span>
-          <button *ngIf="!user.displayDialogs || !user.userDialog" md-icon-button md-tooltip="Display dialog"
+          <button *ngIf="!user.displayDialogs" md-icon-button md-tooltip="Display dialog"
                   color="primary" (click)="loadDialog(user)">
             <md-icon>forum</md-icon>
           </button>
-          <button *ngIf="user.displayDialogs && user.userDialog" md-icon-button md-tooltip="Hide dialog" color="accent"
+          <button *ngIf="user.displayDialogs" md-icon-button md-tooltip="Hide dialog" color="accent"
                   (click)="closeDialog(user)">
             <md-icon>remove_from_queue</md-icon>
           </button>
+          <div *ngIf="user.displayDialogs && !user.userDialog">No dialog found</div>
         </md-card-content>
       </md-card>
       <tock-display-dialog
+        class="dialog"
         *ngIf="user.displayDialogs && user.userDialog"
         [dialog]="user.userDialog">
         <div *ngIf="user.userDialog.actions.length === 0">No dialog</div>
@@ -84,4 +85,4 @@
     </div>
   </div>
 </div>
-
+</div>

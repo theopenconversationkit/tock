@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.dialog
+package fr.vsct.tock.nlp.front.shared.monitoring
 
 /**
  *
  */
-interface DialogReportDAO {
-
-    fun search(query: DialogReportQuery): DialogReportQueryResult
-
-    fun getDialog(id: String): DialogReport?
+data class ParseRequestLogQueryResult(val total: Long, val logs: List<ParseRequestLog>) {
 }

@@ -5,8 +5,19 @@
   color:lightseagreen;
 }
 
-
 .select-plan {
   width: 200px;
 }
 
+.users {
+  height:100%;
+  width:90%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top:20px;
+  text-align:center;
+}
+
+.dialog {
+  text-align: justify;
+}

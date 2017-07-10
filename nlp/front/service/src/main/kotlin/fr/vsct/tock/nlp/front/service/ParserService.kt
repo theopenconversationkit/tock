@@ -16,14 +16,15 @@
 
 package fr.vsct.tock.nlp.front.service
 
+import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityValue
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
-import fr.vsct.tock.nlp.core.ParsingResult
 import fr.vsct.tock.nlp.front.service.FrontRepository.config
 import fr.vsct.tock.nlp.front.service.FrontRepository.core
 import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
+import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
 import fr.vsct.tock.nlp.front.shared.Parser
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
@@ -32,11 +33,14 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeResult
+import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLog
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue
 import fr.vsct.tock.nlp.front.shared.value.ValueTransformer
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.withoutNamespace
 import mu.KotlinLogging
 import java.util.Locale
@@ -48,6 +52,9 @@ object ParserService : Parser {
 
     private val logger = KotlinLogging.logger {}
     private val tabCarriageRegexp = "[\\n\\r\\t]+".toRegex()
+
+    private val executor: Executor by injector.instance()
+    private val logDAO: ParseRequestLogDAO by injector.instance()
 
     internal fun formatQuery(query: String): String {
         return query.replace(tabCarriageRegexp, "").trim()
@@ -168,17 +175,26 @@ object ParserService : Parser {
             }
 
             if (context.registerQuery) {
-                toClassifiedSentence().apply {
-                    if (!hasSameContent(validatedSentence)) {
-                        config.save(this)
+                executor.executeBlocking {
+                    toClassifiedSentence().apply {
+                        if (!hasSameContent(validatedSentence)) {
+                            config.save(this)
+                        }
+                        logDAO.save(
+                                ParseRequestLog(
+                                        application._id!!,
+                                        query,
+                                        result
+                                )
+                        )
                     }
                 }
             }
 
             //check cache for test
             if (context.test && validatedSentence != null) {
-                if (validatedSentence.hasSameContent(toClassifiedSentence())) {
-                    error("[TEST MODE] validated sentence do not produce same output than nlp model for query $q")
+                if (!validatedSentence.hasSameContent(toClassifiedSentence())) {
+                    error("[TEST MODE] nlp model do not produce same output than validated sentence for query $q")
                 }
             }
 
@@ -186,21 +202,6 @@ object ParserService : Parser {
         }
     }
 
-    private fun toClassifiedSentence(
-            application: ApplicationDefinition,
-            language: Locale,
-            parseResult: ParsingResult,
-            result: ParseResult): ClassifiedSentence {
-        val intentId = config.getIntentIdByQualifiedName(parseResult.intent)!!
-        return ClassifiedSentence(
-                result,
-                language,
-                application._id!!,
-                intentId,
-                parseResult.intentProbability,
-                parseResult.entitiesProbability
-        )
-    }
 
     override fun mergeValues(query: ValuesMergeQuery): ValuesMergeResult {
         with(query) {

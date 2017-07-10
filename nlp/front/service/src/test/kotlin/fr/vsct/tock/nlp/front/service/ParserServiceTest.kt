@@ -16,9 +16,19 @@
 
 package fr.vsct.tock.nlp.front.service
 
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
+import com.nhaarman.mockito_kotlin.mock
 import fr.vsct.tock.nlp.front.service.ParserService.formatQuery
+import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.tockInternalInjector
+import org.junit.Before
 import org.junit.Test
 import java.util.Locale
 import kotlin.test.assertEquals
@@ -27,6 +37,19 @@ import kotlin.test.assertEquals
  *
  */
 class ParserServiceTest {
+
+    @Before
+    fun before() {
+        val executor: Executor = mock()
+        val logDAO: ParseRequestLogDAO = mock()
+        tockInternalInjector = KodeinInjector()
+        injector.inject(Kodein {
+            import(Kodein.Module {
+                bind<Executor>() with provider { executor }
+                bind<ParseRequestLogDAO>() with provider { logDAO }
+            })
+        })
+    }
 
     @Test
     fun formatQuery_shouldRemoveAllTabsAndCarriage() {

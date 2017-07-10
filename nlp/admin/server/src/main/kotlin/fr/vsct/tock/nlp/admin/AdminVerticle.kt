@@ -19,6 +19,7 @@ package fr.vsct.tock.nlp.admin
 import fr.vsct.tock.nlp.admin.model.ApplicationWithIntents
 import fr.vsct.tock.nlp.admin.model.CreateEntityQuery
 import fr.vsct.tock.nlp.admin.model.ParseQuery
+import fr.vsct.tock.nlp.admin.model.SearchLogsQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.front.client.FrontClient
@@ -159,6 +160,14 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
         blockingJsonPost("/sentences/search") { context, s: SearchQuery ->
             if (context.organization == s.namespace) {
                 admin.searchSentences(s)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/logs/search") { context, s: SearchLogsQuery ->
+            if (context.organization == s.namespace) {
+                admin.searchLogs(s)
             } else {
                 unauthorized()
             }

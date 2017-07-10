@@ -21,6 +21,7 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import fr.vsct.tock.nlp.front.shared.ApplicationCodec
 import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
+import fr.vsct.tock.nlp.front.shared.ApplicationMonitor
 import fr.vsct.tock.nlp.front.shared.ModelUpdater
 import fr.vsct.tock.nlp.front.shared.Parser
 
@@ -32,4 +33,5 @@ val frontModule = Kodein.Module {
     bind<Parser>() with provider { ParserService }
     bind<ModelUpdater>() with provider { ModelUpdaterService }
     bind<ApplicationCodec>() with provider { ApplicationCodecService }
+    bind<ApplicationMonitor>() with provider { ApplicationMonitorService }
 }

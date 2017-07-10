@@ -19,18 +19,24 @@ package fr.vsct.tock.bot.mongo
 import com.github.salomonbrys.kodein.instance
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Sorts
+import com.mongodb.client.model.UpdateOptions
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
+import fr.vsct.tock.bot.admin.dialog.DialogReportQuery
+import fr.vsct.tock.bot.admin.dialog.DialogReportQueryResult
 import fr.vsct.tock.bot.admin.user.UserReportDAO
 import fr.vsct.tock.bot.admin.user.UserReportQuery
 import fr.vsct.tock.bot.admin.user.UserReportQueryResult
 import fr.vsct.tock.bot.definition.StoryDefinition
+import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
@@ -50,6 +56,7 @@ import org.litote.kmongo.find
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
+import org.litote.kmongo.replaceOne
 import org.litote.kmongo.save
 import java.lang.Exception
 import java.time.Instant
@@ -60,26 +67,47 @@ import java.time.Instant.now
  */
 internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogReportDAO {
 
+    //wrapper to workaround the 1024 chars limit for String indexes
+    private fun textKey(text: String): String
+            = if (text.length > 512) text.substring(0, Math.min(512, text.length)) else text
+
     private val logger = KotlinLogging.logger {}
 
     private val botConfiguration: BotApplicationConfigurationDAO by injector.instance()
+    private val executor: Executor by injector.instance()
 
     private val userTimelineCol = database.getCollection<UserTimelineCol>("user_timeline")
     private val dialogCol = database.getCollection<DialogCol>("dialog")
+    private val dialogTextCol = database.getCollection<DialogTextCol>("dialog_text")
 
     init {
         userTimelineCol.createIndex("{playerId:1}", IndexOptions().unique(true))
         dialogCol.createIndex("{playerIds:1}")
         userTimelineCol.createIndex("{lastUpdateDate:1}")
         dialogCol.createIndex("{lastUpdateDate:1}")
+        dialogTextCol.createIndex("{text:1}")
+        dialogTextCol.createIndex("{text:1, dialogId:1}", IndexOptions().unique(true))
     }
 
     override fun save(userTimeline: UserTimeline) {
         val oldTimeline = userTimelineCol.findOneById(userTimeline.playerId.id)
-        userTimelineCol.save(UserTimelineCol(userTimeline, oldTimeline))
+        val newTimeline = UserTimelineCol(userTimeline, oldTimeline)
+        userTimelineCol.save(newTimeline)
         val dialog = userTimeline.currentDialog()
         if (dialog != null) {
-            dialogCol.save(DialogCol(dialog))
+            dialogCol.save(DialogCol(dialog, newTimeline))
+            executor.executeBlocking {
+                dialog.allActions().lastOrNull { it.playerId.type == PlayerType.user }
+                        ?.let { action ->
+                            if (action is SendSentence && action.text != null) {
+                                val text = textKey(action.text!!)
+                                dialogTextCol.replaceOne(
+                                        "{text:${text.json}, dialogId:${dialog.id.json}}",
+                                        DialogTextCol(text, dialog.id),
+                                        UpdateOptions().upsert(true))
+                            }
+                        }
+            }
         }
     }
 
@@ -179,8 +207,37 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
     }
 
-    override fun lastDialog(playerId: PlayerId): DialogReport {
-        return loadLastDialogCol(playerId)?.toDialogReport() ?: DialogReport()
+    override fun search(query: DialogReportQuery): DialogReportQueryResult {
+        with(query) {
+            val applicationsIds =
+                    botConfiguration
+                            .getConfigurationsByNamespaceAndNlpModel(query.namespace, query.nlpModel)
+                            .map { it.applicationId }
+                            .distinct()
+            val dialogIds = if (query.text != null) {
+                dialogTextCol.find("{text:${query.text!!.json}}").toList().map { it.dialogId }.toSet()
+            } else {
+                emptySet()
+            }
+            val filter =
+                    listOfNotNull(
+                            "'applicationIds':{\$in:${applicationsIds.filter { it.isNotEmpty() }.json}}",
+                            if (query.playerId == null) null else "'playerIds':${query.playerId!!.json}",
+                            if (query.dialogId == null) null else "'_id':${query.dialogId!!.json}",
+                            if (dialogIds.isEmpty()) null else "'_id':{\$in:${dialogIds.json}}"
+                    ).joinToString(",", "{$and:[", "]}") {
+                        "{$it}"
+                    }
+            logger.debug("dialog search query: $filter")
+            val count = dialogCol.count(filter)
+            if (count > start) {
+                val list = dialogCol.find(filter)
+                        .skip(start.toInt()).limit(size).sort(Sorts.descending("lastUpdateDate")).toList()
+                return DialogReportQueryResult(count, start, start + size, list.map { it.toDialogReport() })
+            } else {
+                return DialogReportQueryResult(0, 0, 0, emptyList())
+            }
+        }
     }
 
     override fun getDialog(id: String): DialogReport? {

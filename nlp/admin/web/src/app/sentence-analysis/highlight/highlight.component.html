@@ -15,15 +15,20 @@
   -->
 
 <md-card-title class="highlight-text">
-  <div *ngIf="tokens"
+  <div *ngIf="tokens && !readOnly"
        class="tokens"
        (mouseup)="select()"
        (touchend)="select()"><span *ngFor="let t of tokens"
                                    [style.background]="t.color()"
                                    [id]="t.index">{{t.text}}</span></div>
+  <div *ngIf="tokens && readOnly"
+       class="tokens"><span *ngFor="let t of tokens"
+                                   [style.background]="t.color()"
+                                   [id]="t.index"
+                                   [md-tooltip]="t.display(sentence, state.user)">{{t.text}}</span></div>
 </md-card-title>
 
-<md-card-subtitle *ngIf="edited" class="highlight">
+<md-card-subtitle *ngIf="!readOnly && edited" class="highlight">
   <md-chip-list *ngIf="intent" class="inner-highlight">
     <md-chip *ngFor="let entity of intent.entities"
              mdTooltip="Select {{entity.qualifiedName(state.user)}}"

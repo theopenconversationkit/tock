@@ -14,14 +14,18 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.dialog
+package fr.vsct.tock.nlp.front.service.storage
+
+import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLog
+import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
+import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQueryResult
 
 /**
  *
  */
-interface DialogReportDAO {
+interface ParseRequestLogDAO {
 
-    fun search(query: DialogReportQuery): DialogReportQueryResult
+    fun save(log : ParseRequestLog)
 
-    fun getDialog(id: String): DialogReport?
+    fun search(query: ParseRequestLogQuery): ParseRequestLogQueryResult
 }

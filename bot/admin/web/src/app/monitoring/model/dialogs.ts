@@ -13,16 +13,40 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {ApplicationScopedQuery} from "tock-nlp-admin/src/app/model/commons";
-import {PlayerId} from "../../shared/model/dialog-data";
+import {PaginatedQuery} from "tock-nlp-admin/src/app/model/commons";
+import {DialogReport, PlayerId} from "../../shared/model/dialog-data";
+import {PaginatedResult} from "tock-nlp-admin/src/app/model/nlp";
 
-export class DialogReportRequest extends ApplicationScopedQuery {
+export class DialogReportQuery extends PaginatedQuery {
 
   constructor(public namespace: string,
               public applicationName: string,
               public language: string,
-              public playerId: PlayerId) {
-    super(namespace, applicationName, language)
+              public start: number,
+              public size: number,
+              public playerId?: PlayerId,
+              public dialogId?: string,
+              public text?: string) {
+    super(namespace, applicationName, language, start, size)
+  }
+}
+
+export class DialogReportQueryResult implements PaginatedResult<DialogReport> {
+
+  constructor(public total: number,
+              public start: number,
+              public end: number,
+              public rows: DialogReport[]) {
+  }
+
+  static fromJSON(json?: any): DialogReportQueryResult {
+    const value = Object.create(DialogReportQueryResult.prototype);
+
+    const result = Object.assign(value, json, {
+      rows: DialogReport.fromJSONArray(json.dialogs),
+    });
+
+    return result;
   }
 }
 

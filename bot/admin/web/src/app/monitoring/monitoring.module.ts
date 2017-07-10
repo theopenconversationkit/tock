@@ -26,6 +26,7 @@ import {UserTimelinesComponent} from "./users/user-timelines.component";
 import {MonitoringService} from "./monitoring.service";
 import {BotSharedModule} from "../shared/bot-shared.module";
 import {MomentModule} from "angular2-moment";
+import {DialogsComponent} from "./dialogs/dialogs.component";
 
 
 const routes: Routes = [
@@ -44,6 +45,10 @@ const routes: Routes = [
       {
         path: 'users',
         component: UserTimelinesComponent
+      },
+      {
+        path: 'dialogs',
+        component: DialogsComponent
       }
     ]
   }
@@ -66,7 +71,8 @@ export class MonitoringRoutingModule {
   ],
   declarations: [
     MonitoringTabsComponent,
-    UserTimelinesComponent
+    UserTimelinesComponent,
+    DialogsComponent
   ],
   exports: [],
   providers: [

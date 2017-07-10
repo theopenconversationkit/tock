@@ -17,7 +17,10 @@
 import {Injectable, OnDestroy} from "@angular/core";
 import {RestService} from "../core/rest/rest.service";
 import {StateService} from "../core/state.service";
-import {EntityDefinition, EntityType, ParseQuery, SearchQuery, Sentence, SentencesResult} from "../model/nlp";
+import {
+  EntityDefinition, EntityType, LogsResult, ParseQuery, SearchLogsQuery, SearchQuery, Sentence,
+  SentencesResult
+} from "../model/nlp";
 import {Observable} from "rxjs";
 import {Application, Intent} from "../model/application";
 
@@ -70,6 +73,10 @@ export class NlpService implements OnDestroy {
 
   searchSentences(query: SearchQuery): Observable<SentencesResult> {
     return this.rest.post("/sentences/search", query, SentencesResult.fromJSON)
+  }
+
+  searchLogs(query: SearchLogsQuery): Observable<LogsResult> {
+    return this.rest.post("/logs/search", query, LogsResult.fromJSON)
   }
 
 }

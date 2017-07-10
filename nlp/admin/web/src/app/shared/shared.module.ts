@@ -21,10 +21,11 @@ import {HttpModule} from "@angular/http";
 import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component";
 import {MaterialModule} from "@angular/material";
 import {MapToIterablePipe} from "./map-to-iterable.pipe";
+import {ScrollComponent} from "../scroll/scroll.component";
 
 @NgModule({
   imports: [CommonModule, MaterialModule],
-  declarations: [ConfirmDialogComponent, MapToIterablePipe],
+  declarations: [ConfirmDialogComponent, MapToIterablePipe, ScrollComponent],
   providers: [],
   exports: [MaterialModule, FormsModule, HttpModule, MapToIterablePipe],
   entryComponents: [

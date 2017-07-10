@@ -17,7 +17,9 @@
 package fr.vsct.tock.nlp.admin
 
 import fr.vsct.tock.nlp.admin.model.ApplicationWithIntents
+import fr.vsct.tock.nlp.admin.model.LogsReport
 import fr.vsct.tock.nlp.admin.model.ParseQuery
+import fr.vsct.tock.nlp.admin.model.SearchLogsQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.admin.model.SentencesReport
@@ -67,5 +69,12 @@ object AdminService {
         } else {
             null
         }
+    }
+
+    fun searchLogs(query: SearchLogsQuery): LogsReport {
+        val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
+        val applicationId = application!!._id!!
+        val result = front.search(query.toParseRequestLogQuery(applicationId))
+        return LogsReport(query.start, result, applicationId, { front.getIntentIdByQualifiedName(it.withNamespace(query.namespace)) })
     }
 }

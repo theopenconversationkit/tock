@@ -24,7 +24,7 @@ import {ApplicationConfig} from "tock-nlp-admin/src/app/core/application.config"
   declarations: [],
   exports: [],
   providers: [
-    {provide: ApplicationConfig, useValue: {configurationUrl: "/configuration"}},
+    {provide: ApplicationConfig, useValue: {configurationUrl: "/configuration", displayDialogUrl: "/monitoring/dialogs"}},
     BotConfigurationService
   ]
 })

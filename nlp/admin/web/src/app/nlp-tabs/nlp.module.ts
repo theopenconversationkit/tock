@@ -15,7 +15,7 @@
  */
 
 import {NgModule} from "@angular/core";
-import {Routes, RouterModule} from "@angular/router";
+import {RouterModule, Routes} from "@angular/router";
 import {TryComponent} from "../try/try.component";
 import {SharedModule} from "../shared/shared.module";
 import {NlpTabsComponent} from "./nlp-tabs.component";
@@ -23,7 +23,7 @@ import {InboxComponent} from "../inbox/inbox.component";
 import {ArchiveComponent} from "../archive/archive.component";
 import {IntentsComponent} from "../intents/intents.component";
 import {SearchComponent} from "../search/search.component";
-import {LogsComponent} from "../logs/logs.component";
+import {DisplayFullLogComponent, LogsComponent} from "../logs/logs.component";
 import {CommonModule} from "@angular/common";
 import {AuthGuard} from "../core/auth/auth.guard";
 import {ApplicationsModule} from "../applications/applications.module";
@@ -32,9 +32,11 @@ import {SentenceAnalysisComponent} from "../sentence-analysis/sentence-analysis.
 import {NlpService} from "./nlp.service";
 import {CreateEntityDialogComponent} from "../sentence-analysis/create-entity-dialog/create-entity-dialog.component";
 import {InfiniteScrollModule} from "ngx-infinite-scroll";
-import {SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.component";
 import {CreateIntentDialogComponent} from "../sentence-analysis/create-intent-dialog/create-intent-dialog.component";
 import {ApplicationResolver} from "../core/application.resolver";
+import {SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.component";
+
+import {MomentModule} from "angular2-moment";
 
 const routes: Routes = [
   {
@@ -89,7 +91,8 @@ export class NlpRoutingModule {
     SharedModule,
     NlpRoutingModule,
     ApplicationsModule,
-    InfiniteScrollModule
+    InfiniteScrollModule,
+    MomentModule
   ],
   declarations: [
     NlpTabsComponent,
@@ -103,7 +106,8 @@ export class NlpRoutingModule {
     SentenceAnalysisComponent,
     CreateEntityDialogComponent,
     CreateIntentDialogComponent,
-    SentencesScrollComponent
+    SentencesScrollComponent,
+    DisplayFullLogComponent
   ],
   exports: [
     SentenceAnalysisComponent
@@ -113,7 +117,8 @@ export class NlpRoutingModule {
   ],
   entryComponents: [
     CreateEntityDialogComponent,
-    CreateIntentDialogComponent
+    CreateIntentDialogComponent,
+    DisplayFullLogComponent
   ]
 })
 export class NlpModule {

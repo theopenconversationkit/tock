@@ -19,5 +19,8 @@ import {Injectable} from "@angular/core";
 @Injectable()
 export class ApplicationConfig {
 
+  /** url of the configuration menu */
   configurationUrl: string;
+  /** url of the display dialogs if it exists */
+  displayDialogUrl: string;
 }

@@ -13,15 +13,19 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+.lastUpdateDate {
+  font-style: italic;
+}
 
-package fr.vsct.tock.bot.admin.dialog
+.select-plan {
+  width: 200px;
+}
 
-/**
- *
- */
-interface DialogReportDAO {
-
-    fun search(query: DialogReportQuery): DialogReportQueryResult
-
-    fun getDialog(id: String): DialogReport?
+.dialogs {
+  height:100%;
+  width:90%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top:20px;
+  text-align:center;
 }

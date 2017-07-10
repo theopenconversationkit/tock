@@ -14,14 +14,17 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.dialog
+package fr.vsct.tock.nlp.front.shared.monitoring
+
+import java.util.Locale
 
 /**
  *
  */
-interface DialogReportDAO {
-
-    fun search(query: DialogReportQuery): DialogReportQueryResult
-
-    fun getDialog(id: String): DialogReport?
+data class ParseRequestLogQuery(val applicationId: String,
+                                val language: Locale,
+                                val start: Long = 0,
+                                val size: Int = 1,
+                                val search: String? = null,
+                                val onlyExactMatch: Boolean = false) {
 }

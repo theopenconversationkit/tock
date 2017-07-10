@@ -20,7 +20,7 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotIntentSearchRequest
 import fr.vsct.tock.bot.admin.model.CreateBotIntentRequest
-import fr.vsct.tock.bot.admin.model.DialogReportRequest
+import fr.vsct.tock.bot.admin.model.DialogsSearchQuery
 import fr.vsct.tock.bot.admin.model.UpdateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.test.TestPlan
@@ -46,10 +46,9 @@ class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
             }
         }
 
-        blockingJsonPost("/user/dialogs") { context, query: DialogReportRequest ->
-            //TODO check rights
+        blockingJsonPost("/dialogs/search") { context, query: DialogsSearchQuery ->
             if (context.organization == query.namespace) {
-                BotAdminService.lastDialog(query.playerId)
+                BotAdminService.search(query)
             } else {
                 unauthorized()
             }

@@ -21,6 +21,7 @@ import {Intent} from "../../model/application";
 import {StateService} from "../../core/state.service";
 import {MdDialog, MdSnackBar} from "@angular/material";
 import {CreateEntityDialogComponent} from "../create-entity-dialog/create-entity-dialog.component";
+import {User} from "../../model/auth";
 
 @Component({
   selector: 'tock-highlight',
@@ -30,6 +31,7 @@ import {CreateEntityDialogComponent} from "../create-entity-dialog/create-entity
 export class HighlightComponent implements OnInit, OnChanges {
 
   @Input() sentence: Sentence;
+  @Input() readOnly: boolean = false;
 
   intent: Intent;
   selectedStart: number;
@@ -39,7 +41,7 @@ export class HighlightComponent implements OnInit, OnChanges {
   tokens: Token[];
 
   constructor(private nlp: NlpService,
-              private state: StateService,
+              public state: StateService,
               private snackBar: MdSnackBar,
               private dialog: MdDialog) {
     this.editable = true;
@@ -112,7 +114,6 @@ export class HighlightComponent implements OnInit, OnChanges {
     } else if (this.intent && !this.intent.isUnknownIntent()) {
       this.edited = true;
     }
-
   }
 
   addEntity() {
@@ -216,6 +217,14 @@ export class SelectedResult {
 
 export class Token {
   constructor(public text: string, public index: number, public entity?: ClassifiedEntity) {
+  }
+
+  display(sentence: Sentence, user: User): string {
+    if (!this.entity) {
+      return "";
+    } else {
+      return this.entity.qualifiedName(user) + " = " + sentence.entityValue(this.entity);
+    }
   }
 
   color(): string {

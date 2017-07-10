@@ -34,7 +34,7 @@ data class SentenceReport(val text: String,
                           val status: ClassifiedSentenceStatus,
                           val classification: ClassificationReport) {
 
-    constructor(query: ParseResult, language: Locale, applicationId: String, intentId: String)
+    constructor(query: ParseResult, language: Locale, applicationId: String, intentId: String?)
             : this(
             query.retainedQuery,
             language,

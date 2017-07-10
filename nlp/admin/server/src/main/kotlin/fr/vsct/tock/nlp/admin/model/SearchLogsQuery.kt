@@ -14,14 +14,21 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.dialog
+package fr.vsct.tock.nlp.admin.model
+
+import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
 
 /**
  *
  */
-interface DialogReportDAO {
+data class SearchLogsQuery(val search: String?) : PaginatedQuery() {
 
-    fun search(query: DialogReportQuery): DialogReportQueryResult
-
-    fun getDialog(id: String): DialogReport?
+    fun toParseRequestLogQuery(applicationId: String): ParseRequestLogQuery =
+            ParseRequestLogQuery(
+                    applicationId,
+                    language,
+                    start,
+                    size,
+                    search
+            )
 }

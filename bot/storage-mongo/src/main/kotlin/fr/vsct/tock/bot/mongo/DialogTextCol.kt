@@ -14,14 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.dialog
+package fr.vsct.tock.bot.mongo
 
 /**
- *
+ * To index dialog text
  */
-interface DialogReportDAO {
-
-    fun search(query: DialogReportQuery): DialogReportQueryResult
-
-    fun getDialog(id: String): DialogReport?
+data class DialogTextCol(val text:String, val dialogId:String) {
 }

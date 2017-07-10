@@ -18,6 +18,7 @@ import {PaginatedQuery} from "tock-nlp-admin/src/app/model/commons";
 import {BotApplicationConfiguration} from "../../core/model/configuration";
 import {TestPlan} from "../../test/model/test";
 import {DialogReport, PlayerId} from "../../shared/model/dialog-data";
+import {PaginatedResult} from "tock-nlp-admin/src/app/model/nlp";
 
 export class UserSearchQuery extends PaginatedQuery {
 
@@ -33,19 +34,19 @@ export class UserSearchQuery extends PaginatedQuery {
   }
 }
 
-export class UserReportQueryResult {
+export class UserReportQueryResult implements PaginatedResult<UserReport> {
 
   constructor(public total: number,
               public start: number,
               public end: number,
-              public users: UserReport[]) {
+              public rows: UserReport[]) {
   }
 
   static fromJSON(json?: any): UserReportQueryResult {
     const value = Object.create(UserReportQueryResult.prototype);
 
     const result = Object.assign(value, json, {
-      users: UserReport.fromJSONArray(json.users),
+      rows: UserReport.fromJSONArray(json.users),
     });
 
     return result;

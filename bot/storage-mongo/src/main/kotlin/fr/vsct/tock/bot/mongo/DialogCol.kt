@@ -51,6 +51,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                               var _id: String,
                               val state: StateMongoWrapper,
                               val stories: List<StoryMongoWrapper>,
+                              val applicationIds:Set<String> = emptySet(),
                               val lastUpdateDate: Instant = now()) {
 
     companion object {
@@ -65,11 +66,12 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
         }
     }
 
-    constructor(dialog: Dialog) : this(
+    constructor(dialog: Dialog, userTimeline:UserTimelineCol) : this(
             dialog.playerIds,
             dialog.id,
             StateMongoWrapper(dialog.state),
-            dialog.stories.map { StoryMongoWrapper(it) }
+            dialog.stories.map { StoryMongoWrapper(it) },
+            userTimeline.applicationIds
     )
 
     fun toDialog(storyDefinitionProvider: (String) -> StoryDefinition): Dialog {

@@ -24,6 +24,7 @@ import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.mongo.DialogCol
 import fr.vsct.tock.bot.mongo.DialogCol.EntityStateValueWrapper
 import fr.vsct.tock.bot.mongo.DialogCol.StateMongoWrapper
+import fr.vsct.tock.bot.mongo.UserTimelineCol
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.api.client.model.EntityType
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
@@ -73,7 +74,8 @@ class DialogColDeserializationTest {
         val dialog = Dialog(
                 emptySet(),
                 state = fr.vsct.tock.bot.engine.dialog.State(context = mutableMapOf("a" to LocalDateTime.now())))
-        val s = mapper.writeValueAsString(DialogCol(dialog))
+        val playerId = PlayerId("a", PlayerType.user)
+        val s = mapper.writeValueAsString(DialogCol(dialog, UserTimelineCol(UserTimeline(playerId), null)))
         val newValue = mapper.readValue<DialogCol>(s)
         assertEquals(dialog, newValue.toDialog { mock() })
     }

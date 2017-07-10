@@ -14,14 +14,19 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.dialog
+package fr.vsct.tock.nlp.front.shared.monitoring
+
+import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
+import fr.vsct.tock.nlp.front.shared.parser.ParseResult
+import java.time.Instant
+import java.time.Instant.now
 
 /**
  *
  */
-interface DialogReportDAO {
-
-    fun search(query: DialogReportQuery): DialogReportQueryResult
-
-    fun getDialog(id: String): DialogReport?
+data class ParseRequestLog(
+        val applicationId:String,
+        val query: ParseQuery,
+        val result: ParseResult,
+        val date: Instant = now()) {
 }

@@ -14,88 +14,46 @@
  * limitations under the License.
  */
 
-import {Component, Input, OnDestroy, OnInit} from "@angular/core";
-import {SearchQuery, Sentence, SentenceStatus} from "../model/nlp";
+import {Component, Input} from "@angular/core";
+import {PaginatedResult, SearchQuery, Sentence, SentenceStatus} from "../model/nlp";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {StateService} from "../core/state.service";
+import {ScrollComponent} from "../scroll/scroll.component";
+import {PaginatedQuery} from "../model/commons";
+import {Observable} from "rxjs/Observable";
 
 @Component({
   selector: 'tock-sentences-scroll',
   templateUrl: './sentences-scroll.component.html',
   styleUrls: ['./sentences-scroll.component.css']
 })
-export class SentencesScrollComponent implements OnInit, OnDestroy {
+export class SentencesScrollComponent extends ScrollComponent<Sentence> {
 
   @Input() filter: SentenceFilter;
-  @Input() title: string;
   @Input() displayArchiveButton: boolean = true;
   @Input() displayProbabilities: boolean = false;
 
-  sentences: Array<Sentence> = [];
-  cursor: number = 0;
-  pageSize: number = 10;
-  total: number = -1;
-  loading: boolean = false;
-
-  private currentApplicationUnsuscriber: any;
-  private currentLocaleUnsuscriber: any;
-
-  constructor(private state: StateService, private nlp: NlpService) {
+  constructor(state: StateService, private nlp: NlpService) {
+    super(state);
   }
 
-  ngOnInit() {
-    this.load();
-    this.currentApplicationUnsuscriber = this.state.currentApplicationEmitter.subscribe(_ => this.refresh());
-    this.currentLocaleUnsuscriber = this.state.currentLocaleEmitter.subscribe(_ => this.refresh());
+
+  search(query: PaginatedQuery): Observable<PaginatedResult<Sentence>> {
+    return this.nlp.searchSentences(new SearchQuery(
+      query.namespace,
+      query.applicationName,
+      query.language,
+      query.start,
+      query.size,
+      this.filter.search,
+      this.filter.intentId,
+      this.filter.status));
   }
 
-  ngOnDestroy() {
-    this.currentApplicationUnsuscriber.unsubscribe();
-    this.currentLocaleUnsuscriber.unsubscribe();
-  }
 
-  refresh() {
-    this.loading = false;
-    this.cursor = 0;
-    this.total = -1;
-    this.sentences = [];
-    this.load();
+  dataEquals(d1: Sentence, d2: Sentence): boolean {
+    return d1.text === d2.text
   }
-
-  load() {
-    if (!this.loading && (this.total === -1 || this.total > this.cursor)) {
-      this.loading = true;
-      const app = this.state.currentApplication;
-      const language = this.state.currentLocale;
-      this.nlp.searchSentences(new SearchQuery(
-        app.namespace,
-        app.name,
-        language,
-        this.cursor,
-        this.cursor + this.pageSize,
-        this.filter.search,
-        this.filter.intentId,
-        this.filter.status))
-        .subscribe(s => {
-          Array.prototype.push.apply(this.sentences, s.sentences);
-          this.cursor = s.end;
-          this.total = s.total;
-          this.loading = false;
-        });
-    }
-  }
-
-  onScroll() {
-    this.load();
-  }
-
-  onClose(sentence: Sentence) {
-    let s = this.sentences.filter(s => s.text === sentence.text)[0];
-    this.sentences.splice(this.sentences.indexOf(s), 1);
-    this.total -= 1;
-    this.cursor -= 1;
-  }
-
 }
 
 export class SentenceFilter {
