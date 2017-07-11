@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.service
 
 import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.nhaarman.mockito_kotlin.any
@@ -26,6 +27,8 @@ import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.tockInternalInjector
+import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertFalse
 
@@ -34,7 +37,14 @@ import kotlin.test.assertFalse
  */
 class ApplicationCodecServiceTest {
 
-    fun inject(applicationConfiguration: ApplicationConfiguration) {
+    val app = ApplicationDefinition("test", "namespace", _id = "id")
+    val applicationConfiguration: ApplicationConfiguration = mock() {
+        on { getApplicationByNamespaceAndName(any(), any()) } doReturn app
+    }
+
+    @Before
+    fun before() {
+        tockInternalInjector = KodeinInjector()
         injector.inject(Kodein {
             import(Kodein.Module {
                 bind<ApplicationConfiguration>() with provider { applicationConfiguration }
@@ -44,11 +54,6 @@ class ApplicationCodecServiceTest {
 
     @Test
     fun import_existingApp_shouldNotCreateApp() {
-        val app = ApplicationDefinition("test", "namespace", _id = "id")
-        val mock: ApplicationConfiguration = mock() {
-            on { getApplicationByNamespaceAndName(any(), any()) } doReturn app
-        }
-        inject(mock)
         val dump = ApplicationDump(app)
 
         val report = ApplicationCodecService.import("namespace", dump)
