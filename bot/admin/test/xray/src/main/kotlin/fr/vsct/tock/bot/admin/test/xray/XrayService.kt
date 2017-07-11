@@ -91,11 +91,16 @@ object XrayService {
     private fun exec(configuration: XrayExecutionConfiguration): Boolean {
         return configuration
                 .testPlanKeys
-                .map { planKey ->
+                .mapNotNull { planKey ->
                     logger.info { "start plan $planKey execution" }
                     try {
                         val testPlan = getTestPlan(configuration, planKey)
-                        executePlan(configuration, testPlan)
+                        if (testPlan.dialogs.isNotEmpty()) {
+                            executePlan(configuration, testPlan)
+                        } else {
+                            logger.warn { "empty test plan for $configuration - skipped" }
+                            null
+                        }
                     } finally {
                         logger.info { "plan $planKey executed" }
                     }

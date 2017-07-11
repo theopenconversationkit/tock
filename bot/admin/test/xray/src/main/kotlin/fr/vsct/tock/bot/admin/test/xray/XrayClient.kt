@@ -53,7 +53,10 @@ object XrayClient {
 
     fun getTestPlanTests(testPlanKey: String): List<XrayTest> {
         val tests = xray.getTestsOfTestPlan(testPlanKey).execute().body() ?: error("no test in $testPlanKey")
-        return xray.getTests(tests.map { it.key }).execute().body() ?: error("unable to get tests for $tests")
+        return xray.getTests(tests.joinToString(";") { it.key })
+                .execute()
+                .body()
+                ?: error("unable to get tests for $tests")
     }
 
     fun getTestSteps(testKey: String): List<XrayTestStep>

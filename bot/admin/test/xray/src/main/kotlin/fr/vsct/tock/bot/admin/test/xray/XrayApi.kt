@@ -36,7 +36,7 @@ interface XrayApi {
     fun getTestsOfTestPlan(@Path("testPlanKey") testPlanKey: String): Call<List<XrayTest>>
 
     @GET("/rest/raven/1.0/api/test")
-    fun getTests(@Query("keys") testKeys: List<String>): Call<List<XrayTest>>
+    fun getTests(@Query("keys") testKeys: String): Call<List<XrayTest>>
 
     @GET("/rest/raven/1.0/api/test/{testKey}/step")
     fun getTestSteps(@Path("testKey") testKey: String): Call<List<XrayTestStep>>
