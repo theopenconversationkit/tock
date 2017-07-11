@@ -66,7 +66,7 @@ export class CreateBotIntentComponent {
     const appName = this.state.currentApplication.name;
     const underscoreIndex = appName.indexOf("_");
     const prefix = underscoreIndex !== -1 ? appName.substring(0, Math.min(underscoreIndex, 5)) : appName.substring(0, Math.min(appName.length, 5));
-    const v = NormalizeUtil.normalize(value.trim().toLowerCase());
+    const v = NormalizeUtil.normalize(value.trim().toLowerCase()).replace(new RegExp(" ", 'g'), "_");
     let candidate = prefix + "_" + v.substring(0, Math.min(value.length, 10));
     let count = 1;
     const candidateBase = candidate;
