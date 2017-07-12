@@ -35,6 +35,9 @@ class NlpVerticle : WebVerticle(KotlinLogging.logger {}) {
         val front = FrontClient
 
         blockingJsonPost("/parse") { _, query: ParseQuery ->
+            if (query.queries.isEmpty()) {
+                error("please set queries field with at least one query")
+            }
             front.parse(query)
         }
 
