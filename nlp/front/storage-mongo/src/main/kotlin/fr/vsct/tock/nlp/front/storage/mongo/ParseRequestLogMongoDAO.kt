@@ -44,15 +44,19 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
     private data class ParseRequestLogCol(val text: String,
                                           val applicationId: String,
                                           val query: ParseQuery,
-                                          val result: ParseResult,
+                                          val result: ParseResult?,
+                                          val durationInMS: Long = 0,
+                                          val error: Boolean = false,
                                           val date: Instant = Instant.now()) {
 
         constructor(request: ParseRequestLog) :
                 this(
-                        textKey(request.result.retainedQuery),
+                        textKey(request.result?.retainedQuery ?: request.query.queries.firstOrNull() ?: ""),
                         request.applicationId,
                         request.query,
                         request.result,
+                        request.durationInMS,
+                        request.error,
                         request.date
                 )
 
@@ -61,6 +65,8 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                         applicationId,
                         query,
                         result,
+                        durationInMS,
+                        error,
                         date)
     }
 

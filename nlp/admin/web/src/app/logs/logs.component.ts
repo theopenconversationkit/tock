@@ -64,7 +64,7 @@ export class LogsComponent extends ScrollComponent<Log> {
       {
         queryParams: {
           dialogId: log.dialogId,
-          text : log.sentence.text
+          text : log.error ? log.textRequest() : log.sentence.text
         }
       }
       );

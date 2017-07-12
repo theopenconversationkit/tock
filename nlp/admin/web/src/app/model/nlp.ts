@@ -384,12 +384,18 @@ export class LogsResult implements PaginatedResult<Log> {
 
 export class Log {
 
-  constructor(public sentence: Sentence,
-              public dialogId:string,
+  constructor(public dialogId: string,
               public intent: string,
-              public request: string,
-              public response: string,
-              public date: Date) {
+              public request: any,
+              public durationInMS: number,
+              public error: boolean,
+              public date: Date,
+              public sentence?: Sentence,
+              public response?: any) {
+  }
+
+  textRequest() : string {
+    return this.request.queries[0];
   }
 
   requestDetails(): string {
@@ -397,14 +403,14 @@ export class Log {
   }
 
   responseDetails(): string {
-    return JSON.stringify(this.response, null, 2);
+    return this.response ? JSON.stringify(this.response, null, 2) : "none";
   }
 
   static fromJSON(json?: any): Log {
     const value = Object.create(Log.prototype);
 
     const result = Object.assign(value, json, {
-      sentence: Sentence.fromJSON(json.sentence),
+      sentence: json.sentence ? Sentence.fromJSON(json.sentence) : null,
     });
 
     return result;

@@ -43,13 +43,16 @@
     [infiniteScrollThrottle]="300"
     (scrolled)="onScroll()">
     <md-card *ngFor="let d of data" class="log">
-      <md-card-title><tock-highlight [sentence]="d.sentence" [readOnly]="true"></tock-highlight></md-card-title>
+      <md-card-title>
+        <h4 *ngIf="d.error">{{d.textRequest()}} <md-icon color="warn" md-tooltip="error">error</md-icon></h4>
+        <tock-highlight *ngIf="!d.error" [sentence]="d.sentence" [readOnly]="true"></tock-highlight>
+      </md-card-title>
       <md-card-content>
         {{d.intent}}
-          <span *ngIf="d.sentence.classification.intentId" md-tooltip="intent probability">
+          <span *ngIf="d.sentence?.classification?.intentId" md-tooltip="intent probability">
             <span class="intentProbability">({{d.sentence.classification.intentProbability | percent:'1.0-2'}})</span>
-        </span> -
-        {{d.date | amTimeAgo}}
+        </span> {{d.intent ? '-' : ''}}
+        {{d.date | amTimeAgo}} <span *ngIf="d.durationInMS !== 0">in {{d.durationInMS}} ms</span>
         <button *ngIf="config.displayDialogUrl" md-icon-button md-tooltip="Display Conversation" (click)="displayConversation(d)" color="primary"><md-icon>speaker_notes</md-icon></button>
         <button md-icon-button (click)="displayFullLog(d)" md-tooltip="View Full Log"><md-icon>visibility</md-icon></button>
       </md-card-content>

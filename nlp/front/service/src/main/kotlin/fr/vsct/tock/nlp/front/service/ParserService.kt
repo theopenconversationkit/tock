@@ -43,6 +43,7 @@ import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.withoutNamespace
 import mu.KotlinLogging
+import java.time.ZonedDateTime
 import java.util.Locale
 
 /**
@@ -55,6 +56,8 @@ object ParserService : Parser {
 
     private val executor: Executor by injector.instance()
     private val logDAO: ParseRequestLogDAO by injector.instance()
+
+    private data class ParseMetadata(val application: ApplicationDefinition, val language: Locale, val referenceDate: ZonedDateTime)
 
     internal fun formatQuery(query: String): String {
         return query.replace(tabCarriageRegexp, "").trim()
@@ -81,12 +84,39 @@ object ParserService : Parser {
     }
 
     override fun parse(query: ParseQuery): ParseResult {
+        val time = System.currentTimeMillis()
         with(query) {
-            val application = config.getApplicationByNamespaceAndName(namespace, applicationName) ?: error("unknown application $namespace:$applicationName")
+            val application = config.getApplicationByNamespaceAndName(namespace, applicationName)
+                    ?: error("unknown application $namespace:$applicationName")
 
             val language = findLanguage(application, context.language)
 
             val referenceDate = context.referenceDate.withZoneSameInstant(context.referenceTimezone)
+
+            val metadata: ParseMetadata = ParseMetadata(application, language, referenceDate)
+
+            var result: ParseResult? = null
+            try {
+                result = parseImpl(query, metadata)
+                return result
+            } finally {
+                executor.executeBlocking {
+                    logDAO.save(
+                            ParseRequestLog(
+                                    application._id!!,
+                                    query,
+                                    result,
+                                    System.currentTimeMillis() - time
+                            )
+                    )
+                }
+            }
+        }
+    }
+
+    private fun parseImpl(query: ParseQuery, metadata: ParseMetadata): ParseResult {
+        with(query) {
+            val (application, language, referenceDate) = metadata
 
             val q = formatQuery(queries.first())
             if (q.isEmpty()) {
@@ -180,13 +210,6 @@ object ParserService : Parser {
                         if (!hasSameContent(validatedSentence)) {
                             config.save(this)
                         }
-                        logDAO.save(
-                                ParseRequestLog(
-                                        application._id!!,
-                                        query,
-                                        result
-                                )
-                        )
                     }
                 }
             }
