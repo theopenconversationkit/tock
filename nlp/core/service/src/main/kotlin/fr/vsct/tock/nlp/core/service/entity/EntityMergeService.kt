@@ -104,12 +104,11 @@ internal object EntityMergeService : EntityMerge {
                             is WeightedEntity ->
                                 with(first.entity.value) { if (evaluated && value == null) null else first.entity }
                             is WeightedEntityType -> {
-                                if (group.any { it is WeightedEntity }) {
-                                    first.entityType.toEntityRecognition(
-                                            (group.first { it is WeightedEntity } as WeightedEntity).entity.role)
-                                } else {
-                                    createOrphanEntity(first.entityType, intent)
-                                }
+                                group.firstOrNull { it is WeightedEntity && intent.hasEntity(first.entityType.entityType, it.entity.role) }
+                                        ?.let {
+                                            first.entityType.toEntityRecognition((it as WeightedEntity).entity.role)
+                                        }
+                                        ?: createOrphanEntity(first.entityType, intent)
                             }
                         }
                     }

@@ -30,6 +30,9 @@ data class Intent(val name: String,
         const val UNKNOWN_INTENT: String = "$TOCK_NAMESPACE:unknown"
     }
 
+    fun hasEntity(entityType: EntityType, role: String)
+     = entities.any { it.entityType == entityType && it.role == role }
+
     fun getEntity(role: String): Entity = entities.firstOrNull { it.role == role } ?: error("Unknown entity $role")
 
 }
