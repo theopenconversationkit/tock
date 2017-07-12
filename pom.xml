@@ -328,7 +328,7 @@
                     <autoVersionSubmodules>true</autoVersionSubmodules>
                     <releaseProfiles>deploy</releaseProfiles>
                     <tagNameFormat>tock-@{project.version}</tagNameFormat>
-                    <goals>site deploy</goals>
+                    <goals>dokka:javadocJar deploy</goals>
                 </configuration>
             </plugin>
             <plugin>
