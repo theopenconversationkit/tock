@@ -28,13 +28,15 @@ import java.time.Duration
 import java.util.concurrent.Callable
 
 private val logger = KotlinLogging.logger {}
-val vertx = Vertx.vertx(
-        VertxOptions().apply {
-            maxWorkerExecuteTime = 1000 * 60L * 1000 * 1000000
-            if (devEnvironment) {
-                warningExceptionTime = 1000L * 1000 * 1000000
-            }
-        })
+
+var defaultVertxOptions = VertxOptions().apply {
+    maxWorkerExecuteTime = 1000 * 60L * 1000 * 1000000
+    if (devEnvironment) {
+        warningExceptionTime = 1000L * 1000 * 1000000
+    }
+}
+
+val vertx: Vertx by lazy { Vertx.vertx(defaultVertxOptions) }
 
 fun <T> Vertx.blocking(blockingHandler: (Future<T>) -> Unit, resultHandler: (AsyncResult<T>) -> Unit) {
     this.executeBlocking(
