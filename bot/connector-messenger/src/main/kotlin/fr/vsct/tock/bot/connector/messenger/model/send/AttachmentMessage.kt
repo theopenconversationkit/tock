@@ -26,7 +26,7 @@ import fr.vsct.tock.bot.engine.message.SentenceElement
 /**
  *
  */
-data class AttachmentMessage(val attachment: Attachment) : Message() {
+class AttachmentMessage(val attachment: Attachment, quickReplies:List<QuickReply>? = null) : Message(quickReplies) {
 
     override fun toSentenceElement(): SentenceElement? {
         return when (attachment.type) {
@@ -41,4 +41,21 @@ data class AttachmentMessage(val attachment: Attachment) : Message() {
             template -> attachment.payload.toSentenceElement()
         }
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other?.javaClass != javaClass) return false
+
+        other as AttachmentMessage
+
+        if (attachment != other.attachment) return false
+        if (quickReplies != other.quickReplies) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return attachment.hashCode()
+    }
+
 }

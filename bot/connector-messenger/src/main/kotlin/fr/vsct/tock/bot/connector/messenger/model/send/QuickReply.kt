@@ -16,12 +16,18 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import fr.vsct.tock.bot.connector.messenger.json.send.ButtonDeserializer
-import fr.vsct.tock.bot.engine.message.Choice
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 
-@JsonDeserialize(using = ButtonDeserializer::class)
-abstract class Button(val type: ButtonType) : UserAction {
-
-    abstract fun toChoice() : Choice
-}
+@JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "content_type"
+)
+@JsonSubTypes(
+        JsonSubTypes.Type(value = TextQuickReply::class, name = "text"),
+        JsonSubTypes.Type(value = LocationQuickReply::class, name = "location")
+)
+abstract class QuickReply(
+        @JsonProperty ("content_type") val contentType: QuickReplyContentType) : UserAction

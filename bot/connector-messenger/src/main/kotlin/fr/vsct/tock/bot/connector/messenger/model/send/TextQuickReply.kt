@@ -16,12 +16,11 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import fr.vsct.tock.bot.connector.messenger.json.send.ButtonDeserializer
-import fr.vsct.tock.bot.engine.message.Choice
+import com.fasterxml.jackson.annotation.JsonProperty
 
-@JsonDeserialize(using = ButtonDeserializer::class)
-abstract class Button(val type: ButtonType) : UserAction {
-
-    abstract fun toChoice() : Choice
+data class TextQuickReply(
+        val title:String,
+        val payload:String,
+        @JsonProperty("image_url") val imageUrl : String? = null
+) : QuickReply(QuickReplyContentType.text){
 }

@@ -32,9 +32,6 @@ import fr.vsct.tock.shared.jackson.mapper
 import org.junit.Test
 import kotlin.test.assertEquals
 
-/**
- *
- */
 class WebhookDeserializationTest {
 
     @Test

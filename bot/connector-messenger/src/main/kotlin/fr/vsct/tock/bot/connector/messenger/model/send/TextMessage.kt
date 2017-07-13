@@ -22,9 +22,27 @@ import fr.vsct.tock.bot.engine.message.SentenceElement
  *
  */
 //TODO check 640 char text limit https://developers.facebook.com/docs/messenger-platform/send-api-reference/text-message
-data class TextMessage(val text: String) : Message() {
+class TextMessage(val text: String, quickReplies:List<QuickReply>? = null) : Message(quickReplies) {
 
     override fun toSentenceElement(): SentenceElement? {
         return null
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other?.javaClass != javaClass) return false
+
+        other as TextMessage
+
+        if (text != other.text) return false
+        if (quickReplies != other.quickReplies) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return text.hashCode()
+    }
+
+
 }
