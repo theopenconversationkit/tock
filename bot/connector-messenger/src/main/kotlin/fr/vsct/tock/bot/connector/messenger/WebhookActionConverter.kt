@@ -16,14 +16,8 @@
 
 package fr.vsct.tock.bot.connector.messenger
 
-import fr.vsct.tock.bot.connector.messenger.model.webhook.Attachment
-import fr.vsct.tock.bot.connector.messenger.model.webhook.AttachmentType
-import fr.vsct.tock.bot.connector.messenger.model.webhook.LocationPayload
-import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageWebhook
-import fr.vsct.tock.bot.connector.messenger.model.webhook.OptinWebhook
-import fr.vsct.tock.bot.connector.messenger.model.webhook.PostbackWebhook
-import fr.vsct.tock.bot.connector.messenger.model.webhook.UrlPayload
-import fr.vsct.tock.bot.connector.messenger.model.webhook.Webhook
+import com.fasterxml.jackson.annotation.JsonProperty
+import fr.vsct.tock.bot.connector.messenger.model.webhook.*
 import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
@@ -44,17 +38,29 @@ internal object WebhookActionConverter {
         return when (message) {
             is MessageWebhook ->
                 with(message.message) {
-                    val a = attachments
-                    if (a.isNotEmpty()) {
-                        val type = a.first().type
-                        when (type) {
-                            AttachmentType.location -> readLocation(message, a.first(), applicationId)
-                            AttachmentType.image -> readImage(message, a.first(), applicationId)
-                        // ignore for now
-                            else -> readSentence(message, applicationId)
-                        }
+                    if (quickReply != null) {
+                        SendChoice.decodeChoiceId(quickReply!!.payload)
+                                .let { (intentName, parameters) ->
+                                    SendChoice(
+                                            message.playerId(PlayerType.user),
+                                            applicationId,
+                                            message.recipientId(PlayerType.bot),
+                                            intentName,
+                                            parameters)
+                                }
                     } else {
-                        readSentence(message, applicationId)
+                        val a = attachments
+                        if (a.isNotEmpty()) {
+                            val type = a.first().type
+                            when (type) {
+                                AttachmentType.location -> readLocation(message, a.first(), applicationId)
+                                AttachmentType.image -> readImage(message, a.first(), applicationId)
+                            // ignore for now
+                                else -> readSentence(message, applicationId)
+                            }
+                        } else {
+                            readSentence(message, applicationId)
+                        }
                     }
                 }
             is PostbackWebhook ->

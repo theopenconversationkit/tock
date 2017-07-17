@@ -19,13 +19,14 @@ package fr.vsct.tock.bot.connector.messenger.json.webhook
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.Sender
+import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Message
 import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageEcho
 import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageEchoWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Optin
 import fr.vsct.tock.bot.connector.messenger.model.webhook.OptinWebhook
-import fr.vsct.tock.bot.connector.messenger.model.webhook.Postback
+import fr.vsct.tock.bot.connector.messenger.model.webhook.UserActionPayload
 import fr.vsct.tock.bot.connector.messenger.model.webhook.PostbackWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Webhook
 import fr.vsct.tock.shared.jackson.mapper
@@ -64,8 +65,42 @@ class WebhookDeserializationTest {
 
     @Test
     fun testPostbackWebhookDeserialization() {
-        val m = PostbackWebhook(Sender("1"), Recipient("2"), 1L, Postback("a"))
+        val m = PostbackWebhook(Sender("1"), Recipient("2"), 1L, UserActionPayload("a"))
         val s = mapper.writeValueAsString(m)
         assertEquals(m, mapper.readValue<Webhook>(s))
+    }
+
+    @Test
+    fun testQuickReplayWebhookDeserialization() {
+        val input = "{\n" +
+                "  \"sender\": {\n" +
+                "    \"id\": \"USER_ID\"\n" +
+                "  },\n" +
+                "  \"recipient\": {\n" +
+                "    \"id\": \"PAGE_ID\"\n" +
+                "  },\n" +
+                "  \"timestamp\": 1464990849275,\n" +
+                "  \"message\": {\n" +
+                "    \"mid\": \"mid.1464990849238:b9a22a2bcb1de31773\",\n" +
+                "    \"seq\": 69,\n" +
+                "    \"text\": \"Red\",\n" +
+                "    \"quick_reply\": {\n" +
+                "      \"payload\": \"DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED\"\n" +
+                "    }\n" +
+                "  }\n" +
+                "} "
+        val output = mapper.readValue<MessageWebhook>(input)
+        assertEquals(MessageWebhook(
+                Sender("USER_ID"),
+                Recipient("PAGE_ID"),
+                1464990849275,
+                Message(
+                    "mid.1464990849238:b9a22a2bcb1de31773",
+                        69,
+                        "Red",
+                        emptyList(),
+                        UserActionPayload("DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED")
+                )
+        ), output)
     }
 }

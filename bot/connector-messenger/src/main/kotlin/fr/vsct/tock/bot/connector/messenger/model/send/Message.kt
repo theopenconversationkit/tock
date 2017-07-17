@@ -26,7 +26,7 @@ import fr.vsct.tock.bot.connector.messenger.model.MessengerConnectorMessage
  */
 @JsonDeserialize(using = MessageDeserializer::class)
 abstract class Message(
-        @JsonProperty("quick_replies")
+        @get:JsonProperty("quick_replies")
         val quickReplies:List<QuickReply>? = null
 ) : MessengerConnectorMessage() {
 

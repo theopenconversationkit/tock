@@ -134,6 +134,8 @@ class MessageRequestDeserializationTest {
                 ),
                 output
         )
+
+        assertEquals(output, mapper.readValue(mapper.writeValueAsString(output)))
     }
 
 }

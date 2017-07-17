@@ -110,7 +110,7 @@ fun BotBus.withMessengerGeneric(elements: List<Element>, vararg quickReplies: Qu
                             elements
                     )
             ),
-            quickReplies.toList()
+            quickReplies.run{if(isEmpty()) null else toList()}
     )
     )
 
@@ -139,7 +139,7 @@ private fun BotBus.withMessengerAttachmentType(
                     type,
                     UrlPayload.getUrlPayload(applicationId, attachmentUrl, useCache && !userPreferences.test)
             ),
-            quickReplies.toList()
+            quickReplies.run{if(isEmpty()) null else toList()}
     ))
     return this
 }

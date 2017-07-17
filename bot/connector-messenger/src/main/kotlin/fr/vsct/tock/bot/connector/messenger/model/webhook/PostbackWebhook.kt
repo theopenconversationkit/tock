@@ -25,5 +25,5 @@ import fr.vsct.tock.bot.connector.messenger.model.Sender
 data class PostbackWebhook(override val sender: Sender,
                            override val recipient: Recipient,
                            override val timestamp: Long,
-                           val postback: Postback) : Webhook() {
+                           val postback: UserActionPayload) : Webhook() {
 }

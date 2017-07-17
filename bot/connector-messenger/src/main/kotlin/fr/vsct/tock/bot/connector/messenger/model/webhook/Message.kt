@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.webhook
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import fr.vsct.tock.bot.connector.messenger.json.webhook.MessageDeserializer
 
@@ -23,18 +24,18 @@ import fr.vsct.tock.bot.connector.messenger.json.webhook.MessageDeserializer
 open class Message(open val mid: String,
                    open val seq: Long,
                    open var text: String? = null,
-                   open val attachments: List<Attachment> = emptyList()) {
+                   open val attachments: List<Attachment> = emptyList(),
+                   @get:JsonProperty("quick_reply") open val quickReply: UserActionPayload? = null) {
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
-        if (other?.javaClass != javaClass) return false
-
-        other as Message
+        if (other !is Message) return false
 
         if (mid != other.mid) return false
         if (seq != other.seq) return false
         if (text != other.text) return false
         if (attachments != other.attachments) return false
+        if (quickReply != other.quickReply) return false
 
         return true
     }
@@ -44,12 +45,7 @@ open class Message(open val mid: String,
         result = 31 * result + seq.hashCode()
         result = 31 * result + (text?.hashCode() ?: 0)
         result = 31 * result + attachments.hashCode()
+        result = 31 * result + (quickReply?.hashCode() ?: 0)
         return result
     }
-
-    override fun toString(): String {
-        return "Message(mid='$mid', seq=$seq, text=$text, attachments=$attachments)"
-    }
-
-
 }

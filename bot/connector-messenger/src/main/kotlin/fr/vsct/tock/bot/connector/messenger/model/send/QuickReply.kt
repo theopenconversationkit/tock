@@ -30,4 +30,4 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
         JsonSubTypes.Type(value = LocationQuickReply::class, name = "location")
 )
 abstract class QuickReply(
-        @JsonProperty ("content_type") val contentType: QuickReplyContentType) : UserAction
+        @get:JsonProperty ("content_type") val contentType: QuickReplyContentType) : UserAction
