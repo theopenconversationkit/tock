@@ -16,19 +16,6 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import fr.vsct.tock.bot.connector.messenger.json.send.MessageDeserializer
-import fr.vsct.tock.bot.connector.messenger.model.MessengerConnectorMessage
-
-/**
- *
- */
-@JsonDeserialize(using = MessageDeserializer::class)
-abstract class Message(
-        @get:JsonProperty("quick_replies")
-        val quickReplies:List<QuickReply>? = null
-) : MessengerConnectorMessage() {
-
+enum class QuickReplyContentType {
+    text, location
 }
-

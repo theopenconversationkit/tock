@@ -20,15 +20,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.Sender
-import fr.vsct.tock.bot.connector.messenger.model.webhook.Message
-import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageEcho
-import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageEchoWebhook
-import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageWebhook
-import fr.vsct.tock.bot.connector.messenger.model.webhook.Optin
-import fr.vsct.tock.bot.connector.messenger.model.webhook.OptinWebhook
-import fr.vsct.tock.bot.connector.messenger.model.webhook.Postback
-import fr.vsct.tock.bot.connector.messenger.model.webhook.PostbackWebhook
-import fr.vsct.tock.bot.connector.messenger.model.webhook.Webhook
+import fr.vsct.tock.bot.connector.messenger.model.webhook.*
 import fr.vsct.tock.shared.jackson.JacksonDeserializer
 import fr.vsct.tock.shared.jackson.read
 import fr.vsct.tock.shared.jackson.readValue
@@ -50,7 +42,7 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
                 var timestamp: Long? = null,
                 var message: Message? = null,
                 var optin: Optin? = null,
-                var postback: Postback? = null
+                var postback: UserActionPayload? = null
         )
 
         val (sender, recipient, timestamp, message, optin, postback)

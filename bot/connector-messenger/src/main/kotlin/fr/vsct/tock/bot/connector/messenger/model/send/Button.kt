@@ -21,7 +21,7 @@ import fr.vsct.tock.bot.connector.messenger.json.send.ButtonDeserializer
 import fr.vsct.tock.bot.engine.message.Choice
 
 @JsonDeserialize(using = ButtonDeserializer::class)
-abstract class Button(val type: ButtonType) {
+abstract class Button(val type: ButtonType) : UserAction {
 
     abstract fun toChoice() : Choice
 }

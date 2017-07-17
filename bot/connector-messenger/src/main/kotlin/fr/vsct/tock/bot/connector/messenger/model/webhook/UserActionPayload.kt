@@ -16,6 +16,6 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.webhook
 
-data class Postback(val payload: String) {
+data class UserActionPayload(val payload: String) {
 
 }

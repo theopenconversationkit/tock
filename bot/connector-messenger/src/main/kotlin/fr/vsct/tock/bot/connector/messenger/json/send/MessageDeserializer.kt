@@ -18,12 +18,10 @@ package fr.vsct.tock.bot.connector.messenger.json.send
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
-import fr.vsct.tock.bot.connector.messenger.model.send.Attachment
-import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
-import fr.vsct.tock.bot.connector.messenger.model.send.Message
-import fr.vsct.tock.bot.connector.messenger.model.send.TextMessage
+import fr.vsct.tock.bot.connector.messenger.model.send.*
 import fr.vsct.tock.shared.jackson.JacksonDeserializer
 import fr.vsct.tock.shared.jackson.read
+import fr.vsct.tock.shared.jackson.readListValues
 import fr.vsct.tock.shared.jackson.readValue
 import mu.KotlinLogging
 
@@ -39,22 +37,24 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Message? {
         data class MessageFields(
                 var text: String? = null,
-                var attachment: Attachment? = null)
+                var attachment: Attachment? = null,
+                var quickReplies:List<QuickReply>? = null)
 
-        val (text, attachment) = jp.read<MessageFields> { fields, name ->
+        val (text, attachment, quickReplies) = jp.read<MessageFields> { fields, name ->
             with(fields) {
                 when (name) {
                     TextMessage::text.name -> text = jp.valueAsString
                     AttachmentMessage::attachment.name -> attachment = jp.readValue()
+                    "quick_replies" -> quickReplies = jp.readListValues()
                     else -> unknownValue
                 }
             }
         }
 
         return if (text != null) {
-            TextMessage(text)
+            TextMessage(text, quickReplies)
         } else if (attachment != null) {
-            AttachmentMessage(attachment)
+            AttachmentMessage(attachment, quickReplies)
         } else {
             logger.warn { "invalid message" }
             null

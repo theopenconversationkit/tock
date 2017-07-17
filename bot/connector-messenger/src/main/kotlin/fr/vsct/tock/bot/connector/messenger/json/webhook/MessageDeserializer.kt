@@ -21,9 +21,11 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Attachment
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Message
 import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageEcho
+import fr.vsct.tock.bot.connector.messenger.model.webhook.UserActionPayload
 import fr.vsct.tock.shared.jackson.JacksonDeserializer
 import fr.vsct.tock.shared.jackson.read
 import fr.vsct.tock.shared.jackson.readListValues
+import fr.vsct.tock.shared.jackson.readValue
 import mu.KotlinLogging
 
 /**
@@ -43,10 +45,11 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
                                  var attachments: List<Attachment>? = null,
                                  var isEcho: Boolean = false,
                                  var appId: Long? = null,
-                                 var metadata: String? = null)
+                                 var metadata: String? = null,
+                                 var quickReply: UserActionPayload? = null)
 
 
-        val (mid, seq, text, attachments, isEcho, appId, metadata)
+        val (mid, seq, text, attachments, isEcho, appId, metadata, quickReply)
                 = jp.read<MessageFields> { fields, name ->
             with(fields) {
                 when (name) {
@@ -57,12 +60,13 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
                     "is_echo" -> isEcho = jp.booleanValue
                     "app_id" -> appId = jp.longValue
                     MessageEcho::metadata.name -> metadata = jp.valueAsString
+                    "quick_reply" -> quickReply = jp.readValue()
                     else -> unknownValue
                 }
             }
         }
 
-        if (mid == null || seq == null || (text == null && attachments?.isEmpty() ?: true)) {
+        if (mid == null || seq == null || (text == null && attachments?.isEmpty() ?: true && quickReply == null)) {
             logger.warn { "invalid message $mid $seq $text $attachments" }
             return null
         }
@@ -75,7 +79,7 @@ internal class MessageDeserializer : JacksonDeserializer<Message>() {
                 MessageEcho(mid, seq, text, attachments ?: emptyList(), true, appId, metadata)
             }
         } else {
-            Message(mid, seq, text, attachments ?: emptyList())
+            Message(mid, seq, text, attachments ?: emptyList(), quickReply)
         }
     }
 }
