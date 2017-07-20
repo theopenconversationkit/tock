@@ -43,7 +43,8 @@ internal class UserTimelineCol(
         val userState: UserStateWrapper,
         val applicationIds: MutableSet<String> = mutableSetOf(),
         var lastActionText: String? = null,
-        val lastUpdateDate: Instant = Instant.now()) {
+        val lastUpdateDate: Instant = Instant.now(),
+        var lastUserActionDate: Instant = lastUpdateDate) {
 
     constructor(newTimeline: UserTimeline, oldTimeline: UserTimelineCol?) : this(
             newTimeline.playerId.id,
@@ -53,6 +54,7 @@ internal class UserTimelineCol(
     ) {
         //register last action
         newTimeline.dialogs.lastOrNull()?.currentStory()?.actions?.lastOrNull { it.playerId.type == PlayerType.user }?.let {
+            lastUserActionDate = it.date
             lastActionText = when (it) {
                 is SendSentence -> it.text
                 is SendChoice -> "(click) ${it.intentName}"
@@ -85,7 +87,8 @@ internal class UserTimelineCol(
                 userPreferences,
                 userState.toUserState(),
                 lastUpdateDate,
-                lastActionText
+                lastActionText,
+                lastUserActionDate
         )
     }
 
