@@ -279,3 +279,10 @@ fun BotBus.messengerUrl(title: String, url: String): UrlButton {
     return UrlButton(url, title)
 }
 
+fun BotBus.withQuickReplies(text: String, vararg quickReplies: QuickReply): BotBus {
+    with(
+            TextMessage(text,quickReplies.toList())
+    )
+    return this
+}
+
