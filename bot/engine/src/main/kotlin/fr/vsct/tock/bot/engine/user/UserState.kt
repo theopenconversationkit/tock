@@ -54,6 +54,14 @@ data class UserState(
             else removeFlag(botDisabledFlag)
         }
 
+    fun waitingRawInput(duration: Long){
+        setFlag(
+                waitingRawInputFlag,
+                duration,
+                true.toString()
+        )
+    }
+
     var waitingRawInput: Boolean
         get() = getFlag(waitingRawInputFlag)?.toBoolean() ?: false
         set(value) {
