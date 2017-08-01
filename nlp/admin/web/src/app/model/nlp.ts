@@ -209,6 +209,14 @@ export class Classification {
               public otherIntentsProbabilities: Map<string, number>) {
   }
 
+  hasIntentProbability(): boolean {
+    return this.intentProbability && !isNaN(this.intentProbability);
+  }
+
+  hasEntitiesProbability(): boolean {
+    return this.entitiesProbability && !isNaN(this.entitiesProbability);
+  }
+
   clone(): Classification {
     return new Classification(
       this.intentId,
@@ -243,6 +251,10 @@ export class ClassifiedEntity {
               public probability?: number) {
     this.qualifiedRole = qualifiedRole(type, role);
     this.entityColor = entityColor(this.qualifiedRole)
+  }
+
+  hasProbability(): boolean {
+    return this.probability && !isNaN(this.probability);
   }
 
   qualifiedName(user: User): string {
@@ -394,7 +406,7 @@ export class Log {
               public response?: any) {
   }
 
-  textRequest() : string {
+  textRequest(): string {
     return this.request.queries[0];
   }
 

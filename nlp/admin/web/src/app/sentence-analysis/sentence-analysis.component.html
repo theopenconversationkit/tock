@@ -34,11 +34,12 @@
         </md-option>
       </md-select>
       <span *ngIf="displayProbabilities" class="probability">
-        <span *ngIf="displayProbabilities && sentence.classification.intentId"
+        <span *ngIf="displayProbabilities && sentence.classification.intentId && sentence.classification.hasIntentProbability()"
               md-tooltip="intent probability">
            intent : {{sentence.classification.intentProbability | percent:'1.0-2'}}
         </span>
-        <span *ngIf="displayProbabilities && displayEntities && sentence.classification.entities.length !== 0"
+        <span *ngIf="displayProbabilities && displayEntities
+        && sentence.classification.entities.length !== 0 && sentence.classification.hasEntitiesProbability()"
               md-tooltip="entities probability">
            , entities : {{sentence.classification.entitiesProbability | percent:'1.0-2'}}
         </span>
@@ -65,7 +66,7 @@
         <md-list-item *ngFor="let entity of sentence.classification.entities">
           <label [style.background-color]="entity.entityColor">{{entity.qualifiedName(state.user)}}</label>
           &nbsp;&nbsp;&nbsp;{{sentence.entityValue(entity)}}
-          <span *ngIf="displayProbabilities && entity.probability"
+          <span *ngIf="displayProbabilities && entity.hasProbability()"
                 class="probability"
                 md-tooltip="Probability of entity recognition">
                {{entity.probability | percent:'1.0-2'}}

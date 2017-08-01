@@ -49,7 +49,7 @@
       </md-card-title>
       <md-card-content>
         {{d.intent}}
-          <span *ngIf="d.sentence?.classification?.intentId" md-tooltip="intent probability">
+          <span *ngIf="d.sentence?.classification?.intentId && d.sentence.classification.hasIntentProbability()" md-tooltip="intent probability">
             <span class="intentProbability">({{d.sentence.classification.intentProbability | percent:'1.0-2'}})</span>
         </span> {{d.intent ? '-' : ''}}
         {{d.date | amTimeAgo}} <span *ngIf="d.durationInMS !== 0">in {{d.durationInMS}} ms</span>
