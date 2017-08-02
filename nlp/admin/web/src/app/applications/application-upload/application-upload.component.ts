@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, EventEmitter, OnInit, Output} from "@angular/core";
+import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 import {ApplicationImportConfiguration, ApplicationImportReport} from "../../model/application";
 import {StateService} from "../../core/state.service";
@@ -31,6 +31,7 @@ export class ApplicationUploadComponent implements OnInit {
   public configuration: ApplicationImportConfiguration;
   public report: ApplicationImportReport;
 
+  @Input() applicationName:string = null;
   @Output() closed = new EventEmitter();
 
   constructor(private applicationService: ApplicationService, private state: StateService) {
@@ -47,6 +48,7 @@ export class ApplicationUploadComponent implements OnInit {
         }
       };
     this.configuration = new ApplicationImportConfiguration();
+    this.configuration.newApplicationName = this.applicationName;
   }
 
   cancel(): void {

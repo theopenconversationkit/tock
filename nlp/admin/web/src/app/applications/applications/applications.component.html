@@ -20,10 +20,6 @@
     <span *ngIf="state.applications.length !== 0">NLP Applications</span>
   </md-card-title>
   <md-card-content>
-    <span *ngIf="state.applications.length === 0">
-      <tock-application></tock-application>
-    </span>
-    <span *ngIf="state.applications.length !== 0">
       <md-list>
         <md-list-item *ngFor="let app of state.applications">
           <button *ngIf="app._id === state.currentApplication._id" mdTooltip="Selected" disabled md-mini-fab><md-icon>label</md-icon></button>
@@ -41,11 +37,9 @@
           <button (click)="downloadDump(app)" md-icon-button mdTooltip="Download an application dump"><md-icon>file_download</md-icon></button>
         </md-list-item>
       </md-list>
-    </span>
     <p></p>
-
   </md-card-content>
-  <md-card-actions *ngIf="state.applications.length !== 0 && !uploadDump">
+  <md-card-actions *ngIf="!uploadDump">
     <button (click)="showUploadDumpPanel()" md-button>
       Upload Application Dump
     </button>

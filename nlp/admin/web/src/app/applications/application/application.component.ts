@@ -35,6 +35,8 @@ export class ApplicationComponent implements OnInit {
   newLocale: string;
   nlpEngineType:string;
 
+  uploadDump: boolean = false;
+
   constructor(private route: ActivatedRoute,
               private snackBar: MdSnackBar,
               private dialog: MdDialog,

@@ -19,7 +19,7 @@
   <md-card-content>
 
     <div *ngIf="!report">
-      <p>
+      <p *ngIf="!applicationName">
         <md-input-container id="applicationName">
           <input mdInput [(ngModel)]="configuration.newApplicationName" placeholder="Target Application Name">
         </md-input-container>

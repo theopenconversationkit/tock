@@ -19,13 +19,17 @@
     <span *ngIf="applications.length !== 0">NLP Application <span *ngIf="application && application?.name?.length !== 0">"{{application?.name}}"</span></span>
   </md-card-title>
   <md-card-content *ngIf="application">
-    <div>
+    <md-card>
       <md-input-container>
         <input mdInput placeholder="New application name" [(ngModel)]="application.name"
                (keyup.enter)="saveApplication()">
       </md-input-container>
-    </div>
-    <div *ngIf="state.locales">
+    </md-card>
+    <md-card *ngIf="state.locales" class="locales">
+      <md-card-header>
+        <md-card-title>Supported Locales</md-card-title>
+      </md-card-header>
+      <md-card-content>
       <md-chip-list>
         <md-chip *ngFor="let locale of application.supportedLocales"
                  mdTooltip="Delete locale"
@@ -35,26 +39,30 @@
           {{state.localeName(locale)}}
         </md-chip>
       </md-chip-list>
-    </div>
-    <div>
-      <md-select (change)="addLocale($event.value)" [ngModel]="newLocale" placeholder="Add new locale"
-                 class="mat-chip-list-stacked select-locale">
-        <md-option *ngFor="let locale of state.locales"
-                   [value]="locale.first">{{ locale.second }}
-        </md-option>
-      </md-select>
-    </div>
-    <div>
+      </md-card-content>
+      <md-card-actions>
+        <md-select (change)="addLocale($event.value)" [ngModel]="newLocale" placeholder="Add new locale"
+                   class="mat-chip-list-stacked select-locale">
+          <md-option *ngFor="let locale of state.locales"
+                     [value]="locale.first">{{ locale.second }}
+          </md-option>
+        </md-select>
+      </md-card-actions>
+    </md-card>
+    <md-card>
       <label for="engines">NLP engine:</label>
       <md-radio-group id="engines" [(ngModel)]="nlpEngineType">
         <md-radio-button *ngFor="let engine of state.supportedNlpEngines" [value]="engine.name">
           {{engine.name}}
         </md-radio-button>
       </md-radio-group>
-    </div>
+    </md-card>
   </md-card-content>
-  <md-card-actions>
+  <md-card-actions *ngIf="!uploadDump">
     <button *ngIf="applications.length !== 0" (click)="cancel()" md-button>Cancel</button>
+    <button (click)="uploadDump = true" md-button>
+      Upload Application Dump
+    </button>
     <button *ngIf="!newApplication" md-raised-button (click)="deleteApplication()" color="warn">Delete Application
     </button>
     <button *ngIf="newApplication" md-raised-button (click)="saveApplication()" color="primary">Create new Application
@@ -63,4 +71,6 @@
     </button>
   </md-card-actions>
 </md-card>
+
+<tock-application-upload *ngIf="uploadDump" (closed)="uploadDump = false" [applicationName]="application.name"></tock-application-upload>
 
