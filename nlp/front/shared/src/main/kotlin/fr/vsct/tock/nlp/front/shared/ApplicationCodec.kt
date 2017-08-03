@@ -18,8 +18,9 @@ package fr.vsct.tock.nlp.front.shared
 
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationImportConfiguration
-import fr.vsct.tock.nlp.front.shared.codec.ApplicationImportReport
 import fr.vsct.tock.nlp.front.shared.codec.DumpType
+import fr.vsct.tock.nlp.front.shared.codec.ImportReport
+import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 
 /**
  * To import and export applications, intents, entities and sentences.
@@ -32,15 +33,28 @@ interface ApplicationCodec {
     fun export(applicationId: String, dumpType: DumpType): ApplicationDump
 
     /**
-     * Analyse the dump and present options.
+     * Analyse the application dump and present options.
      */
     fun prepareImport(dump: ApplicationDump): ApplicationImportConfiguration
 
     /**
-     * Import the dump.
+     * Import the application dump.
      */
     fun import(
             namespace: String,
             dump: ApplicationDump,
-            configuration: ApplicationImportConfiguration = ApplicationImportConfiguration()): ApplicationImportReport
+            configuration: ApplicationImportConfiguration = ApplicationImportConfiguration()): ImportReport
+
+    /**
+     * Import the sentences dump.
+     */
+    fun importSentences(
+            namespace: String,
+            dump: SentencesDump
+    ): ImportReport
+
+    /**
+     * Export sentences dump.
+     */
+    fun exportSentences(applicationId: String, dumpType: DumpType): SentencesDump
 }

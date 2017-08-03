@@ -16,7 +16,7 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
-import {ApplicationImportConfiguration, ApplicationImportReport} from "../../model/application";
+import {ApplicationImportConfiguration, ImportReport} from "../../model/application";
 import {StateService} from "../../core/state.service";
 import {ApplicationService} from "../../core/applications.service";
 
@@ -29,7 +29,9 @@ export class ApplicationUploadComponent implements OnInit {
 
   public uploader: FileUploader;
   public configuration: ApplicationImportConfiguration;
-  public report: ApplicationImportReport;
+  public report: ImportReport;
+
+  public type:string = "application";
 
   @Input() applicationName:string = null;
   @Output() closed = new EventEmitter();
@@ -42,7 +44,7 @@ export class ApplicationUploadComponent implements OnInit {
     this.uploader = new FileUploader({removeAfterUpload: true});
     this.uploader.onCompleteItem =
       (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
-        this.report = ApplicationImportReport.fromJSON(JSON.parse(response));
+        this.report = ImportReport.fromJSON(JSON.parse(response));
         if (this.report.modified) {
           this.state.resetConfiguration();
         }
@@ -61,7 +63,11 @@ export class ApplicationUploadComponent implements OnInit {
   }
 
   upload() {
-    this.applicationService.prepareApplicationDumpUploader(this.uploader, this.configuration);
+    if(this.type === "application") {
+      this.applicationService.prepareApplicationDumpUploader(this.uploader, this.configuration);
+    } else {
+      this.applicationService.prepareSentencesDumpUploader(this.uploader, this.configuration.newApplicationName);
+    }
     this.uploader.uploadAll();
   }
 }

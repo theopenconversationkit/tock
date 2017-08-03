@@ -24,12 +24,27 @@ import fr.vsct.tock.nlp.front.shared.ApplicationCodec
 import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationImportConfiguration
-import fr.vsct.tock.nlp.front.shared.codec.ApplicationImportReport
 import fr.vsct.tock.nlp.front.shared.codec.DumpType
+import fr.vsct.tock.nlp.front.shared.codec.ImportReport
+import fr.vsct.tock.nlp.front.shared.codec.SentenceDump
+import fr.vsct.tock.nlp.front.shared.codec.SentenceEntityDump
+import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.nlp.front.shared.config.Classification
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
+import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.name
+import fr.vsct.tock.shared.namespace
+import fr.vsct.tock.shared.withoutNamespace
 import mu.KotlinLogging
+import java.time.Instant
 
 /**
  *
@@ -51,31 +66,102 @@ object ApplicationCodecService : ApplicationCodec {
         return ApplicationImportConfiguration(dump.application.name)
     }
 
-    override fun import(namespace: String, dump: ApplicationDump, configuration: ApplicationImportConfiguration): ApplicationImportReport {
+    override fun import(namespace: String, dump: ApplicationDump, configuration: ApplicationImportConfiguration): ImportReport {
         logger.info { "Import dump..." }
         with(configuration) {
-            val report = ApplicationImportReport()
+            val report = ImportReport()
+            try {
 
-            dump.entityTypes.forEach {
-                e ->
-                if (!entityTypeExists(e.name)) {
-                    val newEntity = e.copy(_id = null)
-                    config.save(newEntity)
-                    report.add(newEntity)
-                    logger.debug { "Import entity type $newEntity" }
+                dump.entityTypes.forEach {
+                    e ->
+                    if (!entityTypeExists(e.name)) {
+                        val newEntity = e.copy(_id = null)
+                        config.save(newEntity)
+                        report.add(newEntity)
+                        logger.debug { "Import entity type $newEntity" }
+                    }
                 }
+
+                val appName = if (configuration.newApplicationName.isNullOrBlank()) dump.application.name else configuration.newApplicationName!!.trim()
+                val app = config.getApplicationByNamespaceAndName(namespace, appName)
+                        .let { app ->
+                            if (app == null) {
+                                val appToSave = dump.application.copy(
+                                        namespace = namespace,
+                                        name = appName,
+                                        intents = emptySet(),
+                                        intentStatesMap = emptyMap(),
+                                        _id = null)
+                                report.add(appToSave)
+                                logger.debug { "Import application $appToSave" }
+                                config.save(appToSave)
+                            } else {
+                                app
+                            }
+                        }
+                val appId = app._id!!
+
+                var intentsIdsMap = dump.intents.map { i ->
+                    var intent = config.getIntentByNamespaceAndName(i.namespace, i.name)
+                    if (intent == null) {
+                        intent = i.copy(_id = null, applications = setOf(appId))
+                        config.save(intent)
+                        report.add(intent)
+                        logger.debug { "Import intent $intent" }
+                    } else {
+                        config.save(intent.copy(applications = intent.applications + appId))
+                    }
+                    i._id to intent._id
+                }.toMap()
+
+                //update application intent list
+                config.save(app.copy(
+                        intents = app.intents + intentsIdsMap.values.filterNotNull().toSet(),
+                        intentStatesMap = app.intentStatesMap + dump.application.intentStatesMap.mapKeys { intentsIdsMap[it.key]!! }
+                ))
+
+                //add unknown intent to intent map
+                intentsIdsMap += (Intent.UNKNOWN_INTENT to Intent.UNKNOWN_INTENT)
+
+                dump.sentences.forEach { s ->
+                    if (config.search(SentencesQuery(appId, s.language, search = s.text, onlyExactMatch = true)).total == 0L) {
+                        logger.debug { "Import sentence ${s.text}" }
+                        val sentence = s.copy(
+                                applicationId = appId,
+                                classification = s.classification.copy(
+                                        intentId = intentsIdsMap[s.classification.intentId]!!
+                                ))
+                        report.add(sentence)
+                        config.save(sentence)
+                    }
+                }
+                logger.info { "Dump imported! Result : $report" }
+
+                //trigger build
+                if (report.modified) {
+                    triggerBuild(ModelBuildTrigger(appId, true))
+                }
+
+            } catch(t: Throwable) {
+                logger.error(t)
+                report.success = false
+                report.addError(t.message ?: "exception without message")
             }
 
-            val appName = if (configuration.newApplicationName.isNullOrBlank()) dump.application.name else configuration.newApplicationName!!.trim()
-            val app = config.getApplicationByNamespaceAndName(namespace, appName)
+            return report
+        }
+    }
+
+    override fun importSentences(namespace: String, dump: SentencesDump): ImportReport {
+        logger.info { "Import Sentences dump..." }
+        val report = ImportReport()
+        try {
+            var app = config.getApplicationByNamespaceAndName(namespace, dump.applicationName.withoutNamespace(namespace))
                     .let { app ->
                         if (app == null) {
-                            val appToSave = dump.application.copy(
-                                    namespace = namespace,
-                                    name = appName,
-                                    intents = emptySet(),
-                                    intentStatesMap = emptyMap(),
-                                    _id = null)
+                            val appToSave = ApplicationDefinition(
+                                    dump.applicationName.withoutNamespace(namespace),
+                                    namespace)
                             report.add(appToSave)
                             logger.debug { "Import application $appToSave" }
                             config.save(appToSave)
@@ -83,50 +169,139 @@ object ApplicationCodecService : ApplicationCodec {
                             app
                         }
                     }
+
             val appId = app._id!!
-
-            var intentsIdsMap = dump.intents.map { i ->
-                var intent = config.getIntentByNamespaceAndName(i.namespace, i.name)
-                if (intent == null) {
-                    intent = i.copy(_id = null, applications = setOf(appId))
-                    config.save(intent)
-                    report.add(intent)
-                    logger.debug { "Import intent $intent" }
-                } else {
-                    config.save(intent.copy(applications = intent.applications + appId))
-                }
-                i._id to intent._id
-            }.toMap()
-
-            //update application intent list
-            config.save(app.copy(
-                    intents = app.intents + intentsIdsMap.values.filterNotNull().toSet(),
-                    intentStatesMap = app.intentStatesMap + dump.application.intentStatesMap.mapKeys { intentsIdsMap[it.key]!! }
-            ))
-
-            //add unknown intent to intent map
-            intentsIdsMap += (Intent.UNKNOWN_INTENT to Intent.UNKNOWN_INTENT)
+            val intentsMap =
+                    config.getIntentsByApplicationId(appId)
+                            .groupBy { it.qualifiedName }
+                            .mapValues { it.value.first() }
+                            .toMutableMap()
+            val sentencesMap = config
+                    .getSentences(intentsMap.values.map { it._id!! }.toSet())
+                    .groupBy { it.text }
+                    .toMutableMap()
 
             dump.sentences.forEach { s ->
-                if (config.search(SentencesQuery(appId, s.language, search = s.text, onlyExactMatch = true)).total == 0L) {
-                    logger.debug { "Import sentence ${s.text}" }
-                    val sentence = s.copy(
-                            applicationId = appId,
-                            classification = s.classification.copy(
-                                    intentId = intentsIdsMap[s.classification.intentId]!!
-                            ))
-                    report.add(sentence)
-                    config.save(sentence)
+                val language = s.language ?: dump.language
+                if (language == null) {
+                    report.addError("please specify a language for : ${s.text}")
+                } else {
+                    if (!app.supportedLocales.contains(language)) {
+                        app = config.save(app.copy(supportedLocales = app.supportedLocales + language))
+                    }
+
+                    val intentId =
+                            intentsMap[s.intent]
+                                    .let { intentId ->
+                                        if (intentId == null) {
+                                            val intent = config.getIntentByNamespaceAndName(s.intent.namespace(), s.intent.name())
+                                            if (intent != null) {
+                                                val i = intent.copy(applications = intent.applications + appId)
+                                                config.save(i)
+                                                intentsMap[intent.qualifiedName] = i
+                                                config.getSentences(setOf(i._id!!))
+                                                        .forEach { sentence ->
+                                                            sentencesMap.compute(
+                                                                    sentence.text,
+                                                                    { _, v -> (v ?: emptyList()) + sentence }
+                                                            )
+                                                        }
+                                                i
+                                            } else {
+                                                IntentDefinition(
+                                                        s.intent.name(),
+                                                        s.intent.namespace(),
+                                                        setOf(appId),
+                                                        emptySet()
+                                                ).run {
+                                                    config.save(this)
+                                                    intentsMap[qualifiedName] = this
+                                                    report.add(this)
+                                                    this
+                                                }
+                                            }
+                                        } else {
+                                            intentId
+                                        }
+                                    }
+
+                    s.entities.forEach {
+                        if (!entityTypeExists(it.entity)) {
+                            val newEntity = EntityTypeDefinition(
+                                    it.entity,
+                                    ""
+                            )
+                            config.save(newEntity)
+                            report.add(newEntity)
+                        }
+                    }
+
+                    config.save(
+                            ClassifiedSentence(
+                                    s.text,
+                                    language,
+                                    appId,
+                                    Instant.now(),
+                                    Instant.now(),
+                                    validated,
+                                    Classification(
+                                            intentId._id!!,
+                                            s.entities.map {
+                                                ClassifiedEntity(
+                                                        it.entity,
+                                                        it.role,
+                                                        it.start,
+                                                        it.end
+                                                )
+                                            }
+                                    ),
+                                    1.0,
+                                    1.0)
+                    )
+                    report.sentencesImported++
                 }
             }
-            logger.info { "Dump imported! Result : $report" }
 
             //trigger build
             if (report.modified) {
                 triggerBuild(ModelBuildTrigger(appId, true))
             }
 
-            return report
+            logger.info { "Sentences Dump imported! Result : $report" }
+        } catch(t: Throwable) {
+            logger.error(t)
+            report.success = false
+            report.addError(t.message ?: "exception without message")
         }
+        return report
+    }
+
+    override fun exportSentences(applicationId: String, dumpType: DumpType): SentencesDump {
+        val app = config.getApplicationById(applicationId)!!
+        val intents = config
+                .getIntentsByApplicationId(applicationId)
+                .groupBy { it._id }
+                .mapValues { it.value.first() }
+        val sentences = config
+                .getSentences(intents.values.map { it._id!! }.toSet())
+                .filter { it.applicationId == applicationId }
+        return SentencesDump(
+                app.qualifiedName,
+                sentences = sentences.map { s ->
+                    SentenceDump(
+                            s.text,
+                            intents[s.classification.intentId]!!.qualifiedName,
+                            s.classification.entities.map {
+                                SentenceEntityDump(
+                                        it.type,
+                                        it.role,
+                                        it.start,
+                                        it.end
+                                )
+                            },
+                            s.language
+                    )
+                }
+        )
     }
 }

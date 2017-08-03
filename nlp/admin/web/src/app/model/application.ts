@@ -123,18 +123,18 @@ export class ApplicationImportConfiguration {
   }
 }
 
-export class ApplicationImportReport {
+export class ImportReport {
   constructor(public applicationsImported: string[],
               public entitiesImported: string[],
               public intentsImported: string[],
               public sentencesImported: number,
               public success: boolean,
               public modified: boolean,
-              public errorMessage?: string) {
+              public errorMessages: string[]) {
   }
 
-  static fromJSON(json: any): ApplicationImportReport {
-    const value = Object.create(ApplicationImportReport.prototype);
+  static fromJSON(json: any): ImportReport {
+    const value = Object.create(ImportReport.prototype);
     const result = Object.assign(value, json, {});
     return result;
   }

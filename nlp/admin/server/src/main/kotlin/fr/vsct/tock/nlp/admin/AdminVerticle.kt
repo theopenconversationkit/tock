@@ -26,6 +26,7 @@ import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationImportConfiguration
 import fr.vsct.tock.nlp.front.shared.codec.DumpType
+import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
@@ -75,6 +76,15 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             }
         }
 
+        blockingJsonGet("/sentences/dump/:applicationId") {
+            val id = it.pathParam("applicationId")
+            if (it.organization == front.getApplicationById(id)?.namespace) {
+                front.exportSentences(id, DumpType.full)
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonPost("/application") { context, application: ApplicationWithIntents ->
             if (context.organization == application.namespace
                     && (application._id == null || context.organization == front.getApplicationById(application._id)?.namespace)) {
@@ -97,8 +107,16 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             front.import(context.organization, dump)
         }
 
+        blockingUploadPost("/dump/sentences") { context, dump: SentencesDump ->
+            front.importSentences(context.organization, dump)
+        }
+
         blockingUploadPost("/dump/application/:name") { context, dump: ApplicationDump ->
             front.import(context.organization, dump, ApplicationImportConfiguration(context.pathParam("name")))
+        }
+
+        blockingUploadPost("/dump/sentences/:name") { context, dump: SentencesDump ->
+            front.importSentences(context.organization, dump.copy(applicationName = context.pathParam("name")))
         }
 
         blockingDelete("/application/:id") {

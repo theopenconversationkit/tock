@@ -46,7 +46,15 @@ export class ApplicationsComponent implements OnInit {
   downloadDump(app: Application) {
     this.applicationService.getApplicationDump(app)
       .subscribe(blob => {
-        saveAs(blob, app.name + ".json");
+        saveAs(blob, app.name + "_app.json");
+        this.snackBar.open(`Dump provided`, "Dump", {duration: 1000});
+      })
+  }
+
+  downloadSentencesDump(app: Application) {
+    this.applicationService.getSentencesDump(app)
+      .subscribe(blob => {
+        saveAs(blob, app.name + "_sentences.json");
         this.snackBar.open(`Dump provided`, "Dump", {duration: 1000});
       })
   }

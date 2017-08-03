@@ -103,12 +103,26 @@ export class ApplicationService implements OnDestroy {
     return this.rest.get(`/application/dump/${application._id}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'}) ));
   }
 
+  getSentencesDump(application: Application): Observable<Blob> {
+    return this.rest.get(`/sentences/dump/${application._id}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'}) ));
+  }
+
   prepareApplicationDumpUploader(uploader: FileUploader, configuration: ApplicationImportConfiguration) {
     let url: string;
     if (configuration.newApplicationName) {
       url = `/dump/application/${configuration.newApplicationName.trim()}`;
     } else {
       url = `/dump/application`;
+    }
+    this.rest.setFileUploaderOptions(uploader, url);
+  }
+
+  prepareSentencesDumpUploader(uploader: FileUploader, name?:string) {
+    let url: string;
+    if (name) {
+      url = `/dump/sentences/${name}`;
+    } else {
+      url = `/dump/sentences`;
     }
     this.rest.setFileUploaderOptions(uploader, url);
   }

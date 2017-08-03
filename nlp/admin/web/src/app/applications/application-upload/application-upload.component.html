@@ -15,10 +15,25 @@
   -->
 
 <md-card *ngIf="configuration">
-  <md-card-title>Upload an Application Dump</md-card-title>
+  <md-card-title>Upload a Dump</md-card-title>
   <md-card-content>
-
     <div *ngIf="!report">
+
+      <p>
+        <md-radio-group [(ngModel)]="type">
+          <md-radio-button value="application">
+            Application Dump
+          </md-radio-button>
+          <md-radio-button value="sentences">
+            Sentences Dump
+          </md-radio-button>
+        </md-radio-group>
+      </p>
+      <ul>
+        <li>The "Application Dump" format is an internal format, useful to copy application data across environments.
+        </li>
+        <li>The "Sentences Dump" format is an agnostic format, used to share data with other systems.</li>
+      </ul>
       <p *ngIf="!applicationName">
         <md-input-container id="applicationName">
           <input mdInput [(ngModel)]="configuration.newApplicationName" placeholder="Target Application Name">
@@ -34,41 +49,60 @@
       </p>
     </div>
     <div *ngIf="report">
-      <h4 *ngIf="!report.modified">No new data found, so no data imported.</h4>
-      <div *ngIf="report.modified">
-        <h4>Successful Import Report:</h4>
-        <md-list *ngIf="report.applicationsImported.length !=0">
-          <h3 *ngIf="report.applicationsImported.length !=0" md-subheader>Applications imported</h3>
-          <md-list-item *ngFor="let app of report.applicationsImported">
-            <md-icon md-list-icon>apps</md-icon>
-            <h4 md-line>{{app}}</h4>
-          </md-list-item>
-          <md-divider></md-divider>
-          <h3 *ngIf="report.entitiesImported.length !=0" md-subheader>Entities imported</h3>
-          <md-list-item *ngFor="let entity of report.entitiesImported">
-            <md-icon md-list-icon>invert_colors</md-icon>
-            <h4 md-line>{{entity}}</h4>
-          </md-list-item>
-          <md-divider></md-divider>
-          <h3 *ngIf="report.intentsImported.length !=0" md-subheader>Intents imported</h3>
-          <md-list-item *ngFor="let intent of report.intentsImported">
-            <md-icon md-list-icon>merge_type</md-icon>
-            <h4 md-line>{{intent}}</h4>
-          </md-list-item>
-          <md-divider></md-divider>
-          <h3 *ngIf="report.sentencesImported !=0" md-subheader>Number of sentences imported</h3>
-          <md-list-item *ngIf="report.sentencesImported !=0">
-            <md-icon md-list-icon>speaker_notes</md-icon>
-            <h4 md-line>{{report.sentencesImported}}</h4>
-          </md-list-item>
-        </md-list>
+      <div *ngIf="!report.success">
+        <h4>Error occurs during import</h4>
+        <ul>
+          <li *ngFor="let e of report.errorMessages">
+            {{e}}
+          </li>
+        </ul>
+      </div>
+      <div *ngIf="report.success">
+        <h4 *ngIf="!report.modified">No new data found, so no data imported.</h4>
+        <div *ngIf="report.modified">
+          <h4>Successful Import Report:</h4>
+          <md-list>
+            <h3 *ngIf="report.applicationsImported.length !== 0" md-subheader>Applications imported</h3>
+            <md-list-item *ngFor="let app of report.applicationsImported">
+              <md-icon md-list-icon>apps</md-icon>
+              <h4 md-line>{{app}}</h4>
+            </md-list-item>
+            <md-divider></md-divider>
+            <h3 *ngIf="report.entitiesImported.length !== 0" md-subheader>Entities imported</h3>
+            <md-list-item *ngFor="let entity of report.entitiesImported">
+              <md-icon md-list-icon>invert_colors</md-icon>
+              <h4 md-line>{{entity}}</h4>
+            </md-list-item>
+            <md-divider></md-divider>
+            <h3 *ngIf="report.intentsImported.length !== 0" md-subheader>Intents imported</h3>
+            <md-list-item *ngFor="let intent of report.intentsImported">
+              <md-icon md-list-icon>merge_type</md-icon>
+              <h4 md-line>{{intent}}</h4>
+            </md-list-item>
+            <md-divider></md-divider>
+            <h3 *ngIf="report.sentencesImported !== 0" md-subheader>Number of sentences imported</h3>
+            <md-list-item *ngIf="report.sentencesImported !=0">
+              <md-icon md-list-icon>speaker_notes</md-icon>
+              <h4 md-line>{{report.sentencesImported}}</h4>
+            </md-list-item>
+          </md-list>
+          <div *ngIf="report.errorMessages.length !== 0">
+            <h5>Errors:</h5>
+            <ul>
+              <li *ngFor="let e of report.errorMessages">
+                {{e}}
+              </li>
+            </ul>
+          </div>
+        </div>
       </div>
     </div>
   </md-card-content>
   <button (click)="cancel()" *ngIf="!report" md-button>
     Cancel
   </button>
-  <button (click)="upload()" *ngIf="!report" [disabled]="!uploader.getNotUploadedItems().length" md-raised-button color="primary">
+  <button (click)="upload()" *ngIf="!report" [disabled]="!uploader.getNotUploadedItems().length" md-raised-button
+          color="primary">
     Upload
   </button>
   <button (click)="close()" *ngIf="report" md-raised-button color="primary">

@@ -61,7 +61,7 @@
   <md-card-actions *ngIf="!uploadDump">
     <button *ngIf="applications.length !== 0" (click)="cancel()" md-button>Cancel</button>
     <button (click)="uploadDump = true" md-button>
-      Upload Application Dump
+      Upload Dump
     </button>
     <button *ngIf="!newApplication" md-raised-button (click)="deleteApplication()" color="warn">Delete Application
     </button>

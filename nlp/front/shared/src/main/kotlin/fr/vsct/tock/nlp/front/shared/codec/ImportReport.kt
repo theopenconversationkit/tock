@@ -24,13 +24,13 @@ import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 /**
  *
  */
-data class ApplicationImportReport(
+data class ImportReport(
         val applicationsImported: MutableList<String> = mutableListOf(),
         val entitiesImported: MutableList<String> = mutableListOf(),
         val intentsImported: MutableList<String> = mutableListOf(),
         var sentencesImported: Long = 0L,
-        val success: Boolean = true,
-        val errorMessage: String? = null) {
+        var success: Boolean = true,
+        val errorMessages: MutableList<String> = mutableListOf()) {
 
     val modified: Boolean get() = applicationsImported.isNotEmpty()
             || entitiesImported.isNotEmpty()
@@ -44,4 +44,8 @@ data class ApplicationImportReport(
     fun add(intent: IntentDefinition) = intentsImported.add(intent.qualifiedName)
 
     fun add(sentence: ClassifiedSentence) = sentencesImported++
+
+    fun addError(error: String) {
+        errorMessages.add(error)
+    }
 }
