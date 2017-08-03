@@ -31,13 +31,13 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.1.3</kotlin>
+        <kotlin>1.1.3-2</kotlin>
 
         <slf4j>1.7.25</slf4j>
         <logback>1.2.3</logback>
-        <kotlin-logging>1.4.5</kotlin-logging>
+        <kotlin-logging>1.4.6</kotlin-logging>
 
-        <kodein>4.0.0</kodein>
+        <kodein>4.1.0</kodein>
         <kmongo>3.4.0</kmongo>
         <fongo>2.1.0</fongo>
         <jackson>2.8.9</jackson>

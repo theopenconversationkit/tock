@@ -30,7 +30,7 @@
 
     <properties>
         <commons-codec>1.10</commons-codec>
-        <commons-lang>3.5</commons-lang>
+        <commons-lang>3.6</commons-lang>
     </properties>
 
     <dependencies>
