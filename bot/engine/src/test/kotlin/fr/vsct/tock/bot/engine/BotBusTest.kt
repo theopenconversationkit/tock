@@ -20,7 +20,11 @@ import com.nhaarman.mockito_kotlin.argForWhich
 import com.nhaarman.mockito_kotlin.verify
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionSignificance
+import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.message.Choice
 import org.junit.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 /**
  *
@@ -31,5 +35,17 @@ class BotBusTest : BotEngineTest() {
     fun withSignificance_hasToUpdateActionSignificance() {
         bus.with(ActionSignificance.urgent).end()
         verify(connector).send(argForWhich { this is Action && metadata.significance == ActionSignificance.urgent })
+    }
+
+    @Test
+    fun step_shouldReturnsAStep_whenTheStepIsDefinedInTheStoryDefinition() {
+        userAction = action(Choice("test", StepTest.s1))
+        assertEquals(StepTest.s1, bus.step())
+    }
+
+    @Test
+    fun step_shouldReturnsNull_whenTheStepIsNotDefinedInTheStoryDefinition() {
+        userAction = action(Choice("test", mapOf(SendChoice.STEP_PARAMETER to "not defined")))
+        assertNull(bus.step())
     }
 }

@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.definition.BotDefinitionBase
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.Step
 import fr.vsct.tock.bot.definition.StoryDefinitionBase
 import fr.vsct.tock.bot.definition.StoryHandlerBase
 
@@ -30,7 +31,13 @@ class BotDefinitionTest
         stories = listOf(StoryDefinitionTest())
 )
 
-class StoryDefinitionTest : StoryDefinitionBase("storyDef1", StoryHandlerTest(), setOf(testIntent))
+enum class StepTest : Step {s1, s2, s3 }
+
+class StoryDefinitionTest : StoryDefinitionBase(
+        "storyDef1",
+        StoryHandlerTest(),
+        StepTest.values(),
+        setOf(testIntent))
 
 class StoryHandlerTest : StoryHandlerBase() {
     override fun action(bus: BotBus) {

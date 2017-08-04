@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.engine
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
+import fr.vsct.tock.bot.engine.action.SendSentence
 import org.junit.Test
 
 /**
@@ -28,7 +29,7 @@ class BotTest : BotEngineTest() {
 
     @Test
     fun handleSendSentence_whenNotWaitingRawInput_shouldSendNlpQuery() {
-        bot.handle(defaultSentence, userTimeline, connectorController)
+        bot.handle(userAction, userTimeline, connectorController)
 
         verify(nlp).parseSentence(any(), any(), any(), any(), any())
     }
@@ -37,7 +38,7 @@ class BotTest : BotEngineTest() {
     fun handleSendSentence_whenWaitingRawInput_shouldNotSendNlpQuery() {
         userTimeline.userState.waitingRawInput = true
 
-        bot.handle(defaultSentence, userTimeline, connectorController)
+        bot.handle(userAction, userTimeline, connectorController)
 
         verify(nlp, never()).parseSentence(any(), any(), any(), any(), any())
     }

@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.Step
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionSignificance
 import fr.vsct.tock.bot.engine.action.SendChoice
@@ -58,6 +59,18 @@ interface BotBus {
 
     val entities: Map<String, EntityStateValue>
     val intent: Intent?
+
+    /**
+     * Returns the step of the action, null if the user action is not a [SendChoice]
+     * or if the step is not set.
+     */
+    fun step(): Step? =
+            if (action is SendChoice) {
+                (action as SendChoice).step()
+                        ?.let { s -> story.definition.steps.firstOrNull { it.name == s } }
+            } else {
+                null
+            }
 
     /**
      * Returns the value of the specified choice parameter, null if the user action is not a [SendChoice]

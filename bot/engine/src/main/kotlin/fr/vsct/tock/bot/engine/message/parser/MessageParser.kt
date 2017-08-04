@@ -234,7 +234,7 @@ object MessageParser {
                                 if (index != -1) {
                                     Choice(
                                             it.substring(0, index).trim(),
-                                            mapper.readValue(it.substring(index + 1))
+                                            mapper.readValue<Map<String, String>>(it.substring(index + 1))
                                     )
                                 } else {
                                     Choice(it.trim())

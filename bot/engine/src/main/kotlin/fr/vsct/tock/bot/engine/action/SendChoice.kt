@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.engine.action
 
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.Step
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.message.Choice
@@ -42,21 +43,47 @@ class SendChoice(playerId: PlayerId,
                  metadata: ActionMetadata = ActionMetadata())
     : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
 
+    constructor(playerId: PlayerId,
+                applicationId: String,
+                recipientId: PlayerId,
+                intentName: String,
+                step: Step,
+                parameters: Map<String, String> = emptyMap(),
+                id: String = Dice.newId(),
+                date: Instant = Instant.now(),
+                state: EventState = EventState(),
+                metadata: ActionMetadata = ActionMetadata()) :
+            this(playerId,
+                    applicationId,
+                    recipientId,
+                    intentName,
+                    parameters + (STEP_PARAMETER to step.name),
+                    id,
+                    date,
+                    state,
+                    metadata)
+
     companion object {
 
         const val TITLE_PARAMETER = "_title"
         const val URL_PARAMETER = "_url"
         const val EXIT_INTENT = "_exit"
+        const val STEP_PARAMETER = "_step"
 
-        fun encodeChoiceId(storyDefinition: StoryDefinition, parameters: Map<String, String> = emptyMap()): String {
-            return encodeChoiceId(storyDefinition.starterIntents.first(), parameters)
+        fun encodeChoiceId(storyDefinition: StoryDefinition, step: Step? = null, parameters: Map<String, String> = emptyMap()): String {
+            return encodeChoiceId(storyDefinition.starterIntents.first(), step, parameters)
         }
 
-        fun encodeChoiceId(intent: Intent, parameters: Map<String, String> = emptyMap()): String {
+        fun encodeChoiceId(intent: Intent, step: Step? = null, parameters: Map<String, String> = emptyMap()): String {
             return StringBuilder().apply {
                 append(intent.name)
-                if (parameters.isNotEmpty()) {
-                    parameters.map { e ->
+                val params = if (step == null) {
+                    parameters
+                } else {
+                    parameters + (STEP_PARAMETER to step.name)
+                }
+                if (params.isNotEmpty()) {
+                    params.map { e ->
                         "${encode(e.key, UTF_8.name())}=${encode(e.value, UTF_8.name())}"
                     }.joinTo(this, "&", "?")
                 }
@@ -82,4 +109,6 @@ class SendChoice(playerId: PlayerId,
     override fun toMessage(): Message {
         return Choice(intentName, parameters)
     }
+
+    fun step(): String? = parameters[STEP_PARAMETER]
 }

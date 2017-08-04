@@ -26,9 +26,11 @@ import com.nhaarman.mockito_kotlin.mock
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.Story
+import fr.vsct.tock.bot.engine.message.Message
+import fr.vsct.tock.bot.engine.message.Sentence
 import fr.vsct.tock.bot.engine.nlp.NlpController
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
@@ -52,12 +54,6 @@ abstract class BotEngineTest {
     val userTimelineDAO: UserTimelineDAO = mock()
     val userId = PlayerId("id")
     val botId = PlayerId("bot", PlayerType.bot)
-    val defaultSentence = SendSentence(
-            userId,
-            "applicationId",
-            botId,
-            "ok computer"
-    )
     val story = Story(StoryDefinitionTest(), testIntent)
     val dialog = Dialog(setOf(userId, botId))
 
@@ -76,10 +72,7 @@ abstract class BotEngineTest {
 
     val userTimeline = UserTimeline(userId)
 
-    init {
-        story.actions.add(defaultSentence)
-        dialog.stories.add(story)
-    }
+    var userAction = action(Sentence("ok computer"))
 
     open fun baseModule(): Kodein.Module {
         return Kodein.Module {
@@ -101,8 +94,14 @@ abstract class BotEngineTest {
         })
     }
 
+    fun action(message: Message): Action = message.toAction(userId, "applicationId", botId)
+
     val bot: Bot by lazy { Bot(BotDefinitionTest()) }
     val connectorController: ConnectorController by lazy { ConnectorController(bot, connector, BotVerticle()) }
-    val bus: BotBus by lazy { TockBotBus(connectorController, userTimeline, dialog, story, defaultSentence, BotDefinitionTest()) }
+    val bus: BotBus by lazy {
+        story.actions.add(userAction)
+        dialog.stories.add(story)
+        TockBotBus(connectorController, userTimeline, dialog, story, userAction, BotDefinitionTest())
+    }
 
 }

@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.engine.config
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.Step
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.definition.StoryHandler
 
@@ -33,4 +34,5 @@ internal class ConfigurationBasedStoryDefinition(configuration: StoryDefinitionC
     override val starterIntents: Set<Intent> = setOf(configuration.intent)
     override val intents: Set<Intent> = starterIntents
     override val storyHandler: StoryHandler = ConfigurationBasedStoryHandler(configuration)
+    override val steps: Set<Step> = emptySet()
 }
