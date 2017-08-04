@@ -55,6 +55,6 @@ class SendSentence(
     }
 
     override fun toString(): String {
-        return "$text ${if (messages.isNotEmpty()) messages.toString() else ""}"
+        return if (text != null) text else if (messages.isNotEmpty()) messages.toString() else ""
     }
 }

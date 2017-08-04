@@ -103,6 +103,6 @@ abstract class BotEngineTest {
 
     val bot: Bot by lazy { Bot(BotDefinitionTest()) }
     val connectorController: ConnectorController by lazy { ConnectorController(bot, connector, BotVerticle()) }
-    val bus: BotBus by lazy { BotBus(connectorController, userTimeline, dialog, story, defaultSentence, BotDefinitionTest()) }
+    val bus: BotBus by lazy { TockBotBus(connectorController, userTimeline, dialog, story, defaultSentence, BotDefinitionTest()) }
 
 }

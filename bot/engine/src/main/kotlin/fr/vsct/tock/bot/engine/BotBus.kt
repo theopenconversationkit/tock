@@ -28,46 +28,36 @@ import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.message.MessagesList
+import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
-import fr.vsct.tock.shared.defaultZoneId
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
-import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.UserInterfaceType
-import mu.KotlinLogging
 import java.util.Locale
 
 /**
  *
  */
-class BotBus internal constructor(
-        private val connector: ConnectorController,
-        val userTimeline: UserTimeline,
-        val dialog: Dialog,
-        val story: Story,
-        val action: Action,
-        var i18nProvider: I18nKeyProvider
-) {
+interface BotBus {
 
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
+    val userTimeline: UserTimeline
+    val dialog: Dialog
+    val story: Story
+    val action: Action
+    var i18nProvider: I18nKeyProvider
 
-    private val bot = connector.bot
-    val applicationId = action.applicationId
-    internal val botId = action.recipientId
-    val userId = action.playerId
-    val userPreferences: UserPreferences = userTimeline.userPreferences
-    val userLocale: Locale = userPreferences.locale
-    val userInterfaceType: UserInterfaceType = connector.connectorType.userInterfaceType
+    val applicationId: String
+    val botId: PlayerId
+    val userId: PlayerId
+    val userPreferences: UserPreferences
+    val userLocale: Locale
+    val userInterfaceType: UserInterfaceType
 
-    private val context: BusContext = BusContext()
-
-    val entities: Map<String, EntityStateValue> = dialog.state.entityValues
-    val intent: Intent? = dialog.state.currentIntent
+    val entities: Map<String, EntityStateValue>
+    val intent: Intent?
 
     /**
      * Returns the value of the specified choice parameter, null if the user action is not a [SendChoice]
@@ -75,7 +65,7 @@ class BotBus internal constructor(
      */
     fun paramChoice(paramName: String): String? {
         return if (action is SendChoice) {
-            action.parameters[paramName]
+            (action as SendChoice).parameters[paramName]
         } else {
             null
         }
@@ -147,34 +137,12 @@ class BotBus internal constructor(
     /**
      * Returns the non persistent current context value.
      */
-    fun getBusContextValue(name: String): Any? {
-        return context.contextMap[name]
-    }
+    fun getBusContextValue(name: String): Any?
 
     /**
      * Update the non persistent current context value.
      */
-    fun setBusContextValue(key: String, value: Any?) {
-        if (value == null) {
-            context.contextMap - key
-        } else {
-            context.contextMap.put(key, value)
-        }
-    }
-
-
-    private fun answer(action: Action, delay: Long = 0): BotBus {
-        context.currentDelay += delay
-        action.metadata.significance = context.significance
-        if (action is SendSentence) {
-            action.messages.addAll(context.connectorMessages.values)
-        }
-        action.state.testEvent = userPreferences.test
-
-        story.actions.add(action)
-        connector.send(action, context.currentDelay)
-        return this
-    }
+    fun setBusContextValue(key: String, value: Any?)
 
     fun end(delay: Long = 0): BotBus {
         return endPlainText(null, delay)
@@ -196,10 +164,7 @@ class BotBus internal constructor(
         return end(message.toAction(this), delay)
     }
 
-    fun end(action: Action, delay: Long = 0): BotBus {
-        action.metadata.lastAnswer = true
-        return answer(action, delay)
-    }
+    fun end(action: Action, delay: Long = 0): BotBus
 
     fun end(messages: MessagesList, initialDelay: Long = 0): BotBus {
         messages.messages.forEachIndexed { i, m ->
@@ -226,29 +191,18 @@ class BotBus internal constructor(
         return sendPlainText(null, delay)
     }
 
-    fun sendPlainText(plainText: String?, delay: Long = 0): BotBus {
-        return answer(SendSentence(botId, applicationId, userId, plainText), delay)
-    }
+    fun sendPlainText(plainText: String?, delay: Long = 0): BotBus
 
     fun send(message: Message, delay: Long = 0): BotBus {
         return send(message.toAction(this), delay)
     }
 
-    fun send(action: Action, delay: Long = 0): BotBus {
-        return answer(action, delay)
-    }
+    fun send(action: Action, delay: Long = 0): BotBus
 
 
-    fun with(significance: ActionSignificance): BotBus {
-        context.significance = significance
-        return this
-    }
+    fun with(significance: ActionSignificance): BotBus
 
-    fun with(message: ConnectorMessage): BotBus {
-        context.addMessage(message)
-        return this
-    }
-
+    fun with(message: ConnectorMessage): BotBus
 
     fun translate(text: String?, arg: Any?): String {
         if (text.isNullOrBlank()) {
@@ -266,10 +220,5 @@ class BotBus internal constructor(
         }
     }
 
-    fun translate(key: I18nLabelKey?): String {
-        return if (key == null) ""
-        else Translator.translate(key,
-                userTimeline.userPreferences.locale,
-                connector.connectorType.userInterfaceType)
-    }
+    fun translate(key: I18nLabelKey?): String
 }
