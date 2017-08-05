@@ -94,6 +94,10 @@ export class BotDialogComponent implements OnInit, OnDestroy {
       });
   }
 
+  clear() {
+       this.messages = [];
+  }
+
   ngOnDestroy() {
     this.errorUnsuscriber.unsubscribe();
   }

@@ -22,8 +22,9 @@
     <div>
       <tock-select-bot [(configurationId)]="currentConfigurationId"
                        (configurationIdChange)="changeConfiguration($event)">
+        <button *ngIf="messages.length !== 0" md-icon-button md-tooltip="Clear conversation" (click)="clear()" color="primary"><md-icon>remove_from_queue</md-icon></button>
         <br><br><br>
-        <table *ngIf="messages.length !==0">
+        <table *ngIf="messages.length !== 0">
           <tr *ngFor="let m of messages">
             <td *ngIf="m.bot">
               &nbsp;
