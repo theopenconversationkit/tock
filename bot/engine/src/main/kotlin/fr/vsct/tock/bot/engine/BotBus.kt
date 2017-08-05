@@ -18,7 +18,8 @@ package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.definition.Step
+import fr.vsct.tock.bot.definition.ParameterKey
+import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionSignificance
 import fr.vsct.tock.bot.engine.action.SendChoice
@@ -61,16 +62,13 @@ interface BotBus {
     val intent: Intent?
 
     /**
-     * Returns the step of the action, null if the user action is not a [SendChoice]
-     * or if the step is not set.
+     * The current [StoryStep] of the [Story].
      */
-    fun step(): Step? =
-            if (action is SendChoice) {
-                (action as SendChoice).step()
-                        ?.let { s -> story.definition.steps.firstOrNull { it.name == s } }
-            } else {
-                null
-            }
+    var step: StoryStep?
+        get() = story.currentStep?.let { s -> story.definition.steps.firstOrNull { it.name == s } }
+        set(step: StoryStep?) {
+            story.currentStep = step?.name
+        }
 
     /**
      * Returns the value of the specified choice parameter, null if the user action is not a [SendChoice]
@@ -83,6 +81,13 @@ interface BotBus {
             null
         }
     }
+
+    /**
+     * Returns the value of the specified choice parameter, null if the user action is not a [SendChoice]
+     * or if this parameter is not set.
+     */
+    fun paramChoice(key: ParameterKey): String?
+            = paramChoice(key.name)
 
     /**
      * Returns true if the current action has the specified entity role.
@@ -141,6 +146,12 @@ interface BotBus {
     }
 
     /**
+     * Returns the persistent current context value.
+     */
+    fun <T : Any> contextValue(key: ParameterKey): T?
+            = contextValue(key.name)
+
+    /**
      * Update persistent context value.
      */
     fun changeContextValue(name: String, value: Any?) {
@@ -148,12 +159,20 @@ interface BotBus {
     }
 
     /**
+     * Update persistent context value.
+     */
+    fun changeContextValue(key: ParameterKey, value: Any?)
+            = changeContextValue(key.name, value)
+
+    /**
      * Returns the non persistent current context value.
+     * Bus context values are useful to store a temporary (ie request scoped) state.
      */
     fun getBusContextValue(name: String): Any?
 
     /**
      * Update the non persistent current context value.
+     * Bus context values are useful to store a temporary (ie request scoped) state.
      */
     fun setBusContextValue(key: String, value: Any?)
 

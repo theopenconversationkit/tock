@@ -23,11 +23,11 @@ open class StoryDefinitionBase(override val id: String,
                                override val storyHandler: StoryHandler,
                                override val starterIntents: Set<Intent>,
                                override val intents: Set<Intent> = starterIntents,
-                               override val steps: Set<Step> = emptySet()) : StoryDefinition {
+                               override val steps: Set<StoryStep> = emptySet()) : StoryDefinition {
 
     constructor(id: String,
                 storyHandler: StoryHandler,
-                steps: Array<out Step> = emptyArray(),
+                steps: Array<out StoryStep> = emptyArray(),
                 starterIntents: Set<Intent>,
                 intents: Set<Intent> = starterIntents
                 )

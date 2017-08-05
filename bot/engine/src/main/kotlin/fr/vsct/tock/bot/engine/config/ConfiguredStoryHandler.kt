@@ -24,7 +24,7 @@ import fr.vsct.tock.bot.engine.BotBus
 /**
  *
  */
-internal class ConfigurationBasedStoryHandler(val configuration: StoryDefinitionConfiguration)
+internal class ConfiguredStoryHandler(val configuration: StoryDefinitionConfiguration)
     : StoryHandler {
 
     override fun handle(bus: BotBus) {

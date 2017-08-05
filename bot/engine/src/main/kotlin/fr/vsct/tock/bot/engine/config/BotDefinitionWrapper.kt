@@ -31,7 +31,7 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     @Volatile
     private var allStories: List<StoryDefinition> = botDefinition.stories
 
-    fun updateStories(configuredStories: List<ConfigurationBasedStoryDefinition>) {
+    fun updateStories(configuredStories: List<ConfiguredStoryDefinition>) {
         //configured stories can override built-in
         allStories =
                 (botDefinition.stories.groupBy { it.id }

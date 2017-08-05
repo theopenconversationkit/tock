@@ -31,6 +31,12 @@ import kotlin.test.assertNull
  */
 class BotBusTest : BotEngineTest() {
 
+    val bus: BotBus by lazy {
+        story.actions.add(userAction)
+        dialog.stories.add(story)
+        TockBotBus(connectorController, userTimeline, dialog, story, userAction, BotDefinitionTest())
+    }
+
     @Test
     fun withSignificance_hasToUpdateActionSignificance() {
         bus.with(ActionSignificance.urgent).end()
@@ -40,12 +46,14 @@ class BotBusTest : BotEngineTest() {
     @Test
     fun step_shouldReturnsAStep_whenTheStepIsDefinedInTheStoryDefinition() {
         userAction = action(Choice("test", StepTest.s1))
-        assertEquals(StepTest.s1, bus.step())
+        bot.handle(userAction, userTimeline, connectorController)
+        assertEquals(StepTest.s1, registeredBus!!.step)
     }
 
     @Test
     fun step_shouldReturnsNull_whenTheStepIsNotDefinedInTheStoryDefinition() {
         userAction = action(Choice("test", mapOf(SendChoice.STEP_PARAMETER to "not defined")))
-        assertNull(bus.step())
+        bot.handle(userAction, userTimeline, connectorController)
+        assertNull(registeredBus!!.step)
     }
 }

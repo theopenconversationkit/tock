@@ -54,8 +54,9 @@ abstract class BotEngineTest {
     val userTimelineDAO: UserTimelineDAO = mock()
     val userId = PlayerId("id")
     val botId = PlayerId("bot", PlayerType.bot)
-    val story = Story(StoryDefinitionTest(), testIntent)
+    val botDefinition = BotDefinitionTest()
     val dialog = Dialog(setOf(userId, botId))
+    val story = Story(botDefinition.stories.first(), testIntent)
 
     val botConfDAO: BotApplicationConfigurationDAO = mock()
     val i18nDAO: I18nDAO = mock()
@@ -96,12 +97,13 @@ abstract class BotEngineTest {
 
     fun action(message: Message): Action = message.toAction(userId, "applicationId", botId)
 
-    val bot: Bot by lazy { Bot(BotDefinitionTest()) }
-    val connectorController: ConnectorController by lazy { ConnectorController(bot, connector, BotVerticle()) }
-    val bus: BotBus by lazy {
+    val registeredBus: BotBus? get() = (story.definition as StoryDefinitionTest).registeredBus
+
+    val bot: Bot by lazy {
         story.actions.add(userAction)
         dialog.stories.add(story)
-        TockBotBus(connectorController, userTimeline, dialog, story, userAction, BotDefinitionTest())
+        Bot(botDefinition)
     }
+    val connectorController: ConnectorController by lazy { ConnectorController(bot, connector, BotVerticle()) }
 
 }

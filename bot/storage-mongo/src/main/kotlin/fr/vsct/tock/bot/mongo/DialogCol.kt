@@ -26,16 +26,16 @@ import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.ActionMetadata
 import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue
-import fr.vsct.tock.bot.engine.action.ActionMetadata
 import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
+import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.dialog.State
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -51,7 +51,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                               var _id: String,
                               val state: StateMongoWrapper,
                               val stories: List<StoryMongoWrapper>,
-                              val applicationIds:Set<String> = emptySet(),
+                              val applicationIds: Set<String> = emptySet(),
                               val lastUpdateDate: Instant = now()) {
 
     companion object {
@@ -66,7 +66,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
         }
     }
 
-    constructor(dialog: Dialog, userTimeline:UserTimelineCol) : this(
+    constructor(dialog: Dialog, userTimeline: UserTimelineCol) : this(
             dialog.playerIds,
             dialog.id,
             StateMongoWrapper(dialog.state),
@@ -153,17 +153,20 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
 
     class StoryMongoWrapper(val storyDefinitionId: String,
                             var currentIntent: Intent?,
+                            val currentStep: String?,
                             val actions: List<ActionMongoWrapper>) {
 
         constructor(story: Story) : this(
                 story.definition.id,
                 story.currentIntent,
+                story.currentStep,
                 story.actions.map { getActionWrapper(it) })
 
         fun toStory(storyDefinitionProvider: (String) -> StoryDefinition): Story {
             return Story(
                     storyDefinitionProvider.invoke(storyDefinitionId),
                     currentIntent,
+                    currentStep,
                     actions.map { it.toAction() }.toMutableList()
             )
         }

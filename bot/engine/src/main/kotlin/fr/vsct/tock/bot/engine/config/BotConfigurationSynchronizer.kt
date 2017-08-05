@@ -55,7 +55,7 @@ internal object BotConfigurationSynchronizer {
     private fun refresh(bot: Bot) {
         bot.botDefinition.updateStories(
                 storyDAO.getStoryDefinitions(bot.botDefinition.botId)
-                        .map { ConfigurationBasedStoryDefinition(it) }
+                        .map { ConfiguredStoryDefinition(it) }
         )
     }
 }

@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.engine.action
 
 import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.definition.Step
+import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.message.Choice
@@ -47,7 +47,7 @@ class SendChoice(playerId: PlayerId,
                 applicationId: String,
                 recipientId: PlayerId,
                 intentName: String,
-                step: Step,
+                step: StoryStep,
                 parameters: Map<String, String> = emptyMap(),
                 id: String = Dice.newId(),
                 date: Instant = Instant.now(),
@@ -70,11 +70,12 @@ class SendChoice(playerId: PlayerId,
         const val EXIT_INTENT = "_exit"
         const val STEP_PARAMETER = "_step"
 
-        fun encodeChoiceId(storyDefinition: StoryDefinition, step: Step? = null, parameters: Map<String, String> = emptyMap()): String {
-            return encodeChoiceId(storyDefinition.starterIntents.first(), step, parameters)
+
+        fun encodeChoiceId(storyDefinition: StoryDefinition, step: StoryStep? = null, parameters: Map<String, String> = emptyMap()): String {
+            return encodeChoiceId(storyDefinition.mainIntent(), step, parameters)
         }
 
-        fun encodeChoiceId(intent: Intent, step: Step? = null, parameters: Map<String, String> = emptyMap()): String {
+        fun encodeChoiceId(intent: Intent, step: StoryStep? = null, parameters: Map<String, String> = emptyMap()): String {
             return StringBuilder().apply {
                 append(intent.name)
                 val params = if (step == null) {

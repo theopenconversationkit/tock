@@ -31,6 +31,7 @@ import mu.KotlinLogging
 data class Story(
         val definition: StoryDefinition,
         var currentIntent: Intent?,
+        var currentStep: String? = null,
         val actions: MutableList<Action> = mutableListOf()) {
 
     companion object {

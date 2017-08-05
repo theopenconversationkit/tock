@@ -17,8 +17,9 @@
 package fr.vsct.tock.bot.definition
 
 /**
- * A step is a part of a [StoryDefinition]. Used to manage workflow in a [StoryHandler].
+ * A step (the implementation is usually an enum) is a part of a [StoryDefinition].
+ * Used to manage workflow in a [StoryHandler].
  */
-interface Step {
+interface StoryStep {
     val name:String
 }

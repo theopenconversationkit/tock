@@ -50,10 +50,12 @@ interface StoryDefinition {
     /**
      * The steps of the story.
      */
-    val steps: Set<Step>
+    val steps: Set<StoryStep>
 
     fun isStarterIntent(intent: Intent) = starterIntents.contains(intent)
 
     fun supportIntent(intent: Intent) = intents.contains(intent)
+
+    fun mainIntent() : Intent = starterIntents.first()
 
 }

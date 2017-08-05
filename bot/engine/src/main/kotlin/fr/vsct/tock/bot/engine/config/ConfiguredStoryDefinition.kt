@@ -19,20 +19,20 @@ package fr.vsct.tock.bot.engine.config
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.definition.Step
+import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.definition.StoryHandler
 
 /**
  *
  */
-internal class ConfigurationBasedStoryDefinition(configuration: StoryDefinitionConfiguration)
+internal class ConfiguredStoryDefinition(configuration: StoryDefinitionConfiguration)
     : StoryDefinition {
 
     val answerType: AnswerConfigurationType = configuration.currentType
     override val id: String = configuration._id!!
     override val starterIntents: Set<Intent> = setOf(configuration.intent)
     override val intents: Set<Intent> = starterIntents
-    override val storyHandler: StoryHandler = ConfigurationBasedStoryHandler(configuration)
-    override val steps: Set<Step> = emptySet()
+    override val storyHandler: StoryHandler = ConfiguredStoryHandler(configuration)
+    override val steps: Set<StoryStep> = emptySet()
 }

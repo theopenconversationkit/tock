@@ -92,6 +92,14 @@ class Bot(botDefinitionBase: BotDefinition) {
                 } else {
                     previousStory
                 }
+
+        //set current step if necessary
+        if (action is SendChoice) {
+            action.step()?.apply {
+                story.currentStep = this
+            }
+        }
+
         story.actions.add(action)
         return story
     }

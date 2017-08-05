@@ -37,8 +37,9 @@ import fr.vsct.tock.bot.connector.messenger.model.send.UserAction
 import fr.vsct.tock.bot.connector.messenger.model.send.UserAction.Companion.extractButtons
 import fr.vsct.tock.bot.connector.messenger.model.send.UserAction.Companion.extractQuickReplies
 import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.definition.Step
+import fr.vsct.tock.bot.definition.Parameters
 import fr.vsct.tock.bot.definition.StoryDefinition
+import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.translator.I18nLabelKey
@@ -173,6 +174,13 @@ fun BotBus.withMessengerVideo(videoUrl: String, vararg quickReplies: QuickReply)
     return withMessengerAttachmentType(videoUrl, AttachmentType.video, quickReplies = *quickReplies)
 }
 
+fun BotBus.withMessengerQuickReplies(text: String, vararg quickReplies: QuickReply): BotBus {
+    with(
+            TextMessage(text, quickReplies.toList())
+    )
+    return this
+}
+
 fun BotBus.messengerGenericElement(
         title: I18nLabelKey,
         subtitle: I18nLabelKey? = null,
@@ -241,23 +249,32 @@ fun BotBus.messengerQuickReply(
         title: String,
         targetStory: StoryDefinition,
         imageUrl: String? = null,
-        step: Step? = null,
-        vararg parameters: Pair<String, String>): QuickReply {
-    if (title.length > 20) {
-        logger.warn { "title $title has more than 20 chars" }
-    }
-    val payload = SendChoice.encodeChoiceId(targetStory, step, parameters.toMap())
-    if (payload.length > 1000) {
-        logger.warn { "payload $payload has more than 1000 chars" }
-    }
-    return TextQuickReply(title, payload, imageUrl)
-}
+        step: StoryStep? = null,
+        parameters: Parameters): QuickReply
+        = messengerQuickReply(title, targetStory, imageUrl, step, *parameters.toArray())
+
+
+fun BotBus.messengerQuickReply(
+        title: String,
+        targetStory: StoryDefinition,
+        imageUrl: String? = null,
+        step: StoryStep? = null,
+        vararg parameters: Pair<String, String>): QuickReply
+        = messengerQuickReply(title, targetStory.mainIntent(), imageUrl, step, *parameters)
 
 fun BotBus.messengerQuickReply(
         title: String,
         targetIntent: Intent,
         imageUrl: String? = null,
-        step: Step? = null,
+        step: StoryStep? = null,
+        parameters: Parameters): QuickReply
+        = messengerQuickReply(title, targetIntent, imageUrl, step, *parameters.toArray())
+
+fun BotBus.messengerQuickReply(
+        title: String,
+        targetIntent: Intent,
+        imageUrl: String? = null,
+        step: StoryStep? = null,
         vararg parameters: Pair<String, String>): QuickReply {
     if (title.length > 20) {
         logger.warn { "title $title has more than 20 chars" }
@@ -272,39 +289,43 @@ fun BotBus.messengerQuickReply(
 fun BotBus.messengerPostback(
         title: String,
         targetStory: StoryDefinition,
-        vararg parameters: Pair<String, String>)
-        : PostbackButton {
-    return messengerPostback(title, targetStory, null, *parameters)
-}
+        vararg parameters: Pair<String, String>): PostbackButton
+        = messengerPostback(title, targetStory, null, *parameters)
 
 fun BotBus.messengerPostback(
         title: String,
         targetStory: StoryDefinition,
-        step: Step? = null,
+        step: StoryStep? = null,
+        parameters: Parameters): PostbackButton
+        = messengerPostback(title, targetStory, step, *parameters.toArray())
+
+fun BotBus.messengerPostback(
+        title: String,
+        targetStory: StoryDefinition,
+        step: StoryStep? = null,
         vararg parameters: Pair<String, String>)
-        : PostbackButton {
-    if (title.length > 20) {
-        logger.warn { "title $title has more than 20 chars" }
-    }
-    val payload = SendChoice.encodeChoiceId(targetStory, step, parameters.toMap())
-    if (payload.length > 1000) {
-        logger.warn { "payload $payload has more than 1000 chars" }
-    }
-    return PostbackButton(payload, title)
-}
+        : PostbackButton
+    = messengerPostback(title, targetStory.mainIntent(), step, *parameters)
 
 fun BotBus.messengerPostback(
         title: String,
         targetIntent: Intent,
         vararg parameters: Pair<String, String>)
-        : PostbackButton {
-    return messengerPostback(title, targetIntent, null, *parameters)
-}
+        : PostbackButton
+    = messengerPostback(title, targetIntent, null, *parameters)
 
 fun BotBus.messengerPostback(
         title: String,
         targetIntent: Intent,
-        step: Step? = null,
+        step: StoryStep? = null,
+        parameters: Parameters)
+        : PostbackButton
+        = messengerPostback(title, targetIntent, step, *parameters.toArray())
+
+fun BotBus.messengerPostback(
+        title: String,
+        targetIntent: Intent,
+        step: StoryStep? = null,
         vararg parameters: Pair<String, String>)
         : PostbackButton {
     if (title.length > 20) {
@@ -323,11 +344,3 @@ fun BotBus.messengerUrl(title: String, url: String): UrlButton {
     }
     return UrlButton(url, title)
 }
-
-fun BotBus.withQuickReplies(text: String, vararg quickReplies: QuickReply): BotBus {
-    with(
-            TextMessage(text, quickReplies.toList())
-    )
-    return this
-}
-
