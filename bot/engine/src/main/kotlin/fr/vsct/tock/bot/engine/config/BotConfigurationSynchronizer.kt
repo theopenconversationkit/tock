@@ -40,7 +40,7 @@ internal object BotConfigurationSynchronizer {
 
     init {
         executor.setPeriodic(Duration.ofMillis(refreshDelay)) {
-            logger.debug { "refresh bots configuration" }
+            logger.trace { "refresh bots configuration" }
             botsToMonitor.forEach {
                 refresh(it)
             }

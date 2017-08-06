@@ -22,6 +22,9 @@ package fr.vsct.tock.bot.definition
 open class StoryDefinitionBase(override val id: String,
                                override val storyHandler: StoryHandler,
                                override val starterIntents: Set<Intent>,
+                               /**
+                                * starter intents + other intents supported by the story.
+                                */
                                override val intents: Set<Intent> = starterIntents,
                                override val steps: Set<StoryStep> = emptySet()) : StoryDefinition {
 
@@ -30,7 +33,7 @@ open class StoryDefinitionBase(override val id: String,
                 steps: Array<out StoryStep> = emptyArray(),
                 starterIntents: Set<Intent>,
                 intents: Set<Intent> = starterIntents
-                )
+    )
             : this(id, storyHandler, starterIntents, intents, steps.toSet())
 
 }

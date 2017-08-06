@@ -17,8 +17,9 @@
 package fr.vsct.tock.bot.engine.action
 
 import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.definition.StoryDefinition
+import fr.vsct.tock.bot.definition.StoryStep
+import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.message.Choice
 import fr.vsct.tock.bot.engine.message.Message
@@ -69,20 +70,40 @@ class SendChoice(playerId: PlayerId,
         const val URL_PARAMETER = "_url"
         const val EXIT_INTENT = "_exit"
         const val STEP_PARAMETER = "_step"
+        const val PREVIOUS_INTENT_PARAMETER = "_previous_intent"
 
-
-        fun encodeChoiceId(storyDefinition: StoryDefinition, step: StoryStep? = null, parameters: Map<String, String> = emptyMap()): String {
-            return encodeChoiceId(storyDefinition.mainIntent(), step, parameters)
+        fun encodeChoiceId(
+                bus: BotBus,
+                storyDefinition: StoryDefinition,
+                step: StoryStep? = null,
+                parameters: Map<String, String> = emptyMap()): String {
+            return encodeChoiceId(bus, storyDefinition.mainIntent(), step, parameters)
         }
 
-        fun encodeChoiceId(intent: Intent, step: StoryStep? = null, parameters: Map<String, String> = emptyMap()): String {
+        fun encodeChoiceId(
+                bus: BotBus,
+                intent: Intent,
+                step: StoryStep? = null,
+                parameters: Map<String, String> = emptyMap()): String {
+            return encodeChoiceId(intent, step, parameters, bus.step, bus.dialog.state.currentIntent)
+        }
+
+        fun encodeChoiceId(
+                intent: Intent,
+                step: StoryStep? = null,
+                parameters: Map<String, String> = emptyMap(),
+                busStep: StoryStep? = null,
+                currentIntent: Intent? = null): String {
+            val currentStep = if (step == null) busStep else step
             return StringBuilder().apply {
                 append(intent.name)
-                val params = if (step == null) {
-                    parameters
-                } else {
-                    parameters + (STEP_PARAMETER to step.name)
-                }
+                val params = parameters +
+                        listOfNotNull(
+                                if (currentStep != null) STEP_PARAMETER to currentStep.name else null,
+                                if (currentIntent != intent)
+                                    PREVIOUS_INTENT_PARAMETER to currentIntent?.name else null
+                        )
+
                 if (params.isNotEmpty()) {
                     params.map { e ->
                         "${encode(e.key, UTF_8.name())}=${encode(e.value, UTF_8.name())}"
@@ -112,4 +133,12 @@ class SendChoice(playerId: PlayerId,
     }
 
     fun step(): String? = parameters[STEP_PARAMETER]
+
+    internal fun previousIntent(): String? = parameters[PREVIOUS_INTENT_PARAMETER]
+
+    override fun toString(): String {
+        return "SendChoice(intentName='$intentName', parameters=$parameters)"
+    }
+
+
 }

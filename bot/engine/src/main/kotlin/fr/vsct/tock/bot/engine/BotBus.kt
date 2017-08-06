@@ -43,15 +43,28 @@ import fr.vsct.tock.translator.UserInterfaceType
 import java.util.Locale
 
 /**
- *
+ * The main interface to build a response to a user query.
  */
 interface BotBus {
 
+    /**
+     * The user timeline. Get history and data abgout the user.
+     */
     val userTimeline: UserTimeline
+    /**
+     * The current dialog history for this user.
+     */
     val dialog: Dialog
+    /**
+     * The current story.
+     */
     val story: Story
+    /**
+     * The last user action.
+     */
     val action: Action
-    var i18nProvider: I18nKeyProvider
+
+    //shortcuts
 
     val applicationId: String
     val botId: PlayerId
@@ -60,8 +73,19 @@ interface BotBus {
     val userLocale: Locale
     val userInterfaceType: UserInterfaceType
 
+    /**
+     * The entities in the dialog state.
+     */
     val entities: Map<String, EntityStateValue>
+    /**
+     * The current intent.
+     */
     val intent: Intent?
+
+    /**
+     * To manage i18n.
+     */
+    var i18nProvider: I18nKeyProvider
 
     /**
      * Qualify the next user action.

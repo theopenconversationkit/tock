@@ -32,8 +32,7 @@ import kotlin.test.assertNull
 class BotBusTest : BotEngineTest() {
 
     val bus: BotBus by lazy {
-        story.actions.add(userAction)
-        dialog.stories.add(story)
+        fillTimeline()
         TockBotBus(connectorController, userTimeline, dialog, story, userAction, BotDefinitionTest())
     }
 

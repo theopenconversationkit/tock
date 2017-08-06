@@ -19,8 +19,10 @@ package fr.vsct.tock.bot.engine
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
-import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.message.Choice
 import org.junit.Test
+import kotlin.test.assertEquals
 
 /**
  *
@@ -41,5 +43,23 @@ class BotTest : BotEngineTest() {
         bot.handle(userAction, userTimeline, connectorController)
 
         verify(nlp, never()).parseSentence(any(), any(), any(), any(), any())
+    }
+
+    @Test
+    fun handleSendChoice_shouldNotReturnUnknownStory_whenIntentIsSecondaryIntentAndNoStoryExists() {
+        val choice = action(
+                Choice(
+                        secondaryIntent.name,
+                        mapOf(
+                                SendChoice.PREVIOUS_INTENT_PARAMETER to testIntent.name
+                        )
+                )
+        )
+        dialog.stories.clear()
+        bot.handle(choice, userTimeline, connectorController)
+
+        assertEquals(story.definition.id, dialog.currentStory()!!.definition.id)
+        assertEquals(secondaryIntent, dialog.currentStory()!!.currentIntent)
+        assertEquals(secondaryIntent, dialog.state.currentIntent)
     }
 }

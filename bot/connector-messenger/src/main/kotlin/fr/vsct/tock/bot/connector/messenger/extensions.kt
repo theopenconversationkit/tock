@@ -279,7 +279,7 @@ fun BotBus.messengerQuickReply(
     if (title.length > 20) {
         logger.warn { "title $title has more than 20 chars" }
     }
-    val payload = SendChoice.encodeChoiceId(targetIntent, step, parameters.toMap())
+    val payload = SendChoice.encodeChoiceId(this, targetIntent, step, parameters.toMap())
     if (payload.length > 1000) {
         logger.warn { "payload $payload has more than 1000 chars" }
     }
@@ -305,14 +305,14 @@ fun BotBus.messengerPostback(
         step: StoryStep? = null,
         vararg parameters: Pair<String, String>)
         : PostbackButton
-    = messengerPostback(title, targetStory.mainIntent(), step, *parameters)
+        = messengerPostback(title, targetStory.mainIntent(), step, *parameters)
 
 fun BotBus.messengerPostback(
         title: String,
         targetIntent: Intent,
         vararg parameters: Pair<String, String>)
         : PostbackButton
-    = messengerPostback(title, targetIntent, null, *parameters)
+        = messengerPostback(title, targetIntent, null, *parameters)
 
 fun BotBus.messengerPostback(
         title: String,
@@ -331,7 +331,7 @@ fun BotBus.messengerPostback(
     if (title.length > 20) {
         logger.warn { "title $title has more than 20 chars" }
     }
-    val payload = SendChoice.encodeChoiceId(targetIntent, step, parameters.toMap())
+    val payload = SendChoice.encodeChoiceId(this, targetIntent, step, parameters.toMap())
     if (payload.length > 1000) {
         logger.warn { "payload $payload has more than 1000 chars" }
     }

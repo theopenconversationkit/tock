@@ -90,7 +90,11 @@ internal class Nlp : NlpController {
                                         nlpResult.intentProbability,
                                         nlpResult.entitiesProbability,
                                         nlpResult.otherIntentsProbabilities
-                                                .map { NlpIntentStat(Intent(it.key.name()), it.value) }
+                                                .map {
+                                                    NlpIntentStat(
+                                                            botDefinition.findIntent(it.key.name()),
+                                                            it.value
+                                                    ) }
                                 )
                                 dialog.apply {
                                     state.currentIntent = sentence.state.currentIntent
@@ -260,12 +264,7 @@ internal class Nlp : NlpController {
                                dialog: Dialog,
                                connector: ConnectorController,
                                botDefinition: BotDefinition) {
-        try {
-            SentenceParser(nlpClient, sentence, userTimeline, dialog, connector, botDefinition).parse()
-        } finally {
-            //reinitialize lastActionState
-            dialog.state.nextActionState = null
-        }
+        SentenceParser(nlpClient, sentence, userTimeline, dialog, connector, botDefinition).parse()
     }
 
     override fun importNlpDump(stream: InputStream): Boolean = nlpClient.importNlpDump(stream).body() ?: false

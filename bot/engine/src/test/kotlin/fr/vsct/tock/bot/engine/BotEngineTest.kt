@@ -124,10 +124,20 @@ abstract class BotEngineTest {
     val registeredBus: BotBus? get() = (story.definition as StoryDefinitionTest).registeredBus
 
     val bot: Bot by lazy {
-        story.actions.add(userAction)
-        dialog.stories.add(story)
+        fillTimeline()
         Bot(botDefinition)
     }
     val connectorController: ConnectorController by lazy { ConnectorController(bot, connector, BotVerticle()) }
+
+    private var timelineFilled = false
+
+    fun fillTimeline() {
+        if(!timelineFilled) {
+            timelineFilled = true
+            story.actions.add(userAction)
+            dialog.stories.add(story)
+            userTimeline.dialogs.add(dialog)
+        }
+    }
 
 }

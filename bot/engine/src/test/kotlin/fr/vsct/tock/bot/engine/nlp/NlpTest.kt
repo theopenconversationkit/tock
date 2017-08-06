@@ -24,7 +24,6 @@ import fr.vsct.tock.bot.engine.BotEngineTest
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
 import org.junit.Test
-import kotlin.test.assertNull
 
 /**
  *
@@ -42,7 +41,6 @@ class NlpTest : BotEngineTest() {
     fun parseSentence_shouldCallNlpClientParseIntentEntities_whenExpectedIntentIsNotNullInDialogState() {
         dialog.state.nextActionState = NextUserActionState(Intent("test2"))
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
-        assertNull(dialog.state.nextActionState)
         verify(nlpClient).parseIntentEntities(any())
         verify(nlpClient, never()).parse(any())
     }

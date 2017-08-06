@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.engine
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.definition.BotDefinition
+import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.action.SendChoice
@@ -81,7 +82,8 @@ class Bot(botDefinitionBase: BotDefinition) {
 
     private fun getStory(action: Action, dialog: Dialog): Story {
         val newIntent = dialog.state.currentIntent
-        val previousStory = dialog.stories.lastOrNull()
+        val previousStory = dialog.currentStory()
+
         val story =
                 if (previousStory == null
                         || (newIntent != null && !previousStory.definition.supportIntent(newIntent))) {
@@ -90,6 +92,7 @@ class Bot(botDefinitionBase: BotDefinition) {
                     dialog.stories.add(newStory)
                     newStory
                 } else {
+                    previousStory.currentIntent = newIntent
                     previousStory
                 }
 
@@ -108,22 +111,27 @@ class Bot(botDefinitionBase: BotDefinition) {
                             userTimeline: UserTimeline,
                             dialog: Dialog,
                             connector: ConnectorController) {
-        when (action) {
-            is SendChoice -> {
-                parseChoice(action, dialog)
-            }
-            is SendLocation -> {
-                parseLocation(action, dialog)
-            }
-            is SendAttachment -> {
-                parseAttachment(action, dialog)
-            }
-            is SendSentence -> {
-                if (!userTimeline.userState.waitingRawInput && !action.text.isNullOrBlank()) {
-                    nlp.parseSentence(action, userTimeline, dialog, connector, botDefinition)
+        try {
+            when (action) {
+                is SendChoice -> {
+                    parseChoice(action, dialog)
                 }
+                is SendLocation -> {
+                    parseLocation(action, dialog)
+                }
+                is SendAttachment -> {
+                    parseAttachment(action, dialog)
+                }
+                is SendSentence -> {
+                    if (!userTimeline.userState.waitingRawInput && !action.text.isNullOrBlank()) {
+                        nlp.parseSentence(action, userTimeline, dialog, connector, botDefinition)
+                    }
+                }
+                else -> logger.warn { "${action::class.simpleName} not yet supported" }
             }
-            else -> logger.warn { "${action::class.simpleName} not yet supported" }
+        } finally {
+            //reinitialize lastActionState
+            dialog.state.nextActionState = null
         }
     }
 
@@ -147,9 +155,29 @@ class Bot(botDefinitionBase: BotDefinition) {
     }
 
     private fun parseChoice(choice: SendChoice, dialog: Dialog) {
-        botDefinition.findIntent(choice.intentName).let {
-            choice.state.currentIntent = it
-            dialog.state.currentIntent = it
+        botDefinition.findIntent(choice.intentName).let { intent ->
+            //restore state if it's possible (old dialog choice case)
+            if (intent != Intent.unknown) {
+                val previousIntentName = choice.previousIntent()
+                if (previousIntentName != null) {
+                    val previousStory = botDefinition.findStoryDefinition(previousIntentName)
+                    if (previousStory != botDefinition.unknownStory && previousStory.supportIntent(intent)) {
+                        //the previous intent is a primary intent that support the new intent
+                        val storyDefinition = botDefinition.findStoryDefinition(choice.intentName)
+                        if (storyDefinition == botDefinition.unknownStory) {
+                            //the new intent is a secondary intent, may be we need to create a intermediate story
+                            val currentStory = dialog.currentStory()
+                            if (currentStory == null
+                                    || !currentStory.definition.supportIntent(intent)
+                                    || !currentStory.definition.supportIntent(botDefinition.findIntent(previousIntentName))) {
+                                dialog.stories.add(Story(previousStory, intent))
+                            }
+                        }
+                    }
+                }
+            }
+            choice.state.currentIntent = intent
+            dialog.state.currentIntent = intent
         }
     }
 

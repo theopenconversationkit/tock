@@ -68,7 +68,7 @@ interface BotDefinition : I18nKeyProvider {
     val stories: List<StoryDefinition>
 
     /**
-     * This is the method called by the bot.
+     * This is the method called by the bot after a NLP request.
      * Overrides it if you need more control on intent choice.
      */
     fun findIntentForBot(intent: String, context: IntentContext): Intent {

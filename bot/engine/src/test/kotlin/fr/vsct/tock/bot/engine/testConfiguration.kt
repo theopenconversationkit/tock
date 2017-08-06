@@ -23,6 +23,8 @@ import fr.vsct.tock.bot.definition.StoryHandlerBase
 import fr.vsct.tock.bot.definition.StoryStep
 
 val testIntent = Intent("test")
+val secondaryIntent = Intent("secondary")
+val notInStoryIntent = Intent("test2")
 
 class BotDefinitionTest
     : BotDefinitionBase(
@@ -37,7 +39,8 @@ class StoryDefinitionTest : StoryDefinitionBase(
         "storyDef1",
         StoryHandlerTest(),
         StepTest.values(),
-        setOf(testIntent)) {
+        setOf(testIntent),
+        setOf(testIntent, secondaryIntent)) {
     val registeredBus: BotBus? get() = (storyHandler as StoryHandlerTest).registeredBus
 }
 
