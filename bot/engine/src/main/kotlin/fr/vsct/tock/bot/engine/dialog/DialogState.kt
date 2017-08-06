@@ -24,21 +24,12 @@ import fr.vsct.tock.nlp.entity.Value
 /**
  *
  */
-data class State(
+data class DialogState(
         var currentIntent: Intent? = null,
         val entityValues: MutableMap<String, EntityStateValue> = mutableMapOf(),
-        val context: MutableMap<String, Any> = mutableMapOf()) {
-
-    companion object {
-        const val userLocationFlag = "tock_user_location"
-    }
-
-    var userLocation: UserLocation?
-        get() = context[userLocationFlag] as UserLocation?
-        set(value) {
-            if (value == null) context -= userLocationFlag
-            else context[userLocationFlag] = value
-        }
+        val context: MutableMap<String, Any> = mutableMapOf(),
+        var userLocation: UserLocation? = null,
+        var nextActionState: NextUserActionState? = null) {
 
     fun setValue(role: String, value: ContextValue) {
         entityValues[role] = EntityStateValue(value)

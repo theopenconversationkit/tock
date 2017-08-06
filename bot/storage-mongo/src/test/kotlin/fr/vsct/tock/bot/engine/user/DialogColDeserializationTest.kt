@@ -21,9 +21,10 @@ import com.nhaarman.mockito_kotlin.mock
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.engine.dialog.NextUserActionState
 import fr.vsct.tock.bot.mongo.DialogCol
+import fr.vsct.tock.bot.mongo.DialogCol.DialogStateMongoWrapper
 import fr.vsct.tock.bot.mongo.DialogCol.EntityStateValueWrapper
-import fr.vsct.tock.bot.mongo.DialogCol.StateMongoWrapper
 import fr.vsct.tock.bot.mongo.UserTimelineCol
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.api.client.model.EntityType
@@ -31,6 +32,8 @@ import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import fr.vsct.tock.shared.jackson.mapper
 import org.junit.Test
 import java.time.LocalDateTime
+import java.time.ZoneId
+import java.time.ZonedDateTime
 import kotlin.test.assertEquals
 
 /**
@@ -50,7 +53,7 @@ class DialogColDeserializationTest {
 
     @Test
     fun serializeAndDeserializeStateMongoWrapper_shouldLeftDataInchanged() {
-        val state = StateMongoWrapper(
+        val state = DialogStateMongoWrapper(
                 Intent("test"),
                 mapOf("role" to EntityStateValueWrapper(
                         ContextValue(
@@ -61,10 +64,16 @@ class DialogColDeserializationTest {
                         ),
                         emptyList()
                 )),
-                emptyMap()
+                emptyMap(),
+                UserLocation(1.0, 2.0),
+                NextUserActionState(
+                        Intent("test"),
+                        ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC")),
+                        ZoneId.systemDefault()
+                )
         )
         val s = mapper.writeValueAsString(state)
-        val newValue = mapper.readValue<StateMongoWrapper>(s)
+        val newValue = mapper.readValue<DialogStateMongoWrapper>(s)
         assertEquals(state, newValue)
     }
 
@@ -73,7 +82,7 @@ class DialogColDeserializationTest {
     fun serializeAndDeserializeDialog_shouldLeftDataInchanged() {
         val dialog = Dialog(
                 emptySet(),
-                state = fr.vsct.tock.bot.engine.dialog.State(context = mutableMapOf("a" to LocalDateTime.now())))
+                state = fr.vsct.tock.bot.engine.dialog.DialogState(context = mutableMapOf("a" to LocalDateTime.now())))
         val playerId = PlayerId("a", PlayerType.user)
         val s = mapper.writeValueAsString(DialogCol(dialog, UserTimelineCol(UserTimeline(playerId), null)))
         val newValue = mapper.readValue<DialogCol>(s)

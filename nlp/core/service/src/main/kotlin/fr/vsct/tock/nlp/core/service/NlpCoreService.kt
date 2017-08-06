@@ -22,7 +22,7 @@ import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.Intent
-import fr.vsct.tock.nlp.core.IntentClassification
+import fr.vsct.tock.nlp.core.IntentSelector
 import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.ParsingResult
@@ -60,11 +60,11 @@ object NlpCoreService : NlpCore {
 
     override fun parse(context: CallContext,
                        text: String,
-                       intentSelector: (IntentClassification) -> Pair<Intent, Double>?): ParsingResult {
+                       intentSelector: IntentSelector): ParsingResult {
         try {
             val tokens = tokenize(context, text)
             val intents = nlpClassifier.classifyIntent(IntentContext(context), text, tokens)
-            val (intent, probability) = intentSelector.invoke(intents) ?: null to null
+            val (intent, probability) = intentSelector.selectIntent(intents) ?: null to null
 
             if (intent == null || probability == null) {
                 return unknownResult

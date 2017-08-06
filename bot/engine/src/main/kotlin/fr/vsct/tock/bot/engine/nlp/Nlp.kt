@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.engine.nlp
 
+import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentContext
@@ -25,11 +26,12 @@ import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.engine.dialog.DialogState
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
-import fr.vsct.tock.bot.engine.dialog.State
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.NlpClient
 import fr.vsct.tock.nlp.api.client.model.Entity
+import fr.vsct.tock.nlp.api.client.model.NlpIntentEntitiesQuery
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.QueryContext
@@ -39,6 +41,9 @@ import fr.vsct.tock.nlp.api.client.model.merge.ValueToMerge
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.name
+import fr.vsct.tock.shared.withNamespace
 import mu.KotlinLogging
 import java.io.InputStream
 import java.time.ZonedDateTime
@@ -46,12 +51,16 @@ import java.time.ZonedDateTime
 /**
  * [NlpController] default implementation.
  */
-object Nlp : NlpController {
+internal class Nlp : NlpController {
 
-    private val logger = KotlinLogging.logger {}
-    private val nlpClient = NlpClient()
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
-    private class SentenceParser(val sentence: SendSentence,
+    private val nlpClient: NlpClient by injector.instance()
+
+    private class SentenceParser(val nlpClient: NlpClient,
+                                 val sentence: SendSentence,
                                  val userTimeline: UserTimeline,
                                  val dialog: Dialog,
                                  val connector: ConnectorController,
@@ -77,6 +86,12 @@ object Nlp : NlpController {
                                         IntentContext(userTimeline, dialog, sentence)
                                 )
                                 sentence.state.entityValues.addAll(nlpResult.entities.map { ContextValue(nlpResult.retainedQuery, it) })
+                                sentence.nlpStats = NlpCallStats(
+                                        nlpResult.intentProbability,
+                                        nlpResult.entitiesProbability,
+                                        nlpResult.otherIntentsProbabilities
+                                                .map { NlpIntentStat(Intent(it.key.name()), it.value) }
+                                )
                                 dialog.apply {
                                     state.currentIntent = sentence.state.currentIntent
                                     state.mergeEntityValuesFromAction(sentence)
@@ -128,10 +143,9 @@ object Nlp : NlpController {
                     sentence.playerId.id,
                     dialog.id,
                     connector.connectorType.toString(),
-                    referenceDate = ZonedDateTime.now(userTimeline.userPreferences.timezone),
-                    referenceTimezone = userTimeline.userPreferences.timezone,
+                    referenceDate = dialog.state.nextActionState?.referenceDate ?: ZonedDateTime.now(userTimeline.userPreferences.timezone),
+                    referenceTimezone = dialog.state.nextActionState?.referenceTimezone ?: userTimeline.userPreferences.timezone,
                     test = userTimeline.userPreferences.test
-
             )
         }
 
@@ -202,7 +216,7 @@ object Nlp : NlpController {
             }
         }
 
-        private fun State.mergeEntityValuesFromAction(action: Action) {
+        private fun DialogState.mergeEntityValuesFromAction(action: Action) {
             entityValues.putAll(
                     action.state.entityValues
                             .groupBy { it.entity.role }
@@ -213,7 +227,16 @@ object Nlp : NlpController {
         }
 
         private fun parse(request: NlpQuery): NlpResult? {
-            val response = nlpClient.parse(request)
+            val expectedIntent = dialog.state.nextActionState?.expectedIntent
+            val response = if (expectedIntent == null) {
+                nlpClient.parse(request)
+            } else {
+                nlpClient.parseIntentEntities(
+                        NlpIntentEntitiesQuery(
+                                expectedIntent.name.withNamespace(request.namespace),
+                                request)
+                )
+            }
             val result = response.body()
             if (result == null) {
                 logger.error { "nlp error : ${response.errorBody()?.string()}" }
@@ -237,7 +260,12 @@ object Nlp : NlpController {
                                dialog: Dialog,
                                connector: ConnectorController,
                                botDefinition: BotDefinition) {
-        SentenceParser(sentence, userTimeline, dialog, connector, botDefinition).parse()
+        try {
+            SentenceParser(nlpClient, sentence, userTimeline, dialog, connector, botDefinition).parse()
+        } finally {
+            //reinitialize lastActionState
+            dialog.state.nextActionState = null
+        }
     }
 
     override fun importNlpDump(stream: InputStream): Boolean = nlpClient.importNlpDump(stream).body() ?: false

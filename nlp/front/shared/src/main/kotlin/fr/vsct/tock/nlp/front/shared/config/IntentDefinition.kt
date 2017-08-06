@@ -18,23 +18,20 @@ package fr.vsct.tock.nlp.front.shared.config
 
 import fr.vsct.tock.nlp.core.EntitiesRegexp
 import fr.vsct.tock.shared.withNamespace
-import fr.vsct.tock.shared.withoutNamespace
 import java.util.Locale
 
 /**
  *
  */
 data class IntentDefinition(val name: String,
-                            val namespace:String,
+                            val namespace: String,
                             val applications: Set<String>,
                             val entities: Set<EntityDefinition>,
                             val entitiesRegexp: Map<Locale, List<EntitiesRegexp>> = emptyMap(),
                             val _id: String? = null) {
 
     @Transient
-    val qualifiedName : String = name.withNamespace(namespace)
-
-    fun shortQualifiedName(defaultNamespace : String) = qualifiedName.withoutNamespace(defaultNamespace)
+    val qualifiedName: String = name.withNamespace(namespace)
 
     fun findEntity(type: String, role: String): EntityDefinition? {
         return entities.firstOrNull { it.entityTypeName == type && it.role == role }

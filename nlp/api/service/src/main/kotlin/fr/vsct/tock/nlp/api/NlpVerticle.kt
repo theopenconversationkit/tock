@@ -19,6 +19,7 @@ package fr.vsct.tock.nlp.api
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
+import fr.vsct.tock.nlp.front.shared.parser.ParseIntentEntitiesQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.ext.web.RoutingContext
@@ -33,6 +34,13 @@ class NlpVerticle : WebVerticle(KotlinLogging.logger {}) {
 
     override fun configure() {
         val front = FrontClient
+
+        blockingJsonPost("/parse/intent/entities") { _, query: ParseIntentEntitiesQuery ->
+            if (query.query.queries.isEmpty()) {
+                error("please set queries field with at least one query")
+            }
+            front.parseIntentEntities(query)
+        }
 
         blockingJsonPost("/parse") { _, query: ParseQuery ->
             if (query.queries.isEmpty()) {

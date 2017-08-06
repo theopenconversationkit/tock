@@ -34,7 +34,7 @@ class NlpClientIntegrationTest {
 
     @Test
     fun testImportNlpDump() {
-        assertTrue(NlpClient("http://localhost:8880").importNlpDump(dumpStream).body()!!)
+        assertTrue(TockNlpClient("http://localhost:8880").importNlpDump(dumpStream).body()!!)
     }
 
     @Test
@@ -50,6 +50,6 @@ class NlpClientIntegrationTest {
                                     name = UUID.randomUUID().toString())
                     )
                 }
-        assertTrue(NlpClient("http://localhost:8880").importNlpPlainDump(dump).body()!!)
+        assertTrue(TockNlpClient("http://localhost:8880").importNlpPlainDump(dump).body()!!)
     }
 }

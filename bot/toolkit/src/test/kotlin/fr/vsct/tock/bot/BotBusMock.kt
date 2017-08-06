@@ -25,6 +25,7 @@ import fr.vsct.tock.bot.engine.action.ActionSignificance
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
+import fr.vsct.tock.bot.engine.dialog.NextUserActionState
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
@@ -70,6 +71,12 @@ open class BotBusMock(override val userTimeline: UserTimeline,
 
     override val entities: Map<String, EntityStateValue> = dialog.state.entityValues
     override val intent: Intent? = dialog.state.currentIntent
+
+    override var nextUserActionState: NextUserActionState?
+        get() = dialog.state.nextActionState
+        set(value) {
+            dialog.state.nextActionState = value
+        }
 
     open fun sendAction(action: Action, delay: Long) {
         (logs as MutableList).add(BotBusMockLog(action, delay))

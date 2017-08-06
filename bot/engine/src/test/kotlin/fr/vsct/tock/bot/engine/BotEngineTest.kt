@@ -38,12 +38,15 @@ import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
+import fr.vsct.tock.nlp.api.client.NlpClient
+import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.tockInternalInjector
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.TranslatorEngine
 import org.junit.Before
+import retrofit2.Response
 
 /**
  *
@@ -64,6 +67,26 @@ abstract class BotEngineTest {
         on { translate(any(), any(), any()) } doReturn ("ok")
     }
 
+    val nlpClient: NlpClient = mock() {
+        on { parse(any()) } doReturn (
+                Response.success(
+                        NlpResult(testIntent.name,
+                                "test",
+                                emptyList(),
+                                1.0,
+                                1.0,
+                                "",
+                                emptyMap())))
+        on { parseIntentEntities(any()) } doReturn (
+                Response.success(
+                        NlpResult(testIntent.name,
+                                "test",
+                                emptyList(),
+                                1.0,
+                                1.0,
+                                "",
+                                emptyMap())))
+    }
     val nlp: NlpController = mock()
     val executor: Executor = mock()
     val connector: Connector = mock {
@@ -77,6 +100,7 @@ abstract class BotEngineTest {
 
     open fun baseModule(): Kodein.Module {
         return Kodein.Module {
+            bind<NlpClient>() with provider { nlpClient }
             bind<NlpController>() with provider { nlp }
             bind<Executor>() with provider { executor }
             bind<UserLock>() with provider { userLock }

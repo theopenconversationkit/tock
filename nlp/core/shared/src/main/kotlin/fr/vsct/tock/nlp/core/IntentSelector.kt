@@ -14,21 +14,20 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.dialog
-
-import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.shared.Dice
+package fr.vsct.tock.nlp.core
 
 /**
- *
+ * To select the best intent match - default take the highest probability.
  */
-data class Dialog(val playerIds: Set<PlayerId>,
-                  var id: String = Dice.newId(),
-                  val state: DialogState = DialogState(),
-                  val stories: MutableList<Story> = mutableListOf()) {
+interface IntentSelector {
 
-    fun currentStory(): Story? = stories.lastOrNull()
+    companion object {
+        val defaultIntentSelector = object : IntentSelector {
+            override fun selectIntent(classification: IntentClassification): Pair<Intent, Double>? {
+                return if (classification.hasNext()) classification.next() to classification.probability() else null
+            }
+        }
+    }
 
-    fun allActions(): List<Action> = stories.flatMap { it.actions }
+    fun selectIntent(classification: IntentClassification): Pair<Intent, Double>?
 }

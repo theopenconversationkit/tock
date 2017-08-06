@@ -21,10 +21,12 @@ package fr.vsct.tock.nlp.api.client.model
  *
  */
 data class NlpResult(val intent: String,
+                     val intentNamespace:String,
                      val entities: List<EntityValue>,
                      val intentProbability: Double,
                      val entitiesProbability: Double,
-                     val retainedQuery: String) {
+                     val retainedQuery: String,
+                     val otherIntentsProbabilities: Map<String, Double>) {
 
     fun firstValue(role: String): EntityValue? = entities.firstOrNull { it.entity.role == role }
 }

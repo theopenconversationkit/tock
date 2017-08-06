@@ -34,10 +34,12 @@ import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue
 import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.engine.dialog.DialogState
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.EventState
-import fr.vsct.tock.bot.engine.dialog.State
+import fr.vsct.tock.bot.engine.dialog.NextUserActionState
 import fr.vsct.tock.bot.engine.dialog.Story
+import fr.vsct.tock.bot.engine.nlp.NlpCallStats
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
@@ -49,7 +51,7 @@ import java.time.Instant.now
  */
 internal data class DialogCol(val playerIds: Set<PlayerId>,
                               var _id: String,
-                              val state: StateMongoWrapper,
+                              val state: DialogStateMongoWrapper,
                               val stories: List<StoryMongoWrapper>,
                               val applicationIds: Set<String> = emptySet(),
                               val lastUpdateDate: Instant = now()) {
@@ -69,7 +71,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
     constructor(dialog: Dialog, userTimeline: UserTimelineCol) : this(
             dialog.playerIds,
             dialog.id,
-            StateMongoWrapper(dialog.state),
+            DialogStateMongoWrapper(dialog.state),
             dialog.stories.map { StoryMongoWrapper(it) },
             userTimeline.applicationIds
     )
@@ -100,25 +102,31 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
         )
     }
 
-    data class StateMongoWrapper(
+    data class DialogStateMongoWrapper(
             var currentIntent: Intent?,
             @JsonDeserialize(contentAs = EntityStateValueWrapper::class)
             val entityValues: Map<String, EntityStateValueWrapper>,
             @JsonDeserialize(contentAs = AnyValueWrapper::class)
-            val context: Map<String, AnyValueWrapper>) {
+            val context: Map<String, AnyValueWrapper>,
+            var userLocation: UserLocation?,
+            var nextActionState: NextUserActionState?) {
 
 
-        constructor(state: State) : this(
+        constructor(state: DialogState) : this(
                 state.currentIntent,
                 state.entityValues.mapValues { EntityStateValueWrapper(it.value) },
-                state.context.map { e -> e.key to AnyValueWrapper(e.value) }.toMap()
+                state.context.map { e -> e.key to AnyValueWrapper(e.value) }.toMap(),
+                state.userLocation,
+                state.nextActionState
         )
 
-        fun toState(actionsMap: Map<String, Action>): State {
-            return State(
+        fun toState(actionsMap: Map<String, Action>): DialogState {
+            return DialogState(
                     currentIntent,
                     entityValues.mapValues { it.value.toEntityStateValue(actionsMap) }.toMutableMap(),
-                    context.mapValues { it.value.value!! }.toMutableMap())
+                    context.mapValues { it.value.value!! }.toMutableMap(),
+                    userLocation,
+                    nextActionState)
         }
 
     }
@@ -207,10 +215,15 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
 
     @JsonTypeName(value = "sentence")
     class SendSentenceMongoWrapper(val text: String?,
-                                   val messages: List<AnyValueWrapper>)
+                                   val messages: List<AnyValueWrapper>,
+                                   val nlpStats: NlpCallStats?)
         : ActionMongoWrapper() {
 
-        constructor(sentence: SendSentence) : this(sentence.text, sentence.messages.map { AnyValueWrapper(it) }) {
+        constructor(sentence: SendSentence) :
+                this(
+                        sentence.text,
+                        sentence.messages.map { AnyValueWrapper(it) },
+                        sentence.nlpStats) {
             assignFrom(sentence)
         }
 
@@ -224,7 +237,8 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                     id,
                     date,
                     state,
-                    botMetadata)
+                    botMetadata,
+                    nlpStats)
         }
     }
 

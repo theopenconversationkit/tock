@@ -16,13 +16,15 @@
 
 package fr.vsct.tock.bot
 
+import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.rest.addRestConnector
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.BotProviderBase
 import fr.vsct.tock.bot.engine.BotRepository
-import fr.vsct.tock.bot.engine.nlp.Nlp
+import fr.vsct.tock.bot.engine.nlp.NlpController
+import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.resourceAsStream
 import io.vertx.ext.web.Router
 
@@ -67,5 +69,6 @@ private fun install(routerHandlers: List<(Router) -> Unit>, installRestConnector
  * @path the dump path in the classpath
  */
 fun importNlpDump(path: String) {
-    Nlp.importNlpDump(resourceAsStream(path))
+    val nlp: NlpController by injector.instance()
+    nlp.importNlpDump(resourceAsStream(path))
 }

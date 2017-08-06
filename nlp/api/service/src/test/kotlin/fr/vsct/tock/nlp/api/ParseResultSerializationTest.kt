@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.nlp.api
 
+import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.entity.date.DateEntityGrain
@@ -23,8 +25,10 @@ import fr.vsct.tock.nlp.entity.date.DateEntityValue
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue
 import fr.vsct.tock.shared.jackson.mapper
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
-import java.time.ZoneOffset
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import kotlin.test.assertEquals
 
@@ -34,24 +38,36 @@ import kotlin.test.assertEquals
  */
 class ParseResultSerializationTest {
 
-    @Test
-    fun testEntityValueDeserialization() {
-        val s = mapper.writeValueAsString(
-                ParseResult(
-                        "test",
-                        listOf(ParsedEntityValue(
-                                0,
-                                1,
-                                Entity(EntityType("type"), "role"),
+    @Before()
+    fun before() {
+        mapper.enable(SerializationFeature.WRITE_DATES_WITH_ZONE_ID)
+    }
 
-                                DateEntityValue(ZonedDateTime.of(2017, 4, 1, 0, 0, 0, 0, ZoneOffset.UTC), DateEntityGrain.day)
-                        )),
-                        1.0,
-                        1.0,
-                        "sentence",
-                        emptyMap()))
+    @After
+    fun after() {
+        mapper.disable(SerializationFeature.WRITE_DATES_WITH_ZONE_ID)
+    }
+
+    @Test
+    fun testEntityValueDeserializationAndSerialization() {
+        val parseResult = ParseResult(
+                "test",
+                "namespace",
+                listOf(ParsedEntityValue(
+                        0,
+                        1,
+                        Entity(EntityType("type"), "role"),
+                        DateEntityValue(ZonedDateTime.of(2017, 4, 1, 0, 0, 0, 0, ZoneId.of("UTC")), DateEntityGrain.day)
+                )),
+                1.0,
+                1.0,
+                "sentence",
+                mapOf("test2" to 2.0))
+        val s = mapper.writeValueAsString(parseResult)
         assertEquals(
-                """{"intent":"test","entities":[{"start":0,"end":1,"entity":{"entityType":{"name":"type","subEntities":[]},"role":"role"},"value":{"@type":"dateEntity","date":"2017-04-01T00:00Z","grain":"day"},"evaluated":false,"probability":1.0,"mergeSupport":false}],"intentProbability":1.0,"entitiesProbability":1.0,"retainedQuery":"sentence","otherIntentsProbabilities":{}}""",
+                """{"intent":"test","intentNamespace":"namespace","entities":[{"start":0,"end":1,"entity":{"entityType":{"name":"type","subEntities":[]},"role":"role"},"value":{"@type":"dateEntity","date":"2017-04-01T00:00Z[UTC]","grain":"day"},"evaluated":false,"probability":1.0,"mergeSupport":false}],"intentProbability":1.0,"entitiesProbability":1.0,"retainedQuery":"sentence","otherIntentsProbabilities":{"test2":2.0}}""",
                 s)
+
+        assertEquals(parseResult, mapper.readValue(s))
     }
 }

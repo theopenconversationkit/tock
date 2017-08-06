@@ -21,6 +21,7 @@ import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.message.Sentence
+import fr.vsct.tock.bot.engine.nlp.NlpCallStats
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.shared.Dice
 import java.time.Instant
@@ -38,7 +39,8 @@ class SendSentence(
         id: String = Dice.newId(),
         date: Instant = Instant.now(),
         state: EventState = EventState(),
-        metadata: ActionMetadata = ActionMetadata())
+        metadata: ActionMetadata = ActionMetadata(),
+        var nlpStats: NlpCallStats? = null)
     : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
 
 

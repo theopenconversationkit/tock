@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.core
 
+import fr.vsct.tock.nlp.core.IntentSelector.Companion.defaultIntentSelector
 import fr.vsct.tock.nlp.core.merge.ValueDescriptor
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 
@@ -24,9 +25,12 @@ import fr.vsct.tock.nlp.core.sample.SampleExpression
  */
 interface NlpCore {
 
+    /**
+     * Parse text with NLP engine.
+     */
     fun parse(context: CallContext,
               text: String,
-              intentSelector: (IntentClassification) -> Pair<Intent, Double>? = { if (it.hasNext()) it.next() to it.probability() else null })
+              intentSelector: IntentSelector = defaultIntentSelector)
             : ParsingResult
 
     fun updateIntentModel(context: BuildContext, expressions: List<SampleExpression>)

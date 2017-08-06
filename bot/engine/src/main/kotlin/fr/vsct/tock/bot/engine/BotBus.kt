@@ -27,9 +27,11 @@ import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
+import fr.vsct.tock.bot.engine.dialog.NextUserActionState
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.message.MessagesList
+import fr.vsct.tock.bot.engine.nlp.NlpCallStats
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
@@ -62,6 +64,11 @@ interface BotBus {
     val intent: Intent?
 
     /**
+     * Qualify the next user action.
+     */
+    var nextUserActionState: NextUserActionState?
+
+    /**
      * The current [StoryStep] of the [Story].
      */
     var step: StoryStep?
@@ -69,6 +76,11 @@ interface BotBus {
         set(step: StoryStep?) {
             story.currentStep = step?.name
         }
+
+    /**
+     * Get the NLP call stats if an NLP call has occurred, null either.
+     */
+    fun nlpStats(): NlpCallStats? = if (action is SendSentence) (action as SendSentence).nlpStats else null
 
     /**
      * Returns the value of the specified choice parameter, null if the user action is not a [SendChoice]

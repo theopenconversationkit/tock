@@ -20,6 +20,7 @@ package fr.vsct.tock.nlp.front.shared.parser
  *
  */
 data class ParseResult(val intent: String,
+                       val intentNamespace: String,
                        val entities: List<ParsedEntityValue>,
                        val intentProbability: Double,
                        val entitiesProbability: Double,

@@ -14,21 +14,12 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.dialog
+package fr.vsct.tock.bot.engine.nlp
 
-import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.shared.Dice
+import fr.vsct.tock.bot.definition.Intent
 
 /**
- *
+ * Used by [NlpCallStats]. Pair Intent - probability.
  */
-data class Dialog(val playerIds: Set<PlayerId>,
-                  var id: String = Dice.newId(),
-                  val state: DialogState = DialogState(),
-                  val stories: MutableList<Story> = mutableListOf()) {
-
-    fun currentStory(): Story? = stories.lastOrNull()
-
-    fun allActions(): List<Action> = stories.flatMap { it.actions }
+data class NlpIntentStat(val intent: Intent, val probability: Double) {
 }

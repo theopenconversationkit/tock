@@ -14,21 +14,13 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.dialog
-
-import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.shared.Dice
+package fr.vsct.tock.nlp.front.shared.parser
 
 /**
  *
  */
-data class Dialog(val playerIds: Set<PlayerId>,
-                  var id: String = Dice.newId(),
-                  val state: DialogState = DialogState(),
-                  val stories: MutableList<Story> = mutableListOf()) {
-
-    fun currentStory(): Story? = stories.lastOrNull()
-
-    fun allActions(): List<Action> = stories.flatMap { it.actions }
+data class ParseIntentEntitiesQuery(
+        val intent: String,
+        val query: ParseQuery
+) {
 }
