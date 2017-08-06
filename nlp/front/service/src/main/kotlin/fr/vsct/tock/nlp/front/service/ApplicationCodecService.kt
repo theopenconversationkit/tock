@@ -276,10 +276,12 @@ object ApplicationCodecService : ApplicationCodec {
         return report
     }
 
-    override fun exportSentences(applicationId: String, dumpType: DumpType): SentencesDump {
+    override fun exportSentences(applicationId: String, intent: String?, dumpType: DumpType): SentencesDump {
         val app = config.getApplicationById(applicationId)!!
+        val filteredIntentId = if (intent == null) null else config.getIntentIdByQualifiedName(intent)
         val intents = config
                 .getIntentsByApplicationId(applicationId)
+                .filter { filteredIntentId == null || filteredIntentId == it._id }
                 .groupBy { it._id }
                 .mapValues { it.value.first() }
         val sentences = config

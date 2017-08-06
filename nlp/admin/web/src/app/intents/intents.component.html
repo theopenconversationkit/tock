@@ -20,9 +20,6 @@
       <tr *ngFor="let i of state.currentApplication.intents">
         <td>
           {{i.name}}
-          <button md-icon-button (click)="deleteIntent(i)">
-            <md-icon>delete</md-icon>
-          </button>
         </td>
         <td>
           <span *ngFor="let e of i.entities">
@@ -31,6 +28,14 @@
             <md-icon>remove_circle_outline</md-icon>
           </button>
           </span>
+        </td>
+        <td>
+          <button md-icon-button (click)="deleteIntent(i)" mdTooltip="Delete the intent {{i.name}}">
+            <md-icon>delete</md-icon>
+          </button>
+          <button (click)="downloadSentencesDump(i)" md-icon-button mdTooltip="Download a sentences dump">
+            <md-icon>cloud_download</md-icon>
+          </button>
         </td>
       </tr>
     </table>

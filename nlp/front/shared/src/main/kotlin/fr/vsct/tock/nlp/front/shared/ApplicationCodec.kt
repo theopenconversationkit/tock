@@ -55,6 +55,7 @@ interface ApplicationCodec {
 
     /**
      * Export sentences dump.
+     * @param intent if specified, only the sentences classified as this intent are exported
      */
-    fun exportSentences(applicationId: String, dumpType: DumpType): SentencesDump
+    fun exportSentences(applicationId: String, intent: String?, dumpType: DumpType): SentencesDump
 }

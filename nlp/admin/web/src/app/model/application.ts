@@ -74,8 +74,12 @@ export class Intent {
     Intent.sortEntities(entities);
   }
 
+  qualifiedName(): string {
+    return `${this.namespace}:${this.name}`;
+  }
+
   isUnknownIntent(): boolean {
-    return `${this.namespace}:${this.name}` === Intent.unknown;
+    return this.qualifiedName() === Intent.unknown;
   }
 
   containsEntity(name: string, role: string): boolean {

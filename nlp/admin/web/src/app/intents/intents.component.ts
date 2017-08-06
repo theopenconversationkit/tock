@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {saveAs} from "file-saver";
 import {Component, OnInit} from "@angular/core";
 import {StateService} from "../core/state.service";
 import {Intent} from "../model/application";
@@ -21,6 +22,7 @@ import {EntityDefinition} from "../model/nlp";
 import {MdDialog, MdSnackBar} from "@angular/material";
 import {ConfirmDialogComponent} from "../shared/confirm-dialog/confirm-dialog.component";
 import {NlpService} from "../nlp-tabs/nlp.service";
+import {ApplicationService} from "../core/applications.service";
 
 @Component({
   selector: 'tock-intents',
@@ -32,7 +34,8 @@ export class IntentsComponent implements OnInit {
   constructor(public state: StateService,
               private nlp: NlpService,
               private snackBar: MdSnackBar,
-              private dialog: MdDialog) {
+              private dialog: MdDialog,
+              private applicationService: ApplicationService) {
   }
 
   ngOnInit() {
@@ -80,6 +83,14 @@ export class IntentsComponent implements OnInit {
           });
       }
     });
+  }
+
+  downloadSentencesDump(intent: Intent) {
+    this.applicationService.getSentencesDumpForIntent(this.state.currentApplication, intent)
+      .subscribe(blob => {
+        saveAs(blob, intent.name + "_sentences.json");
+        this.snackBar.open(`Dump provided`, "Dump", {duration: 1000});
+      })
   }
 
 }

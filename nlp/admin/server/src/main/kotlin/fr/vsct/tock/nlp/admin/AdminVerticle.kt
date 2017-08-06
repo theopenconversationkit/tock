@@ -79,7 +79,16 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
         blockingJsonGet("/sentences/dump/:applicationId") {
             val id = it.pathParam("applicationId")
             if (it.organization == front.getApplicationById(id)?.namespace) {
-                front.exportSentences(id, DumpType.full)
+                front.exportSentences(id, null, DumpType.full)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet("/sentences/dump/:applicationId/:intent") {
+            val id = it.pathParam("applicationId")
+            if (it.organization == front.getApplicationById(id)?.namespace) {
+                front.exportSentences(id, it.pathParam("intent"), DumpType.full)
             } else {
                 unauthorized()
             }

@@ -16,7 +16,7 @@
 
 import {Injectable, OnDestroy} from "@angular/core";
 import {Observable} from "rxjs";
-import {Application, ApplicationImportConfiguration} from "../model/application";
+import {Application, ApplicationImportConfiguration, Intent} from "../model/application";
 import {RestService} from "../core/rest/rest.service";
 import {StateService} from "../core/state.service";
 import {Entry} from "../model/commons";
@@ -107,6 +107,10 @@ export class ApplicationService implements OnDestroy {
     return this.rest.get(`/sentences/dump/${application._id}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'}) ));
   }
 
+  getSentencesDumpForIntent(application: Application, intent: Intent): Observable<Blob> {
+    return this.rest.get(`/sentences/dump/${application._id}/${intent.qualifiedName()}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'}) ));
+  }
+
   prepareApplicationDumpUploader(uploader: FileUploader, configuration: ApplicationImportConfiguration) {
     let url: string;
     if (configuration.newApplicationName) {
@@ -117,7 +121,7 @@ export class ApplicationService implements OnDestroy {
     this.rest.setFileUploaderOptions(uploader, url);
   }
 
-  prepareSentencesDumpUploader(uploader: FileUploader, name?:string) {
+  prepareSentencesDumpUploader(uploader: FileUploader, name?: string) {
     let url: string;
     if (name) {
       url = `/dump/sentences/${name}`;
