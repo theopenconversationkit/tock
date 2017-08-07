@@ -20,7 +20,9 @@ package fr.vsct.tock.bot.definition
  * A parameter key - the implementation is usually an enum.
  */
 interface ParameterKey {
-    val name:String
+    val name: String
 
-    operator fun get(value:Any) : Parameters = Parameters(name to value.toString())
+    val keyName: String get() = name
+
+    operator fun get(value: Any): Parameters = Parameters(keyName to value.toString())
 }

@@ -123,7 +123,7 @@ interface BotBus {
      * or if this parameter is not set.
      */
     fun paramChoice(key: ParameterKey): String?
-            = paramChoice(key.name)
+            = paramChoice(key.keyName)
 
     /**
      * Returns true if the current action has the specified entity role.
@@ -185,7 +185,7 @@ interface BotBus {
      * Returns the persistent current context value.
      */
     fun <T : Any> contextValue(key: ParameterKey): T?
-            = contextValue(key.name)
+            = contextValue(key.keyName)
 
     /**
      * Update persistent context value.
@@ -198,7 +198,7 @@ interface BotBus {
      * Update persistent context value.
      */
     fun changeContextValue(key: ParameterKey, value: Any?)
-            = changeContextValue(key.name, value)
+            = changeContextValue(key.keyName, value)
 
     /**
      * Returns the non persistent current context value.
