@@ -53,7 +53,7 @@ class BotBusMockContext(val userTimeline: UserTimeline,
             : this(
             UserTimeline(userId),
             Dialog(setOf(userId, botId)),
-            Story(storyDefinition, null),
+            Story(storyDefinition, storyDefinition.mainIntent()),
             action,
             Bot(botDefinition),
             storyDefinition.storyHandler as I18nKeyProvider,

@@ -59,7 +59,7 @@ class BotTest : BotEngineTest() {
         bot.handle(choice, userTimeline, connectorController)
 
         assertEquals(story.definition.id, dialog.currentStory()!!.definition.id)
-        assertEquals(secondaryIntent, dialog.currentStory()!!.currentIntent)
+        assertEquals(testIntent, dialog.currentStory()!!.starterIntent)
         assertEquals(secondaryIntent, dialog.state.currentIntent)
     }
 }

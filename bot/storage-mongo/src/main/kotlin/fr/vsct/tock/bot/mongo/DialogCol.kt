@@ -166,14 +166,14 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
 
         constructor(story: Story) : this(
                 story.definition.id,
-                story.currentIntent,
+                story.starterIntent,
                 story.currentStep,
                 story.actions.map { getActionWrapper(it) })
 
         fun toStory(storyDefinitionProvider: (String) -> StoryDefinition): Story {
             return Story(
                     storyDefinitionProvider.invoke(storyDefinitionId),
-                    currentIntent,
+                    currentIntent ?: Intent.unknown,
                     currentStep,
                     actions.map { it.toAction() }.toMutableList()
             )

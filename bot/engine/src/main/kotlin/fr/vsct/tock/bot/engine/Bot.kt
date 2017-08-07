@@ -88,11 +88,13 @@ class Bot(botDefinitionBase: BotDefinition) {
                 if (previousStory == null
                         || (newIntent != null && !previousStory.definition.supportIntent(newIntent))) {
                     val storyDefinition = botDefinition.findStoryDefinition(newIntent?.name)
-                    val newStory = Story(storyDefinition, newIntent)
+                    val newStory = Story(
+                            storyDefinition,
+                            if (newIntent != null && storyDefinition.isStarterIntent(newIntent)) newIntent
+                            else storyDefinition.mainIntent())
                     dialog.stories.add(newStory)
                     newStory
                 } else {
-                    previousStory.currentIntent = newIntent
                     previousStory
                 }
 
