@@ -14,18 +14,28 @@
  * limitations under the License.
  */
 
-.try {
-  width:80%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top:20px;
-}
+import {Component, Inject, OnInit} from "@angular/core";
+import {MD_DIALOG_DATA, MdDialogRef} from "@angular/material";
 
-.try-input {
-  width:80%;
-  font-size: xx-large;
-}
+@Component({
+  selector: 'tock-add-state-dialog',
+  templateUrl: './add-state-dialog.component.html',
+  styleUrls: ['./add-state-dialog.component.css']
+})
+export class AddStateDialogComponent implements OnInit {
 
-.advanced {
-  font-size: smaller;
+  name: string;
+
+  constructor(
+    public dialogRef: MdDialogRef<AddStateDialogComponent>,
+    @Inject(MD_DIALOG_DATA) public data: any) {
+  }
+
+  ngOnInit() {
+  }
+
+  save() {
+    this.dialogRef.close({name: this.name.toLowerCase().trim()});
+  }
+
 }

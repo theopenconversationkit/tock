@@ -29,6 +29,8 @@ export class TryComponent implements OnInit {
 
   sentence: Sentence;
   skipCache: boolean = false;
+  advanced: boolean = false;
+  queryState: string;
 
   constructor(private nlp: NlpService,
               private state: StateService,
@@ -51,7 +53,8 @@ export class TryComponent implements OnInit {
           app.name,
           language,
           v,
-          !this.skipCache)
+          !this.skipCache,
+          !this.queryState || this.queryState.trim().length === 0 ? null : this.queryState.trim())
       ).subscribe(sentence => {
         this.sentence = sentence;
       });

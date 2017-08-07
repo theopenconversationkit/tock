@@ -18,11 +18,15 @@ package fr.vsct.tock.nlp.admin.model
 
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.nlp.front.shared.parser.QueryContext
+import fr.vsct.tock.nlp.front.shared.parser.QueryState
 
 /**
  *
  */
-data class ParseQuery(val query: String, val checkExistingQuery: Boolean = true) : ApplicationScopedQuery() {
+data class ParseQuery(
+        val query: String,
+        val checkExistingQuery: Boolean = true,
+        val state: String? = null) : ApplicationScopedQuery() {
 
     fun toQuery(): ParseQuery {
         return ParseQuery(
@@ -33,6 +37,7 @@ data class ParseQuery(val query: String, val checkExistingQuery: Boolean = true)
                         language,
                         "admin",
                         checkExistingQuery = checkExistingQuery
-                ))
+                ),
+                QueryState(listOfNotNull(state).toSet()))
     }
 }

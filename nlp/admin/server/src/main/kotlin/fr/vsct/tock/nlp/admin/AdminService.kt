@@ -23,6 +23,7 @@ import fr.vsct.tock.nlp.admin.model.SearchLogsQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.admin.model.SentencesReport
+import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
@@ -37,7 +38,8 @@ object AdminService {
 
     fun parseSentence(query: ParseQuery): SentenceReport {
         val result = front.parse(query.toQuery())
-        val intentId = front.getIntentIdByQualifiedName(result.intent.withNamespace(query.namespace))!!
+        val intentId = if(result.intent.withNamespace(result.intentNamespace) == Intent.UNKNOWN_INTENT) Intent.UNKNOWN_INTENT
+                        else front.getIntentIdByQualifiedName(result.intent.withNamespace(query.namespace))!!
         val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
         return SentenceReport(result, query.language, application._id!!, intentId)
     }

@@ -21,13 +21,19 @@ import fr.vsct.tock.shared.withNamespace
 import java.util.Locale
 
 /**
- *
+ * Definition of an intent.
  */
 data class IntentDefinition(val name: String,
                             val namespace: String,
                             val applications: Set<String>,
                             val entities: Set<EntityDefinition>,
                             val entitiesRegexp: Map<Locale, List<EntitiesRegexp>> = emptyMap(),
+                            /**
+                             * This intent is returned as a classification result
+                             * only if at least one of the mandatory states is requested.
+                             * There is no restriction for intents with empty mandatory states set.
+                             */
+                            val mandatoryStates: Set<String> = emptySet(),
                             val _id: String? = null) {
 
     @Transient
@@ -35,6 +41,11 @@ data class IntentDefinition(val name: String,
 
     fun findEntity(type: String, role: String): EntityDefinition? {
         return entities.firstOrNull { it.entityTypeName == type && it.role == role }
+    }
+
+    fun isAllowed(states: Set<String>): Boolean {
+        return mandatoryStates.isEmpty()
+                || states.any { mandatoryStates.contains(it) }
     }
 
 

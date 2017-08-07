@@ -20,13 +20,12 @@ import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityValue
-import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
-import fr.vsct.tock.nlp.core.IntentClassification
-import fr.vsct.tock.nlp.core.IntentSelector
 import fr.vsct.tock.nlp.front.service.FrontRepository.config
 import fr.vsct.tock.nlp.front.service.FrontRepository.core
 import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
+import fr.vsct.tock.nlp.front.service.selector.IntentSelectorService.isValidSentence
+import fr.vsct.tock.nlp.front.service.selector.IntentSelectorService.select
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
 import fr.vsct.tock.nlp.front.shared.Parser
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
@@ -49,7 +48,6 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.withNamespace
-import fr.vsct.tock.shared.withoutNamespace
 import mu.KotlinLogging
 import java.time.ZonedDateTime
 import java.util.Locale
@@ -147,6 +145,7 @@ object ParserService : Parser {
         with(query) {
             val (application, language, referenceDate, expectedIntent) = metadata
 
+            //TODO multi query handling
             val q = formatQuery(queries.first())
             if (q.isEmpty()) {
                 logger.warn { "empty query after format - $query" }
@@ -167,13 +166,11 @@ object ParserService : Parser {
 
             val callContext = CallContext(toApplication(application), language, application.nlpEngineType, referenceDate)
 
-            if (validatedSentence != null
-                    && query.context.checkExistingQuery
-                    && (expectedIntent == null || expectedIntent._id == validatedSentence.classification.intentId)) {
+            if (isValidSentence(query, validatedSentence, expectedIntent)) {
                 val entityValues = core.evaluateEntities(
                         callContext,
                         q,
-                        validatedSentence.classification.entities.map {
+                        validatedSentence!!.classification.entities.map {
                             EntityRecognition(
                                     EntityValue(
                                             it.start,
@@ -195,7 +192,7 @@ object ParserService : Parser {
                 )
             }
 
-            val result = parseWithNLP(callContext, q, expectedIntent)
+            val result = select(query, application, callContext, q, expectedIntent)
 
             fun toClassifiedSentence(): ClassifiedSentence {
                 val intentId = config.getIntentIdByQualifiedName(result.intent.withNamespace(result.intentNamespace))!!
@@ -229,78 +226,6 @@ object ParserService : Parser {
             return result
         }
     }
-
-
-    private fun parseWithNLP(callContext: CallContext, query: String, expectedIntent: IntentDefinition?): ParseResult {
-
-        abstract class ParseSelector : IntentSelector {
-            //the intents with p > 0.1
-            val otherIntents: MutableMap<String, Double> = mutableMapOf()
-        }
-
-        class DefaultIntentSelector : ParseSelector() {
-            override fun selectIntent(classification: IntentClassification): Pair<Intent, Double>? {
-                return with(classification) {
-                    //select first
-                    if (hasNext()) {
-                        next() to probability()
-                    } else {
-                        null
-                    }
-                            .apply {
-                                //and take all other intents where probability is greater than 0.1
-                                while (hasNext()) {
-                                    (next() to probability())
-                                            .takeIf { (_, prob) -> prob > 0.1 }
-                                            ?.let { (intent, prob) -> otherIntents.put(intent.name, prob) }
-                                            ?: break
-                                }
-                            }
-                }
-            }
-        }
-
-        class ExpectedIntentSelector(val forcedIntent: IntentDefinition) : ParseSelector() {
-
-            override fun selectIntent(classification: IntentClassification): Pair<Intent, Double>? {
-                with(classification) {
-                    var result: Pair<Intent, Double>? = null
-                    while (hasNext()) {
-                        (next() to probability())
-                                .also { (intent, prob) ->
-
-                                    if (forcedIntent.qualifiedName == intent.name) {
-                                        result = intent to prob
-                                    }
-                                    if (prob > 0.1) {
-                                        otherIntents.put(intent.name, prob)
-                                    } else if (result != null) {
-                                        return result
-                                    }
-                                }
-                    }
-                }
-                return null
-            }
-        }
-
-
-        //TODO multi query handling
-        //TODO state handling
-        val selector = if (expectedIntent == null) DefaultIntentSelector() else ExpectedIntentSelector(expectedIntent)
-
-        val result = core.parse(callContext, query, selector)
-
-        return ParseResult(
-                result.intent.withoutNamespace(),
-                result.intent.namespace(),
-                result.entities.map { ParsedEntityValue(it.value, it.probability, core.supportValuesMerge(it.entityType)) },
-                result.intentProbability,
-                result.entitiesProbability,
-                query,
-                selector.otherIntents)
-    }
-
 
     override fun mergeValues(query: ValuesMergeQuery): ValuesMergeResult {
         with(query) {

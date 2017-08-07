@@ -17,6 +17,7 @@
 import {Component, OnInit} from "@angular/core";
 import {SentenceFilter} from "../sentences-scroll/sentences-scroll.component";
 import {Intent} from "../model/application";
+import {SentenceStatus} from "../model/nlp";
 
 @Component({
   selector: 'tock-archive',
@@ -25,7 +26,7 @@ import {Intent} from "../model/application";
 })
 export class ArchiveComponent implements OnInit {
 
-  filter: SentenceFilter = new SentenceFilter(null, Intent.unknown, []);
+  filter: SentenceFilter = new SentenceFilter(null, Intent.unknown, [SentenceStatus.validated, SentenceStatus.model]);
 
   constructor() {
   }

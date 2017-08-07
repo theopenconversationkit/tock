@@ -94,7 +94,8 @@ internal class Nlp : NlpController {
                                                     NlpIntentStat(
                                                             botDefinition.findIntent(it.key.name()),
                                                             it.value
-                                                    ) }
+                                                    )
+                                                }
                                 )
                                 dialog.apply {
                                     state.currentIntent = sentence.state.currentIntent
@@ -159,7 +160,8 @@ internal class Nlp : NlpController {
                     botDefinition.namespace,
                     botDefinition.nlpModelName,
                     toQueryContext(),
-                    QueryState.noState)
+                    QueryState(dialog.state.nextActionState?.states
+                            ?: listOfNotNull(dialog.currentStory()?.starterIntent?.name).toSet()))
         }
 
         private fun mergeEntityValues(action: Action, newValues: List<ContextValue>, oldValue: EntityStateValue? = null): EntityStateValue {

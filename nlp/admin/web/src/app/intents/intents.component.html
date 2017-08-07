@@ -30,11 +30,17 @@
           </span>
         </td>
         <td>
-          <button md-icon-button (click)="deleteIntent(i)" mdTooltip="Delete the intent {{i.name}}">
-            <md-icon>delete</md-icon>
+          <md-chip-list *ngIf="i.mandatoryStates.length !== 0" mdTooltip="Mandatory states - click to delete">
+            <md-chip *ngFor="let s of i.mandatoryStates" color="accent" selected="true" (click)="removeState(i, s)">{{s}}</md-chip>
+          </md-chip-list>
+          <button (click)="addState(i)" md-icon-button mdTooltip="Add state" color="primary">
+            <md-icon>add_box</md-icon>
           </button>
           <button (click)="downloadSentencesDump(i)" md-icon-button mdTooltip="Download a sentences dump">
             <md-icon>cloud_download</md-icon>
+          </button>
+          <button md-icon-button (click)="deleteIntent(i)" mdTooltip="Delete the intent {{i.name}}">
+            <md-icon>delete</md-icon>
           </button>
         </td>
       </tr>

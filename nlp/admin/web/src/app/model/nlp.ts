@@ -317,7 +317,8 @@ export class ParseQuery extends ApplicationScopedQuery {
               public applicationName: string,
               public language: string,
               public query: string,
-              public checkExistingQuery: boolean) {
+              public checkExistingQuery: boolean,
+              public state?: string) {
     super(namespace, applicationName, language)
   }
 }

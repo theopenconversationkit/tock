@@ -17,10 +17,21 @@
 <md-card class="try">
   <md-card-content>
     <md-input-container class="try-input">
-      <input mdInput placeholder="Write some text"  #tryIt (keyup.enter)="onTry(tryIt.value)">
+      <input mdInput placeholder="Write some text" #tryIt (keyup.enter)="onTry(tryIt.value)">
     </md-input-container>
-    <button md-button (click)="onTry(tryIt.value)">GO</button>
-    <md-checkbox [(ngModel)]="skipCache" md-tooltip="Force NLP model query (skip cache)">skip cache</md-checkbox>
+    <button md-raised-button (click)="onTry(tryIt.value)" color="primary">GO</button>
+    <button md-raised-button (click)="advanced = true" class="advanced">Advanced</button>
+    <md-card *ngIf="advanced">
+      <md-card-content>
+        <md-input-container>
+          <input mdInput [(ngModel)]="queryState" placeholder="Enter query state">
+        </md-input-container><br>
+        <md-checkbox [(ngModel)]="skipCache" md-tooltip="Force NLP model query (skip cache)">skip cache</md-checkbox>
+      </md-card-content>
+      <md-card-actions>
+        <button md-raised-button (click)="advanced = false">Hide advanced parameters</button>
+      </md-card-actions>
+    </md-card>
   </md-card-content>
 </md-card>
 <br>

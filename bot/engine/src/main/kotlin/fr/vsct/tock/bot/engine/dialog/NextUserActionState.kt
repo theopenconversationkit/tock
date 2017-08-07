@@ -36,7 +36,11 @@ data class NextUserActionState(
         /**
          * Entity parsing will use this referenceTimezone as reference.
          */
-        var referenceTimezone: ZoneId? = null
+        var referenceTimezone: ZoneId? = null,
+        /**
+         * NLP query states.
+         */
+        var states:Set<String>? = null
 ) {
 
     fun setExpectedIntentFromStory(story: StoryDefinition?) {

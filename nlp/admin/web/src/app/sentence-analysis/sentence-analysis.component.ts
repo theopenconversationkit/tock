@@ -136,7 +136,15 @@ export class SentenceAnalysisComponent implements OnInit {
       this.snackBar.open(`Intent ${name} already exists`, "Error", {duration: 5000});
       return false
     } else {
-      this.nlp.saveIntent(new Intent(name, this.state.user.organization, [], [this.state.currentApplication._id], null))
+      this.nlp
+        .saveIntent(
+          new Intent(
+            name,
+            this.state.user.organization,
+            [],
+            [this.state.currentApplication._id],
+            [])
+        )
         .subscribe(intent => {
             this.state.currentApplication.intents.push(intent);
             this.onIntentChange(intent._id);

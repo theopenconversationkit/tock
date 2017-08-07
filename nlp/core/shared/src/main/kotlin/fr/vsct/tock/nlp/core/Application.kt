@@ -26,11 +26,7 @@ data class Application(
         val intents: List<Intent>,
         val supportedLocales: Set<Locale>) {
 
-    private val intentMap: Map<String, Intent>
-
-    init {
-        intentMap = intents.associateBy { it.name }
-    }
+    private val intentMap: Map<String, Intent> = intents.associateBy { it.name }
 
     fun getIntent(intentName: String): Intent = intentMap[intentName] ?: error("Intent $intentName does not exist in $name")
 

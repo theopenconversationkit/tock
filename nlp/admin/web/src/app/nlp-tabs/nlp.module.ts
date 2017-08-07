@@ -37,6 +37,7 @@ import {ApplicationResolver} from "../core/application.resolver";
 import {SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.component";
 
 import {MomentModule} from "angular2-moment";
+import {AddStateDialogComponent} from "../intents/add-state/add-state-dialog.component";
 
 const routes: Routes = [
   {
@@ -107,7 +108,8 @@ export class NlpRoutingModule {
     CreateEntityDialogComponent,
     CreateIntentDialogComponent,
     SentencesScrollComponent,
-    DisplayFullLogComponent
+    DisplayFullLogComponent,
+    AddStateDialogComponent
   ],
   exports: [
     SentenceAnalysisComponent
@@ -118,7 +120,8 @@ export class NlpRoutingModule {
   entryComponents: [
     CreateEntityDialogComponent,
     CreateIntentDialogComponent,
-    DisplayFullLogComponent
+    DisplayFullLogComponent,
+    AddStateDialogComponent
   ]
 })
 export class NlpModule {

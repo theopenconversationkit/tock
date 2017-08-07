@@ -70,7 +70,8 @@ export class Intent {
               public namespace: string,
               public entities: EntityDefinition[],
               public applications: String[],
-              public _id: string) {
+              public mandatoryStates: String[],
+              public _id?: string) {
     Intent.sortEntities(entities);
   }
 
