@@ -122,7 +122,7 @@ object ParserService : Parser {
 
             val referenceDate = context.referenceDate.withZoneSameInstant(context.referenceTimezone)
 
-            val metadata: ParseMetadata = ParseMetadata(application, language, referenceDate, expectedIntentLoader.invoke())
+            val metadata = ParseMetadata(application, language, referenceDate, expectedIntentLoader.invoke())
 
             var result: ParseResult? = null
             try {
