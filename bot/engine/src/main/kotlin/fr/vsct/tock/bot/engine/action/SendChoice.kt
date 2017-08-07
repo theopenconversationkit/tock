@@ -100,8 +100,8 @@ class SendChoice(playerId: PlayerId,
                 val params = parameters +
                         listOfNotNull(
                                 if (currentStep != null) STEP_PARAMETER to currentStep.name else null,
-                                if (currentIntent != intent)
-                                    PREVIOUS_INTENT_PARAMETER to currentIntent?.name else null
+                                if (currentIntent != null && currentIntent != intent)
+                                    PREVIOUS_INTENT_PARAMETER to currentIntent.name else null
                         )
 
                 if (params.isNotEmpty()) {
