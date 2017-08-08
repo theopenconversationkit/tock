@@ -20,7 +20,7 @@ package fr.vsct.tock.nlp.front.shared.config
  *
  */
 data class EntityTypeDefinition(val name: String,
-                                val description: String,
+                                val description: String = "",
                                 val subEntities: List<EntityDefinition> = emptyList(),
                                 val _id: String? = null) {
 

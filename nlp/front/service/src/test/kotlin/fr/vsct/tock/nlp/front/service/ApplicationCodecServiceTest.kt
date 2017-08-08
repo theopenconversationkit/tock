@@ -16,18 +16,10 @@
 
 package fr.vsct.tock.nlp.front.service
 
-import com.github.salomonbrys.kodein.Kodein
-import com.github.salomonbrys.kodein.KodeinInjector
-import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
 import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
-import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
+import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
-import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.tockInternalInjector
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertFalse
@@ -35,21 +27,13 @@ import kotlin.test.assertFalse
 /**
  *
  */
-class ApplicationCodecServiceTest {
+class ApplicationCodecServiceTest : AbstractTest() {
 
     val app = ApplicationDefinition("test", "namespace", _id = "id")
-    val applicationConfiguration: ApplicationConfiguration = mock() {
-        on { getApplicationByNamespaceAndName(any(), any()) } doReturn app
-    }
 
     @Before
     fun before() {
-        tockInternalInjector = KodeinInjector()
-        injector.inject(Kodein {
-            import(Kodein.Module {
-                bind<ApplicationConfiguration>() with provider { applicationConfiguration }
-            })
-        })
+        whenever(context.config.getApplicationByNamespaceAndName(any(), any())).thenReturn(app)
     }
 
     @Test

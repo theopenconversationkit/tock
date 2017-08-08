@@ -22,10 +22,12 @@ import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.NlpCore
-import fr.vsct.tock.nlp.core.client.NlpCoreClient
+import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
+import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.provide
 import mu.KotlinLogging
 import java.util.concurrent.ConcurrentHashMap
 
@@ -36,16 +38,16 @@ internal object FrontRepository {
 
     private val logger = KotlinLogging.logger {}
 
-    val core: NlpCore by lazy { NlpCoreClient }
+    val core: NlpCore get() = injector.provide()
 
-    val config = ApplicationConfigurationService
+    val config: ApplicationConfiguration get() = injector.provide()
 
     val entityTypes: MutableMap<String, EntityType> by lazy {
         loadEntityTypes()
     }
 
     private fun loadEntityTypes(): MutableMap<String, EntityType> {
-        val entityTypesDefinitionMap = entityTypeDAO.getEntityTypes().map { it.name to it }.toMap().toMutableMap()
+        val entityTypesDefinitionMap = config.getEntityTypes().map { it.name to it }.toMap().toMutableMap()
 
         val entityTypesWithoutSubEntities = entityTypesDefinitionMap
                 .filterValues { it.subEntities.isEmpty() }
@@ -68,8 +70,8 @@ internal object FrontRepository {
                         }
                     }
                     entityTypes.putAll(newValues)
-                    newValues.get(it)
-                } as (MutableMap<String, EntityType>)
+                    newValues[it] ?: error("unknown entity type $it")
+                }
     }
 
     fun entityTypeExists(name: String): Boolean {
