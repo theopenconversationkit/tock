@@ -29,7 +29,7 @@
     <description>Services for Duckling Entities</description>
 
     <properties>
-        <duckling>0.4.13</duckling>
+        <duckling>0.4.23</duckling>
         <duckling.basedir>${project.basedir}</duckling.basedir>
     </properties>
 
