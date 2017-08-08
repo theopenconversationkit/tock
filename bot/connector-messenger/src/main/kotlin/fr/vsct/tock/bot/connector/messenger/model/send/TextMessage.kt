@@ -44,5 +44,9 @@ class TextMessage(val text: String, quickReplies:List<QuickReply>? = null) : Mes
         return text.hashCode()
     }
 
+    override fun toString(): String {
+        return "TextMessage(text='$text',quickReplies=$quickReplies)"
+    }
+
 
 }
