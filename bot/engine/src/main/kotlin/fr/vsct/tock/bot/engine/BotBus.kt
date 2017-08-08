@@ -106,6 +106,9 @@ interface BotBus {
      */
     fun nlpStats(): NlpCallStats? = if (action is SendSentence) (action as SendSentence).nlpStats else null
 
+    fun isIntentReturnedByNlp(intent: Intent, minProbability: Double): Boolean
+            = nlpStats()?.hasIntent(intent, minProbability) ?: false
+
     /**
      * Returns the value of the specified choice parameter, null if the user action is not a [SendChoice]
      * or if this parameter is not set.
