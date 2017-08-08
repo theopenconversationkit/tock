@@ -23,7 +23,8 @@ import fr.vsct.tock.bot.definition.Intent
  */
 data class NlpCallStats(val intentProbability: Double?,
                         val entitiesProbability: Double?,
-                        val otherIntentsProbabilities: List<NlpIntentStat>) {
+                        val otherIntentsProbabilities: List<NlpIntentStat>,
+                        var expectedIntent: Intent? = null) {
 
     fun hasIntent(intent: Intent, minProbability:Double = 0.0) : Boolean
         = otherIntentsProbabilities.any { it.intent == intent && it.probability > minProbability }

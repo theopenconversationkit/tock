@@ -95,14 +95,15 @@ internal class Nlp : NlpController {
                                                             botDefinition.findIntent(it.key.name()),
                                                             it.value
                                                     )
-                                                }
+                                                },
+                                        dialog.state.nextActionState?.expectedIntent
                                 )
                                 dialog.apply {
                                     state.currentIntent = sentence.state.currentIntent
                                     state.mergeEntityValuesFromAction(sentence)
                                 }
                             } ?: listenNlpErrorCall(query, null)
-                } catch(t: Throwable) {
+                } catch (t: Throwable) {
                     logger.error(t)
                     listenNlpErrorCall(query, t)
                 }
@@ -114,7 +115,7 @@ internal class Nlp : NlpController {
                 BotRepository.nlpListeners.forEach {
                     try {
                         it.handleKeyword(sentence)?.apply { return this }
-                    } catch(e: Exception) {
+                    } catch (e: Exception) {
                         logger.error(e)
                     }
                 }
@@ -126,7 +127,7 @@ internal class Nlp : NlpController {
             BotRepository.nlpListeners.forEach {
                 try {
                     it.success(query, result)
-                } catch(e: Exception) {
+                } catch (e: Exception) {
                     logger.error(e)
                 }
             }
@@ -136,7 +137,7 @@ internal class Nlp : NlpController {
             BotRepository.nlpListeners.forEach {
                 try {
                     it.error(query, throwable)
-                } catch(e: Exception) {
+                } catch (e: Exception) {
                     logger.error(e)
                 }
             }
