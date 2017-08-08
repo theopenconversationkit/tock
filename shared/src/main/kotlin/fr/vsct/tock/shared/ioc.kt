@@ -24,10 +24,25 @@ import fr.vsct.tock.shared.cache.TockCache
 import fr.vsct.tock.shared.cache.mongo.MongoCache
 import fr.vsct.tock.shared.vertx.vertxRunner
 
+/**
+ * internal injector - reset it only for tests.
+ */
 var tockInternalInjector = KodeinInjector()
 
+/**
+ * main Tock injector.
+ */
 val injector: KodeinInjector get() = tockInternalInjector
 
+/**
+ * extension function. Pattern:
+ * <code>val core: NlpCore get() = injector.provide()</code>
+ */
+inline fun <reified T : Any> KodeinInjector.provide(): T = injector.provider<T>().value.invoke()
+
+/**
+ * IOC of shared module.
+ */
 val sharedModule = Kodein.Module {
     bind<Executor>() with provider { vertxRunner() }
     bind<TockCache>() with provider { MongoCache }
