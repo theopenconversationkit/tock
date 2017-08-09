@@ -36,5 +36,4 @@ val frontModule = Kodein.Module {
     bind<ModelUpdater>() with provider { ModelUpdaterService }
     bind<ApplicationCodec>() with provider { ApplicationCodecService }
     bind<ApplicationMonitor>() with provider { ApplicationMonitorService }
-    bind<NlpCore>() with provider { NlpCoreClient }
 }
