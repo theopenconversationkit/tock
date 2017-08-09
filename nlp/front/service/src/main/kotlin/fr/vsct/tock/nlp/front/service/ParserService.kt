@@ -24,19 +24,19 @@ import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
 import fr.vsct.tock.nlp.front.service.FrontRepository.config
 import fr.vsct.tock.nlp.front.service.FrontRepository.core
 import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
-import fr.vsct.tock.nlp.front.service.selector.IntentSelectorService.isValidSentence
-import fr.vsct.tock.nlp.front.service.selector.IntentSelectorService.select
+import fr.vsct.tock.nlp.front.service.selector.IntentSelectorService
+import fr.vsct.tock.nlp.front.service.selector.IntentSelectorService.isValidClassifiedSentence
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
 import fr.vsct.tock.nlp.front.shared.Parser
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
-import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeResult
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLog
+import fr.vsct.tock.nlp.front.shared.parser.IntentQualifier
 import fr.vsct.tock.nlp.front.shared.parser.ParseIntentEntitiesQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
@@ -45,9 +45,9 @@ import fr.vsct.tock.nlp.front.shared.value.ValueTransformer
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.withNamespace
+import fr.vsct.tock.shared.withoutNamespace
 import mu.KotlinLogging
 import java.time.ZonedDateTime
 import java.util.Locale
@@ -63,11 +63,11 @@ object ParserService : Parser {
     private val executor: Executor by injector.instance()
     private val logDAO: ParseRequestLogDAO by injector.instance()
 
-    private data class ParseMetadata(
+    private data class CallMetadata(
             val application: ApplicationDefinition,
             val language: Locale,
             val referenceDate: ZonedDateTime,
-            val expectedIntent: IntentDefinition? = null)
+            val intentsQualifiers: Set<IntentQualifier>)
 
     internal fun formatQuery(query: String): String {
         return query.replace(tabCarriageRegexp, "").trim()
@@ -94,23 +94,16 @@ object ParserService : Parser {
     }
 
     override fun parseIntentEntities(query: ParseIntentEntitiesQuery): ParseResult {
-        return setMetadataAndParse(
-                query.query,
-                {
-                    config.getIntentByNamespaceAndName(
-                            query.intent.namespace(),
-                            query.intent.name())
-                }
-        )
+        return setMetadataAndParse(query.query, query.intents)
     }
 
     override fun parse(query: ParseQuery): ParseResult {
-        return setMetadataAndParse(query, { null })
+        return setMetadataAndParse(query, emptySet())
     }
 
     private fun setMetadataAndParse(
             query: ParseQuery,
-            expectedIntentLoader: () -> IntentDefinition?): ParseResult {
+            intentsQualifiers: Set<IntentQualifier>): ParseResult {
         val time = System.currentTimeMillis()
         with(query) {
             val application = config.getApplicationByNamespaceAndName(namespace, applicationName)
@@ -120,7 +113,7 @@ object ParserService : Parser {
 
             val referenceDate = context.referenceDate.withZoneSameInstant(context.referenceTimezone)
 
-            val metadata = ParseMetadata(application, language, referenceDate, expectedIntentLoader.invoke())
+            val metadata = CallMetadata(application, language, referenceDate, intentsQualifiers)
 
             var result: ParseResult? = null
             try {
@@ -141,9 +134,9 @@ object ParserService : Parser {
         }
     }
 
-    private fun parse(query: ParseQuery, metadata: ParseMetadata): ParseResult {
+    private fun parse(query: ParseQuery, metadata: CallMetadata): ParseResult {
         with(query) {
-            val (application, language, referenceDate, expectedIntent) = metadata
+            val (application, language, referenceDate, intentsQualifiers) = metadata
 
             //TODO multi query handling
             val q = formatQuery(queries.first())
@@ -165,8 +158,14 @@ object ParserService : Parser {
                     .firstOrNull()
 
             val callContext = CallContext(toApplication(application), language, application.nlpEngineType, referenceDate)
+            val data = ParserRequestData(
+                    application,
+                    query,
+                    validatedSentence,
+                    intentsQualifiers,
+                    config.getIntentsByApplicationId(application._id!!))
 
-            if (isValidSentence(query, validatedSentence, expectedIntent)) {
+            if (isValidClassifiedSentence(data)) {
                 val entityValues = core.evaluateEntities(
                         callContext,
                         q,
@@ -192,7 +191,18 @@ object ParserService : Parser {
                 )
             }
 
-            val result = select(query, application, callContext, q, expectedIntent)
+            val intentSelector = IntentSelectorService.selector(data)
+            val result = core.parse(callContext, q, intentSelector)
+                    .run {
+                        ParseResult(
+                                intent.withoutNamespace(),
+                                intent.namespace(),
+                                entities.map { ParsedEntityValue(it.value, it.probability, core.supportValuesMerge(it.entityType)) },
+                                intentProbability,
+                                entitiesProbability,
+                                q,
+                                intentSelector.otherIntents)
+                    }
 
             fun toClassifiedSentence(): ClassifiedSentence {
                 val intentId = config.getIntentIdByQualifiedName(result.intent.withNamespace(result.intentNamespace))!!
@@ -210,7 +220,11 @@ object ParserService : Parser {
                 executor.executeBlocking {
                     toClassifiedSentence().apply {
                         if (!hasSameContent(validatedSentence)) {
-                            config.save(this)
+                            //do not persist analyse if intent probability is < 0.1
+                            val sentence = if (lastIntentProbability > 0.1) this
+                            else copy(classification = classification.copy(UNKNOWN_INTENT, emptyList()))
+
+                            config.save(sentence)
                         }
                     }
                 }

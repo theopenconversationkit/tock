@@ -28,6 +28,7 @@ import fr.vsct.tock.bot.mongo.DialogCol.EntityStateValueWrapper
 import fr.vsct.tock.bot.mongo.UserTimelineCol
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.api.client.model.EntityType
+import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import fr.vsct.tock.shared.jackson.mapper
 import org.junit.Test
@@ -67,7 +68,7 @@ class DialogColDeserializationTest {
                 emptyMap(),
                 UserLocation(1.0, 2.0),
                 NextUserActionState(
-                        Intent("test"),
+                        listOf(NlpIntentQualifier("test")),
                         ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC")),
                         ZoneId.systemDefault()
                 )

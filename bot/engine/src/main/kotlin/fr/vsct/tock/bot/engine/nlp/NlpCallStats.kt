@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.engine.nlp
 
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
 
 /**
  * Stats about nlp call.
@@ -24,8 +25,8 @@ import fr.vsct.tock.bot.definition.Intent
 data class NlpCallStats(val intentProbability: Double?,
                         val entitiesProbability: Double?,
                         val otherIntentsProbabilities: List<NlpIntentStat>,
-                        var expectedIntent: Intent? = null) {
+                        var intentsQualifiers: List<NlpIntentQualifier>? = null) {
 
-    fun hasIntent(intent: Intent, minProbability:Double = 0.0) : Boolean
-        = otherIntentsProbabilities.any { it.intent == intent && it.probability > minProbability }
+    fun hasIntent(intent: Intent, minProbability: Double = 0.0): Boolean
+            = otherIntentsProbabilities.any { it.intent == intent && it.probability > minProbability }
 }

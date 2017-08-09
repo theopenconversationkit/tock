@@ -20,7 +20,7 @@ package fr.vsct.tock.nlp.front.shared.parser
  *
  */
 data class ParseIntentEntitiesQuery(
-        val intent: String,
+        val intents: Set<IntentQualifier>,
         val query: ParseQuery
 ) {
 }

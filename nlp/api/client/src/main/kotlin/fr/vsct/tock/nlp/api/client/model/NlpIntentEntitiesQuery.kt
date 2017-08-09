@@ -19,6 +19,6 @@ package fr.vsct.tock.nlp.api.client.model
 /**
  *
  */
-data class NlpIntentEntitiesQuery(val intent: String,
+data class NlpIntentEntitiesQuery(val intents: Set<NlpIntentQualifier>,
                                   val query: NlpQuery) {
 }

@@ -19,10 +19,10 @@ package fr.vsct.tock.bot.engine.nlp
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
-import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.BotEngineTest
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
+import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
 import org.junit.Test
 
 /**
@@ -38,8 +38,8 @@ class NlpTest : BotEngineTest() {
     }
 
     @Test
-    fun parseSentence_shouldCallNlpClientParseIntentEntities_whenExpectedIntentIsNotNullInDialogState() {
-        dialog.state.nextActionState = NextUserActionState(Intent("test2"))
+    fun parseSentence_shouldCallNlpClientParseIntentEntities_whenIntentsQualifiersIsNotNullInDialogState() {
+        dialog.state.nextActionState = NextUserActionState(listOf(NlpIntentQualifier("test2")))
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
         verify(nlpClient).parseIntentEntities(any())
         verify(nlpClient, never()).parse(any())

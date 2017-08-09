@@ -85,6 +85,7 @@ internal class Nlp : NlpController {
                                         nlpResult.intent,
                                         IntentContext(userTimeline, dialog, sentence)
                                 )
+
                                 sentence.state.entityValues.addAll(nlpResult.entities.map { ContextValue(nlpResult.retainedQuery, it) })
                                 sentence.nlpStats = NlpCallStats(
                                         nlpResult.intentProbability,
@@ -96,7 +97,7 @@ internal class Nlp : NlpController {
                                                             it.value
                                                     )
                                                 },
-                                        dialog.state.nextActionState?.expectedIntent
+                                        dialog.state.nextActionState?.intentsQualifiers
                                 )
                                 dialog.apply {
                                     state.currentIntent = sentence.state.currentIntent
@@ -234,19 +235,25 @@ internal class Nlp : NlpController {
         }
 
         private fun parse(request: NlpQuery): NlpResult? {
-            val expectedIntent = dialog.state.nextActionState?.expectedIntent
-            val response = if (expectedIntent == null) {
+            val intentsQualifiers = dialog.state.nextActionState?.intentsQualifiers
+            val useQualifiers = intentsQualifiers != null && intentsQualifiers.isNotEmpty()
+            val response = if (!useQualifiers) {
                 nlpClient.parse(request)
             } else {
                 nlpClient.parseIntentEntities(
                         NlpIntentEntitiesQuery(
-                                expectedIntent.name.withNamespace(request.namespace),
+                                intentsQualifiers!!.map { it.copy(intent = it.intent.withNamespace(request.namespace)) }.toSet(),
                                 request)
                 )
             }
             val result = response.body()
             if (result == null) {
                 logger.error { "nlp error : ${response.errorBody()?.string()}" }
+            } else if (useQualifiers) {
+                //force intents qualifiers if unknown answer
+                if (intentsQualifiers!!.none { it.intent == result.intent }) {
+                    return result.copy(intent = intentsQualifiers.first().intent)
+                }
             }
             return result
         }

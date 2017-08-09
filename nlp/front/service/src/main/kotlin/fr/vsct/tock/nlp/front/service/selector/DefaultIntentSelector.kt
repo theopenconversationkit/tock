@@ -18,14 +18,12 @@ package fr.vsct.tock.nlp.front.service.selector
 
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.IntentClassification
-import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import fr.vsct.tock.nlp.front.service.ParserRequestData
 
 /**
  *
  */
-internal class DefaultIntentSelector(
-        override val states: Set<String>,
-        override val intentsMap: Map<String, IntentDefinition>) : SelectorBase() {
+internal class DefaultIntentSelector(data: ParserRequestData) : SelectorBase(data) {
 
     override fun selectIntent(classification: IntentClassification): Pair<Intent, Double>? {
         with(classification) {
@@ -33,7 +31,7 @@ internal class DefaultIntentSelector(
             var result: Pair<Intent, Double>? = null
             while (hasNext() && result == null) {
                 next().apply {
-                    if (isAllowedIntent(this)) {
+                    if (data.isStateSupportedByIntent(this)) {
                         result = this to probability()
                     }
                 }
@@ -42,7 +40,7 @@ internal class DefaultIntentSelector(
             //and take all other intents where probability is greater than 0.1
             while (hasNext()) {
                 next().run {
-                    if (isAllowedIntent(this)) {
+                    if (data.isStateSupportedByIntent(this)) {
                         (this to probability())
                                 .takeIf { (_, prob) -> prob > 0.1 }
                                 ?.also { (intent, prob) -> otherIntents.put(intent.name, prob) }

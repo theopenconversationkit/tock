@@ -14,19 +14,12 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.front.service.selector
-
-import fr.vsct.tock.nlp.core.IntentSelector
-import fr.vsct.tock.nlp.front.service.ParserRequestData
+package fr.vsct.tock.nlp.api.client.model
 
 /**
  *
  */
-internal abstract class SelectorBase(val data: ParserRequestData) : IntentSelector {
-
-    /**
-     * The intents with p > 0.1
-     */
-    val otherIntents: MutableMap<String, Double> = mutableMapOf()
-
+data class NlpIntentQualifier(
+        val intent: String,
+        val modifier: Double = 0.0) {
 }

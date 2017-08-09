@@ -16,8 +16,7 @@
 
 package fr.vsct.tock.bot.engine.dialog
 
-import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.definition.StoryDefinition
+import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -26,9 +25,9 @@ import java.time.ZonedDateTime
  */
 data class NextUserActionState(
         /**
-         * Next sentence will be analysed for this intent.
+         * Next sentence will be analysed for these intents.
          */
-        var expectedIntent: Intent? = null,
+        var intentsQualifiers: List<NlpIntentQualifier>? = null,
         /**
          * Entity parsing will use this date as reference.
          */
@@ -40,10 +39,8 @@ data class NextUserActionState(
         /**
          * NLP query states.
          */
-        var states:Set<String>? = null
+        var states: Set<String>? = null
 ) {
 
-    fun setExpectedIntentFromStory(story: StoryDefinition?) {
-        expectedIntent = story?.mainIntent()
-    }
+
 }

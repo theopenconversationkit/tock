@@ -43,7 +43,7 @@ data class IntentDefinition(val name: String,
         return entities.firstOrNull { it.entityTypeName == type && it.role == role }
     }
 
-    fun isAllowed(states: Set<String>): Boolean {
+    fun supportStates(states: Set<String>): Boolean {
         return mandatoryStates.isEmpty()
                 || states.any { mandatoryStates.contains(it) }
     }
