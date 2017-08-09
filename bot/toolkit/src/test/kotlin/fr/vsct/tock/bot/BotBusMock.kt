@@ -61,6 +61,14 @@ open class BotBusMock(override val userTimeline: UserTimeline,
 
     val logs: List<BotBusMockLog> = mutableListOf()
 
+    val firstAnswer: BotBusMockLog get() = logs.first()
+
+    val secondAnswer: BotBusMockLog get() = logs[1]
+
+    val thirdAnswer: BotBusMockLog get() = logs[2]
+
+    val lastAnswer: BotBusMockLog get() = logs.last()
+
     override val applicationId = action.applicationId
     override val botId = action.recipientId
     override val userId = action.playerId

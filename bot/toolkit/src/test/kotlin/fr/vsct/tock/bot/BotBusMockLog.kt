@@ -18,6 +18,7 @@ package fr.vsct.tock.bot
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.messenger.messengerConnectorType
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 
@@ -28,6 +29,8 @@ data class BotBusMockLog(val action: Action, val delay: Long) {
 
     fun message(connectorType: ConnectorType): ConnectorMessage?
             = (action as SendSentence).message(connectorType)
+
+    fun messenger() = message(messengerConnectorType)
 
     fun text(): String? = (action as SendSentence).text
 
