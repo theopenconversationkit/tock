@@ -33,6 +33,7 @@ import io.vertx.core.http.HttpMethod.DELETE
 import io.vertx.core.http.HttpMethod.GET
 import io.vertx.core.http.HttpMethod.POST
 import io.vertx.core.http.HttpServer
+import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.auth.AbstractUser
@@ -101,7 +102,11 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
     }
 
     protected val server: HttpServer by lazy {
-        vertx.createHttpServer()
+        vertx.createHttpServer(
+                HttpServerOptions()
+                        .setCompressionSupported(verticleBooleanProperty("compression_supported", true))
+                        .setDecompressionSupported(verticleBooleanProperty("compression_supported", true))
+        )
     }
 
     protected open val rootPath: String = ""
@@ -188,12 +193,13 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
 
     protected fun verticleLongProperty(propertyName: String, defaultValue: Long): Long = longProperty(verticleProperty(propertyName), defaultValue)
 
+    protected fun verticleBooleanProperty(propertyName: String, defaultValue: Boolean): Boolean = booleanProperty(verticleProperty(propertyName), defaultValue)
+
     protected fun verticleProperty(propertyName: String, defaultValue: String): String = property(verticleProperty(propertyName), defaultValue)
 
     protected fun blocking(method: HttpMethod, path: String, handler: (RoutingContext) -> Unit) {
         router.route(method, "$rootPath$path")
-                .blockingHandler({
-                    context ->
+                .blockingHandler({ context ->
                     try {
                         handler.invoke(context)
                     } catch (t: Throwable) {
@@ -212,8 +218,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
             method: HttpMethod,
             path: String,
             crossinline handler: (RoutingContext, I) -> O) {
-        blocking(method, path, {
-            context ->
+        blocking(method, path, { context ->
             val input = context.readJson<I>()
 
             val result = handler.invoke(context, input)
@@ -222,16 +227,14 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
     }
 
     protected fun <O> blockingWithoutBodyJson(method: HttpMethod, path: String, handler: (RoutingContext) -> O) {
-        blocking(method, path, {
-            context ->
+        blocking(method, path, { context ->
             val result = handler.invoke(context)
             context.endJson(result)
         })
     }
 
     protected fun <O> blockingJsonGet(path: String, handler: (RoutingContext) -> O) {
-        blocking(GET, path, {
-            context ->
+        blocking(GET, path, { context ->
             val result = handler.invoke(context)
             context.endJson(result)
         })
