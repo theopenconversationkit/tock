@@ -34,6 +34,7 @@ import fr.vsct.tock.nlp.front.shared.config.Classification
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
+import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
@@ -171,13 +172,13 @@ object ApplicationCodecService : ApplicationCodec {
                     }
 
             val appId = app._id!!
-            val intentsMap =
+            val intentsByNameMap =
                     config.getIntentsByApplicationId(appId)
                             .groupBy { it.qualifiedName }
                             .mapValues { it.value.first() }
                             .toMutableMap()
             val sentencesMap = config
-                    .getSentences(intentsMap.values.map { it._id!! }.toSet())
+                    .getSentences(intentsByNameMap.values.map { it._id!! }.toSet())
                     .groupBy { it.text }
                     .toMutableMap()
 
@@ -190,49 +191,57 @@ object ApplicationCodecService : ApplicationCodec {
                         app = config.save(app.copy(supportedLocales = app.supportedLocales + language))
                     }
 
-                    val intentId =
-                            intentsMap[s.intent]
-                                    .let { intentId ->
-                                        if (intentId == null) {
-                                            val intent = config.getIntentByNamespaceAndName(s.intent.namespace(), s.intent.name())
-                                            if (intent != null) {
-                                                val i = intent.copy(applications = intent.applications + appId)
-                                                config.save(i)
-                                                intentsMap[intent.qualifiedName] = i
-                                                config.getSentences(setOf(i._id!!))
-                                                        .forEach { sentence ->
-                                                            sentencesMap.compute(
-                                                                    sentence.text,
-                                                                    { _, v -> (v ?: emptyList()) + sentence }
-                                                            )
-                                                        }
-                                                i
-                                            } else {
-                                                IntentDefinition(
-                                                        s.intent.name(),
-                                                        s.intent.namespace(),
-                                                        setOf(appId),
-                                                        emptySet()
-                                                ).run {
-                                                    config.save(this)
-                                                    intentsMap[qualifiedName] = this
-                                                    report.add(this)
-                                                    this
+                    val newIntent : IntentDefinition= intentsByNameMap[s.intent]
+                            .let { newIntent ->
+                                if (newIntent == null) {
+                                    val intent = config.getIntentByNamespaceAndName(s.intent.namespace(), s.intent.name())
+                                    if (intent != null) {
+                                        val i = intent.copy(applications = intent.applications + appId)
+                                        config.save(i)
+                                        intentsByNameMap[intent.qualifiedName] = i
+                                        config.getSentences(setOf(i._id!!))
+                                                .forEach { sentence ->
+                                                    sentencesMap.compute(
+                                                            sentence.text,
+                                                            { _, v -> (v ?: emptyList()) + sentence }
+                                                    )
                                                 }
-                                            }
-                                        } else {
-                                            intentId
+                                        i
+                                    } else {
+                                        IntentDefinition(
+                                                s.intent.name(),
+                                                s.intent.namespace(),
+                                                setOf(appId),
+                                                emptySet()
+                                        ).run {
+                                            config.save(this)
+                                            intentsByNameMap[qualifiedName] = this
+                                            report.add(this)
+                                            this
                                         }
                                     }
+                                } else {
+                                    newIntent
+                                }
+                            }
 
-                    s.entities.forEach {
-                        if (!entityTypeExists(it.entity)) {
+                    s.entities.forEach { e ->
+                        if (!entityTypeExists(e.entity)) {
                             val newEntity = EntityTypeDefinition(
-                                    it.entity,
+                                    e.entity,
                                     ""
                             )
                             config.save(newEntity)
                             report.add(newEntity)
+                        }
+                        if (newIntent.entities.none { it.entityTypeName == e.entity && it.role == e.role }) {
+                            val intentWithEntities = newIntent.copy(
+                                    entities = newIntent.entities
+                                            + EntityDefinition(
+                                            e.entity,
+                                            e.role))
+                            config.save(intentWithEntities)
+                            intentsByNameMap[intentWithEntities.qualifiedName] = intentWithEntities
                         }
                     }
 
@@ -245,7 +254,7 @@ object ApplicationCodecService : ApplicationCodec {
                                     Instant.now(),
                                     validated,
                                     Classification(
-                                            intentId._id!!,
+                                            newIntent._id!!,
                                             s.entities.map {
                                                 ClassifiedEntity(
                                                         it.entity,
