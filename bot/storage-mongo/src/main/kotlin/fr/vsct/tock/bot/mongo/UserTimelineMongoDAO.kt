@@ -214,17 +214,25 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                             .getConfigurationsByNamespaceAndNlpModel(query.namespace, query.nlpModel)
                             .map { it.applicationId }
                             .distinct()
-            val dialogIds = if (query.text != null) {
-                dialogTextCol.find("{text:${query.text!!.json}}").toList().map { it.dialogId }.toSet()
-            } else {
+            val dialogIds = if (query.text.isNullOrBlank()) {
                 emptySet()
+            } else {
+                if (query.exactMatch) {
+                    dialogTextCol.find("{text:${textKey(query.text!!.trim()).json}}").toList().map { it.dialogId }.toSet()
+                } else {
+                    dialogTextCol.find("{text:/${textKey(query.text!!.trim())}/i}").toList().map { it.dialogId }.toSet()
+                }
+            }
+           if (dialogIds.isEmpty() && !query.text.isNullOrBlank()) {
+                return DialogReportQueryResult(0, 0, 0, emptyList())
             }
             val filter =
                     listOfNotNull(
                             "'applicationIds':{\$in:${applicationsIds.filter { it.isNotEmpty() }.json}}",
                             if (query.playerId == null) null else "'playerIds':${query.playerId!!.json}",
                             if (query.dialogId == null) null else "'_id':${query.dialogId!!.json}",
-                            if (dialogIds.isEmpty()) null else "'_id':{\$in:${dialogIds.json}}"
+                            if (dialogIds.isEmpty()) null else "'_id':{\$in:${dialogIds.json}}",
+                            if (query.intentName.isNullOrBlank()) null else "'stories.actions.state.currentIntent.name':${query.intentName!!.json}"
                     ).joinToString(",", "{$and:[", "]}") {
                         "{$it}"
                     }

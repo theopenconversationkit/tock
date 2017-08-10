@@ -40,6 +40,8 @@ data class Story(
 
     val lastAction: Action? get() = actions.lastOrNull()
 
+    fun findCurrentStep() = currentStep?.let { s -> definition.steps.firstOrNull { it.name == s } }
+
     private fun StoryHandler.sendStartEvent(bus: BotBus) {
         BotRepository.storyHandlerListeners.forEach {
             try {

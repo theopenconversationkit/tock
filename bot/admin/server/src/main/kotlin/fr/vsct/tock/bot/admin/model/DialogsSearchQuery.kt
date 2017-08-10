@@ -26,9 +26,11 @@ import fr.vsct.tock.nlp.admin.model.PaginatedQuery
 data class DialogsSearchQuery(
         val playerId: PlayerId?,
         val text: String?,
-        val dialogId: String?) : PaginatedQuery() {
+        val dialogId: String?,
+        val intentName:String?,
+        val exactMatch:Boolean) : PaginatedQuery() {
 
     fun toDialogReportQuery(): DialogReportQuery {
-        return DialogReportQuery(namespace, applicationName, language, start, size, playerId, text, dialogId)
+        return DialogReportQuery(namespace, applicationName, language, start, size, playerId, text, dialogId, intentName, exactMatch)
     }
 }

@@ -96,8 +96,8 @@ interface BotBus {
      * The current [StoryStep] of the [Story].
      */
     var step: StoryStep?
-        get() = story.currentStep?.let { s -> story.definition.steps.firstOrNull { it.name == s } }
-        set(step: StoryStep?) {
+        get() = story.findCurrentStep()
+        set(step) {
             story.currentStep = step?.name
         }
 

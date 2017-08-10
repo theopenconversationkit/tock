@@ -24,9 +24,11 @@ export class DialogReportQuery extends PaginatedQuery {
               public language: string,
               public start: number,
               public size: number,
+              public exactMatch:boolean,
               public playerId?: PlayerId,
               public dialogId?: string,
-              public text?: string) {
+              public text?: string,
+              public intentName?:string) {
     super(namespace, applicationName, language, start, size)
   }
 }

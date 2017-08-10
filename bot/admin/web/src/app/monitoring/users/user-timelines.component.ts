@@ -76,6 +76,7 @@ export class UserTimelinesComponent extends ScrollComponent<UserReport> {
       language,
       0,
       1,
+      true,
       user.playerId);
   }
 

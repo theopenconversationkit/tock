@@ -29,5 +29,7 @@ data class DialogReportQuery(val namespace: String,
                              val size: Int = 1,
                              val playerId: PlayerId? = null,
                              val text: String? = null,
-                             val dialogId:String?) {
+                             val dialogId: String? = null,
+                             val intentName: String? = null,
+                             val exactMatch:Boolean = false) {
 }

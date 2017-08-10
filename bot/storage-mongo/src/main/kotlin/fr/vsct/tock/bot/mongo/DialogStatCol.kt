@@ -13,24 +13,26 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-.lastUpdateDate {
-  font-style: italic;
-}
 
-.select-plan {
-  width: 200px;
-}
+package fr.vsct.tock.bot.mongo
 
-.search-input {
-  width:40%;
-  font-size: large;
-}
+import fr.vsct.tock.bot.engine.event.EventType
+import fr.vsct.tock.bot.engine.user.PlayerId
+import java.time.Instant
 
-.dialogs {
-  height:100%;
-  width:90%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top:20px;
-  text-align:center;
+/**
+ *
+ */
+data class DialogStatCol(
+        val userId: PlayerId,
+        val applicationId: String,
+        val dialogId: String,
+        val handled: Boolean,
+        val date: Instant,
+        val eventType: EventType,
+        val message: String?,
+        val story: String?,
+        val intent: String?,
+        val step: String?,
+        val _id: String?) {
 }

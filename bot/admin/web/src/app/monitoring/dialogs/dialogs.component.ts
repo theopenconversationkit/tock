@@ -34,7 +34,8 @@ import {ActivatedRoute, Router} from "@angular/router";
 })
 export class DialogsComponent extends ScrollComponent<DialogReport> {
 
-  filter: DialogFilter = new DialogFilter();
+  filter: DialogFilter;
+  state: StateService;
 
   constructor(state: StateService,
               private monitoring: MonitoringService,
@@ -43,13 +44,18 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
               private route: ActivatedRoute,
               private router: Router) {
     super(state);
+    this.state = state;
     this.botConfiguration.configurations.subscribe(_ => this.refresh());
   }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<DialogReport>> {
     return this.route.queryParams.flatMap(params => {
-      this.filter.dialogId = params["dialogId"];
-      this.filter.text = params["text"];
+      if(!this.filter) {
+        this.filter = new DialogFilter(true);
+        this.filter.dialogId = params["dialogId"];
+        this.filter.text = params["text"];
+        this.filter.intentName = params["intentName"];
+      }
       return this.monitoring.dialogs(this.buildDialogQuery(query));
     });
   }
@@ -59,14 +65,8 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
   }
 
   viewAllWithThisText() {
-    this.router.navigate(
-      ['/monitoring/dialogs'],
-      {
-        queryParams: {
-          text : this.filter.text
-        }
-      }
-    );
+    this.filter.dialogId = null;
+    this.refresh();
   }
 
   private buildDialogQuery(query: PaginatedQuery): DialogReportQuery {
@@ -76,9 +76,11 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
       query.language,
       query.start,
       query.size,
+      this.filter.exactMatch,
       null,
       this.filter.dialogId,
-      this.filter.text);
+      this.filter.text,
+      this.filter.intentName);
   }
 
   addDialogToTestPlan(planId: string, dialog: DialogReport) {
@@ -93,7 +95,9 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
 }
 
 export class DialogFilter {
-  constructor(public dialogId?: string,
-              public text?: string) {
+  constructor(public exactMatch:boolean,
+              public dialogId?: string,
+              public text?: string,
+              public intentName?:string) {
   }
 }

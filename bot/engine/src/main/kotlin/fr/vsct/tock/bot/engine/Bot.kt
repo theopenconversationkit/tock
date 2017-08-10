@@ -105,6 +105,9 @@ class Bot(botDefinitionBase: BotDefinition) {
             }
         }
 
+        //revalidate step
+        story.currentStep = story.findCurrentStep()?.name
+
         story.actions.add(action)
         return story
     }

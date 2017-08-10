@@ -15,6 +15,22 @@
   -->
 
 <div class="dialogs">
+  <md-card>
+    <md-card-content>
+      <md-input-container class="search-input">
+        <input mdInput placeholder="Search User text" [(ngModel)]="filter.text" (keyup.enter)="refresh()">
+      </md-input-container>
+      <md-checkbox [(ngModel)]="filter.exactMatch">Exact text match</md-checkbox>
+      <md-select placeholder="Intent" [(ngModel)]="filter.intentName" (change)="refresh()">
+        <md-option value="">All</md-option>
+        <md-option *ngFor="let intent of state.currentApplication.intents" [value]="intent.name">
+          {{intent.name}}
+        </md-option>
+        <md-option value="unknown">Unknown</md-option>
+      </md-select>
+      <button md-button (click)="refresh()">GO</button>
+    </md-card-content>
+  </md-card>
   <div *ngIf="total !== -1">
     <h1 *ngIf="total === 0">No dialogs found!
       <button md-button (click)="refresh()">
@@ -25,7 +41,8 @@
       <button md-button (click)="refresh()">
         <md-icon>refresh</md-icon>
       </button>
-      <button *ngIf="filter.dialogId" md-button (click)="viewAllWithThisText()" md-tooltip="View all dialogs using this text">
+      <button *ngIf="filter.dialogId" md-button (click)="viewAllWithThisText()"
+              md-tooltip="View all dialogs using this text">
         <md-icon>speaker_notes</md-icon>
       </button>
     </h1>
@@ -36,13 +53,13 @@
       [infiniteScrollThrottle]="300"
       (scrolled)="onScroll()">
       <div *ngFor="let dialog of data">
-            <tock-display-dialog
-              [dialog]="dialog">
-              <div *ngIf="dialog.actions.length === 0">No dialog</div>
-              <div *ngIf="dialog.actions.length !== 0">
+        <tock-display-dialog
+          [dialog]="dialog">
+          <div *ngIf="dialog.actions.length === 0">No dialog</div>
+          <div *ngIf="dialog.actions.length !== 0">
 
-              </div>
-            </tock-display-dialog>
+          </div>
+        </tock-display-dialog>
       </div>
     </div>
   </div>
