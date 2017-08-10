@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.engine.dialog
 
+import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -42,5 +43,12 @@ data class NextUserActionState(
         var states: Set<String>? = null
 ) {
 
-
+    constructor(intentsQualifiers: Map<Intent, Double>,
+                referenceDate: ZonedDateTime? = null,
+                referenceTimezone: ZoneId? = null,
+                states: Set<String>? = null) :
+            this(intentsQualifiers.map { NlpIntentQualifier(it.key.name, it.value) },
+                    referenceDate,
+                    referenceTimezone,
+                    states)
 }
