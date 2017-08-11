@@ -21,7 +21,7 @@ import com.mongodb.client.model.IndexOptions
 import fr.vsct.tock.nlp.front.service.storage.IntentDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
-import org.litote.kmongo.createIndex
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
@@ -37,8 +37,8 @@ object IntentDefinitionMongoDAO : IntentDefinitionDAO {
 
     private val col: MongoCollection<IntentDefinition> by lazy {
         val c = database.getCollection<IntentDefinition>()
-        c.createIndex("{'applications':1}")
-        c.createIndex("{'namespace':1,'name':1}", IndexOptions().unique(true))
+        c.ensureIndex("{'applications':1}")
+        c.ensureIndex("{'namespace':1,'name':1}", IndexOptions().unique(true))
         c
     }
 

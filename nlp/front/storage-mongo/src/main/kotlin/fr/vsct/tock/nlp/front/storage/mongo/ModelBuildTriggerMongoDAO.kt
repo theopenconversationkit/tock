@@ -19,7 +19,7 @@ package fr.vsct.tock.nlp.front.storage.mongo
 import com.mongodb.client.MongoCollection
 import fr.vsct.tock.nlp.front.service.storage.ModelBuildTriggerDAO
 import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
-import org.litote.kmongo.createIndex
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.deleteMany
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
@@ -32,7 +32,7 @@ object ModelBuildTriggerMongoDAO : ModelBuildTriggerDAO {
 
     private val col: MongoCollection<ModelBuildTrigger> by lazy {
         val c = MongoFrontConfiguration.database.getCollection<ModelBuildTrigger>()
-        c.createIndex("{'applicationId':1}")
+        c.ensureIndex("{'applicationId':1}")
         c
     }
 

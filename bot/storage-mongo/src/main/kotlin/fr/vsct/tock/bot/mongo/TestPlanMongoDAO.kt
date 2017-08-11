@@ -19,7 +19,7 @@ package fr.vsct.tock.bot.mongo
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanDAO
 import fr.vsct.tock.bot.admin.test.TestPlanExecution
-import org.litote.kmongo.createIndex
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.deleteMany
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.find
@@ -38,7 +38,7 @@ object TestPlanMongoDAO : TestPlanDAO {
     private val testPlanExecutionCol = MongoBotConfiguration.database.getCollection<TestPlanExecution>()
 
     init {
-        testPlanCol.createIndex("{applicationId:1}")
+        testPlanCol.ensureIndex("{applicationId:1}")
     }
 
     override fun save(testPlan: TestPlan) {

@@ -49,9 +49,10 @@ import org.litote.kmongo.MongoOperator.or
 import org.litote.kmongo.MongoOperator.sort
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.count
-import org.litote.kmongo.createIndex
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.deleteMany
 import org.litote.kmongo.deleteOne
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.find
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
@@ -81,12 +82,12 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     private val dialogTextCol = database.getCollection<DialogTextCol>("dialog_text")
 
     init {
-        userTimelineCol.createIndex("{playerId:1}", IndexOptions().unique(true))
-        dialogCol.createIndex("{playerIds:1}")
-        userTimelineCol.createIndex("{lastUpdateDate:1}")
-        dialogCol.createIndex("{lastUpdateDate:1}")
-        dialogTextCol.createIndex("{text:1}")
-        dialogTextCol.createIndex("{text:1, dialogId:1}", IndexOptions().unique(true))
+        userTimelineCol.ensureIndex("{playerId:1}", IndexOptions().unique(true))
+        dialogCol.ensureIndex("{playerIds:1}")
+        userTimelineCol.ensureIndex("{lastUpdateDate:1}")
+        dialogCol.ensureIndex("{lastUpdateDate:1}")
+        dialogTextCol.ensureIndex("{text:1}")
+        dialogTextCol.ensureIndex("{text:1, dialogId:1}", IndexOptions().unique(true))
     }
 
     override fun save(userTimeline: UserTimeline) {

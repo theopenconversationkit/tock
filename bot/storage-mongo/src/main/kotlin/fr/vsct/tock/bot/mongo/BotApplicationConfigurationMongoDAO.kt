@@ -22,7 +22,7 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.shared.error
 import mu.KotlinLogging
 import org.bson.types.ObjectId
-import org.litote.kmongo.createIndex
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.find
@@ -42,7 +42,7 @@ object BotApplicationConfigurationMongoDAO : BotApplicationConfigurationDAO {
     private val col = MongoBotConfiguration.database.getCollection<BotApplicationConfiguration>("bot_configuration")
 
     init {
-        col.createIndex("{applicationId:1, botId:1}", IndexOptions().unique(true))
+        col.ensureIndex("{applicationId:1, botId:1}", IndexOptions().unique(true))
     }
 
     override fun getConfigurationById(id: String): BotApplicationConfiguration? {

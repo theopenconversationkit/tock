@@ -33,7 +33,7 @@ import org.litote.kmongo.MongoOperator.ne
 import org.litote.kmongo.MongoOperator.pull
 import org.litote.kmongo.MongoOperator.set
 import org.litote.kmongo.count
-import org.litote.kmongo.createIndex
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.deleteMany
 import org.litote.kmongo.find
 import org.litote.kmongo.getCollection
@@ -92,10 +92,10 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private val col: MongoCollection<ClassifiedSentenceCol> by lazy {
         val c = MongoFrontConfiguration.database.getCollection<ClassifiedSentenceCol>("classified_sentence")
-        c.createIndex("{'text':1,'language':1,'applicationId':1}", IndexOptions().unique(true))
-        c.createIndex("{'language':1,'applicationId':1,'status':1}")
-        c.createIndex("{'status':1}")
-        c.createIndex("{'language':1, 'status':1, 'classification.intentId':1}")
+        c.ensureIndex("{'text':1,'language':1,'applicationId':1}", IndexOptions().unique(true))
+        c.ensureIndex("{'language':1,'applicationId':1,'status':1}")
+        c.ensureIndex("{'status':1}")
+        c.ensureIndex("{'language':1, 'status':1, 'classification.intentId':1}")
         c
     }
 

@@ -38,7 +38,7 @@
         <kotlin-logging>1.4.6</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>3.4.0</kmongo>
+        <kmongo>3.4.1</kmongo>
         <fongo>2.1.0</fongo>
         <jackson>2.8.9</jackson>
         <vertx>3.4.2</vertx>

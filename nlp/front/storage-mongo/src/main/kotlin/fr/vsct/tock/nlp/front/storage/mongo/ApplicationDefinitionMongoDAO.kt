@@ -21,7 +21,7 @@ import com.mongodb.client.model.IndexOptions
 import fr.vsct.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
-import org.litote.kmongo.createIndex
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
@@ -36,7 +36,7 @@ object ApplicationDefinitionMongoDAO : ApplicationDefinitionDAO {
 
     private val col: MongoCollection<ApplicationDefinition> by lazy {
         val c = database.getCollection<ApplicationDefinition>()
-        c.createIndex("{'name':1,'namespace':1}", IndexOptions().unique(true))
+        c.ensureIndex("{'name':1,'namespace':1}", IndexOptions().unique(true))
         c
     }
 

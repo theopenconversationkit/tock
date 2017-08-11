@@ -22,7 +22,7 @@ import com.mongodb.client.model.UpdateOptions
 import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
-import org.litote.kmongo.createIndex
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
@@ -36,7 +36,7 @@ object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
 
     private val col: MongoCollection<EntityTypeDefinition> by lazy {
         val c = database.getCollection<EntityTypeDefinition>()
-        c.createIndex("{'name':1}", IndexOptions().unique(true))
+        c.ensureIndex("{'name':1}", IndexOptions().unique(true))
         c
     }
 

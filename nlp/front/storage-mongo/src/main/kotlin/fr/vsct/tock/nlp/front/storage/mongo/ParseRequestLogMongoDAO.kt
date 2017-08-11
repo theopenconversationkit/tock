@@ -26,7 +26,7 @@ import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import org.litote.kmongo.count
-import org.litote.kmongo.createIndex
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.find
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
@@ -72,8 +72,8 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
 
     private val col: MongoCollection<ParseRequestLogCol> by lazy {
         val c = database.getCollection<ParseRequestLogCol>("parse_request_log")
-        c.createIndex("{'query.context.language':1,'applicationId':1}")
-        c.createIndex("{'query.context.language':1,'applicationId':1, 'text':1}")
+        c.ensureIndex("{'query.context.language':1,'applicationId':1}")
+        c.ensureIndex("{'query.context.language':1,'applicationId':1, 'text':1}")
         c
     }
 

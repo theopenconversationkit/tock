@@ -22,7 +22,7 @@ import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.UpdateOptions
 import fr.vsct.tock.shared.cache.TockCache
 import fr.vsct.tock.shared.getDatabase
-import org.litote.kmongo.createIndex
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
@@ -40,8 +40,8 @@ internal object MongoCache : TockCache {
     private val col: MongoCollection<MongoCacheData> by lazy {
         val database: MongoDatabase = getDatabase(MONGO_DATABASE)
         val c = database.getCollection<MongoCacheData>("cache")
-        c.createIndex("{'id':1,'type':1}", IndexOptions().unique(true))
-        c.createIndex("{'type':1}")
+        c.ensureIndex("{'id':1,'type':1}", IndexOptions().unique(true))
+        c.ensureIndex("{'type':1}")
         c
     }
 

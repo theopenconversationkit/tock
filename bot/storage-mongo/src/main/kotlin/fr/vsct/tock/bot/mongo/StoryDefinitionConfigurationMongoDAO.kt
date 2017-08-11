@@ -19,7 +19,7 @@ package fr.vsct.tock.bot.mongo
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import mu.KotlinLogging
-import org.litote.kmongo.createIndex
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.find
 import org.litote.kmongo.findOneById
@@ -37,7 +37,7 @@ object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurationDAO {
     private val col = MongoBotConfiguration.database.getCollection<StoryDefinitionConfiguration>("story_configuration")
 
     init {
-        col.createIndex("{botId:1}")
+        col.ensureIndex("{botId:1}")
     }
 
     override fun getStoryDefinitionById(id: String): StoryDefinitionConfiguration? {
