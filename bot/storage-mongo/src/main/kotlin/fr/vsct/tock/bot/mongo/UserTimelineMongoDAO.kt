@@ -39,6 +39,7 @@ import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.longProperty
 import mu.KotlinLogging
 import org.litote.kmongo.MongoOperator.and
 import org.litote.kmongo.MongoOperator.gt
@@ -49,7 +50,6 @@ import org.litote.kmongo.MongoOperator.or
 import org.litote.kmongo.MongoOperator.sort
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.count
-import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.deleteMany
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.ensureIndex
@@ -62,6 +62,7 @@ import org.litote.kmongo.save
 import java.lang.Exception
 import java.time.Instant
 import java.time.Instant.now
+import java.util.concurrent.TimeUnit.DAYS
 
 /**
  *
@@ -85,7 +86,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         userTimelineCol.ensureIndex("{playerId:1}", IndexOptions().unique(true))
         dialogCol.ensureIndex("{playerIds:1}")
         userTimelineCol.ensureIndex("{lastUpdateDate:1}")
-        dialogCol.ensureIndex("{lastUpdateDate:1}")
+        dialogCol.ensureIndex("{lastUpdateDate:1}", IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS))
         dialogTextCol.ensureIndex("{text:1}")
         dialogTextCol.ensureIndex("{text:1, dialogId:1}", IndexOptions().unique(true))
     }
@@ -224,7 +225,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     dialogTextCol.find("{text:/${textKey(query.text!!.trim())}/i}").toList().map { it.dialogId }.toSet()
                 }
             }
-           if (dialogIds.isEmpty() && !query.text.isNullOrBlank()) {
+            if (dialogIds.isEmpty() && !query.text.isNullOrBlank()) {
                 return DialogReportQueryResult(0, 0, 0, emptyList())
             }
             val filter =
