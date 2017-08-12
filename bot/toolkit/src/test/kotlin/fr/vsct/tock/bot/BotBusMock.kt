@@ -17,8 +17,8 @@
 package fr.vsct.tock.bot
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.engine.Bot
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionSignificance
@@ -44,7 +44,7 @@ open class BotBusMock(override val userTimeline: UserTimeline,
                       override val dialog: Dialog,
                       override val story: Story,
                       override val action: Action,
-                      val bot: Bot,
+                      val botDefinition: BotDefinition,
                       override var i18nProvider: I18nKeyProvider,
                       override val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat) : BotBus {
 
@@ -55,7 +55,7 @@ open class BotBusMock(override val userTimeline: UserTimeline,
             context.dialog,
             context.story,
             action,
-            context.bot,
+            context.botDefinition,
             context.storyDefinition.storyHandler as I18nKeyProvider
     )
 
@@ -151,4 +151,5 @@ open class BotBusMock(override val userTimeline: UserTimeline,
                 userTimeline.userPreferences.locale,
                 userInterfaceType)
     }
+
 }

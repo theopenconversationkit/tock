@@ -19,6 +19,10 @@ package fr.vsct.tock.bot.definition
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.nlp.api.client.model.Entity
+import fr.vsct.tock.nlp.api.client.model.EntityType
+import fr.vsct.tock.shared.withNamespace
+import fr.vsct.tock.shared.withoutNamespace
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
 import fr.vsct.tock.translator.Translator
@@ -145,4 +149,12 @@ interface BotDefinition : I18nKeyProvider {
         val prefix = javaClass.kotlin.simpleName?.replace("Definition", "") ?: ""
         return i18nKey("${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}", prefix, defaultLabel, args)
     }
+
+    /**
+     * Returns the entity with the specified name and optional role.
+     */
+    fun entity(name: String, role: String? = null): Entity =
+            Entity(
+                    EntityType(name.withNamespace(namespace)),
+                    role ?: name.withoutNamespace(namespace))
 }

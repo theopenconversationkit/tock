@@ -37,8 +37,8 @@ import fr.vsct.tock.bot.connector.messenger.model.send.UserAction
 import fr.vsct.tock.bot.connector.messenger.model.send.UserAction.Companion.extractButtons
 import fr.vsct.tock.bot.connector.messenger.model.send.UserAction.Companion.extractQuickReplies
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.IntentOwner
 import fr.vsct.tock.bot.definition.Parameters
-import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.action.SendChoice
@@ -247,20 +247,20 @@ fun BotBus.messengerLocationQuickReply(): QuickReply
 
 fun BotBus.messengerQuickReply(
         title: String,
-        targetStory: StoryDefinition,
+        targetIntent: IntentOwner,
         imageUrl: String? = null,
         step: StoryStep? = null,
         parameters: Parameters): QuickReply
-        = messengerQuickReply(title, targetStory, imageUrl, step, *parameters.toArray())
+        = messengerQuickReply(title, targetIntent, imageUrl, step, *parameters.toArray())
 
 
 fun BotBus.messengerQuickReply(
         title: String,
-        targetStory: StoryDefinition,
+        targetIntent: IntentOwner,
         imageUrl: String? = null,
         step: StoryStep? = null,
         vararg parameters: Pair<String, String>): QuickReply
-        = messengerQuickReply(title, targetStory.mainIntent(), imageUrl, step, *parameters)
+        = messengerQuickReply(title, targetIntent.ownedIntent(), imageUrl, step, *parameters)
 
 fun BotBus.messengerQuickReply(
         title: String,
@@ -288,24 +288,24 @@ fun BotBus.messengerQuickReply(
 
 fun BotBus.messengerPostback(
         title: String,
-        targetStory: StoryDefinition,
+        targetIntent: IntentOwner,
         vararg parameters: Pair<String, String>): PostbackButton
-        = messengerPostback(title, targetStory, null, *parameters)
+        = messengerPostback(title, targetIntent, null, *parameters)
 
 fun BotBus.messengerPostback(
         title: String,
-        targetStory: StoryDefinition,
+        targetIntent: IntentOwner,
         step: StoryStep? = null,
         parameters: Parameters): PostbackButton
-        = messengerPostback(title, targetStory, step, *parameters.toArray())
+        = messengerPostback(title, targetIntent, step, *parameters.toArray())
 
 fun BotBus.messengerPostback(
         title: String,
-        targetStory: StoryDefinition,
+        targetIntent: IntentOwner,
         step: StoryStep? = null,
         vararg parameters: Pair<String, String>)
         : PostbackButton
-        = messengerPostback(title, targetStory.mainIntent(), step, *parameters)
+        = messengerPostback(title, targetIntent.ownedIntent(), step, *parameters)
 
 fun BotBus.messengerPostback(
         title: String,

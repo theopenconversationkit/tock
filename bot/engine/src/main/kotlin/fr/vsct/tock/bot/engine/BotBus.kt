@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.IntentOwner
 import fr.vsct.tock.bot.definition.ParameterKey
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.action.Action
@@ -102,12 +103,14 @@ interface BotBus {
         }
 
     /**
+     * To test if the current intent is owned by the [IntentOwner].
+     */
+    fun isIntent(intentOwner: IntentOwner): Boolean = intentOwner.own(intent)
+
+    /**
      * Get the NLP call stats if an NLP call has occurred, null either.
      */
     fun nlpStats(): NlpCallStats? = if (action is SendSentence) (action as SendSentence).nlpStats else null
-
-    fun isIntentReturnedByNlp(intent: Intent, minProbability: Double): Boolean
-            = nlpStats()?.hasIntent(intent, minProbability) ?: false
 
     /**
      * Returns the value of the specified choice parameter, null if the user action is not a [SendChoice]
@@ -129,6 +132,13 @@ interface BotBus {
             = paramChoice(key.keyName)
 
     /**
+     * Returns the value of the specified choice parameter, null if the user action is not a [SendChoice]
+     * or if this parameter is not set.
+     */
+    fun choice(key: ParameterKey): String?
+            = paramChoice(key.keyName)
+
+    /**
      * Returns true if the current action has the specified entity role.
      */
     fun hasActionEntity(role: String): Boolean {
@@ -136,12 +146,36 @@ interface BotBus {
     }
 
     /**
-     * Returns the current entity value for the specified role.
+     * Returns true if the current action has the specified entity role.
+     */
+    fun hasActionEntity(entity: Entity): Boolean
+            = hasActionEntity(entity.role)
+
+    /**
+     * Returns the current value for the specified entity role.
      */
     fun <T : Value> entityValue(role: String): T? {
         @Suppress("UNCHECKED_CAST")
         return entities[role]?.value?.value as T?
     }
+
+    /**
+     * Returns the current value for the specified entity.
+     */
+    fun <T : Value> entityValue(entity: Entity): T?
+            = entityValue(entity.role)
+
+    /**
+     * Returns the current text content for the specified entity.
+     */
+    fun entityText(entity: Entity): String?
+            = entityContextValue(entity)?.content
+
+    /**
+     * Returns the current entity ContextValue.
+     */
+    fun entityContextValue(entity: Entity): ContextValue?
+            = entities[entity.role]?.value
 
     /**
      * Update the current entity value in the dialog.
@@ -152,7 +186,6 @@ interface BotBus {
         dialog.state.changeValue(role, newValue)
     }
 
-
     /**
      * Update the current entity value in the dialog.
      * @param entity the entity definition
@@ -161,6 +194,24 @@ interface BotBus {
     fun changeEntityValue(entity: Entity, newValue: Value?) {
         dialog.state.changeValue(entity, newValue)
     }
+
+    /**
+     * Update the current entity value in the dialog.
+     * @param entity the entity definition
+     * @param newValue the new entity context value
+     */
+    fun changeEntityValue(entity: Entity, newValue: ContextValue)
+            = changeEntityValue(entity.role, newValue)
+
+    /**
+     * Update the current entity text value in the dialog.
+     * @param entity the entity definition
+     * @param textContent the new entity text content
+     */
+    fun changeEntityValue(entity: Entity, textContent: String) =
+            changeEntityValue(
+                    entity.role,
+                    ContextValue(entity, null, textContent))
 
     /**
      * Remove all current entity values.
@@ -175,6 +226,12 @@ interface BotBus {
     fun removeEntityValue(role: String) {
         dialog.state.removeValue(role)
     }
+
+    /**
+     * Remove entity value for the specified role.
+     */
+    fun removeEntityValue(entity: Entity)
+            = removeEntityValue(entity.role)
 
     /**
      * Returns the persistent current context value.
@@ -292,4 +349,5 @@ interface BotBus {
     }
 
     fun translate(key: I18nLabelKey?): String
+
 }

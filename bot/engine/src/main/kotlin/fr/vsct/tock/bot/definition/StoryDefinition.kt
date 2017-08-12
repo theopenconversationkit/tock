@@ -24,7 +24,7 @@ package fr.vsct.tock.bot.definition
  *
  * Story definitions should usually not directly extend this class, but instead extend [StoryDefinitionBase].
  */
-interface StoryDefinition {
+interface StoryDefinition : IntentOwner {
 
     /**
      * An unique identifier for a given bot.
@@ -56,6 +56,14 @@ interface StoryDefinition {
 
     fun supportIntent(intent: Intent) = intents.contains(intent)
 
-    fun mainIntent() : Intent = starterIntents.first()
+    /**
+     * The "referent" intent for this story.
+     */
+    fun mainIntent(): Intent = starterIntents.first()
+
+    /**
+     * Implementation for [IntentOwner].
+     */
+    override fun ownedIntent(): Intent = mainIntent()
 
 }
