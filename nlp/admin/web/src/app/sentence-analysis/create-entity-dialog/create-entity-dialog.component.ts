@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {Component, OnInit, Inject} from "@angular/core";
-import {MdDialogRef, MD_DIALOG_DATA} from "@angular/material";
+import {Component, Inject, OnInit} from "@angular/core";
+import {MD_DIALOG_DATA, MdDialogRef} from "@angular/material";
 import {StateService} from "../../core/state.service";
 import {Intent} from "../../model/application";
 import {entityNameFromQualifiedName, EntityType, qualifiedNameWithoutRole} from "../../model/nlp";
@@ -32,12 +32,13 @@ export class CreateEntityDialogComponent implements OnInit {
   type: string;
   role: string;
 
+  roleInitialized: boolean;
+
   error: string;
 
-  constructor(
-    public dialogRef: MdDialogRef<CreateEntityDialogComponent>,
-    public state: StateService,
-    @Inject(MD_DIALOG_DATA) private data: any) {
+  constructor(public dialogRef: MdDialogRef<CreateEntityDialogComponent>,
+              public state: StateService,
+              @Inject(MD_DIALOG_DATA) private data: any) {
     this.intent = data.intent;
   }
 
@@ -51,11 +52,19 @@ export class CreateEntityDialogComponent implements OnInit {
   }
 
   onTypeKeyDown(event) {
-    this.role = event.target.value + event.key;
+    if (!this.roleInitialized) {
+      setTimeout(() => this.role = this.type);
+    }
+  }
+
+  onRoleKeyDown(event) {
+    this.roleInitialized = true;
   }
 
   onTypeChange() {
-    this.role = this.type;
+    if (!this.roleInitialized) {
+      this.role = this.type;
+    }
   }
 
   save() {

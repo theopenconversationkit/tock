@@ -43,7 +43,7 @@
     With role :
 
     <md-input-container>
-      <input mdInput placeholder="Role" [(ngModel)]="role">
+      <input mdInput placeholder="Role" [(ngModel)]="role" (keydown)="onRoleKeyDown($event)">
     </md-input-container>
   </p>
 
