@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.engine
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.event.TypingOnEvent
@@ -112,7 +113,7 @@ class ConnectorController internal constructor(
     private fun sendSynchronous(action: Action, delay: Long = 0) {
         try {
             logger.debug { "message sent: $action" }
-            connector.send(action)
+            connector.send(action, delay)
         } catch(t: Throwable) {
             logger.error(t)
         }
@@ -130,6 +131,8 @@ class ConnectorController internal constructor(
         errorAction.metadata.lastAnswer = true
         return errorAction
     }
+
+    fun helloIntent() : Intent? = bot.botDefinition.helloStory?.mainIntent()
 
     internal fun loadProfile(applicationId: String, playerId: PlayerId): UserPreferences {
         return connector.loadProfile(applicationId, playerId)

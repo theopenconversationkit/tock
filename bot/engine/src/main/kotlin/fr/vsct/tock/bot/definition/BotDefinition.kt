@@ -97,6 +97,11 @@ interface BotDefinition : I18nKeyProvider {
     val unknownStory: StoryDefinition
 
     /**
+     * The hello story. Used for first interaction with no other input.
+     */
+    val helloStory: StoryDefinition?
+
+    /**
      * The story that handles [fr.vsct.tock.bot.engine.action.SendLocation] action. If it's null, current intent is used.
      */
     val userLocationStory: StoryDefinition?
