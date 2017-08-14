@@ -350,4 +350,9 @@ interface BotBus {
 
     fun translate(key: I18nLabelKey?): String
 
+    /**
+     * Reload the user profile.
+     */
+    fun reloadProfile()
+
 }

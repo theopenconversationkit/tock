@@ -195,7 +195,7 @@ class Bot(botDefinitionBase: BotDefinition) {
             if (!userState.profileLoaded) {
                 val pref = connector.loadProfile(action.applicationId, userTimeline.playerId)
                 userState.profileLoaded = true
-                userPreferences.copy(pref)
+                userPreferences.fillWith(pref)
             }
             action.state.testEvent = userPreferences.test
         }

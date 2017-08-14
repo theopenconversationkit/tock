@@ -36,7 +36,7 @@ data class UserPreferences(var firstName: String? = null,
                             */
                            var test: Boolean = false) {
 
-    fun copy(userPref: UserPreferences) {
+    fun fillWith(userPref: UserPreferences) {
         firstName = userPref.firstName
         lastName = userPref.lastName
         email = userPref.email

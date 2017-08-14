@@ -46,7 +46,8 @@ open class BotBusMock(override val userTimeline: UserTimeline,
                       override val action: Action,
                       val botDefinition: BotDefinition,
                       override var i18nProvider: I18nKeyProvider,
-                      override val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat) : BotBus {
+                      override val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
+                      internal val initialUserPreferences: UserPreferences) : BotBus {
 
     constructor(context: BotBusMockContext,
                 action: Action = context.action)
@@ -56,7 +57,8 @@ open class BotBusMock(override val userTimeline: UserTimeline,
             context.story,
             action,
             context.botDefinition,
-            context.storyDefinition.storyHandler as I18nKeyProvider
+            context.storyDefinition.storyHandler as I18nKeyProvider,
+            initialUserPreferences = context.userPreferences.copy()
     )
 
     val logs: List<BotBusMockLog> = mutableListOf()
@@ -75,7 +77,7 @@ open class BotBusMock(override val userTimeline: UserTimeline,
     override val userPreferences: UserPreferences = userTimeline.userPreferences
     override val userLocale: Locale = userPreferences.locale
 
-    private val context: BusMockContext = BusMockContext()
+    private val mockData: BusMockData = BusMockData()
 
     override val entities: Map<String, EntityStateValue> = dialog.state.entityValues
     override val intent: Intent? = dialog.state.currentIntent
@@ -91,34 +93,34 @@ open class BotBusMock(override val userTimeline: UserTimeline,
     }
 
     private fun answer(action: Action, delay: Long = 0): BotBus {
-        context.currentDelay += delay
-        action.metadata.significance = context.significance
+        mockData.currentDelay += delay
+        action.metadata.significance = mockData.significance
         if (action is SendSentence) {
-            action.messages.addAll(context.connectorMessages.values)
+            action.messages.addAll(mockData.connectorMessages.values)
         }
         action.state.testEvent = userPreferences.test
 
         story.actions.add(action)
 
-        sendAction(action, context.currentDelay)
+        sendAction(action, mockData.currentDelay)
         return this
     }
 
     /**
-     * Returns the non persistent current context value.
+     * Returns the non persistent current mockData value.
      */
     override fun getBusContextValue(name: String): Any? {
-        return context.contextMap[name]
+        return mockData.contextMap[name]
     }
 
     /**
-     * Update the non persistent current context value.
+     * Update the non persistent current mockData value.
      */
     override fun setBusContextValue(key: String, value: Any?) {
         if (value == null) {
-            context.contextMap - key
+            mockData.contextMap - key
         } else {
-            context.contextMap.put(key, value)
+            mockData.contextMap.put(key, value)
         }
     }
 
@@ -136,12 +138,12 @@ open class BotBusMock(override val userTimeline: UserTimeline,
     }
 
     override fun with(significance: ActionSignificance): BotBus {
-        context.significance = significance
+        mockData.significance = significance
         return this
     }
 
     override fun with(message: ConnectorMessage): BotBus {
-        context.addMessage(message)
+        mockData.addMessage(message)
         return this
     }
 
@@ -152,4 +154,7 @@ open class BotBusMock(override val userTimeline: UserTimeline,
                 userInterfaceType)
     }
 
+    override fun reloadProfile() {
+        userPreferences.fillWith(initialUserPreferences)
+    }
 }

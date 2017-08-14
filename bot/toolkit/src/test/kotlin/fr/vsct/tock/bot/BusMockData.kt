@@ -23,7 +23,7 @@ import fr.vsct.tock.bot.engine.action.ActionSignificance
 /**
  *
  */
-internal data class BusMockContext(
+internal data class BusMockData(
         var currentDelay: Long = 0,
         val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf(),
         val contextMap: MutableMap<String, Any> = mutableMapOf(),

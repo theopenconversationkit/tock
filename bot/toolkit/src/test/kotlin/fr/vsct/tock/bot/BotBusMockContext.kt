@@ -49,9 +49,10 @@ class BotBusMockContext(val userTimeline: UserTimeline,
                 botDefinition: BotDefinition,
                 storyDefinition: StoryDefinition,
                 action: Action = SendSentence(userId, applicationId, botId, ""),
-                userInterfaceType: UserInterfaceType = UserInterfaceType.textChat)
+                userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
+                userPreferences: UserPreferences = UserPreferences())
             : this(
-            UserTimeline(userId),
+            UserTimeline(userId, userPreferences),
             Dialog(setOf(userId, botId)),
             Story(storyDefinition, storyDefinition.mainIntent()),
             action,
