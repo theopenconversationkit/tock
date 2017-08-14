@@ -59,4 +59,11 @@ data class DialogState(
         changeValue(role, null)
     }
 
+    fun resetState() {
+        removeAllEntityValues()
+        context.clear()
+        userLocation = null
+        nextActionState = null
+    }
+
 }

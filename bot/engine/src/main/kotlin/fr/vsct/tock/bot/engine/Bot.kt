@@ -52,7 +52,7 @@ class Bot(botDefinitionBase: BotDefinition) {
 
         parseAction(action, userTimeline, dialog, connector)
 
-        if (botDefinition.isEnabledIntent(action.state.currentIntent)) {
+        if (botDefinition.isEnabledIntent(dialog.state.currentIntent)) {
             logger.debug { "Enable bot for $action" }
             userTimeline.userState.botDisabled = false
         }
@@ -140,10 +140,9 @@ class Bot(botDefinitionBase: BotDefinition) {
         }
     }
 
-    private fun parseAttachment(location: SendAttachment, dialog: Dialog) {
+    private fun parseAttachment(attachment: SendAttachment, dialog: Dialog) {
         botDefinition.handleAttachmentStory?.let {
-            it.starterIntents.first().let {
-                location.state.currentIntent = it
+            it.mainIntent().let {
                 dialog.state.currentIntent = it
             }
         }
@@ -152,8 +151,7 @@ class Bot(botDefinitionBase: BotDefinition) {
 
     private fun parseLocation(location: SendLocation, dialog: Dialog) {
         botDefinition.userLocationStory?.let {
-            it.starterIntents.first().let {
-                location.state.currentIntent = it
+            it.mainIntent().let {
                 dialog.state.currentIntent = it
             }
         }
@@ -181,7 +179,6 @@ class Bot(botDefinitionBase: BotDefinition) {
                     }
                 }
             }
-            choice.state.currentIntent = intent
             dialog.state.currentIntent = intent
         }
     }

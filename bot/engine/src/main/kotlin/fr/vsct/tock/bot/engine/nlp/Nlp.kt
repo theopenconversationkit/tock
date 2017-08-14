@@ -70,7 +70,6 @@ internal class Nlp : NlpController {
             logger.debug { "Parse sentence : $sentence" }
 
             findKeyword(sentence.text)?.apply {
-                sentence.state.currentIntent = this
                 dialog.state.currentIntent = this
                 return
             }
@@ -81,13 +80,14 @@ internal class Nlp : NlpController {
                     parse(query)
                             ?.let { nlpResult ->
                                 listenNlpSuccessCall(query, nlpResult)
-                                sentence.state.currentIntent = botDefinition.findIntentForBot(
+                                val intent = botDefinition.findIntentForBot(
                                         nlpResult.intent,
                                         IntentContext(userTimeline, dialog, sentence)
                                 )
 
                                 sentence.state.entityValues.addAll(nlpResult.entities.map { ContextValue(nlpResult.retainedQuery, it) })
                                 sentence.nlpStats = NlpCallStats(
+                                        intent,
                                         nlpResult.intentProbability,
                                         nlpResult.entitiesProbability,
                                         nlpResult.otherIntentsProbabilities
@@ -100,7 +100,7 @@ internal class Nlp : NlpController {
                                         dialog.state.nextActionState?.intentsQualifiers
                                 )
                                 dialog.apply {
-                                    state.currentIntent = sentence.state.currentIntent
+                                    state.currentIntent = intent
                                     state.mergeEntityValuesFromAction(sentence)
                                 }
                             } ?: listenNlpErrorCall(query, null)

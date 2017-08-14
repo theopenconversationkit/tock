@@ -16,14 +16,10 @@
 
 package fr.vsct.tock.bot.engine.dialog
 
-import fr.vsct.tock.bot.definition.Intent
-
 /**
  *
  */
 data class EventState(
-        var currentIntent: Intent? = null,
-        var currentStep: String? = null,
         val entityValues: MutableList<ContextValue> = mutableListOf(),
         var testEvent: Boolean = false) {
 

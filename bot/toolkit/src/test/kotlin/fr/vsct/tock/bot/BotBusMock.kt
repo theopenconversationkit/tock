@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionSignificance
+import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
@@ -53,7 +54,11 @@ open class BotBusMock(override val userTimeline: UserTimeline,
                 action: Action = context.action)
             : this(
             context.userTimeline,
-            context.dialog,
+            if (action is SendChoice)
+                context.dialog.copy(
+                        state = context.dialog.state.copy(
+                                currentIntent = context.botDefinition.findIntent(action.intentName)))
+            else context.dialog,
             context.story,
             action,
             context.botDefinition,

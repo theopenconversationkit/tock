@@ -33,4 +33,6 @@ data class Parameters(val entries: Map<String, String>) {
     operator fun plus(param: Parameters): Parameters = Parameters(entries + param.entries)
 
     fun toArray(): Array<Pair<String, String>> = entries.entries.map { it.key to it.value }.toTypedArray()
+
+    fun toMap() : Map<String,String> = entries
 }

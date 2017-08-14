@@ -19,14 +19,14 @@ package fr.vsct.tock.bot.definition
 /**
  * Convenient interface used to compare [Intent] with [StoryDefinition].
  */
-interface IntentOwner {
+interface IntentAware {
 
-    fun ownedIntent(): Intent
+    fun wrappedIntent(): Intent
 
     /**
-     * Is it the right intent
+     * Is it the right intent?
      */
-    infix fun own(intent: Intent?): Boolean {
-        return ownedIntent() == intent
+    infix fun wrap(intent: Intent?): Boolean {
+        return wrappedIntent() == intent
     }
 }

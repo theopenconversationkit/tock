@@ -17,9 +17,10 @@
 package fr.vsct.tock.bot
 
 import fr.vsct.tock.bot.definition.BotDefinition
+import fr.vsct.tock.bot.definition.IntentAware
+import fr.vsct.tock.bot.definition.Parameters
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.definition.StoryStep
-import fr.vsct.tock.bot.engine.Bot
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -86,5 +87,20 @@ class BotBusMockContext(val userTimeline: UserTimeline,
                step: StoryStep,
                vararg parameters: Pair<String, String>): SendChoice
             = SendChoice(userId, applicationId, botId, intentName, step, parameters.toMap())
+
+    /**
+     * Create a choice for this context.
+     */
+    fun choice(intent: IntentAware,
+               step: StoryStep,
+               parameters: Parameters): SendChoice
+            = SendChoice(userId, applicationId, botId, intent.wrappedIntent().name, step, parameters.toMap())
+
+    /**
+     * Create a choice for this context.
+     */
+    fun choice(intent: IntentAware,
+               parameters: Parameters): SendChoice
+            = SendChoice(userId, applicationId, botId, intent.wrappedIntent().name, parameters.toMap())
 
 }

@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.engine.action
 
 import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.definition.StoryDefinition
+import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.dialog.EventState
@@ -74,29 +74,21 @@ class SendChoice(playerId: PlayerId,
 
         fun encodeChoiceId(
                 bus: BotBus,
-                storyDefinition: StoryDefinition,
-                step: StoryStep? = null,
-                parameters: Map<String, String> = emptyMap()): String {
-            return encodeChoiceId(bus, storyDefinition.mainIntent(), step, parameters)
-        }
-
-        fun encodeChoiceId(
-                bus: BotBus,
-                intent: Intent,
+                intent: IntentAware,
                 step: StoryStep? = null,
                 parameters: Map<String, String> = emptyMap()): String {
             return encodeChoiceId(intent, step, parameters, bus.step, bus.dialog.state.currentIntent)
         }
 
         fun encodeChoiceId(
-                intent: Intent,
+                intent: IntentAware,
                 step: StoryStep? = null,
                 parameters: Map<String, String> = emptyMap(),
                 busStep: StoryStep? = null,
                 currentIntent: Intent? = null): String {
             val currentStep = if (step == null) busStep else step
             return StringBuilder().apply {
-                append(intent.name)
+                append(intent.wrappedIntent().name)
                 val params = parameters +
                         listOfNotNull(
                                 if (currentStep != null) STEP_PARAMETER to currentStep.name else null,

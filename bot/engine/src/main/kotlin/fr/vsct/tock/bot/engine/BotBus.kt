@@ -18,7 +18,7 @@ package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.definition.IntentOwner
+import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.ParameterKey
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.action.Action
@@ -103,9 +103,9 @@ interface BotBus {
         }
 
     /**
-     * To test if the current intent is owned by the [IntentOwner].
+     * To test if the current intent is owned by the [IntentAware].
      */
-    fun isIntent(intentOwner: IntentOwner): Boolean = intentOwner.own(intent)
+    fun isIntent(intentOwner: IntentAware): Boolean = intentOwner.wrap(intent)
 
     /**
      * Get the NLP call stats if an NLP call has occurred, null either.
@@ -212,14 +212,6 @@ interface BotBus {
             changeEntityValue(
                     entity.role,
                     ContextValue(entity, null, textContent))
-
-    /**
-     * Remove all current entity values.
-     */
-    fun removeAllEntityValues() {
-        dialog.state.removeAllEntityValues()
-    }
-
     /**
      * Remove entity value for the specified role.
      */
@@ -232,6 +224,20 @@ interface BotBus {
      */
     fun removeEntityValue(entity: Entity)
             = removeEntityValue(entity.role)
+
+    /**
+     * Remove all current entity values.
+     */
+    fun removeAllEntityValues() {
+        dialog.state.removeAllEntityValues()
+    }
+
+    /**
+     * Remove all entities and context values.
+     */
+    fun resetDialogState() {
+        dialog.state.resetState()
+    }
 
     /**
      * Returns the persistent current context value.

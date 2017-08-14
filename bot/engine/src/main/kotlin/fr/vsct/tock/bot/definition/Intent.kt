@@ -21,9 +21,11 @@ import fr.vsct.tock.shared.TOCK_NAMESPACE
 /**
  * An intent definition.
  */
-data class Intent(val name: String) {
+data class Intent(val name: String) : IntentAware {
 
     companion object {
         val unknown: Intent = Intent("$TOCK_NAMESPACE:unknown")
     }
+
+    override fun wrappedIntent(): Intent = this
 }

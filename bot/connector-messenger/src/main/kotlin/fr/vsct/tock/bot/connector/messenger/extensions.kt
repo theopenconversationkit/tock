@@ -37,7 +37,7 @@ import fr.vsct.tock.bot.connector.messenger.model.send.UserAction
 import fr.vsct.tock.bot.connector.messenger.model.send.UserAction.Companion.extractButtons
 import fr.vsct.tock.bot.connector.messenger.model.send.UserAction.Companion.extractQuickReplies
 import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.definition.IntentOwner
+import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.Parameters
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
@@ -247,7 +247,7 @@ fun BotBus.messengerLocationQuickReply(): QuickReply
 
 fun BotBus.messengerQuickReply(
         title: String,
-        targetIntent: IntentOwner,
+        targetIntent: IntentAware,
         imageUrl: String? = null,
         step: StoryStep? = null,
         parameters: Parameters): QuickReply
@@ -256,11 +256,11 @@ fun BotBus.messengerQuickReply(
 
 fun BotBus.messengerQuickReply(
         title: String,
-        targetIntent: IntentOwner,
+        targetIntent: IntentAware,
         imageUrl: String? = null,
         step: StoryStep? = null,
         vararg parameters: Pair<String, String>): QuickReply
-        = messengerQuickReply(title, targetIntent.ownedIntent(), imageUrl, step, *parameters)
+        = messengerQuickReply(title, targetIntent.wrappedIntent(), imageUrl, step, *parameters)
 
 fun BotBus.messengerQuickReply(
         title: String,
@@ -288,35 +288,14 @@ fun BotBus.messengerQuickReply(
 
 fun BotBus.messengerPostback(
         title: String,
-        targetIntent: IntentOwner,
-        vararg parameters: Pair<String, String>): PostbackButton
-        = messengerPostback(title, targetIntent, null, *parameters)
-
-fun BotBus.messengerPostback(
-        title: String,
-        targetIntent: IntentOwner,
-        step: StoryStep? = null,
-        parameters: Parameters): PostbackButton
-        = messengerPostback(title, targetIntent, step, *parameters.toArray())
-
-fun BotBus.messengerPostback(
-        title: String,
-        targetIntent: IntentOwner,
-        step: StoryStep? = null,
-        vararg parameters: Pair<String, String>)
-        : PostbackButton
-        = messengerPostback(title, targetIntent.ownedIntent(), step, *parameters)
-
-fun BotBus.messengerPostback(
-        title: String,
-        targetIntent: Intent,
+        targetIntent: IntentAware,
         vararg parameters: Pair<String, String>)
         : PostbackButton
         = messengerPostback(title, targetIntent, null, *parameters)
 
 fun BotBus.messengerPostback(
         title: String,
-        targetIntent: Intent,
+        targetIntent: IntentAware,
         step: StoryStep? = null,
         parameters: Parameters)
         : PostbackButton
@@ -324,7 +303,7 @@ fun BotBus.messengerPostback(
 
 fun BotBus.messengerPostback(
         title: String,
-        targetIntent: Intent,
+        targetIntent: IntentAware,
         step: StoryStep? = null,
         vararg parameters: Pair<String, String>)
         : PostbackButton {

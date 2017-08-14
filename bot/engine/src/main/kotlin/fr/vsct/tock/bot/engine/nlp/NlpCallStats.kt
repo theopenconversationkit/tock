@@ -17,16 +17,18 @@
 package fr.vsct.tock.bot.engine.nlp
 
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
 
 /**
  * Stats about nlp call.
  */
-data class NlpCallStats(val intentProbability: Double?,
+data class NlpCallStats(val intent: Intent = Intent.unknown,
+                        val intentProbability: Double?,
                         val entitiesProbability: Double?,
                         val otherIntentsProbabilities: List<NlpIntentStat>,
                         var intentsQualifiers: List<NlpIntentQualifier>? = null) {
 
-    fun hasIntent(intent: Intent, minProbability: Double = 0.0): Boolean
-            = otherIntentsProbabilities.any { it.intent == intent && it.probability > minProbability }
+    fun hasIntent(intent: IntentAware, minProbability: Double = 0.0): Boolean
+            = otherIntentsProbabilities.any { it.intent == intent.wrappedIntent() && it.probability > minProbability }
 }
