@@ -1,0 +1,40 @@
+{
+  "user": {
+    "userId": "1502720195498",
+    "locale": "en-US"
+  },
+  "conversation": {
+    "conversationId": "1502720195498",
+    "type": "NEW"
+  },
+  "inputs": [
+    {
+      "intent": "actions.intent.TEXT",
+      "rawInputs": [
+        {
+          "inputType": "KEYBOARD",
+          "query": "yep blabla"
+        }
+      ],
+      "arguments": [
+        {
+          "name": "text",
+          "rawText": "yep blabla",
+          "textValue": "yep blabla"
+        }
+      ]
+    }
+  ],
+  "surface": {
+    "capabilities": [
+      {
+        "name": "actions.capability.AUDIO_OUTPUT"
+      },
+      {
+        "name": "actions.capability.SCREEN_OUTPUT"
+      }
+    ]
+  },
+  "device": {},
+  "isInSandbox": true
+}

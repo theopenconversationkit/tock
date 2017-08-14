@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector
+package fr.vsct.tock.bot.connector.ga.model.response
 
-import fr.vsct.tock.bot.engine.ConnectorController
-import fr.vsct.tock.bot.engine.event.Event
-import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.bot.engine.user.UserPreferences
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  *
  */
-interface Connector {
-
-    val connectorType: ConnectorType
-
-    fun register(controller: ConnectorController)
-
-    fun send(event: Event)
-
-    fun send(event: Event, delayInMs : Long) = send(event)
-
-    fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences {
-        //default implementation returns empty userPref
-        return UserPreferences()
-    }
-
+data class GAResponse(
+        val conversationToken: String,
+        val expectUserResponse: Boolean = true,
+        val expectedInputs: List<GAExpectedInput>,
+        val finalResponse: GAFinalResponse? = null,
+        val customPushMessage: GACustomPushMessage?= null,
+        val responseMetadata: GAResponseMetadata?= null,
+        @get:JsonProperty("isInSandbox")
+        val isInSandbox: Boolean
+) {
 }
+

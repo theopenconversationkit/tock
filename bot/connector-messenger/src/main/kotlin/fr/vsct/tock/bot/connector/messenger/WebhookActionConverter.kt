@@ -16,8 +16,14 @@
 
 package fr.vsct.tock.bot.connector.messenger
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import fr.vsct.tock.bot.connector.messenger.model.webhook.*
+import fr.vsct.tock.bot.connector.messenger.model.webhook.Attachment
+import fr.vsct.tock.bot.connector.messenger.model.webhook.AttachmentType
+import fr.vsct.tock.bot.connector.messenger.model.webhook.LocationPayload
+import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageWebhook
+import fr.vsct.tock.bot.connector.messenger.model.webhook.OptinWebhook
+import fr.vsct.tock.bot.connector.messenger.model.webhook.PostbackWebhook
+import fr.vsct.tock.bot.connector.messenger.model.webhook.UrlPayload
+import fr.vsct.tock.bot.connector.messenger.model.webhook.Webhook
 import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
@@ -34,7 +40,7 @@ internal object WebhookActionConverter {
 
     private val logger = KotlinLogging.logger {}
 
-    fun toAction(message: Webhook, applicationId: String): Event? {
+    fun toEvent(message: Webhook, applicationId: String): Event? {
         return when (message) {
             is MessageWebhook ->
                 with(message.message) {

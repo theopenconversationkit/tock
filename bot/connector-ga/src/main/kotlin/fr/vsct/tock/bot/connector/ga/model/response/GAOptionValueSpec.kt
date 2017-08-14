@@ -14,29 +14,17 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector
+package fr.vsct.tock.bot.connector.ga.model.response
 
-import fr.vsct.tock.bot.engine.ConnectorController
-import fr.vsct.tock.bot.engine.event.Event
-import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.bot.engine.user.UserPreferences
+import fr.vsct.tock.bot.connector.ga.model.GAIntent.option
 
 /**
  *
  */
-interface Connector {
-
-    val connectorType: ConnectorType
-
-    fun register(controller: ConnectorController)
-
-    fun send(event: Event)
-
-    fun send(event: Event, delayInMs : Long) = send(event)
-
-    fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences {
-        //default implementation returns empty userPref
-        return UserPreferences()
-    }
-
+data class GAOptionValueSpec(
+        val simpleSelect: GASimpleSelect? = null,
+        val listSelect: GAListSelect? = null,
+        val carouselSelect: GACarouselSelect? = null
+) : GAInputValueData(option.type!!) {
 }
+

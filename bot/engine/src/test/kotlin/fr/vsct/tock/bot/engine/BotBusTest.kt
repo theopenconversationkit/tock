@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.engine
 
+import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.argForWhich
 import com.nhaarman.mockito_kotlin.verify
 import fr.vsct.tock.bot.engine.action.Action
@@ -39,7 +40,7 @@ class BotBusTest : BotEngineTest() {
     @Test
     fun withSignificance_hasToUpdateActionSignificance() {
         bus.with(ActionSignificance.urgent).end()
-        verify(connector).send(argForWhich { this is Action && metadata.significance == ActionSignificance.urgent })
+        verify(connector).send(argForWhich { this is Action && metadata.significance == ActionSignificance.urgent }, any())
     }
 
     @Test

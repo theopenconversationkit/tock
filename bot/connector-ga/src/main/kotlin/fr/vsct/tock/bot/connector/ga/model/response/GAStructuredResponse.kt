@@ -14,29 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector
-
-import fr.vsct.tock.bot.engine.ConnectorController
-import fr.vsct.tock.bot.engine.event.Event
-import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.bot.engine.user.UserPreferences
+package fr.vsct.tock.bot.connector.ga.model.response
 
 /**
  *
  */
-interface Connector {
-
-    val connectorType: ConnectorType
-
-    fun register(controller: ConnectorController)
-
-    fun send(event: Event)
-
-    fun send(event: Event, delayInMs : Long) = send(event)
-
-    fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences {
-        //default implementation returns empty userPref
-        return UserPreferences()
-    }
-
+data class GAStructuredResponse(val orderUpdate:GAOrderUpdate) {
 }

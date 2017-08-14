@@ -24,7 +24,7 @@ import mu.KotlinLogging
  * Manage Facebook attachment upload cache API.
  * cf (https://developers.facebook.com/docs/messenger-platform/send-api-reference/attachment-upload)
  */
-object AttachmentCacheService {
+internal object AttachmentCacheService {
 
     private val logger = KotlinLogging.logger {}
     private val cacheType = "messenger_cache_url"

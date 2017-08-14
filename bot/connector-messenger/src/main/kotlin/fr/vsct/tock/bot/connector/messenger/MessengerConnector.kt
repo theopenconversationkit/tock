@@ -120,7 +120,7 @@ class MessengerConnector internal constructor(
                                                 val applicationId = pageApplicationMap.getValue(entry.id)
                                                 entry.messaging!!.forEach { m ->
                                                     try {
-                                                        val event = WebhookActionConverter.toAction(m, applicationId)
+                                                        val event = WebhookActionConverter.toEvent(m, applicationId)
                                                         if (event != null) {
                                                             controller.handle(event)
                                                         } else {

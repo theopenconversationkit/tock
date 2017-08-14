@@ -1,0 +1,39 @@
+{
+  "user": {
+    "userId": "1502713700729",
+    "locale": "en-US"
+  },
+  "conversation": {
+    "conversationId": "1502713700729",
+    "type": "NEW"
+  },
+  "inputs": [
+    {
+      "intent": "actions.intent.OPTION",
+      "rawInputs": [
+        {
+          "inputType": "VOICE",
+          "query": "Paris Marseille tomorrow"
+        }
+      ],
+      "arguments": [
+        {
+          "name": "OPTION",
+          "textValue": "id"
+        }
+      ]
+    }
+  ],
+  "surface": {
+    "capabilities": [
+      {
+        "name": "actions.capability.AUDIO_OUTPUT"
+      },
+      {
+        "name": "actions.capability.SCREEN_OUTPUT"
+      }
+    ]
+  },
+  "device": {},
+  "isInSandbox": true
+}

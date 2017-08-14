@@ -1,0 +1,33 @@
+{
+  "user": {
+    "userId": "1502713700729",
+    "locale": "en-US"
+  },
+  "conversation": {
+    "conversationId": "1502380157410",
+    "type": "NEW"
+  },
+  "inputs": [
+    {
+      "intent": "actions.intent.MAIN",
+      "rawInputs": [
+        {
+          "inputType": "KEYBOARD",
+          "query": "talk to my test app"
+        }
+      ]
+    }
+  ],
+  "surface": {
+    "capabilities": [
+      {
+        "name": "actions.capability.AUDIO_OUTPUT"
+      },
+      {
+        "name": "actions.capability.SCREEN_OUTPUT"
+      }
+    ]
+  },
+  "device": {},
+  "isInSandbox": true
+}

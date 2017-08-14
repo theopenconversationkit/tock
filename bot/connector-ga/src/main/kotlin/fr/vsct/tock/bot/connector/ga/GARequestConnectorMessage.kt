@@ -14,29 +14,22 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector
+package fr.vsct.tock.bot.connector.ga
 
-import fr.vsct.tock.bot.engine.ConnectorController
-import fr.vsct.tock.bot.engine.event.Event
-import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.bot.engine.user.UserPreferences
+import com.fasterxml.jackson.annotation.JsonIgnore
+import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.ga.model.request.GARequest
+import fr.vsct.tock.bot.engine.message.SentenceElement
 
 /**
  *
  */
-interface Connector {
+class GARequestConnectorMessage(val request: GARequest) : ConnectorMessage {
 
-    val connectorType: ConnectorType
+    override val connectorType: ConnectorType @JsonIgnore get() = gaConnectorType
 
-    fun register(controller: ConnectorController)
-
-    fun send(event: Event)
-
-    fun send(event: Event, delayInMs : Long) = send(event)
-
-    fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences {
-        //default implementation returns empty userPref
-        return UserPreferences()
+    override fun toSentenceElement(): SentenceElement? {
+        return null
     }
-
 }
