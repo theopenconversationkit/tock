@@ -16,8 +16,13 @@
 
 package fr.vsct.tock.bot.mongo
 
+import java.time.Instant
+
 /**
  * To index dialog text
  */
-data class DialogTextCol(val text:String, val dialogId:String) {
+data class DialogTextCol(
+        val text: String,
+        val dialogId: String,
+        val date: Instant = Instant.now()) {
 }

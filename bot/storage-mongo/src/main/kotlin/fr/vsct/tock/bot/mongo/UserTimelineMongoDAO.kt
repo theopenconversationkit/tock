@@ -84,11 +84,12 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
     init {
         userTimelineCol.ensureIndex("{playerId:1}", IndexOptions().unique(true))
-        dialogCol.ensureIndex("{playerIds:1}")
         userTimelineCol.ensureIndex("{lastUpdateDate:1}")
+        dialogCol.ensureIndex("{playerIds:1}")
         dialogCol.ensureIndex("{lastUpdateDate:1}", IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS))
         dialogTextCol.ensureIndex("{text:1}")
         dialogTextCol.ensureIndex("{text:1, dialogId:1}", IndexOptions().unique(true))
+        dialogTextCol.ensureIndex("{date:1}", IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS))
     }
 
     override fun save(userTimeline: UserTimeline) {
@@ -187,8 +188,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                             if (flags.isEmpty()) null
                             else flags.flatMap {
                                 "userState.flags.${it.key}".let { key ->
-                                    listOf(
-                                            "{'$key.value':${it.value.json}}",
+                                    listOfNotNull(
+                                            if (it.value == null) null else "{'$key.value':${it.value!!.json}}",
                                             "{$or:[{'$key.expirationDate':{$gt:${now().json}}},{'$key.expirationDate':null}]}"
                                     )
                                 }

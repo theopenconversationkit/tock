@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.storage.mongo
 
 import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Sorts
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLog
@@ -25,12 +26,14 @@ import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQueryResult
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
+import fr.vsct.tock.shared.longProperty
 import org.litote.kmongo.count
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.find
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
 import java.time.Instant
+import java.util.concurrent.TimeUnit
 
 /**
  *
@@ -74,6 +77,7 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
         val c = database.getCollection<ParseRequestLogCol>("parse_request_log")
         c.ensureIndex("{'query.context.language':1,'applicationId':1}")
         c.ensureIndex("{'query.context.language':1,'applicationId':1, 'text':1}")
+        c.ensureIndex("{'date':1}", IndexOptions().expireAfter(longProperty("tock_nlp_log_index_ttl_days", 7), TimeUnit.DAYS))
         c
     }
 
