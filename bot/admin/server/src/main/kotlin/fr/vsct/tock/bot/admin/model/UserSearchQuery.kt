@@ -26,9 +26,19 @@ import java.time.ZonedDateTime
 data class UserSearchQuery(
         val name: String?,
         val from: ZonedDateTime?,
-        val to: ZonedDateTime?) : PaginatedQuery() {
+        val to: ZonedDateTime?,
+        val flags: Set<String> = emptySet()) : PaginatedQuery() {
 
     fun toUserReportQuery(): UserReportQuery {
-        return UserReportQuery(namespace, applicationName, language, start, size, name, from, to)
+        return UserReportQuery(
+                namespace,
+                applicationName,
+                language,
+                start,
+                size,
+                name,
+                from,
+                to,
+                flags.map { it to null }.toMap())
     }
 }

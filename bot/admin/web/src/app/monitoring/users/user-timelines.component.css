@@ -1,8 +1,9 @@
 .lastUpdateDate {
   font-style: italic;
 }
+
 .lastActionText {
-  color:lightseagreen;
+  color: lightseagreen;
 }
 
 .select-plan {
@@ -10,14 +11,24 @@
 }
 
 .users {
-  height:100%;
-  width:90%;
+  height: 100%;
+  width: 90%;
   margin-left: auto;
   margin-right: auto;
-  margin-top:20px;
-  text-align:center;
+  margin-top: 20px;
 }
 
 .dialog {
   text-align: justify;
+}
+
+.searchForm {
+  text-align: center;
+}
+
+.filter {
+  width: 80%;
+  font-size: large;
+  margin-left: auto;
+  margin-right: auto;
 }

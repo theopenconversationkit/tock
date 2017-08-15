@@ -34,8 +34,7 @@ import {PaginatedQuery} from "tock-nlp-admin/src/app/model/commons";
 })
 export class UserTimelinesComponent extends ScrollComponent<UserReport> {
 
-  filter: UserFilter = new UserFilter();
-
+  filter: UserFilter = new UserFilter([]);
 
   constructor(state: StateService,
               private monitoring: MonitoringService,
@@ -45,6 +44,34 @@ export class UserTimelinesComponent extends ScrollComponent<UserReport> {
     this.botConfiguration.configurations.subscribe(_ => this.refresh());
   }
 
+  containsFlag(flag: string): boolean {
+    return this.filter.flags.indexOf(flag) !== -1
+  }
+
+  toggleFlag(flag: string) {
+    if (!this.containsFlag(flag)) {
+      this.filter.flags.push(flag);
+      this.refresh();
+    } else {
+      this.removeFlag(flag);
+    }
+  }
+
+  removeFlag(flag: string) {
+    const i = this.filter.flags.indexOf(flag);
+    if (i !== -1) {
+      this.filter.flags.splice(i, 1);
+      this.refresh();
+    }
+  }
+
+  changeBefore() {
+    setTimeout(_ => this.refresh() );
+  }
+
+  changeAfter() {
+    setTimeout(_ => this.refresh() );
+  }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<UserReport>> {
     return this.monitoring.users(this.buildUserSearchQuery(query));
@@ -61,9 +88,10 @@ export class UserTimelinesComponent extends ScrollComponent<UserReport> {
       query.language,
       query.start,
       query.size,
-      this.filter.name,
+      null,
       this.filter.from,
-      this.filter.to);
+      this.filter.to,
+      this.filter.flags);
   }
 
 
@@ -86,7 +114,7 @@ export class UserTimelinesComponent extends ScrollComponent<UserReport> {
 
   loadDialog(user: UserReport) {
     this.monitoring.dialogs(this.buildDialogQuery(user)).subscribe(r => {
-      if(r.rows.length != 0) {
+      if (r.rows.length != 0) {
         user.userDialog = r.rows[0];
         this.monitoring.getTestPlansByNamespaceAndNlpModel().subscribe(r => user.testPlans = r);
       }
@@ -106,7 +134,7 @@ export class UserTimelinesComponent extends ScrollComponent<UserReport> {
 }
 
 export class UserFilter {
-  constructor(public name?: string,
+  constructor(public flags: string[],
               public from?: Date,
               public to?: Date) {
   }

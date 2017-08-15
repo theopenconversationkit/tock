@@ -27,6 +27,7 @@ import {MonitoringService} from "./monitoring.service";
 import {BotSharedModule} from "../shared/bot-shared.module";
 import {MomentModule} from "angular2-moment";
 import {DialogsComponent} from "./dialogs/dialogs.component";
+import {MdDatepickerModule, MdNativeDateModule} from "@angular/material";
 
 
 const routes: Routes = [
@@ -67,7 +68,9 @@ export class MonitoringRoutingModule {
     MonitoringRoutingModule,
     InfiniteScrollModule,
     MomentModule,
-    BotSharedModule
+    BotSharedModule,
+    MdDatepickerModule,
+    MdNativeDateModule
   ],
   declarations: [
     MonitoringTabsComponent,

@@ -34,9 +34,9 @@ import fr.vsct.tock.bot.admin.model.CreateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.DialogsSearchQuery
 import fr.vsct.tock.bot.admin.model.UpdateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
+import fr.vsct.tock.bot.admin.model.UserSearchQueryResult
 import fr.vsct.tock.bot.admin.test.toClientMessage
 import fr.vsct.tock.bot.admin.user.UserReportDAO
-import fr.vsct.tock.bot.admin.user.UserReportQueryResult
 import fr.vsct.tock.bot.connector.rest.client.ConnectorRestClient
 import fr.vsct.tock.bot.connector.rest.client.model.ClientMessageRequest
 import fr.vsct.tock.bot.connector.rest.client.model.ClientSentence
@@ -88,8 +88,8 @@ object BotAdminService {
         return conf
     }
 
-    fun searchUsers(query: UserSearchQuery): UserReportQueryResult {
-        return userReportDAO.search(query.toUserReportQuery())
+    fun searchUsers(query: UserSearchQuery): UserSearchQueryResult {
+        return UserSearchQueryResult(userReportDAO.search(query.toUserReportQuery()))
     }
 
     fun search(query: DialogsSearchQuery): DialogReportQueryResult {

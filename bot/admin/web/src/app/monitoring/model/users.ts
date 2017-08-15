@@ -29,7 +29,8 @@ export class UserSearchQuery extends PaginatedQuery {
               public size: number,
               public name?: String,
               public from?: Date,
-              public to?: Date) {
+              public to?: Date,
+              public flags?: string[]) {
     super(namespace, applicationName, language, start, size)
   }
 }
@@ -90,11 +91,8 @@ export class UserPreferences {
 
   constructor(public firstName?: string,
               public lastName?: string,
-              public email?: string,
-              public timezone?: string,
               public locale?: string,
-              public picture?: string,
-              public gender?: string) {
+              public picture?: string) {
 
   }
 
@@ -111,7 +109,7 @@ export class UserPreferences {
 export class UserState {
 
   constructor(public creationDate: Date,
-              public flags: any) {
+              public flags: string[]) {
   }
 
   static fromJSON(json?: any): UserState {

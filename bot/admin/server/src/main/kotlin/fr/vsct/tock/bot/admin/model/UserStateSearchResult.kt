@@ -14,23 +14,19 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.user
+package fr.vsct.tock.bot.admin.model
 
-import java.time.ZonedDateTime
-import java.util.Locale
+import fr.vsct.tock.bot.engine.user.UserState
+import java.time.Instant
 
 /**
  *
  */
-data class UserReportQuery(
-        val namespace: String,
-        val nlpModel: String,
-        val language: Locale,
-        val start: Long = 0,
-        val size: Int = 1,
-        val name: String? = null,
-        val from: ZonedDateTime? = null,
-        val to: ZonedDateTime? = null,
-        val flags: Map<String, String?> = emptyMap()
-) {
+data class UserStateSearchResult(
+        val creationDate: Instant,
+        val flags: Set<String>) {
+
+    constructor(state: UserState) : this(
+            state.creationDate,
+            state.flags.filter { it.value.isValid() }.keys)
 }

@@ -15,7 +15,33 @@
   -->
 
 <div class="users">
-<div *ngIf="total !== -1">
+  <div *ngIf="total !== -1">
+  <span class="searchForm">
+     <md-card>
+    <md-card-content class="filter">
+      <md-input-container>
+        <input mdInput [mdDatepicker]="after" placeholder="Modified after" [(ngModel)]="filter.from" (change)="changeAfter()">
+        <button mdSuffix [mdDatepickerToggle]="after"></button>
+      </md-input-container>
+      <md-datepicker #after (selectedChanged)="changeAfter()"></md-datepicker>
+
+      <md-input-container>
+        <input mdInput [mdDatepicker]="before" placeholder="Modified before" [(ngModel)]="filter.to" (change)="changeBefore()">
+        <button mdSuffix [mdDatepickerToggle]="before"></button>
+      </md-input-container>
+      <md-datepicker #before (selectedChanged)="changeBefore()"></md-datepicker>
+      &nbsp;
+      <md-chip-list *ngIf="filter.flags.length !== 0">
+              <md-chip *ngFor="let f of filter.flags"
+                       [selected]="true"
+                       color="primary"
+                       (click)="removeFlag(f)"
+                       md-tooltip="Remove filter {{f}}">{{f}}
+              </md-chip>
+    </md-chip-list>
+    </md-card-content>
+  </md-card>
+
   <h1 *ngIf="total === 0">No user yet!
     <button md-button (click)="refresh()">
       <md-icon>refresh</md-icon>
@@ -26,63 +52,72 @@
       <md-icon>refresh</md-icon>
     </button>
   </h1>
-  <p></p>
-  <div
-    infinite-scroll
-    [infiniteScrollDistance]="2"
-    [infiniteScrollThrottle]="300"
-    (scrolled)="onScroll()">
-    <div *ngFor="let user of data">
-      <md-card>
-        <md-card-header>
-          <img md-card-avatar
-               src="{{user.userPreferences.picture ? user.userPreferences.picture : '/assets/images/people.png'}}"
-               alt="{{user.userPreferences.firstName}} {{user.userPreferences.lastName}}">
-          <md-card-title> {{user.userPreferences.firstName}} {{user.userPreferences.lastName}}
-            <span *ngIf="user.botConfiguration">[{{user.botConfiguration.name}} - {{user.botConfiguration.connectorType.id}}]</span>
-            ({{user.userPreferences.locale}})
-          </md-card-title>
-          <md-card-subtitle>
-            <span class="lastUpdateDate"> created the {{user.userState.creationDate | amDateFormat: 'YYYY-MM-DD'}} - updated {{user.lastUpdateDate | amTimeAgo}} </span>
-          </md-card-subtitle>
-        </md-card-header>
-        <md-card-content>
-          <span *ngIf="user.lastActionText" class="lastActionText"> &quot; {{user.lastActionText}} &quot;</span>
-          <button *ngIf="!user.displayDialogs" md-icon-button md-tooltip="Display dialog"
-                  color="primary" (click)="loadDialog(user)">
-            <md-icon>forum</md-icon>
-          </button>
-          <button *ngIf="user.displayDialogs" md-icon-button md-tooltip="Hide dialog" color="accent"
-                  (click)="closeDialog(user)">
-            <md-icon>remove_from_queue</md-icon>
-          </button>
-          <div *ngIf="user.displayDialogs && !user.userDialog">No dialog found</div>
-        </md-card-content>
-      </md-card>
-      <tock-display-dialog
-        class="dialog"
-        *ngIf="user.displayDialogs && user.userDialog"
-        [dialog]="user.userDialog">
-        <div *ngIf="user.userDialog.actions.length === 0">No dialog</div>
-        <div *ngIf="user.userDialog.actions.length !== 0">
-          <div *ngIf="user.testPlans && user.testPlans.length !== 0">
-            <md-select #selectedPlan
-                       placeholder="Select a Test Plan"
-                       class="select-plan">
-              <md-option *ngFor="let plan of user.testPlans"
-                         [value]="plan._id">{{ plan.name }}
-              </md-option>
-            </md-select>
-            <button (click)="addDialogToTestPlan(selectedPlan?.selected?.value, user.userDialog)"
-                    md-button color="primary">
-              <md-icon>add_shopping_cart</md-icon>
-              Add dialog to Test Plan
+    </span>
+    <p></p>
+    <div
+      infinite-scroll
+      [infiniteScrollDistance]="2"
+      [infiniteScrollThrottle]="300"
+      (scrolled)="onScroll()">
+      <div *ngFor="let user of data">
+        <md-card>
+          <md-card-header>
+            <img md-card-avatar
+                 src="{{user.userPreferences.picture ? user.userPreferences.picture : '/assets/images/people.png'}}"
+                 alt="{{user.userPreferences.firstName}} {{user.userPreferences.lastName}}">
+            <md-card-title> {{user.userPreferences.firstName}} {{user.userPreferences.lastName}}
+              <span *ngIf="user.botConfiguration">[{{user.botConfiguration.name}} - {{user.botConfiguration.connectorType.id}}]</span>
+              <span *ngIf="user.userPreferences.locale">({{user.userPreferences.locale}})</span>
+            </md-card-title>
+            <md-card-subtitle>
+              <span class="lastUpdateDate"> created the {{user.userState.creationDate | amDateFormat: 'YYYY-MM-DD'}} - updated {{user.lastUpdateDate | amTimeAgo}} </span>
+            </md-card-subtitle>
+          </md-card-header>
+          <md-card-content>
+            <span *ngIf="user.lastActionText" class="lastActionText"> &quot; {{user.lastActionText}} &quot;</span>
+            <button *ngIf="!user.displayDialogs" md-icon-button md-tooltip="Display dialog"
+                    color="primary" (click)="loadDialog(user)">
+              <md-icon>forum</md-icon>
             </button>
+            <button *ngIf="user.displayDialogs" md-icon-button md-tooltip="Hide dialog" color="accent"
+                    (click)="closeDialog(user)">
+              <md-icon>remove_from_queue</md-icon>
+            </button>
+            <md-chip-list *ngIf="user.userState.flags.length !== 0">
+              <md-chip *ngFor="let f of user.userState.flags"
+                       [selected]="containsFlag(f)"
+                       color="accent"
+                       (click)="toggleFlag(f)"
+                       md-tooltip="Filter by flag {{f}}">{{f}}
+              </md-chip>
+            </md-chip-list>
+            <div *ngIf="user.displayDialogs && !user.userDialog">No dialog found</div>
+          </md-card-content>
+        </md-card>
+        <tock-display-dialog
+          class="dialog"
+          *ngIf="user.displayDialogs && user.userDialog"
+          [dialog]="user.userDialog">
+          <div *ngIf="user.userDialog.actions.length === 0">No dialog</div>
+          <div *ngIf="user.userDialog.actions.length !== 0">
+            <div *ngIf="user.testPlans && user.testPlans.length !== 0">
+              <md-select #selectedPlan
+                         placeholder="Select a Test Plan"
+                         class="select-plan">
+                <md-option *ngFor="let plan of user.testPlans"
+                           [value]="plan._id">{{ plan.name }}
+                </md-option>
+              </md-select>
+              <button (click)="addDialogToTestPlan(selectedPlan?.selected?.value, user.userDialog)"
+                      md-button color="primary">
+                <md-icon>add_shopping_cart</md-icon>
+                Add dialog to Test Plan
+              </button>
+            </div>
           </div>
-        </div>
           <p></p>
-      </tock-display-dialog>
+        </tock-display-dialog>
+      </div>
     </div>
   </div>
-</div>
 </div>

@@ -48,6 +48,7 @@ import org.litote.kmongo.MongoOperator.lt
 import org.litote.kmongo.MongoOperator.match
 import org.litote.kmongo.MongoOperator.or
 import org.litote.kmongo.MongoOperator.sort
+import org.litote.kmongo.MongoOperator.type
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.count
 import org.litote.kmongo.deleteMany
@@ -190,7 +191,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                 "userState.flags.${it.key}".let { key ->
                                     listOfNotNull(
                                             if (it.value == null) null else "{'$key.value':${it.value!!.json}}",
-                                            "{$or:[{'$key.expirationDate':{$gt:${now().json}}},{'$key.expirationDate':null}]}"
+                                            "{$or:[{'$key.expirationDate':{$gt:${now().json}}},{'$key.expirationDate':{$type:10}}]}"
                                     )
                                 }
                             }.joinToString(",", "$and:[", "]")
