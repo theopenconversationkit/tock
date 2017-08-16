@@ -20,6 +20,7 @@ import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {BotIntent, BotIntentSearchQuery, CreateBotIntentRequest, UpdateBotIntentRequest} from "./model/bot-intent";
 import {Intent} from "tock-nlp-admin/src/app/model/application";
 import {Observable} from "rxjs/Observable";
+import {I18nLabel} from "./model/i18n";
 
 @Injectable()
 export class BotService {
@@ -43,4 +44,29 @@ export class BotService {
   deleteBotIntent(storyDefinitionId: string): Observable<boolean> {
     return this.rest.delete(`/bot/intent/${storyDefinitionId}`);
   }
+
+  i18nLabels(): Observable<I18nLabel[]> {
+    return this.rest.get("/i18n", I18nLabel.fromJSONArray);
+  }
+
+  completeI18nLabels(labels: I18nLabel[]): Observable<boolean> {
+    return this.rest.post("/i18n/complete", labels);
+  }
+
+  saveI18nLabels(labels: I18nLabel[]): Observable<boolean> {
+    return this.rest.post("/i18n/saveAll", labels);
+  }
+
+  saveI18nLabel(label: I18nLabel): Observable<boolean> {
+    return this.rest.post("/i18n/save", label);
+  }
+
+  deleteI18nLabel(label: I18nLabel): Observable<boolean> {
+    return this.rest.delete(`/i18n/${label._id}`);
+  }
+
+  downloadI18nLabelsExport(): Observable<Blob> {
+    return this.rest.get("/i18n/export", (r => new Blob([r], {type: 'text/csv'}) ))
+  }
+
 }

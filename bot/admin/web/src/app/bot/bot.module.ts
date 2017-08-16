@@ -28,6 +28,7 @@ import {BotTabsComponent} from "./bot-tabs.component";
 import {SearchBotIntentComponent} from "./intent/search-bot-intent.component";
 import {NlpModule} from "tock-nlp-admin/src/app/nlp-tabs/nlp.module"
 import {ApplicationResolver} from "tock-nlp-admin/src/app/core/application.resolver";
+import {I18nComponent} from "./i18n/i18n.component";
 
 const routes: Routes = [
   {
@@ -49,6 +50,10 @@ const routes: Routes = [
       {
         path: 'intent-search',
         component: SearchBotIntentComponent
+      },
+      {
+        path: 'i18n',
+        component: I18nComponent
       }
     ]
   }
@@ -73,7 +78,8 @@ export class BotRoutingModule {
   declarations: [
     BotTabsComponent,
     CreateBotIntentComponent,
-    SearchBotIntentComponent
+    SearchBotIntentComponent,
+    I18nComponent
   ],
   exports: [],
   providers: [

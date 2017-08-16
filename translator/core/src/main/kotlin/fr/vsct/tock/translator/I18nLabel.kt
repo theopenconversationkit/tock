@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.translator
 
+import fr.vsct.tock.shared.defaultNamespace
 import java.util.Locale
 
 /**
@@ -23,6 +24,7 @@ import java.util.Locale
  */
 data class I18nLabel(
         val _id: String,
+        val namespace: String = defaultNamespace,
         val category: String,
         val i18n: List<I18nLocalizedLabel>) {
 

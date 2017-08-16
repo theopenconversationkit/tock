@@ -29,9 +29,15 @@ interface I18nKeyProvider {
 
     fun i18nKeyFromLabel(defaultLabel: String, args: List<Any?> = emptyList()): I18nLabelKey
 
-    fun i18nKey(key: String, category: String, defaultLabel: String, args: List<Any?> = emptyList()): I18nLabelKey {
+    fun i18nKey(
+            key: String,
+            namespace: String,
+            category: String,
+            defaultLabel: String,
+            args: List<Any?> = emptyList()): I18nLabelKey {
         return I18nLabelKey(
                 key.toLowerCase(),
+                namespace,
                 category.toLowerCase(),
                 defaultLabel,
                 args)

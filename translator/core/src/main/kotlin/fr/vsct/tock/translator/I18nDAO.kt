@@ -23,10 +23,12 @@ interface I18nDAO {
 
     fun getLabels(): List<I18nLabel>
 
-    fun getLabelById(id:String) : I18nLabel?
+    fun getLabelById(id: String): I18nLabel?
 
     fun save(i18n: I18nLabel)
 
     fun save(i18n: List<I18nLabel>)
+
+    fun deleteByNamespaceAndId(namespace: String, id: String)
 
 }

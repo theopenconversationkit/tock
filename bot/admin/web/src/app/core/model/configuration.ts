@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+
+
 export class BotApplicationConfiguration {
 
   constructor(public applicationId: string,
@@ -74,3 +76,5 @@ export enum EventType {
 export enum  AttachmentType {
   image, audio, video, file
 }
+
+export const defaultUserInterfaceType = UserInterfaceType.textChat;

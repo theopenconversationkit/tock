@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.definition
 
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
 import fr.vsct.tock.translator.Translator
@@ -48,12 +49,18 @@ abstract class StoryHandlerBase : StoryHandler, I18nKeyProvider {
      */
     abstract fun action(bus: BotBus)
 
+    /**
+     * The namespace for [I18nKeyProvider] implementation.
+     */
+    protected open val i18nNamespace: String = defaultNamespace
+
     protected fun i18nKeyPrefix(): String = javaClass.kotlin.simpleName?.replace("StoryHandler", "") ?: ""
 
     override fun i18nKeyFromLabel(defaultLabel: String, args: List<Any?>): I18nLabelKey {
         val prefix = i18nKeyPrefix()
         return i18nKey(
                 "${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}",
+                i18nNamespace,
                 prefix,
                 defaultLabel,
                 args)

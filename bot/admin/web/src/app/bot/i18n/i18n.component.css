@@ -14,32 +14,48 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-class TabLink {
-  constructor(public link: string, public label: string) {
-
-  }
+.i18n {
+  font-size: 10px;
 }
 
-const tabs = [
-  new TabLink("intent-create", "Add new Answer"),
-  new TabLink("intent-search", "Search Answers"),
-  new TabLink("i18n", "i18n")
-];
-
-@Component({
-  selector: 'tock-bot-tabs',
-  templateUrl: './bot-tabs.component.html',
-  styleUrls: ['./bot-tabs.component.css']
-})
-export class BotTabsComponent implements OnInit {
-
-  botTabLinks = tabs;
-
-  constructor() {
-  }
-
-  ngOnInit() {
-  }
-
+.userInterface {
+  font-size: 15px;
+  vertical-align: sub;
 }
+
+.input {
+  line-height: 12px;
+}
+
+.input-alternative {
+  line-height: 12px;
+  margin-left: 100px;
+}
+
+
+.defaultLabel {
+  font-weight: bold;
+}
+
+.fill-remaining-space {
+  flex: 1 1 auto;
+}
+
+.validated {
+  color: green;
+}
+
+.notValidated {
+  color: orangered;
+}
+
+.spinner {
+  width:36px;
+  height:36px;
+}
+
+.locale {
+  display: inline-block;
+  width: 1em;
+}
+
