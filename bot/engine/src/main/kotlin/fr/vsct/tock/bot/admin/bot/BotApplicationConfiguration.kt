@@ -27,8 +27,12 @@ data class BotApplicationConfiguration(
         val namespace: String,
         val nlpModel: String,
         val connectorType: ConnectorType,
+        val ownerConnectorType: ConnectorType? = null,
         val name: String = applicationId,
         val baseUrl: String? = null,
         val manuallyModified: Boolean = false,
         val _id: String? = null) {
+
+    @Transient
+    val targetConnectorType = ownerConnectorType ?: connectorType
 }

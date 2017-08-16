@@ -88,6 +88,7 @@ object BotRepository {
                         namespace,
                         nlpModelName,
                         configuration.type,
+                        configuration.ownerConnectorType,
                         configuration.getName(),
                         configuration.getBaseUrl())
 

@@ -123,6 +123,7 @@ object TestPlanService {
                                 playerId,
                                 botId,
                                 testPlan.startAction!!.toClientMessage(),
+                                testPlan.targetConnectorType.toClientConnectorType(),
                                 true
                         ))
             }
@@ -134,6 +135,7 @@ object TestPlanService {
                                     playerId,
                                     botId,
                                     it.findFirstMessage().toClientMessage(),
+                                    testPlan.targetConnectorType.toClientConnectorType(),
                                     true
                             ))
                     expectedBotMessages = answer.body()?.messages?.toMutableList() ?: mutableListOf()
@@ -157,7 +159,7 @@ object TestPlanService {
             }
 
             DialogExecutionReport(dialog.id)
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             logger.error(e)
             DialogExecutionReport(dialog.id, true, errorMessage = e.message)
         } finally {

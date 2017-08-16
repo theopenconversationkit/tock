@@ -194,6 +194,7 @@ object XrayService {
                     botConfiguration.nlpModel,
                     botConfiguration._id!!,
                     if (startSentence.isBlank()) null else MessageParser.parse(startSentence).first(),
+                    botConfiguration.targetConnectorType,
                     "planKey_${configuration.botConfiguration.applicationId}"
             )
         }

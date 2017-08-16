@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.BotBus
@@ -48,7 +49,8 @@ open class BotBusMock(override val userTimeline: UserTimeline,
                       val botDefinition: BotDefinition,
                       override var i18nProvider: I18nKeyProvider,
                       override val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
-                      internal val initialUserPreferences: UserPreferences) : BotBus {
+                      internal val initialUserPreferences: UserPreferences,
+                      internal val connectorType: ConnectorType) : BotBus {
 
     constructor(context: BotBusMockContext,
                 action: Action = context.action)
@@ -63,7 +65,8 @@ open class BotBusMock(override val userTimeline: UserTimeline,
             action,
             context.botDefinition,
             context.storyDefinition.storyHandler as I18nKeyProvider,
-            initialUserPreferences = context.userPreferences.copy()
+            initialUserPreferences = context.userPreferences.copy(),
+            connectorType = context.connectorType
     )
 
     val logs: List<BotBusMockLog> = mutableListOf()
@@ -81,6 +84,8 @@ open class BotBusMock(override val userTimeline: UserTimeline,
     override val userId = action.playerId
     override val userPreferences: UserPreferences = userTimeline.userPreferences
     override val userLocale: Locale = userPreferences.locale
+    override val targetConnectorType: ConnectorType = action.state.targetConnectorType ?: connectorType
+
 
     private val mockData: BusMockData = BusMockData()
 
@@ -147,8 +152,10 @@ open class BotBusMock(override val userTimeline: UserTimeline,
         return this
     }
 
-    override fun with(message: ConnectorMessage): BotBus {
-        mockData.addMessage(message)
+    override fun with(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus {
+        if (targetConnectorType == connectorType) {
+            mockData.addMessage(messageProvider.invoke())
+        }
         return this
     }
 

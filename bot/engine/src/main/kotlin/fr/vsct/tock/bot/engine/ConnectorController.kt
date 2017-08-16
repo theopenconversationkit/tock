@@ -132,7 +132,7 @@ class ConnectorController internal constructor(
         return errorAction
     }
 
-    fun helloIntent() : Intent? = bot.botDefinition.helloStory?.mainIntent()
+    fun helloIntent(): Intent? = bot.botDefinition.helloStory?.mainIntent()
 
     internal fun loadProfile(applicationId: String, playerId: PlayerId): UserPreferences {
         return connector.loadProfile(applicationId, playerId)

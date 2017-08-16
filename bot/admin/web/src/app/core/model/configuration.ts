@@ -23,7 +23,8 @@ export class BotApplicationConfiguration {
               public connectorType: ConnectorType,
               public name: string,
               public baseUrl?: string,
-              public _id?: string) {
+              public _id?: string,
+              public ownerConnectorType?: ConnectorType,) {
   }
 
   static fromJSON(json?: any): BotApplicationConfiguration {
@@ -31,6 +32,7 @@ export class BotApplicationConfiguration {
 
     const result = Object.assign(value, json, {
       connectorType: ConnectorType.fromJSON(json.connectorType),
+      ownerConnectorType: ConnectorType.fromJSON(json.ownerConnectorType)
     });
 
     return result;
@@ -48,11 +50,14 @@ export class ConnectorType {
               public asynchronous: boolean) {
   }
 
-  isRest() : boolean {
+  isRest(): boolean {
     return this.id === "rest";
   }
 
   static fromJSON(json?: any): ConnectorType {
+    if(!json) {
+      return null;
+    }
     const value = Object.create(ConnectorType.prototype);
 
     const result = Object.assign(value, json, {
@@ -71,6 +76,6 @@ export enum EventType {
   sentence, choice, attachment, location
 }
 
-export enum  AttachmentType {
+export enum AttachmentType {
   image, audio, video, file
 }

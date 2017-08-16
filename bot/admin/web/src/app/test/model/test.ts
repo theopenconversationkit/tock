@@ -16,6 +16,7 @@
 
 import {ActionReport, BotMessage, DialogReport, PlayerId, PlayerType} from "app/shared/model/dialog-data";
 import {ApplicationScopedQuery} from "tock-nlp-admin/src/app/model/commons";
+import {ConnectorType} from "../../core/model/configuration";
 
 export class BotDialogRequest extends ApplicationScopedQuery {
 
@@ -67,7 +68,8 @@ export class TestPlan {
               public nlpModel: string,
               public locale: string,
               public botApplicationConfigurationId: string,
-              public _id?: string) {
+              public _id?: string,
+              public targetConnectorType?: ConnectorType) {
   }
 
   fillDialogExecutionReport(report: DialogExecutionReport) {
@@ -90,6 +92,7 @@ export class TestPlan {
 
     const result = Object.assign(value, json, {
       dialogs: TestDialogReport.fromJSONArray(json.dialogs),
+      targetConnectorType: ConnectorType.fromJSON(json.targetConnectorType)
     });
 
     return result;
@@ -164,7 +167,7 @@ export class TestDialogReport {
               public id: string) {
   }
 
-  toDialogReport() : DialogReport {
+  toDialogReport(): DialogReport {
     return new DialogReport(this.actions.map(d => d.toActionReport()), this.id);
   }
 

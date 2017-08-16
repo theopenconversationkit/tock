@@ -22,18 +22,21 @@ data class ConnectorConfiguration(
         val applicationId: String,
         val path: String,
         val type: ConnectorType,
-        val parameters: Map<String, String>) {
+        val ownerConnectorType: ConnectorType? = null,
+        val parameters: Map<String, String> = emptyMap()) {
 
     constructor(applicationId: String,
                 path: String,
                 type: ConnectorType,
                 applicationName: String,
                 baseUrl: String?,
+                ownerConnectorType: ConnectorType? = null,
                 parameters: Map<String, String> = emptyMap())
             : this(
             applicationId,
             path,
             type,
+            ownerConnectorType,
             parameters + mapNotNullValues(
                     APPLICATION_NAME to applicationName,
                     BASE_URL to baseUrl

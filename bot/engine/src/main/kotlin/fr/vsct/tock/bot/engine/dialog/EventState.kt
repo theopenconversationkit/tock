@@ -16,12 +16,24 @@
 
 package fr.vsct.tock.bot.engine.dialog
 
+import fr.vsct.tock.bot.connector.ConnectorType
+
 /**
- *
+ * State in event scope.
  */
 data class EventState(
+        /**
+         * The entity values.
+         */
         val entityValues: MutableList<ContextValue> = mutableListOf(),
-        var testEvent: Boolean = false) {
+        /**
+         * Is it a "test" event - flag used by automatic tests.
+         */
+        var testEvent: Boolean = false,
+        /**
+         * The target connector type - usually the source connector but not always
+         */
+        var targetConnectorType: ConnectorType? = null) {
 
     fun getEntity(role: String): List<ContextValue> {
         return entityValues.filter { it.entity.role == role }

@@ -35,6 +35,7 @@ import fr.vsct.tock.bot.admin.model.DialogsSearchQuery
 import fr.vsct.tock.bot.admin.model.UpdateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.model.UserSearchQueryResult
+import fr.vsct.tock.bot.admin.test.toClientConnectorType
 import fr.vsct.tock.bot.admin.test.toClientMessage
 import fr.vsct.tock.bot.admin.user.UserReportDAO
 import fr.vsct.tock.bot.connector.rest.client.ConnectorRestClient
@@ -258,14 +259,15 @@ object BotAdminService {
                     ClientMessageRequest(
                             "test_${conf._id}",
                             "test_bot_${conf._id}",
-                            request.message.toClientMessage()))
+                            request.message.toClientMessage(),
+                            conf.targetConnectorType.toClientConnectorType()))
 
             if (response.isSuccessful) {
                 BotDialogResponse(response.body()?.messages ?: emptyList())
             } else {
                 BotDialogResponse(listOf(ClientSentence("technical error :(")))
             }
-        } catch(throwable: Throwable) {
+        } catch (throwable: Throwable) {
             logger.error(throwable)
             BotDialogResponse(listOf(ClientSentence("technical error :(")))
         }

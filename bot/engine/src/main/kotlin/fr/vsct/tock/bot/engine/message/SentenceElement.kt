@@ -21,7 +21,7 @@ import fr.vsct.tock.bot.connector.ConnectorType
 
 /**
  * An aggregation of [Message]s used in [Sentence].
- * This a usually "generic" view of [ConnectorMessage].
+ * This is usually a "generic" view of [ConnectorMessage].
  */
 data class SentenceElement(
         val connectorType: ConnectorType = ConnectorType.none,

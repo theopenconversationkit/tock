@@ -23,5 +23,8 @@ data class ClientMessageRequest(
         val userId: String,
         val recipientId: String,
         val message: ClientMessage,
-        val test: Boolean = false) {
+        val targetConnectorType: ClientConnectorType,
+        val test: Boolean = false
+) {
+
 }

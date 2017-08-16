@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.admin.test
 
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.message.Message
 
 /**
@@ -29,6 +30,7 @@ data class TestPlan(
         val nlpModel: String,
         val botApplicationConfigurationId: String,
         val startAction: Message? = null,
+        val targetConnectorType: ConnectorType = ConnectorType.none,
         val _id: String? = null
 ) {
 }

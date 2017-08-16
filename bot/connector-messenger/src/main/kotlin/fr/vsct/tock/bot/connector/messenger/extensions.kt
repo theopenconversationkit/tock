@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector.messenger
 
+import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.messenger.model.send.Attachment
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
@@ -52,11 +53,16 @@ private val logger = KotlinLogging.logger {}
  */
 val messengerConnectorType = ConnectorType("messenger")
 
+fun BotBus.withMessenger(messageProvider: () -> ConnectorMessage): BotBus {
+    with(messengerConnectorType, messageProvider)
+    return this
+}
+
 /**
  * Add a button template [https://developers.facebook.com/docs/messenger-platform/send-api-reference/button-template]
  */
-fun BotBus.withMessengerButtons(text: String, vararg actions: UserAction): BotBus {
-    with(AttachmentMessage(
+fun BotBus.buttonsTemplate(text: String, vararg actions: UserAction): AttachmentMessage {
+    return AttachmentMessage(
             Attachment(
                     AttachmentType.template,
                     ButtonPayload(
@@ -65,24 +71,37 @@ fun BotBus.withMessengerButtons(text: String, vararg actions: UserAction): BotBu
             ),
             extractQuickReplies(actions.toList())
     )
-    )
-    return this
 }
 
-fun BotBus.withMessengerList(
+/**
+ * ListTemplate does not support list with exactly one element.
+ * This function generates a generic template if there is one element,
+ * or a classic list element if there is between 2 and 4.
+ */
+fun BotBus.flexibleListTemplate(elements: List<Element>,
+                                topElementStyle: ListElementStyle? = null,
+                                vararg actions: UserAction): AttachmentMessage {
+    return if (elements.size == 1) {
+        genericTemplate(elements, *actions.filterIsInstance(QuickReply::class.java).toTypedArray())
+    } else {
+        listTemplate(elements, topElementStyle, *actions)
+    }
+}
+
+fun BotBus.listTemplate(
         e1: Element,
         e2: Element,
         e3: Element? = null,
         e4: Element? = null,
         topElementStyle: ListElementStyle? = null,
-        vararg actions: UserAction): BotBus {
-    return withMessengerList(listOfNotNull(e1, e2, e3, e4), topElementStyle, *actions)
+        vararg actions: UserAction): AttachmentMessage {
+    return listTemplate(listOfNotNull(e1, e2, e3, e4), topElementStyle, *actions)
 }
 
-fun BotBus.withMessengerList(
+fun BotBus.listTemplate(
         elements: List<Element>,
         topElementStyle: ListElementStyle? = null,
-        vararg actions: UserAction): BotBus {
+        vararg actions: UserAction): AttachmentMessage {
     if (elements.size < 2 || elements.size > 4) {
         error("must have at least 2 elements and at most 4")
     }
@@ -91,37 +110,33 @@ fun BotBus.withMessengerList(
         error("imageUrl of elements may not be null with large element style")
     }
 
-    with(
-            AttachmentMessage(
-                    Attachment(
-                            AttachmentType.template,
-                            ListPayload(
-                                    elements,
-                                    topElementStyle,
-                                    extractButtons(actions.toList())
-                                            .run {
-                                                if (isEmpty()) null
-                                                else if (size > 1) error("only one button max")
-                                                else this
-                                            })
-                    ),
-                    extractQuickReplies(actions.toList())
-            )
+    return AttachmentMessage(
+            Attachment(
+                    AttachmentType.template,
+                    ListPayload(
+                            elements,
+                            topElementStyle,
+                            extractButtons(actions.toList())
+                                    .run {
+                                        if (isEmpty()) null
+                                        else if (size > 1) error("only one button max")
+                                        else this
+                                    })
+            ),
+            extractQuickReplies(actions.toList())
     )
-
-    return this
 }
 
-fun BotBus.withMessengerGeneric(vararg elements: Element): BotBus {
-    return withMessengerGeneric(elements.toList())
+fun BotBus.genericTemplate(vararg elements: Element): AttachmentMessage {
+    return genericTemplate(elements.toList())
 }
 
-fun BotBus.withMessengerGeneric(elements: List<Element>, vararg quickReplies: QuickReply): BotBus {
+fun BotBus.genericTemplate(elements: List<Element>, vararg quickReplies: QuickReply): AttachmentMessage {
     if (elements.isEmpty() || elements.size > 10) {
         error("must have at least 1 elements and at most 10")
     }
 
-    with(AttachmentMessage(
+    return AttachmentMessage(
             Attachment(
                     AttachmentType.template,
                     GenericPayload(
@@ -130,66 +145,60 @@ fun BotBus.withMessengerGeneric(elements: List<Element>, vararg quickReplies: Qu
             ),
             quickReplies.run { if (isEmpty()) null else toList() }
     )
-    )
-
-    return this
 }
 
-fun BotBus.withMessengerAttachment(attachmentUrl: String, type: AttachmentType, vararg quickReplies: QuickReply): BotBus {
+fun BotBus.attachment(attachmentUrl: String, type: AttachmentType, vararg quickReplies: QuickReply): AttachmentMessage {
     return when (type) {
-        AttachmentType.image -> withMessengerImage(attachmentUrl, *quickReplies)
-        AttachmentType.audio -> withMessengerAudio(attachmentUrl, *quickReplies)
-        AttachmentType.video -> withMessengerVideo(attachmentUrl, *quickReplies)
+        AttachmentType.image -> image(attachmentUrl, *quickReplies)
+        AttachmentType.audio -> audio(attachmentUrl, *quickReplies)
+        AttachmentType.video -> video(attachmentUrl, *quickReplies)
         else -> {
-            logger.warn { "not supported attachment type $type" }
-            this
+            error { "not supported attachment type $type" }
         }
     }
 }
 
-private fun BotBus.withMessengerAttachmentType(
+private fun BotBus.attachment(
         attachmentUrl: String,
         type: AttachmentType,
         useCache: Boolean = MessengerConfiguration.reuseAttachmentByDefault,
-        vararg quickReplies: QuickReply): BotBus {
-    with(AttachmentMessage(
+        vararg quickReplies: QuickReply): AttachmentMessage {
+
+    return AttachmentMessage(
             Attachment(
                     type,
                     UrlPayload.getUrlPayload(applicationId, attachmentUrl, useCache && !userPreferences.test)
             ),
             quickReplies.run { if (isEmpty()) null else toList() }
-    ))
-    return this
-}
-
-fun BotBus.withMessengerImage(imageUrl: String, vararg quickReplies: QuickReply): BotBus {
-    return withMessengerAttachmentType(imageUrl, AttachmentType.image, quickReplies = *quickReplies)
-}
-
-fun BotBus.withMessengerAudio(audioUrl: String, vararg quickReplies: QuickReply): BotBus {
-    return withMessengerAttachmentType(audioUrl, AttachmentType.audio, quickReplies = *quickReplies)
-}
-
-fun BotBus.withMessengerVideo(videoUrl: String, vararg quickReplies: QuickReply): BotBus {
-    return withMessengerAttachmentType(videoUrl, AttachmentType.video, quickReplies = *quickReplies)
-}
-
-fun BotBus.withMessengerQuickReplies(text: String, vararg quickReplies: QuickReply): BotBus {
-    with(
-            TextMessage(text, quickReplies.toList())
     )
-    return this
 }
 
-fun BotBus.messengerGenericElement(
+fun BotBus.image(imageUrl: String, vararg quickReplies: QuickReply): AttachmentMessage {
+    return attachment(imageUrl, AttachmentType.image, quickReplies = *quickReplies)
+}
+
+fun BotBus.audio(audioUrl: String, vararg quickReplies: QuickReply): AttachmentMessage {
+    return attachment(audioUrl, AttachmentType.audio, quickReplies = *quickReplies)
+}
+
+fun BotBus.video(videoUrl: String, vararg quickReplies: QuickReply): AttachmentMessage {
+    return attachment(videoUrl, AttachmentType.video, quickReplies = *quickReplies)
+}
+
+fun BotBus.text(text: String, vararg quickReplies: QuickReply): TextMessage {
+    return TextMessage(text, quickReplies.toList())
+}
+
+
+fun BotBus.genericElement(
         title: I18nLabelKey,
         subtitle: I18nLabelKey? = null,
         imageUrl: String? = null,
         buttons: List<Button>? = null): Element {
-    return messengerGenericElement(translate(title), translate(subtitle), imageUrl, buttons)
+    return genericElement(translate(title), translate(subtitle), imageUrl, buttons)
 }
 
-fun BotBus.messengerGenericElement(
+fun BotBus.genericElement(
         title: String,
         subtitle: String? = null,
         imageUrl: String? = null,
@@ -211,19 +220,19 @@ fun BotBus.messengerGenericElement(
     )
 }
 
-fun BotBus.messengerListElement(
+fun BotBus.listElement(
         title: I18nLabelKey,
         subtitle: I18nLabelKey? = null,
         imageUrl: String? = null,
         button: Button? = null): Element {
-    return messengerListElement(
+    return listElement(
             translate(title),
             translate(subtitle),
             imageUrl,
             button)
 }
 
-fun BotBus.messengerListElement(
+fun BotBus.listElement(
         title: String,
         subtitle: String? = null,
         imageUrl: String? = null,
@@ -242,35 +251,35 @@ fun BotBus.messengerListElement(
     )
 }
 
-fun BotBus.messengerLocationQuickReply(): QuickReply
+fun BotBus.locationQuickReply(): QuickReply
         = LocationQuickReply()
 
-fun BotBus.messengerQuickReply(
+fun BotBus.quickReply(
         title: String,
         targetIntent: IntentAware,
         imageUrl: String? = null,
         step: StoryStep? = null,
         parameters: Parameters): QuickReply
-        = messengerQuickReply(title, targetIntent, imageUrl, step, *parameters.toArray())
+        = quickReply(title, targetIntent, imageUrl, step, *parameters.toArray())
 
 
-fun BotBus.messengerQuickReply(
+fun BotBus.quickReply(
         title: String,
         targetIntent: IntentAware,
         imageUrl: String? = null,
         step: StoryStep? = null,
         vararg parameters: Pair<String, String>): QuickReply
-        = messengerQuickReply(title, targetIntent.wrappedIntent(), imageUrl, step, *parameters)
+        = quickReply(title, targetIntent.wrappedIntent(), imageUrl, step, *parameters)
 
-fun BotBus.messengerQuickReply(
+fun BotBus.quickReply(
         title: String,
         targetIntent: Intent,
         imageUrl: String? = null,
         step: StoryStep? = null,
         parameters: Parameters): QuickReply
-        = messengerQuickReply(title, targetIntent, imageUrl, step, *parameters.toArray())
+        = quickReply(title, targetIntent, imageUrl, step, *parameters.toArray())
 
-fun BotBus.messengerQuickReply(
+fun BotBus.quickReply(
         title: String,
         targetIntent: Intent,
         imageUrl: String? = null,
@@ -286,22 +295,22 @@ fun BotBus.messengerQuickReply(
     return TextQuickReply(title, payload, imageUrl)
 }
 
-fun BotBus.messengerPostback(
+fun BotBus.postbackButton(
         title: String,
         targetIntent: IntentAware,
         vararg parameters: Pair<String, String>)
         : PostbackButton
-        = messengerPostback(title, targetIntent, null, *parameters)
+        = postbackButton(title, targetIntent, null, *parameters)
 
-fun BotBus.messengerPostback(
+fun BotBus.postbackButton(
         title: String,
         targetIntent: IntentAware,
         step: StoryStep? = null,
         parameters: Parameters)
         : PostbackButton
-        = messengerPostback(title, targetIntent, step, *parameters.toArray())
+        = postbackButton(title, targetIntent, step, *parameters.toArray())
 
-fun BotBus.messengerPostback(
+fun BotBus.postbackButton(
         title: String,
         targetIntent: IntentAware,
         step: StoryStep? = null,
@@ -317,7 +326,7 @@ fun BotBus.messengerPostback(
     return PostbackButton(payload, title)
 }
 
-fun BotBus.messengerUrl(title: String, url: String): UrlButton {
+fun BotBus.urlButton(title: String, url: String): UrlButton {
     if (title.length > 20) {
         logger.warn { "title $title has more than 20 chars" }
     }

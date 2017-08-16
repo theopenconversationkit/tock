@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionSignificance
@@ -51,12 +52,14 @@ internal class TockBotBus(
     }
 
     private val bot = connector.bot
+
     override val applicationId = action.applicationId
     override val botId = action.recipientId
     override val userId = action.playerId
     override val userPreferences: UserPreferences = userTimeline.userPreferences
     override val userLocale: Locale = userPreferences.locale
     override val userInterfaceType: UserInterfaceType = connector.connectorType.userInterfaceType
+    override val targetConnectorType: ConnectorType = action.state.targetConnectorType ?: connector.connectorType
 
     private val context: BusContext = BusContext()
 
@@ -118,8 +121,10 @@ internal class TockBotBus(
         return this
     }
 
-    override fun with(message: ConnectorMessage): BotBus {
-        context.addMessage(message)
+    override fun with(connectorType: ConnectorType,messageProvider: () -> ConnectorMessage): BotBus {
+        if(targetConnectorType == connectorType) {
+            context.addMessage(messageProvider.invoke())
+        }
         return this
     }
 

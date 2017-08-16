@@ -16,10 +16,17 @@
 
 package fr.vsct.tock.bot.connector.ga
 
+import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.translator.UserInterfaceType.voiceAssistant
 
 /**
  *
  */
 val gaConnectorType = ConnectorType("ga", voiceAssistant, false)
+
+fun BotBus.withGoogleAssistant(messageProvider: () -> ConnectorMessage): BotBus {
+    with(gaConnectorType, messageProvider)
+    return this
+}

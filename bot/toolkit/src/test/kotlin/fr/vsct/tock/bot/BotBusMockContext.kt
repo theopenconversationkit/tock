@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot
 
+import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.messenger.messengerConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.Parameters
@@ -42,7 +44,8 @@ class BotBusMockContext(val userTimeline: UserTimeline,
                         val botDefinition: BotDefinition,
                         val i18nProvider: I18nKeyProvider,
                         val storyDefinition: StoryDefinition,
-                        val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat) {
+                        val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
+                        val connectorType: ConnectorType = messengerConnectorType) {
 
     constructor(applicationId: String,
                 userId: PlayerId,
@@ -51,7 +54,8 @@ class BotBusMockContext(val userTimeline: UserTimeline,
                 storyDefinition: StoryDefinition,
                 action: Action = SendSentence(userId, applicationId, botId, ""),
                 userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
-                userPreferences: UserPreferences = UserPreferences())
+                userPreferences: UserPreferences = UserPreferences(),
+                connectorType: ConnectorType = messengerConnectorType)
             : this(
             UserTimeline(userId, userPreferences),
             Dialog(setOf(userId, botId)),
@@ -60,7 +64,8 @@ class BotBusMockContext(val userTimeline: UserTimeline,
             botDefinition,
             storyDefinition.storyHandler as I18nKeyProvider,
             storyDefinition,
-            userInterfaceType
+            userInterfaceType,
+            connectorType
     )
 
     val applicationId = action.applicationId

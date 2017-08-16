@@ -41,7 +41,11 @@ fun addRestConnector(
         /**
          * The base url for the connector path.
          */
-        baseUrl: String? = null
+        baseUrl: String? = null,
+        /**
+         * The owner of the rest connector (if applicable)
+         */
+        ownerConnectorType: ConnectorType? = null
 ): ConnectorConfiguration {
 
     val configuration = ConnectorConfiguration(
@@ -49,7 +53,8 @@ fun addRestConnector(
             path,
             ConnectorType.rest,
             name,
-            baseUrl
+            baseUrl,
+            ownerConnectorType
     )
     ConnectorConfigurationRepository.addConfiguration(configuration)
     BotRepository.registerConnectorProvider(RestConnectorProvider)
@@ -61,5 +66,6 @@ fun addRestConnector(botConfiguration: BotApplicationConfiguration): ConnectorCo
             "rest-${botConfiguration.applicationId}",
             "/rest/rest-${botConfiguration.applicationId}",
             botConfiguration.name,
-            botConfiguration.baseUrl)
+            botConfiguration.baseUrl,
+            botConfiguration.connectorType)
 }

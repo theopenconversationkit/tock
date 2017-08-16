@@ -65,6 +65,7 @@ internal object MessengerConnectorProvider : ConnectorProvider {
                 connectorType,
                 name,
                 baseUrl,
+                null,
                 mapNotNullValues(
                         PAGE_ID to pageId,
                         TOKEN to pageToken,

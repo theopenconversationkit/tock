@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.ParameterKey
@@ -67,12 +68,34 @@ interface BotBus {
 
     //shortcuts
 
+    /**
+     * The current application id.
+     */
     val applicationId: String
+    /**
+     * The current bot id.
+     */
     val botId: PlayerId
+    /**
+     * The current user id.
+     */
     val userId: PlayerId
+    /**
+     * User preferences of the current user.
+     */
     val userPreferences: UserPreferences
+    /**
+     * The current user [Locale].
+     */
     val userLocale: Locale
+    /**
+     * The current user interface type.
+     */
     val userInterfaceType: UserInterfaceType
+    /**
+     * The [ConnectorType] used by the response.
+     */
+    val targetConnectorType: ConnectorType
 
     /**
      * The entities in the dialog state.
@@ -212,6 +235,7 @@ interface BotBus {
             changeEntityValue(
                     entity.role,
                     ContextValue(entity, null, textContent))
+
     /**
      * Remove entity value for the specified role.
      */
@@ -333,10 +357,22 @@ interface BotBus {
 
     fun send(action: Action, delay: Long = 0): BotBus
 
-
+    /**
+     * Add the specified [ActionSignificance] to the bus context.
+     */
     fun with(significance: ActionSignificance): BotBus
 
+    /**
+     * Add the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.
+     */
+    @Deprecated("use with(connectorType, messageProvider) version")
     fun with(message: ConnectorMessage): BotBus
+            = with(message.connectorType, { message })
+
+    /**
+     * Add the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.
+     */
+    fun with(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus
 
     fun translate(text: String?, arg: Any?): String {
         if (text.isNullOrBlank()) {

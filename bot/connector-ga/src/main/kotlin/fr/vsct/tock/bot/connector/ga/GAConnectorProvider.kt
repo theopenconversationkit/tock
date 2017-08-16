@@ -42,11 +42,9 @@ object GAConnectorProvider : ConnectorProvider {
             applicationId: String = "ga",
             path: String = "/ga"): ConnectorConfiguration {
 
-
         return ConnectorConfiguration(
                 applicationId,
                 path,
-                connectorType,
-                emptyMap())
+                connectorType)
     }
 }

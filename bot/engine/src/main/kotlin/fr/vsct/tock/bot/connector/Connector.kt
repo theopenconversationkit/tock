@@ -26,14 +26,30 @@ import fr.vsct.tock.bot.engine.user.UserPreferences
  */
 interface Connector {
 
+    /**
+     * The type of the connector
+     */
     val connectorType: ConnectorType
 
+    /**
+     * Register the connector for the specified controller.
+     * There is usually one controller by application.
+     */
     fun register(controller: ConnectorController)
 
+    /**
+     * Send an event with this connector.
+     */
     fun send(event: Event)
 
-    fun send(event: Event, delayInMs : Long) = send(event)
+    /**
+     * Send an event with the specified delay. Default implementation is #send(Event).
+     */
+    fun send(event: Event, delayInMs: Long) = send(event)
 
+    /**
+     * Load user preferences - default implementation returns empty [UserPreferences].
+     */
     fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences {
         //default implementation returns empty userPref
         return UserPreferences()

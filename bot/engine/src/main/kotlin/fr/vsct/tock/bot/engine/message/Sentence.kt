@@ -26,7 +26,7 @@ import fr.vsct.tock.shared.error
 import mu.KotlinLogging
 
 /**
- * Could be a simple text, or a complex message using [ConnectorMessage] constructor.
+ * Could be a simple text, or a complex message using secondary constructor.
  */
 data class Sentence(
         val text: String?,

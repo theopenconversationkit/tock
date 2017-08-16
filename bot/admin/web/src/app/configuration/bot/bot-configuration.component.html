@@ -38,6 +38,9 @@
           <input mdInput placeholder="Connector type" [ngModel]="newApplicationConfiguration.connectorType.id" [disabled]="true">
         </md-input-container>
         <md-input-container>
+          <input mdInput placeholder="Owner connector type" [ngModel]="newApplicationConfiguration.ownerConnectorType?.id" [disabled]="true">
+        </md-input-container>
+        <md-input-container>
           <input mdInput placeholder="Bot identifier" [(ngModel)]="newApplicationConfiguration.botId">
         </md-input-container>
         <md-input-container>
@@ -50,7 +53,7 @@
           <input mdInput placeholder="Nlp model" [(ngModel)]="newApplicationConfiguration.nlpModel">
         </md-input-container>
         <md-card-actions>
-          <button md-button (click)="cancel()">Cancel</button>
+          <button md-button (click)="cancelCreate()">Cancel</button>
           <button md-raised-button color="primary" (click)="create()">Create</button>
         </md-card-actions>
       </md-card>
@@ -61,6 +64,9 @@
         </md-input-container>
         <md-input-container>
           <input mdInput placeholder="Connector type" [ngModel]="conf.connectorType.id" [disabled]="true">
+        </md-input-container>
+        <md-input-container *ngIf="conf.ownerConnectorType">
+          <input mdInput placeholder="Owner connector type" [ngModel]="conf.ownerConnectorType?.id" [disabled]="true">
         </md-input-container>
         <md-input-container>
           <input mdInput placeholder="Bot identifier" [(ngModel)]="conf.botId" [disabled]="true">

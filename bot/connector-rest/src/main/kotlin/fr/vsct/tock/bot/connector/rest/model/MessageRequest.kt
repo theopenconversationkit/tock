@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector.rest.model
 
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.message.Message
 
 /**
@@ -25,5 +26,6 @@ internal data class MessageRequest(
         val userId: String,
         val recipientId: String,
         val message: Message,
+        val targetConnectorType: ConnectorType,
         val test: Boolean = false) {
 }

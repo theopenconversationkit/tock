@@ -71,25 +71,27 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
                             val message: MessageRequest = mapper.readValue(context.bodyAsString)
                             try {
                                 currentMessages.put(message.userId, Response(context, message.test))
-                                controller.handle(message.message.toAction(
+                                val action = message.message.toAction(
                                         PlayerId(message.userId, PlayerType.user),
                                         applicationId,
                                         PlayerId(message.recipientId, PlayerType.bot)
-                                ))
-                            } catch(t: Throwable) {
+                                )
+                                action.state.targetConnectorType = message.targetConnectorType
+                                controller.handle(action)
+                            } catch (t: Throwable) {
                                 try {
                                     logger.error(t)
                                     send(controller.errorMessage(
                                             PlayerId(message.userId, PlayerType.user),
                                             applicationId,
                                             PlayerId(message.recipientId, PlayerType.bot)))
-                                } catch(t: Throwable) {
+                                } catch (t: Throwable) {
                                     logger.error(t)
                                 }
                             } finally {
                                 sendAnswer(message.userId)
                             }
-                        } catch(t: Throwable) {
+                        } catch (t: Throwable) {
                             logger.error(t)
                         }
                     },
