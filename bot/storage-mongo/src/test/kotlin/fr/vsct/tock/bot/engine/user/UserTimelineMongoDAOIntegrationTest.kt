@@ -21,6 +21,7 @@ import com.github.salomonbrys.kodein.Kodein
 import fr.vsct.tock.bot.admin.user.UserReportQuery
 import fr.vsct.tock.bot.mongo.UserTimelineMongoDAO
 import fr.vsct.tock.bot.mongo.botMongoModule
+import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.sharedModule
 import org.junit.Test
@@ -41,7 +42,7 @@ class UserTimelineMongoDAOIntegrationTest {
     fun testSearch() {
         println(UserTimelineMongoDAO.search(
                 UserReportQuery(
-                        "vsc",
+                        defaultNamespace,
                         "bot_open_data",
                         Locale.FRENCH,
                         flags = mapOf("tock_profile_loaded" to "true")

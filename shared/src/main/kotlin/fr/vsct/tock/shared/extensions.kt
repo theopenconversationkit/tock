@@ -21,6 +21,8 @@ import java.util.Enumeration
 
 const val TOCK_NAMESPACE: String = "tock"
 
+val defaultNamespace :String = property("tock_default_namespace", "vsc")
+
 fun String.namespace(): String = namespaceAndName().first
 fun String.name(): String = namespaceAndName().second
 fun String.namespaceAndName(): Pair<String, String> = this.split(":").let { it[0] to it[1] }

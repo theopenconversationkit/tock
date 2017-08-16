@@ -25,6 +25,7 @@ import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue
 import fr.vsct.tock.nlp.front.shared.parser.QueryContext
+import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.shared.defaultZoneId
 import org.junit.BeforeClass
 import org.junit.Test
@@ -46,11 +47,11 @@ class IntegrationTest {
 
     @Test
     fun testOpenNlpSimpleRequest() {
-        val result = FrontClient.parse(ParseQuery(listOf("I want to go to Paris tomorrow"), "vsc", "test", QueryContext(Locale.ENGLISH, "clientTest")))
+        val result = FrontClient.parse(ParseQuery(listOf("I want to go to Paris tomorrow"), defaultNamespace, "test", QueryContext(Locale.ENGLISH, "clientTest")))
         println(result)
         assertEquals("travel", result.intent)
         assertEquals(2, result.entities.size)
-        assertEquals(ParsedEntityValue(16, 21, Entity(EntityType("vsc:locality"), "locality"), null, probability = 0.30666386016073854), result.firstValue("locality"))
+        assertEquals(ParsedEntityValue(16, 21, Entity(EntityType("$defaultNamespace:locality"), "locality"), null, probability = 0.30666386016073854), result.firstValue("locality"))
         assertEquals(ParsedEntityValue(22, 30, Entity(EntityType("duckling:datetime"), "datetime"),
                 DateEntityValue(
                         ZonedDateTime.now().withZoneSameInstant(defaultZoneId).plusDays(1).withHour(0).withMinute(0).withSecond(0).withNano(0).withFixedOffsetZone(),

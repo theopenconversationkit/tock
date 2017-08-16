@@ -24,6 +24,7 @@ import fr.vsct.tock.nlp.front.client.FrontClient.updateEntityModelForIntent
 import fr.vsct.tock.nlp.front.client.FrontClient.updateIntentsModelForApplication
 import fr.vsct.tock.nlp.front.ioc.FrontIoc
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
+import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.resource
 import java.util.Locale
@@ -42,12 +43,12 @@ object IntegrationConfiguration {
         FrontIoc.setup()
 
         println("Start model initialization")
-        val report = import("vsc", loadDump(nlpEngineType))
+        val report = import(defaultNamespace, loadDump(nlpEngineType))
 
         if (report.modified) {
-            val application = FrontClient.getApplicationByNamespaceAndName("vsc", "test")!!
-            val travelIntentId = FrontClient.getIntentIdByQualifiedName("vsc:travel")!!
-            val weatherIntentId = FrontClient.getIntentIdByQualifiedName("vsc:weather")!!
+            val application = FrontClient.getApplicationByNamespaceAndName(defaultNamespace, "test")!!
+            val travelIntentId = FrontClient.getIntentIdByQualifiedName("$defaultNamespace:travel")!!
+            val weatherIntentId = FrontClient.getIntentIdByQualifiedName("$defaultNamespace:weather")!!
             updateIntentsModelForApplication(emptyList(), application, Locale.ENGLISH, nlpEngineType)
             updateEntityModelForIntent(emptyList(), application, travelIntentId, Locale.ENGLISH, nlpEngineType)
             updateEntityModelForIntent(emptyList(), application, weatherIntentId, Locale.ENGLISH, nlpEngineType)

@@ -18,6 +18,7 @@ package fr.vsct.tock.shared.vertx
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.shared.booleanProperty
+import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.intProperty
@@ -83,7 +84,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
     companion object {
         private val username = property("tock_user", "admin@vsct.fr")
         private val password = property("tock_password", "password")
-        private val organization = property("tock_organization", "vsc")
+        private val organization = defaultNamespace
 
         val authProvider: AuthProvider = AuthProvider { authInfo, handler ->
             val username = authInfo.getString("username")
