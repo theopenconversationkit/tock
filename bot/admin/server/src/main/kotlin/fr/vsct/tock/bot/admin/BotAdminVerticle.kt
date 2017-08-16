@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.admin
 
+import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotIntentSearchRequest
@@ -27,6 +28,11 @@ import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanService
 import fr.vsct.tock.nlp.admin.AdminVerticle
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
+import fr.vsct.tock.shared.injector
+import fr.vsct.tock.translator.I18nDAO
+import fr.vsct.tock.translator.I18nExport
+import fr.vsct.tock.translator.I18nLabel
+import fr.vsct.tock.translator.Translator
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 
@@ -34,6 +40,8 @@ import mu.KotlinLogging
  *
  */
 class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
+
+    val i18n: I18nDAO  by injector.instance()
 
     override fun configure() {
         configureServices()
@@ -186,6 +194,37 @@ class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
             BotAdminService.deleteBotIntent(context.organization, context.pathParam("intentId"))
         }
 
+        blockingJsonGet("/i18n") { _ ->
+            //TODO filter by namespace
+            i18n.getLabels()
+        }
+
+        blockingJsonPost("/i18n/complete") { context, labels: List<I18nLabel> ->
+            Translator.completeAllLabels(labels.filter { it.namespace == context.organization })
+        }
+
+        blockingJsonPost("/i18n/saveAll") { context, labels: List<I18nLabel> ->
+            i18n.save(labels.filter { it.namespace == context.organization })
+        }
+
+        blockingJsonPost("/i18n/save") { context, label: I18nLabel ->
+            if (label.namespace == context.organization) {
+                i18n.save(label)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingDelete("/i18n/:id") { context ->
+            i18n.deleteByNamespaceAndId(context.organization, context.pathParam("id"))
+        }
+
+        blockingJsonGet("/i18n/export") { context ->
+            I18nExport.exportCsv(context.organization)
+        }
+
+
+
         configureStaticHandling()
     }
 
@@ -198,4 +237,5 @@ class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
             }
         } ?: notFound()
     }
+
 }

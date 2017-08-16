@@ -1,0 +1,78 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+<br>
+<md-toolbar>
+  <md-input-container>
+    <input mdInput placeholder="Search" [(ngModel)]="filterString" (keyup)="filter($event.target.value)">
+  </md-input-container>
+  <button md-button (click)="refresh()" md-tooltip="Reload all">
+    <md-icon>refresh</md-icon>
+  </button>
+  <md-select placeholder="Filter by category"  [(ngModel)]="selectedCategory" (ngModelChange)="onSelectedCategoryChange()">
+    <md-option *ngFor="let c of allCategories" [value]="c">{{c}}</md-option>
+  </md-select>
+  <span class="fill-remaining-space"></span>
+  <md-slide-toggle [(ngModel)]="filterValidated" (change)="filterValidatedChange()">Hide validated labels</md-slide-toggle>
+  <span class="fill-remaining-space"></span>
+  <button md-button (click)="validateAll()" md-tooltip="Validate all existing labels">Validate all</button>
+  <button md-button (click)="complete()">Complete all fields</button>
+
+  <button md-button (click)="downloadExport()" md-tooltip="Download export">
+    <md-icon>file_download</md-icon>
+  </button>
+</md-toolbar>
+
+<md-spinner *ngIf="loading" [color]="accent"></md-spinner>
+
+<md-list dense>
+  <div *ngFor="let i of filteredI18n">
+    <h3 *ngIf="i.firstCategory" md-subheader>{{i.category}}</h3>
+    <md-list-item>
+      <h4 md-line>
+        <span class="defaultLabel" md-tooltip="id: {{i._id}}">{{i.defaultLabel().label}}</span>
+        <button md-button (click)="deleteLabel(i)" md-tooltip="Delete Label" color="warn"><md-icon>delete_forever</md-icon></button>
+      </h4>
+      <div md-line *ngFor="let l of i.i18n">
+        <div class="locale">{{l.locale}}</div>
+        <md-icon class="userInterface" *ngIf="l.interfaceType === 0" md-list-avatar>chat</md-icon>
+        <md-icon class="userInterface" *ngIf="l.interfaceType === 1" md-list-avatar>record_voice_over</md-icon>
+
+        <md-input-container class="input">
+          <input mdInput [(ngModel)]="l.label" (focusout)="save(i, l)" size="60">
+        </md-input-container>
+
+        <md-checkbox [(ngModel)]="l.validated" (change)="save(i, l)">
+          Validated
+        </md-checkbox>
+
+        <span *ngFor="let a of l.alternatives;let index=index;">
+          <br>
+          <md-input-container class="input-alternative">
+            <input mdInput [value]="a" (focusout)="addAlternative(i, l, index, $event.target.value)" size="20">
+          </md-input-container>
+          <button md-button (click)="removeAlternative(i, l, index)" md-tooltip="Remove alternative">
+            <md-icon>remove</md-icon>
+          </button>
+        </span>
+
+        <button md-button (click)="addNewAlternative(l)" md-tooltip="Add an alternative">
+          <md-icon>add</md-icon>
+        </button>
+      </div>
+      <div md-line></div>
+    </md-list-item>
+  </div>
+</md-list>

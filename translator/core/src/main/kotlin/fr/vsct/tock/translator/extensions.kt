@@ -19,6 +19,8 @@ package fr.vsct.tock.translator
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAccessor
 
+val defaultUserInterface: UserInterfaceType = UserInterfaceType.textChat
+
 infix fun TemporalAccessor?.by(formatter: DateTimeFormatter): DateTemplate {
     return DateTemplate(this, formatter)
 }

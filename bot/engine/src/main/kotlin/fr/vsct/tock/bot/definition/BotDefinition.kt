@@ -152,7 +152,7 @@ interface BotDefinition : I18nKeyProvider {
 
     override fun i18nKeyFromLabel(defaultLabel: String, args: List<Any?>): I18nLabelKey {
         val prefix = javaClass.kotlin.simpleName?.replace("Definition", "") ?: ""
-        return i18nKey("${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}", prefix, defaultLabel, args)
+        return i18nKey("${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}", namespace, prefix, defaultLabel, args)
     }
 
     /**

@@ -56,14 +56,14 @@ object Translator {
             val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, key.defaultLabel)
             if (locale != defaultLocale) {
                 val localizedLabel = I18nLocalizedLabel(locale, userInterfaceType, translate(key.defaultLabel, defaultLocale, locale))
-                val label = I18nLabel(key.key, key.category, listOf(defaultLabel, localizedLabel))
+                val label = I18nLabel(key.key, key.namespace, key.category, listOf(defaultLabel, localizedLabel))
                 i18nDAO.save(label)
                 localizedLabel.label
             } else {
                 val interfaceLabel =
                         if (defaultInterface != userInterfaceType) I18nLocalizedLabel(locale, userInterfaceType, defaultLabel.label)
                         else null
-                val label = I18nLabel(key.key, key.category, listOfNotNull(defaultLabel, interfaceLabel))
+                val label = I18nLabel(key.key, key.namespace, key.category, listOfNotNull(defaultLabel, interfaceLabel))
                 i18nDAO.save(label)
                 key.defaultLabel
             }
@@ -160,8 +160,8 @@ object Translator {
         }
     }
 
-    fun translate(key: String, category: String, defaultLabel: String, locale: Locale, userInterfaceType: UserInterfaceType): String {
-        return translate(I18nLabelKey(key.toLowerCase(), category.toLowerCase(), defaultLabel), locale, userInterfaceType)
+    fun translate(key: String, namespace: String, category: String, defaultLabel: String, locale: Locale, userInterfaceType: UserInterfaceType): String {
+        return translate(I18nLabelKey(key.toLowerCase(), namespace, category.toLowerCase(), defaultLabel), locale, userInterfaceType)
     }
 
     fun getKeyFromDefaultLabel(label: String): String {
@@ -173,7 +173,7 @@ object Translator {
         val newI18n = i18n.map { i ->
             val defaultValue = i.findLabel(defaultLocale, defaultInterface)
             val newLabels = i.i18n.map {
-                if (defaultValue == null || it.validated || !it.label.isNullOrBlank() || (it.locale == defaultLocale && it.interfaceType == defaultInterface)) {
+                if (defaultValue == null || it.validated || !it.label.isBlank() || (it.locale == defaultLocale && it.interfaceType == defaultInterface)) {
                     it
                 } else {
                     if (it.locale == defaultLocale) {
