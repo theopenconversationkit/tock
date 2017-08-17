@@ -40,7 +40,7 @@ import kotlin.test.assertEquals
 /**
  *
  */
-class DialogColDeserializationTest {
+class DialogColDeserializationTest : AbstractTest() {
 
     @Test
     fun serializeAndDeserializeAnyValueWrapper_shouldLeftDataInchanged() {

@@ -34,6 +34,8 @@ import fr.vsct.tock.bot.engine.user.TimeBoxedFlag
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserState
 import fr.vsct.tock.bot.engine.user.UserTimeline
+import fr.vsct.tock.shared.decrypt
+import fr.vsct.tock.shared.encrypt
 import java.time.Instant
 
 internal class UserTimelineCol(
@@ -100,7 +102,11 @@ internal class UserTimelineCol(
                 this(
                         state.creationDate,
                         Instant.now(),
-                        state.flags.mapValues { TimeBoxedFlagWrapper(it.value) }
+                        state.flags.mapValues {
+                            TimeBoxedFlagWrapper(
+                                    it.value,
+                                    MongoBotConfiguration.hasToEncryptFlag(it.key))
+                        }
                 )
 
         fun toUserState(): UserState {
@@ -111,12 +117,27 @@ internal class UserTimelineCol(
         }
     }
 
-    data class TimeBoxedFlagWrapper(val value: String,
+    data class TimeBoxedFlagWrapper(val encrypted: Boolean = false,
+                                    val value: String,
                                     val expirationDate: Instant? = Instant.now()) {
 
-        constructor(flag: TimeBoxedFlag) : this(flag.value, flag.expirationDate)
 
-        fun toTimeBoxedFlag(): TimeBoxedFlag = TimeBoxedFlag(value, expirationDate)
+        constructor(flag: TimeBoxedFlag, doEncrypt: Boolean) : this(
+                doEncrypt,
+                if (doEncrypt) encrypt(flag.value) else flag.value,
+                flag.expirationDate)
+
+        fun toTimeBoxedFlag(): TimeBoxedFlag = TimeBoxedFlag(
+                decryptValue(),
+                expirationDate)
+
+        fun decryptValue(): String {
+            return if (encrypted) {
+                decrypt(value)
+            } else {
+                value
+            }
+        }
     }
 
     class FlagsDeserializer : JsonDeserializer<Map<String, TimeBoxedFlagWrapper>>() {
