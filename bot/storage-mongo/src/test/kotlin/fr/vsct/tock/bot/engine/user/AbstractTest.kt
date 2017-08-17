@@ -14,21 +14,17 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.mongo
-
-import com.github.salomonbrys.kodein.instance
-import com.mongodb.client.MongoDatabase
-import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.listProperty
+package fr.vsct.tock.bot.engine.user
 
 /**
  *
  */
-internal object MongoBotConfiguration {
-    val database: MongoDatabase by injector.instance(MONGO_DATABASE)
-    private val encryptedFlags = listProperty("tock_bot_encrypted_flags", emptyList()).toSet()
+abstract class AbstractTest {
 
-    fun hasToEncryptFlag(flag: String): Boolean {
-        return encryptedFlags.contains(flag)
+    companion object {
+
+        init {
+            System.setProperty("tock_bot_encrypted_flags", "test1,test2")
+        }
     }
 }

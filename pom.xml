@@ -45,6 +45,7 @@
         <retrofit>2.3.0</retrofit>
         <okhttp>3.8.1</okhttp>
         <guava>22.0</guava>
+        <jasypt>1.9.2</jasypt>
 
         <junit>4.12</junit>
         <mockito-kotlin>1.5.0</mockito-kotlin>
@@ -217,6 +218,11 @@
                 <groupId>org.slf4j</groupId>
                 <artifactId>jul-to-slf4j</artifactId>
                 <version>${slf4j}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jasypt</groupId>
+                <artifactId>jasypt</artifactId>
+                <version>${jasypt}</version>
             </dependency>
 
             <dependency>

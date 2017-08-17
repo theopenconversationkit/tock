@@ -14,21 +14,27 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.mongo
+package fr.vsct.tock.nlp.shared
 
-import com.github.salomonbrys.kodein.instance
-import com.mongodb.client.MongoDatabase
-import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.listProperty
+import fr.vsct.tock.shared.decrypt
+import fr.vsct.tock.shared.encrypt
+import org.junit.Test
+import java.security.SecureRandom
+import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 /**
  *
  */
-internal object MongoBotConfiguration {
-    val database: MongoDatabase by injector.instance(MONGO_DATABASE)
-    private val encryptedFlags = listProperty("tock_bot_encrypted_flags", emptyList()).toSet()
+class EncryptorTest {
 
-    fun hasToEncryptFlag(flag: String): Boolean {
-        return encryptedFlags.contains(flag)
+    @Test
+    fun testEncryptAndDecrypt() {
+        val s = String(SecureRandom().generateSeed(30))
+        val encrypted1 = encrypt(s)
+        assertEquals(s, decrypt(encrypted1))
+        val encrypted2 = encrypt(s)
+        assertEquals(s, decrypt(encrypted2))
+        assertNotEquals(encrypted1, encrypted2)
     }
 }
