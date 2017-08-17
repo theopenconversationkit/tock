@@ -16,18 +16,70 @@
 
 package fr.vsct.tock.translator
 
+import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.shared.defaultNamespace
+import fr.vsct.tock.translator.UserInterfaceType.textChat
+import org.junit.After
+import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 
 /**
  *
  */
-class TranslatorTest {
+class TranslatorTest : AbstractTest() {
+
+    @Before
+    fun before() {
+        Translator.enabled = true
+    }
+
+    @After
+    fun after() {
+        Translator.enabled = false
+    }
 
     @Test
     fun formatMessage_shouldHandleWell_NullArgValue() {
-        val result = Translator.formatMessage("a {0}", defaultLocale, UserInterfaceType.textChat, listOf(null))
+        val result = Translator.formatMessage("a {0}", defaultLocale, textChat, listOf(null))
         assertEquals("a ", result)
+    }
+
+    @Test
+    fun translate_shouldReturnsRightValue_whenAlreadyTranslatedStringIsPassed() {
+        val category = "category"
+        val toTranslate = "aaa"
+        val target = "bbb"
+        whenever(i18nDAO.getLabelById(any())).thenReturn(
+                I18nLabel(
+                        "a",
+                        defaultNamespace,
+                        category,
+                        listOf(I18nLocalizedLabel(
+                                defaultLocale,
+                                textChat,
+                                target
+                        ))))
+
+        val key = I18nLabelKey(
+                Translator.getKeyFromDefaultLabel(toTranslate),
+                defaultNamespace,
+                category,
+                toTranslate)
+
+        val translated = Translator.translate(key, defaultLocale, textChat)
+        assertEquals(target, translated.toString())
+
+        val key2 = I18nLabelKey(
+                Translator.getKeyFromDefaultLabel(translated),
+                defaultNamespace,
+                category,
+                translated)
+
+        val translated2 = Translator.translate(key2, defaultLocale, textChat)
+
+        assertEquals(translated, translated2)
     }
 }

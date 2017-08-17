@@ -21,19 +21,19 @@ package fr.vsct.tock.translator
  */
 interface I18nKeyProvider {
 
-    fun i18nKeyFromLabel(defaultLabel: String, vararg args: Any?): I18nLabelKey
+    fun i18nKeyFromLabel(defaultLabel: CharSequence, vararg args: Any?): I18nLabelKey
             = i18nKeyFromLabel(defaultLabel, args.toList())
 
-    fun i18nKeyFromLabel(defaultLabel: String, arg: Any?): I18nLabelKey
+    fun i18nKeyFromLabel(defaultLabel: CharSequence, arg: Any?): I18nLabelKey
             = i18nKeyFromLabel(defaultLabel, listOf(arg))
 
-    fun i18nKeyFromLabel(defaultLabel: String, args: List<Any?> = emptyList()): I18nLabelKey
+    fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?> = emptyList()): I18nLabelKey
 
     fun i18nKey(
             key: String,
             namespace: String,
             category: String,
-            defaultLabel: String,
+            defaultLabel: CharSequence,
             args: List<Any?> = emptyList()): I18nLabelKey {
         return I18nLabelKey(
                 key.toLowerCase(),

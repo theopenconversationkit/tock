@@ -14,17 +14,13 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.front.service
+package fr.vsct.tock.translator
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.nhaarman.mockito_kotlin.mock
-import fr.vsct.tock.nlp.core.NlpCore
-import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
-import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
-import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.tockInternalInjector
 import org.junit.After
@@ -35,37 +31,28 @@ import org.junit.Before
  */
 abstract class AbstractTest {
 
-    class TestContext {
+    val i18nDAO: I18nDAO = mock()
+    val translatorEngine: TranslatorEngine = mock()
 
-        val core: NlpCore = mock()
-        val config: ApplicationConfiguration = mock()
-        val executor: Executor = mock()
-        val logDAO: ParseRequestLogDAO = mock()
-
-        val frontTestModule = Kodein.Module {
-            bind<ApplicationConfiguration>() with provider { config }
-            bind<NlpCore>() with provider { core }
-            bind<Executor>() with provider { executor }
-            bind<ParseRequestLogDAO>() with provider { logDAO }
-        }
-
-        fun init() {
-            tockInternalInjector = KodeinInjector()
-            injector.inject(Kodein {
-                import(frontTestModule)
-            })
+    open fun baseModule(): Kodein.Module {
+        return Kodein.Module {
+            bind<I18nDAO>() with provider { i18nDAO }
+            bind<TranslatorEngine>() with provider { translatorEngine }
         }
     }
 
-    val context = TestContext()
-
     @Before
     fun initContext() {
-        context.init()
+        tockInternalInjector = KodeinInjector()
+        injector.inject(Kodein {
+            import(baseModule())
+        })
     }
 
     @After
     fun cleanupContext() {
         tockInternalInjector = KodeinInjector()
     }
+
+
 }

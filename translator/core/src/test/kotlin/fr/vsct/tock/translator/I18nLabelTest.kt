@@ -24,7 +24,7 @@ import kotlin.test.assertNotNull
 /**
  *
  */
-class I18nLabelTest {
+class I18nLabelTest : AbstractTest() {
 
     @Test
     fun findLabel_shouldFindALanguageOnlyLocalizedLabel_whenUsingALanguageAndCountryLocale() {

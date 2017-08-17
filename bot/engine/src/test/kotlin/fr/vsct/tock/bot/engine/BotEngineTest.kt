@@ -45,6 +45,7 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.tockInternalInjector
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.TranslatorEngine
+import org.junit.After
 import org.junit.Before
 import retrofit2.Response
 
@@ -119,6 +120,11 @@ abstract class BotEngineTest {
         })
     }
 
+    @After
+    fun after() {
+        tockInternalInjector = KodeinInjector()
+    }
+
     fun action(message: Message): Action = message.toAction(userId, "applicationId", botId)
 
     val registeredBus: BotBus? get() = (story.definition as StoryDefinitionTest).registeredBus
@@ -132,7 +138,7 @@ abstract class BotEngineTest {
     private var timelineFilled = false
 
     fun fillTimeline() {
-        if(!timelineFilled) {
+        if (!timelineFilled) {
             timelineFilled = true
             story.actions.add(userAction)
             dialog.stories.add(story)

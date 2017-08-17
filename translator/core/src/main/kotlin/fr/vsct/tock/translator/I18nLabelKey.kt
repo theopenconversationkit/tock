@@ -19,21 +19,26 @@ package fr.vsct.tock.translator
 /**
  *
  */
-class I18nLabelKey(val key: String,
-                   val namespace: String,
-                   val category: String,
-                   val defaultLabel: String,
-                   val args: List<Any?> = emptyList()) {
+data class I18nLabelKey(val key: String,
+                        val namespace: String,
+                        val category: String,
+                        val defaultLabel: CharSequence,
+                        val args: List<Any?> = emptyList()) : CharSequence by defaultLabel {
 
     constructor(key: String,
                 namespace: String,
                 category: String,
-                defaultLabel: String,
+                defaultLabel: CharSequence,
                 vararg args: Any?) : this(key, namespace, category, defaultLabel, args.toList())
 
     constructor(key: String,
                 namespace: String,
                 category: String,
-                defaultLabel: String,
+                defaultLabel: CharSequence,
                 arg: Any?) : this(key, namespace, category, defaultLabel, listOf(arg))
+
+    override fun toString(): String {
+        return defaultLabel.toString()
+    }
+
 }

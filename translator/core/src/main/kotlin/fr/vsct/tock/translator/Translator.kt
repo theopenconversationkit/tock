@@ -21,6 +21,7 @@ import fr.vsct.tock.shared.Dice
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
+import mu.KotlinLogging
 import java.text.ChoiceFormat
 import java.text.MessageFormat
 import java.util.Formatter
@@ -30,6 +31,8 @@ import java.util.Locale
  * The main entry class of translator module.
  */
 object Translator {
+
+    private val logger = KotlinLogging.logger {}
 
     /**
      * Translator and i18n support is disabled by default.
@@ -44,18 +47,32 @@ object Translator {
     private val i18nDAO: I18nDAO by injector.instance()
     private val translator: TranslatorEngine by injector.instance()
 
-    fun translate(key: I18nLabelKey, locale: Locale, userInterfaceType: UserInterfaceType): String {
+    fun translate(key: I18nLabelKey, locale: Locale, userInterfaceType: UserInterfaceType): TranslatedString {
         if (!enabled) {
-            return formatMessage(key.defaultLabel, locale, userInterfaceType, key.args)
+            return TranslatedString(formatMessage(key.defaultLabel.toString(), locale, userInterfaceType, key.args))
         }
+        if (key.defaultLabel is TranslatedString) {
+            logger.warn { "already translated string is proposed to translation - skipped: $key" }
+            return key.defaultLabel
+        }
+        if (key.defaultLabel is RawString) {
+            logger.warn { "raw string is proposed to translation - skipped: $key" }
+            return TranslatedString(key.defaultLabel)
+        }
+
         val storedLabel = i18nDAO.getLabelById(key.key)
 
         val label = if (storedLabel != null) {
-            getLabel(storedLabel, key.defaultLabel, locale, userInterfaceType)
+            getLabel(storedLabel, key.defaultLabel.toString(), locale, userInterfaceType)
         } else {
-            val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, key.defaultLabel)
+            val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, key.defaultLabel.toString())
             if (locale != defaultLocale) {
-                val localizedLabel = I18nLocalizedLabel(locale, userInterfaceType, translate(key.defaultLabel, defaultLocale, locale))
+                val localizedLabel = I18nLocalizedLabel(
+                        locale,
+                        userInterfaceType,
+                        translate(key.defaultLabel.toString(), defaultLocale, locale
+                        )
+                )
                 val label = I18nLabel(key.key, key.namespace, key.category, listOf(defaultLabel, localizedLabel))
                 i18nDAO.save(label)
                 localizedLabel.label
@@ -69,7 +86,7 @@ object Translator {
             }
         }
 
-        return formatMessage(label, locale, userInterfaceType, key.args)
+        return TranslatedString(formatMessage(label.toString(), locale, userInterfaceType, key.args))
     }
 
     private fun getLabel(i18nLabel: I18nLabel,
@@ -96,7 +113,7 @@ object Translator {
         }
     }
 
-    internal fun formatMessage(label: String, locale: Locale, userInterfaceType: UserInterfaceType, args: List<Any?>): String {
+    fun formatMessage(label: String, locale: Locale, userInterfaceType: UserInterfaceType, args: List<Any?>): String {
         if (args.isEmpty()) {
             return label
         }
@@ -160,12 +177,12 @@ object Translator {
         }
     }
 
-    fun translate(key: String, namespace: String, category: String, defaultLabel: String, locale: Locale, userInterfaceType: UserInterfaceType): String {
+    fun translate(key: String, namespace: String, category: String, defaultLabel: CharSequence, locale: Locale, userInterfaceType: UserInterfaceType): CharSequence {
         return translate(I18nLabelKey(key.toLowerCase(), namespace, category.toLowerCase(), defaultLabel), locale, userInterfaceType)
     }
 
-    fun getKeyFromDefaultLabel(label: String): String {
-        val s = label.trim().replace(" ", "_").replace(keyLabelRegex, "").toLowerCase()
+    fun getKeyFromDefaultLabel(label: CharSequence): String {
+        val s = label.trim().toString().replace(" ", "_").replace(keyLabelRegex, "").toLowerCase()
         return s.substring(0, Math.min(40, s.length))
     }
 

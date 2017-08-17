@@ -43,7 +43,6 @@ import fr.vsct.tock.bot.definition.Parameters
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.action.SendChoice
-import fr.vsct.tock.translator.I18nLabelKey
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
@@ -61,12 +60,13 @@ fun BotBus.withMessenger(messageProvider: () -> ConnectorMessage): BotBus {
 /**
  * Add a button template [https://developers.facebook.com/docs/messenger-platform/send-api-reference/button-template]
  */
-fun BotBus.buttonsTemplate(text: String, vararg actions: UserAction): AttachmentMessage {
+fun BotBus.buttonsTemplate(text: CharSequence, vararg actions: UserAction): AttachmentMessage {
     return AttachmentMessage(
             Attachment(
                     AttachmentType.template,
                     ButtonPayload(
-                            text, extractButtons(actions.toList())
+                            translate(text).toString(),
+                            extractButtons(actions.toList())
                     )
             ),
             extractQuickReplies(actions.toList())
@@ -185,68 +185,52 @@ fun BotBus.video(videoUrl: String, vararg quickReplies: QuickReply): AttachmentM
     return attachment(videoUrl, AttachmentType.video, quickReplies = *quickReplies)
 }
 
-fun BotBus.text(text: String, vararg quickReplies: QuickReply): TextMessage {
-    return TextMessage(text, quickReplies.toList())
-}
-
-
-fun BotBus.genericElement(
-        title: I18nLabelKey,
-        subtitle: I18nLabelKey? = null,
-        imageUrl: String? = null,
-        buttons: List<Button>? = null): Element {
-    return genericElement(translate(title), translate(subtitle), imageUrl, buttons)
+fun BotBus.text(text: CharSequence, vararg quickReplies: QuickReply): TextMessage {
+    return TextMessage(translate(text).toString(), quickReplies.toList())
 }
 
 fun BotBus.genericElement(
-        title: String,
-        subtitle: String? = null,
+        title: CharSequence,
+        subtitle: CharSequence? = null,
         imageUrl: String? = null,
         buttons: List<Button>? = null): Element {
-    if (title.length > 80) {
-        logger.warn { "title $title has more than 80 chars" }
+    val t = translate(title)
+    val s = translate(subtitle).run { if (isBlank()) null else this }
+    if (t.length > 80) {
+        logger.warn { "title $t has more than 80 chars" }
     }
-    if (subtitle?.length ?: 0 > 80) {
-        logger.warn { "subtitle $subtitle has more than 80 chars" }
+    if (s?.length ?: 0 > 80) {
+        logger.warn { "subtitle $s has more than 80 chars" }
     }
     if (buttons?.size ?: 0 > 3) {
         error("Number of buttons > 3 : $buttons")
     }
     return Element(
-            title,
+            t.toString(),
             imageUrl,
-            if (subtitle.isNullOrEmpty()) null else subtitle,
+            s?.toString(),
             buttons
     )
 }
 
 fun BotBus.listElement(
-        title: I18nLabelKey,
-        subtitle: I18nLabelKey? = null,
+        title: CharSequence,
+        subtitle: CharSequence? = null,
         imageUrl: String? = null,
         button: Button? = null): Element {
-    return listElement(
-            translate(title),
-            translate(subtitle),
-            imageUrl,
-            button)
-}
+    val t = translate(title)
+    val s = translate(subtitle).run { if (isBlank()) null else this }
 
-fun BotBus.listElement(
-        title: String,
-        subtitle: String? = null,
-        imageUrl: String? = null,
-        button: Button? = null): Element {
-    if (title.length > 80) {
-        logger.warn { "title $title has more than 80 chars" }
+    if (t.length > 80) {
+        logger.warn { "title $t has more than 80 chars" }
     }
-    if (subtitle?.length ?: 0 > 80) {
-        logger.warn { "subtitle $subtitle has more than 80 chars" }
+    if (s?.length ?: 0 > 80) {
+        logger.warn { "subtitle $s has more than 80 chars" }
     }
     return Element(
-            title,
+            t.toString(),
             imageUrl,
-            if (subtitle.isNullOrEmpty()) null else subtitle,
+            s?.toString(),
             if (button == null) null else listOf(button)
     )
 }
@@ -255,7 +239,7 @@ fun BotBus.locationQuickReply(): QuickReply
         = LocationQuickReply()
 
 fun BotBus.quickReply(
-        title: String,
+        title: CharSequence,
         targetIntent: IntentAware,
         imageUrl: String? = null,
         step: StoryStep? = null,
@@ -264,7 +248,7 @@ fun BotBus.quickReply(
 
 
 fun BotBus.quickReply(
-        title: String,
+        title: CharSequence,
         targetIntent: IntentAware,
         imageUrl: String? = null,
         step: StoryStep? = null,
@@ -272,7 +256,7 @@ fun BotBus.quickReply(
         = quickReply(title, targetIntent.wrappedIntent(), imageUrl, step, *parameters)
 
 fun BotBus.quickReply(
-        title: String,
+        title: CharSequence,
         targetIntent: Intent,
         imageUrl: String? = null,
         step: StoryStep? = null,
@@ -280,30 +264,31 @@ fun BotBus.quickReply(
         = quickReply(title, targetIntent, imageUrl, step, *parameters.toArray())
 
 fun BotBus.quickReply(
-        title: String,
+        title: CharSequence,
         targetIntent: Intent,
         imageUrl: String? = null,
         step: StoryStep? = null,
         vararg parameters: Pair<String, String>): QuickReply {
-    if (title.length > 20) {
-        logger.warn { "title $title has more than 20 chars" }
+    val t = translate(title)
+    if (t.length > 20) {
+        logger.warn { "title $t has more than 20 chars" }
     }
     val payload = SendChoice.encodeChoiceId(this, targetIntent, step, parameters.toMap())
     if (payload.length > 1000) {
         logger.warn { "payload $payload has more than 1000 chars" }
     }
-    return TextQuickReply(title, payload, imageUrl)
+    return TextQuickReply(t.toString(), payload, imageUrl)
 }
 
 fun BotBus.postbackButton(
-        title: String,
+        title: CharSequence,
         targetIntent: IntentAware,
         vararg parameters: Pair<String, String>)
         : PostbackButton
         = postbackButton(title, targetIntent, null, *parameters)
 
 fun BotBus.postbackButton(
-        title: String,
+        title: CharSequence,
         targetIntent: IntentAware,
         step: StoryStep? = null,
         parameters: Parameters)
@@ -311,24 +296,26 @@ fun BotBus.postbackButton(
         = postbackButton(title, targetIntent, step, *parameters.toArray())
 
 fun BotBus.postbackButton(
-        title: String,
+        title: CharSequence,
         targetIntent: IntentAware,
         step: StoryStep? = null,
         vararg parameters: Pair<String, String>)
         : PostbackButton {
-    if (title.length > 20) {
-        logger.warn { "title $title has more than 20 chars" }
+    val t = translate(title)
+    if (t.length > 20) {
+        logger.warn { "title $t has more than 20 chars" }
     }
     val payload = SendChoice.encodeChoiceId(this, targetIntent, step, parameters.toMap())
     if (payload.length > 1000) {
         logger.warn { "payload $payload has more than 1000 chars" }
     }
-    return PostbackButton(payload, title)
+    return PostbackButton(payload, t.toString())
 }
 
-fun BotBus.urlButton(title: String, url: String): UrlButton {
-    if (title.length > 20) {
-        logger.warn { "title $title has more than 20 chars" }
+fun BotBus.urlButton(title: CharSequence, url: String): UrlButton {
+    val t = translate(title)
+    if (t.length > 20) {
+        logger.warn { "title $t has more than 20 chars" }
     }
-    return UrlButton(url, title)
+    return UrlButton(url, t.toString())
 }

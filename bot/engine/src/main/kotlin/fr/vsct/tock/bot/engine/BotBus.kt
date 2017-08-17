@@ -41,6 +41,8 @@ import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
+import fr.vsct.tock.translator.RawString
+import fr.vsct.tock.translator.TranslatedString
 import fr.vsct.tock.translator.UserInterfaceType
 import java.util.Locale
 
@@ -303,19 +305,22 @@ interface BotBus {
     fun setBusContextValue(key: String, value: Any?)
 
     fun end(delay: Long = 0): BotBus {
-        return endPlainText(null, delay)
+        return endRawText(null, delay)
     }
 
-    fun end(i18nText: String, delay: Long = 0, vararg i18nArgs: Any?): BotBus {
-        return endPlainText(translate(i18nText, *i18nArgs), delay)
+    fun end(i18nText: CharSequence, delay: Long = 0, vararg i18nArgs: Any?): BotBus {
+        return endRawText(translate(i18nText, *i18nArgs), delay)
     }
 
-    fun end(i18nText: String, vararg i18nArgs: Any?): BotBus {
-        return endPlainText(translate(i18nText, *i18nArgs))
+    fun end(i18nText: CharSequence, vararg i18nArgs: Any?): BotBus {
+        return endRawText(translate(i18nText, *i18nArgs))
     }
 
-    fun endPlainText(plainText: String?, delay: Long = 0): BotBus {
-        return end(SendSentence(botId, applicationId, userId, plainText), delay)
+    /**
+     * Send text that should not be translated, and terminate bot actions.
+     */
+    fun endRawText(plainText: CharSequence?, delay: Long = 0): BotBus {
+        return end(SendSentence(botId, applicationId, userId, plainText?.toString()), delay)
     }
 
     fun end(message: Message, delay: Long = 0): BotBus {
@@ -337,19 +342,22 @@ interface BotBus {
     }
 
 
-    fun send(i18nText: String, delay: Long = 0, vararg i18nArgs: Any?): BotBus {
-        return sendPlainText(translate(i18nText, *i18nArgs), delay)
+    fun send(i18nText: CharSequence, delay: Long = 0, vararg i18nArgs: Any?): BotBus {
+        return sendRawText(translate(i18nText, *i18nArgs), delay)
     }
 
-    fun send(i18nText: String, vararg i18nArgs: Any?): BotBus {
-        return sendPlainText(translate(i18nText, *i18nArgs))
+    fun send(i18nText: CharSequence, vararg i18nArgs: Any?): BotBus {
+        return sendRawText(translate(i18nText, *i18nArgs))
     }
 
     fun send(delay: Long = 0): BotBus {
-        return sendPlainText(null, delay)
+        return sendRawText(null, delay)
     }
 
-    fun sendPlainText(plainText: String?, delay: Long = 0): BotBus
+    /**
+     * Send text that should not be translated.
+     */
+    fun sendRawText(plainText: CharSequence?, delay: Long = 0): BotBus
 
     fun send(message: Message, delay: Long = 0): BotBus {
         return send(message.toAction(this), delay)
@@ -374,23 +382,19 @@ interface BotBus {
      */
     fun with(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus
 
-    fun translate(text: String?, arg: Any?): String {
-        if (text.isNullOrBlank()) {
-            return ""
-        } else {
-            return translate(i18nProvider.i18nKeyFromLabel(text!!, listOf(arg)))
-        }
-    }
-
-    fun translate(text: String?, vararg args: Any?): String {
-        if (text.isNullOrBlank()) {
-            return ""
+    fun translate(text: CharSequence?, vararg args: Any?): CharSequence {
+        return if (text.isNullOrBlank()) {
+            ""
+        } else if (text is I18nLabelKey) {
+            translate(text)
+        } else if (text is TranslatedString || text is RawString) {
+            text
         } else {
             return translate(i18nProvider.i18nKeyFromLabel(text!!, args.toList()))
         }
     }
 
-    fun translate(key: I18nLabelKey?): String
+    fun translate(key: I18nLabelKey?): CharSequence
 
     /**
      * Reload the user profile.

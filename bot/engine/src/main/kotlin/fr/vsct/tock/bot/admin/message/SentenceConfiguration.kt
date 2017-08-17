@@ -52,7 +52,7 @@ data class SentenceConfiguration(
                 playerId,
                 applicationId,
                 recipientId,
-                if (text != null) Translator.translate(text, locale, userInterfaceType) else null,
+                if (text != null) Translator.translate(text, locale, userInterfaceType).toString() else null,
                 messages.mapNotNull {
                     try {
                         it.findConnectorMessage()

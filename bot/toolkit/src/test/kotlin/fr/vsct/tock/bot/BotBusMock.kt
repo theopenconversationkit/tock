@@ -139,8 +139,8 @@ open class BotBusMock(override val userTimeline: UserTimeline,
         return answer(action, delay)
     }
 
-    override fun sendPlainText(plainText: String?, delay: Long): BotBus {
-        return answer(SendSentence(botId, applicationId, userId, plainText), delay)
+    override fun sendRawText(plainText: CharSequence?, delay: Long): BotBus {
+        return answer(SendSentence(botId, applicationId, userId, plainText?.toString()), delay)
     }
 
     override fun send(action: Action, delay: Long): BotBus {
@@ -159,11 +159,9 @@ open class BotBusMock(override val userTimeline: UserTimeline,
         return this
     }
 
-    override fun translate(key: I18nLabelKey?): String {
+    override fun translate(key: I18nLabelKey?): CharSequence {
         return if (key == null) ""
-        else Translator.translate(key,
-                userTimeline.userPreferences.locale,
-                userInterfaceType)
+        else Translator.formatMessage(key.defaultLabel.toString(), userLocale, userInterfaceType, key.args)
     }
 
     override fun reloadProfile() {

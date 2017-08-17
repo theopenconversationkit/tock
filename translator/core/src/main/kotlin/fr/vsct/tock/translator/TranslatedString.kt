@@ -16,16 +16,13 @@
 
 package fr.vsct.tock.translator
 
-import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAccessor
-
-val defaultUserInterface: UserInterfaceType = UserInterfaceType.textChat
-
-infix fun TemporalAccessor?.by(formatter: DateTimeFormatter): DateTemplate {
-    return DateTemplate(this, formatter)
-}
-
 /**
- * Transform this String in a [RawString] - ie a not-to-translate String.
+ * A [CharSequence] flagged as translated.
  */
-val String.raw: RawString get() = RawString(this)
+data class TranslatedString(private val wrapped: CharSequence)
+    : CharSequence by wrapped {
+
+    override fun toString(): String {
+        return wrapped.toString()
+    }
+}

@@ -56,7 +56,7 @@ abstract class StoryHandlerBase : StoryHandler, I18nKeyProvider {
 
     protected fun i18nKeyPrefix(): String = javaClass.kotlin.simpleName?.replace("StoryHandler", "") ?: ""
 
-    override fun i18nKeyFromLabel(defaultLabel: String, args: List<Any?>): I18nLabelKey {
+    override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey {
         val prefix = i18nKeyPrefix()
         return i18nKey(
                 "${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}",
@@ -69,14 +69,14 @@ abstract class StoryHandlerBase : StoryHandler, I18nKeyProvider {
     /**
      * Shortcut method for [i18nKeyFromLabel].
      */
-    fun i18n(defaultLabel: String, vararg args: Any?): I18nLabelKey {
+    fun i18n(defaultLabel: CharSequence, vararg args: Any?): I18nLabelKey {
         return i18nKeyFromLabel(defaultLabel, *args)
     }
 
     /**
      * Shortcut method for [i18nKeyFromLabel].
      */
-    fun i18n(defaultLabel: String, arg: Any?): I18nLabelKey {
+    fun i18n(defaultLabel: CharSequence, arg: Any?): I18nLabelKey {
         return i18nKeyFromLabel(defaultLabel, arg)
     }
 

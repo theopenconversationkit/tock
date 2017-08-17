@@ -108,8 +108,8 @@ internal class TockBotBus(
         return answer(action, delay)
     }
 
-    override fun sendPlainText(plainText: String?, delay: Long): BotBus {
-        return answer(SendSentence(botId, applicationId, userId, plainText), delay)
+        override fun sendRawText(plainText: CharSequence?, delay: Long): BotBus {
+        return answer(SendSentence(botId, applicationId, userId, plainText?.toString()), delay)
     }
 
     override fun send(action: Action, delay: Long): BotBus {
@@ -128,7 +128,7 @@ internal class TockBotBus(
         return this
     }
 
-    override fun translate(key: I18nLabelKey?): String {
+    override fun translate(key: I18nLabelKey?): CharSequence {
         return if (key == null) ""
         else Translator.translate(key,
                 userTimeline.userPreferences.locale,
