@@ -17,9 +17,13 @@
 package fr.vsct.tock.nlp.model
 
 /**
- *
+ * The key used by the classifier to know if a [ClassifierContext] is equals
+ * to another [ClassifierContext].
  */
 interface ClassifierContextKey {
 
-    fun name(): String
+    /**
+     * The id of the key. key1 == key2 <=> key1.id == key2.id
+     */
+    fun id(): String
 }

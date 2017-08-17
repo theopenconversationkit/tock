@@ -23,8 +23,9 @@ import com.mongodb.client.gridfs.GridFSBucket
 import com.mongodb.client.gridfs.GridFSBuckets
 import com.mongodb.client.gridfs.GridFSDownloadStream
 import com.mongodb.client.gridfs.model.GridFSFile
-import com.mongodb.client.gridfs.model.GridFSUploadOptions
-import com.mongodb.client.model.Filters
+import com.mongodb.client.model.Filters.and
+import com.mongodb.client.model.Filters.eq
+import com.mongodb.client.model.Filters.ne
 import fr.vsct.tock.nlp.model.ClassifierContextKey
 import fr.vsct.tock.nlp.model.EntityContextKey
 import fr.vsct.tock.nlp.model.IntentContext.IntentContextKey
@@ -32,8 +33,6 @@ import fr.vsct.tock.nlp.model.service.storage.NlpEngineModelIO
 import fr.vsct.tock.nlp.model.service.storage.NlpModelStream
 import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
-import org.bson.Document
-import org.litote.kmongo.json
 import java.io.InputStream
 import java.time.Instant
 
@@ -45,13 +44,17 @@ object NlpEngineMongoModelIO : NlpEngineModelIO {
     private val logger = KotlinLogging.logger {}
 
     private val database: MongoDatabase by injector.instance(MONGO_DATABASE)
-    private val entityBucket: GridFSBucket  by lazy { GridFSBuckets.create(database, "fs_entity") }
-    private val intentBucket: GridFSBucket  by lazy { GridFSBuckets.create(database, "fs_intent") }
+    private val entityBucket: GridFSBucket  by lazy {
+        GridFSBuckets.create(database, "fs_entity")
+    }
+    private val intentBucket: GridFSBucket  by lazy {
+        GridFSBuckets.create(database, "fs_intent")
+    }
 
     private fun getGridFSFile(bucket: GridFSBucket, key: ClassifierContextKey): GridFSFile? {
         return try {
-            bucket.find(Filters.eq("metadata", key)).firstOrNull()
-        } catch(e: MongoGridFSException) {
+            bucket.find(eq("filename", key.id())).limit(1).first()
+        } catch (e: MongoGridFSException) {
             logger.debug(e) { "no model exists for $key" }
             null
         }
@@ -64,10 +67,11 @@ object NlpEngineMongoModelIO : NlpEngineModelIO {
     }
 
     private fun saveModel(bucket: GridFSBucket, key: ClassifierContextKey, stream: InputStream) {
-        val newId = bucket.uploadFromStream(key.name(), stream, GridFSUploadOptions().metadata(Document.parse(key.json)))
+        val filename = key.id()
+        val newId = bucket.uploadFromStream(filename, stream)
         //remove old versions
-        bucket.find(Filters.eq("metadata", key)).forEach {
-            if (it.objectId != newId) {
+        if (newId != null) {
+            bucket.find(and(ne("_id", newId), eq("filename", filename))).forEach {
                 logger.debug { "Remove file ${it.objectId} for $key" }
                 bucket.delete(it.objectId)
             }

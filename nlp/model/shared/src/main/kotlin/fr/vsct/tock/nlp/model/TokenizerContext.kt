@@ -38,7 +38,7 @@ data class TokenizerContext(override val language: Locale,
         return this
     }
 
-    override fun name(): String {
-        return "$language-$engineType"
+    override fun id(): String {
+        return "$language-${engineType.name}"
     }
 }

@@ -30,8 +30,8 @@ data class EntityContextKey(val applicationName: String?,
                             val nlpEngineType: NlpEngineType,
                             val entityType: EntityType? = null,
                             val subEntities: Boolean = false) : ClassifierContextKey {
-    override fun name(): String {
-        return "$applicationName-$intentName-$language-$nlpEngineType-${entityType?.name}-$subEntities"
+    override fun id(): String {
+        return "$applicationName-$intentName-$language-${nlpEngineType.name}-${entityType?.name}-$subEntities"
     }
 }
 
