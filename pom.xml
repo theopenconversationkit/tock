@@ -57,13 +57,13 @@
         <plugin.nexus-staging>1.6.8</plugin.nexus-staging>
         <plugin.dokka>0.9.14</plugin.dokka>
         <plugin.assembly>3.0.0</plugin.assembly>
-        <plugin.frontend>1.4</plugin.frontend>
+        <plugin.frontend>1.5</plugin.frontend>
         <plugin.clean>3.0.0</plugin.clean>
         <plugin.jar>3.0.2</plugin.jar>
 
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
 
-        <node>v6.10.2</node>
+        <node>v6.11.0</node>
     </properties>
 
     <modules>
