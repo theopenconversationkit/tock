@@ -51,7 +51,7 @@
         <md-icon class="userInterface" *ngIf="l.interfaceType === 1" md-list-avatar>record_voice_over</md-icon>
 
         <md-input-container class="input">
-          <input mdInput [(ngModel)]="l.label" (focusout)="save(i, l)" size="60">
+          <textarea mdInput [(ngModel)]="l.label" (focusout)="save(i, l)" cols="100" rows="1"></textarea>
         </md-input-container>
 
         <md-checkbox [(ngModel)]="l.validated" (change)="save(i, l)">
@@ -61,7 +61,7 @@
         <span *ngFor="let a of l.alternatives;let index=index;">
           <br>
           <md-input-container class="input-alternative">
-            <input mdInput [value]="a" (focusout)="addAlternative(i, l, index, $event.target.value)" size="20">
+            <textarea mdInput [value]="a" (focusout)="addAlternative(i, l, index, $event.target.value)" cols="90" rows="1"></textarea>
           </md-input-container>
           <button md-button (click)="removeAlternative(i, l, index)" md-tooltip="Remove alternative">
             <md-icon>remove</md-icon>
