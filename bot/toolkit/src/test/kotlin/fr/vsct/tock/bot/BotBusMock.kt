@@ -61,7 +61,11 @@ open class BotBusMock(override val userTimeline: UserTimeline,
                         state = context.dialog.state.copy(
                                 currentIntent = context.botDefinition.findIntent(action.intentName)))
             else context.dialog,
-            context.story,
+            context.story.apply {
+                if (action is SendChoice && action.step() != null) {
+                    currentStep = action.step()
+                }
+            },
             action,
             context.botDefinition,
             context.storyDefinition.storyHandler as I18nKeyProvider,
