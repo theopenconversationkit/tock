@@ -39,10 +39,9 @@ export class I18nComponent implements OnInit {
   selectedCategory: string = this.doNotFilterByCategory;
   allCategories: string[] = [];
 
-  constructor(
-    public state:StateService,
-    private botService: BotService,
-    private snackBar: MdSnackBar) {
+  constructor(public state: StateService,
+              private botService: BotService,
+              private snackBar: MdSnackBar) {
   }
 
   ngOnInit() {
@@ -59,7 +58,7 @@ export class I18nComponent implements OnInit {
 
       this.i18n.forEach(i => {
           //add non present i18n
-        locales.forEach(locale => {
+          locales.forEach(locale => {
             this.userInterfaces.forEach(userInterface => {
               if (!i.label(locale, userInterface)) {
                 i.i18n.push(new I18nLocalizedLabel(locale, userInterface, "", false, []));
@@ -105,19 +104,16 @@ export class I18nComponent implements OnInit {
     this.allCategories.sort()
   }
 
-  deleteLabel(label:I18nLabel) {
+  deleteLabel(label: I18nLabel) {
     this.i18n.splice(this.i18n.indexOf(label), 1);
     this.filteredI18n.splice(this.filteredI18n.indexOf(label), 1);
     this.botService
       .deleteI18nLabel(label)
       .subscribe(_ => this.snackBar.open(`Label "${label.defaultLabel().label}" deleted`, "Delete", {duration: 3000}));
-    }
+  }
 
   onSelectedCategoryChange() {
     this.filter(this.filterString);
-    if (this.selectedCategory !== this.doNotFilterByCategory) {
-      this.filteredI18n = this.filteredI18n.filter(i => i.category === this.selectedCategory)
-    }
   }
 
   filterValidatedChange() {
@@ -125,29 +121,13 @@ export class I18nComponent implements OnInit {
   }
 
   filter(value: string) {
-    if (value) {
-      const v = value.trim().toLowerCase();
-      if (v.length !== 0) {
-        this.filteredI18n = this.i18n.filter(i => {
-            if (this.filterValidated && !i.i18n.some(label => !label.validated)) {
-              return false;
-            }
-            const r = i.i18n.some(label => label.label.length != 0 && label.label.toLowerCase().indexOf(v) !== -1);
-            return r;
-          }
-        );
-        this.setCategoryOnFirstItem(this.filteredI18n);
-        return;
-      }
+    const v = value ? value.trim().toLowerCase() : "";
+    this.filteredI18n = this.i18n.filter(i => {
+      return (!this.filterValidated || i.i18n.some(label => !label.validated))
+          && (v.length === 0 || i.i18n.some(label => label.label.length !== 0 && label.label.toLowerCase().indexOf(v) !== -1))
+        && (this.selectedCategory === this.doNotFilterByCategory || i.category === this.selectedCategory)
+    });
 
-    }
-    if (this.filterValidated) {
-      this.filteredI18n = this.i18n.filter(i => {
-        return i.i18n.some(label => !label.validated);
-      });
-    } else {
-      this.filteredI18n = this.i18n;
-    }
     this.setCategoryOnFirstItem(this.filteredI18n);
   }
 
@@ -197,11 +177,11 @@ export class I18nComponent implements OnInit {
   }
 
   downloadExport() {
-      this.botService.downloadI18nLabelsExport()
-        .subscribe(blob => {
-          saveAs(blob, "labels.csv");
-          this.snackBar.open(`Export provided`, "Export", {duration: 1000});
-        })
+    this.botService.downloadI18nLabelsExport()
+      .subscribe(blob => {
+        saveAs(blob, "labels.csv");
+        this.snackBar.open(`Export provided`, "Export", {duration: 1000});
+      })
   }
 
 }
