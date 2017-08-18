@@ -21,7 +21,7 @@ import fr.vsct.tock.nlp.core.merge.ValueDescriptor
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 
 /**
- *
+ * The main entry point for NLP.
  */
 interface NlpCore {
 
@@ -33,10 +33,9 @@ interface NlpCore {
               intentSelector: IntentSelector = defaultIntentSelector)
             : ParsingResult
 
-    fun updateIntentModel(context: BuildContext, expressions: List<SampleExpression>)
-
-    fun updateEntityModelForIntent(context: BuildContext, intent: Intent, expressions: List<SampleExpression>)
-
+    /**
+     * Supported nlp engines.
+     */
     fun supportedNlpEngineTypes(): Set<NlpEngineType>
 
     /**

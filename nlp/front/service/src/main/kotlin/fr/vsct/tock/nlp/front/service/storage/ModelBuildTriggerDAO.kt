@@ -25,7 +25,7 @@ interface ModelBuildTriggerDAO {
 
     fun save(trigger: ModelBuildTrigger)
 
-    fun deleteTriggersForApplicationId(applicationId: String)
+    fun deleteTrigger(trigger: ModelBuildTrigger)
 
     fun getTriggers(): List<ModelBuildTrigger>
 }

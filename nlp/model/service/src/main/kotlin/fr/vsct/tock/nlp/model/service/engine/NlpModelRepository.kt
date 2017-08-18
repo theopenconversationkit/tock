@@ -19,6 +19,7 @@ package fr.vsct.tock.nlp.model.service.engine
 import com.github.salomonbrys.kodein.instance
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import fr.vsct.tock.nlp.model.EntityBuildContext
 import fr.vsct.tock.nlp.model.EntityCallContext
 import fr.vsct.tock.nlp.model.EntityContextKey
 import fr.vsct.tock.nlp.model.IntentContext
@@ -28,6 +29,7 @@ import fr.vsct.tock.nlp.model.TokenizerContext
 import fr.vsct.tock.nlp.model.service.storage.NlpEngineModelIO
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.booleanProperty
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.longProperty
 import mu.KotlinLogging
@@ -66,28 +68,32 @@ internal object NlpModelRepository {
             logger.info { "start refresh model thread" }
             //10 minutes by default
             executor.setPeriodic(Duration.ofSeconds(longProperty("tock_nlp_model_refresh_rate", 10 * 60))) {
-                logger.debug { "start refresh model process" }
-                intentModelsCache.asMap().forEach { key, value ->
-                    logger.trace { "check intent model $key" }
-                    if (modelIO.getIntentModelLastUpdate(key) != value.lastUpdate) {
-                        logger.info { "refresh intent model for $key" }
-                        intentModelsCache.put(key,
-                                loadIntentModel(
-                                        key,
-                                        NlpEngineRepository.getProvider(key.nlpEngineType))
-                        )
+                try {
+                    logger.debug { "start refresh model process" }
+                    intentModelsCache.asMap().forEach { key, value ->
+                        logger.trace { "check intent model $key" }
+                        if (modelIO.getIntentModelLastUpdate(key) != value.lastUpdate) {
+                            logger.info { "refresh intent model for $key" }
+                            intentModelsCache.put(key,
+                                    loadIntentModel(
+                                            key,
+                                            NlpEngineRepository.getProvider(key.nlpEngineType))
+                            )
+                        }
                     }
-                }
-                entityModelsCache.asMap().forEach { key, value ->
-                    logger.trace { "check entity model $key" }
-                    if (modelIO.getEntityModelLastUpdate(key) != value.lastUpdate) {
-                        logger.info { "refresh entity model for $key" }
-                        entityModelsCache.put(key,
-                                loadEntityModel(
-                                        key,
-                                        NlpEngineRepository.getProvider(key.nlpEngineType))
-                        )
+                    entityModelsCache.asMap().forEach { key, value ->
+                        logger.trace { "check entity model $key" }
+                        if (modelIO.getEntityModelLastUpdate(key) != value.lastUpdate) {
+                            logger.info { "refresh entity model for $key" }
+                            entityModelsCache.put(key,
+                                    loadEntityModel(
+                                            key,
+                                            NlpEngineRepository.getProvider(key.nlpEngineType))
+                            )
+                        }
                     }
+                } catch (t: Throwable) {
+                    logger.error(t)
                 }
             }
         } else {
@@ -152,7 +158,7 @@ internal object NlpModelRepository {
             pipedOutputStream.use {
                 try {
                     copy(it)
-                } catch(t: Throwable) {
+                } catch (t: Throwable) {
                     logger.error(t) { t.message }
                 } finally {
                     logger.debug { "Copy model end" }
@@ -166,7 +172,7 @@ internal object NlpModelRepository {
             try {
                 logger.debug { "Start to save the model" }
                 save(it)
-            } catch(t: Throwable) {
+            } catch (t: Throwable) {
                 logger.error(t) { t.message }
             } finally {
                 logger.debug { "Model saved" }
@@ -192,4 +198,21 @@ internal object NlpModelRepository {
                 { modelIO.saveEntityModel(entityContextKey, it) }
         )
     }
+
+    fun isIntentModelExist(context: IntentContext): Boolean {
+        return modelIO.getIntentModelLastUpdate(context.key()) != null
+    }
+
+    fun isEntityModelExist(context: EntityBuildContext): Boolean {
+        return modelIO.getEntityModelLastUpdate(context.key()) != null
+    }
+
+    fun removeEntityModelsNotIn(keys: List<EntityContextKey>) {
+        modelIO.removeEntityModelsNotIn(keys)
+    }
+
+    fun removeIntentModelsNotIn(keys: List<IntentContextKey>) {
+        modelIO.removeIntentModelsNotIn(keys)
+    }
+
 }

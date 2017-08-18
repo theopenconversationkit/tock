@@ -19,9 +19,11 @@ package fr.vsct.tock.nlp.core
 import java.util.Locale
 
 /**
- *
+ * Context for a NLP model build.
  */
 data class BuildContext(val application: Application,
                         val language: Locale,
-                        val engineType: NlpEngineType = NlpEngineType.opennlp) {
+                        val engineType: NlpEngineType = NlpEngineType.opennlp,
+                        /** update the model only if he does not exist already */
+                        val onlyIfNotExists: Boolean = false) {
 }

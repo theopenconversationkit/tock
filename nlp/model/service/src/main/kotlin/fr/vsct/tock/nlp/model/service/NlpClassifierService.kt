@@ -16,7 +16,10 @@
 
 package fr.vsct.tock.nlp.model.service
 
+import fr.vsct.tock.nlp.core.Application
 import fr.vsct.tock.nlp.core.EntityRecognition
+import fr.vsct.tock.nlp.core.Intent
+import fr.vsct.tock.nlp.core.IntentClassification
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 import fr.vsct.tock.nlp.model.EntityBuildContext
@@ -24,13 +27,15 @@ import fr.vsct.tock.nlp.model.EntityBuildContextForEntity
 import fr.vsct.tock.nlp.model.EntityBuildContextForIntent
 import fr.vsct.tock.nlp.model.EntityBuildContextForSubEntities
 import fr.vsct.tock.nlp.model.EntityCallContext
+import fr.vsct.tock.nlp.model.EntityContextKey
 import fr.vsct.tock.nlp.model.IntentContext
-import fr.vsct.tock.nlp.core.IntentClassification
+import fr.vsct.tock.nlp.model.IntentContext.IntentContextKey
 import fr.vsct.tock.nlp.model.NlpClassifier
 import fr.vsct.tock.nlp.model.TokenizerContext
 import fr.vsct.tock.nlp.model.service.engine.NlpEngineRepository
 import fr.vsct.tock.nlp.model.service.engine.NlpEngineRepository.getModelBuilder
 import fr.vsct.tock.nlp.model.service.engine.NlpEngineRepository.getModelIo
+import fr.vsct.tock.nlp.model.service.engine.NlpModelRepository
 import fr.vsct.tock.nlp.model.service.engine.NlpModelRepository.saveEntityModel
 import fr.vsct.tock.nlp.model.service.engine.NlpModelRepository.saveIntentModel
 
@@ -71,6 +76,46 @@ object NlpClassifierService : NlpClassifier {
         if (model != null) {
             saveEntityModel(context.key(), model, getModelIo(context))
         }
+    }
+
+    override fun isIntentModelExist(context: IntentContext): Boolean {
+        return NlpModelRepository.isIntentModelExist(context)
+    }
+
+    override fun isEntityModelExist(context: EntityBuildContext): Boolean {
+        return NlpModelRepository.isEntityModelExist(context)
+    }
+
+    override fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>) {
+        //remove intents
+        NlpModelRepository.removeIntentModelsNotIn(
+                applicationsAndIntents.keys
+                        .flatMap { key ->
+                            key.supportedLocales
+                                    .flatMap { locale ->
+                                        supportedNlpEngineTypes()
+                                                .map { engineType ->
+                                                    IntentContextKey(key.name, locale, engineType)
+                                                }
+                                    }
+                        }
+        )
+
+        //remove entities
+        NlpModelRepository.removeEntityModelsNotIn(
+                applicationsAndIntents.entries
+                        .flatMap { e ->
+                            e.key.supportedLocales
+                                    .flatMap { locale ->
+                                        supportedNlpEngineTypes()
+                                                .flatMap { engineType ->
+                                                    e.value.map { intent ->
+                                                        EntityContextKey(e.key.name, intent.name, locale, engineType)
+                                                    }
+                                                }
+                                    }
+                        }
+        )
     }
 
     private fun filterExpressionsForContext(context: EntityBuildContext, expressions: List<SampleExpression>): List<SampleExpression> {

@@ -19,8 +19,8 @@ package fr.vsct.tock.nlp.front.storage.mongo
 import com.mongodb.client.MongoCollection
 import fr.vsct.tock.nlp.front.service.storage.ModelBuildTriggerDAO
 import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
-import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.deleteMany
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
 import org.litote.kmongo.save
@@ -40,8 +40,8 @@ object ModelBuildTriggerMongoDAO : ModelBuildTriggerDAO {
         col.save(trigger)
     }
 
-    override fun deleteTriggersForApplicationId(applicationId: String) {
-        col.deleteMany("{'applicationId':${applicationId.json}}")
+    override fun deleteTrigger(trigger: ModelBuildTrigger) {
+        col.deleteMany("{'applicationId':${trigger.applicationId.json},'onlyIfModelNotExists':${trigger.onlyIfModelNotExists}}")
     }
 
     override fun getTriggers(): List<ModelBuildTrigger> {

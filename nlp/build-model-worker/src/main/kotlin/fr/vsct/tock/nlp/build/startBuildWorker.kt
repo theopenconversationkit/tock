@@ -28,6 +28,6 @@ fun main(args: Array<String>) {
 fun startBuildWorker(vararg modules: Kodein.Module) {
     FrontIoc.setup(*modules)
     vertx.deployVerticle(BuildModelWorkerVerticle(), DeploymentOptions().setWorker(true))
-
+    vertx.deployVerticle(CleanupModelWorkerVerticle(), DeploymentOptions().setWorker(true))
 }
 

@@ -23,6 +23,7 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.deleted
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
+import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
 import fr.vsct.tock.shared.error
 import io.vertx.core.AbstractVerticle
 import mu.KotlinLogging
@@ -38,34 +39,35 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
 
     companion object {
         private val logger = KotlinLogging.logger {}
+        val front = FrontClient
 
         fun updateAllModels() {
             FrontClient.getApplications().forEach { updateApplicationModels(it) }
         }
 
-        private fun updateApplicationModels(app: ApplicationDefinition) {
+        private fun updateApplicationModels(app: ApplicationDefinition, onlyIfNotExists: Boolean = false) {
             logger.debug { "Rebuild all models for application ${app.name} and nlp engine ${app.nlpEngineType.name}" }
             app.supportedLocales.forEach { locale ->
                 updateModel(
                         ModelRefreshKey(app._id!!, locale),
-                        FrontClient.search(SentencesQuery(app._id as String, locale, 0, Integer.MAX_VALUE, status = setOf(model))).sentences)
+                        FrontClient.search(SentencesQuery(app._id as String, locale, 0, Integer.MAX_VALUE, status = setOf(model))).sentences,
+                        onlyIfNotExists)
             }
         }
 
-        private fun updateModel(key: ModelRefreshKey, sentences: List<ClassifiedSentence>) {
-            val front = FrontClient
+        private fun updateModel(key: ModelRefreshKey, sentences: List<ClassifiedSentence>, onlyIfNotExists: Boolean = false) {
             try {
                 val app = front.getApplicationById(key.applicationId)!!
                 logger.info { "start model update for ${app.name} and ${key.language}" }
                 logger.trace { "Sentences : ${sentences.map { it.text }}" }
 
-                front.updateIntentsModelForApplication(sentences, app, key.language, app.nlpEngineType)
+                front.updateIntentsModelForApplication(sentences, app, key.language, app.nlpEngineType, onlyIfNotExists)
                 sentences.groupBy { it.classification.intentId }.forEach { intentId, _ ->
-                    front.updateEntityModelForIntent(sentences, app, intentId, key.language, app.nlpEngineType)
+                    front.updateEntityModelForIntent(sentences, app, intentId, key.language, app.nlpEngineType, onlyIfNotExists)
                 }
 
                 logger.info { "Model updated for ${app.name} and ${key.language}" }
-            } catch(e: Throwable) {
+            } catch (e: Throwable) {
                 logger.error(e)
             } finally {
                 front.switchSentencesStatus(sentences, model)
@@ -74,7 +76,6 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
     }
 
     override fun start() {
-        val front = FrontClient
         val canAnalyse = AtomicBoolean(true)
 
         vertx.setPeriodic(1000, {
@@ -102,21 +103,31 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                         logger.info { "end model update" }
                     } else {
                         front.getTriggers()
-                                .groupBy { it.applicationId }
-                                .forEach {
-                                    //for now only full rebuild
-                                    front.deleteTriggersForApplicationId(it.key)
-                                    front.getApplicationById(it.key)?.let {
-                                        updateApplicationModels(it)
-                                    } ?: logger.warn { "unknown application id trigger ${it.key} - skipped" }
-
+                                .forEach { trigger ->
+                                    front.deleteTrigger(trigger)
+                                    front.getApplicationById(trigger.applicationId)?.let {
+                                        updateApplicationModels(it, trigger.onlyIfModelNotExists)
+                                    } ?: logger.warn {
+                                        "unknown application id trigger ${trigger} - skipped"
+                                    }
                                 }
                     }
-                } catch(e: Throwable) {
+                } catch (e: Throwable) {
                     logger.error(e)
                 } finally {
                     canAnalyse.set(true)
                 }
+            }
+        })
+
+        vertx.setPeriodic(60 * 60 * 1000, {
+            try {
+                logger.debug { "trigger build to check not existing models" }
+                front.getApplications().forEach {
+                    front.triggerBuild(ModelBuildTrigger(it._id!!, true, true))
+                }
+            } catch (e: Throwable) {
+                logger.error(e)
             }
         })
     }

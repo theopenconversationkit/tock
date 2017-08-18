@@ -17,13 +17,15 @@
 package fr.vsct.tock.nlp.core.client
 
 import com.github.salomonbrys.kodein.instance
+import fr.vsct.tock.nlp.core.ModelCore
 import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.shared.injector
 
 private val nlpCore: NlpCore by injector.instance()
+private val modelCore: ModelCore by injector.instance()
 
 /**
  *
  */
-object NlpCoreClient : NlpCore by nlpCore {
+object NlpCoreClient : NlpCore by nlpCore, ModelCore by modelCore {
 }

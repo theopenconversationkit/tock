@@ -114,14 +114,6 @@ object NlpCoreService : NlpCore {
         return entityCore.evaluateEntities(context, text, entities)
     }
 
-    override fun updateIntentModel(context: BuildContext, expressions: List<SampleExpression>) {
-        nlpClassifier.buildAndSaveIntentModel(IntentContext(context), expressions)
-    }
-
-    override fun updateEntityModelForIntent(context: BuildContext, intent: Intent, expressions: List<SampleExpression>) {
-        nlpClassifier.buildAndSaveEntityModel(EntityBuildContextForIntent(context, intent), expressions)
-    }
-
     override fun supportedNlpEngineTypes(): Set<NlpEngineType> {
         return nlpClassifier.supportedNlpEngineTypes()
     }

@@ -20,8 +20,8 @@ import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.BuildContext
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.Intent
+import fr.vsct.tock.nlp.core.ModelCore
 import fr.vsct.tock.nlp.core.NlpEngineType
-import fr.vsct.tock.nlp.front.service.FrontRepository.core
 import fr.vsct.tock.nlp.front.service.FrontRepository.entityTypeByName
 import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
 import fr.vsct.tock.nlp.front.service.storage.ModelBuildTriggerDAO
@@ -32,6 +32,7 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.provide
 import java.util.Locale
 
 val triggerDAO: ModelBuildTriggerDAO by injector.instance()
@@ -42,6 +43,7 @@ val triggerDAO: ModelBuildTriggerDAO by injector.instance()
 object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
 
     private val config = ApplicationConfigurationService
+    val model: ModelCore get() = injector.provide()
 
     override fun triggerBuild(trigger: ModelBuildTrigger) {
         save(trigger)
@@ -51,10 +53,11 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
             validatedSentences: List<ClassifiedSentence>,
             application: ApplicationDefinition,
             language: Locale,
-            engineType: NlpEngineType) {
+            engineType: NlpEngineType,
+            onlyIfNotExists:Boolean) {
         val modelSentences = config.getSentences(application.intents, language, ClassifiedSentenceStatus.model)
         val samples = (modelSentences + validatedSentences).map { it.toSampleExpression({ toIntent(it) }, { entityTypeByName(it) }) }
-        core.updateIntentModel(BuildContext(toApplication(application), language, engineType), samples)
+        model.updateIntentModel(BuildContext(toApplication(application), language, engineType, onlyIfNotExists), samples)
     }
 
     override fun updateEntityModelForIntent(
@@ -62,13 +65,24 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
             application: ApplicationDefinition,
             intentId: String,
             language: Locale,
-            engineType: NlpEngineType) {
+            engineType: NlpEngineType,
+            onlyIfNotExists:Boolean) {
         val i = toIntent(intentId)
         val modelSentences = config.getSentences(setOf(intentId), language, ClassifiedSentenceStatus.model)
         val samples = (modelSentences + validatedSentences).map {
             it.toSampleExpression({ i }, { entityTypeByName(it) })
         }
-        core.updateEntityModelForIntent(BuildContext(toApplication(application), language, engineType), i, samples)
+        model.updateEntityModelForIntent(BuildContext(toApplication(application), language, engineType, onlyIfNotExists), i, samples)
+    }
+
+    override fun deleteOrphans() {
+        model.deleteOrphans(
+                config.getApplications()
+                        .map {
+                            toApplication(it) to config.getIntentsByApplicationId(it._id!!).map { toIntent(it) }.toSet()
+                        }
+                        .toMap()
+        )
     }
 
     private fun toIntent(intentId: String): Intent {

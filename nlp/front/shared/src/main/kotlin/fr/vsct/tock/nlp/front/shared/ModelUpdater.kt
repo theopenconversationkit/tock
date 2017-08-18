@@ -34,7 +34,8 @@ interface ModelUpdater {
             validatedSentences: List<ClassifiedSentence>,
             application: ApplicationDefinition,
             language: Locale,
-            engineType: NlpEngineType)
+            engineType: NlpEngineType,
+            onlyIfNotExists:Boolean = false)
 
     /**
      * Update all entities model of intent.
@@ -44,7 +45,13 @@ interface ModelUpdater {
             application: ApplicationDefinition,
             intentId: String,
             language: Locale,
-            engineType: NlpEngineType)
+            engineType: NlpEngineType,
+            onlyIfNotExists:Boolean = false)
+
+    /**
+     * Delete orphans intent and entity models.
+     */
+    fun deleteOrphans()
 
     /**
      * Get all available triggers.
@@ -57,7 +64,7 @@ interface ModelUpdater {
     fun triggerBuild(trigger: ModelBuildTrigger)
 
     /**
-     * Deleete all triggers for the specified application id.
+     * Delete the trigger.
      */
-    fun deleteTriggersForApplicationId(applicationId: String)
+    fun deleteTrigger(trigger: ModelBuildTrigger)
 }

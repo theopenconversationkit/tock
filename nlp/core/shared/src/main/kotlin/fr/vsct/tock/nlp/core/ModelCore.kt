@@ -14,26 +14,31 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.model
+package fr.vsct.tock.nlp.core
 
-import fr.vsct.tock.nlp.core.Application
-import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 
 /**
- *
+ * The main entry point to manage NLP models.
  */
-interface ModelBuilder {
+interface ModelCore {
 
-    fun buildAndSaveTokenizerModel(context: TokenizerContext, expressions: List<SampleExpression>)
+    /**
+     * Update intent model.
+     */
+    fun updateIntentModel(context: BuildContext,
+                          expressions: List<SampleExpression>)
 
-    fun buildAndSaveIntentModel(context: IntentContext, expressions: List<SampleExpression>)
+    /**
+     * Update entity model.
+     */
+    fun updateEntityModelForIntent(context: BuildContext,
+                                   intent: Intent,
+                                   expressions: List<SampleExpression>)
 
-    fun buildAndSaveEntityModel(context: EntityBuildContext, expressions: List<SampleExpression>)
-
-    fun isIntentModelExist(context: IntentContext) : Boolean
-
-    fun isEntityModelExist(context: EntityBuildContext) : Boolean
-
+    /**
+     * Remove models that does not match specified applications or intents.
+     */
     fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>)
+
 }
