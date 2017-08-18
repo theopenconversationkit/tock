@@ -62,8 +62,8 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                 logger.trace { "Sentences : ${sentences.map { it.text }}" }
 
                 front.updateIntentsModelForApplication(sentences, app, key.language, app.nlpEngineType, onlyIfNotExists)
-                sentences.groupBy { it.classification.intentId }.forEach { intentId, _ ->
-                    front.updateEntityModelForIntent(sentences, app, intentId, key.language, app.nlpEngineType, onlyIfNotExists)
+                sentences.groupBy { it.classification.intentId }.forEach { intentId, intentSentences ->
+                    front.updateEntityModelForIntent(intentSentences, app, intentId, key.language, app.nlpEngineType, onlyIfNotExists)
                 }
 
                 logger.info { "Model updated for ${app.name} and ${key.language}" }
@@ -120,7 +120,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
             }
         })
 
-        vertx.setPeriodic(60 * 60 * 1000, {
+        vertx.setPeriodic(10 * 60 * 5000, {
             try {
                 logger.debug { "trigger build to check not existing models" }
                 front.getApplications().forEach {
