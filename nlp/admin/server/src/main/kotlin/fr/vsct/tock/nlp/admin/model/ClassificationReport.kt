@@ -27,8 +27,8 @@ import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 data class ClassificationReport(
         val intentId: String?,
         val entities: List<ClassifiedEntityReport>,
-        val intentProbability: Double,
-        val entitiesProbability: Double,
+        val intentProbability: Double?,
+        val entitiesProbability: Double?,
         val otherIntentsProbabilities: Map<String, Double>) {
 
     constructor(query: ParseResult, intentId: String?) : this(

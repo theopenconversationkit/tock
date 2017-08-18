@@ -157,7 +157,12 @@ object ParserService : Parser {
                     .sentences
                     .firstOrNull()
 
-            val callContext = CallContext(toApplication(application), language, application.nlpEngineType, referenceDate)
+            val callContext = CallContext(
+                    toApplication(application),
+                    language, application.nlpEngineType,
+                    referenceDate,
+                    application.mergeEngineTypes)
+
             val data = ParserRequestData(
                     application,
                     query,
@@ -221,7 +226,7 @@ object ParserService : Parser {
                     toClassifiedSentence().apply {
                         if (!hasSameContent(validatedSentence)) {
                             //do not persist analyse if intent probability is < 0.1
-                            val sentence = if (lastIntentProbability > 0.1) this
+                            val sentence = if ((lastIntentProbability ?: 0.0) > 0.1) this
                             else copy(classification = classification.copy(UNKNOWN_INTENT, emptyList()))
 
                             config.save(sentence)

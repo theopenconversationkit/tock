@@ -33,8 +33,8 @@ import org.litote.kmongo.MongoOperator.ne
 import org.litote.kmongo.MongoOperator.pull
 import org.litote.kmongo.MongoOperator.set
 import org.litote.kmongo.count
-import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.deleteMany
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.find
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
@@ -60,8 +60,8 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                                              val updateDate: Instant,
                                              val status: ClassifiedSentenceStatus,
                                              val classification: Classification,
-                                             val lastIntentProbability: Double = 1.0,
-                                             val lastEntityProbability: Double = 1.0) {
+                                             val lastIntentProbability: Double? = null,
+                                             val lastEntityProbability: Double? = null) {
 
         constructor(sentence: ClassifiedSentence) :
                 this(

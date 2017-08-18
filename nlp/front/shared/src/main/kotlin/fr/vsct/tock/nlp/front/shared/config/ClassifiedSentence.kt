@@ -36,8 +36,8 @@ data class ClassifiedSentence(val text: String,
                               val updateDate: Instant,
                               val status: ClassifiedSentenceStatus,
                               val classification: Classification,
-                              val lastIntentProbability: Double,
-                              val lastEntityProbability: Double) {
+                              val lastIntentProbability: Double?,
+                              val lastEntityProbability: Double?) {
 
     constructor(
             query: ParseResult,

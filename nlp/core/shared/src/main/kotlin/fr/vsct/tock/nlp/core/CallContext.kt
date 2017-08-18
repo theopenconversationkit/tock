@@ -17,7 +17,6 @@
 package fr.vsct.tock.nlp.core
 
 import fr.vsct.tock.nlp.core.NlpEngineType.Companion.opennlp
-import java.time.ZoneOffset
 import java.time.ZoneOffset.UTC
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
@@ -29,6 +28,7 @@ import java.util.Locale
 data class CallContext(val application: Application,
                        val language: Locale,
                        val engineType: NlpEngineType = opennlp,
-                       val referenceDate: ZonedDateTime = now(UTC)) {
+                       val referenceDate: ZonedDateTime = now(UTC),
+                       val mergeEntityTypes: Boolean = true) {
 
 }

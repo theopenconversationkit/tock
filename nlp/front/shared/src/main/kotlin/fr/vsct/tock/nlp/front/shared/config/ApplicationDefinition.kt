@@ -29,6 +29,7 @@ data class ApplicationDefinition(val name: String,
                                  val supportedLocales: Set<Locale> = emptySet(),
                                  val intentStatesMap: Map<String, Set<String>> = emptyMap(),
                                  val nlpEngineType: NlpEngineType = NlpEngineType.opennlp,
+                                 val mergeEngineTypes: Boolean = true,
                                  val _id: String? = null) {
 
     @Transient

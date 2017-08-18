@@ -22,7 +22,7 @@
   <md-card-content>
       <md-list>
         <md-list-item *ngFor="let app of state.applications">
-          <button *ngIf="app._id === state.currentApplication._id" mdTooltip="Selected" disabled md-mini-fab><md-icon>label</md-icon></button>
+          <button *ngIf="app._id === state.currentApplication._id" mdTooltip="Current" class="select-action" md-mini-fab><md-icon color="primary">label</md-icon></button>
           <button *ngIf="app._id !== state.currentApplication._id" class="select-action" mdTooltip="Select"
                   (click)="selectApplication(app)" md-mini-fab><md-icon>label_outline</md-icon></button>
           <span class="tock-name">{{app.name}}</span>

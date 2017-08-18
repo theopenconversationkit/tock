@@ -17,7 +17,6 @@
 package fr.vsct.tock.nlp.core.service
 
 import com.github.salomonbrys.kodein.instance
-import fr.vsct.tock.nlp.core.BuildContext
 import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityType
@@ -27,10 +26,8 @@ import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.ParsingResult
 import fr.vsct.tock.nlp.core.merge.ValueDescriptor
-import fr.vsct.tock.nlp.core.sample.SampleExpression
 import fr.vsct.tock.nlp.core.service.entity.EntityCore
 import fr.vsct.tock.nlp.core.service.entity.EntityMerge
-import fr.vsct.tock.nlp.model.EntityBuildContextForIntent
 import fr.vsct.tock.nlp.model.EntityCallContextForEntity
 import fr.vsct.tock.nlp.model.EntityCallContextForIntent
 import fr.vsct.tock.nlp.model.IntentContext
@@ -77,10 +74,10 @@ object NlpCoreService : NlpCore {
                     evaluatedEntities,
                     probability,
                     evaluatedEntities.map { it.probability }.average())
-        } catch(e: ModelNotInitializedException) {
+        } catch (e: ModelNotInitializedException) {
             logger.warn { "model not initialized : ${e.message}" }
             return unknownResult
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             logger.error(e)
             return unknownResult
         }
@@ -98,10 +95,14 @@ object NlpCoreService : NlpCore {
             val intentContext = EntityCallContextForIntent(context, intent)
             val entities = nlpClassifier.classifyEntities(intentContext, text, tokens)
             val evaluatedEntities = evaluateEntities(context, text, entities)
-            val classifiedEntityTypes = entityCore.classifyEntityTypes(intentContext, text, tokens)
 
-            entityMerge.mergeEntityTypes(intent, evaluatedEntities, classifiedEntityTypes)
-        } catch(e: Exception) {
+            return if (context.mergeEntityTypes) {
+                val classifiedEntityTypes = entityCore.classifyEntityTypes(intentContext, text, tokens)
+                entityMerge.mergeEntityTypes(intent, evaluatedEntities, classifiedEntityTypes)
+            } else {
+                evaluatedEntities
+            }
+        } catch (e: Exception) {
             logger.error(e)
             emptyList()
         }

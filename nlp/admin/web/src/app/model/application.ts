@@ -23,12 +23,13 @@ export class Application {
               public intents: Intent[],
               public supportedLocales: string[],
               public nlpEngineType: NlpEngineType,
+              public mergeEngineTypes: boolean,
               public _id?: string) {
   }
 
   clone(): Application {
     return new Application(this.name
-      , this.namespace, this.intents.slice(0), this.supportedLocales.slice(0), this.nlpEngineType, this._id)
+      , this.namespace, this.intents.slice(0), this.supportedLocales.slice(0), this.nlpEngineType, this.mergeEngineTypes, this._id)
   }
 
   removeIntentById(id: string) {
