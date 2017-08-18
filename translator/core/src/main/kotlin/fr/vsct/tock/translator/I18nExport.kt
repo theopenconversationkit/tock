@@ -26,7 +26,7 @@ import fr.vsct.tock.shared.property
  */
 object I18nExport {
 
-    val s = property("tock_csv_sepearator", "~")
+    val s = property("tock_csv_sepearator", ";")
     val i18n: I18nDAO  by injector.instance()
 
     fun exportCsv(namespace: String): String {
@@ -37,9 +37,9 @@ object I18nExport {
                         .flatMap { l ->
                             l.i18n.sortedWith(compareBy({ it.locale.language }, { it.interfaceType }))
                                     .map { i ->
-                                        "${i.label}$s${l.category}$s${i.locale}$s${i.interfaceType}$s${l._id}$s${i.validated}$s${i.alternatives.joinToString(s)}"
+                                        "\"${i.label.replace("\"", "\"\"")}\"$s${l.category}$s${i.locale}$s${i.interfaceType}$s${l._id}$s${i.validated}$s${i.alternatives.joinToString(s) { "\"${it.replace("\"", "\"\"")}\"" }}"
                                     }
                         }
-                        .joinToString("\n")
+                        .joinToString("\r\n")
     }
 }
