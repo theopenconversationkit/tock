@@ -20,6 +20,8 @@ private fun findProperty(name: String): String? {
     return System.getProperty(name) ?: System.getenv(name)
 }
 
+fun propertyExists(name: String): Boolean = findProperty(name) != null
+
 fun property(name: String, defaultValue: String): String = findProperty(name) ?: defaultValue
 
 fun intProperty(name: String, defaultValue: Int): Int = findProperty(name)?.toInt() ?: defaultValue

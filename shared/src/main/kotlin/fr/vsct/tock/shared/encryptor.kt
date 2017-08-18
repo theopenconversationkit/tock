@@ -26,7 +26,7 @@ private val textEncryptor: BasicTextEncryptor by lazy {
             .apply {
                 property("tock_encrypt_pass", "").apply {
                     if (isBlank()) {
-                        if(devEnvironment) {
+                        if (devEnvironment) {
                             setPassword("dev")
                         } else {
                             error("no tock_encrypt_pass set")
@@ -37,6 +37,8 @@ private val textEncryptor: BasicTextEncryptor by lazy {
                 }
             }
 }
+
+val encryptionEnabled: Boolean = propertyExists("tock_encrypt_pass")
 
 fun encrypt(s: String): String {
     return textEncryptor.encrypt(s)

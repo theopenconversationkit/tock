@@ -35,13 +35,18 @@ import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserState
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.shared.decrypt
+import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.shared.defaultZoneId
 import fr.vsct.tock.shared.encrypt
+import fr.vsct.tock.shared.encryptionEnabled
 import java.time.Instant
+import java.time.ZoneId
+import java.util.Locale
 
 internal class UserTimelineCol(
         val _id: String,
         val playerId: PlayerId,
-        val userPreferences: UserPreferences,
+        val userPreferences: UserPreferencesWrapper,
         val userState: UserStateWrapper,
         val applicationIds: MutableSet<String> = mutableSetOf(),
         var lastActionText: String? = null,
@@ -51,7 +56,7 @@ internal class UserTimelineCol(
     constructor(newTimeline: UserTimeline, oldTimeline: UserTimelineCol?) : this(
             newTimeline.playerId.id,
             newTimeline.playerId,
-            newTimeline.userPreferences,
+            UserPreferencesWrapper(newTimeline.userPreferences),
             UserStateWrapper(newTimeline.userState)
     ) {
         //register last action
@@ -77,7 +82,7 @@ internal class UserTimelineCol(
     fun toUserTimeline(): UserTimeline {
         return UserTimeline(
                 playerId,
-                userPreferences,
+                userPreferences.toUserPreferences(),
                 userState.toUserState()
         )
     }
@@ -86,12 +91,52 @@ internal class UserTimelineCol(
         return UserReport(
                 playerId,
                 applicationIds,
-                userPreferences,
+                userPreferences.toUserPreferences(),
                 userState.toUserState(),
                 lastUpdateDate,
                 lastActionText,
                 lastUserActionDate
         )
+    }
+
+    data class UserPreferencesWrapper(var firstName: String? = null,
+                                      var lastName: String? = null,
+                                      var email: String? = null,
+                                      var timezone: ZoneId = defaultZoneId,
+                                      var locale: Locale = defaultLocale,
+                                      var picture: String? = null,
+                                      var gender: String? = null,
+                                      /**
+                                       * Is it a test user?
+                                       */
+                                      var test: Boolean = false,
+                                      val encrypted: Boolean = false) {
+
+        constructor(pref: UserPreferences) : this(
+                pref.firstName?.let { if (encryptionEnabled) encrypt(it) else it },
+                pref.lastName?.let { if (encryptionEnabled) encrypt(it) else it },
+                pref.email?.let { if (encryptionEnabled) encrypt(it) else it },
+                pref.timezone,
+                pref.locale,
+                pref.picture?.let { if (encryptionEnabled) encrypt(it) else it },
+                pref.gender?.let { if (encryptionEnabled) encrypt(it) else it },
+                pref.test,
+                encryptionEnabled
+        )
+
+        fun toUserPreferences(): UserPreferences {
+            return UserPreferences(
+                    firstName?.let { if (encrypted) decrypt(it) else it },
+                    lastName?.let { if (encrypted) decrypt(it) else it },
+                    email?.let { if (encrypted) decrypt(it) else it },
+                    timezone,
+                    locale,
+                    picture?.let { if (encrypted) decrypt(it) else it },
+                    gender?.let { if (encrypted) decrypt(it) else it },
+                    test
+            )
+        }
+
     }
 
     class UserStateWrapper(val creationDate: Instant = Instant.now(),
