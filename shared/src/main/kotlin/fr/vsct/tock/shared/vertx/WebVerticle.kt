@@ -105,8 +105,8 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
     protected val server: HttpServer by lazy {
         vertx.createHttpServer(
                 HttpServerOptions()
-                        .setCompressionSupported(verticleBooleanProperty("compression_supported", true))
-                        .setDecompressionSupported(verticleBooleanProperty("compression_supported", true))
+                        .setCompressionSupported(verticleBooleanProperty("tock_vertx_compression_supported", true))
+                        .setDecompressionSupported(verticleBooleanProperty("tock_vertx_compression_supported", true))
         )
     }
 
