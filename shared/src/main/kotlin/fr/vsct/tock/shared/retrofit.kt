@@ -23,11 +23,16 @@ import mu.KotlinLogging
 import okhttp3.Credentials
 import okhttp3.Headers
 import okhttp3.Interceptor
+import okhttp3.MediaType
 import okhttp3.OkHttpClient
 import okhttp3.Protocol
+import okhttp3.RequestBody
 import okhttp3.Response
 import okhttp3.internal.http.HttpHeaders
 import okio.Buffer
+import okio.BufferedSink
+import okio.GzipSink
+import okio.Okio
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.EOFException
@@ -35,13 +40,18 @@ import java.nio.charset.StandardCharsets.UTF_8
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
+
 inline fun <reified T : Any> Retrofit.create(): T = create(T::class.java)
 
 fun retrofitBuilderWithTimeoutAndLogger(
         ms: Long,
         logger: KLogger = KotlinLogging.logger {},
         level: Level = Level.BODY,
-        interceptors: List<Interceptor> = emptyList()
+        interceptors: List<Interceptor> = emptyList(),
+        /**
+         * Gzip the request for servers that support it.
+         */
+        requestGZipEncoding: Boolean = false
 ): Retrofit.Builder
         = OkHttpClient.Builder()
         .readTimeout(ms, MILLISECONDS)
@@ -51,6 +61,10 @@ fun retrofitBuilderWithTimeoutAndLogger(
             interceptors.forEach { addInterceptor(it) }
         }
         .addInterceptor(LoggingInterceptor(logger, level))
+        .apply {
+            takeIf { requestGZipEncoding }
+                    ?.addInterceptor(GzipRequestInterceptor())
+        }
         .build()
         .let {
             Retrofit.Builder().client(it)
@@ -73,6 +87,43 @@ fun basicAuthInterceptor(login: String, password: String): Interceptor {
 
 fun Retrofit.Builder.addJacksonConverter(objectMapper: ObjectMapper = mapper): Retrofit.Builder = run {
     addConverterFactory(JacksonConverterFactory.create(objectMapper))
+}
+
+
+/** This interceptor compresses the HTTP request body. Many webservers can't handle this!  */
+private class GzipRequestInterceptor : Interceptor {
+
+    override fun intercept(chain: Interceptor.Chain): Response {
+        val originalRequest = chain.request()
+        val body = originalRequest.body()
+        if (body == null || originalRequest.header("Content-Encoding") != null) {
+            return chain.proceed(originalRequest)
+        }
+
+        val compressedRequest = originalRequest.newBuilder()
+                .header("Content-Encoding", "gzip")
+                .method(originalRequest.method(), gzip(body))
+                .build()
+        return chain.proceed(compressedRequest)
+    }
+
+    private fun gzip(body: RequestBody): RequestBody {
+        return object : RequestBody() {
+            override fun contentType(): MediaType? {
+                return body.contentType()
+            }
+
+            override fun contentLength(): Long {
+                return -1 // We don't know the compressed length in advance!
+            }
+
+            override fun writeTo(sink: BufferedSink) {
+                val gzipSink = Okio.buffer(GzipSink(sink))
+                body.writeTo(gzipSink)
+                gzipSink.close()
+            }
+        }
+    }
 }
 
 //copied from okhttp3.logging.HttpLogginginterceptor
