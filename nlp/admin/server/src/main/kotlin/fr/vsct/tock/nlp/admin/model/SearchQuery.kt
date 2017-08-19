@@ -25,9 +25,19 @@ import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 data class SearchQuery(
         val search: String?,
         val intentId: String?,
-        val status: Set<ClassifiedSentenceStatus> = emptySet()) : PaginatedQuery() {
+        val status: Set<ClassifiedSentenceStatus> = emptySet(),
+        val entityType: String? = null,
+        val entityRole: String? = null) : PaginatedQuery() {
 
     fun toSentencesQuery(applicationId: String): SentencesQuery {
-        return SentencesQuery(applicationId, language, start, size, search, intentId, status)
+        return SentencesQuery(
+                applicationId,
+                language, start,
+                size,
+                search,
+                intentId,
+                status,
+                entityType = entityType,
+                entityRole = entityRole)
     }
 }

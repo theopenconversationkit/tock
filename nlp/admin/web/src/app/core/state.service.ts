@@ -82,7 +82,17 @@ export class StateService implements AuthListener {
   }
 
   entityTypesSortedByName(): EntityType[] {
-    return this.entityTypes.sort((e1, e2) => e1.simpleName().localeCompare(e2.simpleName()));
+    return this.entityTypes ? this.entityTypes.sort((e1, e2) => e1.simpleName().localeCompare(e2.simpleName())) : this.entityTypes;
+  }
+
+  entityRoles(): string[] {
+    const roles = new Set();
+    this.currentApplication.intents.forEach(
+      intent => intent.entities.forEach(
+        entity => roles.add(entity.role)
+      )
+    );
+    return Array.from(roles.values()).sort();
   }
 
   removeEntityTypeByName(name: string) {

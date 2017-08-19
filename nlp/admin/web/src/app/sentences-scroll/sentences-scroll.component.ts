@@ -47,7 +47,9 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> {
       query.size,
       this.filter.search,
       this.filter.intentId,
-      this.filter.status));
+      this.filter.status,
+      !this.filter.entityType || this.filter.entityType.length === 0 ? null : this.filter.entityType,
+      !this.filter.entityRole || this.filter.entityRole.length === 0 ? null : this.filter.entityRole));
   }
 
 
@@ -59,10 +61,12 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> {
 export class SentenceFilter {
   constructor(public search?: string,
               public intentId?: string,
-              public status?: SentenceStatus[]) {
+              public status?: SentenceStatus[],
+              public entityType?: string,
+              public entityRole?: string) {
   }
 
   clone(): SentenceFilter {
-    return new SentenceFilter(this.search, this.intentId, this.status);
+    return new SentenceFilter(this.search, this.intentId, this.status, this.entityType, this.entityRole);
   }
 }

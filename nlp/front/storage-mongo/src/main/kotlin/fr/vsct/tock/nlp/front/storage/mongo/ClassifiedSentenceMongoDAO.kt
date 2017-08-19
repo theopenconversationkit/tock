@@ -143,7 +143,9 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                             "'language':${language.json}",
                             if (search.isNullOrBlank()) null else if (query.onlyExactMatch) "'text':${search!!.json}" else "'fullText':/${search!!.trim()}/i",
                             if (intentId.isNullOrBlank()) null else "'classification.intentId':${intentId!!.json}",
-                            if (filterStatus.isEmpty()) null else filterStatus
+                            if (filterStatus.isEmpty()) null else filterStatus,
+                            if (entityType == null) null else "'classification.entities.type':${entityType!!.json}",
+                            if (entityRole == null) null else "'classification.entities.role':${entityRole!!.json}"
                     ).joinToString(",", "{", "}")
             val count = col.count(filter)
             if (count > start) {

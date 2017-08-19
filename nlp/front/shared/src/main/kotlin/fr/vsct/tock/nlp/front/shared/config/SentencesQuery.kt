@@ -29,5 +29,7 @@ data class SentencesQuery(val applicationId: String,
                           val intentId: String? = null,
                           val status: Set<ClassifiedSentenceStatus> = emptySet(),
                           val notStatus: ClassifiedSentenceStatus? = ClassifiedSentenceStatus.deleted,
-                          val onlyExactMatch: Boolean = false) {
+                          val onlyExactMatch: Boolean = false,
+                          val entityType: String? = null,
+                          val entityRole: String? = null) {
 }

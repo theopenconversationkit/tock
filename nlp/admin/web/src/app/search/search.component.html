@@ -21,12 +21,25 @@
         <md-input-container class="search-input">
           <input mdInput placeholder="Search sentences" [(ngModel)]="filter.search" (keyup.enter)="search()">
         </md-input-container>
+        <md-icon color="primary" md-tooltip="Search support regexp (PCRE format)">info</md-icon>
         <md-select placeholder="Intent" [(ngModel)]="filter.intentId" (change)="search()">
           <md-option value="-1">All</md-option>
           <md-option *ngFor="let intent of state.currentApplication.intents" [value]="intent._id">
             {{intent.name}}
           </md-option>
           <md-option value="unknown">Unknown</md-option>
+        </md-select>
+        <md-select placeholder="Entity Type" [(ngModel)]="filter.entityType" (change)="search()">
+          <md-option value="">All</md-option>
+          <md-option *ngFor="let e of state.entityTypesSortedByName()" [value]="e.name">
+            {{e.qualifiedName(state.user)}}
+          </md-option>
+        </md-select>
+        <md-select placeholder="Entity Role" [(ngModel)]="filter.entityRole" (change)="search()">
+          <md-option value="">All</md-option>
+          <md-option *ngFor="let r of state.entityRoles()" [value]="r">
+            {{r}}
+          </md-option>
         </md-select>
         <md-select placeholder="Status" [(ngModel)]="status" (change)="search()">
           <md-option value="">All</md-option>
