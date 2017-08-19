@@ -61,6 +61,7 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
                         OkHttpClient.Builder()
                                 .readTimeout(timeout, TimeUnit.MILLISECONDS)
                                 .connectTimeout(timeout, TimeUnit.MILLISECONDS)
+                                .writeTimeout(timeout, TimeUnit.MILLISECONDS)
                                 .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
                                 .build()
                 )

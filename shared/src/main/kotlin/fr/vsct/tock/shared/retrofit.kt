@@ -46,6 +46,7 @@ fun retrofitBuilderWithTimeoutAndLogger(
         = OkHttpClient.Builder()
         .readTimeout(ms, MILLISECONDS)
         .connectTimeout(ms, MILLISECONDS)
+        .writeTimeout(ms, MILLISECONDS)
         .apply {
             interceptors.forEach { addInterceptor(it) }
         }
