@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot
+package fr.vsct.tock.bot.test
 
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.messenger.messengerConnectorType

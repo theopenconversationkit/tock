@@ -39,6 +39,7 @@
         <module>storage-mongo</module>
 
         <module>toolkit</module>
+        <module>test</module>
 
         <module>admin</module>
     </modules>

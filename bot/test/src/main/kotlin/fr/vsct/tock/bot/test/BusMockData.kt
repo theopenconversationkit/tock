@@ -14,24 +14,24 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot
+package fr.vsct.tock.bot.test
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.messenger.messengerConnectorType
-import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.action.ActionSignificance
 
 /**
- * The actions sent by the mocked bus.
+ *
  */
-data class BotBusMockLog(val action: Action, val delay: Long) {
+internal data class BusMockData(
+        var currentDelay: Long = 0,
+        val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf(),
+        val contextMap: MutableMap<String, Any> = mutableMapOf(),
+        var significance: ActionSignificance = ActionSignificance.normal) {
 
-    fun message(connectorType: ConnectorType): ConnectorMessage?
-            = (action as SendSentence).message(connectorType)
+    fun addMessage(message: ConnectorMessage) {
+        connectorMessages.put(message.connectorType, message)
+    }
 
-    fun messenger() = message(messengerConnectorType)
-
-    fun text(): String? = (action as SendSentence).text
-
+    fun getMessage(type: ConnectorType): ConnectorMessage? = connectorMessages[type]
 }
