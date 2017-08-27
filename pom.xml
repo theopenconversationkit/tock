@@ -31,7 +31,7 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.1.3-2</kotlin>
+        <kotlin>1.1.4-2</kotlin>
 
         <slf4j>1.7.25</slf4j>
         <logback>1.2.3</logback>
@@ -44,7 +44,7 @@
         <vertx>3.4.2</vertx>
         <retrofit>2.3.0</retrofit>
         <okhttp>3.8.1</okhttp>
-        <guava>22.0</guava>
+        <guava>23.0</guava>
         <jasypt>1.9.2</jasypt>
 
         <junit>4.12</junit>
@@ -55,8 +55,8 @@
         <plugin.release>2.5.3</plugin.release>
         <plugin.gpg>1.6</plugin.gpg>
         <plugin.nexus-staging>1.6.8</plugin.nexus-staging>
-        <plugin.dokka>0.9.14</plugin.dokka>
-        <plugin.assembly>3.0.0</plugin.assembly>
+        <plugin.dokka>0.9.15</plugin.dokka>
+        <plugin.assembly>3.1.0</plugin.assembly>
         <plugin.frontend>1.5</plugin.frontend>
         <plugin.clean>3.0.0</plugin.clean>
         <plugin.jar>3.0.2</plugin.jar>
