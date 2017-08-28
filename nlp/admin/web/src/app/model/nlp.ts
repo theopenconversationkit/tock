@@ -16,6 +16,7 @@
 
 import {ApplicationScopedQuery, JsonUtils, PaginatedQuery} from "./commons";
 import {User} from "./auth";
+import {Intent} from "./application";
 
 export class EntityDefinition {
 
@@ -96,22 +97,30 @@ export class Sentence {
               public updateDate: Date) {
   }
 
-  statusDisplayed() : string {
-    switch(this.status) {
-      case SentenceStatus.deleted : return "Deleted";
-      case SentenceStatus.inbox : return "Inbox";
-      case SentenceStatus.model : return "Included in model";
-      case SentenceStatus.validated : return "Validated";
+  statusDisplayed(): string {
+    switch (this.status) {
+      case SentenceStatus.deleted :
+        return "Deleted";
+      case SentenceStatus.inbox :
+        return "Inbox";
+      case SentenceStatus.model :
+        return "Included in model";
+      case SentenceStatus.validated :
+        return "Validated";
     }
     return "unknown";
   }
 
-  statusColor() : string {
-    switch(this.status) {
-      case SentenceStatus.deleted : return "red";
-      case SentenceStatus.inbox : return "lightblue";
-      case SentenceStatus.model : return "lightgreen";
-      case SentenceStatus.validated : return "mediumspringgreen ";
+  statusColor(): string {
+    switch (this.status) {
+      case SentenceStatus.deleted :
+        return "red";
+      case SentenceStatus.inbox :
+        return "lightblue";
+      case SentenceStatus.model :
+        return "lightgreen";
+      case SentenceStatus.validated :
+        return "mediumspringgreen ";
     }
     return "orange";
   }
@@ -353,8 +362,8 @@ export class SearchQuery extends PaginatedQuery {
               public search?: string,
               public intentId?: string,
               public status?: SentenceStatus[],
-              public entityType?:string,
-              public entityRole?:string) {
+              public entityType?: string,
+              public entityRole?: string) {
     super(namespace, applicationName, language, start, size)
   }
 }
@@ -528,6 +537,20 @@ export function qualifiedNameWithoutRole(user: User, type: string): string {
 
 export function entityNameFromQualifiedName(qualifiedName: string): string {
   return qualifiedName.split(":")[1];
+}
+
+export function getRoles(intents: Intent[], entityType?: string): string[] {
+  const roles = new Set();
+  intents.forEach(
+    intent => intent.entities.forEach(
+      entity => {
+        if (!entityType || entityType.length === 0 || entity.entityTypeName === entityType) {
+          roles.add(entity.role);
+        }
+      }
+    )
+  );
+  return Array.from(roles.values()).sort();
 }
 
 

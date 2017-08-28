@@ -15,7 +15,7 @@
  */
 
 import {EventEmitter, Injectable} from "@angular/core";
-import {Application} from "../model/application";
+import {Application, Intent} from "../model/application";
 import {AuthService} from "./auth/auth.service";
 import {AuthListener} from "./auth/auth.listener";
 import {AuthenticateResponse, User} from "../model/auth";
@@ -23,6 +23,8 @@ import {SettingsService} from "./settings.service";
 import {ApplicationScopedQuery, Entry} from "../model/commons";
 import {environment} from "../../environments/environment";
 import {EntityType, NlpEngineType} from "../model/nlp";
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {Observable} from "rxjs/Observable";
 
 @Injectable()
 export class StateService implements AuthListener {
@@ -35,7 +37,7 @@ export class StateService implements AuthListener {
 
   user: User;
   applications: Application[];
-  entityTypes: EntityType[];
+  entityTypes: BehaviorSubject<EntityType[]> = new BehaviorSubject([]);
 
   currentApplication: Application;
   currentLocale: string = StateService.DEFAULT_LOCALE;
@@ -77,27 +79,22 @@ export class StateService implements AuthListener {
     this.currentLocaleEmitter.emit(locale);
   }
 
+  findIntentById(id: string): Intent {
+    return this.currentApplication.intents.find(i => i._id === id);
+  }
+
   findEntityTypeByName(name: string): EntityType {
-    return this.entityTypes.find(e => e.name === name);
+    return this.entityTypes.getValue().find(e => e.name === name);
   }
 
-  entityTypesSortedByName(): EntityType[] {
-    return this.entityTypes ? this.entityTypes.sort((e1, e2) => e1.simpleName().localeCompare(e2.simpleName())) : this.entityTypes;
-  }
-
-  entityRoles(): string[] {
-    const roles = new Set();
-    this.currentApplication.intents.forEach(
-      intent => intent.entities.forEach(
-        entity => roles.add(entity.role)
-      )
-    );
-    return Array.from(roles.values()).sort();
+  entityTypesSortedByName(): Observable<EntityType[]> {
+    return this.entityTypes.map(e => e.sort((e1, e2) => e1.simpleName().localeCompare(e2.simpleName())));
   }
 
   removeEntityTypeByName(name: string) {
     const entityToRemove = this.findEntityTypeByName(name);
-    this.entityTypes.splice(this.entityTypes.indexOf(entityToRemove), 1)
+    const entities = this.entityTypes.getValue().slice(0);
+    this.entityTypes.next(entities.splice(entities.indexOf(entityToRemove), 1));
   }
 
   localeName(code: string): string {

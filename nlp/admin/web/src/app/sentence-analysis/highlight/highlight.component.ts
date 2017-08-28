@@ -141,7 +141,9 @@ export class HighlightComponent implements OnInit, OnChanges {
             if (e) {
               const entity = new EntityDefinition(e.name, role);
               this.intent.addEntity(entity);
-              this.state.entityTypes.push(e);
+              const entities = this.state.entityTypes.getValue().slice(0);
+              entities.push(e);
+              this.state.entityTypes.next(entities);
               this.nlp.saveIntent(this.intent).subscribe(_ => {
                   this.onSelect(entity);
                   this.snackBar.open(`Entity Type ${entity.qualifiedRole} added`, "Entity added", {duration: 1000})

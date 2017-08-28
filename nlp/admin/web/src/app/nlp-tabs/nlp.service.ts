@@ -40,7 +40,7 @@ export class NlpService implements OnDestroy {
   }
 
   resetConfiguration() {
-    this.getEntityTypes().subscribe(types => this.state.entityTypes = types);
+    this.getEntityTypes().subscribe(types => this.state.entityTypes.next(types));
   }
 
   parse(parseQuery: ParseQuery): Observable<Sentence> {

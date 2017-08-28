@@ -16,7 +16,7 @@
 
 import {Component, OnInit, ViewChild} from "@angular/core";
 import {SentenceFilter, SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.component";
-import {SentenceStatus} from "../model/nlp";
+import {EntityType, getRoles, SentenceStatus} from "../model/nlp";
 import {StateService} from "../core/state.service";
 
 @Component({
@@ -28,6 +28,8 @@ export class SearchComponent implements OnInit {
 
   filter: SentenceFilter = new SentenceFilter();
   status: SentenceStatus;
+  entityTypes: EntityType[];
+  entityRoles: string[];
 
   @ViewChild(SentencesScrollComponent) scroll;
 
@@ -35,6 +37,24 @@ export class SearchComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.fillEntitiesFilter();
+  }
+
+  private fillEntitiesFilter() {
+    this.state.entityTypesSortedByName()
+      .subscribe(entities => {
+          if (!this.filter.intentId || this.filter.intentId === "-1") {
+            this.entityTypes = entities;
+            this.entityRoles = getRoles(this.state.currentApplication.intents, this.filter.entityType);
+          } else {
+            const intent = this.state.findIntentById(this.filter.intentId);
+            this.entityTypes =
+              entities.filter(
+                e => intent.entities.some(intentEntity => intentEntity.entityTypeName === e.name))
+            this.entityRoles = getRoles([intent], this.filter.entityType);
+          }
+        }
+      );
   }
 
   search() {
@@ -46,6 +66,8 @@ export class SearchComponent implements OnInit {
     if (this.filter.intentId === "-1") {
       this.filter.intentId = null;
     }
+    this.fillEntitiesFilter();
+
     if (this.filter.search) {
       this.filter.search = this.filter.search.trim()
     }

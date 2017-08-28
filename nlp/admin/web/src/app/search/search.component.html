@@ -29,15 +29,15 @@
           </md-option>
           <md-option value="unknown">Unknown</md-option>
         </md-select>
-        <md-select placeholder="Entity Type" [(ngModel)]="filter.entityType" (change)="search()">
+        <md-select *ngIf="entityTypes" placeholder="Entity Type" [(ngModel)]="filter.entityType" (change)="search()">
           <md-option value="">All</md-option>
-          <md-option *ngFor="let e of state.entityTypesSortedByName()" [value]="e.name">
+          <md-option *ngFor="let e of entityTypes" [value]="e.name">
             {{e.qualifiedName(state.user)}}
           </md-option>
         </md-select>
-        <md-select placeholder="Entity Role" [(ngModel)]="filter.entityRole" (change)="search()">
+        <md-select *ngIf="entityRoles" placeholder="Entity Role" [(ngModel)]="filter.entityRole" (change)="search()">
           <md-option value="">All</md-option>
-          <md-option *ngFor="let r of state.entityRoles()" [value]="r">
+          <md-option *ngFor="let r of entityRoles" [value]="r">
             {{r}}
           </md-option>
         </md-select>
