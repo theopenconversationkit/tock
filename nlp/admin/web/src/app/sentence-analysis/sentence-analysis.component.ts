@@ -34,6 +34,7 @@ export class SentenceAnalysisComponent implements OnInit {
   @Input() @Output() sentence: Sentence;
   @Input() displayArchiveButton: boolean = true;
   @Input() displayProbabilities: boolean = false;
+  @Input() displayStatus: boolean = false;
   @Output() closed = new EventEmitter();
   @Input() displayEntities: Boolean = true;
 

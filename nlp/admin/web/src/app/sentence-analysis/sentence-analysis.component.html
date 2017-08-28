@@ -34,6 +34,9 @@
           {{state.localeName(l)}}
         </md-option>
       </md-select>
+      <span *ngIf="displayStatus" class="status" [style.background]="sentence.statusColor()">
+        {{sentence.statusDisplayed()}}
+      </span>
       <span *ngIf="displayProbabilities" class="probability">
         <span *ngIf="displayProbabilities && sentence.classification.intentId && sentence.classification.hasIntentProbability()"
               md-tooltip="intent probability">

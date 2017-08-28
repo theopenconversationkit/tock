@@ -96,6 +96,26 @@ export class Sentence {
               public updateDate: Date) {
   }
 
+  statusDisplayed() : string {
+    switch(this.status) {
+      case SentenceStatus.deleted : return "Deleted";
+      case SentenceStatus.inbox : return "Inbox";
+      case SentenceStatus.model : return "Included in model";
+      case SentenceStatus.validated : return "Validated";
+    }
+    return "unknown";
+  }
+
+  statusColor() : string {
+    switch(this.status) {
+      case SentenceStatus.deleted : return "red";
+      case SentenceStatus.inbox : return "lightblue";
+      case SentenceStatus.model : return "lightgreen";
+      case SentenceStatus.validated : return "mediumspringgreen ";
+    }
+    return "orange";
+  }
+
   clone(): Sentence {
     return new Sentence(this.text, this.language, this.applicationId, this.status, this.classification, this.creationDate, this.updateDate);
   }

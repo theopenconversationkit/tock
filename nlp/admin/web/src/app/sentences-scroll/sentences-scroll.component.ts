@@ -32,11 +32,11 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> {
   @Input() filter: SentenceFilter;
   @Input() displayArchiveButton: boolean = true;
   @Input() displayProbabilities: boolean = false;
+  @Input() displayStatus: boolean = false;
 
   constructor(state: StateService, private nlp: NlpService) {
     super(state);
   }
-
 
   search(query: PaginatedQuery): Observable<PaginatedResult<Sentence>> {
     return this.nlp.searchSentences(new SearchQuery(

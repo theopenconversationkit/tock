@@ -47,3 +47,8 @@
 .otherIntents {
   float:right;
 }
+
+.status {
+  border-radius: 25px;
+  padding: 8px;
+}
