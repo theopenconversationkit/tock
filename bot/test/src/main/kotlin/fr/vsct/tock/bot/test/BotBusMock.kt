@@ -112,6 +112,7 @@ open class BotBusMock(override val userTimeline: UserTimeline,
         if (action is SendSentence) {
             action.messages.addAll(mockData.connectorMessages.values)
         }
+        mockData.clear()
         action.state.testEvent = userPreferences.test
 
         story.actions.add(action)

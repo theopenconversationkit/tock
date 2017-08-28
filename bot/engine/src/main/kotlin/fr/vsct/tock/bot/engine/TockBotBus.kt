@@ -96,6 +96,7 @@ internal class TockBotBus(
         if (action is SendSentence) {
             action.messages.addAll(context.connectorMessages.values)
         }
+        context.clear()
         action.state.testEvent = userPreferences.test
 
         story.actions.add(action)

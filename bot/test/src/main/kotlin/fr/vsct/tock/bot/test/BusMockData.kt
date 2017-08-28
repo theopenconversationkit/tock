@@ -29,6 +29,11 @@ internal data class BusMockData(
         val contextMap: MutableMap<String, Any> = mutableMapOf(),
         var significance: ActionSignificance = ActionSignificance.normal) {
 
+    fun clear() {
+        connectorMessages.clear()
+        significance = ActionSignificance.normal
+    }
+
     fun addMessage(message: ConnectorMessage) {
         connectorMessages.put(message.connectorType, message)
     }
