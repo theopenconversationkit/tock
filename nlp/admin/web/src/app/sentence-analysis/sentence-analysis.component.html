@@ -25,6 +25,7 @@
         <md-option *ngFor="let intent of state.currentApplication.intents" [value]="intent._id">
           {{intent.name}}
         </md-option>
+        <md-option value="tock:unknown">unknown</md-option>
         <md-option value="newIntent">Create a new Intent</md-option>
       </md-select>
 
