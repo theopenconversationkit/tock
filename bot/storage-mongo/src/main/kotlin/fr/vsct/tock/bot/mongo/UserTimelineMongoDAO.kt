@@ -236,7 +236,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                             if (query.playerId == null) null else "'playerIds':${query.playerId!!.json}",
                             if (query.dialogId == null) null else "'_id':${query.dialogId!!.json}",
                             if (dialogIds.isEmpty()) null else "'_id':{\$in:${dialogIds.json}}",
-                            if (query.intentName.isNullOrBlank()) null else "'stories.actions.state.currentIntent.name':${query.intentName!!.json}"
+                            if (query.intentName.isNullOrBlank()) null else "'stories.currentIntent.name':${query.intentName!!.json}"
                     ).joinToString(",", "{$and:[", "]}") {
                         "{$it}"
                     }
