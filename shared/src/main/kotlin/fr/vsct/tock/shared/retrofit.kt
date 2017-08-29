@@ -60,11 +60,12 @@ fun retrofitBuilderWithTimeoutAndLogger(
         .apply {
             interceptors.forEach { addInterceptor(it) }
         }
-        .addInterceptor(LoggingInterceptor(logger, level))
         .apply {
             takeIf { requestGZipEncoding }
                     ?.addInterceptor(GzipRequestInterceptor())
         }
+        .addInterceptor(LoggingInterceptor(logger, level))
+
         .build()
         .let {
             Retrofit.Builder().client(it)
@@ -96,7 +97,9 @@ private class GzipRequestInterceptor : Interceptor {
     override fun intercept(chain: Interceptor.Chain): Response {
         val originalRequest = chain.request()
         val body = originalRequest.body()
-        if (body == null || originalRequest.header("Content-Encoding") != null) {
+        if (body == null
+                || originalRequest.header("Content-Encoding") != null
+                || body.contentLength() < 512) {
             return chain.proceed(originalRequest)
         }
 

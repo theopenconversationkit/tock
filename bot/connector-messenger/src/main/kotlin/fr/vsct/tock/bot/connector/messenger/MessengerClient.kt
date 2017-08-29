@@ -67,7 +67,9 @@ internal class MessengerClient(val secretKey: String) {
 
     init {
         val retrofit = retrofitBuilderWithTimeoutAndLogger(
-                longProperty("tock_messenger_request_timeout_ms", 30000), logger)
+                longProperty("tock_messenger_request_timeout_ms", 30000),
+                logger,
+                requestGZipEncoding = true)
                 .baseUrl("https://graph.facebook.com")
                 .addJacksonConverter()
                 .build()
@@ -81,7 +83,7 @@ internal class MessengerClient(val secretKey: String) {
     fun sendAction(token: String, actionRequest: ActionRequest): SendResponse? {
         return try {
             send(actionRequest, { graphApi.activateTyping(token, actionRequest).execute() })
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             //log and ignore
             logger.error(e)
             null
@@ -97,7 +99,7 @@ internal class MessengerClient(val secretKey: String) {
         return try {
             graphApi.getUserProfile(recipient.id!!, token, "first_name,last_name,profile_pic,locale,timezone,gender")
                     .execute().body() ?: defaultUserProfile()
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             logger.logError(e, requestTimerData)
             defaultUserProfile()
         } finally {
@@ -138,7 +140,7 @@ internal class MessengerClient(val secretKey: String) {
             } else {
                 return response.body() ?: throw ConnectorException("null body")
             }
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             logger.logError(e, requestTimerData)
             throw ConnectorException(e.message ?: "")
         } finally {
