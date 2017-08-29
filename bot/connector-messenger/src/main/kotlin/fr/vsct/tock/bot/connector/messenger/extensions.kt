@@ -149,16 +149,16 @@ fun BotBus.genericTemplate(elements: List<Element>, vararg quickReplies: QuickRe
 
 fun BotBus.attachment(attachmentUrl: String, type: AttachmentType, vararg quickReplies: QuickReply): AttachmentMessage {
     return when (type) {
-        AttachmentType.image -> image(attachmentUrl, *quickReplies)
-        AttachmentType.audio -> audio(attachmentUrl, *quickReplies)
-        AttachmentType.video -> video(attachmentUrl, *quickReplies)
+        AttachmentType.image -> cachedAttachment(attachmentUrl, AttachmentType.image, quickReplies = *quickReplies)
+        AttachmentType.audio -> cachedAttachment(attachmentUrl, AttachmentType.audio, quickReplies = *quickReplies)
+        AttachmentType.video -> cachedAttachment(attachmentUrl, AttachmentType.video, quickReplies = *quickReplies)
         else -> {
             error { "not supported attachment type $type" }
         }
     }
 }
 
-private fun BotBus.attachment(
+private fun BotBus.cachedAttachment(
         attachmentUrl: String,
         type: AttachmentType,
         useCache: Boolean = MessengerConfiguration.reuseAttachmentByDefault,
@@ -174,15 +174,15 @@ private fun BotBus.attachment(
 }
 
 fun BotBus.image(imageUrl: String, vararg quickReplies: QuickReply): AttachmentMessage {
-    return attachment(imageUrl, AttachmentType.image, quickReplies = *quickReplies)
+    return cachedAttachment(imageUrl, AttachmentType.image, quickReplies = *quickReplies)
 }
 
 fun BotBus.audio(audioUrl: String, vararg quickReplies: QuickReply): AttachmentMessage {
-    return attachment(audioUrl, AttachmentType.audio, quickReplies = *quickReplies)
+    return cachedAttachment(audioUrl, AttachmentType.audio, quickReplies = *quickReplies)
 }
 
 fun BotBus.video(videoUrl: String, vararg quickReplies: QuickReply): AttachmentMessage {
-    return attachment(videoUrl, AttachmentType.video, quickReplies = *quickReplies)
+    return cachedAttachment(videoUrl, AttachmentType.video, quickReplies = *quickReplies)
 }
 
 fun BotBus.text(text: CharSequence, vararg quickReplies: QuickReply): TextMessage {
