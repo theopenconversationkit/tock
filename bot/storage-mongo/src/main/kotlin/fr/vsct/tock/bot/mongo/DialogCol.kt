@@ -91,7 +91,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
         return DialogReport(
                 stories.flatMap { it.actions }
                         .map { it.toAction() }
-                        .mapNotNull {
+                        .map {
                             ActionReport(
                                     it.playerId,
                                     it.date,
