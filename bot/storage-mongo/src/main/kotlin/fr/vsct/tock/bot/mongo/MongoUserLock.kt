@@ -56,7 +56,7 @@ internal object MongoUserLock : UserLock {
                     col.updateOneById(lock._id, UserLock(userId, true))
                     true
                 } else {
-                    if (lock.date.plusSeconds(lockTimeout).isBefore(now())) {
+                    if (lock.date.plusMillis(lockTimeout).isBefore(now())) {
                         logger.warn { "lock user : $userId because lock date is too old" }
                         col.updateOneById(lock._id, UserLock(userId, true))
                         true
