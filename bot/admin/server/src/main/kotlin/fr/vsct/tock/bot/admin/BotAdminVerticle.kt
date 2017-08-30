@@ -39,7 +39,7 @@ import mu.KotlinLogging
 /**
  *
  */
-class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
+open class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
 
     val i18n: I18nDAO  by injector.instance()
 
