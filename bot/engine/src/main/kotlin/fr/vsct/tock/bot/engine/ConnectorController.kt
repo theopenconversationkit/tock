@@ -47,7 +47,7 @@ class ConnectorController internal constructor(
     companion object {
 
         private val logger = KotlinLogging.logger {}
-        private val maxLockedAttempts = intProperty("tock_bot_max_locked_attempts", 4)
+        private val maxLockedAttempts = intProperty("tock_bot_max_locked_attempts", 10)
         private val lockedAttemptsWaitInMs = longProperty("tock_bot_locked_attempts_wait_in_ms", 500L)
 
         internal fun register(connector: Connector,

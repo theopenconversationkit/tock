@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.mongo
 import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.longProperty
 import mu.KotlinLogging
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.findOneById
@@ -39,6 +40,8 @@ internal object MongoUserLock : UserLock {
 
     private val col = database.getCollection<UserLock>()
 
+    private val lockTimeout = longProperty("tock_bot_lock_timeout_in_ms", 5000)
+
     override fun lock(userId: String): Boolean {
         try {
             var lock = col.findOneById(userId)
@@ -51,15 +54,17 @@ internal object MongoUserLock : UserLock {
                     logger.debug { "lock user : $userId" }
                     col.updateOneById(lock._id, UserLock(userId, true))
                     true
-                } else if (lock.date.plusSeconds(30).isBefore(now())) {
-                    logger.warn { "lock user : $userId because lock date is too old" }
-                    col.updateOneById(lock._id, UserLock(userId, true))
-                    true
                 } else {
-                    false
+                    if (lock.date.plusSeconds(lockTimeout).isBefore(now())) {
+                        logger.warn { "lock user : $userId because lock date is too old" }
+                        col.updateOneById(lock._id, UserLock(userId, true))
+                        true
+                    } else {
+                        false
+                    }
                 }
             }
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             logger.error(e)
             return false
         }
@@ -74,7 +79,7 @@ internal object MongoUserLock : UserLock {
             } else {
                 logger.warn { "lock deleted??? : $userId" }
             }
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             logger.error(e)
         }
     }
@@ -82,7 +87,7 @@ internal object MongoUserLock : UserLock {
     fun deleteLock(userId: String) {
         try {
             col.deleteOneById(userId)
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             logger.error(e)
         }
     }
