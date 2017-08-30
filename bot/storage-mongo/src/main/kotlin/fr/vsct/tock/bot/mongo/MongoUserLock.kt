@@ -48,6 +48,7 @@ internal object MongoUserLock : UserLock {
             return if (lock == null) {
                 lock = UserLock(userId)
                 col.insertOne(lock)
+                logger.debug { "lock user : $userId" }
                 true
             } else {
                 if (!lock.locked) {
