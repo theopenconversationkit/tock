@@ -14,8 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, OnInit, ViewChild} from "@angular/core";
-import {MdInputContainer} from "@angular/material";
+import {Component, OnInit} from "@angular/core";
 import {AuthService} from "../auth.service";
 import {Router} from "@angular/router";
 
@@ -31,13 +30,11 @@ export class LoginComponent implements OnInit {
   errorMessage: string;
   sendLogin: boolean;
 
-  @ViewChild('emailInputContainer') emailInput: MdInputContainer;
 
   constructor(private authService: AuthService, private router: Router) {
   }
 
   ngOnInit(): void {
-    this.emailInput._focusInput();
   }
 
   onSubmit() {

@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {Component, ViewChild} from "@angular/core";
-import {MdInputContainer, MdSnackBar} from "@angular/material";
+import {Component, ElementRef, ViewChild} from "@angular/core";
+import {MdSnackBar} from "@angular/material";
 import {NlpService} from "tock-nlp-admin/src/app/nlp-tabs/nlp.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {NormalizeUtil} from "tock-nlp-admin/src/app/model/commons";
@@ -38,8 +38,8 @@ export class CreateBotIntentComponent {
 
   botConfigurationId: string;
 
-  @ViewChild('newSentenceContainer') newSentence: MdInputContainer;
-  @ViewChild('newReplyContainer') newReply: MdInputContainer;
+  @ViewChild('newSentence') newSentence: ElementRef;
+  @ViewChild('newReply') newReply: ElementRef;
 
   constructor(private nlp: NlpService,
               private state: StateService,
@@ -57,7 +57,7 @@ export class CreateBotIntentComponent {
       this.nlp.parse(new ParseQuery(app.namespace, app.name, language, v, true)).subscribe(sentence => {
         this.sentence = sentence;
         this.initIntentName(v);
-        setTimeout(_ => this.newReply._focusInput(), 100);
+        setTimeout(_ => this.newReply.nativeElement.focus(), 100);
       });
     }
   }
@@ -93,7 +93,7 @@ export class CreateBotIntentComponent {
       this.state.currentApplication.intents.push(intent);
       this.snackBar.open(`New answer saved for language ${this.state.currentLocale}`, "Answer Saved", {duration: 3000});
       this.onClose();
-      this.newSentence._focusInput();
+      this.newSentence.nativeElement.focus();
     });
   }
 

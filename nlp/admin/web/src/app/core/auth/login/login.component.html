@@ -23,20 +23,20 @@
     </p>
     <form (keydown.enter)="onSubmit()" (ngSubmit)="onSubmit()" #loginForm="ngForm">
       <p>
-        <md-input-container #emailInputContainer class="formInput">
+        <md-form-field #emailInputContainer class="formInput">
           <input mdInput placeholder="E-MAIL"
                  #emailInput name="emailInput"
-                 [(ngModel)]="email"
+                 [(ngModel)]="email" autofocus
                  ngDefaultControl required email>
-        </md-input-container>
+        </md-form-field>
       </p>
       <p>
-        <md-input-container class="formInput">
+        <md-form-field class="formInput">
           <input type="password"
                  [(ngModel)]="password"
                  #passwordInput name="passwordInput" mdInput placeholder="PASSWORD"
                  ngDefaultControl required>
-        </md-input-container>
+        </md-form-field>
       </p>
       <md-card-actions>
         <button md-raised-button color="primary" type="submit" [disabled]="!loginForm.form.valid">LOGIN</button>

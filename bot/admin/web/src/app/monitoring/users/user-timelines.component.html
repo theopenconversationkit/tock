@@ -21,13 +21,13 @@
     <md-card-content class="filter">
       <md-input-container>
         <input mdInput [mdDatepicker]="after" placeholder="Modified after" [(ngModel)]="filter.from" (change)="changeAfter()">
-        <button mdSuffix [mdDatepickerToggle]="after"></button>
+        <md-datepicker-toggle mdSuffix [for]="after"></md-datepicker-toggle>
       </md-input-container>
       <md-datepicker #after (selectedChanged)="changeAfter()"></md-datepicker>
 
       <md-input-container>
         <input mdInput [mdDatepicker]="before" placeholder="Modified before" [(ngModel)]="filter.to" (change)="changeBefore()">
-        <button mdSuffix [mdDatepickerToggle]="before"></button>
+        <md-datepicker-toggle mdSuffix [for]="before"></md-datepicker-toggle>
       </md-input-container>
       <md-datepicker #before (selectedChanged)="changeBefore()"></md-datepicker>
       &nbsp;
