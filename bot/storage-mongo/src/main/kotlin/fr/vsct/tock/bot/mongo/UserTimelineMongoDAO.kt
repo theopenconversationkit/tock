@@ -96,12 +96,16 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     override fun save(userTimeline: UserTimeline) {
         logger.debug { "start to save timeline $userTimeline" }
         val oldTimeline = userTimelineCol.findOneById(userTimeline.playerId.id)
+        logger.debug { "load old timeline $userTimeline" }
         val newTimeline = UserTimelineCol(userTimeline, oldTimeline)
+        logger.debug { "create new timeline $userTimeline" }
         userTimelineCol.save(newTimeline)
         logger.debug { "timeline saved $userTimeline" }
         val dialog = userTimeline.currentDialog()
         if (dialog != null) {
-            dialogCol.save(DialogCol(dialog, newTimeline))
+            val dialogToSave = DialogCol(dialog, newTimeline)
+            logger.debug { "dialog to save created $userTimeline" }
+            dialogCol.save(dialogToSave)
             logger.debug { "dialog saved $userTimeline" }
             executor.executeBlocking {
                 dialog.allActions().lastOrNull { it.playerId.type == PlayerType.user }

@@ -187,10 +187,14 @@ internal class UserTimelineCol(
 
     class FlagsDeserializer : JsonDeserializer<Map<String, TimeBoxedFlagWrapper>>() {
 
+        companion object {
+            val reference = object : TypeReference<Map<String, TimeBoxedFlagWrapper>>() {}
+        }
+
         override fun deserialize(jp: JsonParser, context: DeserializationContext): Map<String, TimeBoxedFlagWrapper> {
             val mapper = jp.getCodec()
             return if (jp.getCurrentToken() == JsonToken.START_OBJECT) {
-                mapper.readValue(jp, object : TypeReference<Map<String, TimeBoxedFlagWrapper>>() {})
+                mapper.readValue(jp, reference)
             } else {
                 //consume this stream
                 mapper.readTree<TreeNode>(jp)

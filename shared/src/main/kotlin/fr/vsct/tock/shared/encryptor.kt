@@ -16,11 +16,11 @@
 
 package fr.vsct.tock.shared
 
+import mu.KotlinLogging
 import org.jasypt.util.text.BasicTextEncryptor
 
-/**
- *
- */
+private val logger = KotlinLogging.logger {}
+
 private val textEncryptor: BasicTextEncryptor by lazy {
     BasicTextEncryptor()
             .apply {
@@ -35,6 +35,10 @@ private val textEncryptor: BasicTextEncryptor by lazy {
                         setPassword(this)
                     }
                 }
+                //warmup encryptor
+                logger.info { "initialize encryptor..." }
+                encrypt("test")
+                logger.info { "encryptor initialized" }
             }
 }
 

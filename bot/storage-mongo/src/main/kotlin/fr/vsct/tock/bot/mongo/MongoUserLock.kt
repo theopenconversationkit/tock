@@ -75,10 +75,10 @@ internal object MongoUserLock : UserLock {
         try {
             logger.debug { "release lock for user : $userId" }
             val lock = col.findOneById(userId)
-            if (lock != null) {
+            if (lock != null && lock.locked) {
                 col.updateOneById(userId, UserLock(userId, false))
             } else {
-                logger.warn { "lock deleted??? : $userId" }
+                logger.warn { "lock deleted or updated??? : $userId" }
             }
         } catch (e: Exception) {
             logger.error(e)
