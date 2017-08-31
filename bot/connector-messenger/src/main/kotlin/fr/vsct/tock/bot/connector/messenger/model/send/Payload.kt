@@ -24,4 +24,6 @@ import fr.vsct.tock.bot.engine.message.SentenceElement
 abstract class Payload {
 
     open fun toSentenceElement(): SentenceElement? = null
+
+    open fun obfuscate() : Payload = this
 }

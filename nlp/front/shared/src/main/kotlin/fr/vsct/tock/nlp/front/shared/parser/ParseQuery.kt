@@ -19,9 +19,9 @@ package fr.vsct.tock.nlp.front.shared.parser
 /**
  *
  */
-class ParseQuery(val queries: List<String>,
-                 val namespace: String,
-                 val applicationName: String,
-                 val context: QueryContext,
-                 val state: QueryState = QueryState.noState) {
+data class ParseQuery(val queries: List<String>,
+                      val namespace: String,
+                      val applicationName: String,
+                      val context: QueryContext,
+                      val state: QueryState = QueryState.noState) {
 }

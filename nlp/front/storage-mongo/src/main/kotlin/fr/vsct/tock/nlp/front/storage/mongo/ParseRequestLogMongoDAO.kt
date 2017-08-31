@@ -27,6 +27,7 @@ import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import fr.vsct.tock.shared.longProperty
+import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 import org.litote.kmongo.count
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.find
@@ -82,7 +83,11 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
     }
 
     override fun save(log: ParseRequestLog) {
-        col.insertOne(ParseRequestLogCol(log))
+        val savedLog = log.copy(
+                query = log.query.copy(queries = obfuscate(log.query.queries)),
+                result = log.result?.copy(retainedQuery = obfuscate(log.result?.retainedQuery) ?: "")
+        )
+        col.insertOne(ParseRequestLogCol(savedLog))
     }
 
     override fun search(query: ParseRequestLogQuery): ParseRequestLogQueryResult {

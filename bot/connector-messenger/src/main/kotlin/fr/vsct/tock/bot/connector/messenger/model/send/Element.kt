@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType.image
 import fr.vsct.tock.bot.engine.message.SentenceSubElement
 import fr.vsct.tock.shared.mapNotNullValues
+import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 
 data class Element(val title: String,
                    @JsonProperty("image_url") val imageUrl: String? = null,
@@ -37,5 +38,9 @@ data class Element(val title: String,
                         ?.let { listOf(fr.vsct.tock.bot.engine.message.Attachment(imageUrl, image)) }
                         ?: emptyList()
         )
+    }
+
+    fun obfuscate(): Element {
+        return Element(obfuscate(title)!!, imageUrl, obfuscate(subtitle), buttons)
     }
 }

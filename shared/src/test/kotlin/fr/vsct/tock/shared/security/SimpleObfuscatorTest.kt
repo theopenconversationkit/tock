@@ -14,27 +14,20 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.shared
+package fr.vsct.tock.shared.security
 
-import fr.vsct.tock.shared.security.decrypt
-import fr.vsct.tock.shared.security.encrypt
 import org.junit.Test
-import java.security.SecureRandom
 import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
+
 
 /**
  *
  */
-class EncryptorTest {
+class SimpleObfuscatorTest {
 
     @Test
-    fun testEncryptAndDecrypt() {
-        val s = String(SecureRandom().generateSeed(30))
-        val encrypted1 = encrypt(s)
-        assertEquals(s, decrypt(encrypted1))
-        val encrypted2 = encrypt(s)
-        assertEquals(s, decrypt(encrypted2))
-        assertNotEquals(encrypted1, encrypted2)
+    fun obfuscate_shouldUpdateText_WhenPatternFound() {
+        val obf = SimpleObfuscator("\\d{9}".toRegex(), "sososecret")
+        assertEquals("aze sososecret 223 sososecret ds", obf.obfuscate("aze 222777777 223 199999999 ds"))
     }
 }

@@ -19,6 +19,9 @@ package fr.vsct.tock.nlp.admin.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
+import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
+import fr.vsct.tock.shared.security.decrypt
+import fr.vsct.tock.shared.security.encrypt
 import java.time.Instant
 import java.time.Instant.now
 import java.util.Locale
@@ -32,31 +35,40 @@ data class SentenceReport(val text: String,
                           val creationDate: Instant,
                           val updateDate: Instant,
                           val status: ClassifiedSentenceStatus,
-                          val classification: ClassificationReport) {
+                          val classification: ClassificationReport,
+                          var key: String? = null) {
 
     constructor(query: ParseResult, language: Locale, applicationId: String, intentId: String?)
             : this(
-            query.retainedQuery,
+            obfuscate(query.retainedQuery)!!,
             language,
             applicationId,
             now(),
             now(),
             ClassifiedSentenceStatus.inbox,
-            ClassificationReport(query, intentId))
+            ClassificationReport(query, intentId)) {
+        if (text != query.retainedQuery) {
+            key = encrypt(query.retainedQuery)
+        }
+    }
 
     constructor(sentence: ClassifiedSentence) : this(
-            sentence.text,
+            obfuscate(sentence.text)!!,
             sentence.language,
             sentence.applicationId,
             sentence.creationDate,
             sentence.updateDate,
             sentence.status,
             ClassificationReport(sentence)
-    )
+    ) {
+        if (text != sentence.text) {
+            key = encrypt(sentence.text)
+        }
+    }
 
     fun toClassifiedSentence(): ClassifiedSentence {
         return ClassifiedSentence(
-                text,
+                if (key == null) text else decrypt(key!!),
                 language,
                 applicationId,
                 creationDate,

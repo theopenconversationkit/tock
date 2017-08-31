@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.shared.property
+import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.web.Router
@@ -45,6 +46,8 @@ class BotVerticle : WebVerticle(KotlinLogging.logger {}) {
     }
 
     override fun configure() {
+        initEncryptor()
+
         handlers.forEach { it.value.invoke(router) }
     }
 

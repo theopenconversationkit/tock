@@ -94,7 +94,8 @@ export class Sentence {
               public status: SentenceStatus,
               public classification: Classification,
               public creationDate: Date,
-              public updateDate: Date) {
+              public updateDate: Date,
+              public key?: string) {
   }
 
   statusDisplayed(): string {
@@ -126,7 +127,15 @@ export class Sentence {
   }
 
   clone(): Sentence {
-    return new Sentence(this.text, this.language, this.applicationId, this.status, this.classification, this.creationDate, this.updateDate);
+    return new Sentence(
+      this.text,
+      this.language,
+      this.applicationId,
+      this.status,
+      this.classification,
+      this.creationDate,
+      this.updateDate,
+      this.key);
   }
 
   entityValue(entity: ClassifiedEntity): string {

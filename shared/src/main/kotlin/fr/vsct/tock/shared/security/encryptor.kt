@@ -14,8 +14,11 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package fr.vsct.tock.shared.security
 
+import fr.vsct.tock.shared.devEnvironment
+import fr.vsct.tock.shared.property
+import fr.vsct.tock.shared.propertyExists
 import mu.KotlinLogging
 import org.jasypt.util.text.BasicTextEncryptor
 
@@ -35,10 +38,6 @@ private val textEncryptor: BasicTextEncryptor by lazy {
                         setPassword(this)
                     }
                 }
-                //warmup encryptor
-                logger.info { "initialize encryptor..." }
-                encrypt("test")
-                logger.info { "encryptor initialized" }
             }
 }
 
@@ -50,4 +49,14 @@ fun encrypt(s: String): String {
 
 fun decrypt(s: String): String {
     return textEncryptor.decrypt(s)
+}
+
+fun initEncryptor() {
+    if (encryptionEnabled) {
+        //warmup encryptor
+        logger.info { "initialize encryptor..." }
+        decrypt(encrypt("test"))
+        logger.info { "encryptor initialized" }
+    }
+    StringObfuscatorService.loadObfuscators()
 }

@@ -28,4 +28,8 @@ data class GenericPayload(val elements: List<Element>) : ModelPayload(PayloadTyp
                 subElements = elements.map { it.toSentenceSubElement() }
         )
     }
+
+    override fun obfuscate(): Payload {
+        return GenericPayload(elements.map { it.obfuscate() })
+    }
 }

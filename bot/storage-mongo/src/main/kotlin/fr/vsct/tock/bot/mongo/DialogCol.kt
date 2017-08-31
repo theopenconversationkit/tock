@@ -43,6 +43,7 @@ import fr.vsct.tock.bot.engine.nlp.NlpCallStats
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
+import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 import java.time.Instant
 import java.time.Instant.now
 
@@ -221,8 +222,8 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
 
         constructor(sentence: SendSentence) :
                 this(
-                        sentence.text,
-                        sentence.messages.map { AnyValueWrapper(it) },
+                        obfuscate(sentence.text),
+                        sentence.messages.map { AnyValueWrapper(it.obfuscate()) },
                         sentence.nlpStats) {
             assignFrom(sentence)
         }

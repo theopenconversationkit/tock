@@ -30,7 +30,7 @@ fun longProperty(name: String, defaultValue: Long): Long = findProperty(name)?.t
 
 fun booleanProperty(name: String, defaultValue: Boolean): Boolean = findProperty(name)?.toBoolean() ?: defaultValue
 
-fun listProperty(name: String, defaultValue: List<String>): List<String>
-        = findProperty(name)?.split(",") ?: defaultValue
+fun listProperty(name: String, defaultValue: List<String>, separator: String = ","): List<String>
+        = findProperty(name)?.split(separator) ?: defaultValue
 
 val devEnvironment: Boolean = property("tock_env", "dev") == "dev"

@@ -32,6 +32,7 @@ import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
 import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.name
+import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.BadRequestException
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.ext.auth.AuthProvider
@@ -53,6 +54,8 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
     fun configureServices() {
         val front = FrontClient
         val admin = AdminService
+
+        initEncryptor()
 
         blockingJsonGet("/applications") { context ->
             front.getApplications().filter {

@@ -16,13 +16,15 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
+import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 
 /**
  *
  */
 //TODO check 640 char text limit https://developers.facebook.com/docs/messenger-platform/send-api-reference/text-message
-class TextMessage(val text: String, quickReplies:List<QuickReply>? = null) : Message(quickReplies) {
+class TextMessage(val text: String, quickReplies: List<QuickReply>? = null) : Message(quickReplies) {
 
     override fun toSentenceElement(): SentenceElement? {
         return null
@@ -38,6 +40,10 @@ class TextMessage(val text: String, quickReplies:List<QuickReply>? = null) : Mes
         if (quickReplies != other.quickReplies) return false
 
         return true
+    }
+
+    override fun obfuscate(): ConnectorMessage {
+        return TextMessage(obfuscate(text)!!, quickReplies)
     }
 
     override fun hashCode(): Int {

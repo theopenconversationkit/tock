@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
+import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.audio
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.file
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.image
@@ -39,6 +40,16 @@ class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickRepl
                             ))
             )
             template -> attachment.payload.toSentenceElement()
+        }
+    }
+
+    override fun obfuscate(): ConnectorMessage {
+        return when (attachment.type) {
+            template -> AttachmentMessage(
+                    attachment.copy(payload = attachment.payload.obfuscate()),
+                    quickReplies
+            )
+            else -> this
         }
     }
 

@@ -34,11 +34,12 @@ import fr.vsct.tock.bot.engine.user.TimeBoxedFlag
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserState
 import fr.vsct.tock.bot.engine.user.UserTimeline
-import fr.vsct.tock.shared.decrypt
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.defaultZoneId
-import fr.vsct.tock.shared.encrypt
-import fr.vsct.tock.shared.encryptionEnabled
+import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
+import fr.vsct.tock.shared.security.decrypt
+import fr.vsct.tock.shared.security.encrypt
+import fr.vsct.tock.shared.security.encryptionEnabled
 import java.time.Instant
 import java.time.ZoneId
 import java.util.Locale
@@ -63,7 +64,7 @@ internal class UserTimelineCol(
         newTimeline.dialogs.lastOrNull()?.currentStory()?.actions?.lastOrNull { it.playerId.type == PlayerType.user }?.let {
             lastUserActionDate = it.date
             lastActionText = when (it) {
-                is SendSentence -> it.text
+                is SendSentence -> obfuscate(it.text)
                 is SendChoice -> "(click) ${it.intentName}"
                 is SendAttachment -> "(send) ${it.url}"
                 is SendLocation -> "(send user location)"

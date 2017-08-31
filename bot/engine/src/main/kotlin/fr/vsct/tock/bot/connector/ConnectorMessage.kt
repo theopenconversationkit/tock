@@ -33,4 +33,9 @@ interface ConnectorMessage {
      * @return the generic transformed element, null if unsupported
      */
     fun toSentenceElement(): SentenceElement?
+
+    /**
+     * Obfuscate the message - by default this method does nothing.
+     */
+    fun obfuscate() : ConnectorMessage = this
 }

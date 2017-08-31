@@ -14,27 +14,11 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.shared
-
-import fr.vsct.tock.shared.security.decrypt
-import fr.vsct.tock.shared.security.encrypt
-import org.junit.Test
-import java.security.SecureRandom
-import kotlin.test.assertEquals
-import kotlin.test.assertNotEquals
+package fr.vsct.tock.shared.security
 
 /**
- *
+ * Base implementation for [StringObfuscator].
  */
-class EncryptorTest {
-
-    @Test
-    fun testEncryptAndDecrypt() {
-        val s = String(SecureRandom().generateSeed(30))
-        val encrypted1 = encrypt(s)
-        assertEquals(s, decrypt(encrypted1))
-        val encrypted2 = encrypt(s)
-        assertEquals(s, decrypt(encrypted2))
-        assertNotEquals(encrypted1, encrypted2)
-    }
+data class SimpleObfuscator(override val regex: Regex,
+                            override val replacement: String) : StringObfuscator {
 }

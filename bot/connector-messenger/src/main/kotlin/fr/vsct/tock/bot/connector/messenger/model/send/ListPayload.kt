@@ -37,4 +37,8 @@ data class ListPayload(
                 metadata = mapNotNullValues(ListPayload::topElementStyle.name to topElementStyle?.name)
         )
     }
+
+    override fun obfuscate(): Payload {
+        return ListPayload(elements.map { it.obfuscate() }, topElementStyle, buttons)
+    }
 }
