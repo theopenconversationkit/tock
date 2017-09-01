@@ -18,4 +18,5 @@ package fr.vsct.tock.shared
 
 import java.time.ZoneId
 
-val defaultZoneId : ZoneId = ZoneId.of(property("tock_default_zone", "UTC"))
+var internalDefaultZoneId = ZoneId.of(property("tock_default_zone", "UTC"))
+val defaultZoneId: ZoneId get() = internalDefaultZoneId

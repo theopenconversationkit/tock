@@ -40,6 +40,7 @@ import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
 import fr.vsct.tock.nlp.api.client.model.merge.ValueToMerge
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
+import fr.vsct.tock.shared.defaultZoneId
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.name
@@ -150,8 +151,8 @@ internal class Nlp : NlpController {
                     sentence.playerId.id,
                     dialog.id,
                     connector.connectorType.toString(),
-                    referenceDate = dialog.state.nextActionState?.referenceDate ?: ZonedDateTime.now(userTimeline.userPreferences.timezone),
-                    referenceTimezone = dialog.state.nextActionState?.referenceTimezone ?: userTimeline.userPreferences.timezone,
+                    referenceDate = dialog.state.nextActionState?.referenceDate ?: ZonedDateTime.now(defaultZoneId),
+                    referenceTimezone = dialog.state.nextActionState?.referenceTimezone ?: defaultZoneId,
                     test = userTimeline.userPreferences.test
             )
         }
