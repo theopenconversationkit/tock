@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.nlp.core
 
+import fr.vsct.tock.nlp.core.quality.TestContext
+import fr.vsct.tock.nlp.core.quality.TestModelReport
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 
 /**
@@ -40,5 +42,13 @@ interface ModelCore {
      * Remove models that does not match specified applications or intents.
      */
     fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>)
+
+
+    /**
+     * Test a model and returns a report.
+     */
+    fun testModel(
+            context: TestContext,
+            expressions: List<SampleExpression>): TestModelReport
 
 }

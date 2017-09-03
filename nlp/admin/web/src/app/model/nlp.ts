@@ -474,6 +474,134 @@ export class Log {
   }
 }
 
+export class IntentTestErrorQueryResult {
+
+  constructor(public total: number,
+              public data: IntentTestError[]) {
+  }
+
+  static fromJSON(json?: any): IntentTestErrorQueryResult {
+    const value = Object.create(IntentTestErrorQueryResult.prototype);
+
+    const result = Object.assign(value, json, {
+      data: IntentTestError.fromJSONArray(json.data)
+    });
+
+    return result;
+  }
+}
+
+export class IntentTestError {
+
+  constructor(public sentence: Sentence,
+              public currentIntent: string,
+              public wrongIntent: string,
+              public count: number,
+              public averageErrorProbability: number,
+              public total: number,
+              public firstDetectionDate: Date) {
+  }
+
+  currentIntentName(): string {
+    return entityNameFromQualifiedName(this.currentIntent);
+  }
+
+  wrongIntentName(): string {
+    return entityNameFromQualifiedName(this.wrongIntent);
+  }
+
+  static fromJSON(json?: any): IntentTestError {
+    const value = Object.create(IntentTestError.prototype);
+
+    const result = Object.assign(value, json, {
+      sentence: Sentence.fromJSON(json.sentence)
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): IntentTestError[] {
+    return json ? json.map(IntentTestError.fromJSON) : [];
+  }
+
+}
+
+export class EntityTestErrorQueryResult {
+
+  constructor(public total: number,
+              public data: EntityTestError[]) {
+  }
+
+  static fromJSON(json?: any): EntityTestErrorQueryResult {
+    const value = Object.create(EntityTestErrorQueryResult.prototype);
+
+    const result = Object.assign(value, json, {
+      data: EntityTestError.fromJSONArray(json.data)
+    });
+
+    return result;
+  }
+}
+
+export class EntityTestError {
+
+  constructor(public originalSentence: Sentence,
+              public sentence: Sentence,
+              public count: number,
+              public averageErrorProbability: number,
+              public total: number,
+              public firstDetectionDate: Date) {
+  }
+
+  static fromJSON(json?: any): EntityTestError {
+    const value = Object.create(EntityTestError.prototype);
+
+    const result = Object.assign(value, json, {
+      originalSentence: Sentence.fromJSON(json.originalSentence),
+      sentence: Sentence.fromJSON(json.sentence)
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): EntityTestError[] {
+    return json ? json.map(EntityTestError.fromJSON) : [];
+  }
+
+}
+
+export class TestErrorQuery {
+
+  constructor(public applicationId: string,
+              public language: string,
+              public start: number,
+              public size: number) {
+  }
+}
+
+export class TestBuildStat {
+
+  constructor(public errors: number,
+              public nbSentencesInModel: number,
+              public nbSentencesTested: number,
+              public buildModelDuration: any,
+              public testModelDuration: any,
+              public date: Date) {
+  }
+
+  static fromJSON(json?: any): TestBuildStat {
+    const value = Object.create(TestBuildStat.prototype);
+
+    const result = Object.assign(value, json, {});
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): TestBuildStat[] {
+    return json ? json.map(TestBuildStat.fromJSON) : [];
+  }
+
+}
 
 function hashCode(str: string): number {
   let hash = 0;
@@ -545,7 +673,7 @@ export function qualifiedNameWithoutRole(user: User, type: string): string {
 }
 
 export function entityNameFromQualifiedName(qualifiedName: string): string {
-  return qualifiedName.split(":")[1];
+  return qualifiedName ? qualifiedName.split(":")[1] : "error";
 }
 
 export function getRoles(intents: Intent[], entityType?: string): string[] {

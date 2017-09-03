@@ -18,7 +18,6 @@ package fr.vsct.tock.nlp.front.service
 
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.BuildContext
-import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.ModelCore
 import fr.vsct.tock.nlp.core.NlpEngineType
@@ -29,7 +28,6 @@ import fr.vsct.tock.nlp.front.shared.ModelUpdater
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
-import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.provide
@@ -54,9 +52,10 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
             application: ApplicationDefinition,
             language: Locale,
             engineType: NlpEngineType,
-            onlyIfNotExists:Boolean) {
+            onlyIfNotExists: Boolean) {
+        val intentCache = mutableMapOf<String, Intent>()
         val modelSentences = config.getSentences(application.intents, language, ClassifiedSentenceStatus.model)
-        val samples = (modelSentences + validatedSentences).map { it.toSampleExpression({ toIntent(it) }, { entityTypeByName(it) }) }
+        val samples = (modelSentences + validatedSentences).map { it.toSampleExpression({ config.toIntent(it, intentCache) }, { entityTypeByName(it) }) }
         model.updateIntentModel(BuildContext(toApplication(application), language, engineType, onlyIfNotExists), samples)
     }
 
@@ -66,8 +65,8 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
             intentId: String,
             language: Locale,
             engineType: NlpEngineType,
-            onlyIfNotExists:Boolean) {
-        val i = toIntent(intentId)
+            onlyIfNotExists: Boolean) {
+        val i = config.toIntent(intentId)
         val modelSentences = config.getSentences(setOf(intentId), language, ClassifiedSentenceStatus.model)
         val samples = (modelSentences + validatedSentences).map {
             it.toSampleExpression({ i }, { entityTypeByName(it) })
@@ -79,22 +78,11 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
         model.deleteOrphans(
                 config.getApplications()
                         .map {
-                            toApplication(it) to config.getIntentsByApplicationId(it._id!!).map { toIntent(it) }.toSet()
+                            toApplication(it) to config.getIntentsByApplicationId(it._id!!).map { config.toIntent(it) }.toSet()
                         }
                         .toMap()
         )
     }
 
-    private fun toIntent(intentId: String): Intent {
-        return config.getIntentById(intentId)?.let {
-            toIntent(it)
-        } ?: Intent(Intent.Companion.UNKNOWN_INTENT, emptyList())
-    }
 
-    private fun toIntent(intent: IntentDefinition): Intent {
-        return Intent(
-                intent.qualifiedName,
-                intent.entities.map { Entity(entityTypeByName(it.entityTypeName), it.role) },
-                intent.entitiesRegexp)
-    }
 }

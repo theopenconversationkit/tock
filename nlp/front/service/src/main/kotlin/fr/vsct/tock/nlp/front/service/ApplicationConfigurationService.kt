@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.service
 
 import com.github.salomonbrys.kodein.instance
+import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
 import fr.vsct.tock.nlp.core.NlpEngineType
@@ -106,5 +107,22 @@ object ApplicationConfigurationService :
 
     override fun initData() {
         FrontRepository.registerBuiltInEntities()
+    }
+
+    fun toIntent(intentId: String, cache: MutableMap<String, Intent>? = null): Intent {
+        return cache?.getOrPut(intentId, { findIntent(intentId) }) ?: findIntent(intentId)
+    }
+
+    private fun findIntent(intentId: String): Intent {
+        return getIntentById(intentId)?.let {
+            toIntent(it)
+        } ?: Intent(Intent.Companion.UNKNOWN_INTENT, emptyList())
+    }
+
+    fun toIntent(intent: IntentDefinition): Intent {
+        return Intent(
+                intent.qualifiedName,
+                intent.entities.map { Entity(FrontRepository.entityTypeByName(it.entityTypeName), it.role) },
+                intent.entitiesRegexp)
     }
 }

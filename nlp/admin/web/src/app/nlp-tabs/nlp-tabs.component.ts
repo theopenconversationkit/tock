@@ -28,7 +28,7 @@ const tabs = [
   new TabLink("archive", "Archive"),
   new TabLink("search", "Search"),
   new TabLink("intents", "Intents"),
-  new TabLink("logs", "Logs"),
+  new TabLink("logs", "Logs")
 ];
 
 @Component({

@@ -18,7 +18,13 @@ import {Injectable, OnDestroy} from "@angular/core";
 import {RestService} from "../core/rest/rest.service";
 import {StateService} from "../core/state.service";
 import {
-  EntityDefinition, EntityType, LogsResult, ParseQuery, SearchLogsQuery, SearchQuery, Sentence,
+  EntityDefinition,
+  EntityType,
+  LogsResult,
+  ParseQuery,
+  SearchLogsQuery,
+  SearchQuery,
+  Sentence,
   SentencesResult
 } from "../model/nlp";
 import {Observable} from "rxjs";

@@ -18,6 +18,7 @@ import {Component, OnInit, ViewChild} from "@angular/core";
 import {SentenceFilter, SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.component";
 import {EntityType, getRoles, SentenceStatus} from "../model/nlp";
 import {StateService} from "../core/state.service";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'tock-search',
@@ -33,11 +34,15 @@ export class SearchComponent implements OnInit {
 
   @ViewChild(SentencesScrollComponent) scroll;
 
-  constructor(public state: StateService) {
+  constructor(public state: StateService,
+              private route: ActivatedRoute) {
   }
 
   ngOnInit() {
-    this.fillEntitiesFilter();
+    this.route.queryParams.subscribe(params => {
+      this.filter.search = params["text"];
+      this.fillEntitiesFilter();
+    });
   }
 
   private fillEntitiesFilter() {

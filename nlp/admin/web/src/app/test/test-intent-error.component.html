@@ -1,0 +1,74 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<div>
+
+  <md-table #table [dataSource]="dataSource">
+
+    <ng-container mdColumnDef="text">
+      <md-header-cell *mdHeaderCellDef> Text </md-header-cell>
+      <md-cell *mdCellDef="let row"> {{row.sentence.text}} </md-cell>
+    </ng-container>
+
+    <ng-container mdColumnDef="currentIntent">
+      <md-header-cell *mdHeaderCellDef> Current Intent </md-header-cell>
+      <md-cell *mdCellDef="let row"> <span style="color:green">{{row.currentIntentName()}}</span></md-cell>
+    </ng-container>
+
+    <ng-container mdColumnDef="wrongIntent">
+      <md-header-cell *mdHeaderCellDef> Intent Found </md-header-cell>
+      <md-cell *mdCellDef="let row"> <span style="color:red">{{row.wrongIntentName()}}</span></md-cell>
+    </ng-container>
+
+    <ng-container mdColumnDef="count">
+      <md-header-cell *mdHeaderCellDef> Errors </md-header-cell>
+      <md-cell *mdCellDef="let row"> {{row.count}} </md-cell>
+    </ng-container>
+
+    <ng-container mdColumnDef="percent">
+      <md-header-cell *mdHeaderCellDef md-tooltip="(after first error)"> Test Errors / Tests  </md-header-cell>
+      <md-cell *mdCellDef="let row"> {{(row.count/row.total)| percent}} </md-cell>
+    </ng-container>
+
+    <ng-container mdColumnDef="probability">
+      <md-header-cell *mdHeaderCellDef> Average Intent Error Probability </md-header-cell>
+      <md-cell *mdCellDef="let row"> {{(row.averageErrorProbability*100) | percent}} </md-cell>
+    </ng-container>
+
+    <ng-container mdColumnDef="firstErrorDate">
+      <md-header-cell *mdHeaderCellDef> Detection Date </md-header-cell>
+      <md-cell *mdCellDef="let row"> {{row.firstDetectionDate | amCalendar}} </md-cell>
+    </ng-container>
+
+    <ng-container mdColumnDef="actions">
+      <md-header-cell *mdHeaderCellDef> Actions </md-header-cell>
+      <md-cell *mdCellDef="let row">
+        <button md-icon-button (click)="validate(row)"><md-icon mdTooltip="Validate Intent" style="color:green">sentiment_very_satisfied</md-icon></button>
+        <button md-icon-button (click)="change(row)"><md-icon mdTooltip="Change the Intent" style="color:red">update</md-icon></button>
+      </md-cell>
+    </ng-container>
+
+    <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
+    <md-row *mdRowDef="let row; columns: displayedColumns;"></md-row>
+  </md-table>
+
+  <md-paginator #paginator
+                [length]="dataSource.size"
+                [pageIndex]="0"
+                [pageSize]="10"
+                [pageSizeOptions]="[5, 10, 25, 100]">
+  </md-paginator>
+</div>

@@ -16,8 +16,11 @@
 
 package fr.vsct.tock.nlp.admin
 
+import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 import fr.vsct.tock.nlp.admin.model.ApplicationWithIntents
 import fr.vsct.tock.nlp.admin.model.CreateEntityQuery
+import fr.vsct.tock.nlp.admin.model.EntityTestErrorWithSentenceReport
+import fr.vsct.tock.nlp.admin.model.IntentTestErrorWithSentenceReport
 import fr.vsct.tock.nlp.admin.model.ParseQuery
 import fr.vsct.tock.nlp.admin.model.SearchLogsQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
@@ -29,6 +32,7 @@ import fr.vsct.tock.nlp.front.shared.codec.DumpType
 import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import fr.vsct.tock.nlp.front.shared.test.TestErrorQuery
 import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
 import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.name
@@ -227,6 +231,47 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
                 entityType
             } else {
                 null
+            }
+        }
+
+        blockingJsonPost("/test/intent-errors") { context, query: TestErrorQuery ->
+            if (context.organization == front.getApplicationById(query.applicationId)?.namespace) {
+                AdminService.searchTestIntentErrors(query)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/test/intent-error/delete") { context, error: IntentTestErrorWithSentenceReport ->
+            if (context.organization == front.getApplicationById(error.sentence.applicationId)?.namespace) {
+                front.deleteTestIntentError(error.sentence.applicationId, error.sentence.language, error.sentence.toClassifiedSentence().text)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/test/entity-errors") { context, query: TestErrorQuery ->
+            if (context.organization == front.getApplicationById(query.applicationId)?.namespace) {
+                AdminService.searchTestEntityErrors(query)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/test/entity-error/delete") { context, error: EntityTestErrorWithSentenceReport ->
+            if (context.organization == front.getApplicationById(error.sentence.applicationId)?.namespace) {
+                front.deleteTestEntityError(error.sentence.applicationId, error.sentence.language, error.sentence.toClassifiedSentence().text)
+
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/test/stats") { context, query: ApplicationScopedQuery ->
+            if (context.organization == front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)?.namespace) {
+                AdminService.testBuildStats(query)
+            } else {
+                unauthorized()
             }
         }
     }

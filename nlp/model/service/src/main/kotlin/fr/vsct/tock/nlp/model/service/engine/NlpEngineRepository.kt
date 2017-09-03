@@ -53,9 +53,21 @@ internal object NlpEngineRepository {
         }
     }
 
+    fun getIntentClassifier(context: IntentContext, modelHolder: IntentModelHolder): IntentClassifier {
+        return getProvider(context.engineType).getIntentClassifier(modelHolder)
+    }
+
     fun getEntityClassifier(context: EntityCallContext): EntityClassifier? {
         return getProvider(context.engineType).let { provider ->
             NlpModelRepository.getEntityModelHolder(context, provider)?.let { model ->
+                provider.getEntityClassifier(model)
+            }
+        }
+    }
+
+    fun getEntityClassifier(context: EntityCallContext, modelHolder: EntityModelHolder?): EntityClassifier? {
+        return getProvider(context.engineType).let { provider ->
+            modelHolder?.let { model ->
                 provider.getEntityClassifier(model)
             }
         }

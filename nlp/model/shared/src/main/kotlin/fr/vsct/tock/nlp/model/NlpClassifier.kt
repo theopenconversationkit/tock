@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.nlp.model
 
+import fr.vsct.tock.nlp.core.EntityRecognition
+import fr.vsct.tock.nlp.core.IntentClassification
 import fr.vsct.tock.nlp.core.NlpEngineType
 
 /**
@@ -24,4 +26,8 @@ import fr.vsct.tock.nlp.core.NlpEngineType
 interface NlpClassifier : Tokenizer, IntentClassifier, EntityClassifier, ModelBuilder {
 
     fun supportedNlpEngineTypes(): Set<NlpEngineType>
+
+    fun classifyIntent(context: IntentContext, modelHolder: ModelHolder, text: String, tokens: Array<String>): IntentClassification
+
+    fun classifyEntities(context: EntityCallContext, modelHolder: ModelHolder?, text: String, tokens: Array<String>): List<EntityRecognition>
 }

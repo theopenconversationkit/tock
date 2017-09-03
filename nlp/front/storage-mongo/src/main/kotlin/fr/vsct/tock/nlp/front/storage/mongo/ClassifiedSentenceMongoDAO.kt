@@ -48,10 +48,6 @@ import java.util.Locale
  */
 object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
-    //wrapper to workaround the 1024 chars limit for String indexes
-    private fun textKey(text: String): String
-            = if (text.length > 512) text.substring(0, Math.min(512, text.length)) else text
-
     private data class ClassifiedSentenceCol(val text: String,
                                              val fullText: String = text,
                                              val language: Locale,

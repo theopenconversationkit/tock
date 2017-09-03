@@ -32,6 +32,7 @@ export class HighlightComponent implements OnInit, OnChanges {
 
   @Input() sentence: Sentence;
   @Input() readOnly: boolean = false;
+  @Input() fontSize:string = "inherit";
 
   intent: Intent;
   selectedStart: number;

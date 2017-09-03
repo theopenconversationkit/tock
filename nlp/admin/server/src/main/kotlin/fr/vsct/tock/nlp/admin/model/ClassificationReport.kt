@@ -20,6 +20,8 @@ import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.front.shared.config.Classification
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
+import fr.vsct.tock.nlp.front.shared.test.EntityTestError
+import fr.vsct.tock.nlp.front.shared.test.IntentTestError
 
 /**
  *
@@ -44,6 +46,21 @@ data class ClassificationReport(
             sentence.classification.entities.map { ClassifiedEntityReport(it) },
             sentence.lastIntentProbability,
             sentence.lastEntityProbability,
+            emptyMap()
+    )
+
+    constructor(error: IntentTestError) : this(
+            null,
+            emptyList(),
+            error.averageErrorProbability,
+            1.0,
+            emptyMap())
+
+    constructor(error: EntityTestError) : this(
+            error.intentId,
+            error.lastAnalyse.map { ClassifiedEntityReport(it) },
+            1.0,
+            error.averageErrorProbability,
             emptyMap())
 
     fun toClassification(): Classification {

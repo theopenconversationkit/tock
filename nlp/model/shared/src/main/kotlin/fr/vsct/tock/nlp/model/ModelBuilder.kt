@@ -27,13 +27,17 @@ interface ModelBuilder {
 
     fun buildAndSaveTokenizerModel(context: TokenizerContext, expressions: List<SampleExpression>)
 
+    fun buildIntentModel(context: IntentContext, expressions: List<SampleExpression>): ModelHolder
+
     fun buildAndSaveIntentModel(context: IntentContext, expressions: List<SampleExpression>)
+
+    fun buildEntityModel(context: EntityBuildContext, expressions: List<SampleExpression>): ModelHolder?
 
     fun buildAndSaveEntityModel(context: EntityBuildContext, expressions: List<SampleExpression>)
 
-    fun isIntentModelExist(context: IntentContext) : Boolean
+    fun isIntentModelExist(context: IntentContext): Boolean
 
-    fun isEntityModelExist(context: EntityBuildContext) : Boolean
+    fun isEntityModelExist(context: EntityBuildContext): Boolean
 
     fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>)
 }

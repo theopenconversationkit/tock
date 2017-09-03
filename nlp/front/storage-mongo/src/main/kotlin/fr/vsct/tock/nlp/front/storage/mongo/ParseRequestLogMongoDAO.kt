@@ -41,10 +41,6 @@ import java.util.concurrent.TimeUnit
  */
 object ParseRequestLogMongoDAO : ParseRequestLogDAO {
 
-    //wrapper to workaround the 1024 chars limit for String indexes
-    private fun textKey(text: String): String
-            = if (text.length > 512) text.substring(0, Math.min(512, text.length)) else text
-
     private data class ParseRequestLogCol(val text: String,
                                           val applicationId: String,
                                           val query: ParseQuery,

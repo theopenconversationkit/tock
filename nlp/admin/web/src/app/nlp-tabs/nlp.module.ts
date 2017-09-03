@@ -79,6 +79,7 @@ const routes: Routes = [
     ]
   }
 ];
+
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
@@ -112,7 +113,8 @@ export class NlpRoutingModule {
     AddStateDialogComponent
   ],
   exports: [
-    SentenceAnalysisComponent
+    SentenceAnalysisComponent,
+    HighlightComponent
   ],
   providers: [
     NlpService

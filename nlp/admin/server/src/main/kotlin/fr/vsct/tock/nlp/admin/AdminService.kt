@@ -16,18 +16,27 @@
 
 package fr.vsct.tock.nlp.admin
 
+import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 import fr.vsct.tock.nlp.admin.model.ApplicationWithIntents
+import fr.vsct.tock.nlp.admin.model.EntityTestErrorQueryResultReport
+import fr.vsct.tock.nlp.admin.model.EntityTestErrorWithSentenceReport
+import fr.vsct.tock.nlp.admin.model.IntentTestErrorQueryResultReport
+import fr.vsct.tock.nlp.admin.model.IntentTestErrorWithSentenceReport
 import fr.vsct.tock.nlp.admin.model.LogsReport
 import fr.vsct.tock.nlp.admin.model.ParseQuery
 import fr.vsct.tock.nlp.admin.model.SearchLogsQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.admin.model.SentencesReport
+import fr.vsct.tock.nlp.admin.model.TestBuildStat
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
+import fr.vsct.tock.nlp.front.shared.test.TestErrorQuery
 import fr.vsct.tock.shared.withNamespace
+import java.time.Duration
 
 /**
  *
@@ -38,8 +47,8 @@ object AdminService {
 
     fun parseSentence(query: ParseQuery): SentenceReport {
         val result = front.parse(query.toQuery())
-        val intentId = if(result.intent.withNamespace(result.intentNamespace) == Intent.UNKNOWN_INTENT) Intent.UNKNOWN_INTENT
-                        else front.getIntentIdByQualifiedName(result.intent.withNamespace(query.namespace))!!
+        val intentId = if (result.intent.withNamespace(result.intentNamespace) == Intent.UNKNOWN_INTENT) Intent.UNKNOWN_INTENT
+        else front.getIntentIdByQualifiedName(result.intent.withNamespace(query.namespace))!!
         val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
         return SentenceReport(result, query.language, application._id!!, intentId)
     }
@@ -78,5 +87,63 @@ object AdminService {
         val applicationId = application!!._id!!
         val result = front.search(query.toParseRequestLogQuery(applicationId))
         return LogsReport(query.start, result, applicationId, { front.getIntentIdByQualifiedName(it.withNamespace(query.namespace)) })
+    }
+
+    fun searchTestIntentErrors(query: TestErrorQuery): IntentTestErrorQueryResultReport {
+        return front.searchTestIntentErrors(query)
+                .run {
+                    IntentTestErrorQueryResultReport(
+                            total,
+                            data.map {
+                                IntentTestErrorWithSentenceReport(it)
+                            }
+                    )
+                }
+    }
+
+    fun searchTestEntityErrors(query: TestErrorQuery): EntityTestErrorQueryResultReport {
+        return front.searchTestEntityErrors(query)
+                .run {
+                    EntityTestErrorQueryResultReport(
+                            total,
+                            data.mapNotNull {
+                                val s = front.search(
+                                        SentencesQuery(
+                                                it.applicationId,
+                                                it.language,
+                                                search = it.text,
+                                                onlyExactMatch = true
+                                        ))
+                                if (s.total == 0L) {
+                                    null
+                                } else {
+                                    EntityTestErrorWithSentenceReport(
+                                            SentenceReport(s.sentences.first()),
+                                            it)
+                                }
+                            }
+                    )
+                }
+    }
+
+    fun testBuildStats(query: ApplicationScopedQuery): List<TestBuildStat> {
+        val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
+        val stats = front
+                .getTestBuilds(app._id!!, query.language)
+                .map {
+                    TestBuildStat(
+                            it.startDate,
+                            it.nbErrors,
+                            it.nbSentencesInModel,
+                            it.nbSentencesTested,
+                            it.buildModelDuration,
+                            it.testSentencesDuration
+                    )
+                }
+                .sortedBy { it.date }
+        //only one point each 10 minutes
+        return stats.filterIndexed { i, s ->
+            i == 0 || Duration.between(stats[i - 1].date, s.date) >= Duration.ofMinutes(10)
+        }
     }
 }

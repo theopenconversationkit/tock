@@ -32,11 +32,12 @@
 
 package fr.vsct.tock.nlp.model.service.engine
 
+import fr.vsct.tock.nlp.model.ModelHolder
 import java.time.Instant
 
 /**
  * Updatable cache value.
  */
-interface UpdatableHolder {
+interface UpdatableHolder : ModelHolder {
     val lastUpdate: Instant
 }

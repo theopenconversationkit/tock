@@ -26,6 +26,7 @@ import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import fr.vsct.tock.nlp.front.service.storage.IntentDefinitionDAO
 import fr.vsct.tock.nlp.front.service.storage.ModelBuildTriggerDAO
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
+import fr.vsct.tock.nlp.front.service.storage.TestModelDAO
 import fr.vsct.tock.shared.getDatabase
 
 internal const val MONGO_DATABASE: String = "tock_front_mongo_db"
@@ -38,4 +39,6 @@ val frontMongoModule = Kodein.Module {
     bind<ClassifiedSentenceDAO>() with provider { ClassifiedSentenceMongoDAO }
     bind<ModelBuildTriggerDAO>() with provider { ModelBuildTriggerMongoDAO }
     bind<ParseRequestLogDAO>() with provider { ParseRequestLogMongoDAO }
+    bind<TestModelDAO>() with provider { TestModelMongoDAO }
 }
+

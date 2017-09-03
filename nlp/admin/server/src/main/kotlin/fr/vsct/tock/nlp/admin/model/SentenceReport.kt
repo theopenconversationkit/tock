@@ -19,6 +19,8 @@ package fr.vsct.tock.nlp.admin.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
+import fr.vsct.tock.nlp.front.shared.test.EntityTestError
+import fr.vsct.tock.nlp.front.shared.test.IntentTestError
 import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 import fr.vsct.tock.shared.security.decrypt
 import fr.vsct.tock.shared.security.encrypt
@@ -65,6 +67,26 @@ data class SentenceReport(val text: String,
             key = encrypt(sentence.text)
         }
     }
+
+    constructor(error: IntentTestError) : this(
+            obfuscate(error.text)!!,
+            error.language,
+            error.applicationId,
+            error.firstDetectionDate,
+            error.firstDetectionDate,
+            ClassifiedSentenceStatus.model,
+            ClassificationReport(error)
+    )
+
+    constructor(error: EntityTestError) : this(
+            obfuscate(error.text)!!,
+            error.language,
+            error.applicationId,
+            error.firstDetectionDate,
+            error.firstDetectionDate,
+            ClassifiedSentenceStatus.model,
+            ClassificationReport(error)
+    )
 
     fun toClassifiedSentence(): ClassifiedSentence {
         return ClassifiedSentence(

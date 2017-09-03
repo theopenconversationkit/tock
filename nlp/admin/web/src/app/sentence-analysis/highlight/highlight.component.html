@@ -19,10 +19,12 @@
        class="tokens"
        (mouseup)="select()"
        (touchend)="select()"><span *ngFor="let t of tokens"
+                                   [style.font-size]="fontSize"
                                    [style.background]="t.color()"
                                    [id]="t.index">{{t.text}}</span></div>
   <div *ngIf="tokens && readOnly"
        class="tokens"><span *ngFor="let t of tokens"
+                                   [style.font-size]="fontSize"
                                    [style.background]="t.color()"
                                    [id]="t.index"
                                    [md-tooltip]="t.display(sentence, state.user)">{{t.text}}</span></div>

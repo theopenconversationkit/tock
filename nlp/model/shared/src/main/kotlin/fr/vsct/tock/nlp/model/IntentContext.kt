@@ -20,6 +20,7 @@ import fr.vsct.tock.nlp.core.Application
 import fr.vsct.tock.nlp.core.BuildContext
 import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.NlpEngineType
+import fr.vsct.tock.nlp.core.quality.TestContext
 import fr.vsct.tock.nlp.model.IntentContext.IntentContextKey
 import java.util.Locale
 
@@ -30,8 +31,9 @@ data class IntentContext(val application: Application,
 
     constructor(callContext: CallContext) : this(callContext.application, callContext.language, callContext.engineType)
 
-    constructor(buildContext: BuildContext) : this(buildContext.application, buildContext.language, buildContext.engineType)
+    constructor(testContext: TestContext) : this(testContext.callContext)
 
+    constructor(buildContext: BuildContext) : this(buildContext.application, buildContext.language, buildContext.engineType)
 
     data class IntentContextKey(val applicationName: String,
                                 val language: Locale,

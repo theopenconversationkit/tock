@@ -31,6 +31,10 @@ const routes: Routes = [
   {
     path: 'applications',
     loadChildren: 'app/applications/applications.module#ApplicationsModule'
+  },
+  {
+    path: 'quality',
+    loadChildren: 'app/quality/quality.module#QualityModule'
   }
 ];
 @NgModule({

@@ -24,9 +24,12 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
+import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.listProperty
 import io.vertx.core.AbstractVerticle
 import mu.KotlinLogging
+import java.time.LocalTime
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -39,6 +42,15 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
 
     companion object {
         private val logger = KotlinLogging.logger {}
+        private val completeModelEnabled = booleanProperty("tock_complete_model_enabled", true)
+        private val testModelEnabled = booleanProperty("tock_test_model_enabled", true)
+        private val testModelTimeframe =
+                listProperty("tock_test_model_timeframe", listOf("0", "5"))
+                        .let { t ->
+                            logger.info { "test timeframe: $t" }
+                            listOf(t[0].toInt(), t[1].toInt())
+                        }
+
         val front = FrontClient
 
         fun updateAllModels() {
@@ -102,15 +114,31 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                         front.deleteSentencesByStatus(deleted)
                         logger.info { "end model update" }
                     } else {
-                        front.getTriggers()
-                                .forEach { trigger ->
-                                    front.deleteTrigger(trigger)
-                                    front.getApplicationById(trigger.applicationId)?.let {
-                                        updateApplicationModels(it, trigger.onlyIfModelNotExists)
-                                    } ?: logger.warn {
-                                        "unknown application id trigger ${trigger} - skipped"
-                                    }
+                        val triggers = front.getTriggers()
+                        if (triggers.isNotEmpty()) {
+                            triggers.forEach { trigger ->
+                                front.deleteTrigger(trigger)
+                                front.getApplicationById(trigger.applicationId)?.let {
+                                    updateApplicationModels(it, trigger.onlyIfModelNotExists)
+                                } ?: logger.warn {
+                                    "unknown application id trigger ${trigger} - skipped"
                                 }
+                            }
+
+                        } else {
+                            //test model each 10 minutes if it's in the time frame
+                            if (testModelEnabled
+                                    && LocalTime.now()
+                                    .run {
+                                        hour >= testModelTimeframe[0]
+                                                && hour <= testModelTimeframe[1]
+                                                && minute % 10 == 0
+                                    }) {
+                                front.testModels()
+                            } else {
+                                logger.trace { "nothing to do - skip" }
+                            }
+                        }
                     }
                 } catch (e: Throwable) {
                     logger.error(e)
@@ -120,16 +148,18 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
             }
         })
 
-        vertx.setPeriodic(10 * 60 * 5000, {
-            try {
-                logger.debug { "trigger build to check not existing models" }
-                front.getApplications().forEach {
-                    front.triggerBuild(ModelBuildTrigger(it._id!!, true, true))
+        if (completeModelEnabled) {
+            vertx.setPeriodic(60 * 60 * 1000, {
+                try {
+                    logger.debug { "trigger build to check not existing models" }
+                    front.getApplications().forEach {
+                        front.triggerBuild(ModelBuildTrigger(it._id!!, true, true))
+                    }
+                } catch (e: Throwable) {
+                    logger.error(e)
                 }
-            } catch (e: Throwable) {
-                logger.error(e)
-            }
-        })
+            })
+        }
     }
 
 

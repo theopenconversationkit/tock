@@ -23,15 +23,15 @@ import fr.vsct.tock.nlp.core.IntentClassification
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 import fr.vsct.tock.nlp.model.EntityBuildContext
-import fr.vsct.tock.nlp.model.EntityBuildContextForEntity
-import fr.vsct.tock.nlp.model.EntityBuildContextForIntent
-import fr.vsct.tock.nlp.model.EntityBuildContextForSubEntities
 import fr.vsct.tock.nlp.model.EntityCallContext
 import fr.vsct.tock.nlp.model.EntityContextKey
 import fr.vsct.tock.nlp.model.IntentContext
 import fr.vsct.tock.nlp.model.IntentContext.IntentContextKey
+import fr.vsct.tock.nlp.model.ModelHolder
 import fr.vsct.tock.nlp.model.NlpClassifier
 import fr.vsct.tock.nlp.model.TokenizerContext
+import fr.vsct.tock.nlp.model.service.engine.EntityModelHolder
+import fr.vsct.tock.nlp.model.service.engine.IntentModelHolder
 import fr.vsct.tock.nlp.model.service.engine.NlpEngineRepository
 import fr.vsct.tock.nlp.model.service.engine.NlpEngineRepository.getModelBuilder
 import fr.vsct.tock.nlp.model.service.engine.NlpEngineRepository.getModelIo
@@ -56,8 +56,17 @@ object NlpClassifierService : NlpClassifier {
         return NlpEngineRepository.getIntentClassifier(context).classifyIntent(context, text, tokens)
     }
 
+    override fun classifyIntent(context: IntentContext, modelHolder: ModelHolder, text: String, tokens: Array<String>): IntentClassification {
+        return NlpEngineRepository.getIntentClassifier(context, modelHolder as IntentModelHolder).classifyIntent(context, text, tokens)
+    }
+
     override fun classifyEntities(context: EntityCallContext, text: String, tokens: Array<String>): List<EntityRecognition> {
         val entityClassifier = NlpEngineRepository.getEntityClassifier(context)
+        return entityClassifier?.classifyEntities(context, text, tokens) ?: emptyList()
+    }
+
+    override fun classifyEntities(context: EntityCallContext, modelHolder: ModelHolder?, text: String, tokens: Array<String>): List<EntityRecognition> {
+        val entityClassifier = NlpEngineRepository.getEntityClassifier(context, modelHolder as EntityModelHolder?)
         return entityClassifier?.classifyEntities(context, text, tokens) ?: emptyList()
     }
 
@@ -65,16 +74,24 @@ object NlpClassifierService : NlpClassifier {
         //do nothing at this time
     }
 
+    override fun buildIntentModel(context: IntentContext, expressions: List<SampleExpression>): ModelHolder {
+        return getModelBuilder(context).buildIntentModel(context, expressions)
+    }
+
     override fun buildAndSaveIntentModel(context: IntentContext, expressions: List<SampleExpression>) {
-        val model = getModelBuilder(context).buildIntentModel(context, expressions)
-        saveIntentModel(context.key(), model, getModelIo(context))
+        val model = buildIntentModel(context, expressions)
+        saveIntentModel(context.key(), model as IntentModelHolder, getModelIo(context))
+    }
+
+    override fun buildEntityModel(context: EntityBuildContext, expressions: List<SampleExpression>): ModelHolder? {
+        val exp = context.selectValid(expressions)
+        return if (exp.isNotEmpty()) getModelBuilder(context).buildEntityModel(context, exp) else null
     }
 
     override fun buildAndSaveEntityModel(context: EntityBuildContext, expressions: List<SampleExpression>) {
-        val exp = filterExpressionsForContext(context, expressions)
-        val model = getModelBuilder(context).buildEntityModel(context, exp)
+        val model = buildEntityModel(context, expressions)
         if (model != null) {
-            saveEntityModel(context.key(), model, getModelIo(context))
+            saveEntityModel(context.key(), model as EntityModelHolder, getModelIo(context))
         }
     }
 
@@ -116,16 +133,5 @@ object NlpClassifierService : NlpClassifier {
                                     }
                         }
         )
-    }
-
-    private fun filterExpressionsForContext(context: EntityBuildContext, expressions: List<SampleExpression>): List<SampleExpression> {
-        return when (context) {
-            is EntityBuildContextForIntent -> expressions
-            is EntityBuildContextForEntity ->
-                expressions
-                        .filter { it.containsEntityType(context.entityType) }
-                        .map { it.copy(entities = it.entities.filter { it.isType(context.entityType) }) }
-            is EntityBuildContextForSubEntities -> TODO()
-        }
     }
 }

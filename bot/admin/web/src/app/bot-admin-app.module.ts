@@ -14,6 +14,10 @@ const routes: Routes = [
     loadChildren: 'app/nlp/nlp.module#BotNlpModule'
   },
   {
+    path: 'quality',
+    loadChildren: 'app/quality/quality.module#BotQualityModule'
+  },
+  {
     path: 'configuration',
     loadChildren: 'app/configuration/configuration.module#BotConfigurationModule'
   },

@@ -21,6 +21,8 @@ import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.NlpEngineType
+import fr.vsct.tock.nlp.core.quality.TestContext
+import fr.vsct.tock.nlp.core.sample.SampleExpression
 import java.time.ZonedDateTime
 import java.util.Locale
 
@@ -60,6 +62,8 @@ class EntityCallContextForIntent(val applicationName: String,
 
     constructor(context: CallContext, intent: Intent) : this(context.application.name, intent, context.language, context.engineType, context.referenceDate)
 
+    constructor(context: TestContext, intent: Intent) : this(context.callContext, intent)
+
     override fun key(): EntityContextKey {
         return EntityContextKey(applicationName, intent.name, language, engineType)
     }
@@ -92,6 +96,10 @@ sealed class EntityBuildContext(
         language: Locale,
         engineType: NlpEngineType) : EntityContext(language, engineType) {
 
+    /**
+     * Returns only expression valid for this context
+     */
+    abstract fun selectValid(expressions: List<SampleExpression>): List<SampleExpression>
 }
 
 class EntityBuildContextForIntent(
@@ -102,10 +110,19 @@ class EntityBuildContextForIntent(
 
     constructor(context: BuildContext, intent: Intent) : this(context.application.name, intent, context.language, context.engineType)
 
+    constructor(context: CallContext, intent: Intent) : this(context.application.name, intent, context.language, context.engineType)
+
+    constructor(context: TestContext, intent: Intent) : this(context.callContext, intent)
+
     override fun key(): EntityContextKey {
         return EntityContextKey(applicationName, intent.name, language, engineType)
     }
 
+    override fun selectValid(expressions: List<SampleExpression>): List<SampleExpression> {
+        val result = expressions.filter { it.intent == intent }
+        //returns empty list if no expression contains at least one expression
+        return if (result.any { it.entities.isNotEmpty() }) result else emptyList()
+    }
 }
 
 class EntityBuildContextForEntity(
@@ -115,6 +132,12 @@ class EntityBuildContextForEntity(
     override fun key(): EntityContextKey {
         return EntityContextKey(null, null, language, engineType, entityType)
     }
+
+    override fun selectValid(expressions: List<SampleExpression>): List<SampleExpression> {
+        return  expressions
+                .filter { it.containsEntityType(entityType) }
+                .map { it.copy(entities = it.entities.filter { it.isType(entityType) }) }
+    }
 }
 
 class EntityBuildContextForSubEntities(val entityType: EntityType,
@@ -122,5 +145,9 @@ class EntityBuildContextForSubEntities(val entityType: EntityType,
                                        engineType: NlpEngineType) : EntityBuildContext(language, engineType) {
     override fun key(): EntityContextKey {
         return EntityContextKey(null, null, language, engineType, entityType, true)
+    }
+
+    override fun selectValid(expressions: List<SampleExpression>): List<SampleExpression> {
+        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
     }
 }

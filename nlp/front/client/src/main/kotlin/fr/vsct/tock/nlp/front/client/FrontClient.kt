@@ -20,6 +20,7 @@ import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.front.shared.ApplicationCodec
 import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
 import fr.vsct.tock.nlp.front.shared.ApplicationMonitor
+import fr.vsct.tock.nlp.front.shared.ModelTester
 import fr.vsct.tock.nlp.front.shared.ModelUpdater
 import fr.vsct.tock.nlp.front.shared.Parser
 import fr.vsct.tock.shared.injector
@@ -29,6 +30,7 @@ private val applicationConfiguration: ApplicationConfiguration by injector.insta
 private val modelUpdater: ModelUpdater by injector.instance()
 private val applicationCodec: ApplicationCodec by injector.instance()
 private val applicationMonitor: ApplicationMonitor by injector.instance()
+private val modelTester: ModelTester by injector.instance()
 
 /**
  *
@@ -38,5 +40,5 @@ object FrontClient :
         ApplicationConfiguration by applicationConfiguration,
         ModelUpdater by modelUpdater,
         ApplicationCodec by applicationCodec,
-        ApplicationMonitor by applicationMonitor {
-}
+        ApplicationMonitor by applicationMonitor,
+        ModelTester by modelTester

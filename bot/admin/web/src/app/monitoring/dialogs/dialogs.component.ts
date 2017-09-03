@@ -25,7 +25,7 @@ import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {MdSnackBar} from "@angular/material";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {DialogReportQuery} from "../model/dialogs";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'tock-dialogs',
@@ -41,8 +41,7 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
               private monitoring: MonitoringService,
               private botConfiguration: BotConfigurationService,
               private snackBar: MdSnackBar,
-              private route: ActivatedRoute,
-              private router: Router) {
+              private route: ActivatedRoute) {
     super(state);
     this.state = state;
     this.botConfiguration.configurations.subscribe(_ => this.refresh());
@@ -50,7 +49,7 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
 
   search(query: PaginatedQuery): Observable<PaginatedResult<DialogReport>> {
     return this.route.queryParams.flatMap(params => {
-      if(!this.filter) {
+      if (!this.filter) {
         this.filter = new DialogFilter(true);
         this.filter.dialogId = params["dialogId"];
         this.filter.text = params["text"];
@@ -95,9 +94,9 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
 }
 
 export class DialogFilter {
-  constructor(public exactMatch:boolean,
+  constructor(public exactMatch: boolean,
               public dialogId?: string,
               public text?: string,
-              public intentName?:string) {
+              public intentName?: string) {
   }
 }
