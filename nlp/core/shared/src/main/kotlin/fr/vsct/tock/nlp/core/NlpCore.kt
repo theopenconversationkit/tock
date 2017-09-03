@@ -18,7 +18,6 @@ package fr.vsct.tock.nlp.core
 
 import fr.vsct.tock.nlp.core.IntentSelector.Companion.defaultIntentSelector
 import fr.vsct.tock.nlp.core.merge.ValueDescriptor
-import fr.vsct.tock.nlp.core.sample.SampleExpression
 
 /**
  * The main entry point for NLP.
@@ -68,4 +67,9 @@ interface NlpCore {
      * Merge two or more values for the given [EntityType].
      */
     fun mergeValues(context: CallContext, entityType: EntityType, values: List<ValueDescriptor>): ValueDescriptor?
+
+    /**
+     * Check engines availability.
+     */
+    fun healthcheck(): Boolean
 }

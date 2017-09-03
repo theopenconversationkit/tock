@@ -83,7 +83,7 @@ internal object EntityCoreService : EntityCore {
             tokens: Array<String>): List<EntityTypeRecognition> {
         return try {
             classifier.classifyEntities(context, text, tokens)
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             logger.error(e)
             emptyList()
         }
@@ -93,8 +93,7 @@ internal object EntityCoreService : EntityCore {
         val newEvaluatedEntities: Map<EntityRecognition, EvaluationResult> =
                 entitiesRecognition
                         .filterNot { it.value.evaluated }
-                        .mapNotNull {
-                            e ->
+                        .mapNotNull { e ->
                             getEntityEvaluatorProvider(e.entityType)?.let {
                                 it.getEntityEvaluator()?.let { evaluator ->
                                     e to evaluate(evaluator, EntityCallContextForEntity(context, e.entityType), e.value.textValue(text))
@@ -120,7 +119,7 @@ internal object EntityCoreService : EntityCore {
                  text: String): EvaluationResult {
         return try {
             evaluator.evaluate(context, text)
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             logger.error(e)
             EvaluationResult(false)
         }
@@ -128,5 +127,9 @@ internal object EntityCoreService : EntityCore {
 
     override fun mergeValues(context: EntityCallContextForEntity, values: List<ValueDescriptor>): ValueDescriptor? {
         return getEntityEvaluatorProvider(context.entityType)?.getEntityEvaluator()?.merge(context, values)
+    }
+
+    override fun healthcheck(): Boolean {
+        return evaluatorProviders.all { it.healthcheck() }
     }
 }

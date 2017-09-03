@@ -261,4 +261,8 @@ object ParserService : Parser {
             return ValuesMergeResult(ValueTransformer.wrapNullableValue(result?.value), result?.content)
         }
     }
+
+    override fun healthcheck(): Boolean {
+        return core.healthcheck()
+    }
 }

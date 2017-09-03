@@ -163,4 +163,8 @@ object NlpCoreService : NlpCore {
     override fun mergeValues(context: CallContext, entityType: EntityType, values: List<ValueDescriptor>): ValueDescriptor? {
         return entityCore.mergeValues(EntityCallContextForEntity(context, entityType), values)
     }
+
+    override fun healthcheck(): Boolean {
+        return entityCore.healthcheck()
+    }
 }

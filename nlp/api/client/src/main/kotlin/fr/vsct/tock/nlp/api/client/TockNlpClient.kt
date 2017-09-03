@@ -103,7 +103,11 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
     }
 
     override fun healthcheck(): Boolean {
-        return nlpService.healthcheck().execute().isSuccessful
+        return try {
+            nlpService.healthcheck().execute().isSuccessful
+        } catch (t: Throwable) {
+            false
+        }
     }
 
 }

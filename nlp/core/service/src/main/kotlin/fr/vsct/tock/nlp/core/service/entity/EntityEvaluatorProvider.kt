@@ -42,4 +42,9 @@ interface EntityEvaluatorProvider {
      * Returns the entity evaluator - null by default.
      */
     fun getEntityEvaluator(): EntityEvaluator? = null
+
+    /**
+     * Test the server is up.
+     */
+    fun healthcheck(): Boolean = true
 }

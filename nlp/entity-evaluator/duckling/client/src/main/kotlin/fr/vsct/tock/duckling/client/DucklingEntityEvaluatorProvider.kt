@@ -32,4 +32,8 @@ class DucklingEntityEvaluatorProvider : EntityEvaluatorProvider {
     override fun getSupportedEntityTypes(): Set<String> = DucklingDimensions.entityTypes
 
     override fun getEntityTypesWithValuesMergeSupport(): Set<String> = DucklingDimensions.mergeSupport
+
+    override fun healthcheck(): Boolean {
+        return DucklingClient.healthcheck()
+    }
 }

@@ -17,6 +17,7 @@
 package fr.vsct.tock.duckling.client
 
 import fr.vsct.tock.shared.create
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.property
@@ -102,6 +103,11 @@ internal object DucklingClient {
     }
 
     fun healthcheck(): Boolean {
-        return service.healthcheck().execute().isSuccessful
+        return try {
+            service.healthcheck().execute().isSuccessful
+        } catch (t: Throwable) {
+            logger.error(t)
+            false
+        }
     }
 }

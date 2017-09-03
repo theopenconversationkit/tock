@@ -28,6 +28,8 @@ import fr.vsct.tock.bot.definition.StoryHandlerListener
 import fr.vsct.tock.bot.engine.config.BotConfigurationSynchronizer
 import fr.vsct.tock.bot.engine.monitoring.RequestTimer
 import fr.vsct.tock.bot.engine.nlp.NlpListener
+import fr.vsct.tock.nlp.api.client.NlpClient
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
@@ -44,6 +46,8 @@ object BotRepository {
     private val botProviders: MutableSet<BotProvider> = mutableSetOf()
     internal val storyHandlerListeners: MutableList<StoryHandlerListener> = mutableListOf()
     internal val nlpListeners: MutableList<NlpListener> = mutableListOf()
+    private val nlpClient: NlpClient by injector.instance()
+    private val executor: Executor by injector.instance()
 
     /**
      * Request timer for connectors.
@@ -53,7 +57,11 @@ object BotRepository {
     /**
      * healthcheck handler to answer to GET /healthcheck.
      */
-    var healthcheckHandler: (RoutingContext) -> Unit = { it.response().end() }
+    var healthcheckHandler: (RoutingContext) -> Unit = {
+        executor.executeBlocking {
+            it.response().setStatusCode(if (nlpClient.healthcheck()) 200 else 500).end()
+        }
+    }
 
     fun registerConnectorProvider(connectorProvider: ConnectorProvider) {
         connectorProviders.add(connectorProvider)
@@ -133,4 +141,5 @@ object BotRepository {
 
         vertx.deployVerticle(verticle)
     }
+
 }

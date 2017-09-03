@@ -16,13 +16,13 @@
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
-import com.github.salomonbrys.kodein.provider
+import com.github.salomonbrys.kodein.singleton
 import fr.vsct.tock.bot.engine.nlp.Nlp
 import fr.vsct.tock.bot.engine.nlp.NlpController
 import fr.vsct.tock.nlp.api.client.NlpClient
 import fr.vsct.tock.nlp.api.client.TockNlpClient
 
 val botModule = Kodein.Module {
-    bind<NlpClient>() with provider { TockNlpClient() }
-    bind<NlpController>() with provider { Nlp() }
+    bind<NlpClient>() with singleton { TockNlpClient() }
+    bind<NlpController>() with singleton { Nlp() }
 }

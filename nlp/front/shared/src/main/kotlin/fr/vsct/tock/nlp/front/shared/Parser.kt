@@ -44,4 +44,9 @@ interface Parser {
      */
     fun mergeValues(query: ValuesMergeQuery): ValuesMergeResult
 
+    /**
+     * Check parser availability.
+     */
+    fun healthcheck(): Boolean
+
 }

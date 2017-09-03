@@ -131,7 +131,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
 
         configure()
 
-        router.get("/healthcheck").handler(healthcheck())
+        router.get("$rootPath/healthcheck").handler(healthcheck())
 
         startServer(startFuture)
     }

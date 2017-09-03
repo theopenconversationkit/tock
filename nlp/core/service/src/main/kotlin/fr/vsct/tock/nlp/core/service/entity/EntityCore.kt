@@ -57,4 +57,9 @@ internal interface EntityCore {
      * Merge two or more values for the given [context].
      */
     fun mergeValues(context: EntityCallContextForEntity, values: List<ValueDescriptor>): ValueDescriptor?
+
+    /**
+     * Check entity model providers availability.
+     */
+    fun healthcheck(): Boolean
 }

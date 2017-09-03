@@ -16,11 +16,14 @@
 
 package fr.vsct.tock.nlp.api
 
+import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseIntentEntitiesQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
+import fr.vsct.tock.shared.Executor
+import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.ext.web.RoutingContext
@@ -32,6 +35,8 @@ import mu.KotlinLogging
 class NlpVerticle : WebVerticle(KotlinLogging.logger {}) {
 
     override val rootPath: String = "/rest/nlp"
+
+    private val executor: Executor by injector.instance()
 
     override fun configure() {
         val front = FrontClient
@@ -66,6 +71,10 @@ class NlpVerticle : WebVerticle(KotlinLogging.logger {}) {
     }
 
     override fun healthcheck(): (RoutingContext) -> Unit {
-        return { it.response().end() }
+        return {
+            executor.executeBlocking {
+                it.response().setStatusCode(if (FrontClient.healthcheck()) 200 else 500).end()
+            }
+        }
     }
 }
