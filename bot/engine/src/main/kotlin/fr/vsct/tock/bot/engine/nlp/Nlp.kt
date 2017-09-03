@@ -146,6 +146,7 @@ internal class Nlp : NlpController {
         }
 
         private fun toQueryContext(): QueryContext {
+            val test = userTimeline.userPreferences.test
             return QueryContext(
                     userTimeline.userPreferences.locale,
                     sentence.playerId.id,
@@ -153,7 +154,8 @@ internal class Nlp : NlpController {
                     connector.connectorType.toString(),
                     referenceDate = dialog.state.nextActionState?.referenceDate ?: ZonedDateTime.now(defaultZoneId),
                     referenceTimezone = dialog.state.nextActionState?.referenceTimezone ?: defaultZoneId,
-                    test = userTimeline.userPreferences.test
+                    test = test,
+                    registerQuery = !test && !userTimeline.userState.botDisabled
             )
         }
 

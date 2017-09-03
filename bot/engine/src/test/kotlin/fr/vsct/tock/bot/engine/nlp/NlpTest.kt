@@ -17,13 +17,17 @@
 package fr.vsct.tock.bot.engine.nlp
 
 import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.argumentCaptor
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
 import fr.vsct.tock.bot.engine.BotEngineTest
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
 import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
+import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import org.junit.Test
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 /**
  *
@@ -43,5 +47,26 @@ class NlpTest : BotEngineTest() {
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
         verify(nlpClient).parseIntentEntities(any())
         verify(nlpClient, never()).parse(any())
+    }
+
+    @Test
+    fun parseSentence_shouldNotRegisterQuery_whenBotIsDisabled() {
+        userTimeline.userState.botDisabled = true
+        Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
+        argumentCaptor<NlpQuery>().apply {
+            verify(nlpClient).parse(capture())
+            assertFalse(firstValue.context.test)
+            assertFalse(firstValue.context.registerQuery)
+        }
+    }
+
+    @Test
+    fun parseSentence_shouldRegisterQuery_whenBotIsNotDisabledAndItIsNotATestContext() {
+        Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
+        argumentCaptor<NlpQuery>().apply {
+            verify(nlpClient).parse(capture())
+            assertFalse(firstValue.context.test)
+            assertTrue(firstValue.context.registerQuery)
+        }
     }
 }
