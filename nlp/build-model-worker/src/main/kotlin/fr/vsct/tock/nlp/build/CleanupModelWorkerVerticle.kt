@@ -16,10 +16,13 @@
 
 package fr.vsct.tock.nlp.build
 
+import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.front.client.FrontClient
-import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.Executor
+import fr.vsct.tock.shared.injector
 import io.vertx.core.AbstractVerticle
 import mu.KotlinLogging
+import java.time.Duration
 
 /**
  *
@@ -30,15 +33,13 @@ class CleanupModelWorkerVerticle : AbstractVerticle() {
         private val logger = KotlinLogging.logger {}
     }
 
+    private val executor: Executor by injector.instance()
+
     override fun start() {
-        vertx.setPeriodic(12 * 60 * 60 * 1000, {
-            try {
-                logger.debug { "remove orphan models..." }
-                FrontClient.deleteOrphans()
-                logger.debug { "end remove orphan models" }
-            } catch (t: Throwable) {
-                logger.error(t)
-            }
+        executor.setPeriodic(Duration.ofHours(12), {
+            logger.debug { "remove orphan models..." }
+            FrontClient.deleteOrphans()
+            logger.debug { "end remove orphan models" }
         })
     }
 }

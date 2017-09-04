@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.build
 
+import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
@@ -24,11 +25,15 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.listProperty
 import io.vertx.core.AbstractVerticle
 import mu.KotlinLogging
+import java.time.Duration.ofHours
+import java.time.Duration.ofSeconds
 import java.time.LocalTime
 import java.util.Locale
 import java.util.concurrent.atomic.AtomicBoolean
@@ -87,10 +92,12 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
         }
     }
 
+    private val executor: Executor by injector.instance()
+
     override fun start() {
         val canAnalyse = AtomicBoolean(true)
 
-        vertx.setPeriodic(1000, {
+        executor.setPeriodic(ofSeconds(1), {
             if (canAnalyse.get()) {
                 try {
                     canAnalyse.set(false)
@@ -149,14 +156,10 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
         })
 
         if (completeModelEnabled) {
-            vertx.setPeriodic(60 * 60 * 1000, {
-                try {
-                    logger.debug { "trigger build to check not existing models" }
-                    front.getApplications().forEach {
-                        front.triggerBuild(ModelBuildTrigger(it._id!!, true, true))
-                    }
-                } catch (e: Throwable) {
-                    logger.error(e)
+            executor.setPeriodic(ofHours(1), {
+                logger.debug { "trigger build to check not existing models" }
+                front.getApplications().forEach {
+                    front.triggerBuild(ModelBuildTrigger(it._id!!, true, true))
                 }
             })
         }
