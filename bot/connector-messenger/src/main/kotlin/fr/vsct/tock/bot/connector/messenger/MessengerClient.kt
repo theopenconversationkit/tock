@@ -34,6 +34,7 @@ import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
@@ -60,20 +61,42 @@ internal class MessengerClient(val secretKey: String) {
         fun getUserProfile(@Path("userId") userId: String, @Query("access_token") accessToken: String, @Query("fields") fields: String): Call<UserProfile>
     }
 
+    interface StatusApi {
+
+        @GET("/platform/api-status")
+        fun status(): Call<ResponseBody>
+    }
+
     private val logger = KotlinLogging.logger {}
-    private val graphApi: MessengerClient.GraphApi
+    private val graphApi: GraphApi
+    private val statusApi: StatusApi
     private val nbRetriesLimit = intProperty("messenger_retries_on_error_limit", 1)
     private val nbRetriesWaitInMs = longProperty("messenger_retries_on_error_wait_in_ms", 5000)
 
     init {
-        val retrofit = retrofitBuilderWithTimeoutAndLogger(
+        graphApi = retrofitBuilderWithTimeoutAndLogger(
                 longProperty("tock_messenger_request_timeout_ms", 30000),
                 logger,
                 requestGZipEncoding = true)
                 .baseUrl("https://graph.facebook.com")
                 .addJacksonConverter()
                 .build()
-        graphApi = retrofit.create()
+                .create()
+        statusApi = retrofitBuilderWithTimeoutAndLogger(
+                longProperty("tock_messenger_request_timeout_ms", 5000),
+                logger)
+                .baseUrl("https://www.facebook.com")
+                .build()
+                .create()
+    }
+
+    fun healthcheck(): Boolean {
+        return try {
+            statusApi.status().execute().isSuccessful
+        } catch (t: Throwable) {
+            logger.error(t)
+            false
+        }
     }
 
     fun sendMessage(token: String, messageRequest: MessageRequest): SendResponse {

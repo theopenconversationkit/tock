@@ -72,6 +72,10 @@ class MessengerConnector internal constructor(
         fun getConnectorByPageId(pageId: String): MessengerConnector? {
             return connectors.find { it.pageId == pageId }
         }
+
+        fun healthcheck(): Boolean {
+            return connectors.firstOrNull()?.client?.healthcheck() ?: true
+        }
     }
 
     init {
@@ -93,7 +97,7 @@ class MessengerConnector internal constructor(
                     } else {
                         context.response().end("Invalid verify token")
                     }
-                } catch(e: Throwable) {
+                } catch (e: Throwable) {
                     logger.error(e)
                     context.fail(500)
                 }
@@ -126,14 +130,14 @@ class MessengerConnector internal constructor(
                                                         } else {
                                                             logger.logError("unable to convert $m to event", requestTimerData)
                                                         }
-                                                    } catch(e: Throwable) {
+                                                    } catch (e: Throwable) {
                                                         try {
                                                             logger.logError(e, requestTimerData)
                                                             controller.errorMessage(m.playerId(bot), applicationId, m.recipientId(bot)).let {
                                                                 send(it)
                                                                 endTypingAnswer(it)
                                                             }
-                                                        } catch(t: Throwable) {
+                                                        } catch (t: Throwable) {
                                                             logger.error(e)
                                                         }
                                                     }
@@ -141,30 +145,30 @@ class MessengerConnector internal constructor(
                                             } else {
                                                 logger.warn { "empty message for entry $entry" }
                                             }
-                                        } catch(e: Throwable) {
+                                        } catch (e: Throwable) {
                                             logger.logError(e, requestTimerData)
                                         }
                                     }
-                                } catch(e: Throwable) {
+                                } catch (e: Throwable) {
                                     logger.logError(e, requestTimerData)
                                 } finally {
                                     it.complete()
                                 }
                             }, false, {})
-                        } catch(t: Throwable) {
+                        } catch (t: Throwable) {
                             logger.logError(t, requestTimerData)
                         }
                     } else {
                         logger.logError("Not signed by facebook!!! : $facebookHeader \n $body", requestTimerData)
                     }
 
-                } catch(e: Throwable) {
+                } catch (e: Throwable) {
                     logger.logError(e, requestTimerData)
                 } finally {
                     try {
                         requestTimer.end(requestTimerData)
                         context.response().end()
-                    } catch(e: Throwable) {
+                    } catch (e: Throwable) {
                         logger.error(e)
                     }
                 }
@@ -219,7 +223,7 @@ class MessengerConnector internal constructor(
                     }
                 }
             }
-        } catch(e: Throwable) {
+        } catch (e: Throwable) {
             logger.error(e)
             null
         }
@@ -280,14 +284,14 @@ class MessengerConnector internal constructor(
                     userProfile.locale?.let {
                         try {
                             LocaleUtils.toLocale(it)
-                        } catch(e: Exception) {
+                        } catch (e: Exception) {
                             logger.error(e)
                             null
                         }
                     } ?: defaultLocale,
                     userProfile.profilePic,
                     userProfile.gender)
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             logger.error(e)
         }
         return UserPreferences()
