@@ -19,13 +19,17 @@ package fr.vsct.tock.nlp.front.service.storage
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLog
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQueryResult
+import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogStat
+import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogStatQuery
 
 /**
  *
  */
 interface ParseRequestLogDAO {
 
-    fun save(log : ParseRequestLog)
+    fun save(log: ParseRequestLog)
 
     fun search(query: ParseRequestLogQuery): ParseRequestLogQueryResult
+
+    fun stats(query: ParseRequestLogStatQuery): List<ParseRequestLogStat>
 }

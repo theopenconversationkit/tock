@@ -127,6 +127,7 @@ export class TestBuildsComponent implements OnInit {
   };
   public lineChartLegend: boolean = true;
   public lineChartType: string = 'line';
+  public nodata: boolean = false;
 
   constructor(private state: StateService, private quality: QualityService) {
   }
@@ -134,6 +135,11 @@ export class TestBuildsComponent implements OnInit {
   ngOnInit(): void {
     this.quality.buildStats(this.state.createApplicationScopedQuery())
       .subscribe(result => {
+        if(result.length === 0) {
+          this.nodata = true;
+          return;
+        }
+        this.nodata = false;
         maxDurationUnit = "ms";
         const errorData = result.map(p => {
           return {

@@ -14,19 +14,21 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.front.shared
+package fr.vsct.tock.nlp.admin.model
 
-import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
-import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQueryResult
-import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogStat
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogStatQuery
 
 /**
  *
  */
-interface ApplicationMonitor {
+data class LogStatsQuery(val intent: String?) : ApplicationScopedQuery() {
 
-    fun search(query: ParseRequestLogQuery): ParseRequestLogQueryResult
-
-    fun stats(query: ParseRequestLogStatQuery): List<ParseRequestLogStat>
+    fun toStatQuery(application: ApplicationDefinition): ParseRequestLogStatQuery {
+        return ParseRequestLogStatQuery(
+                application._id!!,
+                language,
+                intent
+        )
+    }
 }

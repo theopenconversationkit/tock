@@ -15,7 +15,7 @@
  */
 
 import {Component, Inject} from "@angular/core";
-import {Log, PaginatedResult, SearchLogsQuery} from "../model/nlp";
+import {Log, PaginatedResult, LogsQuery} from "../model/nlp";
 import {ScrollComponent} from "../scroll/scroll.component";
 import {StateService} from "../core/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
@@ -44,7 +44,7 @@ export class LogsComponent extends ScrollComponent<Log> {
   }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<Log>> {
-    return this.nlp.searchLogs(new SearchLogsQuery(
+    return this.nlp.searchLogs(new LogsQuery(
       query.namespace,
       query.applicationName,
       query.language,

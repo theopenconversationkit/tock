@@ -14,21 +14,19 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.admin.model
+package fr.vsct.tock.nlp.front.shared.monitoring
 
-import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
+import java.time.LocalDate
 
 /**
  *
  */
-data class SearchLogsQuery(val search: String?) : PaginatedQuery() {
-
-    fun toParseRequestLogQuery(applicationId: String): ParseRequestLogQuery =
-            ParseRequestLogQuery(
-                    applicationId,
-                    language,
-                    start,
-                    size,
-                    search
-            )
+data class ParseRequestLogStat(
+        val day: LocalDate,
+        val error: Int,
+        val count: Int,
+        val averageDuration: Double,
+        val averageIntentProbability: Double,
+        val averageEntitiesProbability: Double
+) {
 }

@@ -14,19 +14,15 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.front.shared
+package fr.vsct.tock.nlp.front.shared.monitoring
 
-import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
-import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQueryResult
-import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogStat
-import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogStatQuery
+import java.util.Locale
 
 /**
  *
  */
-interface ApplicationMonitor {
-
-    fun search(query: ParseRequestLogQuery): ParseRequestLogQueryResult
-
-    fun stats(query: ParseRequestLogStatQuery): List<ParseRequestLogStat>
-}
+data class ParseRequestLogStatQuery(
+        val applicationId: String,
+        val language: Locale,
+        val intent: String?
+)

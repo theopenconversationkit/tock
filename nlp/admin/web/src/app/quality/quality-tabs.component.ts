@@ -23,6 +23,7 @@ class TabLink {
 }
 
 const tabs = [
+  new TabLink("log-stats", "Stats"),
   new TabLink("test-builds", "Tests Trend"),
   new TabLink("test-intent-errors", "Intent Errors"),
   new TabLink("test-entity-errors", "Entity Errors"),

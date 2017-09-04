@@ -24,7 +24,7 @@ import fr.vsct.tock.nlp.admin.model.IntentTestErrorQueryResultReport
 import fr.vsct.tock.nlp.admin.model.IntentTestErrorWithSentenceReport
 import fr.vsct.tock.nlp.admin.model.LogsReport
 import fr.vsct.tock.nlp.admin.model.ParseQuery
-import fr.vsct.tock.nlp.admin.model.SearchLogsQuery
+import fr.vsct.tock.nlp.admin.model.LogsQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.admin.model.SentencesReport
@@ -82,7 +82,7 @@ object AdminService {
         }
     }
 
-    fun searchLogs(query: SearchLogsQuery): LogsReport {
+    fun searchLogs(query: LogsQuery): LogsReport {
         val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
         val applicationId = application!!._id!!
         val result = front.search(query.toParseRequestLogQuery(applicationId))

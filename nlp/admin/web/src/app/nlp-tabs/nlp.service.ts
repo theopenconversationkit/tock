@@ -22,7 +22,7 @@ import {
   EntityType,
   LogsResult,
   ParseQuery,
-  SearchLogsQuery,
+  LogsQuery,
   SearchQuery,
   Sentence,
   SentencesResult
@@ -81,7 +81,7 @@ export class NlpService implements OnDestroy {
     return this.rest.post("/sentences/search", query, SentencesResult.fromJSON)
   }
 
-  searchLogs(query: SearchLogsQuery): Observable<LogsResult> {
+  searchLogs(query: LogsQuery): Observable<LogsResult> {
     return this.rest.post("/logs/search", query, LogsResult.fromJSON)
   }
 

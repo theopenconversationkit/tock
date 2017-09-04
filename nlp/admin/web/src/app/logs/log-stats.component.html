@@ -14,33 +14,48 @@
   ~ limitations under the License.
   -->
 
+<md-card class="search">
+  <md-card-content>
+    <md-select placeholder="Intent" [(ngModel)]="intent" (change)="search()" class="search-input">
+      <md-option value="">All</md-option>
+      <md-option *ngFor="let intent of state.currentApplication.intents" [value]="intent.name">
+        {{intent.name}}
+      </md-option>
+      <md-option value="unknown">Unknown</md-option>
+    </md-select>
+    <button md-button (click)="search()">GO</button>
+  </md-card-content>
+</md-card>
+
 <h2 *ngIf="nodata" class="search">
-  No Data
+      No Data
 </h2>
+
+<p></p>
+<p></p>
+
 <div *ngIf="!nodata">
-  <canvas *ngIf="errors" baseChart
-          [datasets]="errors"
-          [options]="errorChartOptions"
+  <canvas *ngIf="probability" baseChart
+          [datasets]="probability"
+          [options]="probabilityChartOptions"
+          [legend]="lineChartLegend"
+          [chartType]="lineChartType">
+  </canvas>
+
+</div>
+<div *ngIf="!nodata">
+  <canvas *ngIf="stats" baseChart
+          [datasets]="stats"
+          [options]="statsChartOptions"
           [legend]="lineChartLegend"
           [chartType]="lineChartType">
 
   </canvas>
 </div>
-<br>
 <div *ngIf="!nodata">
-  <canvas *ngIf="durations" baseChart
-          [datasets]="durations"
+  <canvas *ngIf="duration" baseChart
+          [datasets]="duration"
           [options]="durationChartOptions"
-          [legend]="lineChartLegend"
-          [chartType]="lineChartType">
-
-  </canvas>
-</div>
-<br>
-<div *ngIf="!nodata">
-  <canvas *ngIf="sizes" baseChart
-          [datasets]="sizes"
-          [options]="sizeChartOptions"
           [legend]="lineChartLegend"
           [chartType]="lineChartType">
 

@@ -21,8 +21,9 @@ import fr.vsct.tock.nlp.admin.model.ApplicationWithIntents
 import fr.vsct.tock.nlp.admin.model.CreateEntityQuery
 import fr.vsct.tock.nlp.admin.model.EntityTestErrorWithSentenceReport
 import fr.vsct.tock.nlp.admin.model.IntentTestErrorWithSentenceReport
+import fr.vsct.tock.nlp.admin.model.LogStatsQuery
+import fr.vsct.tock.nlp.admin.model.LogsQuery
 import fr.vsct.tock.nlp.admin.model.ParseQuery
-import fr.vsct.tock.nlp.admin.model.SearchLogsQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.front.client.FrontClient
@@ -199,9 +200,17 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             }
         }
 
-        blockingJsonPost("/logs/search") { context, s: SearchLogsQuery ->
+        blockingJsonPost("/logs/search") { context, s: LogsQuery ->
             if (context.organization == s.namespace) {
                 admin.searchLogs(s)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/logs/stats") { context, s: LogStatsQuery ->
+            if (context.organization == s.namespace) {
+                front.stats(s.toStatQuery(front.getApplicationByNamespaceAndName(s.namespace, s.applicationName)!!))
             } else {
                 unauthorized()
             }

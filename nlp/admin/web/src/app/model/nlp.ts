@@ -404,7 +404,7 @@ export class SentencesResult implements PaginatedResult<Sentence> {
   }
 }
 
-export class SearchLogsQuery extends PaginatedQuery {
+export class LogsQuery extends PaginatedQuery {
 
   constructor(public namespace: string,
               public applicationName: string,
@@ -472,6 +472,42 @@ export class Log {
   static fromJSONArray(json?: Array<any>): Log[] {
     return json ? json.map(Log.fromJSON) : [];
   }
+}
+
+export class LogStatsQuery extends ApplicationScopedQuery {
+
+  constructor(public namespace: string,
+              public applicationName: string,
+              public language: string,
+              public intent?: string) {
+    super(namespace, applicationName, language)
+  }
+}
+
+export class LogStat {
+
+  constructor(public day: Date,
+              public error: number,
+              public count: number,
+              public averageDuration: number,
+              public averageIntentProbability: number,
+              public averageEntitiesProbability: number) {
+
+  }
+
+  static fromJSON(json?: any): LogStat {
+    const value = Object.create(LogStat.prototype);
+
+    const result = Object.assign(value, json, {
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): LogStat[] {
+    return json ? json.map(LogStat.fromJSON) : [];
+  }
+
 }
 
 export class IntentTestErrorQueryResult {

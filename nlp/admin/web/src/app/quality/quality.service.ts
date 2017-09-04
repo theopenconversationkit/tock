@@ -21,6 +21,8 @@ import {
   EntityTestErrorQueryResult,
   IntentTestError,
   IntentTestErrorQueryResult,
+  LogStat,
+  LogStatsQuery,
   TestBuildStat,
   TestErrorQuery
 } from "../model/nlp";
@@ -31,6 +33,10 @@ import {ApplicationScopedQuery} from "../model/commons";
 export class QualityService {
 
   constructor(private rest: RestService) {
+  }
+
+  logStats(query: LogStatsQuery): Observable<LogStat[]> {
+    return this.rest.post("/logs/stats", query, LogStat.fromJSONArray)
   }
 
   searchIntentErrors(query: TestErrorQuery): Observable<IntentTestErrorQueryResult> {
