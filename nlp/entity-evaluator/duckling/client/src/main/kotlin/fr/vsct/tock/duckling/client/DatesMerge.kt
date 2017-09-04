@@ -119,7 +119,7 @@ internal object DatesMerge {
     private fun mergeGrain(language: Locale, oldValue: ValueDescriptor, newValue: ValueDescriptor): MergeGrain? {
         return if (oldValue.end() < ZonedDateTime.now()) {
             null
-        } else if (language.language == "fr" && frenchChangeHourRegex.matches(newValue.content!!)) {
+        } else if (language.language == "fr" && frenchChangeHourRegex.matches(newValue.content!!.toLowerCase())) {
             MergeGrain(false, day)
         } else if (oldValue.grain() > newValue.grain()
                 && oldValue.grain().calculateEnd(newValue.start()) >= newValue.end()) {
@@ -137,7 +137,7 @@ internal object DatesMerge {
         } else {
             true
         }
-        return if (basicSupport && newValue.content != null && frenchAddRegex.matches(newValue.content!!)) {
+        return if (basicSupport && newValue.content != null && frenchAddRegex.matches(newValue.content!!.toLowerCase())) {
             MergeGrain(true, newValue.grain())
         } else {
             null

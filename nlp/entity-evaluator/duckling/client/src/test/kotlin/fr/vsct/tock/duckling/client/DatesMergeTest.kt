@@ -65,7 +65,7 @@ internal class DatesMergeTest {
                         referenceTime.plusDays(2),
                         DateEntityGrain.day
                 ),
-                "2 jours après",
+                "2 jours Après",
                 false,
                 12,
                 0.8)
@@ -105,7 +105,7 @@ internal class DatesMergeTest {
                         eq(Locale.FRENCH.language),
                         eq(timeDucklingDimension),
                         eq((tomorrow.value as DateEntityValue).date),
-                        eq("2 jours après")
+                        eq("2 jours Après")
                 )
             } doReturn (listOf(
                     ValueWithRange(0, 0, inThreeDays, timeDucklingDimension)))
