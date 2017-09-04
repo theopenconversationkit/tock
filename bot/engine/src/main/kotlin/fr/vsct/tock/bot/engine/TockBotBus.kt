@@ -39,7 +39,7 @@ import java.util.Locale
  *
  */
 internal class TockBotBus(
-        private val connector: ConnectorController,
+        private val connector: TockConnectorController,
         override val userTimeline: UserTimeline,
         override val dialog: Dialog,
         override val story: Story,
@@ -109,7 +109,7 @@ internal class TockBotBus(
         return answer(action, delay)
     }
 
-        override fun sendRawText(plainText: CharSequence?, delay: Long): BotBus {
+    override fun sendRawText(plainText: CharSequence?, delay: Long): BotBus {
         return answer(SendSentence(botId, applicationId, userId, plainText?.toString()), delay)
     }
 
@@ -122,8 +122,8 @@ internal class TockBotBus(
         return this
     }
 
-    override fun with(connectorType: ConnectorType,messageProvider: () -> ConnectorMessage): BotBus {
-        if(targetConnectorType == connectorType) {
+    override fun with(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus {
+        if (targetConnectorType == connectorType) {
             context.addMessage(messageProvider.invoke())
         }
         return this
@@ -138,7 +138,9 @@ internal class TockBotBus(
 
     override fun reloadProfile() {
         val newUserPref = connector.loadProfile(applicationId, userId)
-        userTimeline.userState.profileLoaded = true
-        userPreferences.fillWith(newUserPref)
+        if (newUserPref != null) {
+            userTimeline.userState.profileLoaded = true
+            userPreferences.fillWith(newUserPref)
+        }
     }
 }

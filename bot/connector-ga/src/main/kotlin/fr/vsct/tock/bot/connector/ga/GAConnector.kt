@@ -34,6 +34,7 @@ import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
+import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
 import io.vertx.ext.web.RoutingContext
@@ -76,32 +77,39 @@ class GAConnector internal constructor(
             router.post(path).blockingHandler({ context ->
                 try {
                     val body = context.bodyAsString
-                    logger.debug { "Google Assistant request input : $body" }
-                    val request: GARequest = mapper.readValue(body)
-                    val event = WebhookActionConverter.toEvent(controller, request, applicationId)
-                    val userId = request.user.userId
-                    try {
-                        currentMessages.put(userId, RoutingContextHolder(context, request))
-                        controller.handle(event)
-                    } catch (t: Throwable) {
-                        try {
-                            logger.error(t)
-                            send(controller.errorMessage(
-                                    PlayerId(userId, PlayerType.user),
-                                    applicationId,
-                                    PlayerId(applicationId, PlayerType.bot)))
-                        } catch (t: Throwable) {
-                            logger.error(t)
-                        }
-                    } finally {
-                        sendAnswer(userId)
-                    }
+                    handleRequest(controller, context, body)
 
                 } catch (e: Throwable) {
                     logger.error(e)
                 }
             }, false)
         })
+    }
+
+    //internal for tests
+    internal fun handleRequest(controller: ConnectorController,
+                               context: RoutingContext,
+                               body: String) {
+        logger.debug { "Google Assistant request input : $body" }
+        val request: GARequest = mapper.readValue(body)
+        val event = WebhookActionConverter.toEvent(controller, request, applicationId)
+        val userId = request.user.userId
+        try {
+            currentMessages.put(userId, RoutingContextHolder(context, request))
+            controller.handle(event)
+        } catch (t: Throwable) {
+            try {
+                logger.error(t)
+                send(controller.errorMessage(
+                        PlayerId(userId, PlayerType.user),
+                        applicationId,
+                        PlayerId(applicationId, PlayerType.bot)))
+            } catch (t: Throwable) {
+                logger.error(t)
+            }
+        } finally {
+            sendAnswer(userId)
+        }
     }
 
     private fun sendAnswer(userId: String) {
@@ -161,10 +169,15 @@ class GAConnector internal constructor(
 
                 val message = actions.firstOrNull { it.action is SendSentence && it.action.hasMessage(gaConnectorType) }
                 val expectedInput = if (message == null) {
-                    GAExpectedInput(
-                            GAInputPrompt(
-                                    GARichResponse(
-                                            listOf(simpleResponse!!))))
+                    if (simpleResponse == null) {
+                        logger.warn { "no simple response for $routingContext" }
+                        null
+                    } else {
+                        GAExpectedInput(
+                                GAInputPrompt(
+                                        GARichResponse(
+                                                listOf(simpleResponse))))
+                    }
                 } else {
                     val m = (message.action as SendSentence).message(gaConnectorType) as GAResponseConnectorMessage
                     if (simpleResponse == null) {
@@ -185,7 +198,7 @@ class GAConnector internal constructor(
                 val gaResponse = GAResponse(
                         request.conversation.conversationToken ?: "",
                         true,
-                        listOf(expectedInput),
+                        listOfNotNull(expectedInput),
                         null,
                         null,
                         null, //GAResponseMetadata(GAStatus(0, "OK")),
@@ -201,6 +214,17 @@ class GAConnector internal constructor(
             }
         } catch (e: Exception) {
             logger.error(e)
+        }
+    }
+
+    override fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences? {
+        return currentMessages.getIfPresent(userId.id)
+                ?.request?.user?.profile?.run {
+            if (givenName != null) {
+                UserPreferences(givenName, familyName)
+            } else {
+                null
+            }
         }
     }
 }

@@ -17,20 +17,15 @@
 package fr.vsct.tock.bot.connector.ga.model.response
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import com.fasterxml.jackson.annotation.JsonSubTypes
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import fr.vsct.tock.bot.connector.ga.model.GAInputValueDataType
+import fr.vsct.tock.bot.connector.ga.model.GAIntent
+import fr.vsct.tock.bot.connector.ga.model.request.GAPermission
 
 /**
  *
  */
-@JsonTypeInfo(
-        use = JsonTypeInfo.Id.NAME,
-        include = JsonTypeInfo.As.EXISTING_PROPERTY,
-        property = "@type")
-@JsonSubTypes(
-        JsonSubTypes.Type(value = GAOptionValueSpec::class, name = "type.googleapis.com/google.actions.v2.OptionValueSpec"),
-        JsonSubTypes.Type(value = GAPermissionValueSpec::class, name = "type.googleapis.com/google.actions.v2.PermissionValueSpec")
-)
-abstract class GAInputValueData(@get:JsonProperty("@type") val type: GAInputValueDataType) {
+data class GAPermissionValueSpec(
+        @get:JsonProperty("opt_context")
+        val optContext: String,
+        val permissions: Set<GAPermission>
+) : GAInputValueData(GAIntent.permission.type!!) {
 }

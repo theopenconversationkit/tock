@@ -18,6 +18,10 @@ package fr.vsct.tock.bot.connector.ga
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.ga.model.GAIntent
+import fr.vsct.tock.bot.connector.ga.model.request.GAPermission
+import fr.vsct.tock.bot.connector.ga.model.response.GAExpectedIntent
+import fr.vsct.tock.bot.connector.ga.model.response.GAPermissionValueSpec
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.translator.UserInterfaceType.voiceAssistant
 
@@ -30,3 +34,14 @@ fun BotBus.withGoogleAssistant(messageProvider: () -> ConnectorMessage): BotBus 
     with(gaConnectorType, messageProvider)
     return this
 }
+
+fun BotBus.permissionIntent(optionalContext: String = "", vararg permissions: GAPermission): GAExpectedIntent {
+    return GAExpectedIntent(
+            GAIntent.permission,
+            GAPermissionValueSpec(
+                    optionalContext,
+                    permissions.toSet()
+            )
+    )
+}
+

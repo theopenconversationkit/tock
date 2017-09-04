@@ -48,11 +48,11 @@ interface Connector {
     fun send(event: Event, delayInMs: Long) = send(event)
 
     /**
-     * Load user preferences - default implementation returns empty [UserPreferences].
+     * Load user preferences - default implementation returns null.
      */
-    fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences {
-        //default implementation returns empty userPref
-        return UserPreferences()
+    fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences? {
+        //default implementation returns null
+        return null
     }
 
 }

@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentContext
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
+import fr.vsct.tock.bot.engine.TockConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.ContextValue
@@ -64,7 +65,7 @@ internal class Nlp : NlpController {
                                  val sentence: SendSentence,
                                  val userTimeline: UserTimeline,
                                  val dialog: Dialog,
-                                 val connector: ConnectorController,
+                                 val connector: TockConnectorController,
                                  val botDefinition: BotDefinition) {
 
         fun parse() {
@@ -277,7 +278,7 @@ internal class Nlp : NlpController {
                                dialog: Dialog,
                                connector: ConnectorController,
                                botDefinition: BotDefinition) {
-        SentenceParser(nlpClient, sentence, userTimeline, dialog, connector, botDefinition).parse()
+        SentenceParser(nlpClient, sentence, userTimeline, dialog, connector as TockConnectorController, botDefinition).parse()
     }
 
     override fun importNlpDump(stream: InputStream): Boolean = nlpClient.importNlpDump(stream).body() ?: false

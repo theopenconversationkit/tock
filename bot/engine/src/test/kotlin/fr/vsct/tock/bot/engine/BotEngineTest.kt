@@ -88,7 +88,7 @@ abstract class BotEngineTest {
                                 "",
                                 emptyMap())))
     }
-    val nlp: NlpController = mock()
+    internal val nlp: NlpController = mock()
     val executor: Executor = mock()
     val connector: Connector = mock {
         on { loadProfile(any(), any()) } doReturn (UserPreferences())
@@ -133,7 +133,7 @@ abstract class BotEngineTest {
         fillTimeline()
         Bot(botDefinition)
     }
-    val connectorController: ConnectorController by lazy { ConnectorController(bot, connector, BotVerticle()) }
+    internal val connectorController: TockConnectorController by lazy { TockConnectorController(bot, connector, BotVerticle()) }
 
     private var timelineFilled = false
 

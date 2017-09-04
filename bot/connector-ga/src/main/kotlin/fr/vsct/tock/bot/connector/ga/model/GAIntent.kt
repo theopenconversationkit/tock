@@ -32,8 +32,8 @@ enum class GAIntent(
     transactionRequirementsCheck("actions.intent.TRANSACTION_REQUIREMENTS_CHECK", GAInputValueDataType.transactionRequirementsCheck),
     deliveryAddress("actions.intent.DELIVERY_ADDRESS", GAInputValueDataType.deliveryAddress),
     transactionDecision("actions.intent.TRANSACTION_DECISION", GAInputValueDataType.transactionDecision),
-    permission("actions.intent.PERMISSION"),
-    datetime("actions.intent.DATETIME"),
+    permission("actions.intent.PERMISSION", GAInputValueDataType.permission),
+    datetime("actions.intent.DATETIME", GAInputValueDataType.datetime),
     signIn("actions.intent.SIGN_IN");
 
     companion object {

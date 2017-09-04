@@ -16,130 +16,24 @@
 
 package fr.vsct.tock.bot.engine
 
-import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.Connector
-import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.event.Event
-import fr.vsct.tock.bot.engine.event.TypingOnEvent
 import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.bot.engine.user.UserLock
-import fr.vsct.tock.bot.engine.user.UserPreferences
-import fr.vsct.tock.bot.engine.user.UserTimelineDAO
-import fr.vsct.tock.shared.Executor
-import fr.vsct.tock.shared.error
-import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.intProperty
-import fr.vsct.tock.shared.longProperty
 import io.vertx.ext.web.Router
-import mu.KotlinLogging
-import java.time.Duration
 
 /**
- *
+ * Controller to connect [Connector] and [Bot].
  */
-class ConnectorController internal constructor(
-        val bot: Bot,
-        private val connector: Connector,
-        private val verticle: BotVerticle) {
+interface ConnectorController {
 
-    companion object {
+    fun handle(event: Event)
 
-        private val logger = KotlinLogging.logger {}
-        private val maxLockedAttempts = intProperty("tock_bot_max_locked_attempts", 10)
-        private val lockedAttemptsWaitInMs = longProperty("tock_bot_locked_attempts_wait_in_ms", 500L)
+    fun registerServices(rootPath: String, installer: (Router) -> Unit)
 
-        internal fun register(connector: Connector,
-                              bot: Bot,
-                              verticle: BotVerticle) {
-            logger.info { "Register connector $connector for bot $bot" }
-            connector.register(ConnectorController(bot, connector, verticle))
-        }
-    }
+    fun errorMessage(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action
 
-    private val executor: Executor by injector.instance()
-    private val userLock: UserLock by injector.instance()
-    private val userTimelineDAO: UserTimelineDAO by injector.instance()
-
-    internal val connectorType: ConnectorType get() = connector.connectorType
-
-    fun handle(event: Event) {
-        when (event) {
-            is Action -> handleAction(event, 0)
-            else -> bot.handleEvent(connector, event)
-        }
-    }
-
-    private fun handleAction(action: Action, nbAttempts: Int) {
-        val playerId = action.playerId
-        val id = playerId.id
-
-        logger.debug { "try to lock $playerId" }
-        if (userLock.lock(id)) {
-            try {
-                val userTimeline = userTimelineDAO.loadWithLastValidDialog(action.playerId, { bot.botDefinition.findStoryDefinition(it) })
-                bot.handle(action, userTimeline, this)
-                userTimelineDAO.save(userTimeline)
-            } catch(t: Throwable) {
-                logger.error(t)
-                send(bot.errorActionFor(action))
-            } finally {
-                userLock.releaseLock(id)
-            }
-        } else if (nbAttempts < maxLockedAttempts) {
-            logger.debug { "$playerId locked - wait" }
-            executor.executeBlocking(Duration.ofMillis(lockedAttemptsWaitInMs)) {
-                handleAction(action, nbAttempts + 1)
-            }
-
-        } else {
-            logger.debug { "$playerId locked for $maxLockedAttempts times - skip $action" }
-        }
-    }
-
-    fun registerServices(rootPath: String, installer: (Router) -> Unit) {
-        verticle.registerServices(rootPath, installer)
-    }
-
-    internal fun send(action: Action, delay: Long = 0) {
-        if (connectorType.asynchronous) {
-            sendAsynchronous(action, delay)
-        } else {
-            sendSynchronous(action, delay)
-        }
-    }
-
-    private fun sendSynchronous(action: Action, delay: Long = 0) {
-        try {
-            logger.debug { "message sent: $action" }
-            connector.send(action, delay)
-        } catch(t: Throwable) {
-            logger.error(t)
-        }
-    }
-
-    private fun sendAsynchronous(action: Action, delay: Long = 0) {
-        executor.executeBlocking(Duration.ofMillis(delay)) {
-            logger.debug { "message sent: $action" }
-            connector.send(action)
-        }
-    }
-
-    fun errorMessage(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {
-        val errorAction = bot.botDefinition.errorAction(playerId, applicationId, recipientId)
-        errorAction.metadata.lastAnswer = true
-        return errorAction
-    }
-
-    fun helloIntent(): Intent? = bot.botDefinition.helloStory?.mainIntent()
-
-    internal fun loadProfile(applicationId: String, playerId: PlayerId): UserPreferences {
-        return connector.loadProfile(applicationId, playerId)
-    }
-
-    internal fun startTypingInAnswerTo(action: Action) {
-        connector.send(TypingOnEvent(action.playerId, action.applicationId))
-    }
+    fun helloIntent(): Intent?
 
 }

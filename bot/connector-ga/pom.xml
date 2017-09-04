@@ -49,6 +49,18 @@
             <artifactId>junit</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>com.nhaarman</groupId>
+            <artifactId>mockito-kotlin</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <!-- see https://github.com/mockito/mockito/issues/366 -->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-codegen</artifactId>
+            <version>${vertx}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

@@ -128,7 +128,7 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
 
     override fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences {
         //register user as test user if applicable
-        return super.loadProfile(applicationId, userId)
+        return UserPreferences()
                 .apply {
                     test = currentMessages.getIfPresent(userId.id)?.test ?: false
                 }

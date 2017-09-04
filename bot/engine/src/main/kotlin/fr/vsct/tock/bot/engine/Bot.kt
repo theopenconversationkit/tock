@@ -46,11 +46,12 @@ class Bot(botDefinitionBase: BotDefinition) {
     internal val botDefinition: BotDefinitionWrapper = BotDefinitionWrapper(botDefinitionBase)
 
     fun handle(action: Action, userTimeline: UserTimeline, connector: ConnectorController) {
+        val realConnector = connector as TockConnectorController
         loadProfileIfNotSet(action, userTimeline, connector)
 
         val dialog = getDialog(action, userTimeline)
 
-        parseAction(action, userTimeline, dialog, connector)
+        parseAction(action, userTimeline, dialog, realConnector)
 
         if (botDefinition.isEnabledIntent(dialog.state.currentIntent)) {
             logger.debug { "Enable bot for $action" }
@@ -58,9 +59,9 @@ class Bot(botDefinitionBase: BotDefinition) {
         }
 
         if (!userTimeline.userState.botDisabled) {
-            connector.startTypingInAnswerTo(action)
+            realConnector.startTypingInAnswerTo(action)
             val story = getStory(action, dialog)
-            val bus = TockBotBus(connector, userTimeline, dialog, story, action, botDefinition)
+            val bus = TockBotBus(realConnector, userTimeline, dialog, story, action, botDefinition)
 
             story.handle(bus)
         } else {
@@ -115,7 +116,7 @@ class Bot(botDefinitionBase: BotDefinition) {
     private fun parseAction(action: Action,
                             userTimeline: UserTimeline,
                             dialog: Dialog,
-                            connector: ConnectorController) {
+                            connector: TockConnectorController) {
         try {
             when (action) {
                 is SendChoice -> {
@@ -187,12 +188,14 @@ class Bot(botDefinitionBase: BotDefinition) {
         return botDefinition.errorActionFor(userAction)
     }
 
-    private fun loadProfileIfNotSet(action: Action, userTimeline: UserTimeline, connector: ConnectorController) {
+    private fun loadProfileIfNotSet(action: Action, userTimeline: UserTimeline, connector: TockConnectorController) {
         with(userTimeline) {
             if (!userState.profileLoaded) {
                 val pref = connector.loadProfile(action.applicationId, userTimeline.playerId)
-                userState.profileLoaded = true
-                userPreferences.fillWith(pref)
+                if (pref != null) {
+                    userState.profileLoaded = true
+                    userPreferences.fillWith(pref)
+                }
             }
             action.state.testEvent = userPreferences.test
         }

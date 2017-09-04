@@ -1,0 +1,41 @@
+{
+  "user": {
+    "userId": "a",
+    "profile": {
+      "displayName": "Pierre Totor",
+      "givenName": "Pierre",
+      "familyName": "Totor"
+    },
+    "locale": "en-US"
+  },
+  "conversation": {
+    "conversationId": "1504529220232",
+    "type": "NEW"
+  },
+  "inputs": [
+    {
+      "intent": "actions.intent.PERMISSION",
+      "rawInputs": [
+        {
+          "inputType": "VOICE",
+          "query": "yes"
+        }
+      ],
+      "arguments": [
+        {
+          "name": "PERMISSION",
+          "textValue": "true"
+        }
+      ]
+    }
+  ],
+  "surface": {
+    "capabilities": [
+      {
+        "name": "actions.capability.AUDIO_OUTPUT"
+      }
+    ]
+  },
+  "device": {},
+  "isInSandbox": true
+}

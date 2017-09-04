@@ -100,7 +100,7 @@ object BotRepository {
                         configuration.getName(),
                         configuration.getBaseUrl())
 
-                ConnectorController.register(connector, bot, verticle)
+                TockConnectorController.register(connector, bot, verticle)
 
                 botConfigurationDAO.updateIfNotManuallyModified(conf)
             }
