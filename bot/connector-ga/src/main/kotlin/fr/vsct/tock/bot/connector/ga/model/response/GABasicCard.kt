@@ -20,8 +20,8 @@ package fr.vsct.tock.bot.connector.ga.model.response
  *
  */
 data class GABasicCard(
-        val title: String,
-        val subtitle: String,
+        val title: String? = null,
+        val subtitle: String? = null,
         val formattedText: String? = null,
         val image : GAImage? = null,
         val buttons: List<GAButton> = emptyList()

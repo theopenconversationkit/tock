@@ -20,14 +20,33 @@ import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.ga.model.GAIntent
 import fr.vsct.tock.bot.connector.ga.model.request.GAPermission
+import fr.vsct.tock.bot.connector.ga.model.response.GABasicCard
+import fr.vsct.tock.bot.connector.ga.model.response.GAButton
+import fr.vsct.tock.bot.connector.ga.model.response.GACarouselSelect
+import fr.vsct.tock.bot.connector.ga.model.response.GAExpectedInput
 import fr.vsct.tock.bot.connector.ga.model.response.GAExpectedIntent
+import fr.vsct.tock.bot.connector.ga.model.response.GAImage
+import fr.vsct.tock.bot.connector.ga.model.response.GAInputPrompt
+import fr.vsct.tock.bot.connector.ga.model.response.GAItem
+import fr.vsct.tock.bot.connector.ga.model.response.GALinkOutSuggestion
+import fr.vsct.tock.bot.connector.ga.model.response.GAListItem
+import fr.vsct.tock.bot.connector.ga.model.response.GAListSelect
+import fr.vsct.tock.bot.connector.ga.model.response.GAOptionValueSpec
 import fr.vsct.tock.bot.connector.ga.model.response.GAPermissionValueSpec
+import fr.vsct.tock.bot.connector.ga.model.response.GARichResponse
+import fr.vsct.tock.bot.connector.ga.model.response.GASimpleResponse
+import fr.vsct.tock.bot.connector.ga.model.response.GASimpleSelect
+import fr.vsct.tock.bot.connector.ga.model.response.GAStructuredResponse
+import fr.vsct.tock.bot.connector.ga.model.response.GASuggestion
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.translator.UserInterfaceType.voiceAssistant
+import mu.KotlinLogging
 
 /**
  *
  */
+private val logger = KotlinLogging.logger {}
+
 val gaConnectorType = ConnectorType("ga", voiceAssistant, false)
 
 fun BotBus.withGoogleAssistant(messageProvider: () -> ConnectorMessage): BotBus {
@@ -43,5 +62,98 @@ fun BotBus.permissionIntent(optionalContext: String = "", vararg permissions: GA
                     permissions.toSet()
             )
     )
+}
+
+fun BotBus.linkOutSuggestion(destinationName: String, url: String): GALinkOutSuggestion {
+    val d = translate(destinationName)
+    if (d.length > 20) {
+        logger.warn { "title $d has more than 20 chars" }
+    }
+    return GALinkOutSuggestion(d.toString(), url)
+}
+
+fun BotBus.suggestion(text: String): GASuggestion {
+    val t = translate(text)
+    if (t.length > 25) {
+        logger.warn { "title $t has more than 25 chars" }
+    }
+    return GASuggestion(t.toString())
+}
+
+fun BotBus.simpleResponse(textToSpeech: String? = null, ssml: String? = null, displayText: String? = null): GASimpleResponse {
+    val t = translate(textToSpeech).run { if (isBlank()) null else this.toString() }
+    val s = translate(ssml).run { if (isBlank()) null else this.toString() }
+    val d = translate(displayText).run { if (isBlank()) null else this.toString() }
+
+    return GASimpleResponse(t, s, d)
+}
+
+fun BotBus.item(simpleResponse: GASimpleResponse? = null, basicCard: GABasicCard? = null, structuredResponse: GAStructuredResponse? = null): GAItem {
+
+    return GAItem(simpleResponse, basicCard, structuredResponse)
+}
+
+fun BotBus.item(basicCard: GABasicCard? = null): GAItem = item(null, basicCard, null)
+
+fun BotBus.item(simpleResponse: GASimpleResponse? = null): GAItem = item(simpleResponse, null, null)
+
+fun BotBus.basicCard(
+        title: String? = null,
+        subtitle: String? = null,
+        formattedText: String? = null,
+        image: GAImage? = null,
+        buttons: List<GAButton> = emptyList()): GABasicCard {
+
+    val t = translate(title).run { if (isBlank()) null else this.toString() }
+    val s = translate(subtitle).run { if (isBlank()) null else this.toString() }
+    val f = translate(formattedText).run { if (isBlank()) null else this.toString() }
+
+    return GABasicCard(t, s, f, image, buttons)
+}
+
+fun BotBus.basicCard(title: String? = null, subtitle: String? = null, image: GAImage? = null): GABasicCard = basicCard(title, subtitle, null, image)
+
+fun BotBus.basicCard(title: String? = null, image: GAImage? = null): GABasicCard = basicCard(title, "", null, image)
+
+fun BotBus.basicCard(image: GAImage? = null): GABasicCard = basicCard(null, null, null, image)
+
+fun BotBus.gaImage(url: String, accessibilityText: String, height: Int? = null, width: Int? = null): GAImage {
+    val a = translate(accessibilityText)
+    return GAImage(url, a.toString(), height, width)
+}
+
+fun BotBus.richResponse(items: List<GAItem>, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: GASuggestion): GARichResponse {
+    return GARichResponse(items, linkOutSuggestion = linkOutSuggestion, suggestions = listOf(*suggestions))
+}
+
+fun BotBus.richResponse(items: List<GAItem>, vararg suggestions: GASuggestion): GARichResponse = richResponse(items, null, *suggestions)
+
+fun BotBus.optionValueSpec(simpleSelect: GASimpleSelect? = null,
+                           listSelect: GAListSelect? = null,
+                           carouselSelect: GACarouselSelect? = null): GAOptionValueSpec {
+
+    return GAOptionValueSpec(simpleSelect, listSelect, carouselSelect)
+}
+
+
+fun BotBus.expectedInput(inputPrompt: GAInputPrompt,
+                         possibleIntents: List<GAExpectedIntent> = listOf(
+                                 GAExpectedIntent(GAIntent.text)
+                         ),
+                         speechBiasingHints: List<String> = emptyList()): GAResponseConnectorMessage {
+    return GAResponseConnectorMessage(GAExpectedInput(inputPrompt, possibleIntents, speechBiasingHints))
+}
+
+fun BotBus.expectedInput(possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage = expectedInput(GAInputPrompt(GARichResponse(emptyList())), possibleIntents)
+
+fun BotBus.expectedIntentForListSelectOption(title: String, listItems: List<GAListItem>): GAExpectedIntent {
+    val t = translate(title)
+
+    return GAExpectedIntent(
+            GAIntent.option,
+            optionValueSpec(
+                    listSelect = GAListSelect(
+                            t.toString(),
+                            listItems)))
 }
 
