@@ -39,7 +39,7 @@ import fr.vsct.tock.bot.connector.ga.model.response.GASimpleSelect
 import fr.vsct.tock.bot.connector.ga.model.response.GAStructuredResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GASuggestion
 import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.translator.UserInterfaceType.voiceAssistant
+import fr.vsct.tock.translator.UserInterfaceType.textChat
 import mu.KotlinLogging
 
 /**
@@ -47,7 +47,7 @@ import mu.KotlinLogging
  */
 private val logger = KotlinLogging.logger {}
 
-val gaConnectorType = ConnectorType("ga", voiceAssistant, false)
+val gaConnectorType = ConnectorType("ga", textChat, false)
 
 fun BotBus.withGoogleAssistant(messageProvider: () -> ConnectorMessage): BotBus {
     with(gaConnectorType, messageProvider)
@@ -128,6 +128,8 @@ fun BotBus.richResponse(items: List<GAItem>, linkOutSuggestion: GALinkOutSuggest
 
 fun BotBus.richResponse(items: List<GAItem>, vararg suggestions: GASuggestion): GARichResponse = richResponse(items, null, *suggestions)
 
+fun BotBus.richResponse(text: String, linkOutSuggestion: GALinkOutSuggestion? = null): GARichResponse = richResponse(listOf(item(simpleResponse(textToSpeech = text))), linkOutSuggestion)
+
 fun BotBus.optionValueSpec(simpleSelect: GASimpleSelect? = null,
                            listSelect: GAListSelect? = null,
                            carouselSelect: GACarouselSelect? = null): GAOptionValueSpec {
@@ -135,6 +137,9 @@ fun BotBus.optionValueSpec(simpleSelect: GASimpleSelect? = null,
     return GAOptionValueSpec(simpleSelect, listSelect, carouselSelect)
 }
 
+fun BotBus.expectedInput(text: String,
+                         possibleIntents: List<GAExpectedIntent>)
+        : GAResponseConnectorMessage = expectedInput(GAInputPrompt(richResponse(text)), possibleIntents)
 
 fun BotBus.expectedInput(inputPrompt: GAInputPrompt,
                          possibleIntents: List<GAExpectedIntent> = listOf(
