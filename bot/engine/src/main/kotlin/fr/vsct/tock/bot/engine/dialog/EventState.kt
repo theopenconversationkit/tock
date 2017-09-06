@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.translator.UserInterfaceType
 
 /**
  * State in event scope.
@@ -31,9 +32,13 @@ data class EventState(
          */
         var testEvent: Boolean = false,
         /**
-         * The target connector type - usually the source connector but not always
+         * The target connector type - usually the source connector but not always.
          */
-        var targetConnectorType: ConnectorType? = null) {
+        var targetConnectorType: ConnectorType? = null,
+        /**
+         * The user interface - if different of [ConnectorType].
+         */
+        var userInterface: UserInterfaceType? = null) {
 
     fun getEntity(role: String): List<ContextValue> {
         return entityValues.filter { it.entity.role == role }

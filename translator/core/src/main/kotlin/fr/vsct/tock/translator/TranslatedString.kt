@@ -19,10 +19,23 @@ package fr.vsct.tock.translator
 /**
  * A [CharSequence] flagged as translated.
  */
-data class TranslatedString(private val wrapped: CharSequence)
-    : CharSequence by wrapped {
+open class TranslatedString(private val wrapped: CharSequence) : CharSequence by wrapped {
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other !is TranslatedString) return false
+
+        if (wrapped != other.wrapped) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return wrapped.hashCode()
+    }
 
     override fun toString(): String {
         return wrapped.toString()
     }
+
 }

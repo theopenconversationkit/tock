@@ -49,7 +49,8 @@ internal object WebhookActionConverter {
                         applicationId,
                         botId,
                         params.first,
-                        params.second
+                        params.second,
+                        state = message.getEventState()
                 )
             } else {
                 if (input.builtInIntent == GAIntent.main && controller.helloIntent() != null) {
@@ -57,20 +58,21 @@ internal object WebhookActionConverter {
                             playerId,
                             applicationId,
                             botId,
-                            controller.helloIntent()!!.name
+                            controller.helloIntent()!!.name,
+                            state = message.getEventState()
                     )
                 } else {
                     val rawInput = input.rawInputs.firstOrNull()
                     if (rawInput != null) {
                         val text = rawInput.query
 
-
                         return SendSentence(
                                 playerId,
                                 applicationId,
                                 botId,
                                 text,
-                                mutableListOf(GARequestConnectorMessage(message))
+                                mutableListOf(GARequestConnectorMessage(message)),
+                                state = message.getEventState()
                         )
                     }
                 }

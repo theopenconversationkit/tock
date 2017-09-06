@@ -18,5 +18,9 @@ package fr.vsct.tock.bot.connector.ga.model.request
 
 data class GASurface(val capabilities: List<GACapability>) {
 
+    fun hasScreen() : Boolean = capabilities.any { it.name == "actions.capabililty.SCREEN_OUTPUT" }
+
+    fun hasAudio() : Boolean = capabilities.any { it.name == "actions.capabililty.AUDIO_OUTPUT" }
+
 }
 

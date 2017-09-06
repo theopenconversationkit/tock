@@ -17,10 +17,12 @@
 package fr.vsct.tock.translator
 
 import com.github.salomonbrys.kodein.instance
-import fr.vsct.tock.shared.Dice
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.translator.UserInterfaceType.textAndVoiceAssistant
+import fr.vsct.tock.translator.UserInterfaceType.textChat
+import fr.vsct.tock.translator.UserInterfaceType.voiceAssistant
 import mu.KotlinLogging
 import java.text.ChoiceFormat
 import java.text.MessageFormat
@@ -42,7 +44,7 @@ object Translator {
     var enabled: Boolean = booleanProperty("tock_i18n_enabled", false)
 
     private val keyLabelRegex = "[^\\p{L}_]+".toRegex()
-    private val defaultInterface: UserInterfaceType = UserInterfaceType.textChat
+    private val defaultInterface: UserInterfaceType = textChat
 
     private val i18nDAO: I18nDAO by injector.instance()
     private val translator: TranslatorEngine by injector.instance()
@@ -62,6 +64,8 @@ object Translator {
 
         val storedLabel = i18nDAO.getLabelById(key.key)
 
+        val targetDefaultUserInterface = if (userInterfaceType == textAndVoiceAssistant) textChat else userInterfaceType
+
         val label = if (storedLabel != null) {
             getLabel(storedLabel, key.defaultLabel.toString(), locale, userInterfaceType)
         } else {
@@ -69,7 +73,7 @@ object Translator {
             if (locale != defaultLocale) {
                 val localizedLabel = I18nLocalizedLabel(
                         locale,
-                        userInterfaceType,
+                        targetDefaultUserInterface,
                         translate(key.defaultLabel.toString(), defaultLocale, locale
                         )
                 )
@@ -78,7 +82,8 @@ object Translator {
                 localizedLabel.label
             } else {
                 val interfaceLabel =
-                        if (defaultInterface != userInterfaceType) I18nLocalizedLabel(locale, userInterfaceType, defaultLabel.label)
+                        if (defaultInterface != targetDefaultUserInterface)
+                            I18nLocalizedLabel(locale, targetDefaultUserInterface, defaultLabel.label)
                         else null
                 val label = I18nLabel(key.key, key.namespace, key.category, listOfNotNull(defaultLabel, interfaceLabel))
                 i18nDAO.save(label)
@@ -86,30 +91,52 @@ object Translator {
             }
         }
 
-        return TranslatedString(formatMessage(label.toString(), locale, userInterfaceType, key.args))
+        return if (label is TextAndVoiceTranslatedString) {
+            label.copy(
+                    text = formatMessage(label.text.toString(), locale, textChat, key.args),
+                    voice = formatMessage(label.voice.toString(), locale, voiceAssistant, key.args)
+            )
+        } else {
+            TranslatedString(formatMessage(label.toString(), locale, targetDefaultUserInterface, key.args))
+        }
     }
 
     private fun getLabel(i18nLabel: I18nLabel,
                          defaultLabel: String,
                          locale: Locale,
-                         userInterfaceType: UserInterfaceType): String {
-        val localizedLabel = i18nLabel.findLabel(locale, userInterfaceType)
-        return if (localizedLabel != null) {
-            if (localizedLabel.alternatives.isEmpty()) {
-                localizedLabel.label
+                         userInterfaceType: UserInterfaceType): CharSequence {
+        return if (userInterfaceType == textAndVoiceAssistant) {
+            val text = i18nLabel.findLabel(locale, textChat)
+            val voice = i18nLabel.findLabel(locale, voiceAssistant)
+            if (voice != null) {
+                if (text != null) {
+                    TextAndVoiceTranslatedString(text.randomText(), voice.randomText())
+                } else {
+                    voice.randomText()
+                }
             } else {
-                Dice.choose(listOf(localizedLabel.label) + localizedLabel.alternatives)
+                text?.randomText() ?: labelWithoutUserInterface(i18nLabel, defaultLabel, locale, textChat)
             }
         } else {
-            val labelWithoutUserInterface = i18nLabel.findLabel(locale)
-            if (labelWithoutUserInterface != null) {
-                i18nDAO.save(i18nLabel.copy(i18n = i18nLabel.i18n + labelWithoutUserInterface.copy(interfaceType = userInterfaceType, validated = false)))
-                labelWithoutUserInterface.label
-            } else {
-                val newLabel = translate(defaultLabel, defaultLocale, locale)
-                i18nDAO.save(i18nLabel.copy(i18n = i18nLabel.i18n + I18nLocalizedLabel(locale, userInterfaceType, newLabel)))
-                newLabel
-            }
+            return i18nLabel.findLabel(locale, userInterfaceType)?.randomText()
+                    ?: labelWithoutUserInterface(i18nLabel, defaultLabel, locale, userInterfaceType)
+        }
+    }
+
+    private fun labelWithoutUserInterface(
+            i18nLabel: I18nLabel,
+            defaultLabel: String,
+            locale: Locale,
+            userInterfaceType: UserInterfaceType): String {
+
+        val labelWithoutUserInterface = i18nLabel.findLabel(locale)
+        return if (labelWithoutUserInterface != null) {
+            i18nDAO.save(i18nLabel.copy(i18n = i18nLabel.i18n + labelWithoutUserInterface.copy(interfaceType = userInterfaceType, validated = false)))
+            labelWithoutUserInterface.label
+        } else {
+            val newLabel = translate(defaultLabel, defaultLocale, locale)
+            i18nDAO.save(i18nLabel.copy(i18n = i18nLabel.i18n + I18nLocalizedLabel(locale, userInterfaceType, newLabel)))
+            newLabel
         }
     }
 

@@ -39,7 +39,9 @@ import fr.vsct.tock.bot.connector.ga.model.response.GASimpleSelect
 import fr.vsct.tock.bot.connector.ga.model.response.GAStructuredResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GASuggestion
 import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.translator.UserInterfaceType.textChat
+import fr.vsct.tock.translator.TextAndVoiceTranslatedString
+import fr.vsct.tock.translator.UserInterfaceType.textAndVoiceAssistant
+import fr.vsct.tock.translator.isSSML
 import mu.KotlinLogging
 
 /**
@@ -47,7 +49,7 @@ import mu.KotlinLogging
  */
 private val logger = KotlinLogging.logger {}
 
-val gaConnectorType = ConnectorType("ga", textChat, false)
+val gaConnectorType = ConnectorType("ga", textAndVoiceAssistant, false)
 
 fun BotBus.withGoogleAssistant(messageProvider: () -> ConnectorMessage): BotBus {
     with(gaConnectorType, messageProvider)
@@ -64,7 +66,7 @@ fun BotBus.permissionIntent(optionalContext: String = "", vararg permissions: GA
     )
 }
 
-fun BotBus.linkOutSuggestion(destinationName: String, url: String): GALinkOutSuggestion {
+fun BotBus.linkOutSuggestion(destinationName: CharSequence, url: String): GALinkOutSuggestion {
     val d = translate(destinationName)
     if (d.length > 20) {
         logger.warn { "title $d has more than 20 chars" }
@@ -72,7 +74,7 @@ fun BotBus.linkOutSuggestion(destinationName: String, url: String): GALinkOutSug
     return GALinkOutSuggestion(d.toString(), url)
 }
 
-fun BotBus.suggestion(text: String): GASuggestion {
+fun BotBus.suggestion(text: CharSequence): GASuggestion {
     val t = translate(text)
     if (t.length > 25) {
         logger.warn { "title $t has more than 25 chars" }
@@ -80,16 +82,34 @@ fun BotBus.suggestion(text: String): GASuggestion {
     return GASuggestion(t.toString())
 }
 
-fun BotBus.simpleResponse(textToSpeech: String? = null, ssml: String? = null, displayText: String? = null): GASimpleResponse {
-    val t = translate(textToSpeech).run { if (isBlank()) null else this.toString() }
-    val s = translate(ssml).run { if (isBlank()) null else this.toString() }
-    val d = translate(displayText).run { if (isBlank()) null else this.toString() }
+fun BotBus.simpleResponse(text: TextAndVoiceTranslatedString): GASimpleResponse {
+    val t = if (text.isSSML()) null else text.voice.toString()
+    val s = if (text.isSSML()) text.voice.toString() else null
+    val d = text.text.toString()
+
+    return GASimpleResponse(t, s, d)
+}
+
+fun BotBus.simpleResponse(text: CharSequence): GASimpleResponse {
+    val t = translate(text)
+    return if (t is TextAndVoiceTranslatedString) {
+        simpleResponse(t)
+    } else if (t.isSSML()) {
+        simpleResponse(ssml = t)
+    } else {
+        simpleResponse(textToSpeech = t)
+    }
+}
+
+fun BotBus.simpleResponse(textToSpeech: CharSequence? = null, ssml: CharSequence? = null, displayText: CharSequence? = null): GASimpleResponse {
+    val t = translateAndSetBlankAsNull(textToSpeech)
+    val s = translateAndSetBlankAsNull(ssml)
+    val d = translateAndSetBlankAsNull(displayText)
 
     return GASimpleResponse(t, s, d)
 }
 
 fun BotBus.item(simpleResponse: GASimpleResponse? = null, basicCard: GABasicCard? = null, structuredResponse: GAStructuredResponse? = null): GAItem {
-
     return GAItem(simpleResponse, basicCard, structuredResponse)
 }
 
@@ -104,9 +124,9 @@ fun BotBus.basicCard(
         image: GAImage? = null,
         buttons: List<GAButton> = emptyList()): GABasicCard {
 
-    val t = translate(title).run { if (isBlank()) null else this.toString() }
-    val s = translate(subtitle).run { if (isBlank()) null else this.toString() }
-    val f = translate(formattedText).run { if (isBlank()) null else this.toString() }
+    val t = translateAndSetBlankAsNull(title)
+    val s = translateAndSetBlankAsNull(subtitle)
+    val f = translateAndSetBlankAsNull(formattedText)
 
     return GABasicCard(t, s, f, image, buttons)
 }
@@ -162,3 +182,5 @@ fun BotBus.expectedIntentForListSelectOption(title: String, listItems: List<GALi
                             listItems)))
 }
 
+private fun BotBus.translateAndSetBlankAsNull(s: CharSequence?): String?
+        = translate(s).run { if (isBlank()) null else this.toString() }

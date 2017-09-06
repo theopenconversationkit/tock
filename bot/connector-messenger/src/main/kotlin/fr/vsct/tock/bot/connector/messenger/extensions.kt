@@ -194,7 +194,7 @@ fun BotBus.genericElement(
         imageUrl: String? = null,
         buttons: List<Button>? = null): Element {
     val t = translate(title)
-    val s = translate(subtitle).run { if (isBlank()) null else this }
+    val s = translateAndSetBlankAsNull(subtitle)
     if (t.length > 80) {
         logger.warn { "title $t has more than 80 chars" }
     }
@@ -207,7 +207,7 @@ fun BotBus.genericElement(
     return Element(
             t.toString(),
             imageUrl,
-            s?.toString(),
+            s,
             buttons
     )
 }
@@ -218,7 +218,7 @@ fun BotBus.listElement(
         imageUrl: String? = null,
         button: Button? = null): Element {
     val t = translate(title)
-    val s = translate(subtitle).run { if (isBlank()) null else this }
+    val s = translateAndSetBlankAsNull(subtitle)
 
     if (t.length > 80) {
         logger.warn { "title $t has more than 80 chars" }
@@ -229,7 +229,7 @@ fun BotBus.listElement(
     return Element(
             t.toString(),
             imageUrl,
-            s?.toString(),
+            s,
             if (button == null) null else listOf(button)
     )
 }
@@ -318,3 +318,6 @@ fun BotBus.urlButton(title: CharSequence, url: String): UrlButton {
     }
     return UrlButton(url, t.toString())
 }
+
+private fun BotBus.translateAndSetBlankAsNull(s: CharSequence?): String?
+        = translate(s).run { if (isBlank()) null else this.toString() }

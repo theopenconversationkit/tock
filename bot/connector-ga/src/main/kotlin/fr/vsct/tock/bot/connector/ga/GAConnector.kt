@@ -37,6 +37,7 @@ import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.translator.isSSML
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.util.concurrent.CopyOnWriteArrayList
@@ -148,15 +149,23 @@ class GAConnector internal constructor(
                                 .filter { it.action is SendSentence && it.action.text != null }
                                 .mapIndexed { i, a ->
                                     val s = a.action as SendSentence
+                                    val text = s.text!!
                                     if (i == 0) {
-                                        s.text
+                                        text
                                     } else {
                                         (if (a.delayInMs != 0L) {
                                             "<break time=\"${a.delayInMs}ms\"/>"
                                         } else {
                                             ""
-                                        }) + s.text
+                                        }) + text
                                     }
+                                }
+                                .map {
+                                    //special case - if the string is already ssml, remove the <speak> tag
+                                    if (it.isSSML())
+                                        it.replace("<speak>", "", true)
+                                                .replace("</speak>", "", true)
+                                    else it
                                 }
                                 .joinToString("", "<speak>", "</speak>")
                 val simpleResponse = if (text != "<speak></speak>") {

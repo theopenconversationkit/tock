@@ -16,21 +16,12 @@
 
 package fr.vsct.tock.translator
 
-import java.time.format.DateTimeFormatter
-import java.time.temporal.TemporalAccessor
+/**
+ * A [TranslatedString] that has also a "voice" version.
+ */
+data class TextAndVoiceTranslatedString(
+        val text: CharSequence,
+        val voice: CharSequence) : TranslatedString(text) {
 
-val defaultUserInterface: UserInterfaceType = UserInterfaceType.textChat
-
-infix fun TemporalAccessor?.by(formatter: DateTimeFormatter): DateTemplate {
-    return DateTemplate(this, formatter)
+    fun isSSML(): Boolean = voice.isSSML()
 }
-
-/**
- * Transform this String in a [RawString] - ie a not-to-translate String.
- */
-val String.raw: RawString get() = RawString(this)
-
-/**
- * Is this char sequence containing SSML?
- */
-fun CharSequence.isSSML(): Boolean = contains("<speak>")

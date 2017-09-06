@@ -58,7 +58,7 @@ internal class TockBotBus(
     override val userId = action.playerId
     override val userPreferences: UserPreferences = userTimeline.userPreferences
     override val userLocale: Locale = userPreferences.locale
-    override val userInterfaceType: UserInterfaceType = connector.connectorType.userInterfaceType
+    override val userInterfaceType: UserInterfaceType = action.state.userInterface ?: connector.connectorType.userInterfaceType
     override val targetConnectorType: ConnectorType = action.state.targetConnectorType ?: connector.connectorType
 
     private val context: BusContext = BusContext()

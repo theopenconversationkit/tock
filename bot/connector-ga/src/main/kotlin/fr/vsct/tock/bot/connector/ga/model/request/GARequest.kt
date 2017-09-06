@@ -16,6 +16,9 @@
 
 package fr.vsct.tock.bot.connector.ga.model.request
 
+import fr.vsct.tock.bot.engine.dialog.EventState
+import fr.vsct.tock.translator.UserInterfaceType
+
 /**
  *
  */
@@ -26,5 +29,19 @@ data class GARequest(
         val conversation: GAConversation,
         val inputs: List<GAInput>,
         val isInSandbox: Boolean) {
+
+    fun getEventState(): EventState {
+        val ui =
+                if (surface.hasAudio()) {
+                    if (surface.hasScreen()) {
+                        UserInterfaceType.textAndVoiceAssistant
+                    } else {
+                        UserInterfaceType.voiceAssistant
+                    }
+                } else {
+                    UserInterfaceType.textChat
+                }
+        return EventState(userInterface = ui)
+    }
 }
 

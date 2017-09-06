@@ -21,6 +21,6 @@ package fr.vsct.tock.translator
  */
 enum class UserInterfaceType {
 
-    textChat, voiceAssistant
+    textChat, voiceAssistant, textAndVoiceAssistant
 
 }

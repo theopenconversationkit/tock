@@ -71,7 +71,7 @@ export class ConnectorType {
 }
 
 export enum UserInterfaceType {
-  textChat, voiceAssistant
+  textChat, voiceAssistant, textAndVoiceAssistant
 }
 
 export enum EventType {

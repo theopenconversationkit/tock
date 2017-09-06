@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.translator
 
+import fr.vsct.tock.shared.Dice
 import java.util.Locale
 
 /**
@@ -30,4 +31,12 @@ data class I18nLocalizedLabel(val locale: Locale,
     constructor(locale: Locale, interfaceType: UserInterfaceType, label: String, alternatives: List<String>) : this(locale, interfaceType, label, false, alternatives)
 
     constructor(locale: Locale, interfaceType: UserInterfaceType, label: String) : this(locale, interfaceType, label, emptyList())
+
+    fun randomText(): String {
+        return if (alternatives.isEmpty()) {
+            label
+        } else {
+            Dice.choose(listOf(label) + alternatives)
+        }
+    }
 }
