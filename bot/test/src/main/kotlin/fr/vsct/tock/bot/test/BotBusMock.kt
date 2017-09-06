@@ -45,7 +45,7 @@ import java.util.Locale
 open class BotBusMock(override val userTimeline: UserTimeline,
                       override val dialog: Dialog,
                       override val story: Story,
-                      override val action: Action,
+                      override var action: Action,
                       val botDefinition: BotDefinition,
                       override var i18nProvider: I18nKeyProvider,
                       override val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
