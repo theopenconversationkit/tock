@@ -33,6 +33,7 @@ import fr.vsct.tock.nlp.front.shared.test.IntentTestError
 import fr.vsct.tock.nlp.front.shared.test.IntentTestErrorQueryResult
 import fr.vsct.tock.nlp.front.shared.test.TestBuild
 import fr.vsct.tock.nlp.front.shared.test.TestErrorQuery
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.provide
 import mu.KotlinLogging
@@ -52,7 +53,11 @@ object ModelTesterService : ModelTester {
     override fun testModels() {
         config.getApplications().forEach { app ->
             app.supportedLocales.forEach { locale ->
-                testApplicationModel(app, locale)
+                try {
+                    testApplicationModel(app, locale)
+                } catch (t: Throwable) {
+                    logger.error(t)
+                }
             }
         }
     }
