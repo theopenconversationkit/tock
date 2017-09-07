@@ -42,6 +42,10 @@
             <artifactId>tock-bot-connector-rest-client</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-csv</artifactId>
+        </dependency>
+        <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-admin-test-core</artifactId>
         </dependency>

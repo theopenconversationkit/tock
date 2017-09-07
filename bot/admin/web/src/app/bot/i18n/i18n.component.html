@@ -21,19 +21,45 @@
   <button md-button (click)="refresh()" md-tooltip="Reload all">
     <md-icon>refresh</md-icon>
   </button>
-  <md-select placeholder="Filter by category"  [(ngModel)]="selectedCategory" (ngModelChange)="onSelectedCategoryChange()">
+  <md-select placeholder="Filter by category" [(ngModel)]="selectedCategory"
+             (ngModelChange)="onSelectedCategoryChange()">
     <md-option *ngFor="let c of allCategories" [value]="c">{{c}}</md-option>
   </md-select>
   <span class="fill-remaining-space"></span>
-  <md-slide-toggle [(ngModel)]="filterValidated" (change)="filterValidatedChange()">Hide validated labels</md-slide-toggle>
+  <md-select placeholder="Filter by state" [(ngModel)]="filterOption"
+             (ngModelChange)="filterValidatedChange()">
+    <md-option value="">All</md-option>
+    <md-option value="not_validated">Only Not validated</md-option>
+    <md-option value="validated">Only validated</md-option>
+  </md-select>
   <span class="fill-remaining-space"></span>
   <button md-button (click)="validateAll()" md-tooltip="Validate all existing labels">Validate all</button>
   <button md-button (click)="complete()">Complete all fields</button>
 
-  <button md-button (click)="downloadExport()" md-tooltip="Download export">
+  <button md-icon-button (click)="downloadExport()" md-tooltip="Download Csv">
     <md-icon>file_download</md-icon>
   </button>
+  <button md-icon-button (click)="displayUpload = true" md-tooltip="Upload Csv">
+    <md-icon>file_upload</md-icon>
+  </button>
 </md-toolbar>
+
+<md-card *ngIf="displayUpload">
+  <md-card-title>Upload a Csv File</md-card-title>
+  <md-card-content>
+    <p>
+      <label for="file">Please select a CSV file:</label>
+      <input id="file" type="file" ng2FileSelect [uploader]="uploader"/>
+    </p>
+  </md-card-content>
+  <button (click)="displayUpload = false" md-button>
+    Cancel
+  </button>
+  <button (click)="upload()" [disabled]="!uploader.getNotUploadedItems().length" md-raised-button
+          color="primary">
+    Upload
+  </button>
+</md-card>
 
 <md-spinner *ngIf="loading" [color]="accent"></md-spinner>
 
@@ -43,7 +69,9 @@
     <md-list-item>
       <h4 md-line>
         <span class="defaultLabel" md-tooltip="id: {{i._id}}">{{i.defaultLabel().label}}</span>
-        <button md-button (click)="deleteLabel(i)" md-tooltip="Delete Label" color="warn"><md-icon>delete_forever</md-icon></button>
+        <button md-button (click)="deleteLabel(i)" md-tooltip="Delete Label" color="warn">
+          <md-icon>delete_forever</md-icon>
+        </button>
       </h4>
       <div md-line *ngFor="let l of i.i18n">
         <div class="locale">{{l.locale}}</div>
@@ -61,7 +89,8 @@
         <span *ngFor="let a of l.alternatives;let index=index;">
           <br>
           <md-input-container class="input-alternative">
-            <textarea mdInput [value]="a" (change)="addAlternative(i, l, index, $event.target.value)" cols="90" rows="1"></textarea>
+            <textarea mdInput [value]="a" (change)="addAlternative(i, l, index, $event.target.value)" cols="90"
+                      rows="1"></textarea>
           </md-input-container>
           <button md-button (click)="removeAlternative(i, l, index)" md-tooltip="Remove alternative">
             <md-icon>remove</md-icon>

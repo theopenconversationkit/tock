@@ -30,7 +30,6 @@ import fr.vsct.tock.nlp.admin.AdminVerticle
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.translator.I18nDAO
-import fr.vsct.tock.translator.I18nExport
 import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.Translator
 import io.vertx.ext.web.RoutingContext
@@ -220,10 +219,12 @@ open class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
         }
 
         blockingJsonGet("/i18n/export") { context ->
-            I18nExport.exportCsv(context.organization)
+            I18nCsvCodec.exportCsv(context.organization)
         }
 
-
+        blockingUploadPost("/i18n/import") { context, content ->
+            I18nCsvCodec.importCsv(context.organization, content)
+        }
 
         configureStaticHandling()
     }

@@ -21,6 +21,7 @@ import {BotService} from "../bot-service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {MdSnackBar} from "@angular/material";
 import {saveAs} from "file-saver";
+import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 
 @Component({
   selector: 'app-i18n',
@@ -33,11 +34,13 @@ export class I18nComponent implements OnInit {
   i18n: I18nLabel[];
   filteredI18n: I18nLabel[];
   filterString: string = "";
-  filterValidated: boolean = false;
+  filterOption: string = "";
   loading: boolean = false;
   private doNotFilterByCategory = "All";
   selectedCategory: string = this.doNotFilterByCategory;
   allCategories: string[] = [];
+  displayUpload: boolean = false;
+  public uploader: FileUploader;
 
   constructor(public state: StateService,
               private botService: BotService,
@@ -46,6 +49,12 @@ export class I18nComponent implements OnInit {
 
   ngOnInit() {
     this.load();
+    this.uploader = new FileUploader({removeAfterUpload: true});
+    this.uploader.onCompleteItem =
+      (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+        this.displayUpload = false;
+        this.refresh();
+      };
   }
 
   private load() {
@@ -121,10 +130,13 @@ export class I18nComponent implements OnInit {
   }
 
   filter(value: string) {
+    const hideNotValidated = this.filterOption == "validated";
+    const hideValidated = this.filterOption == "not_validated";
     const v = value ? value.trim().toLowerCase() : "";
     this.filteredI18n = this.i18n.filter(i => {
-      return (!this.filterValidated || i.i18n.some(label => !label.validated))
-          && (v.length === 0 || i.i18n.some(label => label.label.length !== 0 && label.label.toLowerCase().indexOf(v) !== -1))
+      return (!hideValidated || i.i18n.some(label => !label.validated))
+        && (!hideNotValidated || i.i18n.some(label => label.validated))
+        && (v.length === 0 || i.i18n.some(label => label.label.length !== 0 && label.label.toLowerCase().indexOf(v) !== -1))
         && (this.selectedCategory === this.doNotFilterByCategory || i.category === this.selectedCategory)
     });
 
@@ -182,6 +194,11 @@ export class I18nComponent implements OnInit {
         saveAs(blob, "labels.csv");
         this.snackBar.open(`Export provided`, "Export", {duration: 1000});
       })
+  }
+
+  upload() {
+    this.botService.prepareApplicationDumpUploader(this.uploader);
+    this.uploader.uploadAll()
   }
 
 }

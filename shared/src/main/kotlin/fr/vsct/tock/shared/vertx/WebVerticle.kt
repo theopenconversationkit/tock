@@ -51,6 +51,9 @@ import io.vertx.ext.web.handler.UserSessionHandler
 import io.vertx.ext.web.sstore.LocalSessionStore
 import mu.KLogger
 import java.io.File
+import java.nio.charset.StandardCharsets
+import java.nio.file.Files
+import java.nio.file.Paths
 import java.util.EnumSet
 
 /**
@@ -248,10 +251,19 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
         }
     }
 
-    protected inline fun <reified F : Any, O> blockingUploadPost(path: String, crossinline handler: (RoutingContext, F) -> O) {
+    protected inline fun <reified F : Any, O> blockingUploadJsonPost(path: String, crossinline handler: (RoutingContext, F) -> O) {
         blocking(POST, path) { context ->
             val upload = context.fileUploads().first()
-            val f = context.readJson<F>(upload)
+            val f = readJson<F>(upload)
+            val result = handler.invoke(context, f)
+            context.endJson(result)
+        }
+    }
+
+    protected inline fun <O> blockingUploadPost(path: String, crossinline handler: (RoutingContext, String) -> O) {
+        blocking(POST, path) { context ->
+            val upload = context.fileUploads().first()
+            val f = readString(upload)
             val result = handler.invoke(context, f)
             context.endJson(result)
         }
@@ -304,8 +316,12 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
         return mapper.readValue<T>(this.bodyAsString)
     }
 
-    inline fun <reified T : Any> RoutingContext.readJson(upload: FileUpload): T {
+    inline fun <reified T : Any> readJson(upload: FileUpload): T {
         return mapper.readValue<T>(File(upload.uploadedFileName()))
+    }
+
+    fun readString(upload: FileUpload): String {
+        return String(Files.readAllBytes(Paths.get(upload.uploadedFileName())), StandardCharsets.UTF_8)
     }
 
     fun RoutingContext.success() {

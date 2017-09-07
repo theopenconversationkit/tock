@@ -60,7 +60,7 @@ class NlpVerticle : WebVerticle(KotlinLogging.logger {}) {
             front.mergeValues(query)
         }
 
-        blockingUploadPost("/dump/import") { _, dump: ApplicationDump ->
+        blockingUploadJsonPost("/dump/import") { _, dump: ApplicationDump ->
             front.import(dump.application.namespace, dump).modified
         }
 

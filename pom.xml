@@ -46,6 +46,7 @@
         <okhttp>3.8.1</okhttp>
         <guava>23.0</guava>
         <jasypt>1.9.2</jasypt>
+        <commons-csv>1.5</commons-csv>
 
         <junit>4.12</junit>
         <mockito-kotlin>1.5.0</mockito-kotlin>
@@ -223,6 +224,11 @@
                 <groupId>org.jasypt</groupId>
                 <artifactId>jasypt</artifactId>
                 <version>${jasypt}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-csv</artifactId>
+                <version>${commons-csv}</version>
             </dependency>
 
             <dependency>

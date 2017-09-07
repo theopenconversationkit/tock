@@ -21,6 +21,7 @@ import {BotIntent, BotIntentSearchQuery, CreateBotIntentRequest, UpdateBotIntent
 import {Intent} from "tock-nlp-admin/src/app/model/application";
 import {Observable} from "rxjs/Observable";
 import {I18nLabel} from "./model/i18n";
+import {FileUploader} from "ng2-file-upload";
 
 @Injectable()
 export class BotService {
@@ -67,6 +68,10 @@ export class BotService {
 
   downloadI18nLabelsExport(): Observable<Blob> {
     return this.rest.get("/i18n/export", (r => new Blob([r], {type: 'text/csv'}) ))
+  }
+
+  prepareApplicationDumpUploader(uploader: FileUploader) {
+    this.rest.setFileUploaderOptions(uploader, "/i18n/import");
   }
 
 }

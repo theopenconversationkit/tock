@@ -120,19 +120,19 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             }
         }
 
-        blockingUploadPost("/dump/application") { context, dump: ApplicationDump ->
+        blockingUploadJsonPost("/dump/application") { context, dump: ApplicationDump ->
             front.import(context.organization, dump)
         }
 
-        blockingUploadPost("/dump/sentences") { context, dump: SentencesDump ->
+        blockingUploadJsonPost("/dump/sentences") { context, dump: SentencesDump ->
             front.importSentences(context.organization, dump)
         }
 
-        blockingUploadPost("/dump/application/:name") { context, dump: ApplicationDump ->
+        blockingUploadJsonPost("/dump/application/:name") { context, dump: ApplicationDump ->
             front.import(context.organization, dump, ApplicationImportConfiguration(context.pathParam("name")))
         }
 
-        blockingUploadPost("/dump/sentences/:name") { context, dump: SentencesDump ->
+        blockingUploadJsonPost("/dump/sentences/:name") { context, dump: SentencesDump ->
             front.importSentences(context.organization, dump.copy(applicationName = context.pathParam("name")))
         }
 

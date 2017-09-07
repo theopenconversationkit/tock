@@ -29,6 +29,7 @@ import {SearchBotIntentComponent} from "./intent/search-bot-intent.component";
 import {NlpModule} from "tock-nlp-admin/src/app/nlp-tabs/nlp.module"
 import {ApplicationResolver} from "tock-nlp-admin/src/app/core/application.resolver";
 import {I18nComponent} from "./i18n/i18n.component";
+import {FileUploadModule} from "ng2-file-upload";
 
 const routes: Routes = [
   {
@@ -73,7 +74,8 @@ export class BotRoutingModule {
     BotRoutingModule,
     InfiniteScrollModule,
     MomentModule,
-    NlpModule
+    NlpModule,
+    FileUploadModule
   ],
   declarations: [
     BotTabsComponent,
