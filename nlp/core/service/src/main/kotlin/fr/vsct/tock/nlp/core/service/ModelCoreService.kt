@@ -31,7 +31,9 @@ import fr.vsct.tock.nlp.core.sample.SampleExpression
 import fr.vsct.tock.nlp.model.EntityBuildContextForIntent
 import fr.vsct.tock.nlp.model.IntentContext
 import fr.vsct.tock.nlp.model.NlpClassifier
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
+import mu.KotlinLogging
 import java.time.Duration
 import java.time.Instant
 import java.util.Collections
@@ -40,6 +42,8 @@ import java.util.Collections
  *
  */
 object ModelCoreService : ModelCore {
+
+    private val logger = KotlinLogging.logger {}
 
     private val nlpClassifier: NlpClassifier by injector.instance()
 
@@ -78,11 +82,17 @@ object ModelCoreService : ModelCore {
         val intentModel = nlpClassifier.buildIntentModel(intentContext, modelExpressions)
         val entityModels = modelExpressions
                 .groupBy { it.intent }
-                .map { (intent, expressions)
+                .mapNotNull { (intent, expressions)
                     ->
-                    intent to nlpClassifier.buildEntityModel(
-                            EntityBuildContextForIntent(context, intent),
-                            expressions)
+                    try {
+                        intent to nlpClassifier.buildEntityModel(
+                                EntityBuildContextForIntent(context, intent),
+                                expressions)
+                    } catch (e: Exception) {
+                        logger.error { "entity model build fail for $intent " }
+                        logger.error(e)
+                        null
+                    }
                 }
                 .toMap()
 
