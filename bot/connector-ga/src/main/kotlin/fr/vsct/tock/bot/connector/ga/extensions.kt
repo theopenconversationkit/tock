@@ -95,13 +95,16 @@ fun BotBus.simpleResponse(text: CharSequence): GASimpleResponse {
     return if (t is TextAndVoiceTranslatedString) {
         simpleResponse(t)
     } else if (t.isSSML()) {
-        simpleResponse(ssml = t)
+        flexibleSimpleResponse(ssml = t)
     } else {
-        simpleResponse(textToSpeech = t)
+        flexibleSimpleResponse(textToSpeech = t)
     }
 }
 
-fun BotBus.simpleResponse(textToSpeech: CharSequence? = null, ssml: CharSequence? = null, displayText: CharSequence? = null): GASimpleResponse {
+fun BotBus.flexibleSimpleResponse(
+        textToSpeech: CharSequence? = null,
+        ssml: CharSequence? = null,
+        displayText: CharSequence? = null): GASimpleResponse {
     val t = translateAndSetBlankAsNull(textToSpeech)
     val s = translateAndSetBlankAsNull(ssml)
     val d = translateAndSetBlankAsNull(displayText)
