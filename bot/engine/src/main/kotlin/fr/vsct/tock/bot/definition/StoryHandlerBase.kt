@@ -74,10 +74,16 @@ abstract class StoryHandlerBase : StoryHandler, I18nKeyProvider {
     }
 
     /**
-     * Shortcut method for [i18nKeyFromLabel].
+     * Get I18nKey with specified key. Current namespace is used.
      */
-    fun i18n(defaultLabel: CharSequence, arg: Any?): I18nLabelKey {
-        return i18nKeyFromLabel(defaultLabel, arg)
+    fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelKey {
+        val prefix = i18nKeyPrefix()
+        return i18nKey(
+                key,
+                i18nNamespace,
+                prefix,
+                defaultLabel,
+                args.toList())
     }
 
 }
