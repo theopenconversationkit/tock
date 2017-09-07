@@ -110,7 +110,13 @@ object Translator {
             val voice = i18nLabel.findLabel(locale, voiceAssistant)
             if (voice != null) {
                 if (text != null) {
-                    TextAndVoiceTranslatedString(text.randomText(), voice.randomText())
+                    val t = text.randomText()
+                    val v = voice.randomText()
+                    if (t.isNotBlank() && v.isNotBlank()) {
+                        TextAndVoiceTranslatedString(t, v)
+                    } else {
+                        t
+                    }
                 } else {
                     voice.randomText()
                 }

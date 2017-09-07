@@ -16,18 +16,17 @@
 
 package fr.vsct.tock.translator
 
+import org.junit.Assert.assertEquals
+import org.junit.Test
+
 /**
- * A [TranslatedString] that has also a "voice" version.
+ *
  */
-data class TextAndVoiceTranslatedString(
-        val text: CharSequence,
-        val voice: CharSequence) : TranslatedString(text) {
+class TextAndVoiceTranslatedStringTest {
 
-    fun isSSML(): Boolean = voice.isSSML()
-
-    override fun toString(): String {
-        return text.toString()
+    @Test
+    fun toString_shouldReturn_Text() {
+        assertEquals("to", TextAndVoiceTranslatedString("ok", "voice").toString())
     }
-
-
 }
+
