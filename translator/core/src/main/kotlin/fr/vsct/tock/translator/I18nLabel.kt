@@ -33,7 +33,7 @@ data class I18nLabel(
             ?: i18n.firstOrNull { it.locale.language == locale.language && it.interfaceType == userInterfaceType }
 
     fun findLabel(locale: Locale): I18nLocalizedLabel?
-            = i18n.firstOrNull { it.locale == locale }
-            ?: i18n.firstOrNull { it.locale.language == locale.language }
+            = i18n.firstOrNull { it.locale == locale && it.label.isNotBlank() }
+            ?: i18n.firstOrNull { it.locale.language == locale.language && it.label.isNotBlank() }
 
 }

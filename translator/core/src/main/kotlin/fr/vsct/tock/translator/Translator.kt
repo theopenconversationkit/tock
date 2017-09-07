@@ -121,11 +121,16 @@ object Translator {
                     voice.randomText()
                 }
             } else {
-                text?.randomText() ?: labelWithoutUserInterface(i18nLabel, defaultLabel, locale, textChat)
+                text?.randomText() ?: labelWithoutUserInterface(i18nLabel, defaultLabel, locale, defaultInterface)
             }
         } else {
-            return i18nLabel.findLabel(locale, userInterfaceType)?.randomText()
-                    ?: labelWithoutUserInterface(i18nLabel, defaultLabel, locale, userInterfaceType)
+            i18nLabel.findLabel(locale, userInterfaceType)?.randomText().run {
+                if (isNullOrBlank()) {
+                    labelWithoutUserInterface(i18nLabel, defaultLabel, locale, userInterfaceType)
+                } else {
+                    this!!
+                }
+            }
         }
     }
 

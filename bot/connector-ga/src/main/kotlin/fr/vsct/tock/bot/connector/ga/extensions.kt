@@ -148,7 +148,7 @@ fun BotBus.richResponse(items: List<GAItem>, linkOutSuggestion: GALinkOutSuggest
 
 fun BotBus.richResponse(items: List<GAItem>, vararg suggestions: GASuggestion): GARichResponse = richResponse(items, null, *suggestions)
 
-fun BotBus.richResponse(text: String, linkOutSuggestion: GALinkOutSuggestion? = null): GARichResponse = richResponse(listOf(item(simpleResponse(textToSpeech = text))), linkOutSuggestion)
+fun BotBus.richResponse(text: String, linkOutSuggestion: GALinkOutSuggestion? = null): GARichResponse = richResponse(listOf(item(simpleResponse(text))), linkOutSuggestion)
 
 fun BotBus.optionValueSpec(simpleSelect: GASimpleSelect? = null,
                            listSelect: GAListSelect? = null,
