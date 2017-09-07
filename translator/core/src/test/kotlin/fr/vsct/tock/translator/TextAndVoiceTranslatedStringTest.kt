@@ -26,7 +26,7 @@ class TextAndVoiceTranslatedStringTest {
 
     @Test
     fun toString_shouldReturn_Text() {
-        assertEquals("to", TextAndVoiceTranslatedString("ok", "voice").toString())
+        assertEquals("ok", TextAndVoiceTranslatedString("ok", "voice").toString())
     }
 }
 
