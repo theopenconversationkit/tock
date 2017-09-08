@@ -27,6 +27,10 @@
   line-height: 12px;
 }
 
+.text-area {
+  min-width:500px;
+}
+
 .input-alternative {
   line-height: 12px;
   margin-left: 100px;

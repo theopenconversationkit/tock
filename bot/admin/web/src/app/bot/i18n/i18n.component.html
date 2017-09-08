@@ -78,7 +78,7 @@
         <md-icon class="userInterface" *ngIf="l.interfaceType === 0" md-list-avatar>chat</md-icon>
         <md-icon class="userInterface" *ngIf="l.interfaceType === 1" md-list-avatar>record_voice_over</md-icon>
 
-        <md-input-container class="input">
+        <md-input-container class="input text-area">
           <textarea mdInput [(ngModel)]="l.label" (change)="save(i, l)" cols="100" rows="1"></textarea>
         </md-input-container>
 
@@ -88,7 +88,7 @@
 
         <span *ngFor="let a of l.alternatives;let index=index;">
           <br>
-          <md-input-container class="input-alternative">
+          <md-input-container class="input-alternative text-area">
             <textarea mdInput [value]="a" (change)="addAlternative(i, l, index, $event.target.value)" cols="90"
                       rows="1"></textarea>
           </md-input-container>
