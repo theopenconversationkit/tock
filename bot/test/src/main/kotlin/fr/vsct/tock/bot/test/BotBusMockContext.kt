@@ -37,15 +37,15 @@ import fr.vsct.tock.translator.UserInterfaceType
 /**
  * The context for test.
  */
-class BotBusMockContext(val userTimeline: UserTimeline,
-                        val dialog: Dialog,
-                        val story: Story,
-                        val action: Action,
-                        val botDefinition: BotDefinition,
-                        val i18nProvider: I18nKeyProvider,
-                        val storyDefinition: StoryDefinition,
-                        val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
-                        val connectorType: ConnectorType = messengerConnectorType) {
+class BotBusMockContext(var userTimeline: UserTimeline,
+                        var dialog: Dialog,
+                        var story: Story,
+                        var action: Action,
+                        var botDefinition: BotDefinition,
+                        var i18nProvider: I18nKeyProvider,
+                        var storyDefinition: StoryDefinition,
+                        var userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
+                        var connectorType: ConnectorType = messengerConnectorType) {
 
     constructor(applicationId: String,
                 userId: PlayerId,

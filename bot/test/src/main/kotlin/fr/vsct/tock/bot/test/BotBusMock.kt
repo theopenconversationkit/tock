@@ -40,15 +40,15 @@ import java.util.Locale
  *
  * The send result actions are available in the [logs] property.
  */
-open class BotBusMock(override val userTimeline: UserTimeline,
-                      override val dialog: Dialog,
-                      override val story: Story,
+open class BotBusMock(override var userTimeline: UserTimeline,
+                      override var dialog: Dialog,
+                      override var story: Story,
                       override var action: Action,
-                      val botDefinition: BotDefinition,
+                      var botDefinition: BotDefinition,
                       override var i18nProvider: I18nKeyProvider,
-                      override val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
-                      internal val initialUserPreferences: UserPreferences,
-                      internal val connectorType: ConnectorType) : BotBus {
+                      override var userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
+                      var initialUserPreferences: UserPreferences,
+                      var connectorType: ConnectorType) : BotBus {
 
     constructor(context: BotBusMockContext,
                 action: Action = context.action)
@@ -67,8 +67,9 @@ open class BotBusMock(override val userTimeline: UserTimeline,
             action,
             context.botDefinition,
             context.storyDefinition.storyHandler as I18nKeyProvider,
-            initialUserPreferences = context.userPreferences.copy(),
-            connectorType = context.connectorType
+            action.state.userInterface ?: UserInterfaceType.textChat,
+            context.userPreferences.copy(),
+            context.connectorType
     )
 
     val logs: List<BotBusMockLog> = mutableListOf()
@@ -81,18 +82,18 @@ open class BotBusMock(override val userTimeline: UserTimeline,
 
     val lastAnswer: BotBusMockLog get() = logs.last()
 
-    override val applicationId = action.applicationId
-    override val botId = action.recipientId
-    override val userId = action.playerId
-    override val userPreferences: UserPreferences = userTimeline.userPreferences
-    override val userLocale: Locale = userPreferences.locale
-    override val targetConnectorType: ConnectorType = action.state.targetConnectorType ?: connectorType
+    override var applicationId = action.applicationId
+    override var botId = action.recipientId
+    override var userId = action.playerId
+    override var userPreferences: UserPreferences = userTimeline.userPreferences
+    override var userLocale: Locale = userPreferences.locale
+    override var targetConnectorType: ConnectorType = action.state.targetConnectorType ?: connectorType
 
 
     private val mockData: BusMockData = BusMockData()
 
-    override val entities: Map<String, EntityStateValue> = dialog.state.entityValues
-    override val intent: Intent? = dialog.state.currentIntent
+    override var entities: Map<String, EntityStateValue> = dialog.state.entityValues
+    override var intent: Intent? = dialog.state.currentIntent
 
     override var nextUserActionState: NextUserActionState?
         get() = dialog.state.nextActionState
