@@ -43,6 +43,7 @@ import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
 import fr.vsct.tock.translator.RawString
 import fr.vsct.tock.translator.TranslatedString
+import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.UserInterfaceType
 import java.util.Locale
 
@@ -388,6 +389,9 @@ interface BotBus {
      */
     fun with(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus
 
+    /**
+     * Translate and format if needed the text with the optionals args.
+     */
     fun translate(text: CharSequence?, vararg args: Any?): CharSequence {
         return if (text.isNullOrBlank()) {
             ""
@@ -400,7 +404,16 @@ interface BotBus {
         }
     }
 
-    fun translate(key: I18nLabelKey?): CharSequence
+    /**
+     * Translate the specified key.
+     */
+    fun translate(key: I18nLabelKey?): CharSequence =
+            if (key == null) ""
+            else Translator.translate(
+                    key,
+                    userTimeline.userPreferences.locale,
+                    userInterfaceType
+            )
 
     /**
      * Reload the user profile.

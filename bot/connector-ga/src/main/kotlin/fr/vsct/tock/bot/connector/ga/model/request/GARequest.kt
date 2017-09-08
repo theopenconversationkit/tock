@@ -28,7 +28,7 @@ data class GARequest(
         val surface: GASurface,
         val conversation: GAConversation,
         val inputs: List<GAInput>,
-        val isInSandbox: Boolean) {
+        val isInSandbox: Boolean = false) {
 
     fun getEventState(): EventState {
         val ui =

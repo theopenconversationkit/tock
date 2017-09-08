@@ -29,8 +29,6 @@ import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.translator.I18nKeyProvider
-import fr.vsct.tock.translator.I18nLabelKey
-import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.UserInterfaceType
 import mu.KotlinLogging
 import java.util.Locale
@@ -127,13 +125,6 @@ internal class TockBotBus(
             context.addMessage(messageProvider.invoke())
         }
         return this
-    }
-
-    override fun translate(key: I18nLabelKey?): CharSequence {
-        return if (key == null) ""
-        else Translator.translate(key,
-                userTimeline.userPreferences.locale,
-                connector.connectorType.userInterfaceType)
     }
 
     override fun reloadProfile() {

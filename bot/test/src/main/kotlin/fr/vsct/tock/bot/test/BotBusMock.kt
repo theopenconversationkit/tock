@@ -32,8 +32,6 @@ import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.translator.I18nKeyProvider
-import fr.vsct.tock.translator.I18nLabelKey
-import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.UserInterfaceType
 import java.util.Locale
 
@@ -162,11 +160,6 @@ open class BotBusMock(override val userTimeline: UserTimeline,
             mockData.addMessage(messageProvider.invoke())
         }
         return this
-    }
-
-    override fun translate(key: I18nLabelKey?): CharSequence {
-        return if (key == null) ""
-        else Translator.formatMessage(key.defaultLabel.toString(), userLocale, userInterfaceType, key.args)
     }
 
     override fun reloadProfile() {

@@ -16,10 +16,13 @@
 
 package fr.vsct.tock.bot.connector.ga.model.request
 
+import fr.vsct.tock.bot.connector.ga.model.request.GAConversationType.TYPE_UNSPECIFIED
+import fr.vsct.tock.shared.Dice
+
 data class GAConversation(
-        val conversationId: String,
-        val type: GAConversationType,
-        val conversationToken: String?
+        val conversationId: String = Dice.newId(),
+        val type: GAConversationType = TYPE_UNSPECIFIED,
+        val conversationToken: String? = null
 ) {
 
 }
