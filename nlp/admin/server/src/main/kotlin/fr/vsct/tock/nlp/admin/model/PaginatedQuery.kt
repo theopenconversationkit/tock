@@ -19,5 +19,5 @@ package fr.vsct.tock.nlp.admin.model
 /**
  *
  */
-abstract class PaginatedQuery(val start: Long = 0, val size: Int = 10) : ApplicationScopedQuery() {
+open class PaginatedQuery(val start: Long = 0, val size: Int = 10) : ApplicationScopedQuery() {
 }

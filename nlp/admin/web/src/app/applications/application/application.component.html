@@ -64,6 +64,8 @@
     <button (click)="uploadDump = true" md-button>
       Upload Dump
     </button>
+    <button *ngIf="!newApplication" md-raised-button (click)="triggerBuild()" color="accent">Trigger Build
+    </button>
     <button *ngIf="!newApplication" md-raised-button (click)="deleteApplication()" color="warn">Delete Application
     </button>
     <button *ngIf="newApplication" md-raised-button (click)="saveApplication()" color="primary">Create new Application

@@ -25,12 +25,18 @@ import fr.vsct.tock.nlp.front.service.FrontRepository.entityTypeByName
 import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
 import fr.vsct.tock.nlp.front.service.storage.ModelBuildTriggerDAO
 import fr.vsct.tock.nlp.front.shared.ModelUpdater
+import fr.vsct.tock.nlp.front.shared.build.ModelBuild
+import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
+import fr.vsct.tock.nlp.front.shared.build.ModelBuildType
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
-import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.provide
+import mu.KotlinLogging
+import java.time.Duration
+import java.time.Instant
 import java.util.Locale
 
 val triggerDAO: ModelBuildTriggerDAO by injector.instance()
@@ -40,11 +46,30 @@ val triggerDAO: ModelBuildTriggerDAO by injector.instance()
  */
 object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
 
+    private val logger = KotlinLogging.logger {}
+
     private val config = ApplicationConfigurationService
     val model: ModelCore get() = injector.provide()
 
     override fun triggerBuild(trigger: ModelBuildTrigger) {
         save(trigger)
+    }
+
+    private fun logBuild(
+            application: ApplicationDefinition,
+            language: Locale,
+            type: ModelBuildType,
+            intentId:String?,
+            builder: () -> Int) {
+        var build = ModelBuild(application._id!!, language, type, intentId,0, Duration.ZERO, false, null, Instant.now())
+        try {
+            build = build.copy(nbSentences = builder.invoke())
+        } catch (e: Throwable) {
+            logger.error(e)
+            build = build.copy(error = true, errorMessage = e.message)
+        } finally {
+            triggerDAO.save(build.copy(duration = Duration.between(build.date, Instant.now())))
+        }
     }
 
     override fun updateIntentsModelForApplication(
@@ -53,10 +78,13 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
             language: Locale,
             engineType: NlpEngineType,
             onlyIfNotExists: Boolean) {
-        val intentCache = mutableMapOf<String, Intent>()
-        val modelSentences = config.getSentences(application.intents, language, ClassifiedSentenceStatus.model)
-        val samples = (modelSentences + validatedSentences).map { it.toSampleExpression({ config.toIntent(it, intentCache) }, { entityTypeByName(it) }) }
-        model.updateIntentModel(BuildContext(toApplication(application), language, engineType, onlyIfNotExists), samples)
+        logBuild(application, language, ModelBuildType.intent, null) {
+            val intentCache = mutableMapOf<String, Intent>()
+            val modelSentences = config.getSentences(application.intents, language, ClassifiedSentenceStatus.model)
+            val samples = (modelSentences + validatedSentences).map { it.toSampleExpression({ config.toIntent(it, intentCache) }, { entityTypeByName(it) }) }
+            model.updateIntentModel(BuildContext(toApplication(application), language, engineType, onlyIfNotExists), samples)
+            samples.size
+        }
     }
 
     override fun updateEntityModelForIntent(
@@ -66,12 +94,15 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
             language: Locale,
             engineType: NlpEngineType,
             onlyIfNotExists: Boolean) {
-        val i = config.toIntent(intentId)
-        val modelSentences = config.getSentences(setOf(intentId), language, ClassifiedSentenceStatus.model)
-        val samples = (modelSentences + validatedSentences).map {
-            it.toSampleExpression({ i }, { entityTypeByName(it) })
+        logBuild(application, language, ModelBuildType.intentEntities, intentId) {
+            val i = config.toIntent(intentId)
+            val modelSentences = config.getSentences(setOf(intentId), language, ClassifiedSentenceStatus.model)
+            val samples = (modelSentences + validatedSentences).map {
+                it.toSampleExpression({ i }, { entityTypeByName(it) })
+            }
+            model.updateEntityModelForIntent(BuildContext(toApplication(application), language, engineType, onlyIfNotExists), i, samples)
+            samples.size
         }
-        model.updateEntityModelForIntent(BuildContext(toApplication(application), language, engineType, onlyIfNotExists), i, samples)
     }
 
     override fun deleteOrphans() {

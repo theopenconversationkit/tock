@@ -38,7 +38,7 @@ import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
-import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
+import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.name

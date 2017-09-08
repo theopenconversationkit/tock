@@ -1,0 +1,62 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<div>
+
+  <md-table #table [dataSource]="dataSource">
+
+    <ng-container mdColumnDef="date">
+      <md-header-cell *mdHeaderCellDef> Date </md-header-cell>
+      <md-cell *mdCellDef="let row"> {{row.date | amDateFormat: 'YYYY-MM-DD HH:mm' }}
+      </md-cell>
+    </ng-container>
+
+    <ng-container mdColumnDef="type">
+      <md-header-cell *mdHeaderCellDef> Type </md-header-cell>
+      <md-cell *mdCellDef="let row"> {{row.type}}</md-cell>
+    </ng-container>
+
+    <ng-container mdColumnDef="intent">
+      <md-header-cell *mdHeaderCellDef> Intent </md-header-cell>
+      <md-cell *mdCellDef="let row"> {{intentName(row)}}</md-cell>
+    </ng-container>
+
+    <ng-container mdColumnDef="count">
+      <md-header-cell *mdHeaderCellDef> Classified sentences </md-header-cell>
+      <md-cell *mdCellDef="let row"> {{row.nbSentences}} </md-cell>
+    </ng-container>
+
+    <ng-container mdColumnDef="duration">
+      <md-header-cell *mdHeaderCellDef > Build duration  </md-header-cell>
+      <md-cell *mdCellDef="let row"> {{row.duration | amDuration:'ms'}} </md-cell>
+    </ng-container>
+
+    <ng-container mdColumnDef="error">
+      <md-header-cell *mdHeaderCellDef> Error </md-header-cell>
+      <md-cell *mdCellDef="let row"> <span *ngIf="row.error"><md-icon style="color: red">error</md-icon> {{row.errorMessage}}</span></md-cell>
+    </ng-container>
+
+    <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
+    <md-row *mdRowDef="let row; columns: displayedColumns;"></md-row>
+  </md-table>
+
+  <md-paginator #paginator
+                [length]="dataSource.size"
+                [pageIndex]="0"
+                [pageSize]="10"
+                [pageSizeOptions]="[5, 10, 25, 100]">
+  </md-paginator>
+</div>

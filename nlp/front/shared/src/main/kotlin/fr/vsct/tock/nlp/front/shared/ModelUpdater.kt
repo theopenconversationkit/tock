@@ -17,9 +17,10 @@
 package fr.vsct.tock.nlp.front.shared
 
 import fr.vsct.tock.nlp.core.NlpEngineType
+import fr.vsct.tock.nlp.front.shared.build.ModelBuildQueryResult
+import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
-import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
 import java.util.Locale
 
 /**
@@ -35,7 +36,7 @@ interface ModelUpdater {
             application: ApplicationDefinition,
             language: Locale,
             engineType: NlpEngineType,
-            onlyIfNotExists:Boolean = false)
+            onlyIfNotExists: Boolean = false)
 
     /**
      * Update all entities model of intent.
@@ -46,7 +47,7 @@ interface ModelUpdater {
             intentId: String,
             language: Locale,
             engineType: NlpEngineType,
-            onlyIfNotExists:Boolean = false)
+            onlyIfNotExists: Boolean = false)
 
     /**
      * Delete orphans intent and entity models.
@@ -67,4 +68,9 @@ interface ModelUpdater {
      * Delete the trigger.
      */
     fun deleteTrigger(trigger: ModelBuildTrigger)
+
+    /**
+     * Get builds sorted by date.
+     */
+    fun builds(applicationId: String, language: Locale, start: Int, size: Int): ModelBuildQueryResult
 }

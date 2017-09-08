@@ -33,7 +33,7 @@ export class ApplicationComponent implements OnInit {
   application: Application;
   newApplication: boolean;
   newLocale: string;
-  nlpEngineType:string;
+  nlpEngineType: string;
 
   uploadDump: boolean = false;
 
@@ -89,10 +89,10 @@ export class ApplicationComponent implements OnInit {
 
   private redirect() {
     let redirect = '../../';
-    if(this.newApplication) {
+    if (this.newApplication) {
       redirect = '../'
     }
-    this.router.navigate([redirect], { relativeTo: this.route });
+    this.router.navigate([redirect], {relativeTo: this.route});
   }
 
   cancel() {
@@ -130,6 +130,12 @@ export class ApplicationComponent implements OnInit {
   addLocale(newLocale: string) {
     this.application.supportedLocales.push(newLocale);
     this.snackBar.open(`${this.state.localeName(newLocale)} added`, "Locale", {duration: 1000});
+  }
+
+  triggerBuild() {
+    this.applicationService.triggerBuild(this.application).subscribe(_ =>
+      this.snackBar.open(`Application build started`, "Build", {duration: 1000})
+    )
   }
 
 }

@@ -14,25 +14,23 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.front.service.storage
+package fr.vsct.tock.nlp.front.shared.build
 
-import fr.vsct.tock.nlp.front.shared.build.ModelBuild
-import fr.vsct.tock.nlp.front.shared.build.ModelBuildQueryResult
-import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
+import java.time.Duration
+import java.time.Instant
 import java.util.Locale
 
 /**
  *
  */
-interface ModelBuildTriggerDAO {
-
-    fun save(trigger: ModelBuildTrigger)
-
-    fun deleteTrigger(trigger: ModelBuildTrigger)
-
-    fun getTriggers(): List<ModelBuildTrigger>
-
-    fun save(build: ModelBuild)
-
-    fun builds(applicationId: String, language: Locale, start: Int, size: Int): ModelBuildQueryResult
+data class ModelBuild(
+        val applicationId: String,
+        val language:Locale,
+        val type: ModelBuildType,
+        val intentId:String?,
+        val nbSentences: Int,
+        val duration: Duration,
+        val error: Boolean,
+        val errorMessage: String?,
+        val date: Instant) {
 }

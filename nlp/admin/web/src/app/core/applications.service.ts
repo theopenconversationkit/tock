@@ -16,10 +16,10 @@
 
 import {Injectable, OnDestroy} from "@angular/core";
 import {Observable} from "rxjs";
-import {Application, ApplicationImportConfiguration, Intent} from "../model/application";
+import {Application, ApplicationImportConfiguration, Intent, ModelBuildQueryResult} from "../model/application";
 import {RestService} from "../core/rest/rest.service";
 import {StateService} from "../core/state.service";
-import {Entry} from "../model/commons";
+import {Entry, PaginatedQuery} from "../model/commons";
 import {NlpEngineType} from "../model/nlp";
 import {FileUploader} from "ng2-file-upload";
 
@@ -54,6 +54,14 @@ export class ApplicationService implements OnDestroy {
 
   nlpEngineTypes(): Observable<NlpEngineType[]> {
     return this.rest.getArray("/nlp-engines", NlpEngineType.fromJSONArray);
+  }
+
+  triggerBuild(application: Application) {
+    return this.rest.post(`/application/build/trigger`, application);
+  }
+
+  builds(query: PaginatedQuery): Observable<ModelBuildQueryResult> {
+    return this.rest.post(`/application/builds`, query, ModelBuildQueryResult.fromJSON);
   }
 
   getApplicationById(id: string): Observable<Application> {

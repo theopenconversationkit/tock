@@ -145,3 +145,44 @@ export class ImportReport {
     return result;
   }
 }
+
+export class ModelBuild {
+
+  constructor(public applicationId: string,
+              public language: string,
+              public type: string,
+              public nbSentences: number,
+              public duration: Date,
+              public error: boolean,
+              public date: Date,
+              public errorMessage?: string,
+              public intentId?:string) {
+  }
+
+  static fromJSON(json: any): ModelBuild {
+    const value = Object.create(ModelBuild.prototype);
+    const result = Object.assign(value, json, {});
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): ModelBuild[] {
+    return json ? json.map(ModelBuild.fromJSON) : [];
+  }
+
+}
+
+export class ModelBuildQueryResult {
+
+  constructor(public total: number,
+              public data: ModelBuild[]) {
+  }
+
+  static fromJSON(json: any): ModelBuildQueryResult {
+    const value = Object.create(ModelBuildQueryResult.prototype);
+    const result = Object.assign(value, json, {
+      data: ModelBuild.fromJSONArray(json.data)
+    });
+    return result;
+  }
+
+}

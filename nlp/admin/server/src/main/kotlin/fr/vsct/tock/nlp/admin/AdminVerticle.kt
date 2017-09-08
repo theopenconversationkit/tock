@@ -23,10 +23,12 @@ import fr.vsct.tock.nlp.admin.model.EntityTestErrorWithSentenceReport
 import fr.vsct.tock.nlp.admin.model.IntentTestErrorWithSentenceReport
 import fr.vsct.tock.nlp.admin.model.LogStatsQuery
 import fr.vsct.tock.nlp.admin.model.LogsQuery
+import fr.vsct.tock.nlp.admin.model.PaginatedQuery
 import fr.vsct.tock.nlp.admin.model.ParseQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.front.client.FrontClient
+import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationImportConfiguration
 import fr.vsct.tock.nlp.front.shared.codec.DumpType
@@ -34,7 +36,6 @@ import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.test.TestErrorQuery
-import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
 import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.security.initEncryptor
@@ -115,6 +116,24 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
                     front.triggerBuild(ModelBuildTrigger(newApp._id!!, true))
                 }
                 ApplicationWithIntents(newApp, front.getIntentsByApplicationId(newApp._id!!))
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/application/build/trigger") { context, application: ApplicationWithIntents ->
+            val app = front.getApplicationById(application._id!!)
+            if (context.organization == app!!.namespace) {
+                front.triggerBuild(ModelBuildTrigger(app._id!!, true))
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/application/builds") { context, query: PaginatedQuery ->
+            val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
+            if (context.organization == app?.namespace) {
+                front.builds(app._id!!, query.language, query.start.toInt(), query.size)
             } else {
                 unauthorized()
             }

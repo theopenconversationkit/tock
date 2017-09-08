@@ -24,7 +24,7 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.deleted
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
-import fr.vsct.tock.nlp.front.shared.updater.ModelBuildTrigger
+import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
