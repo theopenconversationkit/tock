@@ -41,6 +41,7 @@ import fr.vsct.tock.bot.connector.ga.model.response.GASuggestion
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.translator.TextAndVoiceTranslatedString
 import fr.vsct.tock.translator.UserInterfaceType.textAndVoiceAssistant
+import fr.vsct.tock.translator.UserInterfaceType.textChat
 import fr.vsct.tock.translator.isSSML
 import mu.KotlinLogging
 
@@ -52,7 +53,13 @@ private val logger = KotlinLogging.logger {}
 val gaConnectorType = ConnectorType("ga", textAndVoiceAssistant, false)
 
 fun BotBus.withGoogleAssistant(messageProvider: () -> ConnectorMessage): BotBus {
-    with(gaConnectorType, messageProvider)
+    return with(gaConnectorType, messageProvider)
+}
+
+fun BotBus.withGoogleVoiceAssistant(messageProvider: () -> ConnectorMessage): BotBus {
+    if (userInterfaceType != textChat) {
+        with(gaConnectorType, messageProvider)
+    }
     return this
 }
 
@@ -149,9 +156,22 @@ fun BotBus.richResponse(items: List<GAItem>, linkOutSuggestion: GALinkOutSuggest
     return GARichResponse(items, linkOutSuggestion = linkOutSuggestion, suggestions = listOf(*suggestions))
 }
 
-fun BotBus.richResponse(items: List<GAItem>, vararg suggestions: GASuggestion): GARichResponse = richResponse(items, null, *suggestions)
+fun BotBus.richResponse(items: List<GAItem>, vararg suggestions: GASuggestion): GARichResponse
+        = richResponse(items, null, *suggestions)
 
-fun BotBus.richResponse(text: String, linkOutSuggestion: GALinkOutSuggestion? = null): GARichResponse = richResponse(listOf(item(simpleResponse(text))), linkOutSuggestion)
+fun BotBus.richResponse(text: CharSequence): GARichResponse
+        = richResponse(listOf(item(simpleResponse(text))))
+
+fun BotBus.richResponse(text: CharSequence, linkOutSuggestion: GALinkOutSuggestion? = null): GARichResponse
+        = richResponse(listOf(item(simpleResponse(text))), linkOutSuggestion)
+
+fun BotBus.richResponse(item: GAItem, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: GASuggestion): GARichResponse {
+    return richResponse(listOf(item), linkOutSuggestion, *suggestions)
+}
+
+fun BotBus.richResponse(basicCard: GABasicCard, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: GASuggestion): GARichResponse {
+    return richResponse(item(basicCard), linkOutSuggestion, *suggestions)
+}
 
 fun BotBus.optionValueSpec(simpleSelect: GASimpleSelect? = null,
                            listSelect: GAListSelect? = null,
@@ -160,7 +180,7 @@ fun BotBus.optionValueSpec(simpleSelect: GASimpleSelect? = null,
     return GAOptionValueSpec(simpleSelect, listSelect, carouselSelect)
 }
 
-fun BotBus.expectedInput(text: String,
+fun BotBus.expectedInput(text: CharSequence,
                          possibleIntents: List<GAExpectedIntent>)
         : GAResponseConnectorMessage = expectedInput(GAInputPrompt(richResponse(text)), possibleIntents)
 
@@ -172,7 +192,15 @@ fun BotBus.expectedInput(inputPrompt: GAInputPrompt,
     return GAResponseConnectorMessage(GAExpectedInput(inputPrompt, possibleIntents, speechBiasingHints))
 }
 
-fun BotBus.expectedInput(possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage = expectedInput(GAInputPrompt(GARichResponse(emptyList())), possibleIntents)
+fun BotBus.expectedInput(richResponse: GARichResponse): GAResponseConnectorMessage
+        = expectedInput(inputPrompt(richResponse))
+
+
+fun BotBus.expectedInput(possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage
+        = expectedInput(GAInputPrompt(GARichResponse(emptyList())), possibleIntents)
+
+fun BotBus.inputPrompt(richResponse: GARichResponse): GAInputPrompt
+        = GAInputPrompt(richResponse)
 
 fun BotBus.expectedIntentForListSelectOption(title: String, listItems: List<GAListItem>): GAExpectedIntent {
     val t = translate(title)
