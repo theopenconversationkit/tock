@@ -31,6 +31,7 @@ import fr.vsct.tock.bot.connector.ga.model.response.GAItem
 import fr.vsct.tock.bot.connector.ga.model.response.GALinkOutSuggestion
 import fr.vsct.tock.bot.connector.ga.model.response.GAListItem
 import fr.vsct.tock.bot.connector.ga.model.response.GAListSelect
+import fr.vsct.tock.bot.connector.ga.model.response.GAOptionInfo
 import fr.vsct.tock.bot.connector.ga.model.response.GAOptionValueSpec
 import fr.vsct.tock.bot.connector.ga.model.response.GAPermissionValueSpec
 import fr.vsct.tock.bot.connector.ga.model.response.GARichResponse
@@ -38,7 +39,11 @@ import fr.vsct.tock.bot.connector.ga.model.response.GASimpleResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GASimpleSelect
 import fr.vsct.tock.bot.connector.ga.model.response.GAStructuredResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GASuggestion
+import fr.vsct.tock.bot.definition.IntentAware
+import fr.vsct.tock.bot.definition.Parameters
+import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.translator.TextAndVoiceTranslatedString
 import fr.vsct.tock.translator.UserInterfaceType.textAndVoiceAssistant
 import fr.vsct.tock.translator.UserInterfaceType.textChat
@@ -180,24 +185,31 @@ fun BotBus.optionValueSpec(simpleSelect: GASimpleSelect? = null,
     return GAOptionValueSpec(simpleSelect, listSelect, carouselSelect)
 }
 
-fun BotBus.expectedInput(text: CharSequence,
-                         possibleIntents: List<GAExpectedIntent>)
-        : GAResponseConnectorMessage = expectedInput(GAInputPrompt(richResponse(text)), possibleIntents)
 
-fun BotBus.expectedInput(inputPrompt: GAInputPrompt,
-                         possibleIntents: List<GAExpectedIntent> = listOf(
-                                 GAExpectedIntent(GAIntent.text)
-                         ),
-                         speechBiasingHints: List<String> = emptyList()): GAResponseConnectorMessage {
+fun BotBus.gaMessage(text: CharSequence,
+                     possibleIntents: List<GAExpectedIntent>)
+        : GAResponseConnectorMessage = gaMessage(inputPrompt(richResponse(text)), possibleIntents)
+
+fun BotBus.gaMessage(inputPrompt: GAInputPrompt,
+                     possibleIntents: List<GAExpectedIntent> = listOf(
+                             GAExpectedIntent(GAIntent.text)
+                     ),
+                     speechBiasingHints: List<String> = emptyList()): GAResponseConnectorMessage {
     return GAResponseConnectorMessage(GAExpectedInput(inputPrompt, possibleIntents, speechBiasingHints))
 }
 
-fun BotBus.expectedInput(richResponse: GARichResponse): GAResponseConnectorMessage
-        = expectedInput(inputPrompt(richResponse))
+fun BotBus.gaMessage(richResponse: GARichResponse): GAResponseConnectorMessage
+        = gaMessage(inputPrompt(richResponse))
 
+fun BotBus.gaMessage(gaRichResponse: GARichResponse, gaChoices: List<GAListItem>): GAResponseConnectorMessage = gaMessage(inputPrompt(gaRichResponse), listOf(
+        GAExpectedIntent(GAIntent.text),
+        expectedIntentForListSelectOption("", gaChoices)))
 
-fun BotBus.expectedInput(possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage
-        = expectedInput(GAInputPrompt(GARichResponse(emptyList())), possibleIntents)
+fun BotBus.gaMessage(text: String, gaChoices: List<GAListItem>): GAResponseConnectorMessage = gaMessage(inputPrompt(richResponse(text)), listOf(
+        GAExpectedIntent(GAIntent.text),
+        expectedIntentForListSelectOption("", gaChoices)))
+
+fun BotBus.gaMessage(possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage = gaMessage(GAInputPrompt(GARichResponse(emptyList())), possibleIntents)
 
 fun BotBus.inputPrompt(richResponse: GARichResponse): GAInputPrompt
         = GAInputPrompt(richResponse)
@@ -215,3 +227,30 @@ fun BotBus.expectedIntentForListSelectOption(title: String, listItems: List<GALi
 
 private fun BotBus.translateAndSetBlankAsNull(s: CharSequence?): String?
         = translate(s).run { if (isBlank()) null else this.toString() }
+
+fun BotBus.gaChoice(
+        title: CharSequence,
+        targetIntent: IntentAware,
+        vararg parameters: Pair<String, String>)
+        : GAListItem
+        = gaChoice(title, targetIntent, null, *parameters)
+
+fun BotBus.gaChoice(
+        title: CharSequence,
+        targetIntent: IntentAware,
+        step: StoryStep? = null,
+        parameters: Parameters)
+        : GAListItem
+        = gaChoice(title, targetIntent, step, *parameters.toArray())
+
+fun BotBus.gaChoice(
+        title: CharSequence,
+        targetIntent: IntentAware,
+        step: StoryStep? = null,
+        vararg parameters: Pair<String, String>)
+        : GAListItem {
+    val t = translate(title)
+    return GAListItem(GAOptionInfo(
+            SendChoice.encodeChoiceId(this, targetIntent, step, parameters.toMap()), listOf(t.toString()))
+            , t.toString(), "")
+}
