@@ -48,8 +48,7 @@ export class BotApplicationConfiguration {
 export class ConnectorType {
 
   constructor(public id: string,
-              public userInterfaceType: UserInterfaceType,
-              public asynchronous: boolean) {
+              public userInterfaceType: UserInterfaceType) {
   }
 
   isRest(): boolean {

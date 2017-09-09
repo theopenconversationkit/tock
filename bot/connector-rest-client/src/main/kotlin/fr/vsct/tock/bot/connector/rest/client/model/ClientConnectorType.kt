@@ -21,13 +21,12 @@ package fr.vsct.tock.bot.connector.rest.client.model
  */
 data class ClientConnectorType(
         val id: String,
-        val userInterfaceType: ClientUserInterfaceType,
-        val asynchronous: Boolean) {
+        val userInterfaceType: ClientUserInterfaceType) {
 
     companion object {
         /**
          * Not a specific connector type.
          */
-        val none: ClientConnectorType = ClientConnectorType("NONE", ClientUserInterfaceType.textChat, false)
+        val none: ClientConnectorType = ClientConnectorType("NONE", ClientUserInterfaceType.textChat)
     }
 }

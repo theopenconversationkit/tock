@@ -123,10 +123,6 @@ class GAConnector internal constructor(
         }
     }
 
-    override fun send(event: Event) {
-        send(event, 0)
-    }
-
     override fun send(event: Event, delayInMs: Long) {
         if (event is Action) {
             val response = currentMessages.getIfPresent(event.recipientId.id)

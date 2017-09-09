@@ -45,7 +45,7 @@ import retrofit2.http.Query
 import java.lang.Exception
 
 /**
- *
+ * Messenger client.
  */
 internal class MessengerClient(val secretKey: String) {
 
@@ -55,7 +55,7 @@ internal class MessengerClient(val secretKey: String) {
         fun sendMessage(@Query("access_token") accessToken: String, @Body messageRequest: MessageRequest): Call<SendResponse>
 
         @POST("/v2.6/me/messages")
-        fun activateTyping(@Query("access_token") accessToken: String, @Body actionRequest: ActionRequest): Call<SendResponse>
+        fun sendAction(@Query("access_token") accessToken: String, @Body actionRequest: ActionRequest): Call<SendResponse>
 
         @GET("/v2.6/{userId}/")
         fun getUserProfile(@Path("userId") userId: String, @Query("access_token") accessToken: String, @Query("fields") fields: String): Call<UserProfile>
@@ -105,7 +105,7 @@ internal class MessengerClient(val secretKey: String) {
 
     fun sendAction(token: String, actionRequest: ActionRequest): SendResponse? {
         return try {
-            send(actionRequest, { graphApi.activateTyping(token, actionRequest).execute() })
+            send(actionRequest, { graphApi.sendAction(token, actionRequest).execute() })
         } catch (e: Exception) {
             //log and ignore
             logger.error(e)
@@ -151,7 +151,7 @@ internal class MessengerClient(val secretKey: String) {
                     if (errorContainer.error != null) {
                         //cf https://developers.facebook.com/docs/messenger-platform/send-api-reference/errors
                         with(errorContainer.error) {
-                            if (code == 1200 || (code == 200 && errorSubcode == 1545041)) {
+                            if (code == 1200 || code == 613 || (code == 200 && errorSubcode == 1545041)) {
                                 logger.info { "Try to send again in $nbRetriesWaitInMs ms $request" }
                                 Thread.sleep(nbRetriesWaitInMs)
                                 return send(request, call, nbTries + 1)

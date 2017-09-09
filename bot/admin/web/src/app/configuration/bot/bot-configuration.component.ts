@@ -45,7 +45,7 @@ export class BotConfigurationComponent implements OnInit {
       this.state.currentApplication.name,
       this.state.currentApplication.namespace,
       this.state.currentApplication.name,
-      new ConnectorType("messenger", UserInterfaceType.textChat, true),
+      new ConnectorType("messenger", UserInterfaceType.textChat),
       this.state.currentApplication.name);
   }
 

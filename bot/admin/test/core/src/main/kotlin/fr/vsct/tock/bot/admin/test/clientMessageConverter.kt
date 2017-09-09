@@ -56,11 +56,11 @@ fun ClientLocation.toLocation(): Location {
 }
 
 fun ConnectorType.toClientConnectorType(): ClientConnectorType {
-    return ClientConnectorType(id, userInterfaceType.toClientUserInterfaceType(), asynchronous)
+    return ClientConnectorType(id, userInterfaceType.toClientUserInterfaceType())
 }
 
 fun ClientConnectorType.toConnectorType(): ConnectorType {
-    return ConnectorType(id, userInterfaceType.toUserInterfaceType(), asynchronous)
+    return ConnectorType(id, userInterfaceType.toUserInterfaceType())
 }
 
 fun UserInterfaceType.toClientUserInterfaceType(): ClientUserInterfaceType {

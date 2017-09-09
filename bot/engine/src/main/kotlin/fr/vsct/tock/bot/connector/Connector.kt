@@ -38,14 +38,9 @@ interface Connector {
     fun register(controller: ConnectorController)
 
     /**
-     * Send an event with this connector.
+     * Send an event with this connector for the specified delay.
      */
-    fun send(event: Event)
-
-    /**
-     * Send an event with the specified delay. Default implementation is #send(Event).
-     */
-    fun send(event: Event, delayInMs: Long) = send(event)
+    fun send(event: Event, delayInMs: Long = 0)
 
     /**
      * Load user preferences - default implementation returns null.

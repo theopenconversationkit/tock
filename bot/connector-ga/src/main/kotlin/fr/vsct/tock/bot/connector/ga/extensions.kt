@@ -55,7 +55,7 @@ import mu.KotlinLogging
  */
 private val logger = KotlinLogging.logger {}
 
-val gaConnectorType = ConnectorType("ga", textAndVoiceAssistant, false)
+val gaConnectorType = ConnectorType("ga", textAndVoiceAssistant)
 
 fun BotBus.withGoogleAssistant(messageProvider: () -> ConnectorMessage): BotBus {
     return with(gaConnectorType, messageProvider)

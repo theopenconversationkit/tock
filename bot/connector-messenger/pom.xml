@@ -48,6 +48,10 @@
             <artifactId>commons-lang3</artifactId>
             <version>${commons-lang}</version>
         </dependency>
+        <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

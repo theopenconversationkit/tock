@@ -103,26 +103,11 @@ internal class TockConnectorController constructor(
     }
 
     fun send(action: Action, delay: Long = 0) {
-        if (connectorType.asynchronous) {
-            sendAsynchronous(action, delay)
-        } else {
-            sendSynchronous(action, delay)
-        }
-    }
-
-    private fun sendSynchronous(action: Action, delay: Long = 0) {
         try {
-            logger.debug { "message sent: $action" }
+            logger.debug { "message sent to connector: $action" }
             connector.send(action, delay)
         } catch (t: Throwable) {
             logger.error(t)
-        }
-    }
-
-    private fun sendAsynchronous(action: Action, delay: Long = 0) {
-        executor.executeBlocking(Duration.ofMillis(delay)) {
-            logger.debug { "message sent: $action" }
-            connector.send(action)
         }
     }
 

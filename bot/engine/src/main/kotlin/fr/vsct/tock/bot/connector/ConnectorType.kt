@@ -22,8 +22,7 @@ import fr.vsct.tock.translator.UserInterfaceType
  *
  */
 data class ConnectorType(val id: String,
-                         val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
-                         val asynchronous: Boolean = true) {
+                         val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat) {
 
     companion object {
         /**
@@ -33,7 +32,7 @@ data class ConnectorType(val id: String,
         /**
          * built-in rest connector.
          */
-        val rest: ConnectorType = ConnectorType("rest", asynchronous = false)
+        val rest: ConnectorType = ConnectorType("rest")
     }
 
     override fun toString(): String {

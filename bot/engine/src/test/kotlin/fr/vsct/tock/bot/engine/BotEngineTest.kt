@@ -92,7 +92,7 @@ abstract class BotEngineTest {
     val executor: Executor = mock()
     val connector: Connector = mock {
         on { loadProfile(any(), any()) } doReturn (UserPreferences())
-        on { connectorType } doReturn (ConnectorType("test", asynchronous = false))
+        on { connectorType } doReturn (ConnectorType("test"))
     }
 
     val userTimeline = UserTimeline(userId)

@@ -113,7 +113,7 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
         }
     }
 
-    override fun send(event: Event) {
+    override fun send(event: Event, delayInMs: Long) {
         if (event is Action) {
             val response = currentMessages.getIfPresent(event.recipientId.id)
             if (response == null) {
