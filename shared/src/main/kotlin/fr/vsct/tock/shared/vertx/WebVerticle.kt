@@ -23,6 +23,7 @@ import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.listProperty
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.property
 import io.vertx.core.AbstractVerticle
@@ -39,6 +40,7 @@ import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.auth.AbstractUser
 import io.vertx.ext.auth.AuthProvider
+import io.vertx.ext.auth.User
 import io.vertx.ext.web.FileUpload
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
@@ -85,18 +87,21 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
     }
 
     companion object {
-        private val username = property("tock_user", "admin@vsct.fr")
-        private val password = property("tock_password", "password")
-        private val organization = defaultNamespace
+        private val users = listProperty("tock_users", listOf(property("tock_user", "admin@vsct.fr")))
+        private val passwords = listProperty("tock_passwords", listOf(property("tock_password", "password")))
+        private val organizations = listProperty("tock_organizations", listOf(defaultNamespace))
 
         val authProvider: AuthProvider = AuthProvider { authInfo, handler ->
             val username = authInfo.getString("username")
             val password = authInfo.getString("password")
-            if (username == Companion.username && password == Companion.password) {
-                handler.handle(Future.succeededFuture(UserWithOrg(username, organization)))
-            } else {
-                handler.handle(Future.failedFuture("invalid credentials"))
-            }
+            handler.handle(
+                    users
+                            .indexOfFirst { it == username }
+                            .takeIf { it != -1 }
+                            ?.takeIf { passwords[it] == password }
+                            ?.let { Future.succeededFuture<User>(UserWithOrg(username, organizations[it])) }
+                            ?: Future.failedFuture<User>("invalid credentials")
+            )
         }
     }
 
