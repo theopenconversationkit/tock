@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.connector.ga.model.GAIntent
 import fr.vsct.tock.bot.connector.ga.model.request.GAPermission
 import fr.vsct.tock.bot.connector.ga.model.response.GABasicCard
 import fr.vsct.tock.bot.connector.ga.model.response.GAButton
+import fr.vsct.tock.bot.connector.ga.model.response.GACarouselItem
 import fr.vsct.tock.bot.connector.ga.model.response.GACarouselSelect
 import fr.vsct.tock.bot.connector.ga.model.response.GAExpectedInput
 import fr.vsct.tock.bot.connector.ga.model.response.GAExpectedIntent
@@ -124,13 +125,15 @@ fun BotBus.flexibleSimpleResponse(
     return GASimpleResponse(t, s, d)
 }
 
-fun BotBus.item(simpleResponse: GASimpleResponse? = null, basicCard: GABasicCard? = null, structuredResponse: GAStructuredResponse? = null): GAItem {
-    return GAItem(simpleResponse, basicCard, structuredResponse)
-}
+fun BotBus.item(simpleResponse: GASimpleResponse? = null, basicCard: GABasicCard? = null, structuredResponse: GAStructuredResponse? = null): GAItem
+        = GAItem(simpleResponse, basicCard, structuredResponse)
 
-fun BotBus.item(basicCard: GABasicCard? = null): GAItem = item(null, basicCard, null)
 
-fun BotBus.item(simpleResponse: GASimpleResponse? = null): GAItem = item(simpleResponse, null, null)
+fun BotBus.item(basicCard: GABasicCard? = null): GAItem
+        = item(null, basicCard, null)
+
+fun BotBus.item(simpleResponse: GASimpleResponse? = null): GAItem
+        = item(simpleResponse, null, null)
 
 fun BotBus.basicCard(
         title: String? = null,
@@ -146,20 +149,23 @@ fun BotBus.basicCard(
     return GABasicCard(t, s, f, image, buttons)
 }
 
-fun BotBus.basicCard(title: String? = null, subtitle: String? = null, image: GAImage? = null): GABasicCard = basicCard(title, subtitle, null, image)
+fun BotBus.basicCard(title: String? = null, subtitle: String? = null, image: GAImage? = null): GABasicCard
+        = basicCard(title, subtitle, null, image)
 
-fun BotBus.basicCard(title: String? = null, image: GAImage? = null): GABasicCard = basicCard(title, "", null, image)
+fun BotBus.basicCard(title: String? = null, image: GAImage? = null): GABasicCard
+        = basicCard(title, "", null, image)
 
-fun BotBus.basicCard(image: GAImage? = null): GABasicCard = basicCard(null, null, null, image)
+fun BotBus.basicCard(image: GAImage? = null): GABasicCard
+        = basicCard(null, null, null, image)
 
 fun BotBus.gaImage(url: String, accessibilityText: String, height: Int? = null, width: Int? = null): GAImage {
     val a = translate(accessibilityText)
     return GAImage(url, a.toString(), height, width)
 }
 
-fun BotBus.richResponse(items: List<GAItem>, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: GASuggestion): GARichResponse {
-    return GARichResponse(items, linkOutSuggestion = linkOutSuggestion, suggestions = listOf(*suggestions))
-}
+fun BotBus.richResponse(items: List<GAItem>, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: GASuggestion): GARichResponse
+        = GARichResponse(items, linkOutSuggestion = linkOutSuggestion, suggestions = listOf(*suggestions))
+
 
 fun BotBus.richResponse(items: List<GAItem>, vararg suggestions: GASuggestion): GARichResponse
         = richResponse(items, null, *suggestions)
@@ -170,51 +176,73 @@ fun BotBus.richResponse(text: CharSequence): GARichResponse
 fun BotBus.richResponse(text: CharSequence, linkOutSuggestion: GALinkOutSuggestion? = null): GARichResponse
         = richResponse(listOf(item(simpleResponse(text))), linkOutSuggestion)
 
-fun BotBus.richResponse(item: GAItem, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: GASuggestion): GARichResponse {
-    return richResponse(listOf(item), linkOutSuggestion, *suggestions)
-}
+fun BotBus.richResponse(item: GAItem, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: GASuggestion): GARichResponse
+        = richResponse(listOf(item), linkOutSuggestion, *suggestions)
 
-fun BotBus.richResponse(basicCard: GABasicCard, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: GASuggestion): GARichResponse {
-    return richResponse(item(basicCard), linkOutSuggestion, *suggestions)
-}
+
+fun BotBus.richResponse(basicCard: GABasicCard, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: GASuggestion): GARichResponse
+        = richResponse(item(basicCard), linkOutSuggestion, *suggestions)
+
 
 fun BotBus.optionValueSpec(simpleSelect: GASimpleSelect? = null,
                            listSelect: GAListSelect? = null,
-                           carouselSelect: GACarouselSelect? = null): GAOptionValueSpec {
-
-    return GAOptionValueSpec(simpleSelect, listSelect, carouselSelect)
-}
+                           carouselSelect: GACarouselSelect? = null): GAOptionValueSpec
+        = GAOptionValueSpec(simpleSelect, listSelect, carouselSelect)
 
 
 fun BotBus.gaMessage(text: CharSequence,
-                     possibleIntents: List<GAExpectedIntent>)
-        : GAResponseConnectorMessage = gaMessage(inputPrompt(richResponse(text)), possibleIntents)
+                     expectedIntents: List<GAExpectedIntent>): GAResponseConnectorMessage
+        = gaMessage(inputPrompt(richResponse(text)), expectedIntents)
 
 fun BotBus.gaMessage(inputPrompt: GAInputPrompt,
-                     possibleIntents: List<GAExpectedIntent> = listOf(
+                     expectedIntents: List<GAExpectedIntent> = listOf(
                              GAExpectedIntent(GAIntent.text)
                      ),
-                     speechBiasingHints: List<String> = emptyList()): GAResponseConnectorMessage {
-    return GAResponseConnectorMessage(GAExpectedInput(inputPrompt, possibleIntents, speechBiasingHints))
-}
+                     speechBiasingHints: List<String> = emptyList()): GAResponseConnectorMessage
+        = GAResponseConnectorMessage(GAExpectedInput(inputPrompt, expectedIntents, speechBiasingHints))
+
 
 fun BotBus.gaMessage(richResponse: GARichResponse): GAResponseConnectorMessage
         = gaMessage(inputPrompt(richResponse))
 
 fun BotBus.gaMessage(gaRichResponse: GARichResponse, gaChoices: List<GAListItem>): GAResponseConnectorMessage = gaMessage(inputPrompt(gaRichResponse), listOf(
         GAExpectedIntent(GAIntent.text),
-        expectedIntentForListSelectOption("", gaChoices)))
+        expectedIntentForList("", gaChoices)))
 
-fun BotBus.gaMessage(text: String, gaChoices: List<GAListItem>): GAResponseConnectorMessage = gaMessage(inputPrompt(richResponse(text)), listOf(
-        GAExpectedIntent(GAIntent.text),
-        expectedIntentForListSelectOption("", gaChoices)))
+fun BotBus.gaMessage(possibleIntent: GAExpectedIntent): GAResponseConnectorMessage =
+        gaMessage(listOf(possibleIntent))
 
-fun BotBus.gaMessage(possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage = gaMessage(GAInputPrompt(GARichResponse(emptyList())), possibleIntents)
+
+fun BotBus.gaMessage(expectedIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
+        gaMessage(GAInputPrompt(GARichResponse(emptyList())), expectedIntents)
+
+fun BotBus.gaMessage(text: String, expectedIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
+        gaMessage(
+                GAInputPrompt(
+                        richResponse(text)
+                ),
+                expectedIntents
+        )
+
+fun BotBus.gaMessageForList(text: String, items: List<GAListItem>): GAResponseConnectorMessage =
+        gaMessage(
+                inputPrompt(richResponse(text)), listOf(
+                GAExpectedIntent(GAIntent.text),
+                expectedIntentForList("", items))
+        )
+
+fun BotBus.gaMessageForCarousel(items: List<GACarouselItem>): GAResponseConnectorMessage =
+        gaMessage(
+                listOf(
+                        GAExpectedIntent(GAIntent.text),
+                        expectedIntentForCarousel(items))
+        )
+
 
 fun BotBus.inputPrompt(richResponse: GARichResponse): GAInputPrompt
         = GAInputPrompt(richResponse)
 
-fun BotBus.expectedIntentForListSelectOption(title: String, listItems: List<GAListItem>): GAExpectedIntent {
+fun BotBus.expectedIntentForList(title: String, items: List<GAListItem>): GAExpectedIntent {
     val t = translate(title)
 
     return GAExpectedIntent(
@@ -222,35 +250,109 @@ fun BotBus.expectedIntentForListSelectOption(title: String, listItems: List<GALi
             optionValueSpec(
                     listSelect = GAListSelect(
                             t.toString(),
-                            listItems)))
+                            items)))
+}
+
+fun BotBus.expectedIntentForCarousel(items: List<GACarouselItem>): GAExpectedIntent {
+    return GAExpectedIntent(
+            GAIntent.option,
+            optionValueSpec(carouselSelect = GACarouselSelect(items)
+            )
+    )
 }
 
 private fun BotBus.translateAndSetBlankAsNull(s: CharSequence?): String?
         = translate(s).run { if (isBlank()) null else this.toString() }
 
-fun BotBus.gaChoice(
+fun BotBus.listItem(
         title: CharSequence,
         targetIntent: IntentAware,
         vararg parameters: Pair<String, String>)
         : GAListItem
-        = gaChoice(title, targetIntent, null, *parameters)
+        = listItem(title, targetIntent, null, *parameters)
 
-fun BotBus.gaChoice(
+fun BotBus.listItem(
         title: CharSequence,
         targetIntent: IntentAware,
         step: StoryStep? = null,
         parameters: Parameters)
         : GAListItem
-        = gaChoice(title, targetIntent, step, *parameters.toArray())
+        = listItem(title, targetIntent, step, *parameters.toArray())
 
-fun BotBus.gaChoice(
+fun BotBus.listItem(
         title: CharSequence,
         targetIntent: IntentAware,
         step: StoryStep? = null,
         vararg parameters: Pair<String, String>)
         : GAListItem {
     val t = translate(title)
-    return GAListItem(GAOptionInfo(
-            SendChoice.encodeChoiceId(this, targetIntent, step, parameters.toMap()), listOf(t.toString()))
-            , t.toString(), "")
+    return GAListItem(
+            optionInfo(
+                    title,
+                    targetIntent,
+                    step,
+                    *parameters
+            ),
+            t.toString(),
+            "")
+}
+
+fun BotBus.optionInfo(
+        title: CharSequence,
+        targetIntent: IntentAware,
+        step: StoryStep? = null,
+        vararg parameters: Pair<String, String>
+): GAOptionInfo {
+    val t = translate(title)
+    return GAOptionInfo(
+            SendChoice.encodeChoiceId(
+                    this,
+                    targetIntent,
+                    step,
+                    parameters.toMap()),
+            listOf(t.toString())
+    )
+}
+
+fun BotBus.carouselItem(
+        optionTitle: CharSequence,
+        targetIntent: IntentAware,
+        title: CharSequence = optionTitle,
+        description: CharSequence? = null,
+        image: GAImage? = null,
+        vararg parameters: Pair<String, String>)
+        : GACarouselItem
+        = carouselItem(optionTitle, targetIntent, null, title, description, image, *parameters)
+
+fun BotBus.carouselItem(
+        optionTitle: CharSequence,
+        targetIntent: IntentAware,
+        step: StoryStep? = null,
+        title: CharSequence = optionTitle,
+        description: CharSequence? = null,
+        image: GAImage? = null,
+        parameters: Parameters)
+        : GACarouselItem
+        = carouselItem(optionTitle, targetIntent, step, title, description, image, *parameters.toArray())
+
+fun BotBus.carouselItem(
+        optionTitle: CharSequence,
+        targetIntent: IntentAware,
+        step: StoryStep? = null,
+        title: CharSequence = optionTitle,
+        description: CharSequence? = null,
+        image: GAImage? = null,
+        vararg parameters: Pair<String, String>)
+        : GACarouselItem {
+    return GACarouselItem(
+            optionInfo(
+                    optionTitle,
+                    targetIntent,
+                    step,
+                    *parameters
+            ),
+            translate(title).toString(),
+            translate(description).toString(),
+            image
+    )
 }
