@@ -37,7 +37,7 @@ export class StateService implements AuthListener {
 
   user: User;
   applications: Application[];
-  entityTypes: BehaviorSubject<EntityType[]> = BehaviorSubject.create([]);
+  entityTypes: BehaviorSubject<EntityType[]> = new BehaviorSubject([]);
 
   currentApplication: Application;
   currentLocale: string = StateService.DEFAULT_LOCALE;
@@ -157,3 +157,4 @@ export class StateService implements AuthListener {
   }
 
 }
+
