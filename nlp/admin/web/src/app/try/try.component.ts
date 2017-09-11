@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
+import {Component, OnDestroy, OnInit} from "@angular/core";
 import {ParseQuery, Sentence} from "../model/nlp";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {StateService} from "../core/state.service";
@@ -25,12 +25,13 @@ import {MdSnackBar} from "@angular/material";
   templateUrl: './try.component.html',
   styleUrls: ['./try.component.css']
 })
-export class TryComponent implements OnInit {
+export class TryComponent implements OnInit, OnDestroy {
 
   sentence: Sentence;
   skipCache: boolean = false;
   advanced: boolean = false;
   queryState: string;
+  subscribers: any[] = [];
 
   constructor(private nlp: NlpService,
               private state: StateService,
@@ -38,6 +39,12 @@ export class TryComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.subscribers.push(this.state.currentApplicationEmitter.subscribe(a => this.onClose()));
+    this.subscribers.push(this.state.currentLocaleEmitter.subscribe(_ => this.onClose()));
+  }
+
+  ngOnDestroy(): void {
+    this.subscribers.forEach(s => s.unsubscribe());
   }
 
   onTry(value: string) {
@@ -62,6 +69,7 @@ export class TryComponent implements OnInit {
   }
 
   onClose() {
+    console.log("close");
     this.sentence = null;
   }
 

@@ -20,7 +20,7 @@ import {AuthService} from "./auth/auth.service";
 import {AuthListener} from "./auth/auth.listener";
 import {AuthenticateResponse, User} from "../model/auth";
 import {SettingsService} from "./settings.service";
-import {ApplicationScopedQuery, Entry} from "../model/commons";
+import {ApplicationScopedQuery, Entry, PaginatedQuery} from "../model/commons";
 import {environment} from "../../environments/environment";
 import {EntityType, NlpEngineType} from "../model/nlp";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
@@ -37,7 +37,7 @@ export class StateService implements AuthListener {
 
   user: User;
   applications: Application[];
-  entityTypes: BehaviorSubject<EntityType[]> = new BehaviorSubject([]);
+  entityTypes: BehaviorSubject<EntityType[]> = BehaviorSubject.create([]);
 
   currentApplication: Application;
   currentLocale: string = StateService.DEFAULT_LOCALE;
@@ -144,6 +144,16 @@ export class StateService implements AuthListener {
       this.currentApplication.name,
       this.currentLocale
     )
+  }
+
+  createPaginatedQuery(start: number, size: number): PaginatedQuery {
+    return new PaginatedQuery(
+      this.currentApplication.namespace,
+      this.currentApplication.name,
+      this.currentLocale,
+      start,
+      start + size
+    );
   }
 
 }

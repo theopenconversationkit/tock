@@ -70,20 +70,12 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
   }
 
   private paginatedQuery(): PaginatedQuery {
-    const app = this.state.currentApplication;
-    const language = this.state.currentLocale;
-    return new PaginatedQuery(
-      app.namespace,
-      app.name,
-      language,
-      this.cursor,
-      this.cursor + this.pageSize
-    );
+    return this.state.createPaginatedQuery(this.cursor, this.pageSize);
   }
 
-  private loadResults(result: PaginatedResult<T>, init:boolean) {
+  private loadResults(result: PaginatedResult<T>, init: boolean) {
     //skip parallel initialization
-    if(init && this.data.length !== 0) {
+    if (init && this.data.length !== 0) {
       return;
     }
     Array.prototype.push.apply(this.data, result.rows);
