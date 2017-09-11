@@ -21,6 +21,7 @@ import fr.vsct.tock.nlp.front.service.storage.ModelBuildTriggerDAO
 import fr.vsct.tock.nlp.front.shared.build.ModelBuild
 import fr.vsct.tock.nlp.front.shared.build.ModelBuildQueryResult
 import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
+import org.litote.kmongo.count
 import org.litote.kmongo.deleteMany
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.find
@@ -68,7 +69,7 @@ object ModelBuildTriggerMongoDAO : ModelBuildTriggerDAO {
         val filter = "{'applicationId':${applicationId.json},'language':${language.json}}"
 
         return ModelBuildQueryResult(
-                modelCol.count(),
+                modelCol.count(filter),
                 modelCol
                         .find(filter)
                         .sort("{date:1}")
