@@ -22,6 +22,7 @@ import fr.vsct.tock.nlp.front.service.FrontRepository.entityTypeExists
 import fr.vsct.tock.nlp.front.service.ModelUpdaterService.triggerBuild
 import fr.vsct.tock.nlp.front.shared.ApplicationCodec
 import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
+import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationImportConfiguration
 import fr.vsct.tock.nlp.front.shared.codec.DumpType
@@ -38,7 +39,6 @@ import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
-import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.name
@@ -73,8 +73,7 @@ object ApplicationCodecService : ApplicationCodec {
             val report = ImportReport()
             try {
 
-                dump.entityTypes.forEach {
-                    e ->
+                dump.entityTypes.forEach { e ->
                     if (!entityTypeExists(e.name)) {
                         val newEntity = e.copy(_id = null)
                         config.save(newEntity)
@@ -130,7 +129,10 @@ object ApplicationCodecService : ApplicationCodec {
                         val sentence = s.copy(
                                 applicationId = appId,
                                 classification = s.classification.copy(
-                                        intentId = intentsIdsMap[s.classification.intentId]!!
+                                        intentId = intentsIdsMap[s.classification.intentId]!!,
+                                        //ensure that entities are correctly sorted
+                                        entities = s.classification.entities.sortedBy { it.start }
+
                                 ))
                         report.add(sentence)
                         config.save(sentence)
@@ -143,7 +145,7 @@ object ApplicationCodecService : ApplicationCodec {
                     triggerBuild(ModelBuildTrigger(appId, true))
                 }
 
-            } catch(t: Throwable) {
+            } catch (t: Throwable) {
                 logger.error(t)
                 report.success = false
                 report.addError(t.message ?: "exception without message")
@@ -191,7 +193,7 @@ object ApplicationCodecService : ApplicationCodec {
                         app = config.save(app.copy(supportedLocales = app.supportedLocales + language))
                     }
 
-                    val newIntent : IntentDefinition= intentsByNameMap[s.intent]
+                    val newIntent: IntentDefinition = intentsByNameMap[s.intent]
                             .let { newIntent ->
                                 if (newIntent == null) {
                                     val intent = config.getIntentByNamespaceAndName(s.intent.namespace(), s.intent.name())
@@ -277,7 +279,7 @@ object ApplicationCodecService : ApplicationCodec {
             }
 
             logger.info { "Sentences Dump imported! Result : $report" }
-        } catch(t: Throwable) {
+        } catch (t: Throwable) {
             logger.error(t)
             report.success = false
             report.addError(t.message ?: "exception without message")
