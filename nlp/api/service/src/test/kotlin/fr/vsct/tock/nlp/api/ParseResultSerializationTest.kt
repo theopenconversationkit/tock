@@ -65,7 +65,7 @@ class ParseResultSerializationTest {
                 mapOf("test2" to 2.0))
         val s = mapper.writeValueAsString(parseResult)
         assertEquals(
-                """{"intent":"test","intentNamespace":"namespace","entities":[{"start":0,"end":1,"entity":{"entityType":{"name":"type","subEntities":[]},"role":"role"},"value":{"@type":"dateEntity","date":"2017-04-01T00:00Z[UTC]","grain":"day"},"evaluated":false,"probability":1.0,"mergeSupport":false}],"intentProbability":1.0,"entitiesProbability":1.0,"retainedQuery":"sentence","otherIntentsProbabilities":{"test2":2.0}}""",
+                """{"intent":"test","intentNamespace":"namespace","entities":[{"start":0,"end":1,"entity":{"entityType":{"name":"type","subEntities":[]},"role":"role"},"value":{"@type":"dateEntity","date":"2017-04-01T00:00:00Z[UTC]","grain":"day"},"evaluated":false,"probability":1.0,"mergeSupport":false}],"intentProbability":1.0,"entitiesProbability":1.0,"retainedQuery":"sentence","otherIntentsProbabilities":{"test2":2.0}}""",
                 s)
 
         assertEquals(parseResult, mapper.readValue(s))

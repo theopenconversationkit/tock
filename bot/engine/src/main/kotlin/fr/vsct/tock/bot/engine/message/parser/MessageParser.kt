@@ -23,6 +23,7 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.connector.ConnectorType
@@ -55,6 +56,8 @@ object MessageParser {
     private val mapper: ObjectMapper =
             jacksonObjectMapper()
                     .findAndRegisterModules()
+                    //force java time module
+                    .registerModule(JavaTimeModule())
                     .configure(ALLOW_UNQUOTED_FIELD_NAMES, true)
                     .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                     .setSerializationInclusion(JsonInclude.Include.NON_NULL)

@@ -27,6 +27,7 @@ import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
@@ -34,6 +35,8 @@ import kotlin.reflect.full.createInstance
 val mapper: ObjectMapper by lazy {
     jacksonObjectMapper()
             .findAndRegisterModules()
+            //force java time module
+            .registerModule(JavaTimeModule())
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
             .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)

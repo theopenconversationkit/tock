@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.api.client
 
 import com.fasterxml.jackson.databind.DeserializationFeature
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
@@ -41,6 +42,7 @@ class NlpClientIntegrationTest {
     fun testImportNlpPlainDump() {
         val dump = jacksonObjectMapper()
                 .findAndRegisterModules()
+                .registerModule(JavaTimeModule())
                 .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
                 .readValue<ApplicationDump>(dumpStream)
                 .run {

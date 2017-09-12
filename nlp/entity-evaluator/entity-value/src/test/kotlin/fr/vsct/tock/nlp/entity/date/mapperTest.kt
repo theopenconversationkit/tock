@@ -16,9 +16,12 @@
 
 package fr.vsct.tock.nlp.entity.date
 
+import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 
 val mapper = jacksonObjectMapper().apply {
     findAndRegisterModules()
+    //force java time module
+    registerModule(JavaTimeModule())
 }
 
