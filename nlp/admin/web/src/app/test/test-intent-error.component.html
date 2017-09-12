@@ -40,12 +40,12 @@
 
     <ng-container mdColumnDef="percent">
       <md-header-cell *mdHeaderCellDef md-tooltip="(after first error)"> Test Errors / Tests  </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{(row.count/row.total)| percent}} </md-cell>
+      <md-cell *mdCellDef="let row"> {{(row.count/row.total)| percent:'1.0-2'}} </md-cell>
     </ng-container>
 
     <ng-container mdColumnDef="probability">
       <md-header-cell *mdHeaderCellDef> Average Intent Error Probability </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{(row.averageErrorProbability*100) | percent}} </md-cell>
+      <md-cell *mdCellDef="let row"> {{row.averageErrorProbability | percent:'1.0-2'}} </md-cell>
     </ng-container>
 
     <ng-container mdColumnDef="firstErrorDate">
