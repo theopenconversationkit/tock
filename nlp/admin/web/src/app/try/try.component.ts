@@ -69,7 +69,6 @@ export class TryComponent implements OnInit, OnDestroy {
   }
 
   onClose() {
-    console.log("close");
     this.sentence = null;
   }
 

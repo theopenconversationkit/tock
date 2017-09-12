@@ -60,7 +60,6 @@ export class SearchBotIntentComponent implements OnInit {
   }
 
   update(intent: BotIntent) {
-    console.log(intent);
     this.bot.updateBotIntent(
       new UpdateBotIntentRequest(
         intent.storyDefinition._id,
