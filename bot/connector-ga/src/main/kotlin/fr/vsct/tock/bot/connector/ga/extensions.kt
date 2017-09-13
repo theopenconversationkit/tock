@@ -32,10 +32,12 @@ import fr.vsct.tock.bot.connector.ga.model.response.GAItem
 import fr.vsct.tock.bot.connector.ga.model.response.GALinkOutSuggestion
 import fr.vsct.tock.bot.connector.ga.model.response.GAListItem
 import fr.vsct.tock.bot.connector.ga.model.response.GAListSelect
+import fr.vsct.tock.bot.connector.ga.model.response.GAOpenUrlAction
 import fr.vsct.tock.bot.connector.ga.model.response.GAOptionInfo
 import fr.vsct.tock.bot.connector.ga.model.response.GAOptionValueSpec
 import fr.vsct.tock.bot.connector.ga.model.response.GAPermissionValueSpec
 import fr.vsct.tock.bot.connector.ga.model.response.GARichResponse
+import fr.vsct.tock.bot.connector.ga.model.response.GASelectItem
 import fr.vsct.tock.bot.connector.ga.model.response.GASimpleResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GASimpleSelect
 import fr.vsct.tock.bot.connector.ga.model.response.GAStructuredResponse
@@ -68,6 +70,55 @@ fun BotBus.withGoogleVoiceAssistant(messageProvider: () -> ConnectorMessage): Bo
     }
     return this
 }
+
+fun BotBus.gaMessage(text: CharSequence): GAResponseConnectorMessage
+        = gaMessage(inputPrompt(text))
+
+fun BotBus.gaMessage(text: CharSequence, basicCard: GABasicCard): GAResponseConnectorMessage
+        = gaMessage(richResponse(listOf(GAItem(simpleResponse(text)), GAItem(basicCard = basicCard))))
+
+fun BotBus.gaMessage(inputPrompt: GAInputPrompt,
+                     possibleIntents: List<GAExpectedIntent> = listOf(
+                             expectedTextIntent()
+                     ),
+                     speechBiasingHints: List<String> = emptyList()): GAResponseConnectorMessage
+        = GAResponseConnectorMessage(GAExpectedInput(inputPrompt, possibleIntents, speechBiasingHints))
+
+
+fun BotBus.gaMessage(richResponse: GARichResponse): GAResponseConnectorMessage
+        = gaMessage(inputPrompt(richResponse))
+
+fun BotBus.gaMessage(gaRichResponse: GARichResponse, listItems: List<GAListItem>): GAResponseConnectorMessage = gaMessage(inputPrompt(gaRichResponse), listOf(
+        expectedTextIntent(),
+        expectedIntentForList("", listItems)))
+
+fun BotBus.gaMessage(possibleIntent: GAExpectedIntent): GAResponseConnectorMessage =
+        gaMessage(listOf(possibleIntent))
+
+fun BotBus.gaMessage(possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
+        gaMessage(GAInputPrompt(GARichResponse(emptyList())), possibleIntents)
+
+fun BotBus.gaMessage(text: String, possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
+        gaMessage(
+                GAInputPrompt(
+                        richResponse(text)
+                ),
+                possibleIntents
+        )
+
+fun BotBus.gaMessageForList(text: String, items: List<GAListItem>): GAResponseConnectorMessage =
+        gaMessage(
+                inputPrompt(richResponse(text)), listOf(
+                expectedTextIntent(),
+                expectedIntentForList("", items))
+        )
+
+fun BotBus.gaMessageForCarousel(items: List<GACarouselItem>): GAResponseConnectorMessage =
+        gaMessage(
+                listOf(
+                        expectedTextIntent(),
+                        expectedIntentForCarousel(items))
+        )
 
 fun BotBus.permissionIntent(optionalContext: String = "", vararg permissions: GAPermission): GAExpectedIntent {
     return GAExpectedIntent(
@@ -136,9 +187,9 @@ fun BotBus.item(simpleResponse: GASimpleResponse? = null): GAItem
         = item(simpleResponse, null, null)
 
 fun BotBus.basicCard(
-        title: String? = null,
-        subtitle: String? = null,
-        formattedText: String? = null,
+        title: CharSequence? = null,
+        subtitle: CharSequence? = null,
+        formattedText: CharSequence? = null,
         image: GAImage? = null,
         buttons: List<GAButton> = emptyList()): GABasicCard {
 
@@ -149,10 +200,16 @@ fun BotBus.basicCard(
     return GABasicCard(t, s, f, image, buttons)
 }
 
-fun BotBus.basicCard(title: String? = null, subtitle: String? = null, image: GAImage? = null): GABasicCard
+fun BotBus.basicCard(title: CharSequence? = null, subtitle: CharSequence? = null, image: GAImage? = null, button: GAButton): GABasicCard
+        = basicCard(title, subtitle, null, image, buttons = listOf(button))
+
+fun BotBus.basicCard(title: CharSequence? = null, button: GAButton): GABasicCard
+        = basicCard(title, null, null, button)
+
+fun BotBus.basicCard(title: CharSequence? = null, subtitle: CharSequence? = null, image: GAImage? = null): GABasicCard
         = basicCard(title, subtitle, null, image)
 
-fun BotBus.basicCard(title: String? = null, image: GAImage? = null): GABasicCard
+fun BotBus.basicCard(title: CharSequence? = null, image: GAImage? = null): GABasicCard
         = basicCard(title, "", null, image)
 
 fun BotBus.basicCard(image: GAImage? = null): GABasicCard
@@ -179,76 +236,26 @@ fun BotBus.richResponse(text: CharSequence, linkOutSuggestion: GALinkOutSuggesti
 fun BotBus.richResponse(item: GAItem, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: GASuggestion): GARichResponse
         = richResponse(listOf(item), linkOutSuggestion, *suggestions)
 
-
 fun BotBus.richResponse(basicCard: GABasicCard, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: GASuggestion): GARichResponse
         = richResponse(item(basicCard), linkOutSuggestion, *suggestions)
 
-fun BotBus.richResponse(text: CharSequence, linkOutSuggestion: GALinkOutSuggestion? = null,vararg suggestions: GASuggestion): GARichResponse
-        = richResponse(listOf(item(simpleResponse(text))), linkOutSuggestion,*suggestions)
+fun BotBus.richResponse(text: CharSequence, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: GASuggestion): GARichResponse
+        = richResponse(listOf(item(simpleResponse(text))), linkOutSuggestion, *suggestions)
+
+fun BotBus.richResponse(text: CharSequence, basicCard: GABasicCard, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: GASuggestion): GARichResponse
+        = richResponse(listOf(item(simpleResponse(text)), item(basicCard)), linkOutSuggestion, *suggestions)
 
 fun BotBus.optionValueSpec(simpleSelect: GASimpleSelect? = null,
                            listSelect: GAListSelect? = null,
                            carouselSelect: GACarouselSelect? = null): GAOptionValueSpec
         = GAOptionValueSpec(simpleSelect, listSelect, carouselSelect)
 
-
-fun BotBus.gaMessage(text: CharSequence): GAResponseConnectorMessage
-        = gaMessage(inputPrompt(simpleResponse(text)))
-
-fun BotBus.gaMessage(text: CharSequence,
-                     expectedIntents: List<GAExpectedIntent>): GAResponseConnectorMessage
-        = gaMessage(inputPrompt(richResponse(text)), expectedIntents)
-
-fun BotBus.gaMessage(inputPrompt: GAInputPrompt,
-                     expectedIntents: List<GAExpectedIntent> = listOf(
-                             GAExpectedIntent(GAIntent.text)
-                     ),
-                     speechBiasingHints: List<String> = emptyList()): GAResponseConnectorMessage
-        = GAResponseConnectorMessage(GAExpectedInput(inputPrompt, expectedIntents, speechBiasingHints))
-
-
-fun BotBus.gaMessage(richResponse: GARichResponse): GAResponseConnectorMessage
-        = gaMessage(inputPrompt(richResponse))
-
-fun BotBus.gaMessage(gaRichResponse: GARichResponse, gaChoices: List<GAListItem>): GAResponseConnectorMessage = gaMessage(inputPrompt(gaRichResponse), listOf(
-        GAExpectedIntent(GAIntent.text),
-        expectedIntentForList("", gaChoices)))
-
-fun BotBus.gaMessage(possibleIntent: GAExpectedIntent): GAResponseConnectorMessage =
-        gaMessage(listOf(possibleIntent))
-
-
-fun BotBus.gaMessage(possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
-        gaMessage(GAInputPrompt(GARichResponse(emptyList())), possibleIntents)
-
-fun BotBus.gaMessage(text: String, possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
-        gaMessage(
-                GAInputPrompt(
-                        richResponse(text)
-                ),
-                possibleIntents
-        )
-
-fun BotBus.gaMessageForList(text: String, items: List<GAListItem>): GAResponseConnectorMessage =
-        gaMessage(
-                inputPrompt(richResponse(text)), listOf(
-                GAExpectedIntent(GAIntent.text),
-                expectedIntentForList("", items))
-        )
-
-fun BotBus.gaMessageForCarousel(items: List<GACarouselItem>): GAResponseConnectorMessage =
-        gaMessage(
-                listOf(
-                        GAExpectedIntent(GAIntent.text),
-                        expectedIntentForCarousel(items))
-        )
-
-
 fun BotBus.inputPrompt(richResponse: GARichResponse): GAInputPrompt
         = GAInputPrompt(richResponse)
 
-fun BotBus.inputPrompt(simpleResponse: GASimpleResponse): GAInputPrompt
-        = GAInputPrompt(GARichResponse(listOf(item(simpleResponse))))
+fun BotBus.inputPrompt(text: CharSequence, linkOutSuggestion: GALinkOutSuggestion? = null): GAInputPrompt
+        = inputPrompt(richResponse(text, linkOutSuggestion))
+
 
 fun BotBus.expectedIntentForList(title: String, items: List<GAListItem>): GAExpectedIntent {
     val t = translate(title)
@@ -267,6 +274,18 @@ fun BotBus.expectedIntentForCarousel(items: List<GACarouselItem>): GAExpectedInt
             optionValueSpec(carouselSelect = GACarouselSelect(items)
             )
     )
+}
+
+fun BotBus.expectedIntentForSimpleSelect(items: List<GASelectItem>): GAExpectedIntent {
+    return GAExpectedIntent(
+            GAIntent.option,
+            optionValueSpec(simpleSelect = GASimpleSelect(items)
+            )
+    )
+}
+
+fun BotBus.gaButton(title: CharSequence, url: String): GAButton {
+    return GAButton(translate(title).toString(), GAOpenUrlAction(url))
 }
 
 private fun BotBus.translateAndSetBlankAsNull(s: CharSequence?): String?
@@ -364,3 +383,47 @@ fun BotBus.carouselItem(
             image
     )
 }
+
+fun BotBus.selectItem(
+        optionTitle: CharSequence,
+        targetIntent: IntentAware,
+        vararg parameters: Pair<String, String>)
+        : GASelectItem
+        = selectItem(optionTitle, targetIntent, null, optionTitle, *parameters)
+
+fun BotBus.selectItem(
+        optionTitle: CharSequence,
+        targetIntent: IntentAware,
+        title: CharSequence = optionTitle,
+        vararg parameters: Pair<String, String>)
+        : GASelectItem
+        = selectItem(optionTitle, targetIntent, null, title, *parameters)
+
+fun BotBus.selectItem(
+        optionTitle: CharSequence,
+        targetIntent: IntentAware,
+        step: StoryStep? = null,
+        title: CharSequence = optionTitle,
+        parameters: Parameters)
+        : GASelectItem
+        = selectItem(optionTitle, targetIntent, step, title, *parameters.toArray())
+
+fun BotBus.selectItem(
+        optionTitle: CharSequence,
+        targetIntent: IntentAware,
+        step: StoryStep? = null,
+        title: CharSequence = optionTitle,
+        vararg parameters: Pair<String, String>)
+        : GASelectItem {
+    return GASelectItem(
+            optionInfo(
+                    optionTitle,
+                    targetIntent,
+                    step,
+                    *parameters
+            ),
+            translate(title).toString()
+    )
+}
+
+fun expectedTextIntent() : GAExpectedIntent = GAExpectedIntent(GAIntent.text)
