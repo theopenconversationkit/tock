@@ -172,7 +172,22 @@ class GAConnector internal constructor(
                     null
                 }
 
-                val message = actions.firstOrNull { it.action is SendSentence && it.action.hasMessage(gaConnectorType) }
+                val message: GAExpectedInput? =
+                        actions.map { it.action }
+                                .filterIsInstance<SendSentence>()
+                                .map {
+                                    (it.message(gaConnectorType) as GAResponseConnectorMessage?)?.expectedInput
+                                }
+                                .filterNotNull()
+                                .run {
+                                    if (isEmpty())
+                                        null
+                                    else reduce { a, b ->
+                                        a.copy(
+                                                possibleIntents = a.possibleIntents + b.possibleIntents.filter { ib -> a.possibleIntents.none { ia -> ia.intent == ib.intent } })
+                                    }
+                                }
+
                 val expectedInput = if (message == null) {
                     if (simpleResponse == null) {
                         logger.warn { "no simple response for $routingContext" }
@@ -184,14 +199,13 @@ class GAConnector internal constructor(
                                                 listOf(simpleResponse))))
                     }
                 } else {
-                    val m = (message.action as SendSentence).message(gaConnectorType) as GAResponseConnectorMessage
                     if (simpleResponse == null) {
-                        m.expectedInput
+                        message
                     } else {
-                        m.expectedInput.copy(
-                                inputPrompt = m.expectedInput.inputPrompt.copy(
-                                        richInitialPrompt = m.expectedInput.inputPrompt.richInitialPrompt.copy(
-                                                items = listOf(simpleResponse) + m.expectedInput.inputPrompt.richInitialPrompt.items
+                        message.copy(
+                                inputPrompt = message.inputPrompt.copy(
+                                        richInitialPrompt = message.inputPrompt.richInitialPrompt.copy(
+                                                items = listOf(simpleResponse) + message.inputPrompt.richInitialPrompt.items
                                         )
                                 )
                         )
@@ -214,7 +228,7 @@ class GAConnector internal constructor(
 
                 val writeValueAsString = mapper.writeValueAsString(gaResponse)
 
-                logger.debug { writeValueAsString }
+                logger.debug { "ga json response: $writeValueAsString" }
                 context.response().end(writeValueAsString)
             }
         } catch (e: Exception) {

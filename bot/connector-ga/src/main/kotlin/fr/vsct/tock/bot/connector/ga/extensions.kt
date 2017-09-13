@@ -190,6 +190,9 @@ fun BotBus.optionValueSpec(simpleSelect: GASimpleSelect? = null,
         = GAOptionValueSpec(simpleSelect, listSelect, carouselSelect)
 
 
+fun BotBus.gaMessage(text: CharSequence): GAResponseConnectorMessage
+        = gaMessage(inputPrompt(simpleResponse(text)))
+
 fun BotBus.gaMessage(text: CharSequence,
                      expectedIntents: List<GAExpectedIntent>): GAResponseConnectorMessage
         = gaMessage(inputPrompt(richResponse(text)), expectedIntents)
@@ -213,15 +216,15 @@ fun BotBus.gaMessage(possibleIntent: GAExpectedIntent): GAResponseConnectorMessa
         gaMessage(listOf(possibleIntent))
 
 
-fun BotBus.gaMessage(expectedIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
-        gaMessage(GAInputPrompt(GARichResponse(emptyList())), expectedIntents)
+fun BotBus.gaMessage(possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
+        gaMessage(GAInputPrompt(GARichResponse(emptyList())), possibleIntents)
 
-fun BotBus.gaMessage(text: String, expectedIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
+fun BotBus.gaMessage(text: String, possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
         gaMessage(
                 GAInputPrompt(
                         richResponse(text)
                 ),
-                expectedIntents
+                possibleIntents
         )
 
 fun BotBus.gaMessageForList(text: String, items: List<GAListItem>): GAResponseConnectorMessage =
@@ -241,6 +244,9 @@ fun BotBus.gaMessageForCarousel(items: List<GACarouselItem>): GAResponseConnecto
 
 fun BotBus.inputPrompt(richResponse: GARichResponse): GAInputPrompt
         = GAInputPrompt(richResponse)
+
+fun BotBus.inputPrompt(simpleResponse: GASimpleResponse): GAInputPrompt
+        = GAInputPrompt(GARichResponse(listOf(item(simpleResponse))))
 
 fun BotBus.expectedIntentForList(title: String, items: List<GAListItem>): GAExpectedIntent {
     val t = translate(title)
