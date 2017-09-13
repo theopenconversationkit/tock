@@ -183,6 +183,8 @@ fun BotBus.richResponse(item: GAItem, linkOutSuggestion: GALinkOutSuggestion? = 
 fun BotBus.richResponse(basicCard: GABasicCard, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: GASuggestion): GARichResponse
         = richResponse(item(basicCard), linkOutSuggestion, *suggestions)
 
+fun BotBus.richResponse(text: CharSequence, linkOutSuggestion: GALinkOutSuggestion? = null,vararg suggestions: GASuggestion): GARichResponse
+        = richResponse(listOf(item(simpleResponse(text))), linkOutSuggestion,*suggestions)
 
 fun BotBus.optionValueSpec(simpleSelect: GASimpleSelect? = null,
                            listSelect: GAListSelect? = null,
