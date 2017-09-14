@@ -25,12 +25,15 @@ import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionSignificance
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
+import fr.vsct.tock.nlp.api.client.model.Entity
+import fr.vsct.tock.nlp.entity.Value
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.UserInterfaceType
 import java.util.Locale
@@ -92,6 +95,27 @@ open class BotBusMock(override var userTimeline: UserTimeline,
     fun checkEndCalled(): BotBusMock {
         if (!endCalled) error("end() method not called")
         return this
+    }
+
+    /**
+     * Add an entity set in the current action.
+     */
+    fun addActionEntity(contextValue: ContextValue) {
+        action.state.entityValues.add(contextValue)
+    }
+
+    /**
+     * Add an entity set in the current action.
+     */
+    fun addActionEntity(entity: Entity, newValue: Value?) {
+        addActionEntity(ContextValue(entity, newValue))
+    }
+
+    /**
+     * Simulate an action entity.
+     */
+    fun addActionEntity(entity: Entity, textContent: String) {
+        addActionEntity(ContextValue(entity, null, textContent))
     }
 
     override var applicationId = action.applicationId
