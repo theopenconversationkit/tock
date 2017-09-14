@@ -27,6 +27,7 @@ import fr.vsct.tock.nlp.admin.model.PaginatedQuery
 import fr.vsct.tock.nlp.admin.model.ParseQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
+import fr.vsct.tock.nlp.admin.model.UpdateEntityDefinitionQuery
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
@@ -247,7 +248,15 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             }
         }
 
-        blockingJsonGet("/entities") { front.getEntityTypes() }
+        blockingJsonGet("/entity-types") { front.getEntityTypes() }
+
+        blockingJsonPost("/entity") { context, query: UpdateEntityDefinitionQuery ->
+            if (context.organization == query.namespace) {
+                front.updateEntityDefinition(query.namespace, query.applicationName, query.entity)
+            } else {
+                unauthorized()
+            }
+        }
 
         blockingJsonGet("/nlp-engines") { front.getSupportedNlpEngineTypes() }
 

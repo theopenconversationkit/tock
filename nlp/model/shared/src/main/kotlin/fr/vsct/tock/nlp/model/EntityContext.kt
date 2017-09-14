@@ -18,6 +18,7 @@ package fr.vsct.tock.nlp.model
 
 import fr.vsct.tock.nlp.core.BuildContext
 import fr.vsct.tock.nlp.core.CallContext
+import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.NlpEngineType
@@ -60,7 +61,7 @@ class EntityCallContextForIntent(val applicationName: String,
                                  engineType: NlpEngineType,
                                  referenceDate: ZonedDateTime) : EntityCallContext(language, engineType, referenceDate) {
 
-    constructor(context: CallContext, intent: Intent) : this(context.application.name, intent, context.language, context.engineType, context.referenceDate)
+    constructor(context: CallContext, intent: Intent) : this(context.application.name, intent, context.language, context.engineType, context.evaluationContext.referenceDate)
 
     constructor(context: TestContext, intent: Intent) : this(context.callContext, intent)
 
@@ -75,7 +76,12 @@ class EntityCallContextForEntity(val entityType: EntityType,
                                  engineType: NlpEngineType,
                                  referenceDate: ZonedDateTime) : EntityCallContext(language, engineType, referenceDate) {
 
-    constructor(context: CallContext, entityType: EntityType) : this(entityType, context.language, context.engineType, context.referenceDate)
+    constructor(context: CallContext, entity: Entity) :
+            this(
+                    entity.entityType,
+                    context.language,
+                    context.engineType,
+                    context.evaluationContext.referenceDateForEntity(entity))
 
     override fun key(): EntityContextKey {
         return EntityContextKey(null, null, language, engineType, entityType)
@@ -134,7 +140,7 @@ class EntityBuildContextForEntity(
     }
 
     override fun selectValid(expressions: List<SampleExpression>): List<SampleExpression> {
-        return  expressions
+        return expressions
                 .filter { it.containsEntityType(entityType) }
                 .map { it.copy(entities = it.entities.filter { it.isType(entityType) }) }
     }

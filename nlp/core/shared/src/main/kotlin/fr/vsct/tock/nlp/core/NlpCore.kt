@@ -64,9 +64,9 @@ interface NlpCore {
     fun supportValuesMerge(entityType: EntityType): Boolean
 
     /**
-     * Merge two or more values for the given [EntityType].
+     * Merge two or more values for the given [Entity].
      */
-    fun mergeValues(context: CallContext, entityType: EntityType, values: List<ValueDescriptor>): ValueDescriptor?
+    fun mergeValues(context: CallContext, entity: Entity, values: List<ValueDescriptor>): ValueDescriptor?
 
     /**
      * Check engines availability.

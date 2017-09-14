@@ -15,6 +15,7 @@
  */
 
 import {EntityDefinition, NlpEngineType} from "./nlp";
+import {flatMap} from "./commons";
 
 export class Application {
 
@@ -46,6 +47,28 @@ export class Application {
 
   supportLocale(locale: string): boolean {
     return this.supportedLocales.some(l => l === locale);
+  }
+
+  allEntities(): EntityDefinition[] {
+    const alreadySeen = new Set();
+    return flatMap(this.intents, (i => i.entities))
+      .filter(v => {
+        const value = v.qualifiedRole;
+        if (alreadySeen.has(value)) {
+          return false
+        } else {
+          alreadySeen.add(value);
+          return true
+        }
+      })
+      .sort((a, b) => {
+        const c = a.entityTypeName.localeCompare(b.entityTypeName);
+        if (c === 0) {
+          return a.role.localeCompare(b.role);
+        } else {
+          return c;
+        }
+      })
   }
 
   static fromJSON(json: any): Application {
@@ -156,7 +179,7 @@ export class ModelBuild {
               public error: boolean,
               public date: Date,
               public errorMessage?: string,
-              public intentId?:string) {
+              public intentId?: string) {
   }
 
   static fromJSON(json: any): ModelBuild {

@@ -24,7 +24,6 @@ import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
-import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.provide
@@ -100,10 +99,6 @@ internal object FrontRepository {
         return Application(applicationDefinition.name, intents, applicationDefinition.supportedLocales)
     }
 
-    fun EntityDefinition.toEntity(): Entity {
-        return toEntity(this.entityTypeName, this.role)
-    }
-
     fun registerBuiltInEntities() {
         core.getEvaluableEntityTypes().forEach {
             if (!entityTypeExists(it)) {
@@ -111,7 +106,7 @@ internal object FrontRepository {
                     logger.debug { "save built-in entity type $it" }
                     val entityType = EntityTypeDefinition(it, "built-in entity $it")
                     config.save(entityType)
-                } catch(e: Exception) {
+                } catch (e: Exception) {
                     logger.warn("Fail to save built-in entity type $it", e)
                 }
             }

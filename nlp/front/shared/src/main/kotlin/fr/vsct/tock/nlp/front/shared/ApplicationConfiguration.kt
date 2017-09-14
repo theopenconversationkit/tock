@@ -20,6 +20,7 @@ import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
+import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
@@ -72,12 +73,17 @@ interface ApplicationConfiguration {
 
     fun getEntityTypeByName(name: String): EntityTypeDefinition?
 
+    /**
+     * Update matching entity definition of all intents of the specified application.
+     */
+    fun updateEntityDefinition(namespace: String, applicationName: String, entity: EntityDefinition)
+
 
     fun getIntentsByApplicationId(applicationId: String): List<IntentDefinition>
 
     fun getIntentById(id: String): IntentDefinition?
 
-    fun getIntentByNamespaceAndName(namespace:String, name:String): IntentDefinition?
+    fun getIntentByNamespaceAndName(namespace: String, name: String): IntentDefinition?
 
     fun save(intent: IntentDefinition)
 

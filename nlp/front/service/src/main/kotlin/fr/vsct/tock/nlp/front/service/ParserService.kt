@@ -18,6 +18,8 @@ package fr.vsct.tock.nlp.front.service
 
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.CallContext
+import fr.vsct.tock.nlp.core.Entity
+import fr.vsct.tock.nlp.core.EntityEvaluationContext
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityValue
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
@@ -32,6 +34,7 @@ import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeResult
@@ -50,6 +53,7 @@ import fr.vsct.tock.shared.withNamespace
 import fr.vsct.tock.shared.withoutNamespace
 import mu.KotlinLogging
 import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 import java.util.Locale
 
 /**
@@ -100,6 +104,15 @@ object ParserService : Parser {
     override fun parse(query: ParseQuery): ParseResult {
         return setMetadataAndParse(query, emptySet())
     }
+
+    private fun getReferenceDateByEntityMap(intents: List<IntentDefinition>, referenceDate: ZonedDateTime): Map<Entity, ZonedDateTime>?
+            = intents
+            .flatMap { it.entities }
+            .distinct()
+            .filter { it.atStartOfDay == true }
+            .map { it.toEntity() to referenceDate.truncatedTo(ChronoUnit.DAYS) }
+            .toMap()
+            .takeUnless { it.isEmpty() }
 
     private fun setMetadataAndParse(
             query: ParseQuery,
@@ -157,18 +170,24 @@ object ParserService : Parser {
                     .sentences
                     .firstOrNull()
 
+            val intents = config.getIntentsByApplicationId(application._id!!)
+
             val callContext = CallContext(
                     toApplication(application),
                     language, application.nlpEngineType,
-                    referenceDate,
-                    application.mergeEngineTypes)
+                    EntityEvaluationContext(
+                            referenceDate,
+                            application.mergeEngineTypes,
+                            getReferenceDateByEntityMap(intents, referenceDate)
+                    )
+            )
 
             val data = ParserRequestData(
                     application,
                     query,
                     validatedSentence,
                     intentsQualifiers,
-                    config.getIntentsByApplicationId(application._id!!))
+                    intents)
 
             if (isValidClassifiedSentence(data)) {
                 val entityValues = core.evaluateEntities(
@@ -254,9 +273,9 @@ object ParserService : Parser {
 
             val referenceDate = context.referenceDate.withZoneSameInstant(context.referenceTimezone)
 
-            val callContext = CallContext(toApplication(application), language, application.nlpEngineType, referenceDate)
+            val callContext = CallContext(toApplication(application), language, application.nlpEngineType, EntityEvaluationContext(referenceDate))
 
-            val result = core.mergeValues(callContext, entity.entityType, values.map { it.toValueDescriptor() })
+            val result = core.mergeValues(callContext, entity, values.map { it.toValueDescriptor() })
 
             return ValuesMergeResult(ValueTransformer.wrapNullableValue(result?.value), result?.content)
         }

@@ -18,6 +18,7 @@ package fr.vsct.tock.nlp.core.service
 
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.CallContext
+import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.Intent
@@ -129,9 +130,9 @@ object NlpCoreService : NlpCore {
             val entities = entityClassifier.invoke(intent, tokens)
             val evaluatedEntities = evaluateEntities(context, text, entities)
 
-            return if (context.mergeEntityTypes) {
+            return if (context.evaluationContext.mergeEntityTypes) {
                 val classifiedEntityTypes = entityCore.classifyEntityTypes(intentContext, text, tokens)
-                entityMerge.mergeEntityTypes(intent, evaluatedEntities, classifiedEntityTypes)
+                entityMerge.mergeEntityTypes(context, text, intent, evaluatedEntities, classifiedEntityTypes)
             } else {
                 evaluatedEntities
             }
@@ -160,8 +161,8 @@ object NlpCoreService : NlpCore {
         return entityCore.supportValuesMerge(entityType)
     }
 
-    override fun mergeValues(context: CallContext, entityType: EntityType, values: List<ValueDescriptor>): ValueDescriptor? {
-        return entityCore.mergeValues(EntityCallContextForEntity(context, entityType), values)
+    override fun mergeValues(context: CallContext, entity: Entity, values: List<ValueDescriptor>): ValueDescriptor? {
+        return entityCore.mergeValues(EntityCallContextForEntity(context, entity), values)
     }
 
     override fun healthcheck(): Boolean {

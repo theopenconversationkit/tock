@@ -13,18 +13,15 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+.entities {
+  height:100%;
+  width:80%;
+  margin-left: auto;
+  margin-right: auto;
+  margin-top:20px;
+  text-align:center;
+}
 
-package fr.vsct.tock.nlp.core
-
-import fr.vsct.tock.nlp.core.NlpEngineType.Companion.opennlp
-import java.util.Locale
-
-/**
- *
- */
-data class CallContext(val application: Application,
-                       val language: Locale,
-                       val engineType: NlpEngineType = opennlp,
-                       val evaluationContext: EntityEvaluationContext = EntityEvaluationContext()) {
-
+.dateType {
+  padding-left: 20px;
 }

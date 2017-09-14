@@ -1,0 +1,31 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<md-card class="entities">
+  <md-card-content>
+    <md-card-title>Entities</md-card-title>
+    <md-list>
+        <md-list-item *ngFor="let e of state.entities | async">
+          <md-icon mdListIcon [style.color]="e.entityColor">extension</md-icon>
+          <span [style.background-color]="e.entityColor">{{e.qualifiedName(state.user)}}</span>
+          <div *ngIf="e.isDateType()" class="dateType">
+            <md-checkbox [(ngModel)]="e.atStartOfDay" md-tooltip="useful for non relative time">Evaluate at start of day</md-checkbox>
+            <button md-button (click)="update(e)" color="primary">Update</button>
+          </div>
+        </md-list-item>
+    </md-list>
+  </md-card-content>
+</md-card>

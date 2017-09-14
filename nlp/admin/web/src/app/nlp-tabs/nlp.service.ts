@@ -25,7 +25,7 @@ import {
   LogsQuery,
   SearchQuery,
   Sentence,
-  SentencesResult
+  SentencesResult, UpdateEntityDefinitionQuery
 } from "../model/nlp";
 import {Observable} from "rxjs";
 import {Application, Intent} from "../model/application";
@@ -66,7 +66,11 @@ export class NlpService implements OnDestroy {
   }
 
   getEntityTypes(): Observable<EntityType[]> {
-    return this.rest.get("/entities", EntityType.fromJSONArray);
+    return this.rest.get("/entity-types", EntityType.fromJSONArray);
+  }
+
+  updateEntityDefinition(query:UpdateEntityDefinitionQuery): Observable<boolean> {
+    return this.rest.post("/entity", query);
   }
 
   createEntityType(type: string): Observable<EntityType> {

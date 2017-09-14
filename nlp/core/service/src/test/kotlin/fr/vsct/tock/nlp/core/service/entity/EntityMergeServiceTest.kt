@@ -16,18 +16,27 @@
 
 package fr.vsct.tock.nlp.core.service.entity
 
+import fr.vsct.tock.nlp.core.Application
+import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.EntityValue
 import fr.vsct.tock.nlp.core.Intent
 import org.junit.Test
+import java.util.Locale
 import kotlin.test.assertEquals
 
 /**
  *
  */
 class EntityMergeServiceTest {
+
+    private val callContext
+            = CallContext(
+            Application("test", emptyList(), emptySet()),
+            Locale.US
+    )
 
     @Test
     fun mergeEntityTypes_shouldReturnsTomorrowMorning_WhenTomorrowIsDetectedByTheModelAndTomorrowMorningByTheEntityEvaluator() {
@@ -36,6 +45,8 @@ class EntityMergeServiceTest {
         val tomorrow = EntityRecognition(EntityValue(0, "Tomorrow".length, dateEntity), 0.98)
         val tomorrowMorning = EntityTypeRecognition(EntityTypeValue(0, "Tomorrow morning".length, entityType), 0.8)
         val result = EntityMergeService.mergeEntityTypes(
+                callContext,
+                "Tomorrow morning",
                 Intent("test", listOf(dateEntity)),
                 listOf(tomorrow),
                 listOf(tomorrowMorning))
@@ -62,6 +73,8 @@ class EntityMergeServiceTest {
         val tomorrowMorning = EntityTypeRecognition(EntityTypeValue(0, "sun tomorrow".length, dateEntityType), 0.8)
 
         val result = EntityMergeService.mergeEntityTypes(
+                callContext,
+                "sun tomorrow",
                 Intent("test", listOf(entity, dateEntity)),
                 listOf(tomorrow),
                 listOf(tomorrowMorning))
@@ -88,6 +101,8 @@ class EntityMergeServiceTest {
         val tomorrowMorning = EntityTypeRecognition(EntityTypeValue("the ".length, "the ".length + "sun tomorrow".length, dateEntityType), 0.8)
 
         val result = EntityMergeService.mergeEntityTypes(
+                callContext,
+                "the sun tomorrow",
                 Intent("test", listOf(entity, dateEntity)),
                 listOf(tomorrow),
                 listOf(tomorrowMorning))

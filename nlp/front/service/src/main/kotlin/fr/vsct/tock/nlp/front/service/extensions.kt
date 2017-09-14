@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.core
+package fr.vsct.tock.nlp.front.service
 
-import fr.vsct.tock.nlp.core.NlpEngineType.Companion.opennlp
-import java.util.Locale
+import fr.vsct.tock.nlp.core.Entity
+import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 
 /**
  *
  */
-data class CallContext(val application: Application,
-                       val language: Locale,
-                       val engineType: NlpEngineType = opennlp,
-                       val evaluationContext: EntityEvaluationContext = EntityEvaluationContext()) {
-
+internal fun EntityDefinition.toEntity(): Entity {
+    return FrontRepository.toEntity(this.entityTypeName, this.role)
 }

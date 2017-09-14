@@ -22,7 +22,7 @@ import {AuthenticateResponse, User} from "../model/auth";
 import {SettingsService} from "./settings.service";
 import {ApplicationScopedQuery, Entry, PaginatedQuery} from "../model/commons";
 import {environment} from "../../environments/environment";
-import {EntityType, NlpEngineType} from "../model/nlp";
+import {EntityDefinition, EntityType, NlpEngineType, UpdateEntityDefinitionQuery} from "../model/nlp";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {Observable} from "rxjs/Observable";
 
@@ -38,6 +38,7 @@ export class StateService implements AuthListener {
   user: User;
   applications: Application[];
   entityTypes: BehaviorSubject<EntityType[]> = new BehaviorSubject([]);
+  entities: BehaviorSubject<EntityDefinition[]> = new BehaviorSubject([]);
 
   currentApplication: Application;
   currentLocale: string = StateService.DEFAULT_LOCALE;
@@ -65,6 +66,7 @@ export class StateService implements AuthListener {
   changeApplication(application: Application) {
     this.currentApplication = application;
     this.currentApplicationEmitter.emit(application);
+    this.entities.next(application.allEntities());
     if (application.supportedLocales.indexOf(this.currentLocale) === -1) {
       this.changeLocale(application.supportedLocales[0])
     }
@@ -76,6 +78,7 @@ export class StateService implements AuthListener {
 
   changeLocale(locale: string) {
     this.currentLocale = locale;
+    this.entities.next(this.currentApplication.allEntities());
     this.currentLocaleEmitter.emit(locale);
   }
 
@@ -143,6 +146,15 @@ export class StateService implements AuthListener {
       this.currentApplication.namespace,
       this.currentApplication.name,
       this.currentLocale
+    )
+  }
+
+  createUpdateEntityDefinitionQuery(entity: EntityDefinition): UpdateEntityDefinitionQuery {
+    return new UpdateEntityDefinitionQuery(
+      this.currentApplication.namespace,
+      this.currentApplication.name,
+      this.currentLocale,
+      entity
     )
   }
 

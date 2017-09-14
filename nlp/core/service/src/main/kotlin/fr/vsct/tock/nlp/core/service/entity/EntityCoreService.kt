@@ -96,7 +96,7 @@ internal object EntityCoreService : EntityCore {
                         .mapNotNull { e ->
                             getEntityEvaluatorProvider(e.entityType)?.let {
                                 it.getEntityEvaluator()?.let { evaluator ->
-                                    e to evaluate(evaluator, EntityCallContextForEntity(context, e.entityType), e.value.textValue(text))
+                                    e to evaluate(evaluator, EntityCallContextForEntity(context, e.value.entity), e.value.textValue(text))
                                 }
                             }
                         }

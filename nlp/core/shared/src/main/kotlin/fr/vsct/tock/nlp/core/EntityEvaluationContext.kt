@@ -16,15 +16,15 @@
 
 package fr.vsct.tock.nlp.core
 
-import fr.vsct.tock.nlp.core.NlpEngineType.Companion.opennlp
-import java.util.Locale
+import java.time.ZoneOffset.UTC
+import java.time.ZonedDateTime
+import java.time.ZonedDateTime.now
 
-/**
- *
- */
-data class CallContext(val application: Application,
-                       val language: Locale,
-                       val engineType: NlpEngineType = opennlp,
-                       val evaluationContext: EntityEvaluationContext = EntityEvaluationContext()) {
+data class EntityEvaluationContext(
+        val referenceDate: ZonedDateTime = now(UTC),
+        val mergeEntityTypes: Boolean = true,
+        val referenceDateByEntityMap: Map<Entity, ZonedDateTime>? = null) {
 
+    fun referenceDateForEntity(entity: Entity): ZonedDateTime
+            = referenceDateByEntityMap?.get(entity) ?: referenceDate
 }

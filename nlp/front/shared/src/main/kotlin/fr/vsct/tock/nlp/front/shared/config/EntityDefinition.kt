@@ -22,7 +22,10 @@ import fr.vsct.tock.shared.name
  *
  */
 data class EntityDefinition(val entityTypeName: String,
-                            val role: String = entityTypeName.name()) {
-
+                            val role: String = entityTypeName.name(),
+                            /**
+                             * To evaluate time.
+                             */
+                            val atStartOfDay: Boolean? = null) {
 
 }

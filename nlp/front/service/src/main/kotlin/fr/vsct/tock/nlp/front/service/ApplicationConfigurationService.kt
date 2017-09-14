@@ -28,6 +28,7 @@ import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import fr.vsct.tock.nlp.front.service.storage.IntentDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.shared.injector
@@ -124,5 +125,19 @@ object ApplicationConfigurationService :
                 intent.qualifiedName,
                 intent.entities.map { Entity(FrontRepository.entityTypeByName(it.entityTypeName), it.role) },
                 intent.entitiesRegexp)
+    }
+
+    override fun updateEntityDefinition(namespace: String, applicationName: String, entity: EntityDefinition) {
+        val app = getApplicationByNamespaceAndName(namespace, applicationName)!!
+        val intents = getIntentsByApplicationId(app._id!!)
+        intents.forEach {
+            it.findEntity(entity.entityTypeName, entity.role)
+                    ?.apply {
+                        save(
+                                it.copy(
+                                        entities = it.entities - this + entity
+                                ))
+                    }
+        }
     }
 }

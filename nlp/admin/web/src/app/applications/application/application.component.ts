@@ -70,10 +70,7 @@ export class ApplicationComponent implements OnInit {
       this.application.nlpEngineType = this.state.supportedNlpEngines.find(e => e.name === this.nlpEngineType);
       this.applicationService.saveApplication(this.application)
         .subscribe(app => {
-          this.state.applications = this.state.applications.filter(a => a._id !== app._id);
-          this.state.applications.push(app);
-          this.state.sortApplications();
-          this.state.changeApplication(app);
+          this.applicationService.refreshCurrentApplication(app);
           this.snackBar.open(`Application ${app.name} saved`, "Save Application", {duration: 1000});
           if (this.newApplication && this.state.applications.length === 1) {
             this.router.navigateByUrl("/nlp/try");

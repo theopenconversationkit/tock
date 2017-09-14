@@ -38,6 +38,21 @@ export class ApplicationService implements OnDestroy {
     this.resetConfigurationUnsuscriber.unsubscribe();
   }
 
+  reloadCurrentApplication(): Observable<Application> {
+    return this.getApplicationById(this.state.currentApplication._id)
+      .map(app => {
+        this.refreshCurrentApplication(app);
+        return app;
+      })
+  }
+
+  refreshCurrentApplication(app: Application) {
+    this.state.applications = this.state.applications.filter(a => a._id !== app._id);
+    this.state.applications.push(app);
+    this.state.sortApplications();
+    this.state.changeApplication(app);
+  }
+
   resetConfiguration() {
     this.locales().subscribe(locales => this.state.locales = locales);
     this.nlpEngineTypes().subscribe(engines => this.state.supportedNlpEngines = engines);

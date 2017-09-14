@@ -14,17 +14,12 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.core
+package fr.vsct.tock.nlp.admin.model
 
-import fr.vsct.tock.nlp.core.NlpEngineType.Companion.opennlp
-import java.util.Locale
+import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 
 /**
  *
  */
-data class CallContext(val application: Application,
-                       val language: Locale,
-                       val engineType: NlpEngineType = opennlp,
-                       val evaluationContext: EntityEvaluationContext = EntityEvaluationContext()) {
-
+data class UpdateEntityDefinitionQuery(val entity:EntityDefinition) : ApplicationScopedQuery() {
 }

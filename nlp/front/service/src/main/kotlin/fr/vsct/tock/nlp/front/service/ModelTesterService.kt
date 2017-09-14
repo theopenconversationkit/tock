@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.service
 
 import fr.vsct.tock.nlp.core.CallContext
+import fr.vsct.tock.nlp.core.EntityEvaluationContext
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.ModelCore
 import fr.vsct.tock.nlp.core.quality.TestContext
@@ -74,7 +75,7 @@ object ModelTesterService : ModelTester {
                                     toApplication(application),
                                     locale,
                                     application.nlpEngineType,
-                                    mergeEntityTypes = application.mergeEngineTypes),
+                                    EntityEvaluationContext(mergeEntityTypes = application.mergeEngineTypes)),
                             0.9F),
                     sentences.map { it.toSampleExpression({ config.toIntent(it, intentCache) }, { entityTypeByName(it) }) }
             )

@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.core.service.entity
 
+import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.Intent
 
@@ -25,6 +26,8 @@ import fr.vsct.tock.nlp.core.Intent
 internal interface EntityMerge {
 
     fun mergeEntityTypes(
+            callContext: CallContext,
+            text: String,
             intent: Intent,
             entities: List<EntityRecognition>,
             entityTypes: List<EntityTypeRecognition>): List<EntityRecognition>

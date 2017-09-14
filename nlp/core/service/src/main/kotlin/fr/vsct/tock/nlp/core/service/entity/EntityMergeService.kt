@@ -16,11 +16,14 @@
 
 package fr.vsct.tock.nlp.core.service.entity
 
+import com.github.salomonbrys.kodein.instance
+import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.IntOpenRange
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.service.entity.EntityMergeService.Weighted.WeightedEntity
 import fr.vsct.tock.nlp.core.service.entity.EntityMergeService.Weighted.WeightedEntityType
+import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
 
 /**
@@ -58,7 +61,11 @@ internal object EntityMergeService : EntityMerge {
 
     private val logger = KotlinLogging.logger {}
 
+    private val entityCore: EntityCore by injector.instance()
+
     override fun mergeEntityTypes(
+            callContext: CallContext,
+            text: String,
             intent: Intent,
             entities: List<EntityRecognition>,
             entityTypes: List<EntityTypeRecognition>): List<EntityRecognition> {
@@ -106,9 +113,9 @@ internal object EntityMergeService : EntityMerge {
                             is WeightedEntityType -> {
                                 group.firstOrNull { it is WeightedEntity && intent.hasEntity(first.entityType.entityType, it.entity.role) }
                                         ?.let {
-                                            first.entityType.toEntityRecognition((it as WeightedEntity).entity.role)
+                                            first.entityType.toResult(callContext, text, (it as WeightedEntity).entity.role)
                                         }
-                                        ?: createOrphanEntity(first.entityType, intent)
+                                        ?: createOrphanEntity(callContext, text, first.entityType, intent)
                             }
                         }
                     }
@@ -118,20 +125,44 @@ internal object EntityMergeService : EntityMerge {
     }
 
     private fun createOrphanEntity(
+            callContext: CallContext,
+            text: String,
             entityType: EntityTypeRecognition,
             intent: Intent): EntityRecognition? {
         val intentEntities = intent.entities.filter { it.entityType == entityType.entityType }
         return if (intentEntities.size == 1) {
             logger.debug { "create orphan : $entityType" }
-            entityType.toEntityRecognition(intentEntities.first().role)
+            entityType.toResult(callContext, text, intentEntities.first().role)
         } else {
             //TODO take the more frequently viewed
             intentEntities.let {
                 val e = it.first()
                 logger.warn { "create orphan with first role found  : $e" }
-                entityType.toEntityRecognition(e.role)
+                entityType.toResult(callContext, text, e.role)
             }
         }
+    }
+
+    private fun EntityTypeRecognition.toResult(
+            callContext: CallContext,
+            text: String,
+            role: String): EntityRecognition {
+        return toEntityRecognition(role)
+                .run {
+                    //need to reevaluate
+                    if (callContext.evaluationContext.referenceDateByEntityMap?.containsKey(value.entity) == true) {
+                        entityCore.evaluateEntities(
+                                callContext,
+                                text,
+                                listOf(
+                                        copy(value = value.copy(
+                                                evaluated = false
+                                        )))
+                        ).first()
+                    } else {
+                        this
+                    }
+                }
     }
 
 }

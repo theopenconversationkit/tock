@@ -24,13 +24,18 @@ export class EntityDefinition {
   entityColor: string;
 
   constructor(public entityTypeName: string,
-              public role: string) {
+              public role: string,
+              public atStartOfDay?: Boolean) {
     this.qualifiedRole = qualifiedRole(entityTypeName, role);
     this.entityColor = entityColor(this.qualifiedRole)
   }
 
   qualifiedName(user: User): string {
     return qualifiedName(user, this.entityTypeName, this.role);
+  }
+
+  isDateType(): boolean {
+    return this.entityTypeName === "duckling:datetime";
   }
 
   static fromJSON(json?: any): EntityDefinition {
@@ -52,6 +57,16 @@ export class EntityDefinition {
 
   static fromJSONArray(json?: Array<any>): EntityDefinition[] {
     return json ? json.map(EntityDefinition.fromJSON) : [];
+  }
+}
+
+export class UpdateEntityDefinitionQuery extends ApplicationScopedQuery {
+
+  constructor(public namespace: string,
+              public applicationName: string,
+              public language: string,
+              public entity: EntityDefinition) {
+    super(namespace, applicationName, language);
   }
 }
 
@@ -498,8 +513,7 @@ export class LogStat {
   static fromJSON(json?: any): LogStat {
     const value = Object.create(LogStat.prototype);
 
-    const result = Object.assign(value, json, {
-    });
+    const result = Object.assign(value, json, {});
 
     return result;
   }

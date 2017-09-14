@@ -238,10 +238,12 @@ object ApplicationCodecService : ApplicationCodec {
                         }
                         if (newIntent.entities.none { it.entityTypeName == e.entity && it.role == e.role }) {
                             val intentWithEntities = newIntent.copy(
-                                    entities = newIntent.entities
-                                            + EntityDefinition(
-                                            e.entity,
-                                            e.role))
+                                    entities = newIntent.entities +
+                                            EntityDefinition(
+                                                    e.entity,
+                                                    e.role
+                                            )
+                            )
                             config.save(intentWithEntities)
                             intentsByNameMap[intentWithEntities.qualifiedName] = intentWithEntities
                         }

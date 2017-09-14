@@ -20,4 +20,8 @@ package fr.vsct.tock.nlp.api.client.model.dump
  *
  */
 data class EntityDefinition(val entityTypeName: String,
-                            val role: String)
+                            val role: String,
+                            /**
+                             * To evaluate time.
+                             */
+                            val atStartOfDay: Boolean? = null)
