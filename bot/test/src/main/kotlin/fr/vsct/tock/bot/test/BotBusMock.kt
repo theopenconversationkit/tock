@@ -38,7 +38,7 @@ import java.util.Locale
 /**
  * A Bus mock used in unit tests.
  *
- * The send result actions are available in the [logs] property.
+ * The send result actions are available in the [logsRepository] property.
  */
 open class BotBusMock(override var userTimeline: UserTimeline,
                       override var dialog: Dialog,
@@ -72,15 +72,27 @@ open class BotBusMock(override var userTimeline: UserTimeline,
             context.connectorType
     )
 
-    val logs: List<BotBusMockLog> = mutableListOf()
+    private val logsRepository: List<BotBusMockLog> = mutableListOf()
 
-    val firstAnswer: BotBusMockLog get() = logs.first()
+    val logs: List<BotBusMockLog> get() = checkEndCalled().run { logsRepository }
 
-    val secondAnswer: BotBusMockLog get() = logs[1]
+    val firstAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository.first() }
 
-    val thirdAnswer: BotBusMockLog get() = logs[2]
+    val secondAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository[1] }
 
-    val lastAnswer: BotBusMockLog get() = logs.last()
+    val thirdAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository[2] }
+
+    val lastAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository.last() }
+
+    private var endCalled: Boolean = false
+
+    /**
+     * Throws an exception if the end() is not called
+     */
+    fun checkEndCalled(): BotBusMock {
+        if (!endCalled) error("end() method not called")
+        return this
+    }
 
     override var applicationId = action.applicationId
     override var botId = action.recipientId
@@ -102,7 +114,7 @@ open class BotBusMock(override var userTimeline: UserTimeline,
         }
 
     open fun sendAction(action: Action, delay: Long) {
-        (logs as MutableList).add(BotBusMockLog(action, delay))
+        (logsRepository as MutableList).add(BotBusMockLog(action, delay))
     }
 
     private fun answer(action: Action, delay: Long = 0): BotBus {
@@ -115,6 +127,8 @@ open class BotBusMock(override var userTimeline: UserTimeline,
         action.state.testEvent = userPreferences.test
 
         story.actions.add(action)
+
+        endCalled = action.metadata.lastAnswer
 
         sendAction(action, mockData.currentDelay)
         return this
