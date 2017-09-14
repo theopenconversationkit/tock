@@ -21,6 +21,7 @@ import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.RemovalNotification
 import fr.vsct.tock.bot.connector.ConnectorBase
+import fr.vsct.tock.bot.connector.ga.model.GAIntent
 import fr.vsct.tock.bot.connector.ga.model.request.GARequest
 import fr.vsct.tock.bot.connector.ga.model.response.GAExpectedInput
 import fr.vsct.tock.bot.connector.ga.model.response.GAInputPrompt
@@ -209,6 +210,12 @@ class GAConnector internal constructor(
                                         )
                                 )
                         )
+                    }
+                }?.run {
+                    if (possibleIntents.none { it.intent == GAIntent.text }) {
+                        copy(possibleIntents = listOf(expectedTextIntent()) + possibleIntents)
+                    } else {
+                        this
                     }
                 }
 

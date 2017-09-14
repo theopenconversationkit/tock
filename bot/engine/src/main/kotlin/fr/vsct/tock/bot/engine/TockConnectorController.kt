@@ -19,7 +19,7 @@ package fr.vsct.tock.bot.engine
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.event.TypingOnEvent
@@ -42,7 +42,8 @@ import java.time.Duration
 internal class TockConnectorController constructor(
         val bot: Bot,
         private val connector: Connector,
-        private val verticle: BotVerticle) : ConnectorController {
+        private val verticle: BotVerticle,
+        override val botDefinition: BotDefinition = bot.botDefinition) : ConnectorController {
 
     companion object {
 
@@ -110,14 +111,6 @@ internal class TockConnectorController constructor(
             logger.error(t)
         }
     }
-
-    override fun errorMessage(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {
-        val errorAction = bot.botDefinition.errorAction(playerId, applicationId, recipientId)
-        errorAction.metadata.lastAnswer = true
-        return errorAction
-    }
-
-    override fun helloIntent(): Intent? = bot.botDefinition.helloStory?.mainIntent()
 
     fun loadProfile(applicationId: String, playerId: PlayerId): UserPreferences? {
         return connector.loadProfile(applicationId, playerId)

@@ -1,0 +1,46 @@
+{
+  "user": {
+    "userId": "a",
+    "locale": "en-US"
+  },
+  "conversation": {
+    "conversationId": "1505388822587",
+    "type": "NEW"
+  },
+  "inputs": [
+    {
+      "intent": "actions.intent.PERMISSION",
+      "rawInputs": [
+        {
+          "inputType": "VOICE",
+          "query": "yes"
+        }
+      ],
+      "arguments": [
+        {
+          "name": "PERMISSION",
+          "textValue": "true"
+        }
+      ]
+    }
+  ],
+  "surface": {
+    "capabilities": [
+      {
+        "name": "actions.capability.AUDIO_OUTPUT"
+      },
+      {
+        "name": "actions.capability.SCREEN_OUTPUT"
+      }
+    ]
+  },
+  "device": {
+    "location": {
+      "coordinates": {
+        "latitude": 37.4219806,
+        "longitude": -122.0841979
+      }
+    }
+  },
+  "isInSandbox": true
+}

@@ -18,7 +18,7 @@ package fr.vsct.tock.bot.connector.ga.model.response
 
 data class GASelectItem(
         val optionInfo: GAOptionInfo,
-        val title:String) {
+        val title: String?) {
 
 }
 

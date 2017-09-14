@@ -22,7 +22,7 @@ data class GALocation(
         val zipCode: String?,
         val city: String?,
         val postalAddress: GAPostalAddress?,
-        val name: String,
+        val name: String?,
         val phoneNumber: String?,
         val notes: String?
 ) {

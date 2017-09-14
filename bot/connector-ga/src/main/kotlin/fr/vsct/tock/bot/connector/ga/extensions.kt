@@ -82,7 +82,11 @@ fun BotBus.gaMessage(inputPrompt: GAInputPrompt,
                              expectedTextIntent()
                      ),
                      speechBiasingHints: List<String> = emptyList()): GAResponseConnectorMessage
-        = GAResponseConnectorMessage(GAExpectedInput(inputPrompt, possibleIntents, speechBiasingHints))
+        = GAResponseConnectorMessage(
+        GAExpectedInput(
+                inputPrompt,
+                if (possibleIntents.isEmpty()) listOf(expectedTextIntent()) else possibleIntents,
+                speechBiasingHints))
 
 
 fun BotBus.gaMessage(richResponse: GARichResponse): GAResponseConnectorMessage
@@ -96,13 +100,11 @@ fun BotBus.gaMessage(possibleIntent: GAExpectedIntent): GAResponseConnectorMessa
         gaMessage(listOf(possibleIntent))
 
 fun BotBus.gaMessage(possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
-        gaMessage(GAInputPrompt(GARichResponse(emptyList())), possibleIntents)
+        gaMessage(inputPrompt(GARichResponse(emptyList())), possibleIntents)
 
 fun BotBus.gaMessage(text: String, possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
         gaMessage(
-                GAInputPrompt(
-                        richResponse(text)
-                ),
+                inputPrompt(richResponse(text)),
                 possibleIntents
         )
 
@@ -120,11 +122,11 @@ fun BotBus.gaMessageForCarousel(items: List<GACarouselItem>): GAResponseConnecto
                         expectedIntentForCarousel(items))
         )
 
-fun BotBus.permissionIntent(optionalContext: String = "", vararg permissions: GAPermission): GAExpectedIntent {
+fun BotBus.permissionIntent(optionalContext: CharSequence = "", vararg permissions: GAPermission): GAExpectedIntent {
     return GAExpectedIntent(
             GAIntent.permission,
             GAPermissionValueSpec(
-                    optionalContext,
+                    translate(optionalContext).toString(),
                     permissions.toSet()
             )
     )
@@ -385,45 +387,45 @@ fun BotBus.carouselItem(
 }
 
 fun BotBus.selectItem(
-        optionTitle: CharSequence,
+        title: CharSequence,
         targetIntent: IntentAware,
         vararg parameters: Pair<String, String>)
         : GASelectItem
-        = selectItem(optionTitle, targetIntent, null, optionTitle, *parameters)
+        = selectItem(title, targetIntent, null, null, *parameters)
 
 fun BotBus.selectItem(
-        optionTitle: CharSequence,
+        title: CharSequence,
         targetIntent: IntentAware,
-        title: CharSequence = optionTitle,
+        optionTitle: CharSequence? = null,
         vararg parameters: Pair<String, String>)
         : GASelectItem
-        = selectItem(optionTitle, targetIntent, null, title, *parameters)
+        = selectItem(title, targetIntent, null, optionTitle, *parameters)
 
 fun BotBus.selectItem(
-        optionTitle: CharSequence,
+        title: CharSequence,
         targetIntent: IntentAware,
         step: StoryStep? = null,
-        title: CharSequence = optionTitle,
+        optionTitle: CharSequence? = null,
         parameters: Parameters)
         : GASelectItem
-        = selectItem(optionTitle, targetIntent, step, title, *parameters.toArray())
+        = selectItem(title, targetIntent, step, optionTitle, *parameters.toArray())
 
 fun BotBus.selectItem(
-        optionTitle: CharSequence,
+        title: CharSequence,
         targetIntent: IntentAware,
         step: StoryStep? = null,
-        title: CharSequence = optionTitle,
+        optionTitle: CharSequence? = null,
         vararg parameters: Pair<String, String>)
         : GASelectItem {
     return GASelectItem(
             optionInfo(
-                    optionTitle,
+                    title,
                     targetIntent,
                     step,
                     *parameters
             ),
-            translate(title).toString()
+            optionTitle?.let { translate(it).toString() }
     )
 }
 
-fun expectedTextIntent() : GAExpectedIntent = GAExpectedIntent(GAIntent.text)
+fun expectedTextIntent(): GAExpectedIntent = GAExpectedIntent(GAIntent.text)

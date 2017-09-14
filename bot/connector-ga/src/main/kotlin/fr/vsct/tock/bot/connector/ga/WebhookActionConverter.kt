@@ -21,10 +21,12 @@ import fr.vsct.tock.bot.connector.ga.model.request.GAArgumentBuiltInName
 import fr.vsct.tock.bot.connector.ga.model.request.GARequest
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
+import fr.vsct.tock.bot.engine.user.UserLocation
 import mu.KotlinLogging
 
 /**
@@ -40,7 +42,18 @@ internal object WebhookActionConverter {
 
         val input = message.inputs.firstOrNull()
         if (input != null) {
-            if (input.arguments?.all { it.builtInArg == GAArgumentBuiltInName.OPTION } == true) {
+            if (input.arguments?.all { it.builtInArg == GAArgumentBuiltInName.PERMISSION && message.device.location?.coordinates?.latitude != null } == true) {
+                return with(message.device.location!!.coordinates!!) {
+                    SendLocation(
+                            playerId,
+                            applicationId,
+                            botId,
+                            UserLocation(
+                                    latitude,
+                                    longitude
+                            ))
+                }
+            } else if (input.arguments?.all { it.builtInArg == GAArgumentBuiltInName.OPTION } == true) {
                 val params = SendChoice.decodeChoiceId(
                         input.arguments.first { it.builtInArg == GAArgumentBuiltInName.OPTION }.textValue ?: error("no text value")
                 )
@@ -53,12 +66,12 @@ internal object WebhookActionConverter {
                         state = message.getEventState()
                 )
             } else {
-                if (input.builtInIntent == GAIntent.main && controller.helloIntent() != null) {
+                if (input.builtInIntent == GAIntent.main && controller.botDefinition.helloStory != null) {
                     return SendChoice(
                             playerId,
                             applicationId,
                             botId,
-                            controller.helloIntent()!!.name,
+                            controller.botDefinition.helloStory?.mainIntent()!!.name,
                             state = message.getEventState()
                     )
                 } else {

@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.Connector
-import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -28,12 +28,27 @@ import io.vertx.ext.web.Router
  */
 interface ConnectorController {
 
+    /**
+     * The bot definition served by the controller.
+     */
+    val botDefinition: BotDefinition
+
+    /**
+     * Handle an event sent by the connector. the primary goal of this controller.
+     */
     fun handle(event: Event)
 
+    /**
+     * Register services at startup.
+     */
     fun registerServices(rootPath: String, installer: (Router) -> Unit)
 
-    fun errorMessage(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action
-
-    fun helloIntent(): Intent?
-
+    /**
+     * Returns an error message (technical error).
+     */
+    fun errorMessage(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {
+        val errorAction = botDefinition.errorAction(playerId, applicationId, recipientId)
+        errorAction.metadata.lastAnswer = true
+        return errorAction
+    }
 }
