@@ -185,6 +185,13 @@ class GAConnector internal constructor(
                                         null
                                     else reduce { a, b ->
                                         a.copy(
+                                                inputPrompt = a.inputPrompt.copy(
+                                                        a.inputPrompt.richInitialPrompt.copy(
+                                                                suggestions = a.inputPrompt.richInitialPrompt.suggestions + b.inputPrompt.richInitialPrompt.suggestions,
+                                                                linkOutSuggestion = if (a.inputPrompt.richInitialPrompt.linkOutSuggestion == null) b.inputPrompt.richInitialPrompt.linkOutSuggestion else a.inputPrompt.richInitialPrompt.linkOutSuggestion
+
+                                                        )
+                                                ),
                                                 possibleIntents = a.possibleIntents + b.possibleIntents.filter { ib -> a.possibleIntents.none { ia -> ia.intent == ib.intent } })
                                     }
                                 }
@@ -206,7 +213,9 @@ class GAConnector internal constructor(
                         message.copy(
                                 inputPrompt = message.inputPrompt.copy(
                                         richInitialPrompt = message.inputPrompt.richInitialPrompt.copy(
-                                                items = listOf(simpleResponse) + message.inputPrompt.richInitialPrompt.items
+                                                items = listOf(simpleResponse) + message.inputPrompt.richInitialPrompt.items,
+                                                suggestions = message.inputPrompt.richInitialPrompt.suggestions,
+                                                linkOutSuggestion = message.inputPrompt.richInitialPrompt.linkOutSuggestion
                                         )
                                 )
                         )

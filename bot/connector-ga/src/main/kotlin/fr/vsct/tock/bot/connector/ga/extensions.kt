@@ -115,8 +115,9 @@ fun BotBus.gaMessageForList(text: String, items: List<GAListItem>): GAResponseCo
                 expectedIntentForList("", items))
         )
 
-fun BotBus.gaMessageForCarousel(items: List<GACarouselItem>): GAResponseConnectorMessage =
+fun BotBus.gaMessageForCarousel(items: List<GACarouselItem>, suggestions: List<CharSequence> = emptyList()): GAResponseConnectorMessage =
         gaMessage(
+                inputPrompt(richResponse(emptyList(), *suggestions.map { suggestion(it) }.toTypedArray())),
                 listOf(
                         expectedTextIntent(),
                         expectedIntentForCarousel(items))
