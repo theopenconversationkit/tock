@@ -115,13 +115,41 @@ fun BotBus.gaMessageForList(text: String, items: List<GAListItem>): GAResponseCo
                 expectedIntentForList("", items))
         )
 
-fun BotBus.gaMessageForCarousel(items: List<GACarouselItem>, suggestions: List<CharSequence> = emptyList()): GAResponseConnectorMessage =
-        gaMessage(
+fun BotBus.gaMessageForCarousel(items: List<GACarouselItem>, suggestions: List<CharSequence> = emptyList()): GAResponseConnectorMessage {
+    if (items.size < 2 && items.size > 10) {
+        error("must have at least 2 and at most 10 items - current size = ${items.size}")
+    } else {
+        return gaMessage(
                 inputPrompt(richResponse(emptyList(), *suggestions.map { suggestion(it) }.toTypedArray())),
                 listOf(
                         expectedTextIntent(),
                         expectedIntentForCarousel(items))
         )
+    }
+}
+
+/**
+ *  Add a basic card if one element to avoid the limitation of 2 items
+ */
+fun BotBus.gaFlexibleMessageForCarousel(items: List<GACarouselItem>, suggestions: List<CharSequence> = emptyList()): GAResponseConnectorMessage {
+    return if (items.size == 1) {
+        val one = items.first()
+        gaMessage(
+                richResponse(
+                        basicCard(
+                                one.title,
+                                null,
+                                one.description,
+                                one.image
+                        ),
+                        null,
+                        *suggestions.map { suggestion(it) }.toTypedArray())
+        )
+    } else {
+        gaMessageForCarousel(items, suggestions)
+    }
+}
+
 
 fun BotBus.permissionIntent(optionalContext: CharSequence = "", vararg permissions: GAPermission): GAExpectedIntent {
     return GAExpectedIntent(
