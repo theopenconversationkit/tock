@@ -75,6 +75,12 @@ open class BotBusMock(override var userTimeline: UserTimeline,
             context.connectorType
     )
 
+    init {
+        if(dialog.stories.isEmpty()) {
+            dialog.stories.add(story)
+        }
+    }
+
     private val logsRepository: List<BotBusMockLog> = mutableListOf()
 
     val logs: List<BotBusMockLog> get() = checkEndCalled().run { logsRepository }
