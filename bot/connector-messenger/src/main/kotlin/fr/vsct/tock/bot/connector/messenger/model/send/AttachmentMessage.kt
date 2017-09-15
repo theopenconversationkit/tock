@@ -27,7 +27,7 @@ import fr.vsct.tock.bot.engine.message.SentenceElement
 /**
  *
  */
-class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickReply>? = null) : Message(quickReplies) {
+class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickReply>? = null) : Message(quickReplies?.run { if (isEmpty()) null else this }) {
 
     override fun toSentenceElement(): SentenceElement? {
         return when (attachment.type) {

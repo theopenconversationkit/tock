@@ -24,7 +24,7 @@ import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
  *
  */
 //TODO check 640 char text limit https://developers.facebook.com/docs/messenger-platform/send-api-reference/text-message
-class TextMessage(val text: String, quickReplies: List<QuickReply>? = null) : Message(quickReplies) {
+class TextMessage(val text: String, quickReplies: List<QuickReply>? = null) : Message(quickReplies?.run { if (isEmpty()) null else this }) {
 
     override fun toSentenceElement(): SentenceElement? {
         return null
