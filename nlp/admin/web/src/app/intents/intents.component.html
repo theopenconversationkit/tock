@@ -23,6 +23,7 @@
         </td>
         <td>
           <span *ngFor="let e of i.entities">
+          <md-icon [style.color]="e.entityColor" class="entity_icon">extension</md-icon>
           <span [style.background-color]="e.entityColor">{{e.qualifiedName(state.user)}}</span>
           <button *ngIf="i.applications.length === 1" md-icon-button (click)="removeEntity(i, e)">
             <md-icon>remove_circle_outline</md-icon>
