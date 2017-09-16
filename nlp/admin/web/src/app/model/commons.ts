@@ -35,11 +35,11 @@ export class JsonUtils {
   constructor() {
   }
 
-  static jsonToMap<K,V>(json?): Map<K,V> {
+  static jsonToMap<K, V>(json?): Map<K, V> {
     if (!json) {
-      return new Map<K,V>();
+      return new Map<K, V>();
     } else {
-      return new Map<K,V>((<any>Object).entries(json))
+      return new Map<K, V>((<any>Object).entries(json))
     }
   }
 }
@@ -63,6 +63,10 @@ export class PaginatedQuery extends ApplicationScopedQuery {
 
 export function flatMap<T, U>(array: T[], callbackfn: (value: T, index: number, array: T[]) => U[]): U[] {
   return [].concat(...array.map(callbackfn));
+}
+
+export function escapeRegex(s: string) {
+  return s.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&');
 }
 
 

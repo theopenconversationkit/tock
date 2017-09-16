@@ -23,6 +23,7 @@ import {StateService} from "../core/state.service";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {Router} from "@angular/router";
 import {QualityService} from "../quality/quality.service";
+import {escapeRegex} from "../model/commons";
 
 @Component({
   selector: 'tock-test-intent-error',
@@ -62,10 +63,10 @@ export class TestIntentErrorComponent implements OnInit, AfterViewInit {
     this.quality.deleteIntentError(error).subscribe(
       e => {
         this.router.navigate(
-          ['/quality/search'],
+          ['/nlp/search'],
           {
             queryParams: {
-              text: "^" + error.sentence.text + "$"
+              text: "^" + escapeRegex(error.sentence.text) + "$"
             }
           }
         );

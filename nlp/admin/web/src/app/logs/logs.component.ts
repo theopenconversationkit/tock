@@ -15,7 +15,7 @@
  */
 
 import {Component, Inject} from "@angular/core";
-import {Log, PaginatedResult, LogsQuery} from "../model/nlp";
+import {Log, LogsQuery, PaginatedResult} from "../model/nlp";
 import {ScrollComponent} from "../scroll/scroll.component";
 import {StateService} from "../core/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
@@ -64,10 +64,10 @@ export class LogsComponent extends ScrollComponent<Log> {
       {
         queryParams: {
           dialogId: log.dialogId,
-          text : log.error ? log.textRequest() : log.sentence.text
+          text: log.error ? log.textRequest() : log.sentence.text
         }
       }
-      );
+    );
   }
 
   displayFullLog(log: Log) {
@@ -84,8 +84,10 @@ export class LogsComponent extends ScrollComponent<Log> {
   selector: 'tock-display-full-log',
   template: `<h1 md-dialog-title>Request Full Log</h1>
   <div md-dialog-content>
-    Request: <pre>{{data.request}}</pre>
-    Response: <pre>{{data.response}}</pre>
+    Request:
+    <pre>{{data.request}}</pre>
+    Response:
+    <pre>{{data.response}}</pre>
   </div>
   <div md-dialog-actions>
     <button md-raised-button md-dialog-close color="primary">Close</button>
