@@ -34,11 +34,21 @@ export class Application {
   }
 
   removeIntentById(id: string) {
-    this.intents = this.intents.filter(i => i._id !== id)
+    this.intents.forEach((e, i) => {
+      if (e._id === id) {
+        this.intents.splice(i, 1);
+        return;
+      }
+    });
   }
 
   removeIntentByNamespaceAndName(namespace: string, name: string) {
-    this.intents = this.intents.filter(i => i.namespace !== namespace || i.name !== name)
+    this.intents.forEach((e, i) => {
+      if (e.namespace === namespace && e.name === name) {
+        this.intents.splice(i, 1);
+        return;
+      }
+    });
   }
 
   intentById(id: string): Intent {

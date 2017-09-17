@@ -39,6 +39,7 @@ export class StateService implements AuthListener {
   applications: Application[];
   entityTypes: BehaviorSubject<EntityType[]> = new BehaviorSubject([]);
   entities: BehaviorSubject<EntityDefinition[]> = new BehaviorSubject([]);
+  currentIntents: BehaviorSubject<Intent[]> = new BehaviorSubject([]);
 
   currentApplication: Application;
   currentLocale: string = StateService.DEFAULT_LOCALE;
@@ -66,6 +67,7 @@ export class StateService implements AuthListener {
   changeApplication(application: Application) {
     this.currentApplication = application;
     this.currentApplicationEmitter.emit(application);
+    this.currentIntents.next(application.intents);
     this.entities.next(application.allEntities());
     if (application.supportedLocales.indexOf(this.currentLocale) === -1) {
       this.changeLocale(application.supportedLocales[0])

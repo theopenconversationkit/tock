@@ -50,7 +50,7 @@ export class SearchComponent implements OnInit {
       .subscribe(entities => {
           if (!this.filter.intentId || this.filter.intentId === "-1") {
             this.entityTypes = entities;
-            this.entityRoles = getRoles(this.state.currentApplication.intents, this.filter.entityType);
+            this.entityRoles = getRoles(this.state.currentIntents.value, this.filter.entityType);
           } else {
             const intent = this.state.findIntentById(this.filter.intentId);
             this.entityTypes =

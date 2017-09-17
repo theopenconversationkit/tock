@@ -22,7 +22,7 @@
                  placeholder="Intent"
                  [ngModel]="sentence.classification.intentId"
                  (change)="onIntentChange($event.value)">
-        <md-option *ngFor="let intent of state.currentApplication.intents" [value]="intent._id">
+        <md-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
           {{intent.name}}
         </md-option>
         <md-option value="tock:unknown">unknown</md-option>

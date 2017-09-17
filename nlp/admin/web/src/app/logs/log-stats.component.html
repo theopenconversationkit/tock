@@ -18,7 +18,7 @@
   <md-card-content>
     <md-select placeholder="Intent" [(ngModel)]="intent" (change)="search()" class="search-input">
       <md-option value="">All</md-option>
-      <md-option *ngFor="let intent of state.currentApplication.intents" [value]="intent.name">
+      <md-option *ngFor="let intent of state.currentIntents | async" [value]="intent.name">
         {{intent.name}}
       </md-option>
       <md-option value="unknown">Unknown</md-option>
