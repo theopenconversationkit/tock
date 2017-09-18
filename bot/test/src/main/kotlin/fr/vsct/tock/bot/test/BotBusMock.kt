@@ -69,14 +69,14 @@ open class BotBusMock(override var userTimeline: UserTimeline,
             },
             action,
             context.botDefinition,
-            context.storyDefinition.storyHandler as I18nKeyProvider,
-            action.state.userInterface ?: UserInterfaceType.textChat,
+            context.i18nProvider,
+            action.state.userInterface ?: context.userInterfaceType,
             context.userPreferences.copy(),
             context.connectorType
     )
 
     init {
-        if(dialog.stories.isEmpty()) {
+        if (dialog.stories.isEmpty()) {
             dialog.stories.add(story)
         }
     }
