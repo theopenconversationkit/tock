@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType.image
 import fr.vsct.tock.bot.engine.message.SentenceSubElement
 import fr.vsct.tock.shared.mapNotNullValues
+import fr.vsct.tock.shared.security.StringObfuscatorMode
 import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 
 data class Element(val title: String,
@@ -40,7 +41,7 @@ data class Element(val title: String,
         )
     }
 
-    fun obfuscate(): Element {
-        return Element(obfuscate(title)!!, imageUrl, obfuscate(subtitle), buttons)
+    fun obfuscate(mode: StringObfuscatorMode): Element {
+        return Element(obfuscate(title, mode)!!, imageUrl, obfuscate(subtitle, mode), buttons)
     }
 }

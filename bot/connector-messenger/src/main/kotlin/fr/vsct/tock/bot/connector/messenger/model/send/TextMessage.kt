@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.connector.messenger.model.send
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.shared.security.StringObfuscatorMode
 import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 
 /**
@@ -42,8 +43,8 @@ class TextMessage(val text: String, quickReplies: List<QuickReply>? = null) : Me
         return true
     }
 
-    override fun obfuscate(): ConnectorMessage {
-        return TextMessage(obfuscate(text)!!, quickReplies)
+    override fun obfuscate(mode: StringObfuscatorMode): ConnectorMessage {
+        return TextMessage(obfuscate(text, mode)!!, quickReplies)
     }
 
     override fun hashCode(): Int {

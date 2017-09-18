@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.connector.messenger.model.send
 
 import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.shared.security.StringObfuscatorMode
 
 /**
  *
@@ -29,7 +30,7 @@ data class GenericPayload(val elements: List<Element>) : ModelPayload(PayloadTyp
         )
     }
 
-    override fun obfuscate(): Payload {
-        return GenericPayload(elements.map { it.obfuscate() })
+    override fun obfuscate(mode: StringObfuscatorMode): Payload {
+        return GenericPayload(elements.map { it.obfuscate(mode) })
     }
 }

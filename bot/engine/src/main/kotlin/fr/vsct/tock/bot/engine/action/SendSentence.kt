@@ -19,11 +19,14 @@ package fr.vsct.tock.bot.engine.action
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.dialog.EventState
+import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.message.Sentence
 import fr.vsct.tock.bot.engine.nlp.NlpCallStats
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.shared.Dice
+import fr.vsct.tock.shared.security.StringObfuscatorMode
+import fr.vsct.tock.shared.security.StringObfuscatorService
 import java.time.Instant
 
 /**
@@ -54,6 +57,21 @@ class SendSentence(
 
     override fun toMessage(): Message {
         return Sentence(text, messages)
+    }
+
+    override fun obfuscate(mode: StringObfuscatorMode): Event {
+        return SendSentence(
+                playerId,
+                applicationId,
+                recipientId,
+                StringObfuscatorService.obfuscate(text, mode),
+                messages.map { it.obfuscate(mode) }.toMutableList(),
+                id,
+                date,
+                state,
+                metadata,
+                nlpStats
+        )
     }
 
     override fun toString(): String {

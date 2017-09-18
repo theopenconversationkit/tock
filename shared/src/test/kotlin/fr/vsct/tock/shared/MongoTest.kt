@@ -14,25 +14,20 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.shared
+package fr.vsct.tock.shared
 
-import fr.vsct.tock.shared.vertx.defaultVertxOptions
-import fr.vsct.tock.shared.vertx.vertx
-import io.vertx.core.VertxOptions
-import io.vertx.core.impl.VertxInternal
 import org.junit.Test
-import java.util.concurrent.ThreadPoolExecutor
 import kotlin.test.assertEquals
 
 /**
  *
  */
-class VertxTest {
+class MongoTest {
+
+    class ThisIsACollection
 
     @Test
-    fun testThatVertxOptionCouldBeOverrided() {
-        defaultVertxOptions = VertxOptions(defaultVertxOptions)
-        defaultVertxOptions.workerPoolSize = 100
-        assertEquals(100, ((vertx as VertxInternal).workerPool as ThreadPoolExecutor).maximumPoolSize)
+    fun collectionBuilder_shouldAddUnderscore_forEachUpperCase() {
+        assertEquals("this_is_a_collection", collectionBuilder.invoke(ThisIsACollection::class))
     }
 }

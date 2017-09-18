@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.shared.security
 
+import fr.vsct.tock.shared.security.StringObfuscatorMode.display
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -29,5 +30,13 @@ class SimpleObfuscatorTest {
     fun obfuscate_shouldUpdateText_WhenPatternFound() {
         val obf = SimpleObfuscator("\\d{9}".toRegex(), "sososecret")
         assertEquals("aze sososecret 223 sososecret ds", obf.obfuscate("aze 222777777 223 199999999 ds"))
+    }
+
+    @Test
+    fun obfuscate_shouldUseDisplayedText_WhenDisplayModeIsUsed() {
+        val obf = SimpleObfuscator("\\d{9}".toRegex(), "sososecret", "?")
+        val obfuscated = obf.obfuscate("aze 222777777 223 199999999 ds")
+        assertEquals("aze sososecret 223 sososecret ds", obfuscated)
+        assertEquals("aze ? 223 ? ds", obf.obfuscate(obfuscated, display))
     }
 }

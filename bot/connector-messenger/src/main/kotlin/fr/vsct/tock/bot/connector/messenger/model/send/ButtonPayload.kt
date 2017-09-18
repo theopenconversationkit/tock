@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.connector.messenger.model.send
 
 import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.shared.security.StringObfuscatorMode
 import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 
 /**
@@ -32,7 +33,7 @@ data class ButtonPayload(val text: String, val buttons: List<Button>) : ModelPay
         )
     }
 
-    override fun obfuscate(): Payload {
-        return ButtonPayload(obfuscate(text)!!, buttons)
+    override fun obfuscate(mode: StringObfuscatorMode): Payload {
+        return ButtonPayload(obfuscate(text, mode)!!, buttons)
     }
 }

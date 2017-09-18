@@ -14,21 +14,27 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.shared
+package fr.vsct.tock.shared
 
-import fr.vsct.tock.shared.collectionBuilder
+import fr.vsct.tock.shared.security.decrypt
+import fr.vsct.tock.shared.security.encrypt
 import org.junit.Test
+import java.security.SecureRandom
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 /**
  *
  */
-class MongoTest {
-
-    class ThisIsACollection
+class EncryptorTest {
 
     @Test
-    fun collectionBuilder_shouldAddUnderscore_forEachUpperCase() {
-        assertEquals("this_is_a_collection", collectionBuilder.invoke(ThisIsACollection::class))
+    fun testEncryptAndDecrypt() {
+        val s = String(SecureRandom().generateSeed(30))
+        val encrypted1 = encrypt(s)
+        assertEquals(s, decrypt(encrypted1))
+        val encrypted2 = encrypt(s)
+        assertEquals(s, decrypt(encrypted2))
+        assertNotEquals(encrypted1, encrypted2)
     }
 }

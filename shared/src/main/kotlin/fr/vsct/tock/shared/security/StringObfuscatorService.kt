@@ -60,13 +60,13 @@ object StringObfuscatorService {
         return texts.map { obfuscate(it)!! }
     }
 
-    fun obfuscate(text: String?): String? {
+    fun obfuscate(text: String?, mode: StringObfuscatorMode = StringObfuscatorMode.normal): String? {
         return if (text == null) {
             null
         } else {
             var t = text
             obfuscators.forEach {
-                t = it.obfuscate(t!!)
+                t = it.obfuscate(t!!, mode)
             }
             t
         }

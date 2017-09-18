@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.shared.jackson
+package fr.vsct.tock.shared.jackson
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import fr.vsct.tock.shared.jackson.AnyValueWrapper
-import fr.vsct.tock.shared.jackson.mapper
 import org.junit.Test
 import kotlin.test.assertEquals
 

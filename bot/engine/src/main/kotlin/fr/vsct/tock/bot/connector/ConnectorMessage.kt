@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.connector
 
 import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.shared.security.StringObfuscatorMode
 
 /**
  * Connector specific message format.
@@ -37,5 +38,5 @@ interface ConnectorMessage {
     /**
      * Obfuscate the message - by default this method does nothing.
      */
-    fun obfuscate() : ConnectorMessage = this
+    fun obfuscate(mode: StringObfuscatorMode): ConnectorMessage = this
 }

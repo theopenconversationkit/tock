@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.connector.messenger.model.send
 import com.fasterxml.jackson.annotation.JsonProperty
 import fr.vsct.tock.bot.engine.message.SentenceElement
 import fr.vsct.tock.shared.mapNotNullValues
+import fr.vsct.tock.shared.security.StringObfuscatorMode
 
 /**
  * See [https://developers.facebook.com/docs/messenger-platform/send-api-reference/list-template]
@@ -38,7 +39,7 @@ data class ListPayload(
         )
     }
 
-    override fun obfuscate(): Payload {
-        return ListPayload(elements.map { it.obfuscate() }, topElementStyle, buttons)
+    override fun obfuscate(mode: StringObfuscatorMode): Payload {
+        return ListPayload(elements.map { it.obfuscate(mode) }, topElementStyle, buttons)
     }
 }

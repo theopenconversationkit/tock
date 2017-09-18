@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.engine.event
 
 import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.shared.Dice
+import fr.vsct.tock.shared.security.StringObfuscatorMode
 import java.time.Instant
 
 /**
@@ -32,5 +33,10 @@ abstract class Event(
     fun hasEntity(role: String): Boolean {
         return state.getEntity(role).isNotEmpty()
     }
+
+    /**
+     * Obfuscate the event - by default this method does nothing.
+     */
+    open fun obfuscate(mode: StringObfuscatorMode): Event = this
 
 }

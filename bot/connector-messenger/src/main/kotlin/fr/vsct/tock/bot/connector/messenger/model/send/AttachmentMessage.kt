@@ -23,6 +23,7 @@ import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.image
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.template
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.video
 import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.shared.security.StringObfuscatorMode
 
 /**
  *
@@ -43,10 +44,10 @@ class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickRepl
         }
     }
 
-    override fun obfuscate(): ConnectorMessage {
+    override fun obfuscate(mode: StringObfuscatorMode): ConnectorMessage {
         return when (attachment.type) {
             template -> AttachmentMessage(
-                    attachment.copy(payload = attachment.payload.obfuscate()),
+                    attachment.copy(payload = attachment.payload.obfuscate(mode)),
                     quickReplies
             )
             else -> this

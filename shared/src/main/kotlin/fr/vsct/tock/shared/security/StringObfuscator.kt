@@ -16,29 +16,50 @@
 
 package fr.vsct.tock.shared.security
 
+import fr.vsct.tock.shared.security.StringObfuscatorMode.display
+import fr.vsct.tock.shared.security.StringObfuscatorMode.normal
+
 /**
- * Replace a string by an other String.
+ * Replaces a string by an other String.
  */
 interface StringObfuscator {
 
     /**
-     * The search regexp
+     * The search regexp.
      */
     val regex: Regex
 
     /**
-     * The replacement string - should be the same size than the replaced string.
+     * The replacement string - should have the same size than the replaced string.
      */
     val replacement: String
 
     /**
+     * To match the replacement string in [StringObfuscatorMode.display] mode.
+     */
+    val replacementRegexp: Regex
+
+    /**
+     * Used in [StringObfuscatorMode.display] mode.
+     */
+    val displayed: String
+
+    /**
      * Obfuscate the parameter.
      */
-    fun obfuscate(text: String): String {
-        return regex.toPattern()
+    fun obfuscate(text: String, mode: StringObfuscatorMode = normal): String {
+        return when (mode) {
+            normal -> regex
+            display -> replacementRegexp
+        }
+                .toPattern()
                 .matcher(text)
                 .run {
-                    replaceAll(replacement)
+                    replaceAll(
+                            when (mode) {
+                                normal -> replacement
+                                display -> displayed
+                            })
                 }
     }
 }

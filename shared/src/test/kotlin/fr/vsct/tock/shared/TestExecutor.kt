@@ -14,21 +14,29 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.shared
+package fr.vsct.tock.shared
 
-import fr.vsct.tock.shared.Dice
-import org.junit.Test
-import kotlin.test.assertTrue
+import java.time.Duration
+import java.util.concurrent.Callable
 
 /**
  *
  */
-class DiceTest {
+object TestExecutor : Executor {
 
-    @Test
-    fun newId_ShouldReturnAtLeats23CharsAndAtMost24() {
-        Dice.newId().apply {
-            assertTrue(length >= 23 && length <= 24)
-        }
+    override fun executeBlocking(delay: Duration, runnable: () -> Unit) {
+        TODO()
+    }
+
+    override fun executeBlocking(runnable: () -> Unit) {
+        Thread(runnable).start()
+    }
+
+    override fun <T> executeBlocking(blocking: Callable<T>, result: (T?) -> Unit) {
+        TODO()
+    }
+
+    override fun setPeriodic(initialDelay: Duration, delay: Duration, runnable: () -> Unit): Long {
+        TODO()
     }
 }

@@ -19,11 +19,12 @@ package fr.vsct.tock.bot.connector.messenger.model.send
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import fr.vsct.tock.bot.connector.messenger.json.send.PayloadDeserializer
 import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.shared.security.StringObfuscatorMode
 
 @JsonDeserialize(using = PayloadDeserializer::class)
 abstract class Payload {
 
     open fun toSentenceElement(): SentenceElement? = null
 
-    open fun obfuscate() : Payload = this
+    open fun obfuscate(mode: StringObfuscatorMode) : Payload = this
 }
