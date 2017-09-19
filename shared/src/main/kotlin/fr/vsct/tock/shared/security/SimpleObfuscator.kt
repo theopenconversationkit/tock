@@ -22,7 +22,7 @@ package fr.vsct.tock.shared.security
 data class SimpleObfuscator(override val regex: Regex,
                             override val replacement: String,
                             override val displayed: String = replacement,
-                            override val replacementRegexp: Regex = replacement.toRegex()) : StringObfuscator {
+                            override val replacementRegexp: Regex = replacement.toRegex(RegexOption.LITERAL)) : StringObfuscator {
 
 
 
