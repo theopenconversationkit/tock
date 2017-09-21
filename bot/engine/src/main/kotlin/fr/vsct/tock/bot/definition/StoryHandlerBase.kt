@@ -45,6 +45,21 @@ abstract class StoryHandlerBase : StoryHandler, I18nKeyProvider {
     }
 
     /**
+     * Handle the action and switch the context to the underlying story definition.
+     */
+    fun handleAndSwitchStory(bus: BotBus) {
+        val intent = bus
+                .botDefinition
+                .stories
+                .find { it.storyHandler == this }
+                ?.mainIntent()
+        if (intent != null) {
+            bus.dialog.state.currentIntent = intent
+        }
+        handle(bus)
+    }
+
+    /**
      * The method to implement.
      */
     abstract fun action(bus: BotBus)

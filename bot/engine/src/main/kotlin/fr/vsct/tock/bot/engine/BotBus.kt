@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.ParameterKey
@@ -52,6 +53,10 @@ import java.util.Locale
  */
 interface BotBus {
 
+    /**
+     * The bot definition of the current bot.
+     */
+    val botDefinition: BotDefinition
     /**
      * The user timeline. Get history and data abgout the user.
      */

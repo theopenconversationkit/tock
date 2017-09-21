@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionSignificance
@@ -51,6 +52,7 @@ internal class TockBotBus(
 
     private val bot = connector.bot
 
+    override val botDefinition: BotDefinition = bot.botDefinition
     override val applicationId = action.applicationId
     override val botId = action.recipientId
     override val userId = action.playerId
