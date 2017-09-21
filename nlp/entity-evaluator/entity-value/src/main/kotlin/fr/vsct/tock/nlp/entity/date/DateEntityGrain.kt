@@ -17,14 +17,14 @@
 package fr.vsct.tock.nlp.entity.date
 
 import java.lang.Exception
+import java.time.DayOfWeek
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.HOURS
 import java.time.temporal.ChronoUnit.MINUTES
 import java.time.temporal.ChronoUnit.MONTHS
 import java.time.temporal.ChronoUnit.SECONDS
-import java.time.temporal.ChronoUnit.WEEKS
-import java.time.temporal.ChronoUnit.YEARS
+import java.time.temporal.TemporalAdjusters
 
 /**
  *
@@ -45,6 +45,7 @@ enum class DateEntityGrain(val time: Boolean) {
     year(false);
 
     companion object {
+
         fun from(s: String?): DateEntityGrain {
             try {
                 return if (s == null) unknown else valueOf(s)
@@ -73,16 +74,22 @@ enum class DateEntityGrain(val time: Boolean) {
     }
 
     fun truncate(date: ZonedDateTime): ZonedDateTime {
-        return when (this) {
-            second -> date.truncatedTo(SECONDS)
-            minute -> date.truncatedTo(MINUTES)
-            hour -> date.truncatedTo(HOURS)
-            day_of_week, day -> date.truncatedTo(DAYS)
-            week -> date.truncatedTo(WEEKS)
-            month -> date.truncatedTo(MONTHS)
-            quarter -> date.truncatedTo(MONTHS)
-            year -> date.truncatedTo(YEARS)
-            else -> date
+        return try {
+            when (this) {
+                second -> date.truncatedTo(SECONDS)
+                minute -> date.truncatedTo(MINUTES)
+                hour -> date.truncatedTo(HOURS)
+                day_of_week, day -> date.truncatedTo(DAYS)
+                //TODO depending of the timezone for the start of day
+                week -> date.with(TemporalAdjusters.previous(DayOfWeek.MONDAY)).truncatedTo(DAYS)
+                month -> date.with(TemporalAdjusters.firstDayOfMonth()).truncatedTo(DAYS)
+                quarter -> date.with(TemporalAdjusters.firstDayOfMonth()).truncatedTo(DAYS)
+                year -> date.with(TemporalAdjusters.firstDayOfYear()).truncatedTo(DAYS)
+                else -> date
+            }
+        } catch (e: Exception) {
+            //ignore
+            date
         }
     }
 
