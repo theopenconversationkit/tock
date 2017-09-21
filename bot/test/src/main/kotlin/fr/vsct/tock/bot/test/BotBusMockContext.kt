@@ -25,6 +25,7 @@ import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.action.SendChoice.Companion.decodeChoiceId
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.Story
@@ -108,4 +109,12 @@ class BotBusMockContext(var userTimeline: UserTimeline,
                parameters: Parameters): SendChoice
             = SendChoice(userId, applicationId, botId, intent.wrappedIntent().name, parameters.toMap())
 
+    /**
+     * Create a choice for this context.
+     */
+    fun choiceOfId(choiceId: String): SendChoice
+        = decodeChoiceId(choiceId).let { it ->
+            choice(it.first, *it.second.map { it.key to it.value }.toTypedArray())
+
+    }
 }
