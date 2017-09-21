@@ -16,8 +16,8 @@
 
 package fr.vsct.tock.shared.security
 
+import fr.vsct.tock.shared.Loader
 import fr.vsct.tock.shared.error
-import fr.vsct.tock.shared.listProperty
 import mu.KotlinLogging
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -32,11 +32,10 @@ object StringObfuscatorService {
 
     internal fun loadObfuscators() {
         try {
-            val obf = listProperty("tock_obfuscators", emptyList(), "$$")
-            obf.forEach {
-                val s = it.split("==")
-                registerObfuscator(SimpleObfuscator(s[0].toRegex(), s[1]))
-            }
+            Loader
+                    .loadServices<ObfuscatorService>()
+                    .flatMap { it.stringObfuscators() }
+                    .forEach { registerObfuscator(it) }
         } catch (e: Exception) {
             logger.error(e)
         }

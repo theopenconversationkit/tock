@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.model.service.engine
+package fr.vsct.tock.shared
 
-import fr.vsct.tock.shared.Loader
-
+import java.util.ServiceLoader
 
 /**
- * Provides all supported nlp engines.
+ * Helper methods to deal with [ServiceLoader].
  */
-internal object SupportedNlpEnginesProvider {
+object Loader {
 
-    /**
-     * Returns the list of all supported [NlpEngineProvider].
-     */
-    fun engines(): List<NlpEngineProvider> {
-        return Loader.loadServices()
-    }
+    inline fun <reified T : Any> loadServices(): List<T>
+            = ServiceLoader.load(T::class.java).iterator().toList()
 }

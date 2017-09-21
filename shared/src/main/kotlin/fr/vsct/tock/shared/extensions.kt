@@ -21,7 +21,7 @@ import java.util.Enumeration
 
 const val TOCK_NAMESPACE: String = "tock"
 
-val defaultNamespace :String = property("tock_default_namespace", "vsc")
+val defaultNamespace: String = property("tock_default_namespace", "vsc")
 
 fun String.namespace(): String = namespaceAndName().first
 fun String.name(): String = namespaceAndName().second
@@ -35,3 +35,9 @@ else this
 fun <K, V> mapNotNullValues(vararg pairs: Pair<K, V?>): Map<K, V> = mapOf(*pairs).filterValues { it != null }.mapValues { it.value!! }
 
 fun <T> Enumeration<T>.toSet(): Set<T> = Collections.list(this).toSet()
+
+fun <T> Iterator<T>.toList(): List<T> = mutableListOf<T>().apply {
+    while (hasNext()) {
+        add(next())
+    }
+}

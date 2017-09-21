@@ -14,20 +14,15 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.model.service.engine
-
-import fr.vsct.tock.shared.Loader
-
+package fr.vsct.tock.shared.security
 
 /**
- * Provides all supported nlp engines.
+ * To load obfuscators via service loaders.
  */
-internal object SupportedNlpEnginesProvider {
+interface ObfuscatorService {
 
     /**
-     * Returns the list of all supported [NlpEngineProvider].
+     * Returns the string obfuscators ton register.
      */
-    fun engines(): List<NlpEngineProvider> {
-        return Loader.loadServices()
-    }
+    fun stringObfuscators(): List<StringObfuscator>
 }
