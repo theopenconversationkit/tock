@@ -19,15 +19,84 @@ import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {HttpModule} from "@angular/http";
 import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component";
-import {MaterialModule} from "@angular/material";
+import {
+  MdButtonModule,
+  MdButtonToggleModule,
+  MdCardModule,
+  MdCheckboxModule,
+  MdChipsModule,
+  MdDatepickerModule,
+  MdDialogModule,
+  MdFormFieldModule,
+  MdIconModule,
+  MdInputModule,
+  MdListModule,
+  MdPaginatorModule,
+  MdProgressSpinnerModule,
+  MdRadioModule,
+  MdSelectModule,
+  MdSidenavModule,
+  MdSnackBarModule,
+  MdTableModule,
+  MdTabsModule,
+  MdToolbarModule,
+  MdTooltipModule,
+} from "@angular/material";
 import {MapToIterablePipe} from "./map-to-iterable.pipe";
 import {ScrollComponent} from "../scroll/scroll.component";
 
 @NgModule({
-  imports: [CommonModule, MaterialModule],
+  imports: [
+    CommonModule,
+    MdButtonModule,
+    MdButtonToggleModule,
+    MdCardModule,
+    MdCheckboxModule,
+    MdChipsModule,
+    MdDatepickerModule,
+    MdDialogModule,
+    MdFormFieldModule,
+    MdIconModule,
+    MdInputModule,
+    MdListModule,
+    MdPaginatorModule,
+    MdProgressSpinnerModule,
+    MdRadioModule,
+    MdSelectModule,
+    MdSidenavModule,
+    MdSnackBarModule,
+    MdTableModule,
+    MdTabsModule,
+    MdToolbarModule,
+    MdTooltipModule
+  ],
   declarations: [ConfirmDialogComponent, MapToIterablePipe, ScrollComponent],
   providers: [],
-  exports: [MaterialModule, FormsModule, HttpModule, MapToIterablePipe],
+  exports: [
+    MdButtonModule,
+    MdButtonToggleModule,
+    MdCardModule,
+    MdCheckboxModule,
+    MdChipsModule,
+    MdDatepickerModule,
+    MdDialogModule,
+    MdFormFieldModule,
+    MdIconModule,
+    MdInputModule,
+    MdListModule,
+    MdPaginatorModule,
+    MdProgressSpinnerModule,
+    MdRadioModule,
+    MdSelectModule,
+    MdSidenavModule,
+    MdSnackBarModule,
+    MdTableModule,
+    MdTabsModule,
+    MdToolbarModule,
+    MdTooltipModule,
+    FormsModule,
+    HttpModule,
+    MapToIterablePipe],
   entryComponents: [
     ConfirmDialogComponent
   ]
