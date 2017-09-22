@@ -242,15 +242,7 @@ object ParserService : Parser {
 
             if (context.registerQuery) {
                 executor.executeBlocking {
-                    toClassifiedSentence().apply {
-                        if (!hasSameContent(validatedSentence)) {
-                            //do not persist analyse if intent probability is < 0.1
-                            val sentence = if ((lastIntentProbability ?: 0.0) > 0.1) this
-                            else copy(classification = classification.copy(UNKNOWN_INTENT, emptyList()))
-
-                            config.save(sentence)
-                        }
-                    }
+                    saveSentence(toClassifiedSentence(), validatedSentence)
                 }
             }
 
@@ -262,6 +254,20 @@ object ParserService : Parser {
             }
 
             return result
+        }
+    }
+
+    internal fun saveSentence(newSentence: ClassifiedSentence, validatedSentence: ClassifiedSentence?) {
+        with(newSentence) {
+            if (validatedSentence?.status != validated &&
+                    validatedSentence?.status != model
+                    && !hasSameContent(validatedSentence)) {
+                //do not persist analyse if intent probability is < 0.1
+                val sentence = if ((lastIntentProbability ?: 0.0) > 0.1) this
+                else copy(classification = classification.copy(UNKNOWN_INTENT, emptyList()))
+
+                config.save(sentence)
+            }
         }
     }
 

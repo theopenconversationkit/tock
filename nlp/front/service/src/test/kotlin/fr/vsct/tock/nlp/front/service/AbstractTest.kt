@@ -24,11 +24,16 @@ import com.nhaarman.mockito_kotlin.mock
 import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
 import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
+import fr.vsct.tock.nlp.front.shared.config.Classification
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.shared.Executor
+import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.tockInternalInjector
 import org.junit.After
 import org.junit.Before
+import java.time.Instant
 
 /**
  *
@@ -58,6 +63,9 @@ abstract class AbstractTest {
     }
 
     val context = TestContext()
+
+    val defaultClassification = Classification("test", emptyList())
+    val defaultClassifiedSentence = ClassifiedSentence("a", defaultLocale, "id", Instant.now(), Instant.now(), ClassifiedSentenceStatus.inbox, defaultClassification, 1.0, 1.0)
 
     @Before
     fun initContext() {
