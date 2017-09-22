@@ -41,7 +41,6 @@ internal class TockBotBus(
         private val connector: TockConnectorController,
         override val userTimeline: UserTimeline,
         override val dialog: Dialog,
-        override val story: Story,
         override val action: Action,
         override var i18nProvider: I18nKeyProvider
 ) : BotBus {
@@ -52,6 +51,11 @@ internal class TockBotBus(
 
     private val bot = connector.bot
 
+    override var story: Story
+        get() = dialog.currentStory()!!
+        set(value) {
+            dialog.stories.add(value)
+        }
     override val botDefinition: BotDefinition = bot.botDefinition
     override val applicationId = action.applicationId
     override val botId = action.recipientId

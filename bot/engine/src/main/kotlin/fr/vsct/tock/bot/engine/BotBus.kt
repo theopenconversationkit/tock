@@ -68,7 +68,7 @@ interface BotBus {
     /**
      * The current story.
      */
-    val story: Story
+    var story: Story
     /**
      * The last user action.
      */

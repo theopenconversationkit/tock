@@ -61,7 +61,7 @@ class Bot(botDefinitionBase: BotDefinition) {
         if (!userTimeline.userState.botDisabled) {
             realConnector.startTypingInAnswerTo(action)
             val story = getStory(action, dialog)
-            val bus = TockBotBus(realConnector, userTimeline, dialog, story, action, botDefinition)
+            val bus = TockBotBus(realConnector, userTimeline, dialog, action, botDefinition)
 
             story.handle(bus)
         } else {

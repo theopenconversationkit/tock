@@ -23,28 +23,48 @@ import fr.vsct.tock.bot.definition.StoryHandlerBase
 import fr.vsct.tock.bot.definition.StoryStep
 
 val testIntent = Intent("test")
+val test2Intent = Intent("test2")
 val secondaryIntent = Intent("secondary")
-val notInStoryIntent = Intent("test2")
+val notInStoryIntent = Intent("not_in_story")
 
 class BotDefinitionTest
     : BotDefinitionBase(
         "test",
         "namespace",
-        stories = listOf(StoryDefinitionTest())
+        stories = listOf(StoryDefinitionTest, StoryDefinition2Test)
 )
 
-enum class StepTest : StoryStep {s1, s2, s3 }
+enum class StepTest : StoryStep { s1, s2, s3 }
 
-class StoryDefinitionTest : StoryDefinitionBase(
+object StoryDefinitionTest : StoryDefinitionBase(
         "storyDef1",
-        StoryHandlerTest(),
+        StoryHandlerTest,
         StepTest.values(),
         setOf(testIntent),
         setOf(testIntent, secondaryIntent)) {
     val registeredBus: BotBus? get() = (storyHandler as StoryHandlerTest).registeredBus
 }
 
-class StoryHandlerTest : StoryHandlerBase() {
+object StoryDefinition2Test : StoryDefinitionBase(
+        "storyDef2",
+        StoryHandler2Test,
+        StepTest.values(),
+        setOf(test2Intent),
+        setOf(test2Intent)) {
+    val registeredBus: BotBus? get() = (storyHandler as StoryHandlerTest).registeredBus
+}
+
+
+object StoryHandlerTest : StoryHandlerBase() {
+
+    var registeredBus: BotBus? = null
+
+    override fun action(bus: BotBus) {
+        registeredBus = bus
+    }
+}
+
+object StoryHandler2Test : StoryHandlerBase() {
 
     var registeredBus: BotBus? = null
 
