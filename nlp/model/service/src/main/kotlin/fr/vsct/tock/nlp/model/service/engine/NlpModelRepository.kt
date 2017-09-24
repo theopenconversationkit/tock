@@ -140,7 +140,7 @@ internal object NlpModelRepository {
                 }
     }
 
-    private fun loadEntityModel(contextKey: EntityContextKey, provider: NlpEngineProvider): TimeStampedModel? {
+    private fun loadEntityModel(contextKey: EntityContextKey, provider: NlpEngineProvider): TimeStampedModel {
         return modelIO.getEntityModelInputStream(contextKey)
                 ?.let { inputStream ->
                     logger.debug { "load entity model for $contextKey" }

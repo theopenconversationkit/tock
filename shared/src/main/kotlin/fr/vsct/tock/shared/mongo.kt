@@ -23,13 +23,13 @@ import com.fasterxml.jackson.datatype.jsr310.deser.DurationDeserializer
 import com.fasterxml.jackson.datatype.jsr310.deser.JSR310StringParsableDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.DurationSerializer
 import com.mongodb.MongoClient
-import com.mongodb.MongoClientOptions
 import com.mongodb.MongoClientURI
 import com.mongodb.client.MongoDatabase
 import fr.vsct.tock.shared.jackson.addDeserializer
 import fr.vsct.tock.shared.jackson.addSerializer
 import mu.KotlinLogging
 import org.litote.kmongo.KMongo
+import org.litote.kmongo.util.CollectionNameFormatter
 import org.litote.kmongo.util.KMongoConfiguration
 import java.time.Duration
 import java.time.ZoneId
@@ -52,7 +52,7 @@ internal val collectionBuilder: (KClass<*>) -> String = {
 val mongoJacksonModules = mutableListOf<Module>()
 
 val mongoClient: MongoClient by lazy {
-    KMongoConfiguration.defaultCollectionNameBuilder = collectionBuilder
+    CollectionNameFormatter.defaultCollectionNameBuilder = collectionBuilder
 
     val tockModule = SimpleModule().apply {
         addSerializer(ZoneId::class, ToStringSerializer(ZoneId::class.java))
@@ -69,9 +69,7 @@ val mongoClient: MongoClient by lazy {
     }
     KMongo.createClient(
             MongoClientURI(
-                    property("tock_mongo_url", "mongodb://localhost:27017"),
-                    MongoClientOptions.builder()
-                            .socketKeepAlive(booleanProperty("tock_mongo_keep_alive", true))
+                    property("tock_mongo_url", "mongodb://localhost:27017")
             )
     )
 }
