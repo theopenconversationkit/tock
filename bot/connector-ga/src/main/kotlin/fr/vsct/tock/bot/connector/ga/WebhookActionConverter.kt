@@ -57,39 +57,44 @@ internal object WebhookActionConverter {
                 val params = SendChoice.decodeChoiceId(
                         input.arguments.first { it.builtInArg == GAArgumentBuiltInName.OPTION }.textValue ?: error("no text value")
                 )
-                return SendChoice(
-                        playerId,
-                        applicationId,
-                        botId,
-                        params.first,
-                        params.second,
-                        state = message.getEventState()
-                )
-            } else {
-                if (input.builtInIntent == GAIntent.main && controller.botDefinition.helloStory != null) {
+                //Google assistant makes an somewhat erroneous nlp selection sometimes
+                //to avoid that, double check the label
+                if (input.rawInputs.firstOrNull()?.query?.let { query -> params.second[SendChoice.TITLE_PARAMETER] == query } != false) {
                     return SendChoice(
                             playerId,
                             applicationId,
                             botId,
-                            controller.botDefinition.helloStory?.mainIntent()!!.name,
+                            params.first,
+                            params.second,
                             state = message.getEventState()
                     )
-                } else {
-                    val rawInput = input.rawInputs.firstOrNull()
-                    if (rawInput != null) {
-                        val text = rawInput.query
-
-                        return SendSentence(
-                                playerId,
-                                applicationId,
-                                botId,
-                                text,
-                                mutableListOf(GARequestConnectorMessage(message)),
-                                state = message.getEventState()
-                        )
-                    }
                 }
             }
+
+            if (input.builtInIntent == GAIntent.main && controller.botDefinition.helloStory != null) {
+                return SendChoice(
+                        playerId,
+                        applicationId,
+                        botId,
+                        controller.botDefinition.helloStory?.mainIntent()!!.name,
+                        state = message.getEventState()
+                )
+            } else {
+                val rawInput = input.rawInputs.firstOrNull()
+                if (rawInput != null) {
+                    val text = rawInput.query
+
+                    return SendSentence(
+                            playerId,
+                            applicationId,
+                            botId,
+                            text,
+                            mutableListOf(GARequestConnectorMessage(message)),
+                            state = message.getEventState()
+                    )
+                }
+            }
+
         }
         error("unsupported message: $message")
     }

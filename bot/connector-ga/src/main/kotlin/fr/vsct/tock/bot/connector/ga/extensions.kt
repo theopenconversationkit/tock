@@ -346,7 +346,7 @@ fun BotBus.listItem(
     val t = translate(title)
     return GAListItem(
             optionInfo(
-                    title,
+                    t,
                     targetIntent,
                     step,
                     *parameters
@@ -362,54 +362,54 @@ fun BotBus.optionInfo(
         vararg parameters: Pair<String, String>
 ): GAOptionInfo {
     val t = translate(title)
+    //add the title to the parameters as we need to double check the title in WebhookActionConverter
+    val map = parameters.toMap() + (SendChoice.TITLE_PARAMETER to t.toString())
     return GAOptionInfo(
             SendChoice.encodeChoiceId(
                     this,
                     targetIntent,
                     step,
-                    parameters.toMap()),
+                    map),
             listOf(t.toString())
     )
 }
 
 fun BotBus.carouselItem(
-        optionTitle: CharSequence,
         targetIntent: IntentAware,
-        title: CharSequence = optionTitle,
+        title: CharSequence,
         description: CharSequence? = null,
         image: GAImage? = null,
         vararg parameters: Pair<String, String>)
         : GACarouselItem
-        = carouselItem(optionTitle, targetIntent, null, title, description, image, *parameters)
+        = carouselItem(targetIntent, null, title, description, image, *parameters)
 
 fun BotBus.carouselItem(
-        optionTitle: CharSequence,
         targetIntent: IntentAware,
         step: StoryStep? = null,
-        title: CharSequence = optionTitle,
+        title: CharSequence,
         description: CharSequence? = null,
         image: GAImage? = null,
         parameters: Parameters)
         : GACarouselItem
-        = carouselItem(optionTitle, targetIntent, step, title, description, image, *parameters.toArray())
+        = carouselItem(targetIntent, step, title, description, image, *parameters.toArray())
 
 fun BotBus.carouselItem(
-        optionTitle: CharSequence,
         targetIntent: IntentAware,
         step: StoryStep? = null,
-        title: CharSequence = optionTitle,
+        title: CharSequence,
         description: CharSequence? = null,
         image: GAImage? = null,
         vararg parameters: Pair<String, String>)
         : GACarouselItem {
+    val t = translate(title)
     return GACarouselItem(
             optionInfo(
-                    optionTitle,
+                    t,
                     targetIntent,
                     step,
                     *parameters
             ),
-            translate(title).toString(),
+            t.toString(),
             translate(description).toString(),
             image
     )
