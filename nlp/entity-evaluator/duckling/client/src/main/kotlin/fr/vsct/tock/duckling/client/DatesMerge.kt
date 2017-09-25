@@ -24,6 +24,7 @@ import fr.vsct.tock.nlp.entity.date.DateEntityRange
 import fr.vsct.tock.nlp.entity.date.DateEntityValue
 import fr.vsct.tock.nlp.entity.date.DateIntervalEntityValue
 import fr.vsct.tock.nlp.model.EntityCallContextForEntity
+import fr.vsct.tock.shared.defaultZoneId
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
@@ -109,7 +110,7 @@ internal object DatesMerge {
             if (mergeGrain != null) {
                 return parseDate(language, referenceDateTime, oldValue, newValue, mergeGrain)
             }
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             logger.error(e)
         }
 
@@ -122,7 +123,7 @@ internal object DatesMerge {
         } else if (language.language == "fr" && frenchChangeHourRegex.matches(newValue.content!!.toLowerCase())) {
             MergeGrain(false, day)
         } else if (oldValue.grain() > newValue.grain()
-                && oldValue.grain().calculateEnd(newValue.start()) >= newValue.end()) {
+                && oldValue.grain().calculateEnd(newValue.start(), defaultZoneId) >= newValue.end()) {
             //MergeGrain(false, oldValue.grainFromNow())
             null
         } else {
