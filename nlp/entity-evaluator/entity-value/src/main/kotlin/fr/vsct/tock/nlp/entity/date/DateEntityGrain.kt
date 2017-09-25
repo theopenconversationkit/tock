@@ -18,6 +18,7 @@ package fr.vsct.tock.nlp.entity.date
 
 import java.lang.Exception
 import java.time.DayOfWeek
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.ChronoUnit.HOURS
@@ -80,7 +81,7 @@ enum class DateEntityGrain(val time: Boolean) {
                 minute -> date.truncatedTo(MINUTES)
                 hour -> date.truncatedTo(HOURS)
                 day_of_week, day -> date.truncatedTo(DAYS)
-                //TODO depending of the timezone for the start of day
+            //TODO depending of the timezone for the start of day
                 week -> date.with(TemporalAdjusters.previous(DayOfWeek.MONDAY)).truncatedTo(DAYS)
                 month -> date.with(TemporalAdjusters.firstDayOfMonth()).truncatedTo(DAYS)
                 quarter -> date.with(TemporalAdjusters.firstDayOfMonth()).truncatedTo(DAYS)
@@ -93,17 +94,18 @@ enum class DateEntityGrain(val time: Boolean) {
         }
     }
 
-    fun calculateEnd(start: ZonedDateTime): ZonedDateTime {
+    fun calculateEnd(start: ZonedDateTime, zoneId: ZoneId): ZonedDateTime {
+        val s = start.withZoneSameInstant(zoneId)
         return when (this) {
-            second -> truncate(start.plusSeconds(1))
-            minute -> truncate(start.plusMinutes(1))
-            hour -> truncate(start.plusHours(1))
-            day_of_week, day -> truncate(start.plusDays(1))
-            week -> truncate(start.plusWeeks(1))
-            month -> truncate(start.plusMonths(1))
-            quarter -> truncate(start.plusMonths(3))
-            year -> truncate(start.plusYears(1))
-            else -> start
+            second -> truncate(s.plusSeconds(1))
+            minute -> truncate(s.plusMinutes(1))
+            hour -> truncate(s.plusHours(1))
+            day_of_week, day -> truncate(s.plusDays(1))
+            week -> truncate(s.plusWeeks(1))
+            month -> truncate(s.plusMonths(1))
+            quarter -> truncate(s.plusMonths(3))
+            year -> truncate(s.plusYears(1))
+            else -> s
         }
     }
 

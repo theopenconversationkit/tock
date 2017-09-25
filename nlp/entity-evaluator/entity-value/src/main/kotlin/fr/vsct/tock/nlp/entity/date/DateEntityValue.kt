@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.entity.date
 
+import java.time.ZoneId
 import java.time.ZonedDateTime
 
 /**
@@ -27,7 +28,7 @@ data class DateEntityValue(val date: ZonedDateTime, val grain: DateEntityGrain) 
         return date
     }
 
-    override fun end(): ZonedDateTime {
-        return grain.calculateEnd(date)
+    override fun end(zoneId: ZoneId): ZonedDateTime {
+        return grain.calculateEnd(date, zoneId)
     }
 }

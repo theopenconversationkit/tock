@@ -18,6 +18,7 @@ package fr.vsct.tock.nlp.entity.date
 
 import org.junit.Test
 import java.time.LocalTime
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import kotlin.test.assertEquals
 
@@ -29,7 +30,7 @@ class DateEntityGrainTest {
     @Test
     fun calculateEnd_WithDayGrain_ReturnsTimeEqualsToLocalTimeMin() {
         val now = ZonedDateTime.now()
-        val end = DateEntityGrain.day.calculateEnd(now)
+        val end = DateEntityGrain.day.calculateEnd(now, ZoneId.systemDefault())
         assertEquals(now.plusDays(1).dayOfYear, end.dayOfYear)
         assertEquals(LocalTime.MIN, end.toLocalTime())
     }
