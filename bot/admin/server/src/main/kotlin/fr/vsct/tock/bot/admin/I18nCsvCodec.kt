@@ -38,8 +38,8 @@ object I18nCsvCodec {
 
     private val logger = KotlinLogging.logger {}
 
-    val s = property("tock_csv_delimiter", ";")
-    val i18n: I18nDAO  by injector.instance()
+    private val s = property("tock_csv_delimiter", ";")
+    private val i18nDAO: I18nDAO  by injector.instance()
 
     private fun csvFormat(): CSVFormat = CSVFormat.DEFAULT.withDelimiter(s[0]).withTrim(true)
 
@@ -47,7 +47,7 @@ object I18nCsvCodec {
         val sb = StringBuilder()
         val printer = CSVPrinter(sb, csvFormat())
         printer.printRecord("Label", "Category", "Language", "Interface", "Id", "Validated", "Alternatives")
-        i18n.getLabels()
+        i18nDAO.getLabels()
                 .filter { it.namespace == namespace }
                 .sortedWith(compareBy({ it.category }, { it.findLabel(defaultLocale)?.label ?: "" }))
                 .forEach { l ->
@@ -86,10 +86,26 @@ object I18nCsvCodec {
                     }
                     .filter { it.i18n.first().validated }
                     .groupBy { it._id }
-                    .map { it.value.first().copy(i18n = it.value.flatMap { it.i18n }) }
+                    .map { (key, value) ->
+                        value
+                                .first()
+                                .run {
+                                    val localized = value.flatMap { it.i18n }
+                                    copy(i18n = localized +
+                                            (i18nDAO.getLabelById(key)
+                                                    ?.i18n
+                                                    ?.filter { old ->
+                                                        localized.none {
+                                                            old.locale == it.locale && old.interfaceType == it.interfaceType
+                                                        }
+                                                    }
+                                                    ?: emptyList())
+                                    )
+                                }
+                    }
                     .forEach {
                         logger.info { "Save $it" }
-                        i18n.save(it)
+                        i18nDAO.save(it)
                     }
             true
         } catch (t: Throwable) {

@@ -16,8 +16,6 @@
 
 package fr.vsct.tock.translator
 
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.eq
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.shared.defaultLocale
@@ -54,9 +52,10 @@ class TranslatorTest : AbstractTest() {
         val category = "category"
         val toTranslate = "aaa"
         val target = "bbb"
-        whenever(i18nDAO.getLabelById(any())).thenReturn(
+        val id = "a"
+        whenever(i18nDAO.getLabelById(id)).thenReturn(
                 I18nLabel(
-                        "a",
+                        id,
                         defaultNamespace,
                         category,
                         listOf(I18nLocalizedLabel(
@@ -66,7 +65,7 @@ class TranslatorTest : AbstractTest() {
                         ))))
 
         val key = I18nLabelKey(
-                Translator.getKeyFromDefaultLabel(toTranslate),
+                id,
                 defaultNamespace,
                 category,
                 toTranslate)
@@ -113,6 +112,24 @@ class TranslatorTest : AbstractTest() {
         assertEquals(target, Translator.translate(key, defaultLocale, textChat).toString())
 
         assertEquals(target, Translator.translate(key, defaultLocale, textChat).toString())
+
+        verify(i18nDAO).getLabelById(id)
+    }
+
+    @Test
+    fun translate_shouldGenerateDefault_whenNotExistingIdIsPassed() {
+        val category = "category"
+        val toTranslate = "aaa"
+        val id = "not_existing_id"
+
+        val key = I18nLabelKey(
+                id,
+                defaultNamespace,
+                category,
+                toTranslate)
+
+
+        assertEquals(toTranslate, Translator.translate(key, defaultLocale, textChat).toString())
 
         verify(i18nDAO).getLabelById(id)
     }

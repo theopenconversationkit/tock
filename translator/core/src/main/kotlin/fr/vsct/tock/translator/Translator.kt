@@ -19,6 +19,7 @@ package fr.vsct.tock.translator
 import com.github.salomonbrys.kodein.instance
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import com.google.common.util.concurrent.UncheckedExecutionException
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
@@ -31,7 +32,6 @@ import java.text.ChoiceFormat
 import java.text.MessageFormat
 import java.util.Formatter
 import java.util.Locale
-import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 
 /**
@@ -61,7 +61,7 @@ object Translator {
     private fun loadLabel(id: String): I18nLabel? {
         return try {
             cache.get(id, { requireNotNull(i18nDAO.getLabelById(id)) })
-        } catch (e: ExecutionException) {
+        } catch (e: UncheckedExecutionException) {
             null
         }
     }
