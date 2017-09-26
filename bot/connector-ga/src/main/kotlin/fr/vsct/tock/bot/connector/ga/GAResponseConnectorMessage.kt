@@ -32,4 +32,22 @@ class GAResponseConnectorMessage(val expectedInput: GAExpectedInput) : Connector
     override fun toSentenceElement(): SentenceElement? {
         return null
     }
+
+    override fun hashCode(): Int {
+        return expectedInput.hashCode()
+    }
+
+    override fun toString(): String {
+        return "GAResponseConnectorMessage($expectedInput)"
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (other?.javaClass != javaClass) return false
+
+        other as GAResponseConnectorMessage
+
+        if (expectedInput != other.expectedInput) return false
+        return true
+    }
 }
