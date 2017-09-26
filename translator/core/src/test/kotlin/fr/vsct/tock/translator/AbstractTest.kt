@@ -21,7 +21,6 @@ import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.nhaarman.mockito_kotlin.mock
-import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.tockInternalInjector
 import org.junit.After
 import org.junit.Before
@@ -31,8 +30,10 @@ import org.junit.Before
  */
 abstract class AbstractTest {
 
-    val i18nDAO: I18nDAO = mock()
-    val translatorEngine: TranslatorEngine = mock()
+    companion object {
+        val i18nDAO: I18nDAO = mock()
+        val translatorEngine: TranslatorEngine = mock()
+    }
 
     open fun baseModule(): Kodein.Module {
         return Kodein.Module {
@@ -44,7 +45,7 @@ abstract class AbstractTest {
     @Before
     fun initContext() {
         tockInternalInjector = KodeinInjector()
-        injector.inject(Kodein {
+        tockInternalInjector.inject(Kodein {
             import(baseModule())
         })
     }

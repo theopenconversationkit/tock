@@ -17,9 +17,12 @@
 package fr.vsct.tock.translator
 
 import com.github.salomonbrys.kodein.instance
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.translator.UserInterfaceType.textAndVoiceAssistant
 import fr.vsct.tock.translator.UserInterfaceType.textChat
 import fr.vsct.tock.translator.UserInterfaceType.voiceAssistant
@@ -28,6 +31,8 @@ import java.text.ChoiceFormat
 import java.text.MessageFormat
 import java.util.Formatter
 import java.util.Locale
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.TimeUnit
 
 /**
  * The main entry class of translator module.
@@ -49,6 +54,18 @@ object Translator {
     private val i18nDAO: I18nDAO by injector.instance()
     private val translator: TranslatorEngine by injector.instance()
 
+    private val cache: Cache<String, I18nLabel> = CacheBuilder.newBuilder()
+            .expireAfterWrite(longProperty("tock_i18n_cache_write_timeout_in_seconds", 10), TimeUnit.SECONDS)
+            .build()
+
+    private fun loadLabel(id: String): I18nLabel? {
+        return try {
+            cache.get(id, { requireNotNull(i18nDAO.getLabelById(id)) })
+        } catch (e: ExecutionException) {
+            null
+        }
+    }
+
     fun translate(key: I18nLabelKey, locale: Locale, userInterfaceType: UserInterfaceType): TranslatedString {
         if (!enabled) {
             return TranslatedString(formatMessage(key.defaultLabel.toString(), locale, userInterfaceType, key.args))
@@ -62,7 +79,7 @@ object Translator {
             return TranslatedString(key.defaultLabel)
         }
 
-        val storedLabel = i18nDAO.getLabelById(key.key)
+        val storedLabel = loadLabel(key.key)
 
         val targetDefaultUserInterface = if (userInterfaceType == textAndVoiceAssistant) textChat else userInterfaceType
 

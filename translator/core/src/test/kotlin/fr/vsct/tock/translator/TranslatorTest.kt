@@ -17,6 +17,8 @@
 package fr.vsct.tock.translator
 
 import com.nhaarman.mockito_kotlin.any
+import com.nhaarman.mockito_kotlin.eq
+import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.defaultNamespace
@@ -81,5 +83,37 @@ class TranslatorTest : AbstractTest() {
         val translated2 = Translator.translate(key2, defaultLocale, textChat)
 
         assertEquals(translated, translated2)
+    }
+
+    @Test
+    fun translate_shouldUseCacheAndLoadLabelOnlyOneTime_whenTheSameKeyIsAskedTwiceSequentially() {
+        val category = "category"
+        val toTranslate = "aaa"
+        val target = "bbb"
+        val id = "not_yet_cached_id"
+        whenever(i18nDAO.getLabelById(id)).thenReturn(
+                I18nLabel(
+                        id,
+                        defaultNamespace,
+                        category,
+                        listOf(I18nLocalizedLabel(
+                                defaultLocale,
+                                textChat,
+                                target
+                        ))))
+
+
+        val key = I18nLabelKey(
+                id,
+                defaultNamespace,
+                category,
+                toTranslate)
+
+
+        assertEquals(target, Translator.translate(key, defaultLocale, textChat).toString())
+
+        assertEquals(target, Translator.translate(key, defaultLocale, textChat).toString())
+
+        verify(i18nDAO).getLabelById(id)
     }
 }
