@@ -16,10 +16,15 @@
 
 package fr.vsct.tock.bot.connector.ga.model.response
 
-data class GAStatus(
-        val code: GAStatusCode = GAStatusCode.INTERNAL,
-        val message: String,
-        val details: List<GAStatusDetail>
-) {
+import com.fasterxml.jackson.annotation.JsonProperty
+import fr.vsct.tock.bot.connector.ga.model.request.GARequest
 
-}
+/**
+ * Standard GA connector error.
+ */
+data class GAStatusDetail(
+        val stackTrace: String,
+        val requestBody: String? = null,
+        val requestParsed: GARequest? = null,
+        @get:JsonProperty("@type") val type: String = "voyages-sncf-technologies.github.io/tock/error"
+)

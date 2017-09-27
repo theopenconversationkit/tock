@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.connector.ga
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.google.common.base.Throwables
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.cache.RemovalNotification
@@ -27,8 +28,12 @@ import fr.vsct.tock.bot.connector.ga.model.response.GAExpectedInput
 import fr.vsct.tock.bot.connector.ga.model.response.GAInputPrompt
 import fr.vsct.tock.bot.connector.ga.model.response.GAItem
 import fr.vsct.tock.bot.connector.ga.model.response.GAResponse
+import fr.vsct.tock.bot.connector.ga.model.response.GAResponseMetadata
 import fr.vsct.tock.bot.connector.ga.model.response.GARichResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GASimpleResponse
+import fr.vsct.tock.bot.connector.ga.model.response.GAStatus
+import fr.vsct.tock.bot.connector.ga.model.response.GAStatusCode.INTERNAL
+import fr.vsct.tock.bot.connector.ga.model.response.GAStatusDetail
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -78,50 +83,91 @@ class GAConnector internal constructor(
 
             router.post(path).blockingHandler({ context ->
                 try {
-                    val body = context.bodyAsString
-                    handleRequest(controller, context, body)
-
+                    handleRequest(controller, context, context.bodyAsString)
                 } catch (e: Throwable) {
-                    logger.error(e)
+                    context.sendTechnicalError(e)
                 }
             }, false)
         })
+    }
+
+    private fun RoutingContext.sendTechnicalError(
+            throwable: Throwable,
+            requestBody: String? = null,
+            request: GARequest? = null
+    ) {
+        try {
+            logger.error(throwable)
+            response().end(
+                    mapper.writeValueAsString(
+                            GAResponse(
+                                    request?.conversation?.conversationToken ?: "",
+                                    false,
+                                    emptyList(),
+                                    null,
+                                    null,
+                                    GAResponseMetadata(
+                                            GAStatus(
+                                                    INTERNAL,
+                                                    throwable.message ?: "error",
+                                                    listOf(
+                                                            GAStatusDetail(
+                                                                    Throwables.getStackTraceAsString(throwable),
+                                                                    requestBody,
+                                                                    request
+                                                            )
+                                                    )
+                                            )
+                                    ),
+                                    false
+                            )
+                    )
+            )
+        } catch (t: Throwable) {
+            logger.error(t)
+        }
     }
 
     //internal for tests
     internal fun handleRequest(controller: ConnectorController,
                                context: RoutingContext,
                                body: String) {
-        logger.debug { "Google Assistant request input : $body" }
-        val request: GARequest = mapper.readValue(body)
-        val event = WebhookActionConverter.toEvent(controller, request, applicationId)
-        val userId = request.user.userId
         try {
-            currentMessages.put(userId, RoutingContextHolder(context, request))
-            controller.handle(event)
-        } catch (t: Throwable) {
+            logger.debug { "Google Assistant request input : $body" }
+            val request: GARequest = mapper.readValue(body)
             try {
-                logger.error(t)
-                send(controller.errorMessage(
-                        PlayerId(userId, PlayerType.user),
-                        applicationId,
-                        PlayerId(applicationId, PlayerType.bot)))
+                val event = WebhookActionConverter.toEvent(controller, request, applicationId)
+                val userId = request.user.userId
+                try {
+                    currentMessages.put(userId, RoutingContextHolder(context, request))
+                    controller.handle(event)
+                } catch (t: Throwable) {
+                    logger.error(t)
+                    send(controller.errorMessage(
+                            PlayerId(userId, PlayerType.user),
+                            applicationId,
+                            PlayerId(applicationId, PlayerType.bot)))
+                } finally {
+                    if (!sendAnswer(userId)) {
+                        context.sendTechnicalError(IllegalStateException("no answer found for user $userId"), body, request)
+                    }
+                }
             } catch (t: Throwable) {
-                logger.error(t)
+                context.sendTechnicalError(t, body, request)
             }
-        } finally {
-            sendAnswer(userId)
+        } catch (t: Throwable) {
+            context.sendTechnicalError(t, body)
         }
     }
 
-    private fun sendAnswer(userId: String) {
-        val response = currentMessages.getIfPresent(userId)
-        if (response == null) {
-            logger.error { "no message registered for $userId" }
-        } else {
-            currentMessages.invalidate(userId)
-            sendResponse(response)
-        }
+    private fun sendAnswer(userId: String): Boolean {
+        return currentMessages.getIfPresent(userId)
+                ?.let {
+                    currentMessages.invalidate(userId)
+                    sendResponse(it)
+                    true
+                }
+                ?: false
     }
 
     override fun send(event: Event, delayInMs: Long) {
@@ -138,117 +184,113 @@ class GAConnector internal constructor(
     }
 
     private fun sendResponse(routingContext: RoutingContextHolder) {
-        try {
-            with(routingContext) {
+        with(routingContext) {
 
-                val text =
-                        actions
-                                .filter { it.action is SendSentence && it.action.text != null }
-                                .mapIndexed { i, a ->
-                                    val s = a.action as SendSentence
-                                    val text = s.text!!
-                                    if (i == 0) {
-                                        text
+            val text =
+                    actions
+                            .filter { it.action is SendSentence && it.action.text != null }
+                            .mapIndexed { i, a ->
+                                val s = a.action as SendSentence
+                                val text = s.text!!
+                                if (i == 0) {
+                                    text
+                                } else {
+                                    (if (a.delayInMs != 0L) {
+                                        "<break time=\"${a.delayInMs}ms\"/>"
                                     } else {
-                                        (if (a.delayInMs != 0L) {
-                                            "<break time=\"${a.delayInMs}ms\"/>"
-                                        } else {
-                                            ""
-                                        }) + text
-                                    }
+                                        ""
+                                    }) + text
                                 }
-                                .map {
-                                    //special case - if the string is already ssml, remove the <speak> tag
-                                    if (it.isSSML())
-                                        it.replace("<speak>", "", true)
-                                                .replace("</speak>", "", true)
-                                    else it
-                                }
-                                .joinToString("", "<speak>", "</speak>")
-                val simpleResponse = if (text != "<speak></speak>") {
-                    GAItem(
-                            GASimpleResponse(ssml = text)
-                    )
-                } else {
-                    null
-                }
-
-                val message: GAExpectedInput? =
-                        actions.map { it.action }
-                                .filterIsInstance<SendSentence>()
-                                .map {
-                                    (it.message(gaConnectorType) as GAResponseConnectorMessage?)?.expectedInput
-                                }
-                                .filterNotNull()
-                                .run {
-                                    if (isEmpty())
-                                        null
-                                    else reduce { a, b ->
-                                        a.copy(
-                                                inputPrompt = a.inputPrompt.copy(
-                                                        a.inputPrompt.richInitialPrompt.copy(
-                                                                suggestions = a.inputPrompt.richInitialPrompt.suggestions + b.inputPrompt.richInitialPrompt.suggestions,
-                                                                linkOutSuggestion = if (a.inputPrompt.richInitialPrompt.linkOutSuggestion == null) b.inputPrompt.richInitialPrompt.linkOutSuggestion else a.inputPrompt.richInitialPrompt.linkOutSuggestion
-
-                                                        )
-                                                ),
-                                                possibleIntents = a.possibleIntents + b.possibleIntents.filter { ib -> a.possibleIntents.none { ia -> ia.intent == ib.intent } })
-                                    }
-                                }
-
-                val expectedInput = if (message == null) {
-                    if (simpleResponse == null) {
-                        logger.warn { "no simple response for $routingContext" }
-                        null
-                    } else {
-                        GAExpectedInput(
-                                GAInputPrompt(
-                                        GARichResponse(
-                                                listOf(simpleResponse))))
-                    }
-                } else {
-                    if (simpleResponse == null) {
-                        message
-                    } else {
-                        message.copy(
-                                inputPrompt = message.inputPrompt.copy(
-                                        richInitialPrompt = message.inputPrompt.richInitialPrompt.copy(
-                                                items = listOf(simpleResponse) + message.inputPrompt.richInitialPrompt.items,
-                                                suggestions = message.inputPrompt.richInitialPrompt.suggestions,
-                                                linkOutSuggestion = message.inputPrompt.richInitialPrompt.linkOutSuggestion
-                                        )
-                                )
-                        )
-                    }
-                }?.run {
-                    if (possibleIntents.none { it.intent == GAIntent.text }) {
-                        copy(possibleIntents = listOf(expectedTextIntent()) + possibleIntents)
-                    } else {
-                        this
-                    }
-                }
-
-                context.response().putHeader("Google-Actions-API-Version", "2")
-
-                val gaResponse = GAResponse(
-                        request.conversation.conversationToken ?: "",
-                        true,
-                        listOfNotNull(expectedInput),
-                        null,
-                        null,
-                        null, //GAResponseMetadata(GAStatus(0, "OK")),
-                        request.isInSandbox
+                            }
+                            .map {
+                                //special case - if the string is already ssml, remove the <speak> tag
+                                if (it.isSSML())
+                                    it.replace("<speak>", "", true)
+                                            .replace("</speak>", "", true)
+                                else it
+                            }
+                            .joinToString("", "<speak>", "</speak>")
+            val simpleResponse = if (text != "<speak></speak>") {
+                GAItem(
+                        GASimpleResponse(ssml = text)
                 )
-
-                logger.debug { "ga response : $gaResponse" }
-
-                val writeValueAsString = mapper.writeValueAsString(gaResponse)
-
-                logger.debug { "ga json response: $writeValueAsString" }
-                context.response().end(writeValueAsString)
+            } else {
+                null
             }
-        } catch (e: Exception) {
-            logger.error(e)
+
+            val message: GAExpectedInput? =
+                    actions.map { it.action }
+                            .filterIsInstance<SendSentence>()
+                            .map {
+                                (it.message(gaConnectorType) as GAResponseConnectorMessage?)?.expectedInput
+                            }
+                            .filterNotNull()
+                            .run {
+                                if (isEmpty())
+                                    null
+                                else reduce { a, b ->
+                                    a.copy(
+                                            inputPrompt = a.inputPrompt.copy(
+                                                    a.inputPrompt.richInitialPrompt.copy(
+                                                            suggestions = a.inputPrompt.richInitialPrompt.suggestions + b.inputPrompt.richInitialPrompt.suggestions,
+                                                            linkOutSuggestion = if (a.inputPrompt.richInitialPrompt.linkOutSuggestion == null) b.inputPrompt.richInitialPrompt.linkOutSuggestion else a.inputPrompt.richInitialPrompt.linkOutSuggestion
+
+                                                    )
+                                            ),
+                                            possibleIntents = a.possibleIntents + b.possibleIntents.filter { ib -> a.possibleIntents.none { ia -> ia.intent == ib.intent } })
+                                }
+                            }
+
+            val expectedInput = if (message == null) {
+                if (simpleResponse == null) {
+                    logger.warn { "no simple response for $routingContext" }
+                    null
+                } else {
+                    GAExpectedInput(
+                            GAInputPrompt(
+                                    GARichResponse(
+                                            listOf(simpleResponse))))
+                }
+            } else {
+                if (simpleResponse == null) {
+                    message
+                } else {
+                    message.copy(
+                            inputPrompt = message.inputPrompt.copy(
+                                    richInitialPrompt = message.inputPrompt.richInitialPrompt.copy(
+                                            items = listOf(simpleResponse) + message.inputPrompt.richInitialPrompt.items,
+                                            suggestions = message.inputPrompt.richInitialPrompt.suggestions,
+                                            linkOutSuggestion = message.inputPrompt.richInitialPrompt.linkOutSuggestion
+                                    )
+                            )
+                    )
+                }
+            }?.run {
+                if (possibleIntents.none { it.intent == GAIntent.text }) {
+                    copy(possibleIntents = listOf(expectedTextIntent()) + possibleIntents)
+                } else {
+                    this
+                }
+            }
+
+            context.response().putHeader("Google-Actions-API-Version", "2")
+
+            val gaResponse = GAResponse(
+                    request.conversation.conversationToken ?: "",
+                    true,
+                    listOfNotNull(expectedInput),
+                    null,
+                    null,
+                    null, //GAResponseMetadata(GAStatus(0, "OK")),
+                    request.isInSandbox
+            )
+
+            logger.debug { "ga response : $gaResponse" }
+
+            val writeValueAsString = mapper.writeValueAsString(gaResponse)
+
+            logger.debug { "ga json response: $writeValueAsString" }
+            context.response().end(writeValueAsString)
         }
     }
 

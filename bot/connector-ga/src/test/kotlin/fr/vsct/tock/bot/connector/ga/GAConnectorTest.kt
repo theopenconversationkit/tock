@@ -20,12 +20,15 @@ import com.google.common.io.Resources
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doAnswer
 import com.nhaarman.mockito_kotlin.mock
+import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.resource
+import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext
+import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -42,7 +45,12 @@ class GAConnectorTest {
         }
     }
     val context: RoutingContext = mock()
+    val response: HttpServerResponse = mock()
 
+    @Before
+    fun before() {
+       whenever(context.response()).thenReturn(response)
+    }
 
     @Test
     fun handleRequest_shouldHandleWell_NamePermissions() {

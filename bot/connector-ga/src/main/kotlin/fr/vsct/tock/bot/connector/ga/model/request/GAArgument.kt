@@ -34,5 +34,9 @@ data class GAArgument(
             } catch (e: Exception) {
                 null
             }
+
+    @get:JsonIgnore
+    val healthcheck : Boolean = name == "isHealthCheck" && textValue == "1"
+
 }
 
