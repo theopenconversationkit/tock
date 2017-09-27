@@ -311,10 +311,22 @@ interface BotBus {
     fun getBusContextValue(name: String): Any?
 
     /**
+     * Returns the non persistent current context value.
+     * Bus context values are useful to store a temporary (ie request scoped) state.
+     */
+    fun getBusContextValue(key: ParameterKey): Any? = getBusContextValue(key.keyName)
+
+    /**
      * Update the non persistent current context value.
      * Bus context values are useful to store a temporary (ie request scoped) state.
      */
     fun setBusContextValue(key: String, value: Any?)
+
+    /**
+     * Update the non persistent current context value.
+     * Bus context values are useful to store a temporary (ie request scoped) state.
+     */
+    fun setBusContextValue(key: ParameterKey, value: Any?) = setBusContextValue(key.keyName, value)
 
     fun end(delay: Long = 0): BotBus {
         return endRawText(null, delay)
