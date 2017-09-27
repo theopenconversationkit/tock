@@ -46,11 +46,6 @@
 
     <dependencies>
         <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-stdlib</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.github.salomonbrys.kodein</groupId>
             <artifactId>kodein</artifactId>
         </dependency>
