@@ -17,7 +17,6 @@
 package fr.vsct.tock.bot.engine
 
 import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
 import fr.vsct.tock.bot.engine.TestStoryDefinition.test
 import fr.vsct.tock.bot.engine.action.SendChoice
@@ -35,15 +34,6 @@ class BotTest : BotEngineTest() {
         bot.handle(userAction, userTimeline, connectorController)
 
         verify(nlp).parseSentence(any(), any(), any(), any(), any())
-    }
-
-    @Test
-    fun handleSendSentence_whenWaitingRawInput_shouldNotSendNlpQuery() {
-        userTimeline.userState.waitingRawInput = true
-
-        bot.handle(userAction, userTimeline, connectorController)
-
-        verify(nlp, never()).parseSentence(any(), any(), any(), any(), any())
     }
 
     @Test

@@ -31,7 +31,6 @@ data class UserState(
     companion object {
         private const val PROFILE_LOADED_FLAG = "tock_profile_loaded"
         private const val BOT_DISABLED_FLAG = "tock_bot_disabled"
-        private const val WAITING_RAW_INPUT_FLAG = "tock_waiting_raw_input"
     }
 
     var profileLoaded: Boolean
@@ -52,19 +51,6 @@ data class UserState(
                         value.toString()
                 )
             else removeFlag(BOT_DISABLED_FLAG)
-        }
-
-    @Deprecated("Using waitingRawInput is a bad practise (TM), this flag will be removed in the future.")
-    var waitingRawInput: Boolean
-        get() = getFlag(WAITING_RAW_INPUT_FLAG)?.toBoolean() ?: false
-        set(value) {
-            if (value)
-                setFlag(
-                        WAITING_RAW_INPUT_FLAG,
-                        Duration.ofSeconds(longProperty("tock_bot_waiting_raw_input_duration_in_seconds", 60)),
-                        value.toString()
-                )
-            else removeFlag(WAITING_RAW_INPUT_FLAG)
         }
 
     fun getFlag(flag: String): String? {

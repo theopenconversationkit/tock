@@ -129,7 +129,7 @@ class Bot(botDefinitionBase: BotDefinition) {
                     parseAttachment(action, dialog)
                 }
                 is SendSentence -> {
-                    if (!userTimeline.userState.waitingRawInput && !action.text.isNullOrBlank()) {
+                    if (!action.text.isNullOrBlank()) {
                         nlp.parseSentence(action, userTimeline, dialog, connector, botDefinition)
                     }
                 }
