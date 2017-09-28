@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.definition
 
+import fr.vsct.tock.translator.UserInterfaceType
+
 /**
  * Base implementation of [StoryDefinition].
  */
@@ -26,14 +28,17 @@ open class StoryDefinitionBase(override val id: String,
                                 * starter intents + other intents supported by the story.
                                 */
                                override val intents: Set<Intent> = starterIntents,
-                               override val steps: Set<StoryStep> = emptySet()) : StoryDefinition {
+                               override val steps: Set<StoryStep> = emptySet(),
+                               override val unsupportedUserInterfaces: Set<UserInterfaceType> = emptySet())
+    : StoryDefinition {
 
     constructor(id: String,
                 storyHandler: StoryHandler,
                 steps: Array<out StoryStep> = emptyArray(),
                 starterIntents: Set<Intent>,
-                intents: Set<Intent> = starterIntents
+                intents: Set<Intent> = starterIntents,
+                unsupportedUserInterfaces: Set<UserInterfaceType> = emptySet()
     )
-            : this(id, storyHandler, starterIntents, intents, steps.toSet())
+            : this(id, storyHandler, starterIntents, intents, steps.toSet(), unsupportedUserInterfaces)
 
 }

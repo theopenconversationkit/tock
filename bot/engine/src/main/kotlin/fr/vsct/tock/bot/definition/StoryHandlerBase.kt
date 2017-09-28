@@ -37,11 +37,22 @@ abstract class StoryHandlerBase : StoryHandler, I18nKeyProvider {
      */
     open val breath = 1000L
 
+    open fun findStoryDefinition(bus: BotBus): StoryDefinition?
+            = bus
+            .botDefinition
+            .stories
+            .find { it.storyHandler == this }
+
     final override fun handle(bus: BotBus) {
-        bus.i18nProvider = this
-        action(bus)
-        if (!(bus.story.lastAction?.metadata?.lastAnswer ?: false)) {
-            logger.warn { "No action sent or Bus.end not called" }
+        //if not supported user interface, use unknown
+        if (findStoryDefinition(bus)?.unsupportedUserInterfaces?.contains(bus.userInterfaceType) == true) {
+            bus.botDefinition.unknownStory.storyHandler.handle(bus)
+        } else {
+            bus.i18nProvider = this
+            action(bus)
+            if (bus.story.lastAction?.metadata?.lastAnswer != true) {
+                logger.warn { "No action sent or Bus.end not called" }
+            }
         }
     }
 
@@ -49,15 +60,12 @@ abstract class StoryHandlerBase : StoryHandler, I18nKeyProvider {
      * Handle the action and switch the context to the underlying story definition.
      */
     fun handleAndSwitchStory(bus: BotBus) {
-        val newStory = bus
-                .botDefinition
-                .stories
-                .find { it.storyHandler == this }
+        findStoryDefinition(bus)
+                ?.apply {
+                    bus.story = Story(this, mainIntent())
+                    bus.dialog.state.currentIntent = mainIntent()
+                }
 
-        if (newStory != null) {
-            bus.story = Story(newStory, newStory.mainIntent())
-            bus.dialog.state.currentIntent = newStory.mainIntent()
-        }
         handle(bus)
     }
 

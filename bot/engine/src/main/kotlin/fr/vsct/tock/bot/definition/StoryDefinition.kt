@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.definition
 
+import fr.vsct.tock.translator.UserInterfaceType
+
 /**
  * The definition of a "Story".
  * A story holds a list of actions of the same domain.
@@ -51,6 +53,11 @@ interface StoryDefinition : IntentAware {
      * The steps of the story.
      */
     val steps: Set<StoryStep>
+
+    /**
+     * When this story does not support all [UserInterfaceType]s.
+     */
+    val unsupportedUserInterfaces: Set<UserInterfaceType>
 
     fun isStarterIntent(intent: Intent) = starterIntents.contains(intent)
 

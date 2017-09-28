@@ -22,9 +22,13 @@ import fr.vsct.tock.bot.engine.BotEngineTest
 import fr.vsct.tock.bot.engine.StoryDefinition2Test
 import fr.vsct.tock.bot.engine.StoryDefinitionTest
 import fr.vsct.tock.bot.engine.StoryHandler2Test
+import fr.vsct.tock.bot.engine.StoryHandlerVoiceNotSupported
+import fr.vsct.tock.bot.engine.StoryHandlerVoiceUnknown
 import fr.vsct.tock.bot.engine.TockBotBus
+import fr.vsct.tock.translator.UserInterfaceType
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNotEquals
 
 /**
  *
@@ -41,6 +45,20 @@ class StoryHandlerBaseTest : BotEngineTest() {
         assertEquals(StoryDefinitionTest, bus.story.definition)
         StoryHandler2Test.handleAndSwitchStory(bus)
         assertEquals(StoryDefinition2Test, bus.story.definition)
+    }
+
+    @Test
+    fun handle_shouldUseUnknownStoryHandler_IfNotSupportedInterface() {
+        userAction.state.userInterface = UserInterfaceType.voiceAssistant
+        StoryHandlerVoiceNotSupported.handle(bus)
+        assertEquals(bus, StoryHandlerVoiceUnknown.registeredBus)
+    }
+
+    @Test
+    fun handle_shouldUseNotUnknownStoryHandler_IfSupportedInterface() {
+        userAction.state.userInterface = UserInterfaceType.textChat
+        StoryHandlerVoiceNotSupported.handle(bus)
+        assertNotEquals(bus, StoryHandlerVoiceUnknown.registeredBus)
     }
 
 

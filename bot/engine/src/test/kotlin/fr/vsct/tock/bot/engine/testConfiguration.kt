@@ -21,9 +21,12 @@ import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinitionBase
 import fr.vsct.tock.bot.definition.StoryHandlerBase
 import fr.vsct.tock.bot.definition.StoryStep
+import fr.vsct.tock.translator.UserInterfaceType
 
 val testIntent = Intent("test")
 val test2Intent = Intent("test2")
+val voiceNotSupportedIntent = Intent("voiceNotSupported")
+val unknownIntent = Intent("unknown")
 val secondaryIntent = Intent("secondary")
 val notInStoryIntent = Intent("not_in_story")
 
@@ -31,10 +34,20 @@ class BotDefinitionTest
     : BotDefinitionBase(
         "test",
         "namespace",
-        stories = listOf(StoryDefinitionTest, StoryDefinition2Test)
+        stories = listOf(StoryDefinitionTest, StoryDefinition2Test, StoryDefinitionVoiceNotSupported, StoryDefinitionUnknown),
+        unknownStory = StoryDefinitionUnknown
 )
 
 enum class StepTest : StoryStep { s1, s2, s3 }
+
+abstract class AbstractStoryHandler : StoryHandlerBase() {
+    var registeredBus: BotBus? = null
+
+    override fun action(bus: BotBus) {
+        registeredBus = bus
+    }
+}
+
 
 object StoryDefinitionTest : StoryDefinitionBase(
         "storyDef1",
@@ -45,31 +58,36 @@ object StoryDefinitionTest : StoryDefinitionBase(
     val registeredBus: BotBus? get() = (storyHandler as StoryHandlerTest).registeredBus
 }
 
+object StoryHandlerTest : AbstractStoryHandler()
+
 object StoryDefinition2Test : StoryDefinitionBase(
         "storyDef2",
         StoryHandler2Test,
         StepTest.values(),
         setOf(test2Intent),
         setOf(test2Intent)) {
-    val registeredBus: BotBus? get() = (storyHandler as StoryHandlerTest).registeredBus
 }
 
+object StoryHandler2Test : AbstractStoryHandler()
 
-object StoryHandlerTest : StoryHandlerBase() {
-
-    var registeredBus: BotBus? = null
-
-    override fun action(bus: BotBus) {
-        registeredBus = bus
-    }
+object StoryDefinitionVoiceNotSupported : StoryDefinitionBase(
+        "storyVoiceNotSupported",
+        StoryHandlerVoiceNotSupported,
+        StepTest.values(),
+        setOf(voiceNotSupportedIntent),
+        setOf(voiceNotSupportedIntent),
+        setOf(UserInterfaceType.voiceAssistant)) {
 }
 
-object StoryHandler2Test : StoryHandlerBase() {
+object StoryHandlerVoiceNotSupported : AbstractStoryHandler()
 
-    var registeredBus: BotBus? = null
-
-    override fun action(bus: BotBus) {
-        registeredBus = bus
-    }
+object StoryDefinitionUnknown : StoryDefinitionBase(
+        "storyVoiceUnknown",
+        StoryHandlerVoiceUnknown,
+        StepTest.values(),
+        setOf(unknownIntent),
+        setOf(unknownIntent)) {
 }
+
+object StoryHandlerVoiceUnknown : AbstractStoryHandler()
 
