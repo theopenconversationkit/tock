@@ -35,7 +35,7 @@ open class BotDefinitionBase(override val botId: String,
 
     companion object {
         private val defaultUnknownStory =
-                StoryDefinitionBase(
+                SimpleStoryDefinition(
                         "tock_unknown_story",
                         object : StoryHandlerBase() {
                             override fun action(bus: BotBus) {

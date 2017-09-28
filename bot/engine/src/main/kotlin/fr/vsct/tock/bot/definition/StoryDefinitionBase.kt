@@ -19,26 +19,26 @@ package fr.vsct.tock.bot.definition
 import fr.vsct.tock.translator.UserInterfaceType
 
 /**
- * Base implementation of [StoryDefinition].
+ * Helper class for StoryDefinition implementation. Usually the implementation is an enum.
+ * This interface add a starter (and main) intent with intent name equals to the property of value [name]
+ * to the [StoryDefinition].
  */
-open class StoryDefinitionBase(override val id: String,
-                               override val storyHandler: StoryHandler,
-                               override val starterIntents: Set<Intent>,
-                               /**
-                                * starter intents + other intents supported by the story.
-                                */
-                               override val intents: Set<Intent> = starterIntents,
-                               override val steps: Set<StoryStep> = emptySet(),
-                               override val unsupportedUserInterfaces: Set<UserInterfaceType> = emptySet())
-    : StoryDefinition {
+interface StoryDefinitionBase : StoryDefinition {
 
-    constructor(id: String,
-                storyHandler: StoryHandler,
-                steps: Array<out StoryStep> = emptyArray(),
-                starterIntents: Set<Intent>,
-                intents: Set<Intent> = starterIntents,
-                unsupportedUserInterfaces: Set<UserInterfaceType> = emptySet()
-    )
-            : this(id, storyHandler, starterIntents, intents, steps.toSet(), unsupportedUserInterfaces)
+    val otherStarterIntents: Set<IntentAware> get() = emptySet()
+    val otherIntents: Set<IntentAware> get() = emptySet()
 
+    /**
+     * Usually StoryStep implementation is also an enum
+     */
+    val stepsArray: Array<out StoryStep> get() = emptyArray()
+    override val steps: Set<StoryStep> get() = stepsArray.toSet()
+
+    val unsupportedUserInterface: UserInterfaceType? get() = null
+    override val unsupportedUserInterfaces: Set<UserInterfaceType> get() = listOfNotNull(unsupportedUserInterface).toSet()
+
+    val name: String
+    override val id: String get() = name
+    override val starterIntents: Set<Intent> get() = setOf(Intent(name)) + otherStarterIntents.map { it.wrappedIntent() }.toSet()
+    override val intents: Set<Intent> get() = setOf(Intent(name)) + (otherStarterIntents + otherIntents).map { it.wrappedIntent() }.toSet()
 }

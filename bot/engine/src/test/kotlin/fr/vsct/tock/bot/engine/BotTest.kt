@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.engine
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
+import fr.vsct.tock.bot.engine.TestStoryDefinition.test
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.message.Choice
 import org.junit.Test
@@ -51,7 +52,7 @@ class BotTest : BotEngineTest() {
                 Choice(
                         secondaryIntent.name,
                         mapOf(
-                                SendChoice.PREVIOUS_INTENT_PARAMETER to testIntent.name
+                                SendChoice.PREVIOUS_INTENT_PARAMETER to test.name
                         )
                 )
         )
@@ -59,7 +60,7 @@ class BotTest : BotEngineTest() {
         bot.handle(choice, userTimeline, connectorController)
 
         assertEquals(story.definition.id, dialog.currentStory()!!.definition.id)
-        assertEquals(testIntent, dialog.currentStory()!!.starterIntent)
+        assertEquals(test.mainIntent(), dialog.currentStory()!!.starterIntent)
         assertEquals(secondaryIntent, dialog.state.currentIntent)
     }
 }

@@ -19,11 +19,11 @@ package fr.vsct.tock.bot.definition
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.BotDefinitionTest
 import fr.vsct.tock.bot.engine.BotEngineTest
-import fr.vsct.tock.bot.engine.StoryDefinition2Test
-import fr.vsct.tock.bot.engine.StoryDefinitionTest
 import fr.vsct.tock.bot.engine.StoryHandler2Test
+import fr.vsct.tock.bot.engine.StoryHandlerUnknown
 import fr.vsct.tock.bot.engine.StoryHandlerVoiceNotSupported
-import fr.vsct.tock.bot.engine.StoryHandlerVoiceUnknown
+import fr.vsct.tock.bot.engine.TestStoryDefinition.test
+import fr.vsct.tock.bot.engine.TestStoryDefinition.test2
 import fr.vsct.tock.bot.engine.TockBotBus
 import fr.vsct.tock.translator.UserInterfaceType
 import org.junit.Test
@@ -42,23 +42,23 @@ class StoryHandlerBaseTest : BotEngineTest() {
 
     @Test
     fun handleAndSwitchStory_shouldCreateANewStory_IfStoryHandlerFound() {
-        assertEquals(StoryDefinitionTest, bus.story.definition)
+        assertEquals(test, bus.story.definition)
         StoryHandler2Test.handleAndSwitchStory(bus)
-        assertEquals(StoryDefinition2Test, bus.story.definition)
+        assertEquals(test2, bus.story.definition)
     }
 
     @Test
     fun handle_shouldUseUnknownStoryHandler_IfNotSupportedInterface() {
         userAction.state.userInterface = UserInterfaceType.voiceAssistant
         StoryHandlerVoiceNotSupported.handle(bus)
-        assertEquals(bus, StoryHandlerVoiceUnknown.registeredBus)
+        assertEquals(bus, StoryHandlerUnknown.registeredBus)
     }
 
     @Test
     fun handle_shouldUseNotUnknownStoryHandler_IfSupportedInterface() {
         userAction.state.userInterface = UserInterfaceType.textChat
         StoryHandlerVoiceNotSupported.handle(bus)
-        assertNotEquals(bus, StoryHandlerVoiceUnknown.registeredBus)
+        assertNotEquals(bus, StoryHandlerUnknown.registeredBus)
     }
 
 

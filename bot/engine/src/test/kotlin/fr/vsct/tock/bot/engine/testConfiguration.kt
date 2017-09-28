@@ -18,24 +18,21 @@ package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.definition.BotDefinitionBase
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryDefinitionBase
 import fr.vsct.tock.bot.definition.StoryHandlerBase
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.translator.UserInterfaceType
+import fr.vsct.tock.translator.UserInterfaceType.voiceAssistant
 
-val testIntent = Intent("test")
-val test2Intent = Intent("test2")
-val voiceNotSupportedIntent = Intent("voiceNotSupported")
-val unknownIntent = Intent("unknown")
 val secondaryIntent = Intent("secondary")
-val notInStoryIntent = Intent("not_in_story")
 
 class BotDefinitionTest
     : BotDefinitionBase(
         "test",
         "namespace",
-        stories = listOf(StoryDefinitionTest, StoryDefinition2Test, StoryDefinitionVoiceNotSupported, StoryDefinitionUnknown),
-        unknownStory = StoryDefinitionUnknown
+        stories = enumValues<TestStoryDefinition>().toList(),
+        unknownStory = TestStoryDefinition.unknown
 )
 
 enum class StepTest : StoryStep { s1, s2, s3 }
@@ -48,46 +45,27 @@ abstract class AbstractStoryHandler : StoryHandlerBase() {
     }
 }
 
+enum class TestStoryDefinition(
+        override val storyHandler: AbstractStoryHandler,
+        override val otherStarterIntents: Set<IntentAware> = emptySet(),
+        override val otherIntents: Set<IntentAware> = emptySet(),
+        override val stepsArray: Array<out StoryStep> = enumValues<StepTest>(),
+        override val unsupportedUserInterface: UserInterfaceType? = null
+) : StoryDefinitionBase {
 
-object StoryDefinitionTest : StoryDefinitionBase(
-        "storyDef1",
-        StoryHandlerTest,
-        StepTest.values(),
-        setOf(testIntent),
-        setOf(testIntent, secondaryIntent)) {
-    val registeredBus: BotBus? get() = (storyHandler as StoryHandlerTest).registeredBus
+    test(StoryHandlerTest, otherIntents = setOf(secondaryIntent)),
+    test2(StoryHandler2Test),
+    voice_not_supported(StoryHandlerVoiceNotSupported, unsupportedUserInterface = voiceAssistant),
+    unknown(StoryHandlerUnknown);
+
+    val registeredBus: BotBus? get() = storyHandler.registeredBus
 }
 
 object StoryHandlerTest : AbstractStoryHandler()
 
-object StoryDefinition2Test : StoryDefinitionBase(
-        "storyDef2",
-        StoryHandler2Test,
-        StepTest.values(),
-        setOf(test2Intent),
-        setOf(test2Intent)) {
-}
-
 object StoryHandler2Test : AbstractStoryHandler()
-
-object StoryDefinitionVoiceNotSupported : StoryDefinitionBase(
-        "storyVoiceNotSupported",
-        StoryHandlerVoiceNotSupported,
-        StepTest.values(),
-        setOf(voiceNotSupportedIntent),
-        setOf(voiceNotSupportedIntent),
-        setOf(UserInterfaceType.voiceAssistant)) {
-}
 
 object StoryHandlerVoiceNotSupported : AbstractStoryHandler()
 
-object StoryDefinitionUnknown : StoryDefinitionBase(
-        "storyVoiceUnknown",
-        StoryHandlerVoiceUnknown,
-        StepTest.values(),
-        setOf(unknownIntent),
-        setOf(unknownIntent)) {
-}
-
-object StoryHandlerVoiceUnknown : AbstractStoryHandler()
+object StoryHandlerUnknown : AbstractStoryHandler()
 

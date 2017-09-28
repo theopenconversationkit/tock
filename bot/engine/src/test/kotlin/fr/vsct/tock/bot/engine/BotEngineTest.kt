@@ -26,6 +26,7 @@ import com.nhaarman.mockito_kotlin.mock
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.engine.TestStoryDefinition.test
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.Story
@@ -60,7 +61,7 @@ abstract class BotEngineTest {
     val botId = PlayerId("bot", PlayerType.bot)
     val botDefinition = BotDefinitionTest()
     val dialog = Dialog(setOf(userId, botId))
-    val story = Story(botDefinition.stories.first(), testIntent)
+    val story = Story(botDefinition.stories.first(), test.mainIntent())
 
     val botConfDAO: BotApplicationConfigurationDAO = mock()
     val i18nDAO: I18nDAO = mock()
@@ -71,7 +72,7 @@ abstract class BotEngineTest {
     val nlpClient: NlpClient = mock() {
         on { parse(any()) } doReturn (
                 Response.success(
-                        NlpResult(testIntent.name,
+                        NlpResult(test.name,
                                 "test",
                                 emptyList(),
                                 1.0,
@@ -80,7 +81,7 @@ abstract class BotEngineTest {
                                 emptyMap())))
         on { parseIntentEntities(any()) } doReturn (
                 Response.success(
-                        NlpResult(testIntent.name,
+                        NlpResult(test.name,
                                 "test",
                                 emptyList(),
                                 1.0,
@@ -127,7 +128,7 @@ abstract class BotEngineTest {
 
     fun action(message: Message): Action = message.toAction(userId, "applicationId", botId)
 
-    val registeredBus: BotBus? get() = (story.definition as StoryDefinitionTest).registeredBus
+    val registeredBus: BotBus? get() = (story.definition as TestStoryDefinition).registeredBus
 
     val bot: Bot by lazy {
         fillTimeline()
