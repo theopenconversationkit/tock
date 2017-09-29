@@ -28,7 +28,15 @@ import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 class TextMessage(val text: String, quickReplies: List<QuickReply>? = null) : Message(quickReplies?.run { if (isEmpty()) null else this }) {
 
     override fun toSentenceElement(): SentenceElement? {
-        return null
+        val texts = mapOf("title" to text)
+        return if (quickReplies?.isNotEmpty() == true) {
+            SentenceElement(
+                    texts = texts,
+                    choices = quickReplies.mapNotNull { it.toChoice() },
+                    locations = quickReplies.mapNotNull { it.toLocation() })
+        } else {
+            SentenceElement(texts = texts)
+        }
     }
 
     override fun equals(other: Any?): Boolean {

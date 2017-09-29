@@ -19,6 +19,8 @@ package fr.vsct.tock.bot.connector.messenger.model.send
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
+import fr.vsct.tock.bot.engine.message.Choice
+import fr.vsct.tock.bot.engine.message.Location
 
 @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
@@ -30,4 +32,9 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
         JsonSubTypes.Type(value = LocationQuickReply::class, name = "location")
 )
 abstract class QuickReply(
-        @get:JsonProperty ("content_type") val contentType: QuickReplyContentType) : UserAction
+        @get:JsonProperty("content_type") val contentType: QuickReplyContentType) : UserAction {
+
+    open fun toChoice(): Choice? = null
+
+    open fun toLocation(): Location? = null
+}

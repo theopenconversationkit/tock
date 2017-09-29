@@ -17,10 +17,26 @@
 package fr.vsct.tock.bot.connector.messenger.model.send
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.message.Choice
+import fr.vsct.tock.shared.mapNotNullValues
 
 data class TextQuickReply(
-        val title:String,
-        val payload:String,
-        @JsonProperty("image_url") val imageUrl : String? = null
-) : QuickReply(QuickReplyContentType.text){
+        val title: String,
+        val payload: String,
+        @JsonProperty("image_url") val imageUrl: String? = null
+) : QuickReply(QuickReplyContentType.text) {
+
+    override fun toChoice(): Choice? {
+        return SendChoice.decodeChoiceId(payload)
+                .let { (intent, params) ->
+                    Choice(
+                            intent,
+                            params + mapNotNullValues(
+                                    SendChoice.TITLE_PARAMETER to title,
+                                    SendChoice.IMAGE_PARAMETER to imageUrl
+                            )
+                    )
+                }
+    }
 }

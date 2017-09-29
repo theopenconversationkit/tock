@@ -33,7 +33,7 @@ interface ConnectorMessage {
      * Transforms this message into a generic [SentenceElement].
      * @return the generic transformed element, null if unsupported
      */
-    fun toSentenceElement(): SentenceElement?
+    fun toSentenceElement(): SentenceElement? = null
 
     /**
      * Obfuscate the message - by default this method does nothing.

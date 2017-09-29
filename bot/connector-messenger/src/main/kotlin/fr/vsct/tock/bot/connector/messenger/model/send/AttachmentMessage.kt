@@ -41,6 +41,14 @@ class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickRepl
                             ))
             )
             template -> attachment.payload.toSentenceElement()
+        }?.run {
+            if (quickReplies?.isNotEmpty() == true) {
+                copy(
+                        choices = choices + quickReplies.mapNotNull { it.toChoice() },
+                        locations = locations + quickReplies.mapNotNull { it.toLocation() })
+            } else {
+                this
+            }
         }
     }
 

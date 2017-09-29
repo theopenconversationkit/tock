@@ -68,6 +68,7 @@ class SendChoice(playerId: PlayerId,
 
         const val TITLE_PARAMETER = "_title"
         const val URL_PARAMETER = "_url"
+        const val IMAGE_PARAMETER = "_image"
         const val EXIT_INTENT = "_exit"
         const val STEP_PARAMETER = "_step"
         const val PREVIOUS_INTENT_PARAMETER = "_previous_intent"
