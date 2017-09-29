@@ -25,6 +25,7 @@ data class Intent(val name: String) : IntentAware {
 
     companion object {
         val unknown: Intent = Intent("$TOCK_NAMESPACE:unknown")
+        val keyword: Intent = Intent("$TOCK_NAMESPACE:keyword")
     }
 
     override fun wrappedIntent(): Intent = this

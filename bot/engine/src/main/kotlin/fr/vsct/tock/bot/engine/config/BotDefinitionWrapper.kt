@@ -58,6 +58,6 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
 
     override fun findStoryDefinition(intent: String?): StoryDefinition {
         val s = super.findStoryDefinition(intent)
-        return if (s == unknownStory) BotDefinition.findStoryDefinition(stories, intent, unknownStory) else s
+        return if (s == unknownStory) BotDefinition.findStoryDefinition(stories, intent, unknownStory, keywordStory) else s
     }
 }

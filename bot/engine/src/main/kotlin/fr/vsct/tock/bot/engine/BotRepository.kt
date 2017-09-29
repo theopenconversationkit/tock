@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.StoryHandlerListener
 import fr.vsct.tock.bot.engine.config.BotConfigurationSynchronizer
 import fr.vsct.tock.bot.engine.monitoring.RequestTimer
+import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener
 import fr.vsct.tock.bot.engine.nlp.NlpListener
 import fr.vsct.tock.nlp.api.client.NlpClient
 import fr.vsct.tock.shared.Executor
@@ -45,7 +46,7 @@ object BotRepository {
     internal val connectorProviders: MutableSet<ConnectorProvider> = mutableSetOf()
     private val botProviders: MutableSet<BotProvider> = mutableSetOf()
     internal val storyHandlerListeners: MutableList<StoryHandlerListener> = mutableListOf()
-    internal val nlpListeners: MutableList<NlpListener> = mutableListOf()
+    internal val nlpListeners: MutableList<NlpListener> = mutableListOf(BuiltInKeywordListener)
     private val nlpClient: NlpClient by injector.instance()
     private val executor: Executor by injector.instance()
 

@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.definition
 
+import fr.vsct.tock.bot.definition.Intent.Companion.keyword
+import fr.vsct.tock.bot.definition.Intent.Companion.unknown
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -37,15 +39,20 @@ interface BotDefinition : I18nKeyProvider {
     companion object {
 
         fun findIntent(stories: List<StoryDefinition>, intent: String): Intent {
-            return stories.flatMap { it.intents }.find { it.name == intent } ?: Intent.unknown
+            return stories.flatMap { it.intents }.find { it.name == intent }
+                    ?: if (intent == keyword.name) keyword else unknown
         }
 
-        fun findStoryDefinition(stories: List<StoryDefinition>, intent: String?, unknownStory: StoryDefinition): StoryDefinition {
+        fun findStoryDefinition(stories: List<StoryDefinition>,
+                                intent: String?,
+                                unknownStory: StoryDefinition,
+                                keywordStory: StoryDefinition): StoryDefinition {
             return if (intent == null) {
                 unknownStory
             } else {
                 val i = findIntent(stories, intent)
-                stories.find { it.isStarterIntent(i) } ?: unknownStory
+                stories.find { it.isStarterIntent(i) }
+                        ?: if (intent == keyword.name) keywordStory else unknownStory
             }
         }
 
@@ -88,13 +95,18 @@ interface BotDefinition : I18nKeyProvider {
     }
 
     fun findStoryDefinition(intent: String?): StoryDefinition {
-        return findStoryDefinition(stories, intent, unknownStory)
+        return findStoryDefinition(stories, intent, unknownStory, keywordStory)
     }
 
     /**
      * The unknown story. Used where no valid intent is found.
      */
     val unknownStory: StoryDefinition
+
+    /**
+     * To handle keywords - used to bypass nlp.
+     */
+    val keywordStory: StoryDefinition
 
     /**
      * The hello story. Used for first interaction with no other input.

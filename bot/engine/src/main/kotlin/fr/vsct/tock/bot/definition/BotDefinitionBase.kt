@@ -16,7 +16,15 @@
 
 package fr.vsct.tock.bot.definition
 
+import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener
+import fr.vsct.tock.bot.engine.user.UserTimelineDAO
+import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.vertx.vertx
+import mu.KotlinLogging
 
 /**
  * Base implementation of [BaseDefinition].
@@ -31,10 +39,13 @@ open class BotDefinitionBase(override val botId: String,
                              override val botEnabledStory: StoryDefinition? = null,
                              override val userLocationStory: StoryDefinition? = null,
                              override val handleAttachmentStory: StoryDefinition? = null,
-                             override val eventListener: EventListener = EventListenerBase()) : BotDefinition {
+                             override val eventListener: EventListener = EventListenerBase(),
+                             override val keywordStory: StoryDefinition = defaultKeywordStory) : BotDefinition {
 
     companion object {
-        private val defaultUnknownStory =
+        private val logger = KotlinLogging.logger {}
+
+        val defaultUnknownStory =
                 SimpleStoryDefinition(
                         "tock_unknown_story",
                         object : StoryHandlerBase() {
@@ -43,5 +54,48 @@ open class BotDefinitionBase(override val botId: String,
                             }
                         },
                         setOf(Intent.unknown))
+
+        val defaultKeywordStory =
+                SimpleStoryDefinition(
+                        "tock_keyword_story",
+                        object : StoryHandlerBase() {
+                            override fun action(bus: BotBus) {
+                                if (bus.action is SendSentence) {
+                                    val text = (bus.action as SendSentence).text
+                                    when (text) {
+                                        BuiltInKeywordListener.deleteKeyword -> {
+                                            bus.handleDelete()
+                                            bus.end(
+                                                    "user removed - {0} {1}",
+                                                    bus.userTimeline.userPreferences.firstName,
+                                                    bus.userTimeline.userPreferences.lastName)
+                                        }
+                                        BuiltInKeywordListener.testContextKeyword -> bus.end("test context activated")
+                                        else -> bus.end("unknown keyword : $text")
+                                    }
+                                    return
+                                } else {
+                                    error("keyword story only handle text for now")
+                                }
+                            }
+
+                            private fun BotBus.handleDelete() {
+                                val userTimelineDao: UserTimelineDAO by injector.instance()
+                                //run later to avoid the lock effect :)
+                                vertx.setTimer(1000) {
+                                    vertx.executeBlocking<Unit>({
+                                        try {
+                                            userTimelineDao.remove(userId)
+                                        } catch (e: Exception) {
+                                            logger.error(e)
+                                        } finally {
+                                            it.complete()
+                                        }
+                                    }, false, {})
+                                }
+
+                            }
+                        },
+                        setOf(Intent.keyword))
     }
 }
