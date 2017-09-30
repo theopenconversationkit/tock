@@ -21,8 +21,14 @@ package fr.vsct.tock.bot.engine.event
  */
 enum class EventType(val action: Boolean = true) {
 
-    sentence, choice, attachment, location,
+    sentence,
+    choice,
+    attachment,
+    location,
     subscribing(false),
-    typingOn(false), typingOff(false), markSeen(false)
+    typingOn(false),
+    typingOff(false),
+    markSeen(false),
+    startConversation(false)
 
 }

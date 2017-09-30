@@ -136,7 +136,7 @@ class GAConnector internal constructor(
             logger.debug { "Google Assistant request input : $body" }
             val request: GARequest = mapper.readValue(body)
             try {
-                val event = WebhookActionConverter.toEvent(controller, request, applicationId)
+                val event = WebhookActionConverter.toEvent(request, applicationId)
                 val userId = request.user.userId
                 try {
                     currentMessages.put(userId, RoutingContextHolder(context, request))

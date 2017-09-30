@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.connector.ga.model.response
 
+import fr.vsct.tock.shared.mapNotNullValues
+
 /**
  *
  */
@@ -25,4 +27,12 @@ data class GAImage(
         val height: Int? = null,
         val width: Int? = null
 ) {
+
+    fun toMetadata(): Map<String, String>
+            = mapNotNullValues(
+            GAImage::url.name to url,
+            GAImage::accessibilityText.name to accessibilityText,
+            GAImage::height.name to height?.toString(),
+            GAImage::width.name to width?.toString()
+    )
 }

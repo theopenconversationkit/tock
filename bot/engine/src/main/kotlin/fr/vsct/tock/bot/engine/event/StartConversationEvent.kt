@@ -14,18 +14,15 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.ga
+package fr.vsct.tock.bot.engine.event
 
-import com.fasterxml.jackson.annotation.JsonIgnore
-import fr.vsct.tock.bot.connector.ConnectorMessage
-import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.ga.model.request.GARequest
+import fr.vsct.tock.bot.engine.user.PlayerId
 
 /**
  *
  */
-data class GARequestConnectorMessage(val request: GARequest) : ConnectorMessage {
-
-    override val connectorType: ConnectorType @JsonIgnore get() = gaConnectorType
-
+class StartConversationEvent(
+        val userId: PlayerId,
+        val recipientId: PlayerId,
+        applicationId: String) : Event(applicationId) {
 }

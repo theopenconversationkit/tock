@@ -16,8 +16,10 @@
 
 package fr.vsct.tock.bot.connector.ga.model.response
 
+import fr.vsct.tock.bot.engine.message.SentenceElement
+
 data class GAFinalResponse(
         val richResponse: GARichResponse
 ) {
-
+    fun toSentenceElement(): SentenceElement? = richResponse.toSentenceElement()
 }

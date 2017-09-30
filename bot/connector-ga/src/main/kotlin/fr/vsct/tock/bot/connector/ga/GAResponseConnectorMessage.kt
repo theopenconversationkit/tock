@@ -19,35 +19,28 @@ package fr.vsct.tock.bot.connector.ga
 import com.fasterxml.jackson.annotation.JsonIgnore
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.ga.model.response.GACustomPushMessage
 import fr.vsct.tock.bot.connector.ga.model.response.GAExpectedInput
+import fr.vsct.tock.bot.connector.ga.model.response.GAFinalResponse
 import fr.vsct.tock.bot.engine.message.SentenceElement
 
 /**
  *
  */
-class GAResponseConnectorMessage(val expectedInput: GAExpectedInput) : ConnectorMessage {
+data class GAResponseConnectorMessage(
+        val expectUserResponse: Boolean = true,
+        val expectedInputs: List<GAExpectedInput> = emptyList(),
+        val finalResponse: GAFinalResponse? = null,
+        val customPushMessage: GACustomPushMessage? = null) : ConnectorMessage {
+
+    constructor(input: GAExpectedInput) : this(expectedInputs = listOf(input))
+
+    @Transient
+    val expectedInput: GAExpectedInput? = expectedInputs.firstOrNull()
 
     override val connectorType: ConnectorType @JsonIgnore get() = gaConnectorType
 
-    override fun toSentenceElement(): SentenceElement? {
-        return null
-    }
+    override fun toSentenceElement(): SentenceElement?
+            = expectedInput?.toSentenceElement() ?: finalResponse?.toSentenceElement()
 
-    override fun hashCode(): Int {
-        return expectedInput.hashCode()
-    }
-
-    override fun toString(): String {
-        return "GAResponseConnectorMessage($expectedInput)"
-    }
-
-    override fun equals(other: Any?): Boolean {
-        if (this === other) return true
-        if (other?.javaClass != javaClass) return false
-
-        other as GAResponseConnectorMessage
-
-        if (expectedInput != other.expectedInput) return false
-        return true
-    }
 }

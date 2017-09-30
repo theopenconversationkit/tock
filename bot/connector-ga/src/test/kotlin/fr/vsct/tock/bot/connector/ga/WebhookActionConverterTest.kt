@@ -39,13 +39,13 @@ class WebhookActionConverterTest {
 
     @Test
     fun toEvent_shouldReturnsSendChoice_whenOptionArgAndSameInputText() {
-        val e = WebhookActionConverter.toEvent(controller, optionRequest, appId)
+        val e = WebhookActionConverter.toEvent(optionRequest, appId)
         assertTrue(e is SendChoice)
     }
 
     @Test
     fun toEvent_shouldReturnsSendSentence_whenOptionArgAndDifferentInputText() {
-        val e = WebhookActionConverter.toEvent(controller, optionWithRawTextRequest, appId)
+        val e = WebhookActionConverter.toEvent(optionWithRawTextRequest, appId)
         assertTrue(e is SendSentence)
     }
 

@@ -124,7 +124,7 @@ interface BotDefinition : I18nKeyProvider {
     val handleAttachmentStory: StoryDefinition?
 
     /**
-     * To handle custom events. Default implementation does nothing.
+     * To handle custom events.
      */
     val eventListener: EventListener
 

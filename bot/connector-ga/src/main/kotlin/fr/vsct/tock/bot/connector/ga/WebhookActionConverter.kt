@@ -19,11 +19,11 @@ package fr.vsct.tock.bot.connector.ga
 import fr.vsct.tock.bot.connector.ga.model.GAIntent
 import fr.vsct.tock.bot.connector.ga.model.request.GAArgumentBuiltInName
 import fr.vsct.tock.bot.connector.ga.model.request.GARequest
-import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.bot.engine.event.StartConversationEvent
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserLocation
@@ -36,7 +36,8 @@ internal object WebhookActionConverter {
 
     private val logger = KotlinLogging.logger {}
 
-    fun toEvent(controller: ConnectorController, message: GARequest, applicationId: String): Event {
+    fun toEvent(message: GARequest,
+                applicationId: String): Event {
         val playerId = PlayerId(message.user.userId, PlayerType.user)
         val botId = PlayerId(applicationId, PlayerType.bot)
 
@@ -71,14 +72,11 @@ internal object WebhookActionConverter {
                 }
             }
 
-            if (input.builtInIntent == GAIntent.main && controller.botDefinition.helloStory != null) {
-                return SendChoice(
-                        playerId,
-                        applicationId,
-                        botId,
-                        controller.botDefinition.helloStory?.mainIntent()!!.name,
-                        state = message.getEventState()
-                )
+            if (input.builtInIntent == GAIntent.main) {
+                return StartConversationEvent(playerId, botId, applicationId)
+                        .apply {
+                            state.userInterface = message.getEventState().userInterface
+                        }
             } else {
                 val rawInput = input.rawInputs.firstOrNull()
                 if (rawInput != null) {

@@ -24,4 +24,15 @@ data class SentenceSubElement(val attachments: List<Attachment> = emptyList(),
                               val texts: Map<String, String> = emptyMap(),
                               val locations: List<Location> = emptyList(),
                               val metadata: Map<String, String> = emptyMap()) {
+
+    /**
+     * Transform a [SentenceElement] into a [SentenceSubElement].
+     */
+    constructor(sentenceElement: SentenceElement) : this(
+            sentenceElement.attachments,
+            sentenceElement.choices,
+            sentenceElement.texts,
+            sentenceElement.locations,
+            sentenceElement.metadata
+    )
 }

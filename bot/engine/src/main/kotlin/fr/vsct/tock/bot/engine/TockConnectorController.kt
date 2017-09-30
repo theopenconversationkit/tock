@@ -41,7 +41,7 @@ import java.time.Duration
  */
 internal class TockConnectorController constructor(
         val bot: Bot,
-        private val connector: Connector,
+        override val connector: Connector,
         private val verticle: BotVerticle,
         override val botDefinition: BotDefinition = bot.botDefinition) : ConnectorController {
 
@@ -68,7 +68,7 @@ internal class TockConnectorController constructor(
     override fun handle(event: Event) {
         when (event) {
             is Action -> handleAction(event, 0)
-            else -> bot.handleEvent(connector, event)
+            else -> bot.handleEvent(this, event)
         }
     }
 

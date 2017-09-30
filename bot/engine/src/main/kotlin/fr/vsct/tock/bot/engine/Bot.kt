@@ -17,7 +17,6 @@
 package fr.vsct.tock.bot.engine
 
 import com.github.salomonbrys.kodein.instance
-import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.action.Action
@@ -201,8 +200,10 @@ class Bot(botDefinitionBase: BotDefinition) {
         }
     }
 
-    internal fun handleEvent(connector: Connector, event: Event) {
-        botDefinition.eventListener.listenEvent(this, connector, event)
+    internal fun handleEvent(controller: ConnectorController, event: Event) {
+        if (!botDefinition.eventListener.listenEvent(controller, event)) {
+            logger.warn { "unhandled event : $event" }
+        }
     }
 
     override fun toString(): String {

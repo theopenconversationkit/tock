@@ -16,16 +16,39 @@
 
 package fr.vsct.tock.bot.definition
 
-import fr.vsct.tock.bot.connector.Connector
-import fr.vsct.tock.bot.engine.Bot
+import fr.vsct.tock.bot.engine.ConnectorController
+import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.bot.engine.event.StartConversationEvent
+import mu.KotlinLogging
 
 /**
  * Base implementation of [EventListener].
+ *
  */
 open class EventListenerBase : EventListener {
 
-    override fun listenEvent(bot: Bot, connector: Connector, event: Event) {
-        //do nothing
+    private val logger = KotlinLogging.logger {}
+
+    /**
+     * Listen only [StartConversationEvent] by default (if an [helloStory] is set).
+     */
+    override fun listenEvent(controller: ConnectorController, event: Event): Boolean {
+        if (event is StartConversationEvent) {
+            controller.botDefinition.helloStory?.apply {
+                logger.debug { "handle event $event" }
+                controller.handle(
+                        SendChoice(
+                                event.userId,
+                                event.applicationId,
+                                event.recipientId,
+                                mainIntent().name,
+                                state = event.state
+                        )
+                )
+                return true
+            }
+        }
+        return false
     }
 }

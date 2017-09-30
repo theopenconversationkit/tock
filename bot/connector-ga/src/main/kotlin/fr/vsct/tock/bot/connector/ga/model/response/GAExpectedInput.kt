@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.connector.ga.model.response
 
 import fr.vsct.tock.bot.connector.ga.model.GAIntent
+import fr.vsct.tock.bot.engine.message.SentenceElement
 
 data class GAExpectedInput(
         val inputPrompt: GAInputPrompt,
@@ -25,6 +26,9 @@ data class GAExpectedInput(
         ),
         val speechBiasingHints: List<String> = emptyList()
 ) {
+
+    fun toSentenceElement(): SentenceElement?
+            = inputPrompt.toSentenceElement()
 
 }
 

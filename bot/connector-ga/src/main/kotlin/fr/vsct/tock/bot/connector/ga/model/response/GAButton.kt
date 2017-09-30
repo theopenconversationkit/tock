@@ -16,12 +16,24 @@
 
 package fr.vsct.tock.bot.connector.ga.model.response
 
+import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.message.Choice
+
 /**
  *
  */
 data class GAButton(
-        val title:String,
+        val title: String,
         val openUrlAction: GAOpenUrlAction
 ) {
+
+    fun toChoice(): Choice {
+        return Choice(
+                SendChoice.EXIT_INTENT,
+                mapOf(
+                        SendChoice.URL_PARAMETER to openUrlAction.url,
+                        SendChoice.TITLE_PARAMETER to title
+                ))
+    }
 }
 

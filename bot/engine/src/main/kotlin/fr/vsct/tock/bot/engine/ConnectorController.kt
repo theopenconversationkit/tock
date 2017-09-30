@@ -34,6 +34,11 @@ interface ConnectorController {
     val botDefinition: BotDefinition
 
     /**
+     * The connector used by the controller.
+     */
+    val connector: Connector
+
+    /**
      * Handle an event sent by the connector. the primary goal of this controller.
      */
     fun handle(event: Event)

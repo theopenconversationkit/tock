@@ -16,6 +16,9 @@
 
 package fr.vsct.tock.bot.connector.ga.model.response
 
+import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.shared.mapNotNullValues
+
 /**
  *
  */
@@ -23,6 +26,18 @@ data class GABasicCard(
         val title: String? = null,
         val subtitle: String? = null,
         val formattedText: String? = null,
-        val image : GAImage? = null,
-        val buttons: List<GAButton> = emptyList()
-)
+        val image: GAImage? = null,
+        val buttons: List<GAButton> = emptyList()) {
+
+    fun toSentenceElement(): SentenceElement {
+        return SentenceElement(
+                texts = mapNotNullValues(
+                        GABasicCard::title.name to title,
+                        GABasicCard::subtitle.name to subtitle,
+                        GABasicCard::formattedText.name to formattedText
+                ),
+                choices = buttons.map { it.toChoice() },
+                metadata = image?.toMetadata() ?: emptyMap()
+        )
+    }
+}

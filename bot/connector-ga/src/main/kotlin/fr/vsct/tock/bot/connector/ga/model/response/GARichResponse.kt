@@ -16,11 +16,28 @@
 
 package fr.vsct.tock.bot.connector.ga.model.response
 
+import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.SentenceSubElement
+
 data class GARichResponse(
         val items: List<GAItem>,
         val suggestions: List<GASuggestion> = emptyList(),
         val linkOutSuggestion: GALinkOutSuggestion? = null
 ) {
+
+    fun toSentenceElement(): SentenceElement? {
+        val e = items
+                .firstOrNull()
+                ?.toSentenceElement()
+                ?: SentenceElement(
+                subElements =
+                items.mapNotNull {
+                    it.toSentenceElement()?.let { SentenceSubElement(it) }
+                })
+
+        return e.copy(choices = e.choices + listOfNotNull(linkOutSuggestion?.toChoice()))
+    }
+
 
 }
 
