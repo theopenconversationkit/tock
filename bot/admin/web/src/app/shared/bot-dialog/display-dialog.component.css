@@ -16,7 +16,23 @@
 
 .userAction {
   color:lightseagreen;
+
 }
+
+.connector {
+  float:left;
+  padding-right: 5px;
+  width:24px;
+  height:24px;
+}
+
+.testAction {
+  float:left;
+  padding-right: 5px;
+  width:24px;
+  height:24px;
+}
+
 .botAction {
   color:brown;
 }

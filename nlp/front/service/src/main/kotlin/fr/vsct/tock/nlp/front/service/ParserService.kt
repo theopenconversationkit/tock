@@ -249,7 +249,7 @@ object ParserService : Parser {
             //check cache for test
             if (context.test && validatedSentence != null) {
                 if (!validatedSentence.hasSameContent(toClassifiedSentence())) {
-                    error("[TEST MODE] nlp model do not produce same output than validated sentence for query $q")
+                    error("[TEST MODE] nlp model does not produce same output than validated sentence for query $q")
                 }
             }
 

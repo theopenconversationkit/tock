@@ -19,7 +19,10 @@ package fr.vsct.tock.bot.definition
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener
+import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener.deleteKeyword
+import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener.endTestContextKeyword
+import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener.testContextKeyword
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
@@ -63,14 +66,27 @@ open class BotDefinitionBase(override val botId: String,
                                 if (bus.action is SendSentence) {
                                     val text = (bus.action as SendSentence).text
                                     when (text) {
-                                        BuiltInKeywordListener.deleteKeyword -> {
+                                        deleteKeyword -> {
                                             bus.handleDelete()
                                             bus.end(
                                                     "user removed - {0} {1}",
                                                     bus.userTimeline.userPreferences.firstName,
                                                     bus.userTimeline.userPreferences.lastName)
                                         }
-                                        BuiltInKeywordListener.testContextKeyword -> bus.end("test context activated")
+                                        testContextKeyword -> {
+                                            bus.userTimeline.dialogs.add(
+                                                    Dialog(
+                                                            setOf(bus.userId, bus.botId)))
+                                            bus.userPreferences.test = true
+                                            bus.end("test context activated")
+                                        }
+                                        endTestContextKeyword -> {
+                                            bus.userTimeline.dialogs.add(
+                                                    Dialog(
+                                                            setOf(bus.userId, bus.botId)))
+                                            bus.userPreferences.test = false
+                                            bus.end("test context desactivated")
+                                        }
                                         else -> bus.end("unknown keyword : $text")
                                     }
                                     return

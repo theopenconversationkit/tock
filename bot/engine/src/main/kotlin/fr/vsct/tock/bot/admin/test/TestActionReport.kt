@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.admin.test
 
 import fr.vsct.tock.bot.admin.dialog.ActionReport
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
 import java.time.Instant
@@ -28,15 +29,17 @@ data class TestActionReport(
         val playerId: PlayerId,
         val date: Instant,
         val messages: List<Message>,
+        val connectorType: ConnectorType?,
         val id: String
 ) {
 
     constructor(playerId: PlayerId,
                 date: Instant,
                 message: Message,
-                id: String) : this(playerId, date, listOf(message), id)
+                connectorType: ConnectorType?,
+                id: String) : this(playerId, date, listOf(message), connectorType, id)
 
-    constructor(report: ActionReport) : this(report.playerId, report.date, report.message, report.id)
+    constructor(report: ActionReport) : this(report.playerId, report.date, report.message, report.connectorType, report.id)
 
     fun findFirstMessage(): Message {
         return messages.first()

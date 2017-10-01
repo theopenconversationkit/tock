@@ -191,11 +191,12 @@ export class TestActionReport {
   constructor(public playerId: PlayerId,
               public date: Date,
               public messages: BotMessage[],
-              public id: String) {
+              public id: String,
+              public connectorType?: ConnectorType) {
   }
 
   toActionReport(): ActionReport {
-    return new ActionReport(this.playerId, this.date, this.messages[0], this.id);
+    return new ActionReport(this.playerId, this.date, this.messages[0], this.id, true, this.connectorType);
   }
 
   isBot(): boolean {
@@ -207,7 +208,8 @@ export class TestActionReport {
 
     const result = Object.assign(value, json, {
       playerId: PlayerId.fromJSON(json.playerId),
-      messages: BotMessage.fromJSONArray(json.messages)
+      messages: BotMessage.fromJSONArray(json.messages),
+      connectorType:ConnectorType.fromJSON(json.connectorType)
     });
 
     return result;

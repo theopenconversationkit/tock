@@ -98,6 +98,8 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                                     it.playerId,
                                     it.date,
                                     it.toMessage(),
+                                    it.state.targetConnectorType,
+                                    it.state.testEvent,
                                     it.id)
                         },
                 _id

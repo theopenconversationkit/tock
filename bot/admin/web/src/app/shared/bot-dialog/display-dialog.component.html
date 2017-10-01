@@ -22,6 +22,14 @@
         <tr *ngFor="let action of dialog.actions">
           <td style="min-width:200px;"><span class="userAction" *ngIf="!action.isBot()"
                                              [md-tooltip]="action.date | amDateFormat: 'YYYY-MM-DD HH:mm:ss SSS'">
+            <img *ngIf="action.connectorType"
+                 src="/assets/images/{{action.connectorType.id}}.svg"
+                 class="connector"
+                 [md-tooltip]="action.connectorType.id"/>
+            <img *ngIf="action.test"
+                 src="/assets/images/test_action.svg"
+                 class="testAction"
+                 md-tooltip="Test action"/>
             <tock-bot-message [message]="action.message" [user]="true"></tock-bot-message>
           </span>
           </td>

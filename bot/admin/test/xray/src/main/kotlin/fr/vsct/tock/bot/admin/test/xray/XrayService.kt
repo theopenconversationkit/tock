@@ -82,7 +82,7 @@ object XrayService {
                         exec(XrayExecutionConfiguration(it))
                     }
                     .all { it }
-        } catch(t: Throwable) {
+        } catch (t: Throwable) {
             logger.error(t)
             false
         }
@@ -224,6 +224,7 @@ object XrayService {
                             playerId,
                             instant,
                             MessageParser.parse(replace("\${botUrl}", configuration.botUrl)),
+                            configuration.botConfiguration.targetConnectorType,
                             "${if (playerId.type == PlayerType.bot) "b" else "u"}${stepId}")
                 }
     }

@@ -45,7 +45,9 @@ export class ActionReport {
   constructor(public playerId: PlayerId,
               public date: Date,
               public message: BotMessage,
-              public id: String) {
+              public id: String,
+              public test:boolean,
+              public connectorType?: ConnectorType) {
   }
 
   isBot(): boolean {
@@ -57,7 +59,8 @@ export class ActionReport {
 
     const result = Object.assign(value, json, {
       playerId: PlayerId.fromJSON(json.playerId),
-      message: BotMessage.fromJSON(json.message)
+      message: BotMessage.fromJSON(json.message),
+      connectorType:ConnectorType.fromJSON(json.connectorType)
     });
 
     return result;
@@ -70,11 +73,11 @@ export class ActionReport {
 
 export abstract class BotMessage {
 
-  eventType:string;
+  eventType: string;
 
   constructor(public eventTypeEnum: EventType,
               public delay: number) {
-    this.eventType =  EventType[eventTypeEnum];
+    this.eventType = EventType[eventTypeEnum];
   }
 
   isSentence(): boolean {

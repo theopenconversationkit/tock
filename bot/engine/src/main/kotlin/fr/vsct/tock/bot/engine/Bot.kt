@@ -45,12 +45,17 @@ class Bot(botDefinitionBase: BotDefinition) {
     internal val botDefinition: BotDefinitionWrapper = BotDefinitionWrapper(botDefinitionBase)
 
     fun handle(action: Action, userTimeline: UserTimeline, connector: ConnectorController) {
-        val realConnector = connector as TockConnectorController
+        connector as TockConnectorController
+
+        if (action.state.targetConnectorType == null) {
+            action.state.targetConnectorType = connector.connectorType
+        }
+
         loadProfileIfNotSet(action, userTimeline, connector)
 
         val dialog = getDialog(action, userTimeline)
 
-        parseAction(action, userTimeline, dialog, realConnector)
+        parseAction(action, userTimeline, dialog, connector)
 
         if (botDefinition.isEnabledIntent(dialog.state.currentIntent)) {
             logger.debug { "Enable bot for $action" }
@@ -58,9 +63,9 @@ class Bot(botDefinitionBase: BotDefinition) {
         }
 
         if (!userTimeline.userState.botDisabled) {
-            realConnector.startTypingInAnswerTo(action)
+            connector.startTypingInAnswerTo(action)
             val story = getStory(action, dialog)
-            val bus = TockBotBus(realConnector, userTimeline, dialog, action, botDefinition)
+            val bus = TockBotBus(connector, userTimeline, dialog, action, botDefinition)
 
             story.handle(bus)
         } else {
