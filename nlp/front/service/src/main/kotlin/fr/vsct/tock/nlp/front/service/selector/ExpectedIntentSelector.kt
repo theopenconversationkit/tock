@@ -43,12 +43,6 @@ internal class ExpectedIntentSelector(data: ParserRequestData) : SelectorBase(da
                                 qualifiedIntents.put(intent, prob + modifier)
                                 qualifiedIntentsNames.add(intent.name)
                             }
-
-                            if (qualifiedIntents.isNotEmpty() && prob < 0.1 && data.intentsQualifiersNames.containsAll(qualifiedIntentsNames)) {
-                                val result = qualifiedIntents.entries.sortedByDescending { it.value }.first()
-                                val realProb = otherIntents[result.key.name] ?: prob
-                                return result.key to realProb
-                            }
                         }
             }
 
