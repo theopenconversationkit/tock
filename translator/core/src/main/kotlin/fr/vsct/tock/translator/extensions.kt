@@ -39,7 +39,11 @@ fun CharSequence.isSSML(): Boolean = contains("<speak>")
  * Split a char sequence to a list of char sequence.
  */
 fun CharSequence.splitToCharSequence(vararg delimiters: String, ignoreCase: Boolean = false, limit: Int = 0): List<CharSequence> {
-    return rangesDelimitedBy(delimiters, ignoreCase = ignoreCase, limit = limit).asIterable().map { subSequence(it) }
+    return if (this is TextAndVoiceTranslatedString) {
+        splitToCharSequence(*delimiters, ignoreCase = ignoreCase, limit = limit)
+    } else {
+        rangesDelimitedBy(delimiters, ignoreCase = ignoreCase, limit = limit).asIterable().map { subSequence(it) }
+    }
 }
 
 //copied from Strings.kt ->
