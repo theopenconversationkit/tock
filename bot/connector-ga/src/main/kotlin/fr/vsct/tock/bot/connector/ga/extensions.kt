@@ -177,12 +177,22 @@ fun BotBus.suggestion(text: CharSequence): GASuggestion {
     return GASuggestion(t.toString())
 }
 
-fun BotBus.simpleResponse(text: TextAndVoiceTranslatedString): GASimpleResponse {
+private fun simpleResponse(text: TextAndVoiceTranslatedString): GASimpleResponse {
     val t = if (text.isSSML()) null else text.voice.toString()
     val s = if (text.isSSML()) text.voice.toString() else null
     val d = text.text.toString()
 
     return GASimpleResponse(t, s, d)
+}
+
+internal fun simpleResponseWithoutTranslate(text: CharSequence): GASimpleResponse {
+    return if (text is TextAndVoiceTranslatedString) {
+        simpleResponse(text)
+    } else if (text.isSSML()) {
+        flexibleSimpleResponseWithoutTranslate(ssml = text)
+    } else {
+        flexibleSimpleResponseWithoutTranslate(textToSpeech = text)
+    }
 }
 
 fun BotBus.simpleResponse(text: CharSequence): GASimpleResponse {
@@ -194,6 +204,17 @@ fun BotBus.simpleResponse(text: CharSequence): GASimpleResponse {
     } else {
         flexibleSimpleResponse(textToSpeech = t)
     }
+}
+
+internal fun flexibleSimpleResponseWithoutTranslate(
+        textToSpeech: CharSequence? = null,
+        ssml: CharSequence? = null,
+        displayText: CharSequence? = null): GASimpleResponse {
+    val t = textToSpeech.setBlankAsNull()
+    val s = ssml.setBlankAsNull()
+    val d = displayText.setBlankAsNull()
+
+    return GASimpleResponse(t, s, d)
 }
 
 fun BotBus.flexibleSimpleResponse(
@@ -320,7 +341,10 @@ fun BotBus.gaButton(title: CharSequence, url: String): GAButton {
 }
 
 private fun BotBus.translateAndSetBlankAsNull(s: CharSequence?): String?
-        = translate(s).run { if (isBlank()) null else this.toString() }
+        = translate(s).run { setBlankAsNull() }
+
+private fun CharSequence?.setBlankAsNull(): String?
+        = if (isNullOrBlank()) null else toString()
 
 fun BotBus.listItem(
         title: CharSequence,

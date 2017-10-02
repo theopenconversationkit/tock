@@ -32,6 +32,6 @@ data class BotBusMockLog(val action: Action, val delay: Long) {
 
     fun messenger() = message(messengerConnectorType)
 
-    fun text(): String? = (action as SendSentence).text
+    fun text(): String? = (action as SendSentence).stringText
 
 }

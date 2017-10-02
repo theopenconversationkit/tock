@@ -37,7 +37,7 @@ class SendSentence(
         playerId: PlayerId,
         applicationId: String,
         recipientId: PlayerId,
-        val text: String?,
+        val text: CharSequence?,
         val messages: MutableList<ConnectorMessage> = mutableListOf(),
         id: String = Dice.newId(),
         date: Instant = Instant.now(),
@@ -46,6 +46,8 @@ class SendSentence(
         var nlpStats: NlpCallStats? = null)
     : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
 
+    @Transient
+    val stringText: String? = text?.toString()
 
     fun message(type: ConnectorType): ConnectorMessage? {
         return messages.find { it.connectorType == type }
@@ -56,7 +58,7 @@ class SendSentence(
     }
 
     override fun toMessage(): Message {
-        return Sentence(text, messages)
+        return Sentence(stringText, messages)
     }
 
     override fun obfuscate(mode: StringObfuscatorMode): Event {
@@ -64,7 +66,7 @@ class SendSentence(
                 playerId,
                 applicationId,
                 recipientId,
-                StringObfuscatorService.obfuscate(text, mode),
+                StringObfuscatorService.obfuscate(stringText, mode),
                 messages.map { it.obfuscate(mode) }.toMutableList(),
                 id,
                 date,
@@ -75,6 +77,6 @@ class SendSentence(
     }
 
     override fun toString(): String {
-        return if (text != null) text else if (messages.isNotEmpty()) messages.toString() else ""
+        return if (stringText != null) stringText else if (messages.isNotEmpty()) messages.toString() else ""
     }
 }

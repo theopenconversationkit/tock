@@ -17,9 +17,7 @@
 package fr.vsct.tock.bot.connector.ga
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.nhaarman.mockito_kotlin.mock
 import fr.vsct.tock.bot.connector.ga.model.request.GARequest
-import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.shared.jackson.mapper
@@ -32,7 +30,6 @@ import kotlin.test.assertTrue
  */
 class WebhookActionConverterTest {
 
-    val controller: ConnectorController = mock()
     val appId = "test"
     val optionRequest: GARequest = mapper.readValue(resource("/request_with_option.json"))
     val optionWithRawTextRequest: GARequest = mapper.readValue(resource("/request_with_option_and_raw_text.json"))
@@ -48,6 +45,5 @@ class WebhookActionConverterTest {
         val e = WebhookActionConverter.toEvent(optionWithRawTextRequest, appId)
         assertTrue(e is SendSentence)
     }
-
 
 }

@@ -345,7 +345,7 @@ interface BotBus {
      * Send text that should not be translated, and terminate bot actions.
      */
     fun endRawText(plainText: CharSequence?, delay: Long = 0): BotBus {
-        return end(SendSentence(botId, applicationId, userId, plainText?.toString()), delay)
+        return end(SendSentence(botId, applicationId, userId, plainText), delay)
     }
 
     fun end(message: Message, delay: Long = 0): BotBus {

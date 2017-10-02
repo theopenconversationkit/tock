@@ -110,8 +110,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             executor.executeBlocking {
                 dialog.allActions().lastOrNull { it.playerId.type == PlayerType.user }
                         ?.let { action ->
-                            if (action is SendSentence && action.text != null) {
-                                val text = textKey(action.text!!)
+                            if (action is SendSentence && action.stringText != null) {
+                                val text = textKey(action.stringText!!)
                                 dialogTextCol.replaceOne(
                                         "{text:${text.json}, dialogId:${dialog.id.json}}",
                                         DialogTextCol(text, dialog.id),

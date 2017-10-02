@@ -30,7 +30,6 @@ import fr.vsct.tock.bot.connector.ga.model.response.GAItem
 import fr.vsct.tock.bot.connector.ga.model.response.GAResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GAResponseMetadata
 import fr.vsct.tock.bot.connector.ga.model.response.GARichResponse
-import fr.vsct.tock.bot.connector.ga.model.response.GASimpleResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GAStatus
 import fr.vsct.tock.bot.connector.ga.model.response.GAStatusCode.INTERNAL
 import fr.vsct.tock.bot.connector.ga.model.response.GAStatusDetail
@@ -43,7 +42,6 @@ import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.translator.isSSML
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.util.concurrent.CopyOnWriteArrayList
@@ -186,33 +184,46 @@ class GAConnector internal constructor(
     private fun sendResponse(routingContext: RoutingContextHolder) {
         with(routingContext) {
 
-            val text =
+            val texts =
                     actions
                             .filter { it.action is SendSentence && it.action.text != null }
                             .mapIndexed { i, a ->
                                 val s = a.action as SendSentence
                                 val text = s.text!!
                                 if (i == 0) {
-                                    text
+                                    simpleResponseWithoutTranslate(text)
                                 } else {
-                                    (if (a.delayInMs != 0L) {
-                                        "<break time=\"${a.delayInMs}ms\"/>"
-                                    } else {
-                                        ""
-                                    }) + text
+                                    simpleResponseWithoutTranslate(text)
+                                            .run {
+                                                if (a.delayInMs != 0L && ssml != null) {
+                                                    copy(
+                                                            ssml = "<break time=\"${a.delayInMs}ms\"/>" + ssml
+                                                    )
+                                                } else {
+                                                    this
+                                                }
+                                            }
                                 }
                             }
-                            .map {
-                                //special case - if the string is already ssml, remove the <speak> tag
-                                if (it.isSSML())
-                                    it.replace("<speak>", "", true)
-                                            .replace("</speak>", "", true)
-                                else it
-                            }
-                            .joinToString("", "<speak>", "</speak>")
-            val simpleResponse = if (text != "<speak></speak>") {
+
+            val simpleResponse = if (texts.isNotEmpty()) {
                 GAItem(
-                        GASimpleResponse(ssml = text)
+                        texts.reduce { s, t ->
+                            s.copy(
+                                    textToSpeech = (s.textToSpeech ?: "") + (t.textToSpeech ?: ""),
+                                    ssml = (s.ssml ?: "") + (t.ssml ?: ""),
+                                    displayText = (s.displayText ?: "") + (t.displayText ?: "")
+                            )
+                        }.run {
+                            copy(
+                                    textToSpeech = if (ssml.isNullOrEmpty()) textToSpeech else null,
+                                    ssml = ssml
+                                            ?.replace("<speak>", "", true)
+                                            ?.replace("</speak>", "", true)
+                                            ?.run { if(isEmpty()) null else this },
+                                    displayText = displayText?.run { if(isEmpty()) null else this }
+                            )
+                        }
                 )
             } else {
                 null

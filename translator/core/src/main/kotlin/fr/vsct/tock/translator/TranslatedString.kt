@@ -38,4 +38,8 @@ open class TranslatedString(private val wrapped: CharSequence) : CharSequence by
         return wrapped.toString()
     }
 
+    override fun subSequence(startIndex: Int, endIndex: Int): CharSequence {
+        return TranslatedString(wrapped.subSequence(startIndex, endIndex))
+    }
+
 }

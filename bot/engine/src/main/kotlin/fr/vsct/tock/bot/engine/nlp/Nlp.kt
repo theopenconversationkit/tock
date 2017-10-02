@@ -71,14 +71,14 @@ internal class Nlp : NlpController {
         fun parse() {
             logger.debug { "Parse sentence : $sentence" }
 
-            findKeyword(sentence.text)?.apply {
+            findKeyword(sentence.stringText)?.apply {
                 dialog.state.currentIntent = this
                 return
             }
 
             toNlpQuery().let { query ->
                 try {
-                    logger.debug { "Sending sentence '${sentence.text}' to NLP" }
+                    logger.debug { "Sending sentence '${sentence.stringText}' to NLP" }
                     parse(query)
                             ?.let { nlpResult ->
                                 listenNlpSuccessCall(query, nlpResult)
@@ -162,7 +162,7 @@ internal class Nlp : NlpController {
 
         private fun toNlpQuery(): NlpQuery {
             return NlpQuery(
-                    listOf(sentence.text ?: ""),
+                    listOf(sentence.stringText ?: ""),
                     botDefinition.namespace,
                     botDefinition.nlpModelName,
                     toQueryContext(),

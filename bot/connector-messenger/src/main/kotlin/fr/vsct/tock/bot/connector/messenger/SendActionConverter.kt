@@ -36,7 +36,7 @@ internal object SendActionConverter {
                 if (action.hasMessage(MessengerConnectorProvider.connectorType) ) {
                     action.message(MessengerConnectorProvider.connectorType) as Message
                 } else {
-                    TextMessage(action.text ?: "")
+                    TextMessage(action.stringText ?: "")
                 }
 
             is SendAttachment -> AttachmentMessage(

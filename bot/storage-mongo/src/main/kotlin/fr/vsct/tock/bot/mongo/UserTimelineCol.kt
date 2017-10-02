@@ -64,7 +64,7 @@ internal class UserTimelineCol(
         newTimeline.dialogs.lastOrNull()?.currentStory()?.actions?.lastOrNull { it.playerId.type == PlayerType.user }?.let {
             lastUserActionDate = it.date
             lastActionText = when (it) {
-                is SendSentence -> obfuscate(it.text)
+                is SendSentence -> obfuscate(it.stringText)
                 is SendChoice -> "(click) ${it.intentName}"
                 is SendAttachment -> "(send) ${it.url}"
                 is SendLocation -> "(send user location)"

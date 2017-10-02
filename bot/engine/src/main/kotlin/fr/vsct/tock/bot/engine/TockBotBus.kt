@@ -114,7 +114,7 @@ internal class TockBotBus(
     }
 
     override fun sendRawText(plainText: CharSequence?, delay: Long): BotBus {
-        return answer(SendSentence(botId, applicationId, userId, plainText?.toString()), delay)
+        return answer(SendSentence(botId, applicationId, userId, plainText), delay)
     }
 
     override fun send(action: Action, delay: Long): BotBus {

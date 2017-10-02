@@ -225,7 +225,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
 
         constructor(sentence: SendSentence) :
                 this(
-                        obfuscate(sentence.text),
+                        obfuscate(sentence.stringText),
                         sentence.messages.map { AnyValueWrapper(it.obfuscate(normal)) },
                         sentence.nlpStats) {
             assignFrom(sentence)

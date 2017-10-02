@@ -25,4 +25,8 @@ data class RawString(private val wrapped: CharSequence)
     override fun toString(): String {
         return wrapped.toString()
     }
+
+    override fun subSequence(startIndex: Int, endIndex: Int): CharSequence {
+        return RawString(wrapped.subSequence(startIndex, endIndex))
+    }
 }
