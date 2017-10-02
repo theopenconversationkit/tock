@@ -17,7 +17,6 @@
 package fr.vsct.tock.bot.definition
 
 import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
@@ -62,8 +61,7 @@ abstract class StoryHandlerBase : StoryHandler, I18nKeyProvider {
     fun handleAndSwitchStory(bus: BotBus) {
         findStoryDefinition(bus)
                 ?.apply {
-                    bus.story = Story(this, mainIntent())
-                    bus.dialog.state.currentIntent = mainIntent()
+                    bus.switchStory(this)
                 }
 
         handle(bus)

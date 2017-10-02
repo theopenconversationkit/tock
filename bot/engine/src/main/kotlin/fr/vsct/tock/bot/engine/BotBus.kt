@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.ParameterKey
+import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionSignificance
@@ -436,5 +437,14 @@ interface BotBus {
      * Reload the user profile.
      */
     fun reloadProfile()
+
+    /**
+     * Switch the context to the underlying story definition (start a new [Story]).
+     */
+    fun switchStory(storyDefinition: StoryDefinition) {
+        val starterIntent = storyDefinition.mainIntent()
+        story = Story(storyDefinition, starterIntent)
+        dialog.state.currentIntent = starterIntent
+    }
 
 }
