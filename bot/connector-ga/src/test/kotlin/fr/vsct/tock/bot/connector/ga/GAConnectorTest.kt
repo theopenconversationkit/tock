@@ -31,6 +31,7 @@ import io.vertx.ext.web.RoutingContext
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
  *
@@ -49,7 +50,7 @@ class GAConnectorTest {
 
     @Before
     fun before() {
-       whenever(context.response()).thenReturn(response)
+        whenever(context.response()).thenReturn(response)
     }
 
     @Test
@@ -58,6 +59,11 @@ class GAConnectorTest {
 
         assertEquals("Pierre", userPreferences.firstName)
         assertEquals("Totor", userPreferences.lastName)
+    }
+
+    @Test
+    fun testHasPunctuation_shouldReturnTrue_whenStringEndWithDot() {
+        assertTrue("hkh.".endWithPunctuation())
     }
 
 }

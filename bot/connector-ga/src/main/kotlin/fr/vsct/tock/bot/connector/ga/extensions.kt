@@ -482,3 +482,12 @@ fun BotBus.selectItem(
 }
 
 fun expectedTextIntent(): GAExpectedIntent = GAExpectedIntent(GAIntent.text)
+
+
+internal fun String.endWithPunctuation(): Boolean
+        = endsWith(".") || endsWith("!") || endsWith("?") || endsWith(",") || endsWith(";")
+
+internal fun concat(s1: String?, s2: String?): String {
+    val s = s1?.trim() ?: ""
+    return s + (if (s.isEmpty() || s.endWithPunctuation()) " " else ". ") + (s2 ?: "")
+}

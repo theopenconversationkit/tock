@@ -210,18 +210,18 @@ class GAConnector internal constructor(
                 GAItem(
                         texts.reduce { s, t ->
                             s.copy(
-                                    textToSpeech = (s.textToSpeech ?: "") + (t.textToSpeech ?: ""),
-                                    ssml = (s.ssml ?: "") + (t.ssml ?: ""),
-                                    displayText = (s.displayText ?: "") + (t.displayText ?: "")
+                                    textToSpeech = concat(s.textToSpeech, t.textToSpeech),
+                                    ssml = concat(s.ssml, t.ssml),
+                                    displayText = concat(s.displayText ?: s.textToSpeech, t.displayText ?: t.textToSpeech)
                             )
                         }.run {
                             copy(
-                                    textToSpeech = if (ssml.isNullOrEmpty()) textToSpeech else null,
+                                    textToSpeech = if (ssml.isNullOrBlank()) textToSpeech else null,
                                     ssml = ssml
                                             ?.replace("<speak>", "", true)
                                             ?.replace("</speak>", "", true)
-                                            ?.run { if(isEmpty()) null else this },
-                                    displayText = displayText?.run { if(isEmpty()) null else this }
+                                            ?.run { if (isBlank()) null else "<speak>${this}</speak>" },
+                                    displayText = displayText?.run { if (isBlank()) null else this }
                             )
                         }
                 )
