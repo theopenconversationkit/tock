@@ -177,7 +177,7 @@ fun BotBus.suggestion(text: CharSequence): GASuggestion {
     return GASuggestion(t.toString())
 }
 
-private fun simpleResponse(text: TextAndVoiceTranslatedString): GASimpleResponse {
+private fun simpleTextAndVoiceResponse(text: TextAndVoiceTranslatedString): GASimpleResponse {
     val t = if (text.isSSML()) null else text.voice.toString()
     val s = if (text.isSSML()) text.voice.toString() else null
     val d = text.text.toString()
@@ -187,7 +187,7 @@ private fun simpleResponse(text: TextAndVoiceTranslatedString): GASimpleResponse
 
 internal fun simpleResponseWithoutTranslate(text: CharSequence): GASimpleResponse {
     return if (text is TextAndVoiceTranslatedString) {
-        simpleResponse(text)
+        simpleTextAndVoiceResponse(text)
     } else if (text.isSSML()) {
         flexibleSimpleResponseWithoutTranslate(ssml = text)
     } else {
@@ -198,7 +198,7 @@ internal fun simpleResponseWithoutTranslate(text: CharSequence): GASimpleRespons
 fun BotBus.simpleResponse(text: CharSequence): GASimpleResponse {
     val t = translate(text)
     return if (t is TextAndVoiceTranslatedString) {
-        simpleResponse(t)
+        simpleTextAndVoiceResponse(t)
     } else if (t.isSSML()) {
         flexibleSimpleResponse(ssml = t)
     } else {
