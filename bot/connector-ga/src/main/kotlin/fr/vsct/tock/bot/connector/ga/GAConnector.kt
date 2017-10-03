@@ -215,12 +215,13 @@ class GAConnector internal constructor(
                                     displayText = concat(s.displayText ?: s.textToSpeech, t.displayText ?: t.textToSpeech)
                             )
                         }.run {
+                            val newSSML = ssml
+                                    ?.replace("<speak>", "", true)
+                                    ?.replace("</speak>", "", true)
+                                    ?.run { if (isBlank()) null else "<speak>${this}</speak>" }
                             copy(
-                                    textToSpeech = if (ssml.isNullOrBlank()) textToSpeech else null,
-                                    ssml = ssml
-                                            ?.replace("<speak>", "", true)
-                                            ?.replace("</speak>", "", true)
-                                            ?.run { if (isBlank()) null else "<speak>${this}</speak>" },
+                                    textToSpeech = if (newSSML.isNullOrBlank()) textToSpeech else null,
+                                    ssml = newSSML,
                                     displayText = displayText?.run { if (isBlank()) null else this }
                             )
                         }

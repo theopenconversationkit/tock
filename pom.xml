@@ -47,6 +47,7 @@
         <guava>23.0</guava>
         <jasypt>1.9.2</jasypt>
         <commons-csv>1.5</commons-csv>
+        <emoji>5.0</emoji>
 
         <junit>4.12</junit>
         <mockito-kotlin>1.5.0</mockito-kotlin>
@@ -253,6 +254,12 @@
                         <artifactId>slf4j-api</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.kcthota</groupId>
+                <artifactId>emoji4j</artifactId>
+                <version>${emoji}</version>
             </dependency>
 
             <dependency>

@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector.ga
 
+import emoji4j.EmojiUtils
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.ga.model.GAIntent
@@ -177,12 +178,18 @@ fun BotBus.suggestion(text: CharSequence): GASuggestion {
     return GASuggestion(t.toString())
 }
 
+private fun simpleResponse(textToSpeech: String?, ssml: String?, displayText: String?): GASimpleResponse {
+    val ssmlWithoutEmoji = ssml?.removeEmojis()
+    val textToSpeechWithoutEmoji = if(ssmlWithoutEmoji.isNullOrBlank()) textToSpeech?.removeEmojis().run { if(isNullOrBlank()) " - " else this } else null
+    return GASimpleResponse(textToSpeechWithoutEmoji, ssmlWithoutEmoji, displayText)
+}
+
 private fun simpleTextAndVoiceResponse(text: TextAndVoiceTranslatedString): GASimpleResponse {
     val t = if (text.isSSML()) null else text.voice.toString()
     val s = if (text.isSSML()) text.voice.toString() else null
     val d = text.text.toString()
 
-    return GASimpleResponse(t, s, d)
+    return simpleResponse(t, s, d)
 }
 
 internal fun simpleResponseWithoutTranslate(text: CharSequence): GASimpleResponse {
@@ -214,7 +221,7 @@ internal fun flexibleSimpleResponseWithoutTranslate(
     val s = ssml.setBlankAsNull()
     val d = displayText.setBlankAsNull()
 
-    return GASimpleResponse(t, s, d)
+    return simpleResponse(t, s, d)
 }
 
 fun BotBus.flexibleSimpleResponse(
@@ -225,7 +232,7 @@ fun BotBus.flexibleSimpleResponse(
     val s = translateAndSetBlankAsNull(ssml)
     val d = translateAndSetBlankAsNull(displayText)
 
-    return GASimpleResponse(t, s, d)
+    return simpleResponse(t, s, d)
 }
 
 fun BotBus.item(simpleResponse: GASimpleResponse? = null, basicCard: GABasicCard? = null, structuredResponse: GAStructuredResponse? = null): GAItem
@@ -491,3 +498,5 @@ internal fun concat(s1: String?, s2: String?): String {
     val s = s1?.trim() ?: ""
     return s + (if (s.isEmpty() || s.endWithPunctuation()) " " else ". ") + (s2 ?: "")
 }
+
+internal fun String.removeEmojis(): String = EmojiUtils.removeAllEmojis(EmojiUtils.emojify(this))
