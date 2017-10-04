@@ -16,7 +16,12 @@
 
 package fr.vsct.tock.bot.connector.ga.model.response
 
+import fr.vsct.tock.bot.engine.message.SentenceElement
+
 data class GASimpleSelect(val items: List<GASelectItem>) {
+
+    fun toSentenceElement(): SentenceElement?
+            = SentenceElement(choices = items.map { it.toChoice() })
 
 }
 

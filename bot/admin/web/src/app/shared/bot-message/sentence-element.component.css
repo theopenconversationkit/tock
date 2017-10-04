@@ -2,3 +2,7 @@
   font-size: x-small;
   font-style: italic;
 }
+
+.text {
+  max-width:200px;
+}

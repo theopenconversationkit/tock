@@ -15,7 +15,7 @@
           </tr>
           <tr *ngFor="let entry of e.texts | mapToIterable">
             <td>
-              {{entry.value}} <span class="text-category">({{entry.key}})</span>
+              <span class="text">{{entry.value}}</span> <span class="text-category">({{entry.key}})</span>
             </td>
           </tr>
           <tr *ngIf="e.choices.length !== 0">

@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.connector.ga.model.response
 
+import fr.vsct.tock.bot.engine.message.SentenceElement
+
 /**
  *
  */
@@ -23,5 +25,8 @@ data class GAListSelect(
         val title:String,
         val items:List<GAListItem>
 ) {
+
+    fun toSentenceElement(): SentenceElement?
+            = SentenceElement(subElements = items.map { it.toSentenceSubElement() })
 }
 

@@ -16,9 +16,22 @@
 
 package fr.vsct.tock.bot.connector.ga.model.response
 
+import fr.vsct.tock.bot.engine.action.SendChoice.Companion.TITLE_PARAMETER
+import fr.vsct.tock.bot.engine.message.Choice
+
 data class GASelectItem(
         val optionInfo: GAOptionInfo,
         val title: String?) {
+
+    fun toChoice(): Choice {
+        return optionInfo.toChoice().run {
+            if (title == null) {
+                this
+            } else {
+                copy(parameters = parameters + (TITLE_PARAMETER to title))
+            }
+        }
+    }
 
 }
 

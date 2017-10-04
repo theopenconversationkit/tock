@@ -37,6 +37,7 @@ data class GABasicCard(
                         GABasicCard::formattedText.name to formattedText
                 ),
                 choices = buttons.map { it.toChoice() },
+                attachments = listOfNotNull(image?.toAttachment()),
                 metadata = image?.toMetadata() ?: emptyMap()
         )
     }

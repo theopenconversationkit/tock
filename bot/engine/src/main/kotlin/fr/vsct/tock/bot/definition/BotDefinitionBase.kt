@@ -58,58 +58,67 @@ open class BotDefinitionBase(override val botId: String,
                         },
                         setOf(Intent.unknown))
 
+        fun getKeyword(bus: BotBus): String? {
+            return if (bus.action is SendSentence) {
+                (bus.action as SendSentence).stringText
+            } else {
+                null
+            }
+        }
+
+        fun testContextKeywordHandler(bus: BotBus) {
+            bus.userTimeline.dialogs.add(
+                    Dialog(
+                            setOf(bus.userId, bus.botId)))
+            bus.userPreferences.test = true
+            bus.end("test context activated")
+        }
+
+        fun endTestContextKeywordHandler(bus: BotBus) {
+            bus.userTimeline.dialogs.add(
+                    Dialog(
+                            setOf(bus.userId, bus.botId)))
+            bus.userPreferences.test = false
+            bus.end("test context desactivated")
+        }
+
+        fun deleteKeywordHandler(bus: BotBus) {
+            bus.handleDelete()
+            bus.end(
+                    "user removed - {0} {1}",
+                    bus.userTimeline.userPreferences.firstName,
+                    bus.userTimeline.userPreferences.lastName)
+        }
+
+        private fun BotBus.handleDelete() {
+            val userTimelineDao: UserTimelineDAO by injector.instance()
+            //run later to avoid the lock effect :)
+            vertx.setTimer(1000) {
+                vertx.executeBlocking<Unit>({
+                    try {
+                        userTimelineDao.remove(userId)
+                    } catch (e: Exception) {
+                        logger.error(e)
+                    } finally {
+                        it.complete()
+                    }
+                }, false, {})
+            }
+
+        }
+
         val defaultKeywordStory =
                 SimpleStoryDefinition(
                         "tock_keyword_story",
                         object : StoryHandlerBase() {
                             override fun action(bus: BotBus) {
-                                if (bus.action is SendSentence) {
-                                    val text = (bus.action as SendSentence).text
-                                    when (text) {
-                                        deleteKeyword -> {
-                                            bus.handleDelete()
-                                            bus.end(
-                                                    "user removed - {0} {1}",
-                                                    bus.userTimeline.userPreferences.firstName,
-                                                    bus.userTimeline.userPreferences.lastName)
-                                        }
-                                        testContextKeyword -> {
-                                            bus.userTimeline.dialogs.add(
-                                                    Dialog(
-                                                            setOf(bus.userId, bus.botId)))
-                                            bus.userPreferences.test = true
-                                            bus.end("test context activated")
-                                        }
-                                        endTestContextKeyword -> {
-                                            bus.userTimeline.dialogs.add(
-                                                    Dialog(
-                                                            setOf(bus.userId, bus.botId)))
-                                            bus.userPreferences.test = false
-                                            bus.end("test context desactivated")
-                                        }
-                                        else -> bus.end("unknown keyword : $text")
-                                    }
-                                    return
-                                } else {
-                                    error("keyword story only handle text for now")
+                                val text = getKeyword(bus)
+                                when (getKeyword(bus)) {
+                                    deleteKeyword -> deleteKeywordHandler(bus)
+                                    testContextKeyword -> testContextKeywordHandler(bus)
+                                    endTestContextKeyword -> endTestContextKeywordHandler(bus)
+                                    else -> bus.end("unknown keyword : $text")
                                 }
-                            }
-
-                            private fun BotBus.handleDelete() {
-                                val userTimelineDao: UserTimelineDAO by injector.instance()
-                                //run later to avoid the lock effect :)
-                                vertx.setTimer(1000) {
-                                    vertx.executeBlocking<Unit>({
-                                        try {
-                                            userTimelineDao.remove(userId)
-                                        } catch (e: Exception) {
-                                            logger.error(e)
-                                        } finally {
-                                            it.complete()
-                                        }
-                                    }, false, {})
-                                }
-
                             }
                         },
                         setOf(Intent.keyword))

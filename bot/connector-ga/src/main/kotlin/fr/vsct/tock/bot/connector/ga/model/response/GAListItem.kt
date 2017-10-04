@@ -16,11 +16,29 @@
 
 package fr.vsct.tock.bot.connector.ga.model.response
 
+import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType
+import fr.vsct.tock.bot.engine.message.Attachment
+import fr.vsct.tock.bot.engine.message.SentenceSubElement
+import fr.vsct.tock.shared.mapNotNullValues
+
 data class GAListItem(
         val optionInfo: GAOptionInfo,
         val title: String,
         val description: String? = null,
         val image: GAImage? = null
 ) {
+
+    fun toSentenceSubElement(): SentenceSubElement {
+        return SentenceSubElement(
+                choices = listOf(optionInfo.toChoice()),
+                texts = mapNotNullValues(
+                        GAListItem::title.name to title,
+                        GAListItem::description.name to description
+                ),
+                attachments = image?.url
+                        ?.let { listOf(Attachment(it, AttachmentType.image)) }
+                        ?: emptyList()
+        )
+    }
 
 }

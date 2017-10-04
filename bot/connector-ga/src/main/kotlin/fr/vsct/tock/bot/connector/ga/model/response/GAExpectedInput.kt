@@ -29,6 +29,18 @@ data class GAExpectedInput(
 
     fun toSentenceElement(): SentenceElement?
             = inputPrompt.toSentenceElement()
+            .let {
+                val intentElement = possibleIntents.map { it.toSentenceElement() }.filterNotNull().firstOrNull()
+                if (it == null) {
+                    intentElement
+                } else if (intentElement == null) {
+                    it
+                } else {
+                    it.copy(
+                            subElements = it.subElements + intentElement.subElements
+                    )
+                }
+            }
 
 }
 

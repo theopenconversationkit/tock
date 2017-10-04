@@ -15,8 +15,9 @@
   -->
 
 <span *ngIf="user" mdTooltip="{{parameters()}}">[Choice] {{choice.intentName}}</span>
-<span *ngIf="!user" mdTooltip="{{parameters()}}">
-        <button (click)="click()" md-button color="{{url() ? 'warn' : 'primary'}}">
+<span *ngIf="!user">
+        <button (click)="click()" md-button color="{{url() ? 'warn' : 'primary'}}" class="choice"
+                [md-tooltip]="title()? title() + ' - ' + parameters() : parameters()">
           <span *ngIf="title()">{{title()}}</span>
           <span *ngIf="!title()">{{choice.intentName}}</span>
         </button>
