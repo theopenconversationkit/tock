@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.engine
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.argForWhich
 import com.nhaarman.mockito_kotlin.verify
+import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionSignificance
 import fr.vsct.tock.bot.engine.action.SendChoice
@@ -55,5 +56,15 @@ class BotBusTest : BotEngineTest() {
         userAction = action(Choice("test", mapOf(SendChoice.STEP_PARAMETER to "not defined")))
         bot.handle(userAction, userTimeline, connectorController)
         assertNull(registeredBus!!.step)
+    }
+
+    @Test
+    fun reloadProfile_shouldRemoveFirstNameAndLastNamePreferencesValues_whenConnectorLoadProfileReturnsNull() {
+        whenever(connector.loadProfile(any(), any())).thenReturn(null)
+        bus.userPreferences.firstName = "firstName"
+        bus.userPreferences.lastName = "lastName"
+        bus.reloadProfile()
+        assertNull(bus.userPreferences.firstName)
+        assertNull(bus.userPreferences.lastName)
     }
 }

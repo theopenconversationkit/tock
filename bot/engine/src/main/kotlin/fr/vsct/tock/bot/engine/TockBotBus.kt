@@ -138,6 +138,8 @@ internal class TockBotBus(
         if (newUserPref != null) {
             userTimeline.userState.profileLoaded = true
             userPreferences.fillWith(newUserPref)
+        } else {
+            userPreferences.fillWith(UserPreferences())
         }
     }
 }
