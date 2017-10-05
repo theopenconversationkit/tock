@@ -20,9 +20,20 @@ import {Injectable} from "@angular/core";
 export class SettingsService {
 
   currentApplicationName: string;
-  currentLocale:string;
+  currentLocale: string;
 
   constructor() {
+    this.currentApplicationName = localStorage.getItem("_tock_current_app");
+    this.currentLocale = localStorage.getItem("_tock_current_locale")
   }
 
+  onApplicationChange(applicationName: string): void {
+    this.currentApplicationName = applicationName;
+    localStorage.setItem("_tock_current_app", this.currentApplicationName);
+  }
+
+  onLocaleChange(locale: string): void {
+    this.currentLocale = locale;
+    localStorage.setItem("_tock_current_locale", this.currentLocale);
+  }
 }

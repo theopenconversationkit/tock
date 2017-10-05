@@ -29,8 +29,8 @@ import {ApplicationResolver} from "./application.resolver";
   declarations: [],
   providers: [
     {provide: ApplicationConfig, useValue: {configurationUrl: "/applications"}},
-    StateService,
     SettingsService,
+    StateService,
     ApplicationService,
     ApplicationResolver
   ],

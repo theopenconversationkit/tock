@@ -72,6 +72,7 @@ export class StateService implements AuthListener {
     if (application.supportedLocales.indexOf(this.currentLocale) === -1) {
       this.changeLocale(application.supportedLocales[0])
     }
+    this.settings.onApplicationChange(this.currentApplication.name);
   }
 
   changeApplicationWithName(applicationName: string) {
@@ -82,6 +83,7 @@ export class StateService implements AuthListener {
     this.currentLocale = locale;
     this.entities.next(this.currentApplication.allEntities());
     this.currentLocaleEmitter.emit(locale);
+    this.settings.onLocaleChange(this.currentLocale);
   }
 
   findIntentById(id: string): Intent {
