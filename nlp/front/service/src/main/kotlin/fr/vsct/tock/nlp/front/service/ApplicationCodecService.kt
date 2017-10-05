@@ -34,6 +34,7 @@ import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.Classification
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
@@ -298,7 +299,9 @@ object ApplicationCodecService : ApplicationCodec {
                 .groupBy { it._id }
                 .mapValues { it.value.first() }
         val sentences = config
-                .getSentences(intents.values.map { it._id!! }.toSet())
+                .getSentences(
+                        intents = intents.values.map { it._id!! }.toSet(),
+                        status = model)
                 .filter { it.applicationId == applicationId }
         return SentencesDump(
                 app.qualifiedName,
