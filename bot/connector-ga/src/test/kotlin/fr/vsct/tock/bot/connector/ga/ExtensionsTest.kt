@@ -49,4 +49,16 @@ class ExtensionsTest {
         val r = simpleResponseWithoutTranslate(":):(")
         assertEquals(" - ", r.textToSpeech)
     }
+
+    @Test
+    fun simpleResponseWithoutTranslate_shouldReturnsSameWording_whenWordingContainsColonPlus3() {
+        val r = simpleResponseWithoutTranslate("08:37")
+        assertEquals("08:37", r.textToSpeech)
+    }
+
+    @Test
+    fun simpleResponseWithoutTranslate_shouldReturnsSameWording_whenWordingContainsColonPlus0() {
+        val r = simpleResponseWithoutTranslate("08:07")
+        assertEquals("08:07", r.textToSpeech)
+    }
 }

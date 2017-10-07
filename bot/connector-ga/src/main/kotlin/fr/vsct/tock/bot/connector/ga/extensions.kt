@@ -180,7 +180,7 @@ fun BotBus.suggestion(text: CharSequence): GASuggestion {
 
 private fun simpleResponse(textToSpeech: String?, ssml: String?, displayText: String?): GASimpleResponse {
     val ssmlWithoutEmoji = ssml?.removeEmojis()
-    val textToSpeechWithoutEmoji = if(ssmlWithoutEmoji.isNullOrBlank()) textToSpeech?.removeEmojis().run { if(isNullOrBlank()) " - " else this } else null
+    val textToSpeechWithoutEmoji = if (ssmlWithoutEmoji.isNullOrBlank()) textToSpeech?.removeEmojis().run { if (isNullOrBlank()) " - " else this } else null
     return GASimpleResponse(textToSpeechWithoutEmoji, ssmlWithoutEmoji, displayText)
 }
 
@@ -499,4 +499,9 @@ internal fun concat(s1: String?, s2: String?): String {
     return s + (if (s.isEmpty() || s.endWithPunctuation()) " " else ". ") + (s2 ?: "")
 }
 
-internal fun String.removeEmojis(): String = EmojiUtils.removeAllEmojis(EmojiUtils.emojify(this))
+internal fun String.removeEmojis(): String =
+        EmojiUtils.removeAllEmojis(
+                EmojiUtils.emojify(this)
+                        .replace("\uD83D\uDC68", ":3")
+                        .replace("\uD83D\uDE2E", ":0")
+        )
