@@ -55,9 +55,9 @@ class I18nCsvCodecTest {
         }
 
         val id = "departuresarrivals_départs_suivants"
-        val export = """Label;Category;Language;Interface;Id;Validated;Alternatives
-Départs suivants;departuresarrivals;fr;textChat;departuresarrivals_départs_suivants;false
-Départs suivants;departuresarrivals;fr;voiceAssistant;departuresarrivals_départs_suivants;true"""
+        val export = """Label;Category;Language;Interface;Id;Validated;Connector;Alternatives
+Départs suivants;departuresarrivals;fr;textChat;departuresarrivals_départs_suivants;false;
+Départs suivants;departuresarrivals;fr;voiceAssistant;departuresarrivals_départs_suivants;true;"""
     }
 
 

@@ -260,6 +260,12 @@
                 <groupId>com.kcthota</groupId>
                 <artifactId>emoji4j</artifactId>
                 <version>${emoji}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId> com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-core</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <dependency>

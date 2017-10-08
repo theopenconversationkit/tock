@@ -43,7 +43,7 @@ class TranslatorTest : AbstractTest() {
 
     @Test
     fun formatMessage_shouldHandleWell_NullArgValue() {
-        val result = Translator.formatMessage("a {0}", defaultLocale, textChat, listOf(null))
+        val result = Translator.formatMessage("a {0}", defaultLocale, textChat, null, listOf(null))
         assertEquals("a ", result)
     }
 

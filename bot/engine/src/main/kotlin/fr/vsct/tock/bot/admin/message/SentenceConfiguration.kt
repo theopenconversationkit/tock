@@ -23,7 +23,6 @@ import fr.vsct.tock.bot.engine.event.EventType
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.translator.I18nLabelKey
-import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.UserInterfaceType
 import mu.KotlinLogging
 import java.util.Locale
@@ -52,11 +51,11 @@ data class SentenceConfiguration(
                 playerId,
                 applicationId,
                 recipientId,
-                if (text != null) Translator.translate(text, locale, userInterfaceType).toString() else null,
+                text,
                 messages.mapNotNull {
                     try {
                         it.findConnectorMessage()
-                    } catch(e: Exception) {
+                    } catch (e: Exception) {
                         logger.error(e)
                         null
                     }

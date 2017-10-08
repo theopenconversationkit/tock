@@ -430,7 +430,8 @@ interface BotBus {
             else Translator.translate(
                     key,
                     userTimeline.userPreferences.locale,
-                    userInterfaceType
+                    userInterfaceType,
+                    targetConnectorType.id
             )
 
     /**

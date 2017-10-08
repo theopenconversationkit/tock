@@ -46,14 +46,14 @@ object I18nCsvCodec {
     fun exportCsv(namespace: String): String {
         val sb = StringBuilder()
         val printer = CSVPrinter(sb, csvFormat())
-        printer.printRecord("Label", "Category", "Language", "Interface", "Id", "Validated", "Alternatives")
+        printer.printRecord("Label", "Category", "Language", "Interface", "Id", "Validated", "Connector", "Alternatives")
         i18nDAO.getLabels()
                 .filter { it.namespace == namespace }
-                .sortedWith(compareBy({ it.category }, { it.findLabel(defaultLocale)?.label ?: "" }))
+                .sortedWith(compareBy({ it.category }, { it.findLabel(defaultLocale, null)?.label ?: "" }))
                 .forEach { l ->
                     l.i18n.sortedWith(compareBy({ it.locale.language }, { it.interfaceType }))
                             .forEach { i ->
-                                printer.printRecord(*(listOf(i.label, l.category, i.locale.language, i.interfaceType, l._id, i.validated) + i.alternatives).toTypedArray())
+                                printer.printRecord(*(listOf(i.label, l.category, i.locale.language, i.interfaceType, l._id, i.validated, i.connectorId ?: "") + i.alternatives).toTypedArray())
                             }
                 }
         return sb.toString()
@@ -78,7 +78,8 @@ object I18nCsvCodec {
                                                     UserInterfaceType.valueOf(it[3]),
                                                     it[0],
                                                     it[5].toBoolean(),
-                                                    if (it.size() < 6) emptyList() else (6 until it.size()).mapNotNull { index -> if (it[index].isNullOrBlank()) null else it[index] }
+                                                    it[6].run { if (isBlank()) null else this },
+                                                    if (it.size() < 7) emptyList() else (7 until it.size()).mapNotNull { index -> if (it[index].isNullOrBlank()) null else it[index] }
                                             )
                                     )
                             )
@@ -96,7 +97,7 @@ object I18nCsvCodec {
                                                     ?.i18n
                                                     ?.filter { old ->
                                                         localized.none {
-                                                            old.locale == it.locale && old.interfaceType == it.interfaceType
+                                                            old.locale == it.locale && old.interfaceType == it.interfaceType && old.connectorId == it.connectorId
                                                         }
                                                     }
                                                     ?: emptyList())

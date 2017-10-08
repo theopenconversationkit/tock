@@ -105,7 +105,7 @@ private fun CharSequence.rangesDelimitedBy(delimiters: Array<out String>, startI
     require(limit >= 0, { "Limit must be non-negative, but was $limit." })
     val delimitersList = delimiters.asList()
 
-    return DelimitedRangesSequence(this, startIndex, limit, { startIndex -> findAnyOf(delimitersList, startIndex, ignoreCase = ignoreCase, last = false)?.let { it.first to it.second.length } })
+    return DelimitedRangesSequence(this, startIndex, limit, { start -> findAnyOf(delimitersList, start, ignoreCase = ignoreCase, last = false)?.let { it.first to it.second.length } })
 
 }
 
@@ -148,6 +148,8 @@ internal fun CharSequence.regionMatchesImpl(thisOffset: Int, other: CharSequence
     return true
 }
 
+@Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
 internal fun String.nativeIndexOf(ch: Char, fromIndex: Int): Int = (this as java.lang.String).indexOf(ch.toInt(), fromIndex)
 
+@Suppress("PLATFORM_CLASS_MAPPED_TO_KOTLIN")
 internal fun String.nativeLastIndexOf(ch: Char, fromIndex: Int): Int = (this as java.lang.String).lastIndexOf(ch.toInt(), fromIndex)

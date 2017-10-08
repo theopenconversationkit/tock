@@ -26,9 +26,10 @@ data class I18nLocalizedLabel(val locale: Locale,
                               val interfaceType: UserInterfaceType,
                               val label: String,
                               val validated: Boolean,
+                              val connectorId: String? = null,
                               val alternatives: List<String> = emptyList()) {
 
-    constructor(locale: Locale, interfaceType: UserInterfaceType, label: String, alternatives: List<String>) : this(locale, interfaceType, label, false, alternatives)
+    constructor(locale: Locale, interfaceType: UserInterfaceType, label: String, alternatives: List<String>) : this(locale, interfaceType, label, false, null, alternatives)
 
     constructor(locale: Locale, interfaceType: UserInterfaceType, label: String) : this(locale, interfaceType, label, emptyList())
 

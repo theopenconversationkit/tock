@@ -28,12 +28,16 @@ data class I18nLabel(
         val category: String,
         val i18n: List<I18nLocalizedLabel>) {
 
-    fun findLabel(locale: Locale, userInterfaceType: UserInterfaceType): I18nLocalizedLabel?
-            = i18n.firstOrNull { it.locale == locale && it.interfaceType == userInterfaceType }
-            ?: i18n.firstOrNull { it.locale.language == locale.language && it.interfaceType == userInterfaceType }
+    fun findLabel(locale: Locale, userInterfaceType: UserInterfaceType, connectorId: String?): I18nLocalizedLabel?
+            = i18n.firstOrNull { it.locale == locale && it.interfaceType == userInterfaceType && it.connectorId == connectorId }
+            ?: i18n.firstOrNull { it.locale == locale && it.interfaceType == userInterfaceType && it.connectorId == null }
+            ?: i18n.firstOrNull { it.locale.language == locale.language && it.interfaceType == userInterfaceType && it.connectorId == connectorId }
+            ?: i18n.firstOrNull { it.locale.language == locale.language && it.interfaceType == userInterfaceType && it.connectorId == null }
 
-    fun findLabel(locale: Locale): I18nLocalizedLabel?
-            = i18n.firstOrNull { it.locale == locale && it.label.isNotBlank() }
-            ?: i18n.firstOrNull { it.locale.language == locale.language && it.label.isNotBlank() }
+    fun findLabel(locale: Locale, connectorId: String?): I18nLocalizedLabel?
+            = i18n.firstOrNull { it.locale == locale && it.label.isNotBlank() && it.connectorId == connectorId }
+            ?: i18n.firstOrNull { it.locale == locale && it.label.isNotBlank() && it.connectorId == null }
+            ?: i18n.firstOrNull { it.locale.language == locale.language && it.label.isNotBlank() && it.connectorId == connectorId }
+            ?: i18n.firstOrNull { it.locale.language == locale.language && it.label.isNotBlank() && it.connectorId == null }
 
 }

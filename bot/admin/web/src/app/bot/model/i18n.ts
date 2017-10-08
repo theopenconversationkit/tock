@@ -16,6 +16,7 @@
 
 
 import {defaultUserInterfaceType, UserInterfaceType} from "../../core/model/configuration";
+import {isNullOrUndefined} from "util";
 
 export class I18nLabel {
 
@@ -31,8 +32,17 @@ export class I18nLabel {
     return this.label(this.i18n[0].locale, defaultUserInterfaceType);
   }
 
-  label(locale: string, userInterface: UserInterfaceType): I18nLocalizedLabel {
-    return this.i18n.find(i => i.locale === locale && i.interfaceType === userInterface);
+  label(locale: string, userInterface: UserInterfaceType, connectorId?: string): I18nLocalizedLabel {
+    const l = this.i18n.find(i => i.locale === locale && i.interfaceType === userInterface && i.connectorId === connectorId);
+    return l ? l : this.i18n.find(i => i.locale === locale && i.interfaceType === userInterface);
+  }
+
+  hasLocalAndInterfaceWithASpecifiedConnector(locale: string, userInterface: UserInterfaceType): boolean {
+    return this.i18n.some(i => i.locale === locale && i.interfaceType === userInterface && !isNullOrUndefined(i.connectorId))
+  }
+
+  hasLocaleAndInterfaceAndConnector(locale: string, userInterface: UserInterfaceType, connectorId?: string): boolean {
+    return this.i18n.some(i => i.locale === locale && i.interfaceType === userInterface && i.connectorId === connectorId);
   }
 
   static fromJSON(json: any): I18nLabel {
@@ -55,6 +65,7 @@ export class I18nLocalizedLabel {
               public interfaceType: UserInterfaceType,
               public label: string,
               public validated: boolean,
+              public connectorId: string,
               public alternatives: string[]) {
 
   }

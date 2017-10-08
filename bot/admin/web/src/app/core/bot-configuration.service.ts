@@ -19,7 +19,7 @@ import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {Observable} from "rxjs/Observable";
 import {ApplicationScopedQuery} from "tock-nlp-admin/src/app/model/commons";
-import {BotApplicationConfiguration} from "./model/configuration";
+import {BotApplicationConfiguration, ConnectorType} from "./model/configuration";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
 @Injectable()
@@ -34,6 +34,8 @@ export class BotConfigurationService implements OnInit, OnDestroy {
   configurations: BehaviorSubject<BotApplicationConfiguration[]> = new BehaviorSubject([]);
   //has rest configuration
   hasRestConfigurations: BehaviorSubject<boolean> = new BehaviorSubject(false);
+  //supported connectors
+  supportedConnectors: BehaviorSubject<ConnectorType[]> = new BehaviorSubject([]);
 
   constructor(private rest: RestService,
               private state: StateService) {
@@ -57,6 +59,13 @@ export class BotConfigurationService implements OnInit, OnDestroy {
         let rest = c.filter(c => c.connectorType.isRest());
         this.restConfigurations.next(rest);
         this.hasRestConfigurations.next(rest.length !== 0);
+        const connectors = [];
+        c.forEach(conf => {
+          if (!conf.connectorType.isRest() && !connectors.some(e => conf.connectorType.id === e.id)) {
+            connectors.push(conf.connectorType)
+          }
+        });
+        this.supportedConnectors.next(connectors)
       });
   }
 

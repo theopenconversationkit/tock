@@ -40,7 +40,7 @@ class I18nLabelTest : AbstractTest() {
                                 true)
                 )
         )
-        assertNotNull(label.findLabel(Locale.FRANCE))
-        assertNotNull(label.findLabel(Locale.FRANCE, UserInterfaceType.textChat))
+        assertNotNull(label.findLabel(Locale.FRANCE, null))
+        assertNotNull(label.findLabel(Locale.FRANCE, UserInterfaceType.textChat, null))
     }
 }
