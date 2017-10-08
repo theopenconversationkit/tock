@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
-.fill-remaining-space {
-  flex: 1 1 auto;
+package fr.vsct.tock.bot.admin.model
+
+import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
+import fr.vsct.tock.bot.admin.answer.SimpleAnswerConfiguration
+
+/**
+ *
+ */
+data class BotSimpleAnswerConfiguration(val answers: List<BotSimpleAnswer>)
+    : BotAnswerConfiguration(AnswerConfigurationType.simple) {
+
+    constructor(conf: SimpleAnswerConfiguration) : this(conf.answers.map { BotSimpleAnswer(it) })
 }

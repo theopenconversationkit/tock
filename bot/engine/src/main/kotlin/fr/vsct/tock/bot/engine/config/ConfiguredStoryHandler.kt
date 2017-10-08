@@ -40,10 +40,10 @@ internal class ConfiguredStoryHandler(val configuration: StoryDefinitionConfigur
         simple.answers.let {
             it.subList(0, it.size - 1)
                     .forEach {
-                        sendRawText(it.text, it.delay)
+                        send(it.key, it.delay)
                     }
             it.last().apply {
-                endRawText(text, delay)
+                end(key, delay)
             }
         }
     }

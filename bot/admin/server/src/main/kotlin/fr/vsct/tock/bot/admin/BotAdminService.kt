@@ -30,6 +30,7 @@ import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotDialogResponse
 import fr.vsct.tock.bot.admin.model.BotIntent
 import fr.vsct.tock.bot.admin.model.BotIntentSearchRequest
+import fr.vsct.tock.bot.admin.model.BotStoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.model.CreateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.DialogsSearchQuery
 import fr.vsct.tock.bot.admin.model.UpdateBotIntentRequest
@@ -55,6 +56,8 @@ import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.vertx.UnauthorizedException
+import fr.vsct.tock.translator.I18nLabelKey
+import fr.vsct.tock.translator.Translator
 import mu.KotlinLogging
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
@@ -157,7 +160,7 @@ object BotAdminService {
                                             .map {
                                                 SentenceReport(it)
                                             }
-                            BotIntent(it, sentences)
+                            BotIntent(BotStoryDefinitionConfiguration(it), sentences)
                         } else {
                             logger.warn { "unknown intent: ${request.namespace} ${it.intent.name} - skipped" }
                             null
@@ -207,7 +210,16 @@ object BotAdminService {
                                 AnswerConfigurationType.simple,
                                 listOf(
                                         SimpleAnswerConfiguration(
-                                                listOf(SimpleAnswer(request.reply, 0))
+                                                listOf(
+                                                        SimpleAnswer(
+                                                                I18nLabelKey(
+                                                                        Translator.getKeyFromDefaultLabel(request.reply),
+                                                                        namespace,
+                                                                        "simple",
+                                                                        request.reply
+                                                                ),
+                                                                0)
+                                                )
                                         ))
                         )
                 )
@@ -243,7 +255,15 @@ object BotAdminService {
             storyDefinitionDAO.save(
                     storyDefinition.copy(answers = listOf(
                             SimpleAnswerConfiguration(
-                                    listOf(SimpleAnswer(request.reply, 0))
+                                    listOf(SimpleAnswer(
+                                            I18nLabelKey(
+                                                    Translator.getKeyFromDefaultLabel(request.reply),
+                                                    namespace,
+                                                    "simple",
+                                                    request.reply
+                                            ),
+                                            0
+                                    ))
                             ))))
             front.getIntentByNamespaceAndName(namespace, storyDefinition.intent.name)
         } else {

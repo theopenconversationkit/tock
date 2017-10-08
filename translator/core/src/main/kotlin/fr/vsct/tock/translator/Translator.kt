@@ -60,11 +60,24 @@ object Translator {
 
     private fun loadLabel(id: String): I18nLabel? {
         return try {
-            cache.get(id, { requireNotNull(i18nDAO.getLabelById(id)) })
+            cache.get(id, { requireNotNull(i18nDAO.getLabelById(id)) }).copy()
         } catch (e: UncheckedExecutionException) {
             null
         }
     }
+
+    private fun getLabel(id: String): I18nLabel? = loadLabel(id)
+
+    fun getLabel(key: I18nLabelKey): I18nLabel? = getLabel(key.key)
+
+    fun getOrPersistLabel(key: I18nLabelKey): I18nLabel
+            = getLabel(key) ?:
+            {
+                val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, key.defaultLabel.toString())
+                val label = I18nLabel(key.key, key.namespace, key.category, listOf(defaultLabel))
+                i18nDAO.save(label)
+                label
+            }.invoke()
 
     fun translate(key: I18nLabelKey, locale: Locale, userInterfaceType: UserInterfaceType, connectorId: String? = null): TranslatedString {
         if (!enabled) {
@@ -79,7 +92,7 @@ object Translator {
             return TranslatedString(key.defaultLabel)
         }
 
-        val storedLabel = loadLabel(key.key)
+        val storedLabel = getLabel(key)
 
         val targetDefaultUserInterface = if (userInterfaceType == textAndVoiceAssistant) textChat else userInterfaceType
 

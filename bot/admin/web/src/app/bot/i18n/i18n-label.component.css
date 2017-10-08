@@ -14,6 +14,55 @@
  * limitations under the License.
  */
 
-.fill-remaining-space {
-  flex: 1 1 auto;
+
+.i18n {
+  font-size: 10px;
 }
+
+.userInterface {
+  font-size: 15px;
+  vertical-align: sub;
+}
+
+.input {
+  line-height: 12px;
+}
+
+.text-area {
+  min-width:500px;
+}
+
+.input-alternative {
+  line-height: 12px;
+  margin-left: 100px;
+}
+
+
+.defaultLabel {
+  font-weight: bold;
+}
+
+.validated {
+  color: green;
+}
+
+.notValidated {
+  color: orangered;
+}
+
+.spinner {
+  width:36px;
+  height:36px;
+}
+
+.locale {
+  display: inline-block;
+  width: 1em;
+}
+
+.connector {
+  padding-right: 5px;
+  width:24px;
+  height:24px;
+}
+

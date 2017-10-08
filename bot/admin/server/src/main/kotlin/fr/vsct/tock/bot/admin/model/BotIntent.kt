@@ -16,13 +16,12 @@
 
 package fr.vsct.tock.bot.admin.model
 
-import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 
 /**
  *
  */
 data class BotIntent(
-        val storyDefinition: StoryDefinitionConfiguration,
+        val storyDefinition: BotStoryDefinitionConfiguration,
         val firstSentences: List<SentenceReport>
 )

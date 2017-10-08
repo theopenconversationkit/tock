@@ -18,6 +18,8 @@
 import {defaultUserInterfaceType, UserInterfaceType} from "../../core/model/configuration";
 import {isNullOrUndefined} from "util";
 
+export const userInterfaces = [UserInterfaceType.textChat, UserInterfaceType.voiceAssistant];
+
 export class I18nLabel {
 
   firstCategory: boolean;
@@ -29,7 +31,8 @@ export class I18nLabel {
   }
 
   defaultLabel(): I18nLocalizedLabel {
-    return this.label(this.i18n[0].locale, defaultUserInterfaceType);
+    const d = this.label(this.i18n[0].locale, defaultUserInterfaceType)
+    return d ? d : this.i18n[0];
   }
 
   label(locale: string, userInterface: UserInterfaceType, connectorId?: string): I18nLocalizedLabel {

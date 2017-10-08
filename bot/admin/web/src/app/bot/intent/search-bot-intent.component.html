@@ -18,17 +18,18 @@
   <md-card class="intent" *ngFor="let intent of intents">
   <md-card-content>
     <h2>For
-      <span *ngIf="intent.firstSentences.length === 1">this sentence</span>
-      <span *ngIf="intent.firstSentences.length !== 1">these sentences</span>
-      :</h2>
+      <span *ngIf="intent.firstSentences.length === 1">this sentence:</span>
+      <span *ngIf="intent.firstSentences.length !== 1">these sentences:</span>
+    </h2>
     <ul>
       <li *ngFor="let s of intent.firstSentences">
         {{s.text}}
       </li>
     </ul>
-    <md-input-container class="sentence-input" #newReplyContainer>
-        <input mdInput [(ngModel)]="intent.storyDefinition.textAnswer" placeholder="The reply is" #newReply (keyup.enter)="update(intent)">
-      </md-input-container>
+    <h2>The reply is:</h2>
+    <md-list dense>
+        <tock-i18n-label [i]="intent.storyDefinition.answers[0].answers[0].label"></tock-i18n-label>
+    </md-list>
     <div class="intent-mention">(intent : {{intent.storyDefinition.intent.name}})</div>
   </md-card-content>
   <md-card-actions>

@@ -14,6 +14,12 @@
  * limitations under the License.
  */
 
-.fill-remaining-space {
-  flex: 1 1 auto;
+package fr.vsct.tock.bot.admin.model
+
+import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
+
+/**
+ *
+ */
+abstract class BotAnswerConfiguration(val answerType: AnswerConfigurationType) {
 }

@@ -15,23 +15,21 @@
  */
 
 import {Component, OnInit} from "@angular/core";
-import {UserInterfaceType} from "../../core/model/configuration";
-import {I18nLabel, I18nLocalizedLabel} from "../model/i18n";
+import {I18nLabel} from "../model/i18n";
 import {BotService} from "../bot-service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {MdSnackBar} from "@angular/material";
 import {saveAs} from "file-saver";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
-import {BotConfigurationService} from "../../core/bot-configuration.service";
+import {I18nController} from "./i18n-label.component";
 
 @Component({
-  selector: 'app-i18n',
+  selector: 'tock-i18n',
   templateUrl: './i18n.component.html',
   styleUrls: ['./i18n.component.css']
 })
-export class I18nComponent implements OnInit {
+export class I18nComponent extends I18nController implements OnInit {
 
-  userInterfaces = [UserInterfaceType.textChat, UserInterfaceType.voiceAssistant];
   i18n: I18nLabel[];
   filteredI18n: I18nLabel[];
   filterString: string = "";
@@ -44,9 +42,9 @@ export class I18nComponent implements OnInit {
   public uploader: FileUploader;
 
   constructor(public state: StateService,
-              public config:BotConfigurationService,
               private botService: BotService,
               private snackBar: MdSnackBar) {
+    super(state, []);
   }
 
   ngOnInit() {
@@ -59,13 +57,17 @@ export class I18nComponent implements OnInit {
       };
   }
 
+  controller(): I18nController {
+    return this
+  }
+
   private load() {
     this.loading = true;
     this.botService.i18nLabels().subscribe(r => {
       this.loading = false;
       this.i18n = r;
       this.initCategories(this.i18n);
-      this.sortI18n();
+      this.sortLabels();
 
       this.i18n.sort((a, b) => {
           return a.category.localeCompare(b.category);
@@ -73,33 +75,6 @@ export class I18nComponent implements OnInit {
       );
       this.filter(this.filterString);
     });
-  }
-
-  private sortI18n() {
-    const locales = this.state.currentApplication.supportedLocales;
-    this.i18n.forEach(i => {
-        //add non present i18n
-        locales.forEach(locale => {
-          this.userInterfaces.forEach(userInterface => {
-            if (!i.label(locale, userInterface)) {
-              i.i18n.push(new I18nLocalizedLabel(locale, userInterface, "", false, null, []));
-            }
-          })
-        });
-        i.i18n.sort((a, b) => {
-            if (a.locale === b.locale) {
-              const interfaceDiff = a.interfaceType - b.interfaceType;
-              if (interfaceDiff === 0) {
-                return (a.connectorId === b.connectorId) ? 0 : (a.connectorId === null || (b.connectorId !== null && b.connectorId < a.connectorId)) ? 1 : -1;
-              } else {
-                return  a.interfaceType - b.interfaceType;
-              }
-            }
-            else return b.locale < a.locale ? 1 : -1;
-          }
-        );
-      }
-    );
   }
 
   private setCategoryOnFirstItem(i18n: I18nLabel[]) {
@@ -127,13 +102,6 @@ export class I18nComponent implements OnInit {
   deleteLabel(label: I18nLabel) {
     this.i18n.splice(this.i18n.indexOf(label), 1);
     this.filteredI18n.splice(this.filteredI18n.indexOf(label), 1);
-    let l =  label.defaultLabel().label;
-    if(!l || l.trim().length === 0) {
-      l = label._id;
-    }
-    this.botService
-      .deleteI18nLabel(label)
-      .subscribe(_ => this.snackBar.open(`Label "${l}" deleted`, "Delete", {duration: 3000}));
   }
 
   onSelectedCategoryChange() {
@@ -170,31 +138,6 @@ export class I18nComponent implements OnInit {
     });
   }
 
-  addAlternative(i18n: I18nLabel, label: I18nLocalizedLabel, index: number, value: string) {
-    label.alternatives[index] = value;
-    this.save(i18n);
-  }
-
-  addLocalizedLabelForConnector(i18n: I18nLabel, label: I18nLocalizedLabel, connectorId:string) {
-    i18n.i18n.push(new I18nLocalizedLabel(label.locale, label.interfaceType, "", false, connectorId, []));
-    this.save(i18n);
-    this.sortI18n();
-  }
-
-  removeAlternative(i18n: I18nLabel, label: I18nLocalizedLabel, index: number) {
-    label.alternatives.splice(index, 1);
-    this.save(i18n);
-  }
-
-  removeLocalizedLabel(i18n: I18nLabel, label: I18nLocalizedLabel) {
-    i18n.i18n.splice(i18n.i18n.indexOf(label), 1);
-    this.save(i18n);
-  }
-
-  addNewAlternative(label: I18nLocalizedLabel) {
-    label.alternatives.push("");
-  }
-
   validateAll() {
     this.i18n.forEach(i => {
       i.i18n.forEach(l => {
@@ -206,12 +149,6 @@ export class I18nComponent implements OnInit {
     this.botService
       .saveI18nLabels(this.i18n)
       .subscribe(_ => this.snackBar.open(`All labels validated`, "Validate", {duration: 3000}));
-  }
-
-  save(i18n: I18nLabel) {
-    this.botService
-      .saveI18nLabel(i18n)
-      .subscribe(_ => this.snackBar.open(`Label updated`, "Update", {duration: 3000}));
   }
 
   downloadExport() {

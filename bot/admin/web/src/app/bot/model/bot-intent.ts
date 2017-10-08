@@ -16,6 +16,7 @@
 
 import {PaginatedQuery} from "tock-nlp-admin/src/app/model/commons";
 import {Sentence} from "tock-nlp-admin/src/app/model/nlp";
+import {I18nLabel} from "./i18n";
 
 export class CreateBotIntentRequest {
 
@@ -73,7 +74,7 @@ export class BotIntent {
 
 export class StoryDefinitionConfiguration {
 
-  textAnswer:string;
+  textAnswer: string;
 
   constructor(public storyId: string,
               public botId: string,
@@ -85,10 +86,10 @@ export class StoryDefinitionConfiguration {
   }
 
   initTextAnswer() {
-    this.textAnswer = this.simpleAnswer().answers[0].text;
+    this.textAnswer = this.simpleAnswer().answers[0].label.defaultLabel().label;
   }
 
-  simpleAnswer() : SimpleAnswerConfiguration {
+  simpleAnswer(): SimpleAnswerConfiguration {
     return this.answers[0] as SimpleAnswerConfiguration;
   }
 
@@ -104,7 +105,7 @@ export class StoryDefinitionConfiguration {
   }
 }
 
-export enum  AnswerConfigurationType {
+export enum AnswerConfigurationType {
   simple,
   message,
   script,
@@ -163,15 +164,17 @@ export abstract class SimpleAnswerConfiguration extends AnswerConfiguration {
   }
 }
 
-export abstract class SimpleAnswer {
+export class SimpleAnswer {
 
-  constructor(public text: string,
+  constructor(public label: I18nLabel,
               public delay: number) {
   }
 
   static fromJSON(json: any): SimpleAnswer {
     const value = Object.create(SimpleAnswer.prototype);
-    const result = Object.assign(value, json, {});
+    const result = Object.assign(value, json, {
+      label: I18nLabel.fromJSON(json.label)
+    });
     return result;
   }
 

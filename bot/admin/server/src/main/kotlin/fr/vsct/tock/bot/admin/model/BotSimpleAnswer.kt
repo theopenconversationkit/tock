@@ -14,6 +14,16 @@
  * limitations under the License.
  */
 
-.fill-remaining-space {
-  flex: 1 1 auto;
+package fr.vsct.tock.bot.admin.model
+
+import fr.vsct.tock.bot.admin.answer.SimpleAnswer
+import fr.vsct.tock.translator.I18nLabel
+import fr.vsct.tock.translator.Translator
+
+/**
+ *
+ */
+data class BotSimpleAnswer(val label: I18nLabel, val delay: Long) {
+
+    constructor(answer: SimpleAnswer) : this(Translator.getOrPersistLabel(answer.key), answer.delay)
 }

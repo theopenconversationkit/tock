@@ -16,8 +16,10 @@
 
 package fr.vsct.tock.bot.admin.answer
 
+import fr.vsct.tock.translator.I18nLabelKey
+
 /**
  *
  */
-data class SimpleAnswer(val text:String, val delay:Long) {
+data class SimpleAnswer(val key:I18nLabelKey, val delay:Long) {
 }

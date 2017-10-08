@@ -30,6 +30,7 @@ import {NlpModule} from "tock-nlp-admin/src/app/nlp-tabs/nlp.module"
 import {ApplicationResolver} from "tock-nlp-admin/src/app/core/application.resolver";
 import {I18nComponent} from "./i18n/i18n.component";
 import {FileUploadModule} from "ng2-file-upload";
+import {I18nLabelComponent} from "./i18n/i18n-label.component";
 
 const routes: Routes = [
   {
@@ -59,6 +60,7 @@ const routes: Routes = [
     ]
   }
 ];
+
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
@@ -81,7 +83,8 @@ export class BotRoutingModule {
     BotTabsComponent,
     CreateBotIntentComponent,
     SearchBotIntentComponent,
-    I18nComponent
+    I18nComponent,
+    I18nLabelComponent
   ],
   exports: [],
   providers: [
