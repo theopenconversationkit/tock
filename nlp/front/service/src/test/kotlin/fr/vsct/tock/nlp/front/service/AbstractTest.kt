@@ -24,12 +24,18 @@ import com.nhaarman.mockito_kotlin.mock
 import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
 import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.Classification
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
+import fr.vsct.tock.nlp.front.shared.parser.QueryContext
+import fr.vsct.tock.shared.Dice
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.tockInternalInjector
 import org.junit.After
 import org.junit.Before
@@ -64,8 +70,16 @@ abstract class AbstractTest {
 
     val context = TestContext()
 
-    val defaultClassification = Classification("test", emptyList())
+    val namespace = "namespace"
+    val appName = "test"
+    val app = ApplicationDefinition(appName, namespace, _id = "id")
+
+    val defaultIntentName = "$namespace:intent"
+    val defaultIntentDefinition = IntentDefinition(defaultIntentName.name(), namespace, setOf(app._id!!), emptySet(), _id = Dice.newId())
+    val defaultClassification = Classification(defaultIntentDefinition._id!!, emptyList())
     val defaultClassifiedSentence = ClassifiedSentence("a", defaultLocale, "id", Instant.now(), Instant.now(), ClassifiedSentenceStatus.inbox, defaultClassification, 1.0, 1.0)
+
+    val parseQuery = ParseQuery(emptyList(), namespace, appName, QueryContext(defaultLocale, Dice.newId()))
 
     @Before
     fun initContext() {

@@ -27,7 +27,7 @@ internal object IntentSelectorService {
         with(data) {
             return classifiedSentence != null
                     && query.context.checkExistingQuery
-                    && data.isStateSupportedByIntentId(classifiedSentence.classification.intentId)
+                    && data.isStateEnabledForIntentId(classifiedSentence.classification.intentId)
         }
     }
 

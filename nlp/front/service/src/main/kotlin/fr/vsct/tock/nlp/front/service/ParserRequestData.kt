@@ -36,14 +36,12 @@ internal data class ParserRequestData(
     private val intentsById = intents.map { it._id!! to it }.toMap()
     private val intentsByName = intents.map { it.qualifiedName to it }.toMap()
 
-    val intentsQualifiersNames = intentsQualifiers.map { it.intent }
-
     private fun isIntentEnabled(intentId: String?): Boolean {
         return intentsQualifiers.isEmpty()
-                || intentsQualifiers.any { intentsById.containsKey(intentsById[intentId]?.qualifiedName) }
+                || intentsQualifiers.any { intentsByName.containsKey(intentsById[intentId]?.qualifiedName) }
     }
 
-    fun isStateSupportedByIntentId(intentId: String?): Boolean {
+    fun isStateEnabledForIntentId(intentId: String?): Boolean {
         return isIntentEnabled(intentId) && intentsById[intentId]?.supportStates(query.state.states) ?: true
     }
 

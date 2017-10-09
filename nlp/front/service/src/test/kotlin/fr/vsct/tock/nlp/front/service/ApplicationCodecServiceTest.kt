@@ -19,7 +19,6 @@ package fr.vsct.tock.nlp.front.service
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
-import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertFalse
@@ -28,8 +27,6 @@ import kotlin.test.assertFalse
  *
  */
 class ApplicationCodecServiceTest : AbstractTest() {
-
-    val app = ApplicationDefinition("test", "namespace", _id = "id")
 
     @Before
     fun before() {
@@ -40,7 +37,7 @@ class ApplicationCodecServiceTest : AbstractTest() {
     fun import_existingApp_shouldNotCreateApp() {
         val dump = ApplicationDump(app)
 
-        val report = ApplicationCodecService.import("namespace", dump)
+        val report = ApplicationCodecService.import(namespace, dump)
         assertFalse(report.modified)
     }
 }
