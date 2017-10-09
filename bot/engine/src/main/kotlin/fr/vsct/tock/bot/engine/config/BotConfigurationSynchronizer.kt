@@ -20,6 +20,7 @@ import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.engine.Bot
 import fr.vsct.tock.shared.Executor
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.longProperty
 import mu.KotlinLogging
@@ -53,9 +54,14 @@ internal object BotConfigurationSynchronizer {
     }
 
     private fun refresh(bot: Bot) {
-        bot.botDefinition.updateStories(
-                storyDAO.getStoryDefinitions(bot.botDefinition.botId)
-                        .map { ConfiguredStoryDefinition(it) }
-        )
+        try {
+            bot.botDefinition.updateStories(
+                    storyDAO.getStoryDefinitions(bot.botDefinition.botId)
+                            .map { ConfiguredStoryDefinition(it) }
+            )
+        } catch (e: Exception) {
+            //log & ignore
+            logger.error(e)
+        }
     }
 }
