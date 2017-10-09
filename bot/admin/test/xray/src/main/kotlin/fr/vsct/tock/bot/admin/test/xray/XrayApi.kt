@@ -16,14 +16,23 @@
 
 package fr.vsct.tock.bot.admin.test.xray
 
+import fr.vsct.tock.bot.admin.test.xray.model.JiraAttachment
+import fr.vsct.tock.bot.admin.test.xray.model.JiraIssue
+import fr.vsct.tock.bot.admin.test.xray.model.JiraTest
+import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildTestStep
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecution
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestStep
+import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
+import retrofit2.http.Header
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.PUT
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 
@@ -46,4 +55,22 @@ interface XrayApi {
 
     @GET("/plugins/servlet/raven/attachment/{id}/{fileName}")
     fun getAttachment(@Path("id") id: Long, @Path("fileName") fileName: String): Call<ResponseBody>
+
+
+    @PUT("/rest/raven/1.0/api/test/{id}/step")
+    fun saveStep(@Path("id") id: String, @Body execution: XrayBuildTestStep): Call<ResponseBody>
+
+    @POST("/rest/api/2/issue")
+    fun createTest(@Body test: JiraTest): Call<JiraIssue>
+
+    @PUT("/rest/api/2/issue/{id}")
+    fun updateTest(@Path("id") id: String, @Body test: JiraTest): Call<ResponseBody>
+
+    @Multipart
+    @POST("/rest/api/2/issue/{id}/attachments")
+    fun addAttachment(
+            @Path("id") id: String,
+            @Part body: MultipartBody.Part,
+            @Header("X-Atlassian-Token") token: String = "no-check")
+            : Call<List<JiraAttachment>>
 }

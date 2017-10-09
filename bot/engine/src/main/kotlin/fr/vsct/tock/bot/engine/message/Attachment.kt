@@ -47,4 +47,6 @@ data class Attachment(
     override fun toPrettyString(): String {
         return "{$eventType:$url,$type}"
     }
+
+    override fun isSimpleMessage(): Boolean = false
 }

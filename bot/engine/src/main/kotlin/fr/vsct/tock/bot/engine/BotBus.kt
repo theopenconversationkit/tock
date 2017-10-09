@@ -55,6 +55,15 @@ import java.util.Locale
  */
 interface BotBus {
 
+    companion object {
+        /**
+         * Helper method to returns the current bus,
+         * linked to the thread currently used by the handler.
+         * (warning: advanced usage only).
+         */
+        fun retrieveCurrentBus(): BotBus? = Bot.retrieveCurrentBus()
+    }
+
     /**
      * The bot definition of the current bot.
      */

@@ -66,28 +66,34 @@ open class BotDefinitionBase(override val botId: String,
             }
         }
 
-        fun testContextKeywordHandler(bus: BotBus) {
+        fun testContextKeywordHandler(bus: BotBus, sendEnd: Boolean = true) {
             bus.userTimeline.dialogs.add(
                     Dialog(
                             setOf(bus.userId, bus.botId)))
             bus.userPreferences.test = true
-            bus.end("test context activated")
+            if (sendEnd) {
+                bus.end("test context activated")
+            }
         }
 
-        fun endTestContextKeywordHandler(bus: BotBus) {
+        fun endTestContextKeywordHandler(bus: BotBus, sendEnd: Boolean = true) {
             bus.userTimeline.dialogs.add(
                     Dialog(
                             setOf(bus.userId, bus.botId)))
             bus.userPreferences.test = false
-            bus.end("test context desactivated")
+            if (sendEnd) {
+                bus.end("test context desactivated")
+            }
         }
 
-        fun deleteKeywordHandler(bus: BotBus) {
+        fun deleteKeywordHandler(bus: BotBus, sendEnd: Boolean = true) {
             bus.handleDelete()
-            bus.end(
-                    "user removed - {0} {1}",
-                    bus.userTimeline.userPreferences.firstName,
-                    bus.userTimeline.userPreferences.lastName)
+            if (sendEnd) {
+                bus.end(
+                        "user removed - {0} {1}",
+                        bus.userTimeline.userPreferences.firstName,
+                        bus.userTimeline.userPreferences.lastName)
+            }
         }
 
         private fun BotBus.handleDelete() {

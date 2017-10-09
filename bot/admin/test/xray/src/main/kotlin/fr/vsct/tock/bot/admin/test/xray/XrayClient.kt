@@ -16,7 +16,11 @@
 
 package fr.vsct.tock.bot.admin.test.xray
 
+import fr.vsct.tock.bot.admin.test.xray.model.JiraAttachment
+import fr.vsct.tock.bot.admin.test.xray.model.JiraIssue
+import fr.vsct.tock.bot.admin.test.xray.model.JiraTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayAttachment
+import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildTestStep
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecution
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestStep
@@ -26,6 +30,10 @@ import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import mu.KotlinLogging
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import okhttp3.ResponseBody
 import retrofit2.Response
 
@@ -33,6 +41,8 @@ import retrofit2.Response
  *
  */
 object XrayClient {
+
+    private val logger = KotlinLogging.logger {}
 
     private val xrayTimeoutInSeconds = longProperty("tock_bot_test_xray_timeout_in_ms", 30000L)
     private val xrayLogin = property("tock_bot_test_xray_login", "please set xray login")
@@ -67,4 +77,27 @@ object XrayClient {
 
     fun getAttachmentToString(attachment: XrayAttachment): String
             = xray.getAttachment(attachment.id, attachment.fileName).execute().body()?.string() ?: "error : empty jira attachment"
+
+    fun createTest(test: JiraTest): JiraIssue
+            = xray.createTest(test).execute().body() ?: error("error during creating test $test")
+
+    fun saveStep(testKey: String, step: XrayBuildTestStep)
+            = xray.saveStep(testKey, step).execute().body()
+
+
+    fun updateTest(jiraId: String, test: JiraTest)
+            = xray.updateTest(jiraId, test).execute().body()
+
+    fun uploadAttachment(issueId: String, name: String, content: String): JiraAttachment
+            =
+            xray.addAttachment(
+                    issueId,
+                    MultipartBody.Part.createFormData(
+                            "file",
+                            name,
+                            RequestBody.create(MediaType.parse("text/plain"), content)))
+                    .execute()
+                    .body()?.firstOrNull() ?: error("error during attachment of $content")
+
+
 }

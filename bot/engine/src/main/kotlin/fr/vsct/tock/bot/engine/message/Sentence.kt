@@ -72,4 +72,6 @@ data class Sentence(
     override fun toPrettyString(): String {
         return text ?: "{$eventType:${elementsToString(messages)}}"
     }
+
+    override fun isSimpleMessage(): Boolean = text != null
 }

@@ -55,4 +55,6 @@ data class Choice(
     override fun toPrettyString(): String {
         return "{$eventType:$intentName,${mapToString(parameters)}}"
     }
+
+    override fun isSimpleMessage(): Boolean = false
 }

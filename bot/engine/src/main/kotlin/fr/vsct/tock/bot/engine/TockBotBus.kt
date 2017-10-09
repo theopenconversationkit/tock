@@ -52,10 +52,12 @@ internal class TockBotBus(
 
     private val bot = connector.bot
 
+    private val currentDialog: Dialog get() = userTimeline.currentDialog() ?: dialog
+
     override var story: Story
-        get() = dialog.currentStory()!!
+        get() = currentDialog.currentStory() ?: dialog.currentStory()!!
         set(value) {
-            dialog.stories.add(value)
+            currentDialog.stories.add(value)
         }
     override val botDefinition: BotDefinition = bot.botDefinition
     override val applicationId = action.applicationId
@@ -68,13 +70,13 @@ internal class TockBotBus(
 
     private val context: BusContext = BusContext()
 
-    override val entities: Map<String, EntityStateValue> = dialog.state.entityValues
-    override val intent: Intent? = dialog.state.currentIntent
+    override val entities: Map<String, EntityStateValue> = currentDialog.state.entityValues
+    override val intent: Intent? = currentDialog.state.currentIntent
 
     override var nextUserActionState: NextUserActionState?
-        get() = dialog.state.nextActionState
+        get() = currentDialog.state.nextActionState
         set(value) {
-            dialog.state.nextActionState = value
+            currentDialog.state.nextActionState = value
         }
 
     /**

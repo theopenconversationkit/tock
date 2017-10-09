@@ -18,10 +18,14 @@ package fr.vsct.tock.bot.admin.test.xray
 
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer
+import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.admin.test.TestActionReport
 import fr.vsct.tock.bot.admin.test.TestDialogReport
 import fr.vsct.tock.bot.admin.test.TestPlan
+import fr.vsct.tock.bot.admin.test.xray.model.JiraTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayAttachment
+import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildStepAttachment
+import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildTestStep
 import fr.vsct.tock.bot.admin.test.xray.model.XrayExecutionConfiguration
 import fr.vsct.tock.bot.admin.test.xray.model.XrayStatus.FAIL
 import fr.vsct.tock.bot.admin.test.xray.model.XrayStatus.PASS
@@ -34,17 +38,20 @@ import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecutionStepReport
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.message.parser.MessageParser
 import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.bot.engine.user.PlayerType
+import fr.vsct.tock.bot.engine.user.PlayerType.bot
+import fr.vsct.tock.bot.engine.user.PlayerType.user
 import fr.vsct.tock.bot.jackson.BotEngineJacksonConfiguration
 import fr.vsct.tock.shared.defaultZoneId
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.addSerializer
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.listProperty
 import fr.vsct.tock.shared.property
 import mu.KotlinLogging
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
+import java.util.Base64
 
 /**
  *
@@ -55,8 +62,12 @@ object XrayService {
 
     private val testedBotId: String = property("tock_bot_test_botId", "please set a bot id to test")
     private val startSentence: String = property("tock_bot_test_start_sentence", "")
-    private val userId = PlayerId("testUser", PlayerType.user)
-    private val botId = PlayerId("testBot", PlayerType.bot)
+    private val userId = PlayerId("testUser", user)
+    private val botId = PlayerId("testBot", bot)
+    private val configurationNames = listProperty("tock_bot_test_configuration_names", emptyList())
+    private val jiraProject: String = property("tock_bot_test_jira_project", "please set a jira project")
+    private val testTypeField: String = property("tock_bot_test_jira_xray_test_type_field", "please set a test type field")
+    private val manualStepsField: String = property("tock_bot_test_jira_xray_manual_test_field", "please set a manual type field")
     private val instant = Instant.now()
 
     init {
@@ -78,6 +89,7 @@ object XrayService {
         return try {
             TockTestClient.getBotConfigurations(testedBotId)
                     .filter { it.connectorType == ConnectorType.rest }
+                    .filter { configurationNames.isEmpty() || configurationNames.contains(it.name) }
                     .map {
                         exec(XrayExecutionConfiguration(it))
                     }
@@ -140,7 +152,7 @@ object XrayService {
                                 emptyList()
                             } else {
                                 dialog.actions.filter {
-                                    it.playerId.type == PlayerType.bot
+                                    it.playerId.type == bot
                                 }.map {
                                     val status = if (!dialogReport.error) {
                                         PASS
@@ -225,8 +237,91 @@ object XrayService {
                             instant,
                             MessageParser.parse(replace("\${botUrl}", configuration.botUrl)),
                             configuration.botConfiguration.targetConnectorType,
-                            "${if (playerId.type == PlayerType.bot) "b" else "u"}${stepId}")
+                            "${if (playerId.type == bot) "b" else "u"}${stepId}")
                 }
     }
 
+    fun generateXrayTest(dialog: DialogReport): XrayTest {
+        //define steps
+        val steps: MutableList<XrayBuildTestStep> = mutableListOf()
+        dialog.actions.forEachIndexed { i, a ->
+            val user = a.playerId.type == user
+            val m = a.message
+            val mData = if (m.isSimpleMessage()) m.toPrettyString() else ""
+            val mAttachments =
+                    listOfNotNull(
+                            if (m.isSimpleMessage()) null
+                            else XrayBuildStepAttachment(
+                                    String(Base64.getEncoder().encode(m.toPrettyString().toByteArray())),
+                                    if (user) "user.message" else "bot.message"
+                            )
+                    )
+
+            if (user) {
+                steps.add(
+                        XrayBuildTestStep(
+                                (steps.size + 1).toString(),
+                                mData,
+                                "",
+                                mAttachments
+                        )
+                )
+            } else {
+                steps.lastOrNull()?.apply {
+                    if (result.isNotBlank() || attachments.any { it.filename == "bot.message" }) {
+                        steps.add(
+                                XrayBuildTestStep(
+                                        (steps.size + 1).toString(),
+                                        "",
+                                        mData,
+                                        mAttachments
+                                )
+                        )
+                    } else {
+                        steps.removeAt(steps.size - 1)
+                        steps.add(
+                                copy(
+                                        result = mData,
+                                        attachments = attachments + mAttachments
+                                )
+                        )
+                    }
+                }
+                        ?: logger.warn { "no first step for $dialog" }
+            }
+
+        }
+        //create test
+        val test = JiraTest(
+                jiraProject,
+                "test",
+                "test",
+                testTypeField,
+                manualStepsField
+        )
+        val jira = XrayClient.createTest(test)
+
+        steps.forEach {
+            XrayClient.saveStep(jira.key, it)
+        }
+
+        /*
+        //upload attachments
+        val attachments = steps.flatMap { it.attachments }.map {
+            XrayClient.uploadAttachment(jira.id, it.fileName, it.content)
+        }.toMutableList()
+
+        XrayClient.updateTest(
+                jira.key,
+                JiraTest(
+                        jiraProject,
+                        "test",
+                        "test",
+                        testTypeField,
+                        manualStepsField,
+                        steps.map { it.copy(attachments = it.attachments.map { it.copy(id = attachments.removeAt(0).id.toLong()) }) })
+        )
+        */
+        return XrayTest(jira.key)
+    }
 }

@@ -19,7 +19,5 @@ package fr.vsct.tock.bot.admin.test.xray.model
 /**
  *
  */
-data class XrayAttachment(
-        val id: Long,
-        val fileName: String
-)
+data class JiraAttachment(val id:String, val filename:String) {
+}

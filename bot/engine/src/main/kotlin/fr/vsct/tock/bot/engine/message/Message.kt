@@ -40,4 +40,6 @@ interface Message {
      * Returns a human readable string representation of the message.
      */
     fun toPrettyString() = toString()
+
+    fun isSimpleMessage() : Boolean = false
 }

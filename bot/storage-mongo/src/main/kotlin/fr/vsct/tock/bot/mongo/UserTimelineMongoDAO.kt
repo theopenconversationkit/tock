@@ -101,12 +101,15 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         logger.debug { "create new timeline $userTimeline" }
         userTimelineCol.save(newTimeline)
         logger.debug { "timeline saved $userTimeline" }
-        val dialog = userTimeline.currentDialog()
-        if (dialog != null) {
+        for (dialog in userTimeline.dialogs) {
+            //TODO if dialog updated
             val dialogToSave = DialogCol(dialog, newTimeline)
             logger.debug { "dialog to save created $userTimeline" }
             dialogCol.save(dialogToSave)
             logger.debug { "dialog saved $userTimeline" }
+        }
+        val dialog = userTimeline.currentDialog()
+        if (dialog != null) {
             executor.executeBlocking {
                 dialog.allActions().lastOrNull { it.playerId.type == PlayerType.user }
                         ?.let { action ->
@@ -175,7 +178,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     private fun loadLastValidDialog(userId: PlayerId, storyDefinitionProvider: (String) -> StoryDefinition): Dialog? {
         return try {
             return loadLastValidDialogCol(userId)?.toDialog(storyDefinitionProvider)
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             logger.error(e)
             null
         }

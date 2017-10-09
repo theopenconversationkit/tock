@@ -38,6 +38,17 @@ import mu.KotlinLogging
  */
 class Bot(botDefinitionBase: BotDefinition) {
 
+    companion object {
+        private val currentBus = ThreadLocal<BotBus>()
+
+        /**
+         * Helper method to returns the current bus,
+         * linked to the thread currently used by the handler.
+         * (warning: advanced usage only).
+         */
+        internal fun retrieveCurrentBus(): BotBus? = currentBus.get()
+    }
+
     private val logger = KotlinLogging.logger {}
 
     private val nlp: NlpController by injector.instance()
@@ -67,7 +78,12 @@ class Bot(botDefinitionBase: BotDefinition) {
             val story = getStory(action, dialog)
             val bus = TockBotBus(connector, userTimeline, dialog, action, botDefinition)
 
-            story.handle(bus)
+            try {
+                currentBus.set(bus)
+                story.handle(bus)
+            } finally {
+                currentBus.remove()
+            }
         } else {
             //refresh intent flag
             userTimeline.userState.botDisabled = true
