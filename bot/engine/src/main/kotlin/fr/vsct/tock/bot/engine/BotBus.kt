@@ -25,7 +25,8 @@ import fr.vsct.tock.bot.definition.ParameterKey
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.action.ActionSignificance
+import fr.vsct.tock.bot.engine.action.ActionPriority
+import fr.vsct.tock.bot.engine.action.ActionNotificationType
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.ContextValue
@@ -391,9 +392,14 @@ interface BotBus {
     fun send(action: Action, delay: Long = 0): BotBus
 
     /**
-     * Add the specified [ActionSignificance] to the bus context.
+     * Add the specified [ActionPriority] to the bus context.
      */
-    fun with(significance: ActionSignificance): BotBus
+    fun with(priority: ActionPriority): BotBus
+
+    /**
+     * Add the specified [ActionNotificationType] to the bus context.
+     */
+    fun with(notificationType: ActionNotificationType): BotBus
 
     /**
      * Add the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.

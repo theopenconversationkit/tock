@@ -22,7 +22,8 @@ import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.action.ActionSignificance
+import fr.vsct.tock.bot.engine.action.ActionPriority
+import fr.vsct.tock.bot.engine.action.ActionNotificationType
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.ContextValue
@@ -52,6 +53,7 @@ open class BotBusMock(override var userTimeline: UserTimeline,
                       override var userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
                       var initialUserPreferences: UserPreferences,
                       var connectorType: ConnectorType) : BotBus {
+
 
     constructor(context: BotBusMockContext,
                 action: Action = context.action)
@@ -149,7 +151,7 @@ open class BotBusMock(override var userTimeline: UserTimeline,
 
     private fun answer(action: Action, delay: Long = 0): BotBus {
         mockData.currentDelay += delay
-        action.metadata.significance = mockData.significance
+        action.metadata.priority = mockData.priority
         if (action is SendSentence) {
             action.messages.addAll(mockData.connectorMessages.values)
         }
@@ -195,8 +197,13 @@ open class BotBusMock(override var userTimeline: UserTimeline,
         return answer(action, delay)
     }
 
-    override fun with(significance: ActionSignificance): BotBus {
-        mockData.significance = significance
+    override fun with(priority: ActionPriority): BotBus {
+        mockData.priority = priority
+        return this
+    }
+
+    override fun with(notificationType: ActionNotificationType): BotBus {
+        mockData.notificationType = notificationType
         return this
     }
 

@@ -50,7 +50,7 @@ class MessageRequestDeserializationTest {
                                 )
                         )
                 )
-        )
+        ,tag = MessageTag.FEATURE_FUNCTIONALITY_UPDATE)
         val s = mapper.writeValueAsString(m)
         assertEquals(m, mapper.readValue<MessageRequest>(s))
     }

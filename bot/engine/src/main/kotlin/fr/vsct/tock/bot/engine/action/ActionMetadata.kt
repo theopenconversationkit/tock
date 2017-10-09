@@ -23,5 +23,7 @@ data class ActionMetadata(
         /** Is it the last answer of the bot. */
         var lastAnswer: Boolean = false,
         /** Significance deals with the notification level. */
-        var significance: ActionSignificance = ActionSignificance.normal) {
+        var priority: ActionPriority = ActionPriority.normal,
+        /** tag deals with type of message notification. */
+        var notificationType: ActionNotificationType? = null) {
 }

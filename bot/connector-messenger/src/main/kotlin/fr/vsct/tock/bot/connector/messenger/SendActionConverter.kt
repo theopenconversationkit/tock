@@ -53,7 +53,8 @@ internal object SendActionConverter {
             MessageRequest(
                     Recipient(action.recipientId.id),
                     it,
-                    NotificationType.toNotificationType(action)
+                    NotificationType.toNotificationType(action),
+                    MessageTag.toMessageTag(action)
             )
         }
     }

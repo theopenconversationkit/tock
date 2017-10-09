@@ -21,7 +21,7 @@ import com.nhaarman.mockito_kotlin.argForWhich
 import com.nhaarman.mockito_kotlin.verify
 import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.action.ActionSignificance
+import fr.vsct.tock.bot.engine.action.ActionPriority
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.message.Choice
 import org.junit.Test
@@ -40,8 +40,8 @@ class BotBusTest : BotEngineTest() {
 
     @Test
     fun withSignificance_hasToUpdateActionSignificance() {
-        bus.with(ActionSignificance.urgent).end()
-        verify(connector).send(argForWhich { this is Action && metadata.significance == ActionSignificance.urgent }, any())
+        bus.with(ActionPriority.urgent).end()
+        verify(connector).send(argForWhich { this is Action && metadata.priority == ActionPriority.urgent }, any())
     }
 
     @Test

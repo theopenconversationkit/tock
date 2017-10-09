@@ -18,8 +18,9 @@ package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.engine.action.ActionSignificance
-import fr.vsct.tock.bot.engine.action.ActionSignificance.normal
+import fr.vsct.tock.bot.engine.action.ActionPriority
+import fr.vsct.tock.bot.engine.action.ActionPriority.normal
+import fr.vsct.tock.bot.engine.action.ActionNotificationType
 
 /**
  *
@@ -28,11 +29,12 @@ internal data class BusContext(
         var currentDelay: Long = 0,
         val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf(),
         val contextMap: MutableMap<String, Any> = mutableMapOf(),
-        var significance: ActionSignificance = normal) {
+        var priority: ActionPriority = normal,
+        var notificationType: ActionNotificationType? = null) {
 
     fun clear() {
         connectorMessages.clear()
-        significance = normal
+        priority = normal
     }
 
     fun addMessage(message: ConnectorMessage) {

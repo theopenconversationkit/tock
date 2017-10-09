@@ -22,5 +22,6 @@ import fr.vsct.tock.bot.connector.messenger.model.send.NotificationType.NO_PUSH
 
 data class MessageRequest(val recipient: Recipient,
                           val message: Message,
-                          @JsonProperty("notification_type") val notificationType: NotificationType = NO_PUSH) {
+                          @JsonProperty("notification_type") val notificationType: NotificationType = NO_PUSH,
+                          @JsonProperty("tag") val tag : MessageTag? = null) {
 }

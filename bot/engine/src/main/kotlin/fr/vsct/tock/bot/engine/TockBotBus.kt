@@ -21,7 +21,8 @@ import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.action.ActionSignificance
+import fr.vsct.tock.bot.engine.action.ActionPriority
+import fr.vsct.tock.bot.engine.action.ActionNotificationType
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
@@ -96,7 +97,7 @@ internal class TockBotBus(
 
     private fun answer(action: Action, delay: Long = 0): BotBus {
         context.currentDelay += delay
-        action.metadata.significance = context.significance
+        action.metadata.priority = context.priority
         if (action is SendSentence) {
             action.messages.addAll(context.connectorMessages.values)
         }
@@ -121,8 +122,13 @@ internal class TockBotBus(
         return answer(action, delay)
     }
 
-    override fun with(significance: ActionSignificance): BotBus {
-        context.significance = significance
+    override fun with(priority: ActionPriority): BotBus {
+        context.priority = priority
+        return this
+    }
+
+    override fun with(notificationType: ActionNotificationType): BotBus {
+        context.notificationType = notificationType
         return this
     }
 

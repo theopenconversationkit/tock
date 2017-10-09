@@ -18,7 +18,8 @@ package fr.vsct.tock.bot.test
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.engine.action.ActionSignificance
+import fr.vsct.tock.bot.engine.action.ActionPriority
+import fr.vsct.tock.bot.engine.action.ActionNotificationType
 
 /**
  *
@@ -27,11 +28,12 @@ internal data class BusMockData(
         var currentDelay: Long = 0,
         val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf(),
         val contextMap: MutableMap<String, Any> = mutableMapOf(),
-        var significance: ActionSignificance = ActionSignificance.normal) {
+        var priority: ActionPriority = ActionPriority.normal,
+        var notificationType: ActionNotificationType? = null) {
 
     fun clear() {
         connectorMessages.clear()
-        significance = ActionSignificance.normal
+        priority = ActionPriority.normal
     }
 
     fun addMessage(message: ConnectorMessage) {

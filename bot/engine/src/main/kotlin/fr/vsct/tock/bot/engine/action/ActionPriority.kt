@@ -19,7 +19,7 @@ package fr.vsct.tock.bot.engine.action
 /**
  * To manage notification types.
  */
-enum class ActionSignificance {
+enum class ActionPriority {
 
     normal, high, urgent
 }
