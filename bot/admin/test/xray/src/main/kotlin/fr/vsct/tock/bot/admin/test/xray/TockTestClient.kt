@@ -53,6 +53,6 @@ object TockTestClient {
     }
 
     fun getBotConfigurations(botId: String): List<BotApplicationConfiguration> {
-        return tock.getBotConfigurations(botId).execute().body() ?: error("not bot configuration")
+        return tock.getBotConfigurations(botId).execute().body() ?: error("not a bot configuration")
     }
 }

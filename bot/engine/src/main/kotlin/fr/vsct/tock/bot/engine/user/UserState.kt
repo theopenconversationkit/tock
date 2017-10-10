@@ -22,7 +22,7 @@ import java.time.Instant
 import java.time.Instant.now
 
 /**
- *
+ * The user state.
  */
 data class UserState(
         val creationDate: Instant = now(),
@@ -31,6 +31,13 @@ data class UserState(
     companion object {
         private const val PROFILE_LOADED_FLAG = "tock_profile_loaded"
         private const val BOT_DISABLED_FLAG = "tock_bot_disabled"
+    }
+
+    /**
+     * Cleanup the state.
+     */
+    fun cleanup() {
+        flags.clear()
     }
 
     var profileLoaded: Boolean

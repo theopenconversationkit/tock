@@ -26,6 +26,7 @@ import fr.vsct.tock.bot.connector.rest.model.MessageRequest
 import fr.vsct.tock.bot.connector.rest.model.MessageResponse
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.dialog.TestContext
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
@@ -128,9 +129,10 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
 
     override fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences {
         //register user as test user if applicable
-        return UserPreferences()
-                .apply {
-                    test = currentMessages.getIfPresent(userId.id)?.test ?: false
-                }
+        return UserPreferences().apply {
+            if (currentMessages.getIfPresent(userId.id)?.test == true) {
+                TestContext.setup(this)
+            }
+        }
     }
 }
