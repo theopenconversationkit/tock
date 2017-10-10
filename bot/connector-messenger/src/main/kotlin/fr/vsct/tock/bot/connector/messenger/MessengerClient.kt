@@ -51,13 +51,13 @@ internal class MessengerClient(val secretKey: String) {
 
     interface GraphApi {
 
-        @POST("/v2.6/me/messages")
+        @POST("/v2.10/me/messages")
         fun sendMessage(@Query("access_token") accessToken: String, @Body messageRequest: MessageRequest): Call<SendResponse>
 
-        @POST("/v2.6/me/messages")
+        @POST("/v2.10/me/messages")
         fun sendAction(@Query("access_token") accessToken: String, @Body actionRequest: ActionRequest): Call<SendResponse>
 
-        @GET("/v2.6/{userId}/")
+        @GET("/v2.10/{userId}/")
         fun getUserProfile(@Path("userId") userId: String, @Query("access_token") accessToken: String, @Query("fields") fields: String): Call<UserProfile>
     }
 
