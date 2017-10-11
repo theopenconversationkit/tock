@@ -44,7 +44,7 @@ object XrayClient {
 
     private val logger = KotlinLogging.logger {}
 
-    private val xrayTimeoutInSeconds = longProperty("tock_bot_test_xray_timeout_in_ms", 30000L)
+    private val xrayTimeoutInSeconds = longProperty("tock_bot_test_xray_timeout_in_ms", 60000L)
     private val xrayLogin = property("tock_bot_test_xray_login", "please set xray login")
     private val xrayPassword = property("tock_bot_test_xray_password", "please set xray password")
     private val xrayUrl = property("tock_bot_test_xray_url", "please set xray url")
