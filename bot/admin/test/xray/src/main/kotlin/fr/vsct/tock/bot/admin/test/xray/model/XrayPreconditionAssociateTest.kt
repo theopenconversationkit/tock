@@ -16,21 +16,9 @@
 
 package fr.vsct.tock.bot.admin.test.xray.model
 
-import fr.vsct.tock.translator.UserInterfaceType
-import fr.vsct.tock.translator.UserInterfaceType.textChat
-
 /**
  *
  */
-data class XrayTest(
-        val key: String,
-        val precondition: List<XrayPrecondition> = emptyList()) {
-
-    fun supportConf(conf: String): Boolean {
-        return precondition.isEmpty() || precondition.any { it.supportConf(conf) }
-    }
-
-    fun findUserInterface(): UserInterfaceType
-            = precondition.mapNotNull { it.findUserInterface() }.firstOrNull() ?: textChat
-
-}
+data class XrayPreconditionAssociateTest(
+        val add: List<String>
+)

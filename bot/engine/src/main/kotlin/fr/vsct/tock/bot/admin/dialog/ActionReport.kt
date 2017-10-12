@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.admin.dialog
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.translator.UserInterfaceType
 import java.time.Instant
 
 /**
@@ -29,6 +30,7 @@ data class ActionReport(
         val date: Instant,
         val message: Message,
         val connectorType: ConnectorType?,
+        val userInterfaceType: UserInterfaceType,
         val test:Boolean = false,
         val id: String
 ) {

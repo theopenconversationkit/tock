@@ -20,6 +20,7 @@ import fr.vsct.tock.bot.admin.test.xray.model.JiraAttachment
 import fr.vsct.tock.bot.admin.test.xray.model.JiraIssue
 import fr.vsct.tock.bot.admin.test.xray.model.JiraTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildTestStep
+import fr.vsct.tock.bot.admin.test.xray.model.XrayPreconditionAssociateTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecution
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestStep
@@ -59,6 +60,11 @@ interface XrayApi {
 
     @PUT("/rest/raven/1.0/api/test/{id}/step")
     fun saveStep(@Path("id") id: String, @Body execution: XrayBuildTestStep): Call<ResponseBody>
+
+    @POST("/rest/raven/1.0/api/precondition/{preConditionKey}/test")
+    fun addPrecondition(
+            @Path("preConditionKey") preConditionKey: String,
+            @Body associate: XrayPreconditionAssociateTest): Call<ResponseBody>
 
     @POST("/rest/api/2/issue")
     fun createTest(@Body test: JiraTest): Call<JiraIssue>

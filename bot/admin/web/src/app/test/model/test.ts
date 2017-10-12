@@ -16,7 +16,7 @@
 
 import {ActionReport, BotMessage, DialogReport, PlayerId, PlayerType} from "app/shared/model/dialog-data";
 import {ApplicationScopedQuery} from "tock-nlp-admin/src/app/model/commons";
-import {ConnectorType} from "../../core/model/configuration";
+import {ConnectorType, UserInterfaceType} from "../../core/model/configuration";
 
 export class BotDialogRequest extends ApplicationScopedQuery {
 
@@ -192,6 +192,7 @@ export class TestActionReport {
               public date: Date,
               public messages: BotMessage[],
               public id: String,
+              public userInterfaceType: UserInterfaceType,
               public connectorType?: ConnectorType) {
   }
 
@@ -209,7 +210,8 @@ export class TestActionReport {
     const result = Object.assign(value, json, {
       playerId: PlayerId.fromJSON(json.playerId),
       messages: BotMessage.fromJSONArray(json.messages),
-      connectorType:ConnectorType.fromJSON(json.connectorType)
+      connectorType: ConnectorType.fromJSON(json.connectorType),
+      userInterfaceType: UserInterfaceType[json.userInterfaceType]
     });
 
     return result;

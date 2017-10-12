@@ -16,12 +16,37 @@
 
 package fr.vsct.tock.bot.admin.test.xray.model
 
+import fr.vsct.tock.shared.property
+import fr.vsct.tock.translator.UserInterfaceType
+import fr.vsct.tock.translator.UserInterfaceType.textAndVoiceAssistant
+import fr.vsct.tock.translator.UserInterfaceType.textChat
+import fr.vsct.tock.translator.UserInterfaceType.valueOf
+import fr.vsct.tock.translator.UserInterfaceType.voiceAssistant
+
 /**
  *
  */
-data class XrayPrecondition(val preconditionKey: String, val condition:String?) {
+data class XrayPrecondition(val preconditionKey: String, val condition: String?) {
 
-    fun supportConf(conf:String) : Boolean {
+    companion object {
+        val textChatPrecondition: String = property("tock_bot_test_precondition_key_text_chat", "")
+        val voiceAssistantPrecondition: String = property("tock_bot_test_precondition_key_voice_assistant", "")
+        val textAndVoiceAssistantPrecondition: String = property("tock_bot_test_precondition_key_text_and_voice_assistant", "")
+
+        fun getPreconditionForUserInterface(userInterface: UserInterfaceType): String? {
+            return when (userInterface) {
+                textChat -> textChatPrecondition
+                voiceAssistant -> voiceAssistantPrecondition
+                textAndVoiceAssistant -> textAndVoiceAssistantPrecondition
+            }.run { if (isBlank()) null else this }
+        }
+    }
+
+    fun supportConf(conf: String): Boolean {
         return condition.isNullOrBlank() || condition?.split(",")?.contains(conf) ?: true
+    }
+
+    fun findUserInterface(): UserInterfaceType? {
+        return if (preconditionKey == "user_interface") valueOf(condition ?: textChat.name) else null
     }
 }

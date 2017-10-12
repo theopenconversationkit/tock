@@ -21,6 +21,7 @@ import fr.vsct.tock.bot.admin.test.xray.model.JiraIssue
 import fr.vsct.tock.bot.admin.test.xray.model.JiraTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayAttachment
 import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildTestStep
+import fr.vsct.tock.bot.admin.test.xray.model.XrayPreconditionAssociateTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecution
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestStep
@@ -84,6 +85,11 @@ object XrayClient {
     fun saveStep(testKey: String, step: XrayBuildTestStep)
             = xray.saveStep(testKey, step).execute().body()
 
+    fun addPrecondition(preConditionKey: String, jiraId: String) =
+            xray.addPrecondition(
+                    preConditionKey,
+                    XrayPreconditionAssociateTest(listOf(jiraId))
+            ).execute().body()
 
     fun updateTest(jiraId: String, test: JiraTest)
             = xray.updateTest(jiraId, test).execute().body()

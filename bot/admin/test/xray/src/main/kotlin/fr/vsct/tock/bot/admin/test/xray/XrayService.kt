@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.admin.test.xray.model.XrayAttachment
 import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildStepAttachment
 import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildTestStep
 import fr.vsct.tock.bot.admin.test.xray.model.XrayExecutionConfiguration
+import fr.vsct.tock.bot.admin.test.xray.model.XrayPrecondition
 import fr.vsct.tock.bot.admin.test.xray.model.XrayStatus.FAIL
 import fr.vsct.tock.bot.admin.test.xray.model.XrayStatus.PASS
 import fr.vsct.tock.bot.admin.test.xray.model.XrayStatus.TODO
@@ -47,6 +48,7 @@ import fr.vsct.tock.shared.jackson.addSerializer
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.listProperty
 import fr.vsct.tock.shared.property
+import fr.vsct.tock.translator.UserInterfaceType
 import mu.KotlinLogging
 import java.time.Instant
 import java.time.OffsetDateTime
@@ -213,17 +215,24 @@ object XrayService {
     }
 
     private fun getDialogReport(configuration: XrayExecutionConfiguration, test: XrayTest): TestDialogReport {
+        val userInterface = test.findUserInterface()
         val steps = XrayClient.getTestSteps(test.key)
         return TestDialogReport(
                 steps.flatMap {
                     listOfNotNull(
-                            parseStepData(configuration, it.id, userId, it.data.raw, it.attachments.firstOrNull { it.fileName == "user.message" }),
-                            parseStepData(configuration, it.id, botId, it.result.raw, it.attachments.firstOrNull { it.fileName == "bot.message" })
+                            parseStepData(configuration, userInterface, it.id, userId, it.data.raw, it.attachments.firstOrNull { it.fileName == "user.message" }),
+                            parseStepData(configuration, userInterface, it.id, botId, it.result.raw, it.attachments.firstOrNull { it.fileName == "bot.message" })
                     )
                 }, test.key)
     }
 
-    private fun parseStepData(configuration: XrayExecutionConfiguration, stepId: Long, playerId: PlayerId, raw: String?, attachment: XrayAttachment?): TestActionReport? {
+    private fun parseStepData(
+            configuration: XrayExecutionConfiguration,
+            userInterface: UserInterfaceType,
+            stepId: Long,
+            playerId: PlayerId,
+            raw: String?,
+            attachment: XrayAttachment?): TestActionReport? {
         val message = if (attachment != null) {
             XrayClient.getAttachmentToString(attachment)
         } else {
@@ -237,14 +246,19 @@ object XrayService {
                             instant,
                             MessageParser.parse(replace("\${botUrl}", configuration.botUrl)),
                             configuration.botConfiguration.targetConnectorType,
+                            userInterface,
                             "${if (playerId.type == bot) "b" else "u"}${stepId}")
                 }
     }
 
-    fun generateXrayTest(dialog: DialogReport): XrayTest {
+    fun generateXrayTest(dialog: DialogReport): XrayTest? {
+        if (dialog.actions.isEmpty()) {
+            logger.warn { "no action for dialog $dialog" }
+            return null
+        }
         //define steps
         val steps: MutableList<XrayBuildTestStep> = mutableListOf()
-        dialog.actions.forEachIndexed { i, a ->
+        dialog.actions.forEach { a ->
             val user = a.playerId.type == user
             val m = a.message
             val mData = if (m.isSimpleMessage()) m.toPrettyString() else ""
@@ -305,23 +319,11 @@ object XrayService {
             XrayClient.saveStep(jira.key, it)
         }
 
-        /*
-        //upload attachments
-        val attachments = steps.flatMap { it.attachments }.map {
-            XrayClient.uploadAttachment(jira.id, it.fileName, it.content)
-        }.toMutableList()
+        XrayPrecondition.getPreconditionForUserInterface(dialog.actions.first().userInterfaceType)
+                ?.apply {
+                    XrayClient.addPrecondition(this, jira.key)
+                }
 
-        XrayClient.updateTest(
-                jira.key,
-                JiraTest(
-                        jiraProject,
-                        "test",
-                        "test",
-                        testTypeField,
-                        manualStepsField,
-                        steps.map { it.copy(attachments = it.attachments.map { it.copy(id = attachments.removeAt(0).id.toLong()) }) })
-        )
-        */
         return XrayTest(jira.key)
     }
 }

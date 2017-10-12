@@ -20,6 +20,8 @@ import fr.vsct.tock.bot.admin.dialog.ActionReport
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.translator.UserInterfaceType
+import fr.vsct.tock.translator.UserInterfaceType.textChat
 import java.time.Instant
 
 /**
@@ -30,6 +32,7 @@ data class TestActionReport(
         val date: Instant,
         val messages: List<Message>,
         val connectorType: ConnectorType?,
+        val userInterfaceType: UserInterfaceType = textChat,
         val id: String
 ) {
 
@@ -37,9 +40,17 @@ data class TestActionReport(
                 date: Instant,
                 message: Message,
                 connectorType: ConnectorType?,
-                id: String) : this(playerId, date, listOf(message), connectorType, id)
+                userInterfaceType: UserInterfaceType,
+                id: String) :
+            this(
+                    playerId,
+                    date,
+                    listOf(message),
+                    connectorType,
+                    userInterfaceType,
+                    id)
 
-    constructor(report: ActionReport) : this(report.playerId, report.date, report.message, report.connectorType, report.id)
+    constructor(report: ActionReport) : this(report.playerId, report.date, report.message, report.connectorType, report.userInterfaceType, report.id)
 
     fun findFirstMessage(): Message {
         return messages.first()

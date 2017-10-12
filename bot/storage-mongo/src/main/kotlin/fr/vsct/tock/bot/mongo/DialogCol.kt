@@ -45,6 +45,7 @@ import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import fr.vsct.tock.shared.security.StringObfuscatorMode.normal
 import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
+import fr.vsct.tock.translator.UserInterfaceType.textChat
 import java.time.Instant
 import java.time.Instant.now
 
@@ -99,6 +100,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                                     it.date,
                                     it.toMessage(),
                                     it.state.targetConnectorType,
+                                    it.state.userInterface ?: textChat,
                                     it.state.testEvent,
                                     it.id)
                         },
