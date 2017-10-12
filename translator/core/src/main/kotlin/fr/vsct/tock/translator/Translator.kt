@@ -32,6 +32,7 @@ import java.text.ChoiceFormat
 import java.text.MessageFormat
 import java.util.Formatter
 import java.util.Locale
+import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
 
 /**
@@ -57,6 +58,22 @@ object Translator {
     private val cache: Cache<String, I18nLabel> = CacheBuilder.newBuilder()
             .expireAfterWrite(longProperty("tock_i18n_cache_write_timeout_in_seconds", 10), TimeUnit.SECONDS)
             .build()
+
+    private val voiceTransformers: MutableList<VoiceTransformer> = CopyOnWriteArrayList()
+
+    fun registerVoiceTransformer(transformer: VoiceTransformer) {
+        voiceTransformers.add(transformer)
+    }
+
+    fun unregisterVoiceTransformer(transformer: VoiceTransformer) {
+        voiceTransformers.remove(transformer)
+    }
+
+    private fun transformArg(text: Any, locale: Locale, userInterfaceType: UserInterfaceType): Any {
+        var t = text
+        voiceTransformers.forEach { t = it.transformArg(t, locale, userInterfaceType) }
+        return t
+    }
 
     private fun loadLabel(id: String): I18nLabel? {
         return try {
@@ -241,7 +258,7 @@ object Translator {
     }
 
     private fun formatArg(arg: Any?, locale: Locale, userInterfaceType: UserInterfaceType, connectorId: String?): Any? {
-        return when (arg) {
+        val a = when (arg) {
             is String? -> arg ?: ""
             is Number? -> arg ?: -1
             is Boolean? -> if (arg == null) -1 else if (arg) 1 else 0
@@ -250,6 +267,8 @@ object Translator {
             null -> ""
             else -> Formatter().format(locale, "%s", arg).toString()
         }
+
+        return transformArg(a, locale, userInterfaceType)
     }
 
     fun translate(
