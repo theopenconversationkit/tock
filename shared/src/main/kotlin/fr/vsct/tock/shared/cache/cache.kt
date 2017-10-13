@@ -16,13 +16,38 @@
 
 package fr.vsct.tock.shared.cache
 
-import com.github.salomonbrys.kodein.instance
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.longProperty
+import fr.vsct.tock.shared.provide
 import mu.KotlinLogging
+import java.util.concurrent.TimeUnit
 
 private val logger = KotlinLogging.logger {}
-private val cache: TockCache by injector.instance()
+
+private val inMemoryCache: Cache<Any, Any> =
+        CacheBuilder
+                .newBuilder()
+                .maximumSize(longProperty("tock_cache_in_memory_maximum_size", 10000))
+                .expireAfterAccess(longProperty("tock_cache_in_memory_expiration_in_ms", 1000 * 60 * 60L), TimeUnit.MILLISECONDS)
+                .build()
+
+private val NOT_PRESENT = Any()
+
+private val cache: TockCache get() = injector.provide()
+
+private fun <T> Any?.replaceNotPresent(): T? {
+    @Suppress("UNCHECKED_CAST")
+    return if (this == NOT_PRESENT) {
+        null
+    } else {
+        this as T
+    }
+}
+
+private fun inMemoryKey(id: String, type: String): Any = id to type
 
 /**
  * Returns the value for specified id and type.
@@ -30,16 +55,19 @@ private val cache: TockCache by injector.instance()
  * If [valueProvider] throws exception or returns null, no value is cached and null is returned.
  */
 fun <T : Any> getOrCache(id: String, type: String, valueProvider: () -> T?): T? {
-    return getFromCache(id, type)
-            ?:
-            try {
-                valueProvider.invoke()?.apply {
-                    putInCache(id, type, this)
+    return inMemoryCache.get(inMemoryKey(id, type)) {
+        cache.get(id, type)
+                ?:
+                try {
+                    valueProvider.invoke()?.apply {
+                        putInCache(id, type, this)
+                    }
+                } catch (e: Exception) {
+                    logger.error(e)
+                    null
                 }
-            } catch(e: Exception) {
-                logger.error(e)
-                null
-            }
+                ?: NOT_PRESENT
+    }.replaceNotPresent()
 }
 
 /**
@@ -48,8 +76,9 @@ fun <T : Any> getOrCache(id: String, type: String, valueProvider: () -> T?): T? 
  */
 fun <T : Any> getFromCache(id: String, type: String): T? {
     return try {
-        @Suppress("UNCHECKED_CAST")
-        cache.get(id, type) as T?
+        inMemoryCache.get(inMemoryKey(id, type)) {
+            cache.get(id, type) ?: NOT_PRESENT
+        }.replaceNotPresent()
     } catch (e: Exception) {
         logger.error(e)
         null
@@ -61,8 +90,9 @@ fun <T : Any> getFromCache(id: String, type: String): T? {
  */
 fun <T : Any> putInCache(id: String, type: String, value: T) {
     try {
+        inMemoryCache.put(inMemoryKey(id, type), value)
         cache.put(id, type, value)
-    } catch(e: Exception) {
+    } catch (e: Exception) {
         logger.error(e)
     }
 }
@@ -71,6 +101,7 @@ fun <T : Any> putInCache(id: String, type: String, value: T) {
  * Remove the value for specified id and type from cache.
  */
 fun removeFromCache(id: String, type: String) {
+    inMemoryCache.invalidate(inMemoryKey(id, type))
     cache.remove(id, type)
 }
 
