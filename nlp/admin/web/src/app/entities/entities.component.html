@@ -16,16 +16,9 @@
 
 <md-card class="entities">
   <md-card-content>
-    <md-card-title>Entities</md-card-title>
+    <md-card-title>Entity roles</md-card-title>
     <md-list>
-        <md-list-item *ngFor="let e of state.entities | async">
-          <md-icon mdListIcon [style.color]="e.entityColor">extension</md-icon>
-          <span [style.background-color]="e.entityColor">{{e.qualifiedName(state.user)}}</span>
-          <div *ngIf="e.isDateType()" class="dateType">
-            <md-checkbox [(ngModel)]="e.atStartOfDay" md-tooltip="useful for non relative time">Evaluate at start of day</md-checkbox>
-            <button md-button (click)="update(e)" color="primary">Update</button>
-          </div>
-        </md-list-item>
+      <tock-entity-details *ngFor="let e of state.entities | async" [entity]="e"></tock-entity-details>
     </md-list>
   </md-card-content>
 </md-card>

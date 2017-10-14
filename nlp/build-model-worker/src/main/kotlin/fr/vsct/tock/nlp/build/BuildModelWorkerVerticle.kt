@@ -18,13 +18,13 @@ package fr.vsct.tock.nlp.build
 
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.front.client.FrontClient
+import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.deleted
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
-import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
@@ -82,6 +82,20 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                 sentences.groupBy { it.classification.intentId }.forEach { intentId, intentSentences ->
                     front.updateEntityModelForIntent(intentSentences, app, intentId, key.language, app.nlpEngineType, onlyIfNotExists)
                 }
+
+
+                front.getEntityTypes()
+                        .filter { it.subEntities.isNotEmpty() }
+                        .forEach { entityType ->
+                            front.updateEntityModelForEntityType(
+                                    sentences.filter { it.classification.entities.any { it.type == entityType.name } },
+                                    app,
+                                    entityType,
+                                    key.language,
+                                    app.nlpEngineType,
+                                    onlyIfNotExists
+                            )
+                        }
 
                 logger.info { "Model updated for ${app.name} and ${key.language}" }
             } catch (e: Throwable) {

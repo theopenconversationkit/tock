@@ -30,6 +30,7 @@ data class ContextValue(
         val content: String?,
         var value: Value? = null,
         var evaluated: Boolean = false,
+        val subEntities: List<ContextValue> = emptyList(),
         var probability: Double = 1.0,
         val mergeSupport: Boolean = false
 ) {
@@ -42,6 +43,7 @@ data class ContextValue(
             sentence.substring(value.start, value.end),
             value.value,
             value.evaluated,
+            value.subEntities.map { ContextValue(sentence.substring(value.start, value.end), it) },
             value.probability,
             value.mergeSupport)
 

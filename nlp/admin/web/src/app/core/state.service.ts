@@ -104,6 +104,10 @@ export class StateService implements AuthListener {
     this.entityTypes.next(entities.splice(entities.indexOf(entityToRemove), 1));
   }
 
+  removeSubEntityByRole(entityType:EntityType, role:string) {
+    entityType.subEntities.splice(entityType.subEntities.findIndex(e => e.role === role), 1);
+  }
+
   localeName(code: string): string {
     return this.locales ? this.locales.find(l => l.first === code).second : code;
   }

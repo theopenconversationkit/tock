@@ -28,6 +28,7 @@ data class ModelBuild(
         val language:Locale,
         val type: ModelBuildType,
         val intentId:String?,
+        val entityTypeName:String?,
         val nbSentences: Int,
         val duration: Duration,
         val error: Boolean,

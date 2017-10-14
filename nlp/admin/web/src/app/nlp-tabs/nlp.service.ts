@@ -20,12 +20,13 @@ import {StateService} from "../core/state.service";
 import {
   EntityDefinition,
   EntityType,
+  LogsQuery,
   LogsResult,
   ParseQuery,
-  LogsQuery,
   SearchQuery,
   Sentence,
-  SentencesResult, UpdateEntityDefinitionQuery
+  SentencesResult,
+  UpdateEntityDefinitionQuery
 } from "../model/nlp";
 import {Observable} from "rxjs";
 import {Application, Intent} from "../model/application";
@@ -65,16 +66,24 @@ export class NlpService implements OnDestroy {
     return this.rest.delete(`/application/${application._id}/intent/${intent._id}/entity/${entity.entityTypeName}/${entity.role}`);
   }
 
+  removeSubEntity(application: Application, entityType:EntityType, entity: EntityDefinition): Observable<boolean> {
+    return this.rest.delete(`/application/${application._id}/entity/${entityType.name}/${entity.role}`);
+  }
+
   getEntityTypes(): Observable<EntityType[]> {
     return this.rest.get("/entity-types", EntityType.fromJSONArray);
   }
 
-  updateEntityDefinition(query:UpdateEntityDefinitionQuery): Observable<boolean> {
+  updateEntityDefinition(query: UpdateEntityDefinitionQuery): Observable<boolean> {
     return this.rest.post("/entity", query);
   }
 
   createEntityType(type: string): Observable<EntityType> {
-    return this.rest.post("/entity/create", {type: type}, EntityType.fromJSON);
+    return this.rest.post("/entity-type/create", {type: type}, EntityType.fromJSON);
+  }
+
+  updateEntityType(entityType: EntityType): Observable<boolean> {
+    return this.rest.post("/entity-type", entityType);
   }
 
   updateSentence(sentence: Sentence): Observable<Sentence> {

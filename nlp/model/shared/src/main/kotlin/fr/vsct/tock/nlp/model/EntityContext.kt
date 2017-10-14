@@ -93,7 +93,13 @@ class EntityCallContextForSubEntities(val entityType: EntityType,
                                       engineType: NlpEngineType,
                                       referenceDate: ZonedDateTime) : EntityCallContext(language, engineType, referenceDate) {
     override fun key(): EntityContextKey {
-        return EntityContextKey(null, null, language, engineType, entityType, true)
+        return EntityContextKey(
+                null,
+                null,
+                language,
+                engineType,
+                entityType,
+                true)
     }
 }
 
@@ -149,11 +155,29 @@ class EntityBuildContextForEntity(
 class EntityBuildContextForSubEntities(val entityType: EntityType,
                                        language: Locale,
                                        engineType: NlpEngineType) : EntityBuildContext(language, engineType) {
+
+    constructor(context: BuildContext, entityType: EntityType) : this(entityType, context.language, context.engineType)
+
+
     override fun key(): EntityContextKey {
         return EntityContextKey(null, null, language, engineType, entityType, true)
     }
 
     override fun selectValid(expressions: List<SampleExpression>): List<SampleExpression> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        return expressions
+                .filter { it.containsEntityType(entityType) }
+                .flatMap { sample ->
+                    sample
+                            .entities
+                            .filter { it.isType(entityType) }
+                            .map {
+                                SampleExpression(
+                                        it.textValue(sample.text),
+                                        sample.intent,
+                                        it.subEntities,
+                                        sample.context
+                                )
+                            }
+                }
     }
 }

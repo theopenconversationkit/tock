@@ -21,6 +21,7 @@ import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
 import fr.vsct.tock.nlp.core.NlpEngineType
+import fr.vsct.tock.nlp.front.service.FrontRepository.config
 import fr.vsct.tock.nlp.front.service.FrontRepository.toEntityType
 import fr.vsct.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import fr.vsct.tock.nlp.front.service.storage.ClassifiedSentenceDAO
@@ -90,6 +91,17 @@ object ApplicationConfigurationService :
         } else {
             false
         }
+    }
+
+    override fun removeSubEntityFromEntity(
+            application: ApplicationDefinition,
+            entityType: EntityTypeDefinition,
+            role: String): Boolean {
+        sentenceDAO.removeSubEntityFromSentences(application._id!!, entityType.name, role)
+        config.save(entityType.copy(subEntities = entityType.subEntities.filterNot { it.role == role }))
+        //TODO
+        //delete sub entity if same namespace and if not used by any intent
+        return true
     }
 
     override fun save(entityType: EntityTypeDefinition) {

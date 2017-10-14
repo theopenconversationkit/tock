@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.front.shared.codec
 
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity
 import java.util.Locale
 
 /**
@@ -33,6 +34,27 @@ data class SentenceDump(val text: String,
 
 data class SentenceEntityDump(
         val entity: String,
-        val role:String,
+        val role: String,
+        val subEntities: List<SentenceEntityDump> = emptyList(),
         val start: Int,
-        val end: Int)
+        val end: Int) {
+
+    constructor(entity: ClassifiedEntity) :
+            this(
+                    entity.type,
+                    entity.role,
+                    entity.subEntities.map { SentenceEntityDump(it) },
+                    entity.start,
+                    entity.end
+            )
+
+    fun toClassifiedEntity(): ClassifiedEntity {
+        return ClassifiedEntity(
+                entity,
+                role,
+                start,
+                end,
+                subEntities.map { it.toClassifiedEntity() }
+        )
+    }
+}

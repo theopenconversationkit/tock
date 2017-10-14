@@ -24,6 +24,5 @@ data class EntityValue(
         override val end: Int,
         val entity: Entity,
         val value: Any? = null,
-        val evaluated: Boolean = false) : IntOpenRange {
-
-}
+        val subEntities: List<EntityRecognition> = emptyList(),
+        val evaluated: Boolean = false) : IntOpenRange

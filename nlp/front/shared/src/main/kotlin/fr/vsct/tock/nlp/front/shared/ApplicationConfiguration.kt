@@ -101,6 +101,16 @@ interface ApplicationConfiguration {
             role: String): Boolean
 
     /**
+     * Remove a sub entity from an entity.
+     *
+     * @return true if the entity type is also deleted, false either.
+     */
+    fun removeSubEntityFromEntity(
+            application: ApplicationDefinition,
+            entityType: EntityTypeDefinition,
+            role: String): Boolean
+
+    /**
      * Returns supported NLP engines.
      */
     fun getSupportedNlpEngineTypes(): Set<NlpEngineType>

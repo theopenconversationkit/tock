@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.model
 
 import fr.vsct.tock.nlp.core.Application
+import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 
@@ -39,5 +40,5 @@ interface ModelBuilder {
 
     fun isEntityModelExist(context: EntityBuildContext): Boolean
 
-    fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>)
+    fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>, entityTypes: List<EntityType>)
 }

@@ -20,6 +20,7 @@ import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.Application
 import fr.vsct.tock.nlp.core.BuildContext
 import fr.vsct.tock.nlp.core.EntityRecognition
+import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.ModelCore
 import fr.vsct.tock.nlp.core.quality.EntityMatchError
@@ -28,7 +29,9 @@ import fr.vsct.tock.nlp.core.quality.TestContext
 import fr.vsct.tock.nlp.core.quality.TestModelReport
 import fr.vsct.tock.nlp.core.sample.SampleEntity
 import fr.vsct.tock.nlp.core.sample.SampleExpression
+import fr.vsct.tock.nlp.model.EntityBuildContext
 import fr.vsct.tock.nlp.model.EntityBuildContextForIntent
+import fr.vsct.tock.nlp.model.EntityBuildContextForSubEntities
 import fr.vsct.tock.nlp.model.IntentContext
 import fr.vsct.tock.nlp.model.NlpClassifier
 import fr.vsct.tock.shared.error
@@ -56,14 +59,23 @@ object ModelCoreService : ModelCore {
 
     override fun updateEntityModelForIntent(context: BuildContext, intent: Intent, expressions: List<SampleExpression>) {
         val nlpContext = EntityBuildContextForIntent(context, intent)
+        updateEntityModel(context, nlpContext, expressions)
+    }
+
+    override fun updateEntityModelForEntityType(context: BuildContext, entityType: EntityType, expressions: List<SampleExpression>) {
+        val nlpContext = EntityBuildContextForSubEntities(context, entityType)
+        updateEntityModel(context, nlpContext, expressions)
+    }
+
+    private fun updateEntityModel(context: BuildContext, nlpContext: EntityBuildContext, expressions: List<SampleExpression>) {
         if (!context.onlyIfNotExists
                 || !nlpClassifier.isEntityModelExist(nlpContext)) {
             nlpClassifier.buildAndSaveEntityModel(nlpContext, expressions)
         }
     }
 
-    override fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>) {
-        nlpClassifier.deleteOrphans(applicationsAndIntents)
+    override fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>, entityTypes: List<EntityType>) {
+        nlpClassifier.deleteOrphans(applicationsAndIntents, entityTypes)
     }
 
     override fun testModel(context: TestContext, expressions: List<SampleExpression>): TestModelReport {

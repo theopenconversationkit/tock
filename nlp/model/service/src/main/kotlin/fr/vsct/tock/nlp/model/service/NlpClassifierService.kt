@@ -18,12 +18,15 @@ package fr.vsct.tock.nlp.model.service
 
 import fr.vsct.tock.nlp.core.Application
 import fr.vsct.tock.nlp.core.EntityRecognition
+import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.IntentClassification
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 import fr.vsct.tock.nlp.model.EntityBuildContext
 import fr.vsct.tock.nlp.model.EntityCallContext
+import fr.vsct.tock.nlp.model.EntityCallContextForSubEntities
+import fr.vsct.tock.nlp.model.EntityClassifier
 import fr.vsct.tock.nlp.model.EntityContextKey
 import fr.vsct.tock.nlp.model.IntentContext
 import fr.vsct.tock.nlp.model.IntentContext.IntentContextKey
@@ -60,14 +63,49 @@ object NlpClassifierService : NlpClassifier {
         return NlpEngineRepository.getIntentClassifier(context, modelHolder as IntentModelHolder).classifyIntent(context, text, tokens)
     }
 
-    override fun classifyEntities(context: EntityCallContext, text: String, tokens: Array<String>): List<EntityRecognition> {
+    override fun classifyEntities(
+            context: EntityCallContext,
+            text: String,
+            tokens: Array<String>): List<EntityRecognition> {
+
         val entityClassifier = NlpEngineRepository.getEntityClassifier(context)
-        return entityClassifier?.classifyEntities(context, text, tokens) ?: emptyList()
+        return classifyEntities(entityClassifier, context, text, tokens)
     }
 
-    override fun classifyEntities(context: EntityCallContext, modelHolder: ModelHolder?, text: String, tokens: Array<String>): List<EntityRecognition> {
+    override fun classifyEntities(
+            context: EntityCallContext,
+            modelHolder: ModelHolder?,
+            text: String,
+            tokens: Array<String>): List<EntityRecognition> {
         val entityClassifier = NlpEngineRepository.getEntityClassifier(context, modelHolder as EntityModelHolder?)
-        return entityClassifier?.classifyEntities(context, text, tokens) ?: emptyList()
+        return classifyEntities(entityClassifier, context, text, tokens)
+    }
+
+    private fun classifyEntities(
+            entityClassifier: EntityClassifier?,
+            context: EntityCallContext,
+            text: String,
+            tokens: Array<String>): List<EntityRecognition> {
+
+        val result = entityClassifier?.classifyEntities(context, text, tokens) ?: emptyList()
+        return result.map { e ->
+            if (e.hasSubEntities()) {
+                val entityText = e.textValue(text)
+                val subEntities = classifyEntities(
+                        EntityCallContextForSubEntities(
+                                e.entityType,
+                                context.language,
+                                context.engineType,
+                                context.referenceDate
+                        ),
+                        entityText,
+                        tokenize(TokenizerContext(context), entityText)
+                )
+                e.copy(value = e.value.copy(subEntities = subEntities))
+            } else {
+                e
+            }
+        }
     }
 
     override fun buildAndSaveTokenizerModel(context: TokenizerContext, expressions: List<SampleExpression>) {
@@ -103,7 +141,7 @@ object NlpClassifierService : NlpClassifier {
         return NlpModelRepository.isEntityModelExist(context)
     }
 
-    override fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>) {
+    override fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>, entityTypes: List<EntityType>) {
         //remove intents
         NlpModelRepository.removeIntentModelsNotIn(
                 applicationsAndIntents.keys
@@ -128,6 +166,14 @@ object NlpClassifierService : NlpClassifier {
                                                 .flatMap { engineType ->
                                                     e.value.map { intent ->
                                                         EntityContextKey(e.key.name, intent.name, locale, engineType)
+                                                    } + entityTypes.map { entityType ->
+                                                        EntityContextKey(
+                                                                null,
+                                                                null,
+                                                                locale,
+                                                                engineType,
+                                                                entityType,
+                                                                true)
                                                     }
                                                 }
                                     }

@@ -15,11 +15,12 @@
  */
 
 .highlight {
-  text-align:center;
+  text-align: center;
 }
+
 .inner-highlight {
-  display:inline-block;
-  margin-bottom:10px;
+  display: inline-block;
+  margin-bottom: 10px;
 }
 
 .highlight-text {
@@ -27,5 +28,20 @@
 }
 
 .tokens {
-  width:100%;
+  width: 100%;
 }
+
+.highlight-block {
+}
+
+.sub-entities {
+  padding-top: 10px;
+  text-align: left;
+  width: 100%;
+}
+
+.role-container {
+  float: left;
+  padding-right:15px;
+}
+

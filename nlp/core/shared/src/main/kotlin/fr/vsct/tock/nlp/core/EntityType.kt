@@ -22,4 +22,7 @@ package fr.vsct.tock.nlp.core
 data class EntityType(val name: String,
                       val subEntities: List<Entity> = emptyList()) {
 
+    fun hasSubEntities(): Boolean = subEntities.isNotEmpty()
+
+    fun findSubEntity(role: String): Entity? = subEntities.first { it.role == role }
 }

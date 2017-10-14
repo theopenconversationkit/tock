@@ -17,8 +17,8 @@
 import {Component, Inject, OnInit} from "@angular/core";
 import {MD_DIALOG_DATA, MdDialogRef} from "@angular/material";
 import {StateService} from "../../core/state.service";
-import {Intent} from "../../model/application";
 import {entityNameFromQualifiedName, EntityType, qualifiedNameWithoutRole} from "../../model/nlp";
+import {EntityProvider} from "../highlight/highlight.component";
 
 @Component({
   selector: 'tock-create-entity-dialog',
@@ -27,7 +27,7 @@ import {entityNameFromQualifiedName, EntityType, qualifiedNameWithoutRole} from 
 })
 export class CreateEntityDialogComponent implements OnInit {
 
-  intent: Intent;
+  entityProvider: EntityProvider;
   entityType: EntityType;
   type: string;
   role: string;
@@ -39,7 +39,7 @@ export class CreateEntityDialogComponent implements OnInit {
   constructor(public dialogRef: MdDialogRef<CreateEntityDialogComponent>,
               public state: StateService,
               @Inject(MD_DIALOG_DATA) private data: any) {
-    this.intent = data.intent;
+    this.entityProvider = data.entityProvider;
   }
 
   ngOnInit() {
@@ -87,8 +87,8 @@ export class CreateEntityDialogComponent implements OnInit {
       role = role.trim().toLowerCase();
     }
 
-    if (this.intent.containsEntityRole(role)) {
-      this.error = "Entity role already exists for this intent";
+    if (this.entityProvider.hasEntityRole(role)) {
+      this.error = "Entity role already exists";
     } else {
       this.dialogRef.close({name: name, role: role});
     }

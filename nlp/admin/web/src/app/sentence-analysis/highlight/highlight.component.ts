@@ -14,27 +14,36 @@
  * limitations under the License.
  */
 
-import {Component, Input, OnChanges, OnInit, SimpleChange} from "@angular/core";
-import {ClassifiedEntity, EntityDefinition, Sentence} from "../../model/nlp";
+import {AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChange} from "@angular/core";
+import {
+  ClassifiedEntity,
+  EntityContainer,
+  EntityDefinition,
+  EntityType,
+  EntityWithSubEntities,
+  Sentence
+} from "../../model/nlp";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {Intent} from "../../model/application";
 import {StateService} from "../../core/state.service";
-import {MdDialog, MdSnackBar} from "@angular/material";
+import {MdDialog, MdDialogConfig, MdSnackBar, MdSnackBarConfig} from "@angular/material";
 import {CreateEntityDialogComponent} from "../create-entity-dialog/create-entity-dialog.component";
 import {User} from "../../model/auth";
+import {isNullOrUndefined} from "util";
 
 @Component({
   selector: 'tock-highlight',
   templateUrl: 'highlight.component.html',
   styleUrls: ['highlight.component.css']
 })
-export class HighlightComponent implements OnInit, OnChanges {
+export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
 
-  @Input() sentence: Sentence;
+  @Input() sentence: EntityContainer;
   @Input() readOnly: boolean = false;
-  @Input() fontSize:string = "inherit";
+  @Input() fontSize: string = "inherit";
+  @Input() prefix: string = "s";
 
-  intent: Intent;
+  entityProvider: EntityProvider;
   selectedStart: number;
   selectedEnd: number;
   editable: boolean;
@@ -54,8 +63,8 @@ export class HighlightComponent implements OnInit, OnChanges {
   private initTokens() {
     let i = 0;
     let entityIndex = 0;
-    const text = this.sentence.text;
-    const entities = this.sentence.classification.entities;
+    const text = this.sentence.getText();
+    const entities = this.sentence.getEntities();
     const result: Token[] = [];
     while (i <= text.length) {
       if (entities.length > entityIndex) {
@@ -78,11 +87,35 @@ export class HighlightComponent implements OnInit, OnChanges {
 
 
   ngOnInit(): void {
+    if (this.sentence instanceof Sentence) {
+      this.entityProvider = new IntentEntityProvider(this.nlp, this.state, this.sentence as Sentence);
+    } else {
+      this.entityProvider = new SubEntityProvider(this.nlp, this.state, this.sentence as EntityWithSubEntities);
+    }
+
     this.rebuild();
   }
 
   ngOnChanges(changes: { [key: string]: SimpleChange }): any {
     this.rebuild();
+  }
+
+  ngAfterViewInit(): void {
+    if (this.sentence instanceof EntityWithSubEntities) {
+      const e = this.sentence as EntityWithSubEntities;
+      if (e.hasSelection()) {
+        setTimeout(_ => {
+          this.selectedStart = e.startSelection;
+          this.selectedEnd = e.endSelection;
+          const r = document.createRange();
+          let token = document.getElementById(this.prefix + "0").firstChild;
+          r.setStart(token, this.selectedStart);
+          r.setEnd(token, this.selectedEnd);
+          window.getSelection().addRange(r);
+          this.select();
+        });
+      }
+    }
   }
 
   select() {
@@ -109,10 +142,15 @@ export class HighlightComponent implements OnInit, OnChanges {
     this.selectedEnd = -1;
     this.findSelected(span.parentNode, new SelectedResult(span, start, end));
 
-    if (this.sentence.overlapEntity(this.selectedStart, this.selectedEnd)) {
-      //removehighlight is not ok as it could remove existing highligthing
-      this.rebuild();
-    } else if (this.intent && !this.intent.isUnknownIntent()) {
+    const overlap = this.sentence.overlappedEntity(this.selectedStart, this.selectedEnd);
+    if (overlap) {
+      if (overlap.start !== this.selectedStart || overlap.end !== this.selectedEnd) {
+        this.sentence
+          .addEditedSubEntities(overlap)
+          .setSelection(this.selectedStart - overlap.start, this.selectedEnd - overlap.start);
+      }
+      window.getSelection().removeAllRanges();
+    } else if (this.entityProvider.isValid()) {
       this.edited = true;
     }
   }
@@ -121,9 +159,9 @@ export class HighlightComponent implements OnInit, OnChanges {
     let dialogRef = this.dialog.open(CreateEntityDialogComponent,
       {
         data: {
-          intent: this.intent
+          entityProvider: this.entityProvider
         }
-      });
+      } as MdDialogConfig);
     dialogRef.afterClosed().subscribe(result => {
       if (result !== "cancel") {
         let name = result.name;
@@ -131,27 +169,17 @@ export class HighlightComponent implements OnInit, OnChanges {
         const existingEntityType = this.state.findEntityTypeByName(name);
         if (existingEntityType) {
           const entity = new EntityDefinition(name, role);
-          this.intent.addEntity(entity);
-          this.nlp.saveIntent(this.intent).subscribe(_ => {
-              this.onSelect(entity);
-              this.snackBar.open(`Entity Type ${entity.qualifiedRole} added`, "Entity added", {duration: 1000})
-            }
-          );
+          this.entityProvider.addEntity(entity, this);
         } else {
           this.nlp.createEntityType(name).subscribe(e => {
             if (e) {
               const entity = new EntityDefinition(e.name, role);
-              this.intent.addEntity(entity);
               const entities = this.state.entityTypes.getValue().slice(0);
               entities.push(e);
               this.state.entityTypes.next(entities);
-              this.nlp.saveIntent(this.intent).subscribe(_ => {
-                  this.onSelect(entity);
-                  this.snackBar.open(`Entity Type ${entity.qualifiedRole} added`, "Entity added", {duration: 1000})
-                }
-              );
+              this.entityProvider.addEntity(entity, this);
             } else {
-              this.snackBar.open(`Error when creating Entity Type ${name}`, "Error", {duration: 1000});
+              this.snackBar.open(`Error when creating Entity Type ${name}`, "Error", {duration: 1000} as MdSnackBarConfig);
             }
           });
         }
@@ -159,28 +187,30 @@ export class HighlightComponent implements OnInit, OnChanges {
     });
   }
 
-  private rebuild() {
-    this.edited = false;
-    this.retrieveIntent();
-    this.initTokens();
+  notifyAddEntity(entity: EntityDefinition) {
+    this.onSelect(entity);
+    this.snackBar.open(`Entity Type ${entity.qualifiedRole} added`, "Entity added", {duration: 1000} as MdSnackBarConfig)
+
   }
 
-  private retrieveIntent() {
-    if (this.sentence.classification) {
-      this.intent = this.state.currentApplication.intentById(this.sentence.classification.intentId);
+  private rebuild() {
+    this.edited = false;
+    if (this.entityProvider) {
+      this.entityProvider.reload();
     }
+    this.initTokens();
   }
 
   onClose() {
     this.edited = false;
+    window.getSelection().removeAllRanges();
   }
 
   onSelect(entity: EntityDefinition) {
     if (this.selectedStart < this.selectedEnd) {
       this.edited = false;
-      const e = new ClassifiedEntity(entity.entityTypeName, entity.role, this.selectedStart, this.selectedEnd);
-      this.sentence.classification.entities.push(e);
-      this.sentence.classification.entities.sort((e1, e2) => e1.start - e2.start);
+      const e = new ClassifiedEntity(entity.entityTypeName, entity.role, this.selectedStart, this.selectedEnd, []);
+      this.sentence.addEntity(e);
       this.initTokens();
     }
   }
@@ -235,6 +265,99 @@ export class Token {
       return this.entity.entityColor;
     } else {
       return "";
+    }
+  }
+}
+
+export interface EntityProvider {
+
+  reload()
+
+  getEntities(): EntityDefinition[]
+
+  isValid(): boolean
+
+  hasEntityRole(role: string): boolean
+
+  addEntity(entity: EntityDefinition, highlight: HighlightComponent)
+
+}
+
+export class IntentEntityProvider implements EntityProvider {
+
+  constructor(private nlp: NlpService,
+              private state: StateService,
+              private sentence: Sentence,
+              private intent?: Intent) {
+  }
+
+
+  addEntity(entity: EntityDefinition, highlight: HighlightComponent) {
+    this.intent.addEntity(entity);
+    this.nlp.saveIntent(this.intent).subscribe(_ => {
+        highlight.notifyAddEntity(entity)
+      }
+    );
+  }
+
+  hasEntityRole(role: string): boolean {
+    return this.intent.containsEntityRole(role);
+  }
+
+  isValid(): boolean {
+    return this.intent && !this.intent.isUnknownIntent();
+  }
+
+  reload() {
+    if (this.sentence && this.sentence.classification) {
+      this.intent = this.state.currentApplication.intentById(this.sentence.classification.intentId);
+    }
+  }
+
+  getEntities(): EntityDefinition[] {
+    if (this.intent) {
+      return this.intent.entities;
+    } else {
+      return [];
+    }
+  }
+}
+
+export class SubEntityProvider implements EntityProvider {
+
+  constructor(private nlp: NlpService,
+              private state: StateService,
+              private entity: EntityWithSubEntities,
+              private entityType?: EntityType,) {
+  }
+
+  addEntity(entity: EntityDefinition, highlight: HighlightComponent) {
+    this.entityType.addEntity(entity);
+    this.nlp.updateEntityType(this.entityType).subscribe(_ => {
+        highlight.notifyAddEntity(entity)
+      }
+    );
+  }
+
+  hasEntityRole(role: string): boolean {
+    return this.entityType.containsEntityRole(role);
+  }
+
+  isValid(): boolean {
+    return !isNullOrUndefined(this.entityType);
+  }
+
+  reload() {
+    if (this.entity) {
+      this.entityType = this.state.findEntityTypeByName(this.entity.type);
+    }
+  }
+
+  getEntities(): EntityDefinition[] {
+    if (this.entityType) {
+      return this.entityType.subEntities;
+    } else {
+      return [];
     }
   }
 }

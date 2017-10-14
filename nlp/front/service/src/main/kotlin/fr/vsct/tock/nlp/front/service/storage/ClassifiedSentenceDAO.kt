@@ -45,4 +45,6 @@ interface ClassifiedSentenceDAO {
     fun switchSentencesStatus(sentences: List<ClassifiedSentence>, newStatus: ClassifiedSentenceStatus)
 
     fun removeEntityFromSentences(applicationId: String, intentId: String, entityType: String, role: String)
+
+    fun removeSubEntityFromSentences(applicationId: String, entityType: String, role: String)
 }

@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.shared.parser
 
 import fr.vsct.tock.nlp.core.Entity
+import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityValue
 import fr.vsct.tock.nlp.core.IntOpenRange
 import fr.vsct.tock.nlp.entity.Value
@@ -37,6 +38,7 @@ data class ParsedEntityValue(override val start: Int,
                              val entity: Entity,
                              val value: Value? = null,
                              val evaluated: Boolean = false,
+                             val subEntities: List<ParsedEntityValue> = emptyList(),
                              val probability: Double = 1.0,
                              val mergeSupport: Boolean = false) : IntOpenRange {
 
@@ -45,9 +47,10 @@ data class ParsedEntityValue(override val start: Int,
                 entity: Entity,
                 value: Any? = null,
                 evaluated: Boolean = false,
+                subEntities: List<ParsedEntityValue>,
                 probability: Double = 1.0,
                 mergeSupport: Boolean = false) :
-            this(start, end, entity, wrapNullableValue(value), evaluated, probability, mergeSupport)
+            this(start, end, entity, wrapNullableValue(value), evaluated, subEntities, probability, mergeSupport)
 
     constructor(entityValue: EntityValue, probability: Double, mergeSupport: Boolean) : this(
             entityValue.start,
@@ -55,6 +58,7 @@ data class ParsedEntityValue(override val start: Int,
             entityValue.entity,
             entityValue.value,
             entityValue.evaluated,
+            entityValue.subEntities.map { ParsedEntityValue(it.value, it.probability, false) },
             probability,
             mergeSupport)
 }

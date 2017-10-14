@@ -21,6 +21,7 @@ import fr.vsct.tock.nlp.front.shared.build.ModelBuildQueryResult
 import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
+import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import java.util.Locale
 
 /**
@@ -48,6 +49,15 @@ interface ModelUpdater {
             language: Locale,
             engineType: NlpEngineType,
             onlyIfNotExists: Boolean = false)
+
+    fun updateEntityModelForEntityType(
+            validatedSentences: List<ClassifiedSentence>,
+            application: ApplicationDefinition,
+            entityTypeDefinition: EntityTypeDefinition,
+            language: Locale,
+            engineType: NlpEngineType,
+            onlyIfNotExists: Boolean = false
+            )
 
     /**
      * Delete orphans intent and entity models.

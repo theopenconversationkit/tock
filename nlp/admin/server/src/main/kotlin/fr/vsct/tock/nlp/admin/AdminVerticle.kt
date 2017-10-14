@@ -39,6 +39,7 @@ import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.test.TestErrorQuery
 import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.name
+import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.BadRequestException
 import fr.vsct.tock.shared.vertx.WebVerticle
@@ -188,7 +189,17 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             }
         }
 
-        blockingJsonGet("/locales") {
+        blockingJsonDelete("/application/:appId/entity/:entityType/:role") {
+            //TODO rights
+            val app = front.getApplicationById(it.pathParam("appId"))!!
+            val entityTypeName = it.pathParam("entityType")
+            val role = it.pathParam("role")
+            val entityType = front.getEntityTypeByName(entityTypeName)!!
+            front.removeSubEntityFromEntity(app, entityType, role)
+        }
+
+        blockingJsonGet("/locales")
+        {
             Locale.getAvailableLocales()
                     .filter { it.language.isNotEmpty() }
                     .distinctBy { it.language }
@@ -196,7 +207,8 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
                     .sortedBy { it.second }
         }
 
-        blockingJsonPost("/parse") { context, query: ParseQuery ->
+        blockingJsonPost("/parse")
+        { context, query: ParseQuery ->
             if (context.organization == query.namespace) {
                 admin.parseSentence(query)
             } else {
@@ -204,7 +216,8 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             }
         }
 
-        blockingJsonPost("/sentence") { context, s: SentenceReport ->
+        blockingJsonPost("/sentence")
+        { context, s: SentenceReport ->
             if (context.organization == front.getApplicationById(s.applicationId)?.namespace) {
                 front.save(s.toClassifiedSentence())
             } else {
@@ -212,7 +225,8 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             }
         }
 
-        blockingJsonPost("/sentences/search") { context, s: SearchQuery ->
+        blockingJsonPost("/sentences/search")
+        { context, s: SearchQuery ->
             if (context.organization == s.namespace) {
                 admin.searchSentences(s)
             } else {
@@ -220,7 +234,8 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             }
         }
 
-        blockingJsonPost("/logs/search") { context, s: LogsQuery ->
+        blockingJsonPost("/logs/search")
+        { context, s: LogsQuery ->
             if (context.organization == s.namespace) {
                 admin.searchLogs(s)
             } else {
@@ -228,7 +243,8 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             }
         }
 
-        blockingJsonPost("/logs/stats") { context, s: LogStatsQuery ->
+        blockingJsonPost("/logs/stats")
+        { context, s: LogStatsQuery ->
             if (context.organization == s.namespace) {
                 front.stats(s.toStatQuery(front.getApplicationByNamespaceAndName(s.namespace, s.applicationName)!!))
             } else {
@@ -236,11 +252,13 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             }
         }
 
-        blockingJsonPost("/intent") { context, intent: IntentDefinition ->
+        blockingJsonPost("/intent")
+        { context, intent: IntentDefinition ->
             AdminService.createOrUpdateIntent(context.organization, intent) ?: unauthorized()
         }
 
-        blockingJsonGet("/intents") { context ->
+        blockingJsonGet("/intents")
+        { context ->
             front.getApplications().filter {
                 it.namespace == context.organization
             }.map {
@@ -248,9 +266,11 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             }
         }
 
-        blockingJsonGet("/entity-types") { front.getEntityTypes() }
+        blockingJsonGet("/entity-types")
+        { front.getEntityTypes() }
 
-        blockingJsonPost("/entity") { context, query: UpdateEntityDefinitionQuery ->
+        blockingJsonPost("/entity")
+        { context, query: UpdateEntityDefinitionQuery ->
             if (context.organization == query.namespace) {
                 front.updateEntityDefinition(query.namespace, query.applicationName, query.entity)
             } else {
@@ -258,9 +278,11 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             }
         }
 
-        blockingJsonGet("/nlp-engines") { front.getSupportedNlpEngineTypes() }
+        blockingJsonGet("/nlp-engines")
+        { front.getSupportedNlpEngineTypes() }
 
-        blockingJsonPost<CreateEntityQuery, EntityTypeDefinition?>("/entity/create") { context, query ->
+        blockingJsonPost<CreateEntityQuery, EntityTypeDefinition?>("/entity-type/create")
+        { context, query ->
             val entityName = "${context.organization}:${query.type.toLowerCase().name()}"
             if (front.getEntityTypeByName(entityName) == null) {
                 val entityType = EntityTypeDefinition(entityName, "")
@@ -271,7 +293,28 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             }
         }
 
-        blockingJsonPost("/test/intent-errors") { context, query: TestErrorQuery ->
+        blockingJsonPost("/entity-type")
+        { context, entityType: EntityTypeDefinition ->
+            if (context.organization == entityType.name.namespace()) {
+                val update = front.getEntityTypeByName(entityType.name)
+                        ?.run {
+                            copy(
+                                    description = entityType.description,
+                                    subEntities = entityType.subEntities
+                            )
+                        }
+                if (update != null) {
+                    front.save(update)
+                } else {
+                    error("not existing entity $entityType")
+                }
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/test/intent-errors")
+        { context, query: TestErrorQuery ->
             if (context.organization == front.getApplicationById(query.applicationId)?.namespace) {
                 AdminService.searchTestIntentErrors(query)
             } else {
@@ -279,7 +322,8 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             }
         }
 
-        blockingJsonPost("/test/intent-error/delete") { context, error: IntentTestErrorWithSentenceReport ->
+        blockingJsonPost("/test/intent-error/delete")
+        { context, error: IntentTestErrorWithSentenceReport ->
             if (context.organization == front.getApplicationById(error.sentence.applicationId)?.namespace) {
                 front.deleteTestIntentError(error.sentence.applicationId, error.sentence.language, error.sentence.toClassifiedSentence().text)
             } else {
@@ -287,7 +331,8 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             }
         }
 
-        blockingJsonPost("/test/entity-errors") { context, query: TestErrorQuery ->
+        blockingJsonPost("/test/entity-errors")
+        { context, query: TestErrorQuery ->
             if (context.organization == front.getApplicationById(query.applicationId)?.namespace) {
                 AdminService.searchTestEntityErrors(query)
             } else {
@@ -295,7 +340,8 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             }
         }
 
-        blockingJsonPost("/test/entity-error/delete") { context, error: EntityTestErrorWithSentenceReport ->
+        blockingJsonPost("/test/entity-error/delete")
+        { context, error: EntityTestErrorWithSentenceReport ->
             if (context.organization == front.getApplicationById(error.sentence.applicationId)?.namespace) {
                 front.deleteTestEntityError(error.sentence.applicationId, error.sentence.language, error.sentence.toClassifiedSentence().text)
 
@@ -304,7 +350,8 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             }
         }
 
-        blockingJsonPost("/test/stats") { context, query: ApplicationScopedQuery ->
+        blockingJsonPost("/test/stats")
+        { context, query: ApplicationScopedQuery ->
             if (context.organization == front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)?.namespace) {
                 AdminService.testBuildStats(query)
             } else {

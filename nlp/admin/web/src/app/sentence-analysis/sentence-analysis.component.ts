@@ -49,12 +49,6 @@ export class SentenceAnalysisComponent implements OnInit {
   ngOnInit() {
   }
 
-  onDeleteEntity(entity: ClassifiedEntity) {
-    const entities = this.sentence.classification.entities;
-    entities.splice(entities.indexOf(entity, 0), 1);
-    this.sentence = this.sentence.clone();
-  }
-
   onIntentChange(value) {
     //cleanup entities
     this.sentence.classification.entities = [];
@@ -77,6 +71,10 @@ export class SentenceAnalysisComponent implements OnInit {
       this.sentence.classification.intentId = value;
       this.sentence = this.sentence.clone();
     }
+  }
+
+  onSentenceChange() {
+    this.sentence = this.sentence.clone();
   }
 
   onLanguageChange(value) {

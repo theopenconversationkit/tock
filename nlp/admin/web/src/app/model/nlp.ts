@@ -17,8 +17,13 @@
 import {ApplicationScopedQuery, JsonUtils, PaginatedQuery} from "./commons";
 import {User} from "./auth";
 import {Intent} from "./application";
+import {isNullOrUndefined} from "util";
 
 export class EntityDefinition {
+
+  public static sortEntities(entities: EntityDefinition[]): EntityDefinition[] {
+    return entities.sort((e1, e2) => e1.role.localeCompare(e2.role));
+  }
 
   qualifiedRole: string;
   entityColor: string;
@@ -72,7 +77,9 @@ export class UpdateEntityDefinitionQuery extends ApplicationScopedQuery {
 
 export class EntityType {
 
-  constructor(public name: string, public description: string) {
+  constructor(public name: string,
+              public description: string,
+              public subEntities: EntityDefinition[]) {
   }
 
   qualifiedName(user: User): string {
@@ -87,11 +94,26 @@ export class EntityType {
     return entityColor(this.name);
   }
 
-  static fromJSON(json?: any): EntityType {
+  containsEntityRole(role: string): boolean {
+    return this.subEntities.some(e => e.role === role)
+  }
 
+  addEntity(entity: EntityDefinition) {
+    if (!this.subEntities.some(e => e.entityTypeName === entity.entityTypeName && e.role === entity.role)) {
+      this.subEntities.push(entity);
+      EntityDefinition.sortEntities(this.subEntities);
+    }
+  }
+
+  static fromJSON(json?: any): EntityType {
+    if (!json) {
+      return
+    }
     const value = Object.create(EntityType.prototype);
 
-    const result = Object.assign(value, json, {});
+    const result = Object.assign(value, json, {
+      subEntities: EntityDefinition.fromJSONArray(json.subEntities)
+    });
 
     return result;
   }
@@ -101,7 +123,89 @@ export class EntityType {
   }
 }
 
-export class Sentence {
+export abstract class EntityContainer {
+
+  private editedSubEntities: EntityWithSubEntities[];
+
+  getEditedSubEntities(): EntityWithSubEntities[] {
+    if (!this.editedSubEntities) {
+      this.editedSubEntities =
+        this.getEntities()
+          .filter(e => e.subEntities.length !== 0)
+          .map(e => new EntityWithSubEntities(this.getText().substring(e.start, e.end), e));
+    }
+    return this.editedSubEntities;
+  }
+
+  addEditedSubEntities(entity: ClassifiedEntity): EntityWithSubEntities {
+    let e = this.findEditedSubEntities(entity);
+    if (e) {
+      return e
+    } else {
+      e = new EntityWithSubEntities(this.getText().substring(entity.start, entity.end), entity);
+      this.editedSubEntities.push(e);
+      this.editedSubEntities.sort((e1, e2) => e1.start < e2.start ? -1 : (e1.start > e2.start ? 1 : 0))
+      return e;
+    }
+  }
+
+  findEditedSubEntities(entity: ClassifiedEntity): EntityWithSubEntities {
+      return this.getEditedSubEntities().find(e => e.start === entity.start);
+  }
+
+  abstract clone() : EntityContainer
+
+  abstract getText(): string
+
+  abstract getEntities(): ClassifiedEntity[]
+
+  abstract addEntity(e: ClassifiedEntity)
+
+  abstract removeEntity(e: ClassifiedEntity)
+
+  overlappedEntity(start: number, end: number): ClassifiedEntity {
+    for (const e of this.getEntities()) {
+      if (!(e.end <= start || e.start >= end)) {
+        return e;
+      }
+    }
+    return null;
+  }
+
+  entityValue(entity: ClassifiedEntity): string {
+    if (entity.value) {
+      //clone the value
+      const cloned = JSON.parse(JSON.stringify(entity.value));
+      this.removeTypeForValue(cloned);
+
+      return JSON.stringify(cloned);
+    } else {
+      return this.entityText(entity);
+    }
+  }
+
+  private removeTypeForValue(v) {
+    if (v.constructor.name === "Object") {
+      for (let property in v) {
+        if (v.hasOwnProperty(property))
+          if (property === "@type") {
+            v["@type"] = undefined;
+          } else {
+            this.removeTypeForValue(v[property]);
+          }
+      }
+    }
+  }
+
+  entityText(entity: ClassifiedEntity): string {
+    return this.getText().substring(entity.start, entity.end);
+  }
+
+}
+
+export class Sentence extends EntityContainer {
+
+  private withSubEntities: EntityWithSubEntities[];
 
   constructor(public text: string,
               public language: string,
@@ -111,6 +215,24 @@ export class Sentence {
               public creationDate: Date,
               public updateDate: Date,
               public key?: string) {
+    super()
+  }
+
+  getText(): string {
+    return this.text;
+  }
+
+  getEntities(): ClassifiedEntity[] {
+    return this.classification.entities;
+  }
+
+  addEntity(e: ClassifiedEntity) {
+    this.classification.entities.push(e);
+    this.classification.entities.sort((e1, e2) => e1.start - e2.start);
+  }
+
+  removeEntity(e: ClassifiedEntity) {
+    this.classification.entities.splice(this.classification.entities.indexOf(e, 0), 1);
   }
 
   statusDisplayed(): string {
@@ -153,44 +275,6 @@ export class Sentence {
       this.key);
   }
 
-  entityValue(entity: ClassifiedEntity): string {
-    if (entity.value) {
-      //clone the value
-      const cloned = JSON.parse(JSON.stringify(entity.value));
-      this.removeTypeForValue(cloned);
-
-      return JSON.stringify(cloned);
-    } else {
-      return this.entityText(entity);
-    }
-  }
-
-  private removeTypeForValue(v) {
-    if (v.constructor.name === "Object") {
-      for (let property in v) {
-        if (v.hasOwnProperty(property))
-          if (property === "@type") {
-            v["@type"] = undefined;
-          } else {
-            this.removeTypeForValue(v[property]);
-          }
-      }
-    }
-  }
-
-  entityText(entity: ClassifiedEntity): string {
-    return this.text.substring(entity.start, entity.end);
-  }
-
-  overlapEntity(start: number, end: number): boolean {
-    for (const e of this.classification.entities) {
-      if (!(e.end <= start || e.start >= end)) {
-        return true;
-      }
-    }
-    return false;
-  }
-
   static fromJSON(json?: any): Sentence {
     const value = Object.create(Sentence.prototype);
 
@@ -220,6 +304,77 @@ export class Sentence {
   static fromJSONArray(json?: Array<any>): Sentence[] {
     return json ? json.map(Sentence.fromJSON) : [];
   }
+}
+
+export class EntityWithSubEntities extends EntityContainer {
+
+  qualifiedRole: string;
+  entityColor: string;
+  type: string;
+  role: string;
+  start: number;
+  end: number;
+  probability: number;
+
+  startSelection: number;
+  endSelection: number;
+
+  constructor(public text: string, public entity: ClassifiedEntity) {
+    super();
+    this.qualifiedRole = entity.qualifiedRole;
+    this.entityColor = entity.entityColor;
+    this.type = entity.type;
+    this.role = entity.role;
+    this.start = entity.start;
+    this.end = entity.end;
+    this.probability = entity.probability;
+  }
+
+  hasProbability(): boolean {
+    return this.entity.hasProbability();
+  }
+
+  qualifiedName(user: User): string {
+    return this.entity.qualifiedName(user);
+  }
+
+  setSelection(start: number, end: number) {
+    this.startSelection = start;
+    this.endSelection = end;
+  }
+
+  hasSelection(): boolean {
+    return !isNullOrUndefined(this.startSelection) && !isNullOrUndefined(this.endSelection);
+  }
+
+  cleanupSelection() {
+    this.startSelection = undefined;
+    this.endSelection = undefined;
+  }
+
+  clone(): EntityWithSubEntities {
+    return new EntityWithSubEntities(
+      this.text,
+      this.entity);
+  }
+
+  getText(): string {
+    return this.text;
+  }
+
+  getEntities(): ClassifiedEntity[] {
+    return this.entity.subEntities;
+  }
+
+  addEntity(e: ClassifiedEntity) {
+    this.entity.subEntities.push(e);
+    this.entity.subEntities.sort((e1, e2) => e1.start - e2.start);
+  }
+
+  removeEntity(e: ClassifiedEntity) {
+    this.entity.subEntities.splice(this.entity.subEntities.indexOf(e, 0), 1);
+  }
+
 }
 
 export class DateEntityValue {
@@ -300,6 +455,7 @@ export class ClassifiedEntity {
               public role: string,
               public start: number,
               public end: number,
+              public subEntities: ClassifiedEntity[],
               public value?: any,
               public probability?: number) {
     this.qualifiedRole = qualifiedRole(type, role);
@@ -331,7 +487,8 @@ export class ClassifiedEntity {
 
     const result = Object.assign(value, json, {
       qualifiedRole: qualified,
-      entityColor: entityColor(qualified)
+      entityColor: entityColor(qualified),
+      subEntities: ClassifiedEntity.fromJSONArray(json.subEntities)
     });
 
     return result;

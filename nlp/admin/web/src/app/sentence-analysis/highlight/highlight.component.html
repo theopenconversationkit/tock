@@ -14,42 +14,61 @@
   ~ limitations under the License.
   -->
 
-<md-card-title class="highlight-text">
-  <div *ngIf="tokens && !readOnly"
-       class="tokens"
-       (mouseup)="select()"
-       (touchend)="select()"><span *ngFor="let t of tokens"
-                                   [style.font-size]="fontSize"
-                                   [style.background]="t.color()"
-                                   [id]="t.index">{{t.text}}</span></div>
-  <div *ngIf="tokens && readOnly"
-       class="tokens"><span *ngFor="let t of tokens"
-                                   [style.font-size]="fontSize"
-                                   [style.background]="t.color()"
-                                   [id]="t.index"
-                                   [md-tooltip]="t.display(sentence, state.user)">{{t.text}}</span></div>
-</md-card-title>
-
-<md-card-subtitle *ngIf="!readOnly && edited" class="highlight">
-  <md-chip-list *ngIf="intent" class="inner-highlight">
-    <md-chip *ngFor="let entity of intent.entities"
-             mdTooltip="Select {{entity.qualifiedName(state.user)}}"
-             selected="false"
-             (click)="onSelect(entity)"
-             [style.background-color]="entity.entityColor"
-             color="primary">
-      {{entity.qualifiedName(state.user)}}
-    </md-chip>
-  </md-chip-list>
-  <div>
-    <button md-button (click)="addEntity()">
-      <md-icon>add</md-icon>
-      Add New Entity
-    </button>
-    <button md-raised-button (click)="onClose()">
-      <md-icon>close</md-icon>
-      Close Entity Selection
-    </button>
+<div class="highlight-block">
+  <div class="highlight-text">
+    <div *ngIf="tokens && !readOnly"
+         class="tokens"
+         (mouseup)="select()"
+         (touchend)="select()"><span *ngFor="let t of tokens"
+                                     [style.font-size]="fontSize"
+                                     [style.background]="t.color()"
+                                     [id]="prefix + t.index">{{t.text}}</span></div>
+    <div *ngIf="tokens && readOnly"
+         class="tokens"><span *ngFor="let t of tokens"
+                              [style.font-size]="fontSize"
+                              [style.background]="t.color()"
+                              [id]="t.index"
+                              [md-tooltip]="t.display(sentence, state.user)">{{t.text}}</span></div>
   </div>
-</md-card-subtitle>
+  <div *ngIf="sentence && sentence.getEditedSubEntities().length !== 0" class="sub-entities">
+    <div *ngFor="let e of sentence.getEditedSubEntities();let idx = index">
+      <md-chip-list class="role-container">
+        <md-chip [style.background-color]="e.entityColor"
+                 [md-tooltip]="e.qualifiedName(state.user)"
+                 selected="false"
+                 color="primary">
+          {{e.role}}
+        </md-chip>
+      </md-chip-list>
+      <tock-highlight [sentence]="e"
+                      [readOnly]="readOnly"
+                      prefix="{{prefix}}_{{idx}}"
+                      fontSize="medium"></tock-highlight>
+      <br>
+    </div>
+  </div>
+
+  <div *ngIf="!readOnly && edited" class="highlight">
+    <md-chip-list *ngIf="entityProvider" class="inner-highlight">
+      <md-chip *ngFor="let entity of entityProvider.getEntities()"
+               mdTooltip="Select {{entity.qualifiedName(state.user)}}"
+               selected="false"
+               (click)="onSelect(entity)"
+               [style.background-color]="entity.entityColor"
+               color="primary">
+        {{entity.qualifiedName(state.user)}}
+      </md-chip>
+    </md-chip-list>
+    <div>
+      <button md-button (click)="addEntity()">
+        <md-icon>add</md-icon>
+        Add New Entity
+      </button>
+      <button md-raised-button (click)="onClose()">
+        <md-icon>close</md-icon>
+        Close Entity Selection
+      </button>
+    </div>
+  </div>
+</div>
 

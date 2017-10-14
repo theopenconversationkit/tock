@@ -81,8 +81,17 @@ data class ClassifiedSentence(val text: String,
                 text,
                 intentProvider.invoke(classification.intentId),
                 classification.entities.map {
-                    SampleEntity(Entity(entityTypeProvider.invoke(it.type), it.role), it.start, it.end)
+                    toSampleEntity(it, entityTypeProvider)
                 },
                 SampleContext(language))
+    }
+
+    private fun toSampleEntity(entity: ClassifiedEntity, entityTypeProvider: (String) -> EntityType): SampleEntity {
+        val entityType = entityTypeProvider.invoke(entity.type)
+        return SampleEntity(
+                Entity(entityType, entity.role),
+                entity.subEntities.map { toSampleEntity(it, entityTypeProvider) },
+                entity.start,
+                entity.end)
     }
 }

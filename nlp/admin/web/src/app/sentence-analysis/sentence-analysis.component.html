@@ -65,23 +65,10 @@
            </div>
         </span>
       </span>
-
-      <md-list *ngIf="displayEntities">
-        <md-list-item *ngFor="let entity of sentence.classification.entities">
-          <label [style.background-color]="entity.entityColor">{{entity.qualifiedName(state.user)}}</label>
-          &nbsp;&nbsp;&nbsp;{{sentence.entityValue(entity)}}
-          <span *ngIf="displayProbabilities && entity.hasProbability()"
-                class="probability"
-                md-tooltip="Probability of entity recognition">
-               {{entity.probability | percent:'1.0-2'}}
-          </span>
-          &nbsp;&nbsp;
-          <button md-button color="warn" (click)="onDeleteEntity(entity)">
-            <md-icon>delete</md-icon>
-            Delete
-          </button>
-        </md-list-item>
-      </md-list>
+      <tock-edit-entities *ngIf="displayEntities"
+                          [container]="sentence"
+                          [displayProbabilities]="displayProbabilities"
+                          (containerChange)="onSentenceChange()"></tock-edit-entities>
     </div>
   </md-card-content>
   <md-card-actions class="sentence-analysis-content">

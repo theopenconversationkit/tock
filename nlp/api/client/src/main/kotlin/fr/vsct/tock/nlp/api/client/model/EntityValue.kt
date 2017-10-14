@@ -27,6 +27,7 @@ data class EntityValue(
         val entity: Entity,
         val value: Value? = null,
         val evaluated: Boolean = false,
+        val subEntities: List<EntityValue> = emptyList(),
         val probability: Double = 1.0,
         val mergeSupport: Boolean = false) {
 

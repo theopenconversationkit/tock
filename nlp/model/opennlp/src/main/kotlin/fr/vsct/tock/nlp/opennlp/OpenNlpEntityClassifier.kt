@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.opennlp
 
+import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityValue
 import fr.vsct.tock.nlp.model.EntityCallContext
@@ -24,6 +25,7 @@ import fr.vsct.tock.nlp.model.EntityCallContextForIntent
 import fr.vsct.tock.nlp.model.EntityCallContextForSubEntities
 import fr.vsct.tock.nlp.model.service.engine.EntityModelHolder
 import fr.vsct.tock.nlp.model.service.engine.NlpEntityClassifier
+import mu.KotlinLogging.logger
 import opennlp.tools.namefind.NameFinderME
 
 /**
@@ -31,15 +33,25 @@ import opennlp.tools.namefind.NameFinderME
  */
 internal class OpenNlpEntityClassifier(model: EntityModelHolder) : NlpEntityClassifier(model) {
 
+    private val logger = logger {}
+
     override fun classifyEntities(context: EntityCallContext, text: String, tokens: Array<String>): List<EntityRecognition> {
         return when (context) {
             is EntityCallContextForIntent -> classify(context, text, tokens)
             is EntityCallContextForEntity -> TODO()
-            is EntityCallContextForSubEntities -> TODO()
+            is EntityCallContextForSubEntities -> classify(context, text, tokens)
         }
     }
 
+    private fun classify(context: EntityCallContextForSubEntities, text: String, tokens: Array<String>): List<EntityRecognition> {
+        return classify(text, tokens) { context.entityType.findSubEntity(it) }
+    }
+
     private fun classify(context: EntityCallContextForIntent, text: String, tokens: Array<String>): List<EntityRecognition> {
+        return classify(text, tokens) { context.intent.getEntity(it) }
+    }
+
+    private fun classify(text: String, tokens: Array<String>, entityFinder: (String) -> Entity?): List<EntityRecognition> {
         with(model) {
             val finder = nativeModel as NameFinderME
             val spans = finder.find(tokens)
@@ -82,10 +94,18 @@ internal class OpenNlpEntityClassifier(model: EntityModelHolder) : NlpEntityClas
                     val entityProba = entityProbability / nbEntitySpans
                     entityProbability = 0.0
                     nbEntitySpans = 0
-                    EntityRecognition(EntityValue(start, end, context.intent.getEntity(span.type), null, false), entityProba)
+                    val entity = entityFinder.invoke(span.type)
+                    if (entity == null) {
+                        logger.warn { "unknown entity role ${span.type}" }
+                        null
+                    } else {
+                        EntityRecognition(EntityValue(start, end, entity, null), entityProba)
+                    }
                 }
             }.toList()
 
         }
     }
+
+
 }

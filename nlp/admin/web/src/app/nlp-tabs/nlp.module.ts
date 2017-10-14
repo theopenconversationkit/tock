@@ -39,6 +39,8 @@ import {SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.com
 import {MomentModule} from "angular2-moment";
 import {AddStateDialogComponent} from "../intents/add-state/add-state-dialog.component";
 import {EntitiesComponent} from "../entities/entities.component";
+import {EditEntitiesComponent} from "../sentence-analysis/entities/edit-entities.component";
+import {EntityDetailsComponent} from "../entities/entity-details.component";
 
 const routes: Routes = [
   {
@@ -110,13 +112,15 @@ export class NlpRoutingModule {
     SearchComponent,
     LogsComponent,
     HighlightComponent,
+    EditEntitiesComponent,
     SentenceAnalysisComponent,
     CreateEntityDialogComponent,
     CreateIntentDialogComponent,
     SentencesScrollComponent,
     DisplayFullLogComponent,
     AddStateDialogComponent,
-    EntitiesComponent
+    EntitiesComponent,
+    EntityDetailsComponent
   ],
   exports: [
     SentenceAnalysisComponent,

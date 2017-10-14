@@ -28,4 +28,6 @@ data class EntityRecognition(val value: EntityValue, val probability: Double) : 
     @Transient
     val role: String = value.entity.role
 
+    fun hasSubEntities(): Boolean = entityType.hasSubEntities()
+
 }

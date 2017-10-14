@@ -1,0 +1,20 @@
+.entity {
+  padding-top:10px;
+  text-align: left;
+}
+
+.role-container {
+  float: left;
+  padding-right:15px;
+}
+
+.probability {
+  font-style: italic;
+  font-size: smaller;
+  padding-left:10px;
+}
+
+.value {
+  position: relative;
+  top: -4px;
+}

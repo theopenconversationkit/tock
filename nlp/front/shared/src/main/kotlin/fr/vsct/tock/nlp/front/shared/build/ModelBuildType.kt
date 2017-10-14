@@ -20,5 +20,5 @@ package fr.vsct.tock.nlp.front.shared.build
  *
  */
 enum class ModelBuildType {
-    intent, intentEntities
+    intent, intentEntities, entityTypeEntities
 }

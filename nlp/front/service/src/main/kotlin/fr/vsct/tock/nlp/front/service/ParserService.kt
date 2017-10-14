@@ -20,8 +20,6 @@ import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityEvaluationContext
-import fr.vsct.tock.nlp.core.EntityRecognition
-import fr.vsct.tock.nlp.core.EntityValue
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
 import fr.vsct.tock.nlp.front.service.FrontRepository.config
 import fr.vsct.tock.nlp.front.service.FrontRepository.core
@@ -193,16 +191,8 @@ object ParserService : Parser {
                 val entityValues = core.evaluateEntities(
                         callContext,
                         q,
-                        validatedSentence!!.classification.entities.map {
-                            EntityRecognition(
-                                    EntityValue(
-                                            it.start,
-                                            it.end,
-                                            FrontRepository.toEntity(it.type, it.role)
-                                    ),
-                                    1.0
-                            )
-                        })
+                        validatedSentence!!.classification.entities.map { it.toEntityRecognition(FrontRepository::toEntity) }
+                )
                 val intent = config.getIntentById(validatedSentence.classification.intentId)!!
                 return ParseResult(
                         intent.name,

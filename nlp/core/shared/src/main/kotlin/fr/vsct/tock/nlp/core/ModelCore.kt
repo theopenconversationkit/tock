@@ -39,9 +39,16 @@ interface ModelCore {
                                    expressions: List<SampleExpression>)
 
     /**
+     * Update entity type model.
+     */
+    fun updateEntityModelForEntityType(context: BuildContext,
+                                       entityType: EntityType,
+                                       expressions: List<SampleExpression>)
+
+    /**
      * Remove models that does not match specified applications or intents.
      */
-    fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>)
+    fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>, entityTypes: List<EntityType>)
 
 
     /**

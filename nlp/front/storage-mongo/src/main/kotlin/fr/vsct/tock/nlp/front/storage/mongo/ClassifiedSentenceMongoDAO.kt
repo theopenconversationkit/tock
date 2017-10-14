@@ -129,8 +129,8 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     override fun search(query: SentencesQuery): SentencesQueryResult {
         with(query) {
             val filterStatus = listOfNotNull(
-                    if (status.isEmpty()) null else status.map { "'$it'" }.joinToString(",", "${`in`}:[", "]"),
-                    if (status.isNotEmpty() || notStatus == null) null else "${ne}:${notStatus!!.json}"
+                    if (status.isEmpty()) null else status.map { "'$it'" }.joinToString(",", "$`in`:[", "]"),
+                    if (status.isNotEmpty() || notStatus == null) null else "$ne:${notStatus!!.json}"
             ).joinToString(",", "status:{", "}")
 
             val filter =
@@ -155,10 +155,35 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     }
 
     override fun switchSentencesIntent(applicationId: String, oldIntentId: String, newIntentId: String) {
-        col.updateMany("{'applicationId':${applicationId.json}, 'classification.intentId':${oldIntentId.json}}", "{${set}: {'classification.intentId':${newIntentId.json},'classification.entities':[],'status':'${inbox}'}}")
+        col.updateMany("{'applicationId':${applicationId.json}, 'classification.intentId':${oldIntentId.json}}", "{$set: {'classification.intentId':${newIntentId.json},'classification.entities':[],'status':'${inbox}'}}")
     }
 
     override fun removeEntityFromSentences(applicationId: String, intentId: String, entityType: String, role: String) {
-        col.updateMany("{'applicationId':${applicationId.json}, 'classification.intentId':${intentId.json}, 'classification.entities':{${elemMatch}:{'role':${role.json}}}}", "{${pull}:{'classification.entities':{'role':${role.json}}}}")
+        //TODO check entity type
+        col.updateMany("{'applicationId':${applicationId.json}, 'classification.intentId':${intentId.json}, 'classification.entities':{$elemMatch:{'role':${role.json}}}}", "{$pull:{'classification.entities':{'role':${role.json}}}}")
+    }
+
+    override fun removeSubEntityFromSentences(applicationId: String, entityType: String, role: String) {
+        //TODO more than one level & check entity type
+        col.updateMany("""{
+            'applicationId':${applicationId.json},
+            'classification.entities':{
+                $elemMatch :{
+                    type:${entityType.json},
+                    subEntities:{
+                        $elemMatch:{
+                            'role':${role.json}
+                        }
+                    }
+                }
+            }
+        }""",
+                """{
+                    $pull:{
+                        'classification.entities.$.subEntities':{
+                            'role':${role.json}
+                            }
+                        }
+                    }""")
     }
 }

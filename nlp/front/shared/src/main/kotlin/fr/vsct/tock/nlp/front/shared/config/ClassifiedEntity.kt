@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.nlp.front.shared.config
 
+import fr.vsct.tock.nlp.core.Entity
+import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityValue
 import fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue
 
@@ -25,19 +27,35 @@ import fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue
 data class ClassifiedEntity(val type: String,
                             val role: String,
                             val start: Int,
-                            val end: Int) {
+                            val end: Int,
+                            val subEntities: List<ClassifiedEntity> = emptyList()) {
 
     constructor(value: ParsedEntityValue) : this(
             value.entity.entityType.name,
             value.entity.role,
             value.start,
-            value.end)
+            value.end,
+            value.subEntities.map { ClassifiedEntity(it) })
 
     constructor(value: EntityValue) : this(
             value.entity.entityType.name,
             value.entity.role,
             value.start,
-            value.end
+            value.end,
+            value.subEntities.map { ClassifiedEntity(it.value) }
     )
+
+    fun toEntityValue(entityProvider: (String, String) -> Entity): EntityValue
+            = EntityValue(
+            start,
+            end,
+            entityProvider.invoke(type, role),
+            subEntities = subEntities.map {
+                it.toEntityRecognition(entityProvider)
+            }
+    )
+
+    fun toEntityRecognition(entityProvider: (String, String) -> Entity): EntityRecognition
+            = EntityRecognition(toEntityValue(entityProvider), 1.0)
 
 }

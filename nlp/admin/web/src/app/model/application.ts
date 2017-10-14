@@ -106,7 +106,7 @@ export class Intent {
               public applications: String[],
               public mandatoryStates: String[],
               public _id?: string) {
-    Intent.sortEntities(entities);
+    EntityDefinition.sortEntities(entities);
   }
 
   qualifiedName(): string {
@@ -132,18 +132,14 @@ export class Intent {
   addEntity(entity: EntityDefinition) {
     if (!this.entities.some(e => e.entityTypeName === entity.entityTypeName && e.role === entity.role)) {
       this.entities.push(entity);
-      Intent.sortEntities(this.entities);
+      EntityDefinition.sortEntities(this.entities);
     }
-  }
-
-  private static sortEntities(entities: EntityDefinition[]): EntityDefinition[] {
-    return entities.sort((e1, e2) => e1.role.localeCompare(e2.role));
   }
 
   static fromJSON(json: any): Intent {
     const value = Object.create(Intent.prototype);
     const result = Object.assign(value, json, {
-      entities: Intent.sortEntities(EntityDefinition.fromJSONArray(json.entities)),
+      entities: EntityDefinition.sortEntities(EntityDefinition.fromJSONArray(json.entities)),
     });
 
 

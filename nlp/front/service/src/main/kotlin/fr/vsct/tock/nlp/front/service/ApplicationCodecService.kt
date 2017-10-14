@@ -32,7 +32,6 @@ import fr.vsct.tock.nlp.front.shared.codec.SentenceEntityDump
 import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.Classification
-import fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
@@ -260,14 +259,7 @@ object ApplicationCodecService : ApplicationCodec {
                                     validated,
                                     Classification(
                                             newIntent._id!!,
-                                            s.entities.map {
-                                                ClassifiedEntity(
-                                                        it.entity,
-                                                        it.role,
-                                                        it.start,
-                                                        it.end
-                                                )
-                                            }
+                                            s.entities.map { it.toClassifiedEntity() }
                                     ),
                                     1.0,
                                     1.0)
@@ -309,14 +301,7 @@ object ApplicationCodecService : ApplicationCodec {
                     SentenceDump(
                             s.text,
                             intents[s.classification.intentId]!!.qualifiedName,
-                            s.classification.entities.map {
-                                SentenceEntityDump(
-                                        it.type,
-                                        it.role,
-                                        it.start,
-                                        it.end
-                                )
-                            },
+                            s.classification.entities.map { SentenceEntityDump(it) },
                             s.language
                     )
                 }
