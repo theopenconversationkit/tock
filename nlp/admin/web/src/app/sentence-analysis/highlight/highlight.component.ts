@@ -42,6 +42,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() readOnly: boolean = false;
   @Input() fontSize: string = "inherit";
   @Input() prefix: string = "s";
+  @Input() leftPadding: number = 0;
 
   entityProvider: EntityProvider;
   selectedStart: number;
@@ -70,21 +71,20 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
       if (entities.length > entityIndex) {
         const e = entities[entityIndex];
         if (e.start !== i) {
-          result.push(new Token(text.substring(i, e.start), result.length));
+          result.push(new Token(i, text.substring(i, e.start), result.length));
         }
-        result.push(new Token(text.substring(e.start, e.end), result.length, e));
+        result.push(new Token(e.start, text.substring(e.start, e.end), result.length, e));
         i = e.end;
         entityIndex++;
       } else {
         if (i != text.length) {
-          result.push(new Token(text.substring(i, text.length), result.length));
+          result.push(new Token(i, text.substring(i, text.length), result.length));
         }
         break;
       }
     }
     this.tokens = result;
   }
-
 
   ngOnInit(): void {
     if (this.sentence instanceof Sentence) {
@@ -101,6 +101,9 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   }
 
   ngAfterViewInit(): void {
+  }
+
+  private handleParentSelect() {
     if (this.sentence instanceof EntityWithSubEntities) {
       const e = this.sentence as EntityWithSubEntities;
       if (e.hasSelection()) {
@@ -108,9 +111,13 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
           this.selectedStart = e.startSelection;
           this.selectedEnd = e.endSelection;
           const r = document.createRange();
-          let token = document.getElementById(this.prefix + "0").firstChild;
-          r.setStart(token, this.selectedStart);
-          r.setEnd(token, this.selectedEnd);
+          const tokenMatch = this.tokens.find(t => t.start <= e.startSelection && t.end >= e.endSelection);
+          if (!tokenMatch) {
+            return;
+          }
+          let token = document.getElementById(this.prefix + tokenMatch.index).firstChild;
+          r.setStart(token, this.selectedStart - tokenMatch.start);
+          r.setEnd(token, this.selectedEnd - tokenMatch.start);
           window.getSelection().addRange(r);
           this.select();
         });
@@ -144,11 +151,9 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
 
     const overlap = this.sentence.overlappedEntity(this.selectedStart, this.selectedEnd);
     if (overlap) {
-      if (overlap.start !== this.selectedStart || overlap.end !== this.selectedEnd) {
-        this.sentence
-          .addEditedSubEntities(overlap)
-          .setSelection(this.selectedStart - overlap.start, this.selectedEnd - overlap.start);
-      }
+      this.sentence
+        .addEditedSubEntities(overlap)
+        .setSelection(this.selectedStart - overlap.start, this.selectedEnd - overlap.start);
       window.getSelection().removeAllRanges();
     } else if (this.entityProvider.isValid()) {
       this.edited = true;
@@ -199,6 +204,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
       this.entityProvider.reload();
     }
     this.initTokens();
+    this.handleParentSelect();
   }
 
   onClose() {
@@ -249,7 +255,11 @@ export class SelectedResult {
 }
 
 export class Token {
-  constructor(public text: string, public index: number, public entity?: ClassifiedEntity) {
+
+  public end: number;
+
+  constructor(public start: number, public text: string, public index: number, public entity?: ClassifiedEntity) {
+    this.end = this.start + text.length;
   }
 
   display(sentence: Sentence, user: User): string {

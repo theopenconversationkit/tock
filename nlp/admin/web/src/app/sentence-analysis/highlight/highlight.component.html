@@ -31,7 +31,7 @@
                               [md-tooltip]="t.display(sentence, state.user)">{{t.text}}</span></div>
   </div>
   <div *ngIf="sentence && sentence.getEditedSubEntities().length !== 0" class="sub-entities">
-    <div *ngFor="let e of sentence.getEditedSubEntities();let idx = index">
+    <div *ngFor="let e of sentence.getEditedSubEntities();let idx = index" [style.padding-left]="leftPadding+'px'">
       <md-chip-list class="role-container">
         <md-chip [style.background-color]="e.entityColor"
                  [md-tooltip]="e.qualifiedName(state.user)"
@@ -43,7 +43,8 @@
       <tock-highlight [sentence]="e"
                       [readOnly]="readOnly"
                       prefix="{{prefix}}_{{idx}}"
-                      fontSize="medium"></tock-highlight>
+                      fontSize="medium"
+                      [leftPadding]="leftPadding + 50"></tock-highlight>
       <br>
     </div>
   </div>

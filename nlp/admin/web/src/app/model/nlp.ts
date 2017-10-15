@@ -140,20 +140,21 @@ export abstract class EntityContainer {
   addEditedSubEntities(entity: ClassifiedEntity): EntityWithSubEntities {
     let e = this.findEditedSubEntities(entity);
     if (e) {
-      return e
+      this.editedSubEntities.splice(this.editedSubEntities.indexOf(e), 1);
+      e = e.clone();
     } else {
       e = new EntityWithSubEntities(this.getText().substring(entity.start, entity.end), entity);
-      this.editedSubEntities.push(e);
-      this.editedSubEntities.sort((e1, e2) => e1.start < e2.start ? -1 : (e1.start > e2.start ? 1 : 0))
-      return e;
     }
+    this.editedSubEntities.push(e);
+    this.editedSubEntities.sort((e1, e2) => e1.start < e2.start ? -1 : (e1.start > e2.start ? 1 : 0))
+    return e;
   }
 
   findEditedSubEntities(entity: ClassifiedEntity): EntityWithSubEntities {
-      return this.getEditedSubEntities().find(e => e.start === entity.start);
+    return this.getEditedSubEntities().find(e => e.start === entity.start);
   }
 
-  abstract clone() : EntityContainer
+  abstract clone(): EntityContainer
 
   abstract getText(): string
 
