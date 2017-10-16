@@ -94,6 +94,10 @@ export class EntityType {
     return entityColor(this.name);
   }
 
+  qualifiedEntityColor(user: User): string {
+    return entityColor(this.qualifiedName(user));
+  }
+
   containsEntityRole(role: string): boolean {
     return this.subEntities.some(e => e.role === role)
   }
