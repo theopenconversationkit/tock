@@ -45,21 +45,28 @@ internal object FrontRepository {
         loadEntityTypes()
     }
 
+    private fun reloadEntityTypes() {
+        entityTypes.putAll(loadEntityTypes())
+    }
+
     private fun loadEntityTypes(): MutableMap<String, EntityType> {
-        val entityTypesDefinitionMap = config.getEntityTypes().map { it.name to it }.toMap().toMutableMap()
+        logger.info { "load entity types" }
+        val entityTypesDefinitionMap = config.getEntityTypes().map { it.name to it }.toMap()
+        val entityTypesMap = entityTypesDefinitionMap.mapValues { (_, v) -> EntityType(v.name) }
 
-        val entityTypesWithoutSubEntities = entityTypesDefinitionMap
-                .filterValues { it.subEntities.isEmpty() }
-                .mapValues { (_, v) -> toEntityType(v) }
-
-        val entityTypesWithSubEntities = entityTypesDefinitionMap
-                .filterValues { it.subEntities.isNotEmpty() }
-                .mapValues { (_, v) ->
-                    EntityType(
-                            v.name,
-                            v.subEntities.map { Entity(entityTypesWithoutSubEntities[it.entityTypeName] ?: error("entity ${it.entityTypeName} not found"), it.role) })
-                }
-        return ConcurrentHashMap(entityTypesWithoutSubEntities + entityTypesWithSubEntities)
+        val entityTypes =
+                entityTypesMap
+                        .mapValues { (_, v) ->
+                            v.copy(
+                                    subEntities = entityTypesDefinitionMap[v.name]?.subEntities?.map {
+                                        Entity(
+                                                entityTypesMap[it.entityTypeName] ?: error("entity ${it.entityTypeName} not found"),
+                                                it.role)
+                                    } ?: error("entity ${v.name} not found"))
+                        }
+                        .toMap()
+                        .toMutableMap()
+        return ConcurrentHashMap(entityTypes)
                 //try to reload and refresh the cache if not found
                 .withDefault {
                     val newValues = loadEntityTypes()
@@ -74,10 +81,16 @@ internal object FrontRepository {
     }
 
     fun entityTypeExists(name: String): Boolean {
+        if (entityTypes.isEmpty()) {
+            reloadEntityTypes()
+        }
         return entityTypes.containsKey(name)
     }
 
     fun entityTypeByName(name: String): EntityType {
+        if (entityTypes.isEmpty()) {
+            reloadEntityTypes()
+        }
         return entityTypes.getValue(name)
     }
 

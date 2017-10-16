@@ -57,7 +57,7 @@ class FrontRepositoryTest : AbstractTest() {
     @Test(expected = IllegalStateException::class)
     fun entityTypeByName_shouldFail_whenNoEntityTypeIsFound() {
         with(context) {
-            assertFalse(FrontRepository.entityTypeExists("present"))
+            assertTrue(FrontRepository.entityTypeExists("present"))
             assertFalse(FrontRepository.entityTypeExists("notPresent"))
 
             assertEquals("present", FrontRepository.entityTypeByName("present").name)
