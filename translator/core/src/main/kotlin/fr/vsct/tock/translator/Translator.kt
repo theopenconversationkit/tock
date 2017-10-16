@@ -42,6 +42,8 @@ object Translator {
 
     private val logger = KotlinLogging.logger {}
 
+    private val oldKeyTransformer = booleanProperty("tock_old_key_transformer", false)
+
     /**
      * Translator and i18n support is disabled by default.
      * Set it to true if you want to enable i18n.
@@ -85,13 +87,20 @@ object Translator {
 
     private fun getLabel(id: String): I18nLabel? = loadLabel(id)
 
-    fun getLabel(key: I18nLabelKey): I18nLabel? = getLabel(key.key)
+    fun getLabel(key: I18nLabelKey): I18nLabel?
+            = getLabel(key.key)
+            ?.apply {
+                if (defaultLabel != null && key.defaultLabel != key.defaultLabel.toString()) {
+                    logger.warn { "default label has changed - old value $defaultLabel - new value : ${key.defaultLabel}" }
+                }
+            }
 
     fun getOrPersistLabel(key: I18nLabelKey): I18nLabel
             = getLabel(key) ?:
             {
-                val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, key.defaultLabel.toString())
-                val label = I18nLabel(key.key, key.namespace, key.category, listOf(defaultLabel))
+                val defaultLabelKey = key.defaultLabel.toString()
+                val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, defaultLabelKey)
+                val label = I18nLabel(key.key, key.namespace, key.category, listOf(defaultLabel), defaultLabelKey)
                 i18nDAO.save(label)
                 label
             }.invoke()
@@ -124,7 +133,12 @@ object Translator {
                         translate(key.defaultLabel.toString(), defaultLocale, locale
                         )
                 )
-                val label = I18nLabel(key.key, key.namespace, key.category, listOf(defaultLabel, localizedLabel))
+                val label = I18nLabel(
+                        key.key,
+                        key.namespace,
+                        key.category,
+                        listOf(defaultLabel, localizedLabel),
+                        key.defaultLabel.toString())
                 i18nDAO.save(label)
                 localizedLabel.label
             } else {
@@ -132,7 +146,12 @@ object Translator {
                         if (defaultInterface != targetDefaultUserInterface)
                             I18nLocalizedLabel(locale, targetDefaultUserInterface, defaultLabel.label)
                         else null
-                val label = I18nLabel(key.key, key.namespace, key.category, listOfNotNull(defaultLabel, interfaceLabel))
+                val label = I18nLabel(
+                        key.key,
+                        key.namespace,
+                        key.category,
+                        listOfNotNull(defaultLabel, interfaceLabel),
+                        key.defaultLabel.toString())
                 i18nDAO.save(label)
                 key.defaultLabel
             }
@@ -290,9 +309,18 @@ object Translator {
                 connectorId)
     }
 
-    fun getKeyFromDefaultLabel(label: CharSequence): String {
+    private fun oldKeyFromDefaultLabel(label: CharSequence): String {
         val s = label.trim().toString().replace(" ", "_").replace(keyLabelRegex, "").toLowerCase()
         return s.substring(0, Math.min(40, s.length))
+    }
+
+    private fun newKeyFromDefaultLabel(label: CharSequence): String {
+        val s = label.trim().toString().replace(" ", "_").replace(keyLabelRegex, "_").toLowerCase()
+        return s.substring(0, Math.min(512, s.length))
+    }
+
+    fun getKeyFromDefaultLabel(label: CharSequence): String {
+        return if (oldKeyTransformer) oldKeyFromDefaultLabel(label) else newKeyFromDefaultLabel(label)
     }
 
     fun completeAllLabels(i18n: List<I18nLabel>) {
