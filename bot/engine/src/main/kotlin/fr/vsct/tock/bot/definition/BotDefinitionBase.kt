@@ -29,6 +29,7 @@ import fr.vsct.tock.shared.TOCK_NAMESPACE
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.vertx.vertx
+import fr.vsct.tock.translator.I18nLabelKey
 import fr.vsct.tock.translator.Translator
 import mu.KotlinLogging
 
@@ -56,7 +57,7 @@ open class BotDefinitionBase(override val botId: String,
                         "tock_unknown_story",
                         object : StoryHandlerBase() {
                             override fun action(bus: BotBus) {
-                                bus.end("Sorry, I didn't understand :(")
+                                bus.end(baseI18nKey("Sorry, I didn't understand :("))
                             }
                         },
                         setOf(Intent.unknown))
@@ -77,7 +78,7 @@ open class BotDefinitionBase(override val botId: String,
             )
             TestContext.setup(bus)
             if (sendEnd) {
-                bus.end(i18nKey("test context activated (user state cleaned)"))
+                bus.end(baseI18nKey("test context activated (user state cleaned)"))
             }
         }
 
@@ -87,23 +88,23 @@ open class BotDefinitionBase(override val botId: String,
                             setOf(bus.userId, bus.botId)))
             TestContext.cleanup(bus)
             if (sendEnd) {
-                bus.end(i18nKey("test context desactivated"))
+                bus.end(baseI18nKey("test context desactivated"))
             }
         }
 
         fun deleteKeywordHandler(bus: BotBus, sendEnd: Boolean = true) {
             bus.handleDelete()
             if (sendEnd) {
-                bus.end(i18nKey(
+                bus.end(baseI18nKey(
                         "user removed - {0} {1}",
                         bus.userTimeline.userPreferences.firstName,
                         bus.userTimeline.userPreferences.lastName))
             }
         }
 
-        private fun i18nKey(defaultLabel: String,
-                            vararg args: Any?): CharSequence =
-                i18nKey(
+        private fun baseI18nKey(defaultLabel: String,
+                                vararg args: Any?): CharSequence =
+                I18nLabelKey(
                         Translator.getKeyFromDefaultLabel(defaultLabel),
                         TOCK_NAMESPACE,
                         "keywords",
