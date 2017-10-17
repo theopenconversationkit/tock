@@ -25,6 +25,7 @@ import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ga.model.GAIntent
 import fr.vsct.tock.bot.connector.ga.model.request.GARequest
 import fr.vsct.tock.bot.connector.ga.model.response.GAExpectedInput
+import fr.vsct.tock.bot.connector.ga.model.response.GAFinalResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GAInputPrompt
 import fr.vsct.tock.bot.connector.ga.model.response.GAItem
 import fr.vsct.tock.bot.connector.ga.model.response.GAResponse
@@ -230,58 +231,85 @@ class GAConnector internal constructor(
                 null
             }
 
-            val message: GAExpectedInput? =
-                    actions.map { it.action }
-                            .filterIsInstance<SendSentence>()
-                            .map {
-                                (it.message(gaConnectorType) as GAResponseConnectorMessage?)?.expectedInput
-                            }
-                            .filterNotNull()
-                            .run {
-                                if (isEmpty())
-                                    null
-                                else reduce { a, b ->
-                                    a.copy(
-                                            inputPrompt = a.inputPrompt.copy(
-                                                    a.inputPrompt.richInitialPrompt.copy(
-                                                            suggestions = a.inputPrompt.richInitialPrompt.suggestions + b.inputPrompt.richInitialPrompt.suggestions,
-                                                            linkOutSuggestion = if (a.inputPrompt.richInitialPrompt.linkOutSuggestion == null) b.inputPrompt.richInitialPrompt.linkOutSuggestion else a.inputPrompt.richInitialPrompt.linkOutSuggestion
+            val connectorMessages = actions.map { it.action }
+                    .filterIsInstance<SendSentence>()
+                    .map {
+                        (it.message(gaConnectorType) as GAResponseConnectorMessage?)
+                    }
+                    .filterNotNull()
 
-                                                    )
-                                            ),
-                                            possibleIntents = a.possibleIntents + b.possibleIntents.filter { ib -> a.possibleIntents.none { ia -> ia.intent == ib.intent } })
-                                }
-                            }
+            var finalResponse: GAFinalResponse? = null
+            var expectedInput: GAExpectedInput? = null
 
-            val expectedInput = if (message == null) {
-                if (simpleResponse == null) {
-                    logger.warn { "no simple response for $routingContext" }
-                    null
-                } else {
-                    GAExpectedInput(
-                            GAInputPrompt(
-                                    GARichResponse(
-                                            listOf(simpleResponse))))
-                }
-            } else {
-                if (simpleResponse == null) {
-                    message
-                } else {
-                    message.copy(
-                            inputPrompt = message.inputPrompt.copy(
-                                    richInitialPrompt = message.inputPrompt.richInitialPrompt.copy(
-                                            items = listOf(simpleResponse) + message.inputPrompt.richInitialPrompt.items,
-                                            suggestions = message.inputPrompt.richInitialPrompt.suggestions,
-                                            linkOutSuggestion = message.inputPrompt.richInitialPrompt.linkOutSuggestion
+            if (connectorMessages.any { it.finalResponse != null }) {
+                finalResponse =
+                        connectorMessages
+                                .first { it.finalResponse != null }
+                                .finalResponse!!
+                                .run {
+                                    copy(richResponse =
+                                    if (simpleResponse == null) {
+                                        richResponse
+                                    } else {
+                                        richResponse.copy(
+                                                items = listOf(simpleResponse) + richResponse.items,
+                                                suggestions = richResponse.suggestions,
+                                                linkOutSuggestion = richResponse.linkOutSuggestion
+                                        )
+                                    }
                                     )
-                            )
-                    )
-                }
-            }?.run {
-                if (possibleIntents.none { it.intent == GAIntent.text }) {
-                    copy(possibleIntents = listOf(expectedTextIntent()) + possibleIntents)
+                                }
+            } else {
+                val message: GAExpectedInput? =
+                        connectorMessages
+                                .map { it.expectedInput }
+                                .filterNotNull()
+                                .run {
+                                    if (isEmpty())
+                                        null
+                                    else reduce { a, b ->
+                                        a.copy(
+                                                inputPrompt = a.inputPrompt.copy(
+                                                        a.inputPrompt.richInitialPrompt.copy(
+                                                                suggestions = a.inputPrompt.richInitialPrompt.suggestions + b.inputPrompt.richInitialPrompt.suggestions,
+                                                                linkOutSuggestion = if (a.inputPrompt.richInitialPrompt.linkOutSuggestion == null) b.inputPrompt.richInitialPrompt.linkOutSuggestion else a.inputPrompt.richInitialPrompt.linkOutSuggestion
+
+                                                        )
+                                                ),
+                                                possibleIntents = a.possibleIntents + b.possibleIntents.filter { ib -> a.possibleIntents.none { ia -> ia.intent == ib.intent } })
+                                    }
+                                }
+
+                expectedInput = if (message == null) {
+                    if (simpleResponse == null) {
+                        logger.warn { "no simple response for $routingContext" }
+                        null
+                    } else {
+                        GAExpectedInput(
+                                GAInputPrompt(
+                                        GARichResponse(
+                                                listOf(simpleResponse))))
+                    }
                 } else {
-                    this
+                    if (simpleResponse == null) {
+                        message
+                    } else {
+                        message.copy(
+                                inputPrompt = message.inputPrompt.copy(
+                                        richInitialPrompt = message.inputPrompt.richInitialPrompt.copy(
+                                                items = listOf(simpleResponse) + message.inputPrompt.richInitialPrompt.items,
+                                                suggestions = message.inputPrompt.richInitialPrompt.suggestions,
+                                                linkOutSuggestion = message.inputPrompt.richInitialPrompt.linkOutSuggestion
+                                        )
+                                )
+                        )
+                    }
+                }?.run {
+                    if (possibleIntents.none { it.intent == GAIntent.text }) {
+                        copy(possibleIntents = listOf(expectedTextIntent()) + possibleIntents)
+                    } else {
+                        this
+                    }
                 }
             }
 
@@ -289,9 +317,9 @@ class GAConnector internal constructor(
 
             val gaResponse = GAResponse(
                     request.conversation.conversationToken ?: "",
-                    true,
-                    listOfNotNull(expectedInput),
-                    null,
+                    finalResponse == null,
+                    if (expectedInput == null) null else listOf(expectedInput),
+                    finalResponse,
                     null,
                     null, //GAResponseMetadata(GAStatus(0, "OK")),
                     request.isInSandbox

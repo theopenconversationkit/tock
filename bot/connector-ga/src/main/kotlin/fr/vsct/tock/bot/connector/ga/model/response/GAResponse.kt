@@ -24,10 +24,10 @@ import com.fasterxml.jackson.annotation.JsonProperty
 data class GAResponse(
         val conversationToken: String,
         val expectUserResponse: Boolean = true,
-        val expectedInputs: List<GAExpectedInput>,
+        val expectedInputs: List<GAExpectedInput>?,
         val finalResponse: GAFinalResponse? = null,
-        val customPushMessage: GACustomPushMessage?= null,
-        val responseMetadata: GAResponseMetadata?= null,
+        val customPushMessage: GACustomPushMessage? = null,
+        val responseMetadata: GAResponseMetadata? = null,
         @get:JsonProperty("isInSandbox")
         val isInSandbox: Boolean
 ) {

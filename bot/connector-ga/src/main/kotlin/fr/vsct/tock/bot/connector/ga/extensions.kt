@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.connector.ga.model.response.GACarouselItem
 import fr.vsct.tock.bot.connector.ga.model.response.GACarouselSelect
 import fr.vsct.tock.bot.connector.ga.model.response.GAExpectedInput
 import fr.vsct.tock.bot.connector.ga.model.response.GAExpectedIntent
+import fr.vsct.tock.bot.connector.ga.model.response.GAFinalResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GAImage
 import fr.vsct.tock.bot.connector.ga.model.response.GAInputPrompt
 import fr.vsct.tock.bot.connector.ga.model.response.GAItem
@@ -71,6 +72,17 @@ fun BotBus.withGoogleVoiceAssistant(messageProvider: () -> ConnectorMessage): Bo
     }
     return this
 }
+
+fun BotBus.gaFinalMessage(richResponse: GARichResponse): GAResponseConnectorMessage
+        = GAResponseConnectorMessage(finalResponse = GAFinalResponse(richResponse))
+
+fun BotBus.gaFinalMessage(text: CharSequence? = null): GAResponseConnectorMessage =
+        gaFinalMessage(
+                if (text == null)
+                    //empty rich response
+                    richResponse(emptyList())
+                else richResponse(text)
+        )
 
 fun BotBus.gaMessage(text: CharSequence): GAResponseConnectorMessage
         = gaMessage(inputPrompt(text))
@@ -492,11 +504,11 @@ fun expectedTextIntent(): GAExpectedIntent = GAExpectedIntent(GAIntent.text)
 
 
 internal fun String.endWithPunctuation(): Boolean
-        = endsWith(".") || endsWith("!") || endsWith("?") || endsWith(",") || endsWith(";")
+        = endsWith(".") || endsWith("!") || endsWith("?") || endsWith(",") || endsWith(";") || endsWith(":")
 
 internal fun concat(s1: String?, s2: String?): String {
     val s = s1?.trim() ?: ""
-    return s + (if (s.isEmpty() || s.endWithPunctuation()) " " else ". ") + (s2 ?: "")
+    return s + (if (s.isEmpty() || s.endWithPunctuation()) " " else ". ") + (s2?.trim() ?: "")
 }
 
 internal fun String.removeEmojis(): String =
