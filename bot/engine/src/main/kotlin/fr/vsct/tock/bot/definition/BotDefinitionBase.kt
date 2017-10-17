@@ -139,7 +139,7 @@ open class BotDefinitionBase(override val botId: String,
                                     deleteKeyword -> deleteKeywordHandler(bus)
                                     testContextKeyword -> testContextKeywordHandler(bus)
                                     endTestContextKeyword -> endTestContextKeywordHandler(bus)
-                                    else -> bus.end("unknown keyword : $text")
+                                    else -> bus.end(baseI18nKey("unknown keyword : {0}"), text)
                                 }
                             }
                         },
