@@ -25,9 +25,11 @@ import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener.deleteKeyword
 import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener.endTestContextKeyword
 import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener.testContextKeyword
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
+import fr.vsct.tock.shared.TOCK_NAMESPACE
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.vertx.vertx
+import fr.vsct.tock.translator.Translator
 import mu.KotlinLogging
 
 /**
@@ -75,7 +77,7 @@ open class BotDefinitionBase(override val botId: String,
             )
             TestContext.setup(bus)
             if (sendEnd) {
-                bus.end("test context activated (user state cleaned)")
+                bus.end(i18nKey("test context activated (user state cleaned)"))
             }
         }
 
@@ -85,19 +87,29 @@ open class BotDefinitionBase(override val botId: String,
                             setOf(bus.userId, bus.botId)))
             TestContext.cleanup(bus)
             if (sendEnd) {
-                bus.end("test context desactivated")
+                bus.end(i18nKey("test context desactivated"))
             }
         }
 
         fun deleteKeywordHandler(bus: BotBus, sendEnd: Boolean = true) {
             bus.handleDelete()
             if (sendEnd) {
-                bus.end(
+                bus.end(i18nKey(
                         "user removed - {0} {1}",
                         bus.userTimeline.userPreferences.firstName,
-                        bus.userTimeline.userPreferences.lastName)
+                        bus.userTimeline.userPreferences.lastName))
             }
         }
+
+        private fun i18nKey(defaultLabel: String,
+                            vararg args: Any?): CharSequence =
+                i18nKey(
+                        Translator.getKeyFromDefaultLabel(defaultLabel),
+                        TOCK_NAMESPACE,
+                        "keywords",
+                        defaultLabel,
+                        args.toList()
+                )
 
         private fun BotBus.handleDelete() {
             val userTimelineDao: UserTimelineDAO by injector.instance()
