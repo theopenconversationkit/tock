@@ -16,7 +16,7 @@
 
 <md-list-item *ngIf="i.i18n.length !== 0">
   <h4 md-line>
-    <span class="defaultLabel" md-tooltip="id: {{i._id}}">{{i.defaultLabel().label}}</span>
+    <span class="defaultLabel" md-tooltip="id: {{i._id}}">{{i.defaultLocalizedLabel().label}}</span>
     <button md-button (click)="deleteLabel(i)" md-tooltip="Delete Label" color="warn">
       <md-icon>delete_forever</md-icon>
     </button>

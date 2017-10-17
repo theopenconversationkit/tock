@@ -86,7 +86,7 @@ export class StoryDefinitionConfiguration {
   }
 
   initTextAnswer() {
-    this.textAnswer = this.simpleAnswer().answers[0].label.defaultLabel().label;
+    this.textAnswer = this.simpleAnswer().answers[0].label.defaultLocalizedLabel().label;
   }
 
   simpleAnswer(): SimpleAnswerConfiguration {

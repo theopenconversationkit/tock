@@ -26,11 +26,11 @@ export class I18nLabel {
 
   constructor(public _id: string,
               public category: string,
-              public i18n: I18nLocalizedLabel[]) {
-
+              public i18n: I18nLocalizedLabel[],
+              public defaultLabel?:string) {
   }
 
-  defaultLabel(): I18nLocalizedLabel {
+  defaultLocalizedLabel(): I18nLocalizedLabel {
     const d = this.label(this.i18n[0].locale, defaultUserInterfaceType)
     return d ? d : this.i18n[0];
   }

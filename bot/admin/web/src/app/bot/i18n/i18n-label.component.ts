@@ -50,7 +50,7 @@ export class I18nLabelComponent implements OnInit {
     this.i18nController.deleteLabel(label);
     let l = "";
     if (label.i18n.length !== 0) {
-      l = label.defaultLabel().label;
+      l = label.defaultLocalizedLabel().label;
       if (!l || l.trim().length === 0) {
         l = label._id;
       }
