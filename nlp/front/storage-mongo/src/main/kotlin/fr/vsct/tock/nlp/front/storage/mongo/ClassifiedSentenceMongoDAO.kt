@@ -159,15 +159,19 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     }
 
     override fun removeEntityFromSentences(applicationId: String, intentId: String, entityType: String, role: String) {
-        //TODO check entity type
-        col.updateMany("{'applicationId':${applicationId.json}, 'classification.intentId':${intentId.json}, 'classification.entities':{$elemMatch:{'role':${role.json}}}}", "{$pull:{'classification.entities':{'role':${role.json}}}}")
+        col.updateMany("{'applicationId':${applicationId.json}, 'classification.intentId':${intentId.json}, 'classification.entities':{$elemMatch:{type:${entityType.json},'role':${role.json}}}}", "{$pull:{'classification.entities':{'role':${role.json}}}}")
     }
 
     override fun removeSubEntityFromSentences(applicationId: String, entityType: String, role: String) {
-        //TODO more than one level & check entity type
+        //TODO use 10 levels when this is resolved:  https:jira.mongodb.org/browse/SERVER-831
+        (1..1).forEach { removeSubEntitiesFromSentence(applicationId, entityType, role, it) }
+    }
+
+    private fun removeSubEntitiesFromSentence(applicationId: String, entityType: String, role: String, level: Int) {
+        val baseFilter = "classification.entities" + (2..level).joinToString("") { ".subEntities" }
         col.updateMany("""{
             'applicationId':${applicationId.json},
-            'classification.entities':{
+            '$baseFilter':{
                 $elemMatch :{
                     type:${entityType.json},
                     subEntities:{
@@ -180,7 +184,7 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         }""",
                 """{
                     $pull:{
-                        'classification.entities.$.subEntities':{
+                        '${baseFilter.replace(".subEntities", ".$.subEntities")}.$.subEntities':{
                             'role':${role.json}
                             }
                         }
