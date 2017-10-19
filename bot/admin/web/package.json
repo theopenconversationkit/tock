@@ -33,7 +33,7 @@
     "ng2-file-upload": "^1.2.1",
     "ng2-charts": "^1.6.0",
     "ngx-infinite-scroll": "^0.4.1",
-    "rxjs": "^5.1.0",
+    "rxjs": "5.4.3",
     "tock-nlp-admin": "file:${PWD}/../../../../nlp/admin/web",
     "zone.js": "^0.8.4"
   },
