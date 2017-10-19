@@ -27,6 +27,8 @@ enum class GAIntent(
 
     main("actions.intent.MAIN"),
     text("actions.intent.TEXT"),
+    cancel("actions.intent.CANCEL"),
+    noInput("actions.intent.NO_INPUT"),
     option("actions.intent.OPTION", GAInputValueDataType.option),
     confirmation("actions.intent.CONFIRMATION", GAInputValueDataType.confirmation),
     transactionRequirementsCheck("actions.intent.TRANSACTION_REQUIREMENTS_CHECK", GAInputValueDataType.transactionRequirementsCheck),

@@ -22,7 +22,9 @@ import fr.vsct.tock.bot.connector.ga.model.request.GARequest
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.event.EndConversationEvent
 import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.bot.engine.event.NoInputEvent
 import fr.vsct.tock.bot.engine.event.StartConversationEvent
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
@@ -72,28 +74,35 @@ internal object WebhookActionConverter {
                 }
             }
 
-            if (input.builtInIntent == GAIntent.main) {
-                return StartConversationEvent(playerId, botId, applicationId)
-                        .apply {
-                            state.userInterface = message.getEventState().userInterface
-                        }
-            } else {
-                val rawInput = input.rawInputs.firstOrNull()
-                if (rawInput != null) {
-                    val text = rawInput.query
-
-                    return SendSentence(
-                            playerId,
-                            applicationId,
-                            botId,
-                            text,
-                            mutableListOf(GARequestConnectorMessage(message)),
-                            state = message.getEventState()
-                    )
-                }
+            fun Event.setEventState(): Event {
+                state.userInterface = message.getEventState().userInterface
+                return this
             }
 
+            return when (input.builtInIntent) {
+                GAIntent.main -> StartConversationEvent(playerId, botId, applicationId).setEventState()
+                GAIntent.cancel -> EndConversationEvent(playerId, botId, applicationId).setEventState()
+                GAIntent.noInput -> NoInputEvent(playerId, botId, applicationId).setEventState()
+                else -> {
+                    val rawInput = input.rawInputs.firstOrNull()
+                    if (rawInput != null) {
+                        val text = rawInput.query
+
+                        SendSentence(
+                                playerId,
+                                applicationId,
+                                botId,
+                                text,
+                                mutableListOf(GARequestConnectorMessage(message)),
+                                state = message.getEventState()
+                        )
+                    } else {
+                        error("no raw input in $message")
+                    }
+                }
+            }
         }
         error("unsupported message: $message")
     }
+
 }

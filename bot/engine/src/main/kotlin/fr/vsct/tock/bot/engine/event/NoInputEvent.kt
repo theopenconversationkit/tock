@@ -19,9 +19,10 @@ package fr.vsct.tock.bot.engine.event
 import fr.vsct.tock.bot.engine.user.PlayerId
 
 /**
- * Event created when starting a conversation - connector support is not required!
+ * Event created when there is no input from the user (after an undetermined amount of time)
+ * - connector support is not required!
  */
-class StartConversationEvent(
+class NoInputEvent(
         userId: PlayerId,
         recipientId: PlayerId,
         applicationId: String) : OneToOneEvent(userId, recipientId, applicationId)

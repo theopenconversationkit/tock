@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.engine.event
 
 /**
- *
+ * Define default event types.
  */
 enum class EventType(val action: Boolean = true) {
 
@@ -29,6 +29,8 @@ enum class EventType(val action: Boolean = true) {
     typingOn(false),
     typingOff(false),
     markSeen(false),
-    startConversation(false)
+    startConversation(false),
+    endConversation(false),
+    noInput(false)
 
 }

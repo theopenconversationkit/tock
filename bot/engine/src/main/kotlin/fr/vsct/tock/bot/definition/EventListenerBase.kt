@@ -18,37 +18,52 @@ package fr.vsct.tock.bot.definition
 
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.event.EndConversationEvent
 import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.bot.engine.event.NoInputEvent
+import fr.vsct.tock.bot.engine.event.OneToOneEvent
 import fr.vsct.tock.bot.engine.event.StartConversationEvent
 import mu.KotlinLogging
 
 /**
  * Base implementation of [EventListener].
- *
  */
 open class EventListenerBase : EventListener {
 
     private val logger = KotlinLogging.logger {}
 
     /**
-     * Listen only [StartConversationEvent] by default (if an [helloStory] is set).
+     * Listen [StartConversationEvent] or [EndConversationEvent] by default
+     * (if respectively [BotDefinition.helloStory] or [BotDefinition.goodbyeStory] are set).
      */
     override fun listenEvent(controller: ConnectorController, event: Event): Boolean {
-        if (event is StartConversationEvent) {
-            controller.botDefinition.helloStory?.apply {
-                logger.debug { "handle event $event" }
-                controller.handle(
-                        SendChoice(
-                                event.userId,
-                                event.applicationId,
-                                event.recipientId,
-                                mainIntent().name,
-                                state = event.state
-                        )
-                )
-                return true
+        logger.debug { "listen event $event" }
+
+        fun StoryDefinition?.sendChoice(event: OneToOneEvent): Boolean =
+                if (this == null) {
+                    false
+                } else {
+                    controller.handle(
+                            SendChoice(
+                                    event.userId,
+                                    event.applicationId,
+                                    event.recipientId,
+                                    mainIntent().name,
+                                    state = event.state
+                            )
+                    )
+                    true
+                }
+
+        with(controller.botDefinition) {
+            return when (event) {
+                is StartConversationEvent -> helloStory.sendChoice(event)
+                is EndConversationEvent -> goodbyeStory.sendChoice(event)
+                is NoInputEvent -> goodbyeStory.sendChoice(event)
+                else -> false
             }
         }
-        return false
     }
+
+
 }

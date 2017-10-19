@@ -114,6 +114,16 @@ interface BotDefinition : I18nKeyProvider {
     val helloStory: StoryDefinition?
 
     /**
+     * The goodbye story. Used when closing the conversation.
+     */
+    val goodbyeStory: StoryDefinition?
+
+    /**
+     * The no input story. When user does nothing!
+     */
+    val noInputStory: StoryDefinition?
+
+    /**
      * The story that handles [fr.vsct.tock.bot.engine.action.SendLocation] action. If it's null, current intent is used.
      */
     val userLocationStory: StoryDefinition?

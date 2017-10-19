@@ -19,9 +19,9 @@ package fr.vsct.tock.bot.engine.event
 import fr.vsct.tock.bot.engine.user.PlayerId
 
 /**
- * Event created when starting a conversation - connector support is not required!
+ * A one to one event is an event that has a source (the user id) and a target (the recipient id).
  */
-class StartConversationEvent(
-        userId: PlayerId,
-        recipientId: PlayerId,
-        applicationId: String) : OneToOneEvent(userId, recipientId, applicationId)
+abstract class OneToOneEvent(
+        val userId: PlayerId,
+        val recipientId: PlayerId,
+        applicationId: String) : Event(applicationId)
