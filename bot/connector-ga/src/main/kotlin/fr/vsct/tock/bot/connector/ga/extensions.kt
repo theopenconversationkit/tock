@@ -321,12 +321,11 @@ fun BotBus.optionValueSpec(simpleSelect: GASimpleSelect? = null,
                            carouselSelect: GACarouselSelect? = null): GAOptionValueSpec
         = GAOptionValueSpec(simpleSelect, listSelect, carouselSelect)
 
-fun BotBus.inputPrompt(richResponse: GARichResponse): GAInputPrompt
-        = GAInputPrompt(richResponse)
+fun BotBus.inputPrompt(text: CharSequence, linkOutSuggestion: GALinkOutSuggestion? = null, noInputPrompts: List<GASimpleResponse> = emptyList()): GAInputPrompt
+        = inputPrompt(richResponse(text, linkOutSuggestion),noInputPrompts)
 
-fun BotBus.inputPrompt(text: CharSequence, linkOutSuggestion: GALinkOutSuggestion? = null): GAInputPrompt
-        = inputPrompt(richResponse(text, linkOutSuggestion))
-
+fun BotBus.inputPrompt(richResponse: GARichResponse , noInputPrompts: List<GASimpleResponse> = emptyList()): GAInputPrompt
+        = GAInputPrompt(richResponse , noInputPrompts)
 
 fun BotBus.expectedIntentForList(title: String, items: List<GAListItem>): GAExpectedIntent {
     val t = translate(title)
