@@ -24,6 +24,7 @@ import com.google.common.cache.RemovalNotification
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ga.model.GAIntent
 import fr.vsct.tock.bot.connector.ga.model.request.GARequest
+import fr.vsct.tock.bot.connector.ga.model.response.GABasicCard
 import fr.vsct.tock.bot.connector.ga.model.response.GAExpectedInput
 import fr.vsct.tock.bot.connector.ga.model.response.GAFinalResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GAInputPrompt
@@ -55,13 +56,184 @@ class GAConnector internal constructor(
         val applicationId: String,
         val path: String) : ConnectorBase(GAConnectorProvider.connectorType) {
 
-    private data class ActionWithDelay(val action: Action, val delayInMs: Long = 0)
+    //internal for tests
+    internal data class ActionWithDelay(val action: Action, val delayInMs: Long = 0)
 
-    private data class RoutingContextHolder(
+    //internal for tests
+    internal data class RoutingContextHolder(
             val context: RoutingContext,
             val request: GARequest,
-            val actions: MutableList<ActionWithDelay> = CopyOnWriteArrayList()
-    )
+            val actions: MutableList<ActionWithDelay> = CopyOnWriteArrayList()) {
+
+        private fun GARichResponse.merge(simpleResponse: GAItem?): GARichResponse =
+                if (simpleResponse == null) {
+                    this
+                } else {
+                    copy(
+                            items = listOf(simpleResponse) + items,
+                            suggestions = suggestions,
+                            linkOutSuggestion = linkOutSuggestion
+                    )
+                }
+
+
+        private fun GARichResponse.merge(other: GARichResponse): GARichResponse =
+                copy(
+                        items = mergeItems(items + other.items),
+                        suggestions = suggestions + other.suggestions,
+                        linkOutSuggestion = linkOutSuggestion ?: other.linkOutSuggestion
+                )
+
+
+        private fun GABasicCard.merge(other: GABasicCard): GABasicCard =
+                copy(
+                        title = title ?: other.title,
+                        subtitle = subtitle ?: other.subtitle,
+                        formattedText = formattedText ?: other.formattedText,
+                        image = image ?: other.image,
+                        buttons = if (buttons.isNotEmpty()) buttons else other.buttons
+                )
+
+        //the first has to be a simple response
+        //cf https://developers.google.com/actions/reference/rest/Shared.Types/AppResponse#RichResponse
+        private fun mergeItems(items: List<GAItem>): List<GAItem> =
+                if (items.size < 2) {
+                    items
+                } else {
+                    listOf(items.first()) +
+                            items.takeLast(items.size - 1).reduce { a, b ->
+                                if (a.basicCard != null && b.basicCard != null) {
+                                    GAItem(basicCard = a.basicCard.merge(b.basicCard))
+                                } else {
+                                    a
+                                }
+                            }
+                }
+
+        fun buildResponse(): GAResponse {
+            val texts =
+                    actions
+                            .filter { it.action is SendSentence && it.action.text != null }
+                            .mapIndexed { i, a ->
+                                val s = a.action as SendSentence
+                                val text = s.text!!
+                                if (i == 0) {
+                                    simpleResponseWithoutTranslate(text)
+                                } else {
+                                    simpleResponseWithoutTranslate(text)
+                                            .run {
+                                                if (a.delayInMs != 0L && ssml != null) {
+                                                    copy(
+                                                            ssml = "<break time=\"${a.delayInMs}ms\"/>" + ssml
+                                                    )
+                                                } else {
+                                                    this
+                                                }
+                                            }
+                                }
+                            }
+
+            val simpleResponse = if (texts.isNotEmpty()) {
+                GAItem(
+                        texts.reduce { s, t ->
+                            s.copy(
+                                    textToSpeech = concat(s.textToSpeech, t.textToSpeech),
+                                    ssml = concat(s.ssml, t.ssml),
+                                    displayText = concat(s.displayText ?: s.textToSpeech, t.displayText ?: t.textToSpeech)
+                            )
+                        }.run {
+                            val newSSML = ssml
+                                    ?.replace("<speak>", "", true)
+                                    ?.replace("</speak>", "", true)
+                                    ?.run { if (isBlank()) null else "<speak>${this}</speak>" }
+                            copy(
+                                    textToSpeech = if (newSSML.isNullOrBlank()) textToSpeech else null,
+                                    ssml = newSSML,
+                                    displayText = displayText?.run { if (isBlank()) null else this }
+                            )
+                        }
+                )
+            } else {
+                null
+            }
+
+            val connectorMessages = actions.map { it.action }
+                    .filterIsInstance<SendSentence>()
+                    .mapNotNull {
+                        (it.message(gaConnectorType) as GAResponseConnectorMessage?)
+                    }
+
+            var finalResponse: GAFinalResponse? = null
+            var expectedInput: GAExpectedInput? = null
+
+            if (connectorMessages.any { it.finalResponse != null }) {
+                finalResponse =
+                        connectorMessages
+                                .first { it.finalResponse != null }
+                                .finalResponse!!
+                                .run {
+                                    copy(
+                                            richResponse = richResponse.merge(simpleResponse)
+                                    )
+                                }
+            } else {
+                val message: GAExpectedInput? =
+                        connectorMessages
+                                .mapNotNull { it.expectedInput }
+                                .run {
+                                    if (isEmpty())
+                                        null
+                                    else reduce { a, b ->
+                                        a.copy(
+                                                inputPrompt = a.inputPrompt.copy(
+                                                        richInitialPrompt = a.inputPrompt.richInitialPrompt.merge(b.inputPrompt.richInitialPrompt)
+                                                ),
+                                                possibleIntents = a.possibleIntents + b.possibleIntents.filter { ib -> a.possibleIntents.none { ia -> ia.intent == ib.intent } })
+                                    }
+                                }
+
+                expectedInput = if (message == null) {
+                    if (simpleResponse == null) {
+                        logger.warn { "no simple response for $this" }
+                        null
+                    } else {
+                        GAExpectedInput(
+                                GAInputPrompt(
+                                        GARichResponse(
+                                                listOf(simpleResponse))))
+                    }
+                } else {
+                    if (simpleResponse == null) {
+                        message
+                    } else {
+                        message.copy(
+                                inputPrompt = message.inputPrompt.copy(
+                                        richInitialPrompt = message.inputPrompt.richInitialPrompt.merge(simpleResponse)
+                                )
+                        )
+                    }
+                }?.run {
+                    if (possibleIntents.none { it.intent == GAIntent.text }) {
+                        copy(possibleIntents = listOf(expectedTextIntent()) + possibleIntents)
+                    } else {
+                        this
+                    }
+                }
+            }
+
+            context.response().putHeader("Google-Actions-API-Version", "2")
+
+            return GAResponse(
+                    request.conversation.conversationToken ?: "",
+                    finalResponse == null,
+                    if (expectedInput == null) null else listOf(expectedInput),
+                    finalResponse,
+                    null,
+                    null, //GAResponseMetadata(GAStatus(0, "OK")),
+                    request.isInSandbox
+            )
+        }
+    }
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -183,155 +355,15 @@ class GAConnector internal constructor(
     }
 
     private fun sendResponse(routingContext: RoutingContextHolder) {
-        with(routingContext) {
+        val gaResponse = routingContext.buildResponse()
 
-            val texts =
-                    actions
-                            .filter { it.action is SendSentence && it.action.text != null }
-                            .mapIndexed { i, a ->
-                                val s = a.action as SendSentence
-                                val text = s.text!!
-                                if (i == 0) {
-                                    simpleResponseWithoutTranslate(text)
-                                } else {
-                                    simpleResponseWithoutTranslate(text)
-                                            .run {
-                                                if (a.delayInMs != 0L && ssml != null) {
-                                                    copy(
-                                                            ssml = "<break time=\"${a.delayInMs}ms\"/>" + ssml
-                                                    )
-                                                } else {
-                                                    this
-                                                }
-                                            }
-                                }
-                            }
+        logger.debug { "ga response : $gaResponse" }
 
-            val simpleResponse = if (texts.isNotEmpty()) {
-                GAItem(
-                        texts.reduce { s, t ->
-                            s.copy(
-                                    textToSpeech = concat(s.textToSpeech, t.textToSpeech),
-                                    ssml = concat(s.ssml, t.ssml),
-                                    displayText = concat(s.displayText ?: s.textToSpeech, t.displayText ?: t.textToSpeech)
-                            )
-                        }.run {
-                            val newSSML = ssml
-                                    ?.replace("<speak>", "", true)
-                                    ?.replace("</speak>", "", true)
-                                    ?.run { if (isBlank()) null else "<speak>${this}</speak>" }
-                            copy(
-                                    textToSpeech = if (newSSML.isNullOrBlank()) textToSpeech else null,
-                                    ssml = newSSML,
-                                    displayText = displayText?.run { if (isBlank()) null else this }
-                            )
-                        }
-                )
-            } else {
-                null
-            }
+        val writeValueAsString = mapper.writeValueAsString(gaResponse)
 
-            val connectorMessages = actions.map { it.action }
-                    .filterIsInstance<SendSentence>()
-                    .map {
-                        (it.message(gaConnectorType) as GAResponseConnectorMessage?)
-                    }
-                    .filterNotNull()
+        logger.debug { "ga json response: $writeValueAsString" }
 
-            var finalResponse: GAFinalResponse? = null
-            var expectedInput: GAExpectedInput? = null
-
-            if (connectorMessages.any { it.finalResponse != null }) {
-                finalResponse =
-                        connectorMessages
-                                .first { it.finalResponse != null }
-                                .finalResponse!!
-                                .run {
-                                    copy(richResponse =
-                                    if (simpleResponse == null) {
-                                        richResponse
-                                    } else {
-                                        richResponse.copy(
-                                                items = listOf(simpleResponse) + richResponse.items,
-                                                suggestions = richResponse.suggestions,
-                                                linkOutSuggestion = richResponse.linkOutSuggestion
-                                        )
-                                    }
-                                    )
-                                }
-            } else {
-                val message: GAExpectedInput? =
-                        connectorMessages
-                                .map { it.expectedInput }
-                                .filterNotNull()
-                                .run {
-                                    if (isEmpty())
-                                        null
-                                    else reduce { a, b ->
-                                        a.copy(
-                                                inputPrompt = a.inputPrompt.copy(
-                                                        a.inputPrompt.richInitialPrompt.copy(
-                                                                suggestions = a.inputPrompt.richInitialPrompt.suggestions + b.inputPrompt.richInitialPrompt.suggestions,
-                                                                linkOutSuggestion = if (a.inputPrompt.richInitialPrompt.linkOutSuggestion == null) b.inputPrompt.richInitialPrompt.linkOutSuggestion else a.inputPrompt.richInitialPrompt.linkOutSuggestion
-
-                                                        )
-                                                ),
-                                                possibleIntents = a.possibleIntents + b.possibleIntents.filter { ib -> a.possibleIntents.none { ia -> ia.intent == ib.intent } })
-                                    }
-                                }
-
-                expectedInput = if (message == null) {
-                    if (simpleResponse == null) {
-                        logger.warn { "no simple response for $routingContext" }
-                        null
-                    } else {
-                        GAExpectedInput(
-                                GAInputPrompt(
-                                        GARichResponse(
-                                                listOf(simpleResponse))))
-                    }
-                } else {
-                    if (simpleResponse == null) {
-                        message
-                    } else {
-                        message.copy(
-                                inputPrompt = message.inputPrompt.copy(
-                                        richInitialPrompt = message.inputPrompt.richInitialPrompt.copy(
-                                                items = listOf(simpleResponse) + message.inputPrompt.richInitialPrompt.items,
-                                                suggestions = message.inputPrompt.richInitialPrompt.suggestions,
-                                                linkOutSuggestion = message.inputPrompt.richInitialPrompt.linkOutSuggestion
-                                        )
-                                )
-                        )
-                    }
-                }?.run {
-                    if (possibleIntents.none { it.intent == GAIntent.text }) {
-                        copy(possibleIntents = listOf(expectedTextIntent()) + possibleIntents)
-                    } else {
-                        this
-                    }
-                }
-            }
-
-            context.response().putHeader("Google-Actions-API-Version", "2")
-
-            val gaResponse = GAResponse(
-                    request.conversation.conversationToken ?: "",
-                    finalResponse == null,
-                    if (expectedInput == null) null else listOf(expectedInput),
-                    finalResponse,
-                    null,
-                    null, //GAResponseMetadata(GAStatus(0, "OK")),
-                    request.isInSandbox
-            )
-
-            logger.debug { "ga response : $gaResponse" }
-
-            val writeValueAsString = mapper.writeValueAsString(gaResponse)
-
-            logger.debug { "ga json response: $writeValueAsString" }
-            context.response().end(writeValueAsString)
-        }
+        routingContext.context.response().end(writeValueAsString)
     }
 
     override fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences? {

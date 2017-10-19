@@ -264,11 +264,11 @@ fun BotBus.item(simpleResponse: GASimpleResponse? = null): GAItem
         = item(simpleResponse, null, null)
 
 fun BotBus.basicCard(
-        title: CharSequence? = null,
-        subtitle: CharSequence? = null,
-        formattedText: CharSequence? = null,
-        image: GAImage? = null,
-        buttons: List<GAButton> = emptyList()): GABasicCard {
+        title: CharSequence?,
+        subtitle: CharSequence?,
+        formattedText: CharSequence?,
+        image: GAImage?,
+        buttons: List<GAButton>): GABasicCard {
 
     val t = translateAndSetBlankAsNull(title)
     val s = translateAndSetBlankAsNull(subtitle)
@@ -277,22 +277,30 @@ fun BotBus.basicCard(
     return GABasicCard(t, s, f, image, buttons)
 }
 
-fun BotBus.basicCard(title: CharSequence? = null, subtitle: CharSequence? = null, image: GAImage? = null, button: GAButton): GABasicCard
-        = basicCard(title, subtitle, null, image, buttons = listOf(button))
+fun BotBus.basicCard(
+        title: CharSequence? = null,
+        subtitle: CharSequence? = null,
+        formattedText: CharSequence? = null,
+        image: GAImage? = null,
+        button: GAButton? = null): GABasicCard
+        = basicCard(title, subtitle, formattedText, image, listOfNotNull(button))
 
-fun BotBus.basicCard(title: CharSequence? = null, button: GAButton): GABasicCard
+fun BotBus.basicCard(title: CharSequence, subtitle: CharSequence?, image: GAImage?, button: GAButton): GABasicCard
+        = basicCard(title, subtitle, null, image, button)
+
+fun BotBus.basicCard(title: CharSequence, button: GAButton): GABasicCard
         = basicCard(title, null, null, button)
 
-fun BotBus.basicCard(title: CharSequence? = null, subtitle: CharSequence? = null, image: GAImage? = null): GABasicCard
+fun BotBus.basicCard(title: CharSequence, subtitle: CharSequence, image: GAImage?): GABasicCard
         = basicCard(title, subtitle, null, image)
 
-fun BotBus.basicCard(title: CharSequence? = null, image: GAImage? = null): GABasicCard
+fun BotBus.basicCard(title: CharSequence, image: GAImage?): GABasicCard
         = basicCard(title, "", null, image)
 
-fun BotBus.basicCard(image: GAImage? = null): GABasicCard
+fun BotBus.basicCard(image: GAImage): GABasicCard
         = basicCard(null, null, null, image)
 
-fun BotBus.gaImage(url: String, accessibilityText: String, height: Int? = null, width: Int? = null): GAImage {
+fun BotBus.gaImage(url: String, accessibilityText: CharSequence, height: Int? = null, width: Int? = null): GAImage {
     val a = translate(accessibilityText)
     return GAImage(url, a.toString(), height, width)
 }
@@ -328,10 +336,10 @@ fun BotBus.optionValueSpec(simpleSelect: GASimpleSelect? = null,
         = GAOptionValueSpec(simpleSelect, listSelect, carouselSelect)
 
 fun BotBus.inputPrompt(text: CharSequence, linkOutSuggestion: GALinkOutSuggestion? = null, noInputPrompts: List<GASimpleResponse> = emptyList()): GAInputPrompt
-        = inputPrompt(richResponse(text, linkOutSuggestion),noInputPrompts)
+        = inputPrompt(richResponse(text, linkOutSuggestion), noInputPrompts)
 
-fun BotBus.inputPrompt(richResponse: GARichResponse , noInputPrompts: List<GASimpleResponse> = emptyList()): GAInputPrompt
-        = GAInputPrompt(richResponse , noInputPrompts)
+fun BotBus.inputPrompt(richResponse: GARichResponse, noInputPrompts: List<GASimpleResponse> = emptyList()): GAInputPrompt
+        = GAInputPrompt(richResponse, noInputPrompts)
 
 fun BotBus.expectedIntentForList(title: String, items: List<GAListItem>): GAExpectedIntent {
     val t = translate(title)
