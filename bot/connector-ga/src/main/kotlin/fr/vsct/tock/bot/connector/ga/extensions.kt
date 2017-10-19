@@ -79,7 +79,7 @@ fun BotBus.gaFinalMessage(richResponse: GARichResponse): GAResponseConnectorMess
 fun BotBus.gaFinalMessage(text: CharSequence? = null): GAResponseConnectorMessage =
         gaFinalMessage(
                 if (text == null)
-                    //empty rich response
+                //empty rich response
                     richResponse(emptyList())
                 else richResponse(text)
         )
@@ -142,9 +142,15 @@ fun BotBus.gaMessageForCarousel(items: List<GACarouselItem>, suggestions: List<C
 }
 
 /**
- *  Add a basic card if one element to avoid the limitation of 2 items
+ *  Add a basic card if one element to avoid the limitation of 2 items.
+ *
+ *  @param items the carrousel items
+ *  @param suggestions the suggestions
+ *  @param oneItemSuggestions the additional suggestion if there is only one item
  */
-fun BotBus.gaFlexibleMessageForCarousel(items: List<GACarouselItem>, suggestions: List<CharSequence> = emptyList()): GAResponseConnectorMessage {
+fun BotBus.gaFlexibleMessageForCarousel(items: List<GACarouselItem>,
+                                        suggestions: List<CharSequence> = emptyList(),
+                                        oneItemSuggestions: List<CharSequence> = emptyList()): GAResponseConnectorMessage {
     return if (items.size == 1) {
         val one = items.first()
         gaMessage(
@@ -156,7 +162,7 @@ fun BotBus.gaFlexibleMessageForCarousel(items: List<GACarouselItem>, suggestions
                                 one.image
                         ),
                         null,
-                        *suggestions.map { suggestion(it) }.toTypedArray())
+                        *(suggestions + oneItemSuggestions).map { suggestion(it) }.toTypedArray())
         )
     } else {
         gaMessageForCarousel(items, suggestions)
