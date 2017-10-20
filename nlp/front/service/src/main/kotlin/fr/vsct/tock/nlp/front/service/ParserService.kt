@@ -20,6 +20,7 @@ import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityEvaluationContext
+import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
 import fr.vsct.tock.nlp.front.service.FrontRepository.config
 import fr.vsct.tock.nlp.front.service.FrontRepository.core
@@ -46,6 +47,7 @@ import fr.vsct.tock.nlp.front.shared.value.ValueTransformer
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.withNamespace
 import fr.vsct.tock.shared.withoutNamespace
@@ -193,10 +195,10 @@ object ParserService : Parser {
                         q,
                         validatedSentence!!.classification.entities.map { it.toEntityRecognition(FrontRepository::toEntity) }
                 )
-                val intent = config.getIntentById(validatedSentence.classification.intentId)!!
+                val intent = config.getIntentById(validatedSentence.classification.intentId)
                 return ParseResult(
-                        intent.name,
-                        intent.namespace,
+                        intent?.name ?: Intent.UNKNOWN_INTENT.name(),
+                        intent?.namespace ?: Intent.UNKNOWN_INTENT.namespace(),
                         entityValues.map { ParsedEntityValue(it.value, 1.0, core.supportValuesMerge(it.entityType)) },
                         1.0,
                         1.0,
