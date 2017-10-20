@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.entity.date
 
 import fr.vsct.tock.nlp.entity.Value
+import java.time.Duration
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -30,4 +31,6 @@ interface DateEntityRange : Value {
     fun end(): ZonedDateTime = end(ZoneId.systemDefault())
 
     fun end(zoneId: ZoneId): ZonedDateTime
+
+    fun duration(): Duration = Duration.between(start(), end())
 }
