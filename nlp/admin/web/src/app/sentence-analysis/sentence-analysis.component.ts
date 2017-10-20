@@ -15,7 +15,7 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {ClassifiedEntity, Sentence, SentenceStatus} from "../model/nlp";
+import {Sentence, SentenceStatus} from "../model/nlp";
 import {StateService} from "../core/state.service";
 import {Intent} from "../model/application";
 import {NlpService} from "../nlp-tabs/nlp.service";
@@ -83,8 +83,10 @@ export class SentenceAnalysisComponent implements OnInit {
 
   onValidate() {
     const intent = this.sentence.classification.intentId;
-    if (!intent || intent === Intent.unknown) {
+    if (!intent) {
       this.snackBar.open(`Please select an intent first`, "Error", {duration: 3000});
+    } else if (intent === Intent.unknown) {
+      this.onArchive();
     } else {
       this.update(SentenceStatus.validated);
     }
