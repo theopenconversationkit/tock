@@ -37,6 +37,8 @@ import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.test.TestErrorQuery
+import fr.vsct.tock.shared.cache.getCachedValuesForType
+import fr.vsct.tock.shared.cache.removeFromCache
 import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.namespace
@@ -357,6 +359,17 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
             } else {
                 unauthorized()
             }
+        }
+
+        blockingJsonGet("/cache/:type") {
+            //TODO admin role
+            getCachedValuesForType(it.pathParam("type"))
+        }
+
+        blockingJsonDelete("/cache/:id/:type") {
+            //TODO admin role
+            removeFromCache(it.pathParam("id"), it.pathParam("type"))
+            true
         }
     }
 

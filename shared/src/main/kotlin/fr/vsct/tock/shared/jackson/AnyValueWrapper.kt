@@ -25,7 +25,7 @@ import kotlin.reflect.KClass
 
 /**
  * A jackson wrapper to store class name with dynamic type value.
- * Use with care, as it store the class name in json.
+ * Use with care, as it stores the class name in json.
  */
 @JsonDeserialize(using = AnyValueDeserializer::class)
 data class AnyValueWrapper(val klass: Class<*>, val value: Any?) {
