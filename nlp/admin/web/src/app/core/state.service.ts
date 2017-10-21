@@ -65,14 +65,16 @@ export class StateService implements AuthListener {
   }
 
   changeApplication(application: Application) {
-    this.currentApplication = application;
-    this.currentApplicationEmitter.emit(application);
-    this.currentIntents.next(application.intents);
-    this.entities.next(application.allEntities());
-    if (application.supportedLocales.indexOf(this.currentLocale) === -1) {
-      this.changeLocale(application.supportedLocales[0])
+    if(application) {
+      this.currentApplication = application;
+      this.currentApplicationEmitter.emit(application);
+      this.currentIntents.next(application.intents);
+      this.entities.next(application.allEntities());
+      if (application.supportedLocales.indexOf(this.currentLocale) === -1) {
+        this.changeLocale(application.supportedLocales[0])
+      }
+      this.settings.onApplicationChange(this.currentApplication.name);
     }
-    this.settings.onApplicationChange(this.currentApplication.name);
   }
 
   changeApplicationWithName(applicationName: string) {
