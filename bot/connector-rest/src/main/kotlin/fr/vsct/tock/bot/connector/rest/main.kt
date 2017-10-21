@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.connector.rest
 
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration.Companion.defaultBaseUrl
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.BotRepository
@@ -41,7 +42,7 @@ fun addRestConnector(
         /**
          * The base url for the connector path.
          */
-        baseUrl: String? = null,
+        baseUrl: String? = defaultBaseUrl,
         /**
          * The owner of the rest connector (if applicable)
          */

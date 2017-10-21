@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.admin.bot
 
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.shared.property
 
 /**
  *
@@ -29,9 +30,17 @@ data class BotApplicationConfiguration(
         val connectorType: ConnectorType,
         val ownerConnectorType: ConnectorType? = null,
         val name: String = applicationId,
-        val baseUrl: String? = null,
+        val baseUrl: String? = defaultBaseUrl,
         val manuallyModified: Boolean = false,
         val _id: String? = null) {
+
+    companion object {
+        val defaultBaseUrl: String =
+                property(
+                        "tock_configuration_bot_default_base_url",
+                        "http://localhost:${property("botverticle_port", "8080")}"
+                )
+    }
 
     @Transient
     val targetConnectorType = ownerConnectorType ?: connectorType

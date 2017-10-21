@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector
 
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.shared.mapNotNullValues
 
 data class ConnectorConfiguration(
@@ -49,5 +50,5 @@ data class ConnectorConfiguration(
 
     fun getName(): String = parameters.getOrDefault(APPLICATION_NAME, applicationId)
 
-    fun getBaseUrl(): String? = parameters.get(BASE_URL)
+    fun getBaseUrl(): String = parameters.getOrDefault(BASE_URL, BotApplicationConfiguration.defaultBaseUrl)
 }
