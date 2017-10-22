@@ -38,7 +38,7 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 
   private errorUnsuscriber: any;
 
-  constructor(private state: StateService,
+  constructor(public state: StateService,
               private test: TestService,
               private rest: RestService,
               private snackBar: MdSnackBar) {

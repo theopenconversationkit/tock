@@ -19,7 +19,7 @@
 </div>
 <div *ngIf="(botConfiguration.restConfigurations|async).length!==0">
   <md-select (change)="changeConfiguration($event.value)"
-             placeholder="Select a bot"
+             placeholder="Select a configuration"
              [ngModel]="configurationId"
              class="select-configuration">
     <md-option *ngFor="let conf of (botConfiguration.restConfigurations|async)"
