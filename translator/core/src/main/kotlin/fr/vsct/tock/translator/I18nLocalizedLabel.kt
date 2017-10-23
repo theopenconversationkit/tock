@@ -16,7 +16,8 @@
 
 package fr.vsct.tock.translator
 
-import fr.vsct.tock.shared.Dice
+import fr.vsct.tock.shared.Dice.newInt
+import mu.KotlinLogging
 import java.util.Locale
 
 /**
@@ -33,11 +34,24 @@ data class I18nLocalizedLabel(val locale: Locale,
 
     constructor(locale: Locale, interfaceType: UserInterfaceType, label: String) : this(locale, interfaceType, label, emptyList())
 
-    fun randomText(): String {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
+    fun randomAlternativesIndex(): Int =
+            if (alternatives.isEmpty()) 0 else newInt(alternatives.size + 1)
+
+    fun randomText(index: Int? = null): String {
         return if (alternatives.isEmpty()) {
             label
         } else {
-            Dice.choose(listOf(label) + alternatives)
+            (listOf(label) + alternatives).run {
+                val i = index ?: randomAlternativesIndex()
+                if (i >= size) {
+                    logger.warn { "not valid index $i for $this" }
+                }
+                this[i]
+            }
         }
     }
 }

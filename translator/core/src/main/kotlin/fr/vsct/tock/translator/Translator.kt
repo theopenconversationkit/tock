@@ -177,8 +177,9 @@ object Translator {
             val voice = i18nLabel.findLabel(locale, voiceAssistant, connectorId)
             if (voice != null) {
                 if (text != null) {
-                    val t = text.randomText()
-                    val v = voice.randomText()
+                    val randomIndex = text.randomAlternativesIndex()
+                    val t = text.randomText(randomIndex)
+                    val v = voice.randomText(randomIndex)
                     if (t.isNotBlank() && v.isNotBlank()) {
                         TextAndVoiceTranslatedString(t, v)
                     } else {

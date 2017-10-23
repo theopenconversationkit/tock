@@ -14,29 +14,21 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package fr.vsct.tock.translator
 
-import org.bson.types.ObjectId
-import java.util.Random
-import java.util.UUID
-import java.util.concurrent.ThreadLocalRandom
+import fr.vsct.tock.shared.defaultLocale
+import org.junit.Test
+import kotlin.test.assertEquals
 
 /**
  *
  */
-object Dice {
+class I18nLabelLocalizedTest {
 
-    private fun random(): Random = ThreadLocalRandom.current()
-
-    fun <T> choose(list: List<T>): T = list[index(list)]
-
-    fun index(col: Collection<*>): Int = newInt(col.size)
-
-    fun newInt(max: Int): Int = random().nextInt(max)
-
-    fun newId(): String = try {
-        ObjectId().toHexString()
-    } catch (e: NoClassDefFoundError) {
-        UUID.randomUUID().toString()
+    @Test
+    fun randomText_shouldReturnsTheSameLabel_WhenIndexSpecified() {
+        val label = I18nLocalizedLabel(defaultLocale, defaultUserInterface, "a", listOf("b"))
+        val index = 1
+        assertEquals(label.randomText(index), label.randomText(index))
     }
 }
