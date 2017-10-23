@@ -35,7 +35,10 @@ data class GARichResponse(
                     it.toSentenceElement()?.let { SentenceSubElement(it) }
                 })
 
-        return e.copy(choices = e.choices + listOfNotNull(linkOutSuggestion?.toChoice()))
+        return e.copy(
+                choices = e.choices + listOfNotNull(linkOutSuggestion?.toChoice()),
+                texts = suggestions.mapIndexed { i, s -> "suggestion$i" to s.title }.toMap()
+        )
     }
 
 
