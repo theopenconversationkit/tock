@@ -20,11 +20,11 @@ import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorConfigurationRepository
 
 /**
- * Add a messenger connector.
+ * Add a google assistant connector.
  */
 fun addGoogleAssistantConnector(
         /**
-         * Application id have to be different for each facebook page served by the bot.
+         * Application id have to be different for each google assistant app served by the bot.
          */
         applicationId: String = "app",
         /**

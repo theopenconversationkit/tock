@@ -84,8 +84,8 @@ fun BotBus.gaFinalMessage(text: CharSequence? = null): GAResponseConnectorMessag
                 else richResponse(text)
         )
 
-fun BotBus.gaMessage(text: CharSequence): GAResponseConnectorMessage
-        = gaMessage(inputPrompt(text))
+fun BotBus.gaMessage(text: CharSequence, vararg suggestions: String): GAResponseConnectorMessage
+        = if (suggestions.isEmpty()) gaMessage(inputPrompt(text)) else gaMessage(richResponse(text, *suggestions))
 
 fun BotBus.gaMessage(text: CharSequence, basicCard: GABasicCard): GAResponseConnectorMessage
         = gaMessage(richResponse(listOf(GAItem(simpleResponse(text)), GAItem(basicCard = basicCard))))
@@ -305,15 +305,15 @@ fun BotBus.gaImage(url: String, accessibilityText: CharSequence, height: Int? = 
     return GAImage(url, a.toString(), height, width)
 }
 
+fun BotBus.richResponse(text: CharSequence, vararg suggestions: String): GARichResponse
+        = richResponse(listOf(item(simpleResponse(text))), *suggestions.map { suggestion(it) }.toTypedArray())
+
 fun BotBus.richResponse(items: List<GAItem>, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: GASuggestion): GARichResponse
         = GARichResponse(items, linkOutSuggestion = linkOutSuggestion, suggestions = listOf(*suggestions))
 
 
 fun BotBus.richResponse(items: List<GAItem>, vararg suggestions: GASuggestion): GARichResponse
         = richResponse(items, null, *suggestions)
-
-fun BotBus.richResponse(text: CharSequence): GARichResponse
-        = richResponse(listOf(item(simpleResponse(text))))
 
 fun BotBus.richResponse(text: CharSequence, linkOutSuggestion: GALinkOutSuggestion? = null): GARichResponse
         = richResponse(listOf(item(simpleResponse(text))), linkOutSuggestion)
@@ -438,6 +438,15 @@ fun BotBus.carouselItem(
         vararg parameters: Pair<String, String>)
         : GACarouselItem
         = carouselItem(targetIntent, null, title, description, image, *parameters)
+
+fun BotBus.carouselItem(
+        targetIntent: IntentAware,
+        title: CharSequence,
+        description: CharSequence? = null,
+        image: GAImage? = null,
+        parameters: Parameters)
+        : GACarouselItem
+        = carouselItem(targetIntent, null, title, description, image, parameters)
 
 fun BotBus.carouselItem(
         targetIntent: IntentAware,
