@@ -32,5 +32,5 @@ interface DateEntityRange : Value {
 
     fun end(zoneId: ZoneId): ZonedDateTime
 
-    fun duration(): Duration = Duration.between(start(), end())
+    fun duration(): Duration
 }

@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.entity.date
 
+import java.time.Duration
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
@@ -32,4 +33,7 @@ data class DateIntervalEntityValue(val date: DateEntityValue,
     override fun end(zoneId: ZoneId): ZonedDateTime {
         return toDate.grain.calculateEnd(toDate.date, zoneId)
     }
+
+    override fun duration(): Duration
+            = Duration.between(date.grain.truncate(start()), toDate.grain.truncate(end(start().zone)))
 }

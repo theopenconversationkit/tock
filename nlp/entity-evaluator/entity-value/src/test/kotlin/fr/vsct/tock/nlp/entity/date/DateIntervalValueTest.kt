@@ -16,23 +16,22 @@
 
 package fr.vsct.tock.nlp.entity.date
 
+import org.junit.Assert
+import org.junit.Test
 import java.time.Duration
 import java.time.ZoneId
 import java.time.ZonedDateTime
 
 /**
- * Wraps a [ZonedDateTime] with a [DateEntityGrain].
+ *
  */
-data class DateEntityValue(val date: ZonedDateTime, val grain: DateEntityGrain) : DateEntityRange {
+class DateIntervalValueTest {
 
-    override fun start(): ZonedDateTime {
-        return date
+    @Test
+    fun duration_withDifferentTimeZone_shouldGiveTheRightValue() {
+        val actual = ZonedDateTime.now()
+        val duration = Duration.ofHours(2)
+        val end = actual.plusHours(1).withZoneSameInstant(ZoneId.of("America/Phoenix"))
+        Assert.assertEquals(duration, DateIntervalEntityValue(DateEntityValue(actual, DateEntityGrain.hour), DateEntityValue(end, DateEntityGrain.hour)).duration())
     }
-
-    override fun end(zoneId: ZoneId): ZonedDateTime {
-        return grain.calculateEnd(date, zoneId)
-    }
-
-    override fun duration(): Duration
-        = Duration.between(grain.truncate(date), grain.truncate(end(date.zone)))
 }
