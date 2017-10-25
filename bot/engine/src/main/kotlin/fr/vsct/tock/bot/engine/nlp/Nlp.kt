@@ -167,7 +167,7 @@ internal class Nlp : NlpController {
                     botDefinition.nlpModelName,
                     toQueryContext(),
                     QueryState(dialog.state.nextActionState?.states
-                            ?: listOfNotNull(dialog.currentStory()?.starterIntent?.name).toSet()))
+                            ?: listOfNotNull(dialog.currentStory()?.definition?.mainIntent()?.name).toSet()))
         }
 
         private fun mergeEntityValues(action: Action, newValues: List<ContextValue>, oldValue: EntityStateValue? = null): EntityStateValue {
