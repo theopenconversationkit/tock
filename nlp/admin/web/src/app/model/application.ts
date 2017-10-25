@@ -25,12 +25,20 @@ export class Application {
               public supportedLocales: string[],
               public nlpEngineType: NlpEngineType,
               public mergeEngineTypes: boolean,
+              public supportSubEntities: boolean,
               public _id?: string) {
   }
 
   clone(): Application {
-    return new Application(this.name
-      , this.namespace, this.intents.slice(0), this.supportedLocales.slice(0), this.nlpEngineType, this.mergeEngineTypes, this._id)
+    return new Application(
+      this.name,
+      this.namespace,
+      this.intents.slice(0),
+      this.supportedLocales.slice(0),
+      this.nlpEngineType,
+      this.mergeEngineTypes,
+      this.supportSubEntities,
+      this._id)
   }
 
   removeIntentById(id: string) {

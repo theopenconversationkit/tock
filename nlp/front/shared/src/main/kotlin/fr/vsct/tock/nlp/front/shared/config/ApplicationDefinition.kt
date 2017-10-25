@@ -30,6 +30,7 @@ data class ApplicationDefinition(val name: String,
                                  val intentStatesMap: Map<String, Set<String>> = emptyMap(),
                                  val nlpEngineType: NlpEngineType = NlpEngineType.opennlp,
                                  val mergeEngineTypes: Boolean = true,
+                                 val supportSubEntities:Boolean = false,
                                  val _id: String? = null) {
 
     @Transient

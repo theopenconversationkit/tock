@@ -30,6 +30,7 @@ data class ApplicationWithIntents(val name: String,
                                   val supportedLocales: Set<Locale>,
                                   val nlpEngineType: NlpEngineType,
                                   val mergeEngineTypes: Boolean = true,
+                                  val supportSubEntities:Boolean = false,
                                   val _id: String? = null) {
 
     constructor(application: ApplicationDefinition, intents: List<IntentDefinition>) :
@@ -39,6 +40,7 @@ data class ApplicationWithIntents(val name: String,
                     application.supportedLocales,
                     application.nlpEngineType,
                     application.mergeEngineTypes,
+                    application.supportSubEntities,
                     application._id!!)
 
     fun toApplication(): ApplicationDefinition {
@@ -50,6 +52,7 @@ data class ApplicationWithIntents(val name: String,
                 emptyMap(),
                 nlpEngineType,
                 mergeEngineTypes,
+                supportSubEntities,
                 _id
         )
     }

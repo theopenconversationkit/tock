@@ -151,9 +151,11 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
 
     const overlap = this.sentence.overlappedEntity(this.selectedStart, this.selectedEnd);
     if (overlap) {
-      this.sentence
-        .addEditedSubEntities(overlap)
-        .setSelection(this.selectedStart - overlap.start, this.selectedEnd - overlap.start);
+      if(this.state.currentApplication.supportSubEntities) {
+        this.sentence
+          .addEditedSubEntities(overlap)
+          .setSelection(this.selectedStart - overlap.start, this.selectedEnd - overlap.start);
+      }
       window.getSelection().removeAllRanges();
     } else if (this.entityProvider.isValid()) {
       this.edited = true;

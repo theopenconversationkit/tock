@@ -56,7 +56,7 @@ export class ApplicationComponent implements OnInit {
           }
         } else {
           this.newApplication = true;
-          this.application = new Application("", this.state.user.organization, [], [], StateService.DEFAULT_ENGINE, true);
+          this.application = new Application("", this.state.user.organization, [], [], StateService.DEFAULT_ENGINE, true, false);
         }
         this.nlpEngineType = this.application.nlpEngineType.name;
       }
