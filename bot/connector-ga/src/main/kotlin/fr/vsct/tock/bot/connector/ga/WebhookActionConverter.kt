@@ -45,8 +45,8 @@ internal object WebhookActionConverter {
 
         val input = message.inputs.firstOrNull()
         if (input != null) {
-            if (input.arguments?.all { it.builtInArg == GAArgumentBuiltInName.PERMISSION && message.device.location?.coordinates?.latitude != null } == true) {
-                return with(message.device.location!!.coordinates!!) {
+            if (input.arguments?.all { it.builtInArg == GAArgumentBuiltInName.PERMISSION && message.device?.location?.coordinates?.latitude != null } == true) {
+                return with(message.device!!.location!!.coordinates!!) {
                     SendLocation(
                             playerId,
                             applicationId,

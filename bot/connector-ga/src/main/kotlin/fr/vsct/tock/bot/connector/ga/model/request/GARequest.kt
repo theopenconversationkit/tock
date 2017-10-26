@@ -24,7 +24,7 @@ import fr.vsct.tock.translator.UserInterfaceType
  */
 data class GARequest(
         val user: GAUser,
-        val device: GADevice,
+        val device: GADevice?,
         val surface: GASurface,
         val conversation: GAConversation,
         val inputs: List<GAInput>,
