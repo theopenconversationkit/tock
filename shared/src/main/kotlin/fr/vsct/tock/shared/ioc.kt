@@ -22,7 +22,7 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import fr.vsct.tock.shared.cache.TockCache
 import fr.vsct.tock.shared.cache.mongo.MongoCache
-import fr.vsct.tock.shared.vertx.vertxRunner
+import fr.vsct.tock.shared.vertx.vertxExecutor
 
 /**
  * internal injector - reset it only for tests.
@@ -44,6 +44,6 @@ inline fun <reified T : Any> KodeinInjector.provide(): T = injector.provider<T>(
  * IOC of shared module.
  */
 val sharedModule = Kodein.Module {
-    bind<Executor>() with provider { vertxRunner() }
+    bind<Executor>() with provider { vertxExecutor() }
     bind<TockCache>() with provider { MongoCache }
 }

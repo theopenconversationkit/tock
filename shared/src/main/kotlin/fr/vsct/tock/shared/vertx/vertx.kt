@@ -58,7 +58,7 @@ fun <T> Vertx.blocking(blockingHandler: (Future<T>) -> Unit, resultHandler: (Asy
             })
 }
 
-fun vertxRunner(): Executor {
+fun vertxExecutor(): Executor {
     return object : Executor {
 
         override fun executeBlocking(delay: Duration, runnable: () -> Unit) {
