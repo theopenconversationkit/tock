@@ -26,12 +26,17 @@ import fr.vsct.tock.bot.connector.ConnectorType
  */
 object GAConnectorProvider : ConnectorProvider {
 
+    private const val PROJECT_IDS = "_project_ids"
+    private const val PROJECT_ID_SEPARATOR = ","
+
     override val connectorType: ConnectorType = gaConnectorType
+
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
             return GAConnector(
                     applicationId,
-                    path)
+                    path,
+                    parameters[PROJECT_IDS]?.split(PROJECT_ID_SEPARATOR)?.toSet() ?: emptySet())
         }
     }
 
@@ -40,11 +45,14 @@ object GAConnectorProvider : ConnectorProvider {
      */
     fun newConfiguration(
             applicationId: String = "ga",
-            path: String = "/ga"): ConnectorConfiguration {
+            path: String = "/ga",
+            allowedProjectIds: Set<String> = emptySet()): ConnectorConfiguration {
 
         return ConnectorConfiguration(
                 applicationId,
                 path,
-                connectorType)
+                connectorType,
+                parameters = mapOf(PROJECT_IDS to allowedProjectIds.joinToString(PROJECT_ID_SEPARATOR))
+        )
     }
 }

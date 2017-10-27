@@ -15,7 +15,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>fr.vsct.tock</groupId>
@@ -45,6 +46,7 @@
         <retrofit>2.3.0</retrofit>
         <okhttp>3.8.1</okhttp>
         <guava>23.0</guava>
+        <google-auth>1.23.0</google-auth>
         <jasypt>1.9.2</jasypt>
         <commons-csv>1.5</commons-csv>
         <emoji>5.0</emoji>
@@ -262,7 +264,24 @@
                 <version>${emoji}</version>
                 <exclusions>
                     <exclusion>
-                        <groupId> com.fasterxml.jackson.core</groupId>
+                        <groupId>com.fasterxml.jackson.core</groupId>
+                        <artifactId>jackson-core</artifactId>
+                    </exclusion>
+                </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>com.google.oauth-client</groupId>
+                <artifactId>google-oauth-client</artifactId>
+                <version>${google-auth}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.google.http-client</groupId>
+                <artifactId>google-http-client-jackson2</artifactId>
+                <version>${google-auth}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>com.fasterxml.jackson.core</groupId>
                         <artifactId>jackson-core</artifactId>
                     </exclusion>
                 </exclusions>
@@ -455,7 +474,7 @@
             <name>Apache License, Version 2.0</name>
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
-            <comments />
+            <comments/>
         </license>
     </licenses>
 

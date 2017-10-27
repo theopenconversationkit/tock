@@ -42,6 +42,14 @@
             <groupId>com.kcthota</groupId>
             <artifactId>emoji4j</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.google.oauth-client</groupId>
+            <artifactId>google-oauth-client</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.google.http-client</groupId>
+            <artifactId>google-http-client-jackson2</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>

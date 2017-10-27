@@ -17,6 +17,10 @@
 package fr.vsct.tock.bot.connector.ga
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.salomonbrys.kodein.instance
+import com.google.api.client.auth.openidconnect.IdToken
+import com.google.api.client.auth.openidconnect.IdTokenVerifier
+import com.google.api.client.json.jackson2.JacksonFactory
 import com.google.common.base.Throwables
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
@@ -42,19 +46,25 @@ import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserPreferences
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
+import kotlin.LazyThreadSafetyMode.PUBLICATION
+
 
 /**
  *
  */
 class GAConnector internal constructor(
         val applicationId: String,
-        val path: String) : ConnectorBase(GAConnectorProvider.connectorType) {
+        val path: String,
+        val allowedProjectIds: Set<String>)
+    : ConnectorBase(GAConnectorProvider.connectorType) {
 
     //internal for tests
     internal data class ActionWithDelay(val action: Action, val delayInMs: Long = 0)
@@ -239,6 +249,9 @@ class GAConnector internal constructor(
         private val logger = KotlinLogging.logger {}
     }
 
+    private val executor: Executor by injector.instance()
+    private val verifier: IdTokenVerifier by lazy(PUBLICATION) { IdTokenVerifier.Builder().build() }
+
     private val currentMessages: Cache<String, RoutingContextHolder> = CacheBuilder.newBuilder()
             .expireAfterWrite(1, TimeUnit.MINUTES)
             .removalListener { e: RemovalNotification<String, RoutingContextHolder> ->
@@ -252,14 +265,36 @@ class GAConnector internal constructor(
         controller.registerServices(path, { router ->
             logger.info("deploy rest google assistant services for root path $path ")
 
-            router.post(path).blockingHandler({ context ->
+            router.post(path).handler { context ->
                 try {
-                    handleRequest(controller, context, context.bodyAsString)
+                    if (isValidToken(context)) {
+                        executor.executeBlocking {
+                            handleRequest(controller, context, context.bodyAsString)
+                        }
+                    } else {
+                        context.fail(400)
+                    }
                 } catch (e: Throwable) {
                     context.sendTechnicalError(e)
                 }
-            }, false)
+            }
         })
+    }
+
+    private fun isValidToken(context: RoutingContext): Boolean {
+        return if (allowedProjectIds.isNotEmpty()) {
+            try {
+                val jwt = context.request().getHeader("authorization")
+                IdToken.parse(JacksonFactory.getDefaultInstance(), jwt).let { token ->
+                    verifier.verify(token) && allowedProjectIds.any { token.verifyAudience(listOf(it)) }
+                }
+            } catch (e: Exception) {
+                logger.warn { "invalid signature" }
+                false
+            }
+        } else {
+            true
+        }
     }
 
     private fun RoutingContext.sendTechnicalError(

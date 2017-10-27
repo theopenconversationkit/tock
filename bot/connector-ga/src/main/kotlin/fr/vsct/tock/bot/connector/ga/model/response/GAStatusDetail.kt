@@ -26,5 +26,5 @@ data class GAStatusDetail(
         val stackTrace: String,
         val requestBody: String? = null,
         val requestParsed: GARequest? = null,
-        @get:JsonProperty("@type") val type: String = "voyages-sncf-technologies.github.io/tock/error"
+        @get:JsonProperty("@type") val type: String = "type.googleapis.com"
 )

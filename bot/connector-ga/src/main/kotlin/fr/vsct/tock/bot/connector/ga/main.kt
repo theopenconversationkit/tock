@@ -30,13 +30,20 @@ fun addGoogleAssistantConnector(
         /**
          * The relative connector path.
          */
-        path: String = "/ga/$applicationId"
+        path: String = "/ga/$applicationId",
+        /**
+         * Which are the google actions project ids?
+         * If empty, no JWT is verified (so all project are allowed)
+         * see (https://developers.google.com/actions/reference/rest/verify-requests)
+         */
+        allowedProjectIds: Set<String> = emptySet()
 ) {
 
     ConnectorConfigurationRepository.addConfiguration(
             GAConnectorProvider.newConfiguration(
                     applicationId,
-                    path)
+                    path,
+                    allowedProjectIds)
     )
     BotRepository.registerConnectorProvider(GAConnectorProvider)
 }

@@ -38,7 +38,7 @@ import kotlin.test.assertTrue
  */
 class GAConnectorTest {
 
-    val connector = GAConnector("", "")
+    val connector = GAConnector("", "", emptySet())
     val userPreferences: UserPreferences = UserPreferences()
     val controller: ConnectorController = mock {
         on { handle(any()) } doAnswer {
