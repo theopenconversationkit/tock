@@ -16,5 +16,5 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.webhook
 
-data class Entry(val id: String, val time: Number, val messaging: List<Webhook>?) {
+data class Entry(val id: String, val time: Number, val messaging: List<Webhook?>?) {
 }

@@ -138,23 +138,27 @@ class MessengerConnector internal constructor(
 
                                                 val applicationId = pageApplicationMap.getValue(entry.id)
                                                 entry.messaging!!.forEach { m ->
-                                                    try {
-                                                        val event = WebhookActionConverter.toEvent(m, applicationId)
-                                                        if (event != null) {
-                                                            controller.handle(event)
-                                                        } else {
-                                                            logger.logError("unable to convert $m to event", requestTimerData)
-                                                        }
-                                                    } catch (e: Throwable) {
+                                                    if (m != null) {
                                                         try {
-                                                            logger.logError(e, requestTimerData)
-                                                            controller.errorMessage(m.playerId(bot), applicationId, m.recipientId(bot)).let {
-                                                                send(it)
-                                                                endTypingAnswer(it)
+                                                            val event = WebhookActionConverter.toEvent(m, applicationId)
+                                                            if (event != null) {
+                                                                controller.handle(event)
+                                                            } else {
+                                                                logger.logError("unable to convert $m to event", requestTimerData)
                                                             }
-                                                        } catch (t: Throwable) {
-                                                            logger.error(e)
+                                                        } catch (e: Throwable) {
+                                                            try {
+                                                                logger.logError(e, requestTimerData)
+                                                                controller.errorMessage(m.playerId(bot), applicationId, m.recipientId(bot)).let {
+                                                                    send(it)
+                                                                    endTypingAnswer(it)
+                                                                }
+                                                            } catch (t: Throwable) {
+                                                                logger.error(e)
+                                                            }
                                                         }
+                                                    } else {
+                                                        logger.error { "null message: $body" }
                                                     }
                                                 }
                                             } else {
