@@ -20,9 +20,13 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.connector.ga.model.request.GARequest
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.stt.SttListener
+import fr.vsct.tock.bot.engine.stt.SttService
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.resource
 import org.junit.Test
+import java.util.Locale
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 /**
@@ -33,6 +37,8 @@ class WebhookActionConverterTest {
     val appId = "test"
     val optionRequest: GARequest = mapper.readValue(resource("/request_with_option.json"))
     val optionWithRawTextRequest: GARequest = mapper.readValue(resource("/request_with_option_and_raw_text.json"))
+    val sttRequest: GARequest = mapper.readValue(resource("/request_with_stt_transformer.json"))
+
 
     @Test
     fun toEvent_shouldReturnsSendChoice_whenOptionArgAndSameInputText() {
@@ -44,6 +50,19 @@ class WebhookActionConverterTest {
     fun toEvent_shouldReturnsSendSentence_whenOptionArgAndDifferentInputText() {
         val e = WebhookActionConverter.toEvent(optionWithRawTextRequest, appId)
         assertTrue(e is SendSentence)
+    }
+
+    @Test
+    fun toEvent_shouldReturnsSendSentenceWhithSttParsed_whenThereIsSttErrorInText() {
+        val sttListener = object : SttListener {
+            override fun transform(stt: String, locale: Locale): String {
+                return stt.replace("Deezer", "10h")
+            }
+        }
+        SttService.addListener(sttListener)
+        val e = WebhookActionConverter.toEvent(sttRequest, appId)
+        assertEquals("ds 10h qs", (e as SendSentence).text)
+        SttService.removeListener(sttListener)
     }
 
 }

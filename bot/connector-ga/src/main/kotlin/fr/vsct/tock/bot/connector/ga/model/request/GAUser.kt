@@ -17,6 +17,9 @@
 package fr.vsct.tock.bot.connector.ga.model.request
 
 import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.shared.error
+import mu.KotlinLogging
+import java.util.Locale
 
 data class GAUser(
         val userId: String,
@@ -24,6 +27,18 @@ data class GAUser(
         val accessToken: String? = null,
         val permissions: Set<GAPermission>? = null,
         val locale: String = defaultLocale.toLanguageTag()) {
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
+    fun findLocale(): Locale =
+            try {
+                Locale.forLanguageTag(locale)
+            } catch (e: Exception) {
+                logger.error(e)
+                defaultLocale
+            }
 
 }
 

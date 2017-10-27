@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.connector.ga
 
 import fr.vsct.tock.bot.connector.ga.model.GAIntent
 import fr.vsct.tock.bot.connector.ga.model.request.GAArgumentBuiltInName
+import fr.vsct.tock.bot.connector.ga.model.request.GAInputType.VOICE
 import fr.vsct.tock.bot.connector.ga.model.request.GARequest
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
@@ -26,6 +27,7 @@ import fr.vsct.tock.bot.engine.event.EndConversationEvent
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.event.NoInputEvent
 import fr.vsct.tock.bot.engine.event.StartConversationEvent
+import fr.vsct.tock.bot.engine.stt.SttService
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserLocation
@@ -86,7 +88,10 @@ internal object WebhookActionConverter {
                 else -> {
                     val rawInput = input.rawInputs.firstOrNull()
                     if (rawInput != null) {
-                        val text = rawInput.query
+                        var text = rawInput.query
+                        if (rawInput.inputType == VOICE) {
+                            text = SttService.transform(text, message.user.findLocale())
+                        }
 
                         SendSentence(
                                 playerId,
