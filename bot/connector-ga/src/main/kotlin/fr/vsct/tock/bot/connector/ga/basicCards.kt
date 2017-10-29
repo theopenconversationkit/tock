@@ -39,7 +39,7 @@ fun BotBus.basicCard(
 }
 
 /**
- * Provides a [GABasicCard] with only one [GAButton] (only one is supported for now anyway.
+ * Provides a [GABasicCard] with only one [GAButton] (only one is supported for now anyway).
  */
 fun BotBus.basicCard(
         title: CharSequence? = null,
