@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {AfterViewInit, Component, Input, OnChanges, OnInit, SimpleChange} from "@angular/core";
+import {AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, SimpleChange, ViewChild} from "@angular/core";
 import {
   ClassifiedEntity,
   EntityContainer,
@@ -24,11 +24,11 @@ import {
   Sentence
 } from "../../model/nlp";
 import {NlpService} from "../../nlp-tabs/nlp.service";
-import {Intent} from "../../model/application";
 import {StateService} from "../../core/state.service";
 import {MdDialog, MdDialogConfig, MdSnackBar, MdSnackBarConfig} from "@angular/material";
 import {CreateEntityDialogComponent} from "../create-entity-dialog/create-entity-dialog.component";
 import {User} from "../../model/auth";
+import {Intent} from "../../model/application";
 import {isNullOrUndefined} from "util";
 
 @Component({
@@ -50,6 +50,9 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   editable: boolean;
   edited: boolean;
   tokens: Token[];
+
+  //used to copy to clipboard
+  @ViewChild('copy') tmpTextArea: ElementRef;
 
   constructor(private nlp: NlpService,
               public state: StateService,
@@ -151,7 +154,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
 
     const overlap = this.sentence.overlappedEntity(this.selectedStart, this.selectedEnd);
     if (overlap) {
-      if(this.state.currentApplication.supportSubEntities) {
+      if (this.state.currentApplication.supportSubEntities) {
         this.sentence
           .addEditedSubEntities(overlap)
           .setSelection(this.selectedStart - overlap.start, this.selectedEnd - overlap.start);
@@ -197,7 +200,6 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   notifyAddEntity(entity: EntityDefinition) {
     this.onSelect(entity);
     this.snackBar.open(`Entity Type ${entity.qualifiedRole} added`, "Entity added", {duration: 1000} as MdSnackBarConfig)
-
   }
 
   private rebuild() {
@@ -233,7 +235,6 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
           if (node.nodeType === 1) {
             if (node === result.selectedNode) {
               const textNode = node.childNodes[0];
-              const content = textNode.textContent;
               this.selectedStart = result.alreadyCount + result.startOffset;
               this.selectedEnd = this.selectedStart + result.endOffset - result.startOffset;
             } else {
@@ -243,6 +244,26 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
         }
       }
     }
+  }
+
+  isRootSentence() : boolean {
+    return this.sentence instanceof Sentence;
+  }
+
+  copyToClipboard() {
+    const t = this.tmpTextArea.nativeElement;
+    t.style.display = "block";
+    const text = this.sentence.getText();
+    t.value = text;
+    t.select();
+    let successful = false;
+    try {
+      successful = document.execCommand('copy');
+    } catch (err) {
+      //do nothing
+    }
+    t.style.display = "none";
+    this.snackBar.open(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, "Clipboard", {duration: 1000} as MdSnackBarConfig)
   }
 
 }
@@ -340,7 +361,7 @@ export class SubEntityProvider implements EntityProvider {
   constructor(private nlp: NlpService,
               private state: StateService,
               private entity: EntityWithSubEntities,
-              private entityType?: EntityType,) {
+              private entityType?: EntityType) {
   }
 
   addEntity(entity: EntityDefinition, highlight: HighlightComponent) {

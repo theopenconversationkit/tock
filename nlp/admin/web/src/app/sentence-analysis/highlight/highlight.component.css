@@ -42,6 +42,26 @@
 
 .role-container {
   float: left;
-  padding-right:15px;
+  padding-right: 15px;
+}
+
+.copy-button {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.copy {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 2em;
+  height: 2em;
+  padding: 0;
+  border: none;
+  outline: none;
+  box-shadow: none;
+  background: transparent;
+  display: none;
 }
 
