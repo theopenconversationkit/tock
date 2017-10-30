@@ -36,7 +36,11 @@ object GAConnectorProvider : ConnectorProvider {
             return GAConnector(
                     applicationId,
                     path,
-                    parameters[PROJECT_IDS]?.split(PROJECT_ID_SEPARATOR)?.toSet() ?: emptySet())
+                    parameters[PROJECT_IDS]
+                            ?.split(PROJECT_ID_SEPARATOR)
+                            ?.filter { it.isNotBlank() }
+                            ?.toSet()
+                            ?: emptySet())
         }
     }
 
