@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.connector.ga
 
 import fr.vsct.tock.bot.connector.ga.model.GAIntent
+import fr.vsct.tock.bot.connector.ga.model.response.GABasicCard
 import fr.vsct.tock.bot.connector.ga.model.response.GACarouselItem
 import fr.vsct.tock.bot.connector.ga.model.response.GACarouselSelect
 import fr.vsct.tock.bot.connector.ga.model.response.GAExpectedIntent
@@ -62,16 +63,43 @@ fun BotBus.gaFlexibleMessageForCarousel(items: List<GACarouselItem>,
                                         oneItemDescription: CharSequence? = null,
                                         oneItemSuggestions: List<CharSequence> = emptyList()
 ): GAResponseConnectorMessage {
+    return gaFlexibleMessageForCarousel(
+            items,
+            suggestions,
+            oneItemSuggestions) { one ->
+        basicCard(
+                oneItemTitle ?: one.title,
+                if (one.image != null) oneItemSubtitle ?: one.description else oneItemSubtitle,
+                if (one.image != null) oneItemDescription else oneItemDescription ?: one.description,
+                one.image
+        )
+    }
+}
+
+/**
+ *  Add a basic card if only one element in the items list, in order to avoid the limitation of 2 items.
+ *
+ *  @param items the carousel items
+ *  @param suggestions the suggestions
+ *  @param oneItemSuggestions the additional suggestion if there is only one item
+ *  @param oneItemBasicCardProvider provides the basic card if only one item
+ */
+fun BotBus.gaFlexibleMessageForCarousel(items: List<GACarouselItem>,
+                                        suggestions: List<CharSequence> = emptyList(),
+                                        oneItemSuggestions: List<CharSequence> = emptyList(),
+                                        oneItemBasicCardProvider: (GACarouselItem) -> GABasicCard = {
+                                            basicCard(
+                                                    it.title,
+                                                    if (it.image != null) it.description else null,
+                                                    if (it.image == null) it.description else null,
+                                                    it.image
+                                            )
+                                        }
+): GAResponseConnectorMessage {
     return if (items.size == 1) {
-        val one = items.first()
         gaMessage(
                 richResponse(
-                        basicCard(
-                                oneItemTitle ?: one.title,
-                                if (one.image != null) oneItemSubtitle ?: one.description else oneItemSubtitle,
-                                if (one.image != null) oneItemDescription else oneItemDescription ?: one.description,
-                                one.image
-                        ),
+                        oneItemBasicCardProvider.invoke(items.first()),
                         suggestions + oneItemSuggestions)
         )
     } else {

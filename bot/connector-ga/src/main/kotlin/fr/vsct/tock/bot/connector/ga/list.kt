@@ -109,27 +109,47 @@ fun BotBus.expectedIntentForList(items: List<GAListItem>, title: CharSequence? =
 }
 
 /**
- * Provides a [GAListItem] with [String] parameters.
+ * Provides a [GAListItem] with [String] parameters without description.
  */
 fun BotBus.listItem(
         title: CharSequence,
         targetIntent: IntentAware,
-        description: CharSequence? = null,
         vararg parameters: Pair<String, String>)
         : GAListItem
-        = listItem(title, targetIntent, null, description, *parameters)
+        = listItem(title, targetIntent, null, null, *parameters)
 
 /**
- * Provides a [GAListItem] with [String] parameters.
+ * Provides a [GAListItem] with [String] parameters without description.
  */
 fun BotBus.listItem(
         title: CharSequence,
         targetIntent: IntentAware,
-        description: CharSequence? = null,
         parameters: Parameters)
         : GAListItem
-        = listItem(title, targetIntent, null, description, parameters)
+        = listItem(title, targetIntent, null, null, parameters)
 
+
+/**
+ * Provides a [GAListItem] with [StoryStep] and [Parameters] parameters without description.
+ */
+fun BotBus.listItem(
+        title: CharSequence,
+        targetIntent: IntentAware,
+        step: StoryStep?,
+        parameters: Parameters)
+        : GAListItem
+        = listItem(title, targetIntent, step, null, parameters)
+
+/**
+ * Provides a [GAListItem] with [StoryStep] and [Parameters] parameters without description.
+ */
+fun BotBus.listItem(
+        title: CharSequence,
+        targetIntent: IntentAware,
+        step: StoryStep?,
+        vararg parameters: Pair<String, String>)
+        : GAListItem
+        = listItem(title, targetIntent, step, null, *parameters)
 /**
  * Provides a [GAListItem] with [StoryStep] and [Parameters] parameters.
  */

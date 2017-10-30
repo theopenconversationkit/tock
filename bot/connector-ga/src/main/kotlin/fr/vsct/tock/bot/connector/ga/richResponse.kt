@@ -83,6 +83,25 @@ fun BotBus.richResponse(text: CharSequence, vararg suggestions: CharSequence): G
 
 
 /**
+ * Provides a [GARichResponse] with a text and a [GABasicCard].
+ */
+fun BotBus.richResponse(text: CharSequence, basicCard: GABasicCard, linkOutSuggestion: GALinkOutSuggestion? = null, suggestions: List<CharSequence>): GARichResponse
+        = richResponse(listOf(item(simpleResponse(text)), item(basicCard)), linkOutSuggestion, mapSuggestions(suggestions))
+
+/**
+ * Provides a [GARichResponse] with a text and a [GABasicCard].
+ */
+fun BotBus.richResponse(text: CharSequence, basicCard: GABasicCard, suggestions: List<CharSequence>): GARichResponse
+        = richResponse(text, basicCard, null, suggestions)
+
+/**
+ * Provides a [GARichResponse] with a text and a [GABasicCard].
+ */
+fun BotBus.richResponse(text: CharSequence, basicCard: GABasicCard, vararg suggestions: CharSequence): GARichResponse
+        = richResponse(text, basicCard, suggestions.toList())
+
+
+/**
  * Provides a [GARichResponse] with a [GABasicCard].
  */
 fun BotBus.richResponse(basicCard: GABasicCard, linkOutSuggestion: GALinkOutSuggestion? = null, suggestions: List<CharSequence>): GARichResponse
