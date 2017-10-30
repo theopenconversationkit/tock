@@ -20,5 +20,5 @@ package fr.vsct.tock.bot.connector.messenger.model.webhook
  *
  */
 enum class AttachmentType {
-    audio, fallback, file, image, location, video
+    audio, fallback, file, image, location, video, template
 }
