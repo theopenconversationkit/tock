@@ -21,9 +21,11 @@ import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.UpdateOptions
 import fr.vsct.tock.shared.cache.TockCache
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.getDatabase
-import org.litote.kmongo.ensureIndex
+import mu.KotlinLogging
 import org.litote.kmongo.deleteOne
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
@@ -36,6 +38,8 @@ import org.litote.kmongo.replaceOne
 internal object MongoCache : TockCache {
 
     private const val MONGO_DATABASE: String = "tock_cache_mongo_db"
+
+    private val logger = KotlinLogging.logger {}
 
     private val col: MongoCollection<MongoCacheData> by lazy {
         val database: MongoDatabase = getDatabase(MONGO_DATABASE)
@@ -50,7 +54,13 @@ internal object MongoCache : TockCache {
     }
 
     override fun get(id: String, type: String): Any? {
-        return col.findOne("{'id':${id.json},'type':${type.json}}")?.toValue()
+        return try {
+            col.findOne("{'id':${id.json},'type':${type.json}}")?.toValue()
+        } catch (e: Exception) {
+            logger.error(e)
+            remove(id, type)
+            null
+        }
     }
 
     override fun put(id: String, type: String, data: Any) {
