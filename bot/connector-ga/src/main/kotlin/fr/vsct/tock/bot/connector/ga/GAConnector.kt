@@ -306,7 +306,7 @@ class GAConnector internal constructor(
                         context.fail(400)
                     }
                 } catch (e: Throwable) {
-                    context.sendTechnicalError(e)
+                    context.sendTechnicalError(controller, e)
                 }
             }
         })
@@ -329,6 +329,7 @@ class GAConnector internal constructor(
     }
 
     private fun RoutingContext.sendTechnicalError(
+            controller: ConnectorController,
             throwable: Throwable,
             requestBody: String? = null,
             request: GARequest? = null
@@ -341,7 +342,25 @@ class GAConnector internal constructor(
                                     request?.conversation?.conversationToken ?: "",
                                     false,
                                     emptyList(),
-                                    null,
+                                    GAFinalResponse(
+                                            GARichResponse(
+                                                    listOf(
+                                                            GAItem(
+                                                                    GASimpleResponse(
+                                                                            (controller.errorMessage(
+                                                                                    PlayerId(
+                                                                                            controller.botDefinition.botId,
+                                                                                            PlayerType.bot),
+                                                                                    applicationId,
+                                                                                    PlayerId(
+                                                                                            request?.user?.userId ?: "unknown",
+                                                                                            PlayerType.user)
+                                                                            ) as? SendSentence)?.stringText ?: "Technical error"
+                                                                    )
+                                                            )
+                                                    )
+                                            )
+                                    ),
                                     null,
                                     GAResponseMetadata(
                                             GAStatus(
@@ -386,14 +405,14 @@ class GAConnector internal constructor(
                             PlayerId(applicationId, PlayerType.bot)))
                 } finally {
                     if (!sendAnswer(userId)) {
-                        context.sendTechnicalError(IllegalStateException("no answer found for user $userId"), body, request)
+                        context.sendTechnicalError(controller, IllegalStateException("no answer found for user $userId"), body, request)
                     }
                 }
             } catch (t: Throwable) {
-                context.sendTechnicalError(t, body, request)
+                context.sendTechnicalError(controller, t, body, request)
             }
         } catch (t: Throwable) {
-            context.sendTechnicalError(t, body)
+            context.sendTechnicalError(controller, t, body)
         }
     }
 
