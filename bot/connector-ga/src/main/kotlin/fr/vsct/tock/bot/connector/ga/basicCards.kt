@@ -35,7 +35,7 @@ fun BotBus.basicCard(
     val s = translateAndSetBlankAsNull(subtitle)
     val f = translateAndSetBlankAsNull(formattedText)
 
-    return GABasicCard(t, s, f, image, buttons)
+    return GABasicCard(t ?: "", s ?: "", f, image, buttons)
 }
 
 /**

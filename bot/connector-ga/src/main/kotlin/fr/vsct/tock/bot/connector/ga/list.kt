@@ -92,13 +92,13 @@ fun BotBus.expectedIntentForList(items: List<GAListItem>, title: CharSequence? =
     if (items.size < 2) {
         error("must have at least 2 - current size = ${items.size}")
     } else {
-        val t = translate(title)
+        val t = translateAndSetBlankAsNull(title)
 
         return GAExpectedIntent(
                 GAIntent.option,
                 optionValueSpec(
                         listSelect = GAListSelect(
-                                t.toString(),
+                                t,
                                 if (items.size > 30) {
                                     logger.warn { "too many items $items - keep only first 30" }
                                     items.subList(0, 30)

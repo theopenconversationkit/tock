@@ -22,7 +22,7 @@ import fr.vsct.tock.bot.engine.message.SentenceElement
  *
  */
 data class GAListSelect(
-        val title:String,
+        val title:String?,
         val items:List<GAListItem>
 ) {
 

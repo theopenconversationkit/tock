@@ -36,6 +36,7 @@ import fr.vsct.tock.bot.connector.ga.model.response.GAItem
 import fr.vsct.tock.bot.connector.ga.model.response.GAResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GAResponseMetadata
 import fr.vsct.tock.bot.connector.ga.model.response.GARichResponse
+import fr.vsct.tock.bot.connector.ga.model.response.GASimpleResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GAStatus
 import fr.vsct.tock.bot.connector.ga.model.response.GAStatusCode.INTERNAL
 import fr.vsct.tock.bot.connector.ga.model.response.GAStatusDetail
@@ -80,7 +81,7 @@ class GAConnector internal constructor(
                     this
                 } else {
                     copy(
-                            items = listOf(simpleResponse) + items,
+                            items = mergeItems(listOf(simpleResponse) + items),
                             suggestions = suggestions,
                             linkOutSuggestion = linkOutSuggestion
                     )
@@ -97,11 +98,25 @@ class GAConnector internal constructor(
 
         private fun GABasicCard.merge(other: GABasicCard): GABasicCard =
                 copy(
-                        title = title ?: other.title,
-                        subtitle = subtitle ?: other.subtitle,
+                        title = title?.takeUnless { it.isBlank() } ?: other.title,
+                        subtitle = subtitle?.takeUnless { it.isBlank() } ?: other.subtitle,
                         formattedText = formattedText ?: other.formattedText,
                         image = image ?: other.image,
                         buttons = if (buttons.isNotEmpty()) buttons else other.buttons
+                )
+
+        private fun GASimpleResponse.isMergeable(other: GASimpleResponse): Boolean {
+            return (textToSpeech != null && other.textToSpeech != null
+                    || (textToSpeech == null && other.textToSpeech == null))
+                    && (ssml != null && other.ssml != null
+                    || (ssml == null && other.ssml == null))
+        }
+
+        private fun GASimpleResponse.merge(other: GASimpleResponse): GASimpleResponse =
+                copy(
+                        textToSpeech = if (textToSpeech == null) null else textToSpeech + " " + other.textToSpeech,
+                        ssml = if (ssml == null) null else ssml + " " + other.ssml,
+                        displayText = if (displayText == null) other.displayText else displayText + if (other.displayText == null) "" else " ${other.displayText}"
                 )
 
         //the first has to be a simple response
@@ -110,14 +125,30 @@ class GAConnector internal constructor(
                 if (items.size < 2) {
                     items
                 } else {
-                    listOf(items.first()) +
-                            items.takeLast(items.size - 1).reduce { a, b ->
-                                if (a.basicCard != null && b.basicCard != null) {
-                                    GAItem(basicCard = a.basicCard.merge(b.basicCard))
-                                } else {
-                                    a
-                                }
-                            }
+                    val r = mutableListOf<GAItem>()
+                    var i = 0
+                    var current = items.first()
+                    while (++i < items.size) {
+                        val a = current
+                        val b = items[i]
+                        val newA = if (a.simpleResponse != null && b.simpleResponse != null && a.simpleResponse.isMergeable(b.simpleResponse)) {
+                            GAItem(simpleResponse = a.simpleResponse.merge(b.simpleResponse))
+                        } else if (a.basicCard != null && b.basicCard != null) {
+                            GAItem(basicCard = a.basicCard.merge(b.basicCard))
+                        } else {
+                            a
+                        }
+                        if (a !== newA) {
+                            current = newA
+                        } else {
+                            r.add(a)
+                            current = b
+                        }
+                    }
+                    if (!r.contains(current)) {
+                        r.add(current)
+                    }
+                    r
                 }
 
         fun buildResponse(): GAResponse {
