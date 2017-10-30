@@ -267,7 +267,8 @@ internal fun concat(s1: String?, s2: String?): String {
 
 internal fun String.removeEmojis(): String =
         EmojiUtils.removeAllEmojis(
-                EmojiUtils.emojify(this)
+                EmojiUtils.emojify(this.replace("://", "_____"))
                         .replace("\uD83D\uDC68", ":3")
                         .replace("\uD83D\uDE2E", ":0")
+                        .replace("_____", "://")
         )

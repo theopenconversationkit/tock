@@ -61,4 +61,10 @@ class ExtensionsTest {
         val r = simpleResponseWithoutTranslate("08:07")
         assertEquals("08:07", r.textToSpeech)
     }
+
+    @Test
+    fun simpleResponseWithoutTranslate_shouldReturnsSameWording_whenWordingContainsLinkUrl() {
+        val r = simpleResponseWithoutTranslate("https://oui.sncf")
+        assertEquals("https://oui.sncf", r.textToSpeech)
+    }
 }
