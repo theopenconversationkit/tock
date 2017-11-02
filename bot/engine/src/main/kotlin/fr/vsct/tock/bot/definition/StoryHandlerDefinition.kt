@@ -19,16 +19,20 @@ package fr.vsct.tock.bot.definition
 import fr.vsct.tock.bot.engine.BotBus
 
 /**
- * Receive an analysed sentence or action, and send the answer.
+ * Story handler definitions are used in [StoryHandler] to provide custom context and to manage specific connector behaviour.
  *
- * Story handlers should usually not directly extend this class, but instead extend [StoryHandlerBase].
+ * Implementations should usually use [StoryHandlerDefinitionBase].
  */
-interface StoryHandler {
+interface StoryHandlerDefinition : BotBus {
 
     /**
-     * Receive a message from the bus.
-     *
-     * @param bus the bus used to get the message and send the answer
+     * The [ConnectorStoryHandler] provided for the current [BotBus.targetConnectorType] - null if it does not exist.
      */
-    fun handle(bus: BotBus)
+    val connector: ConnectorStoryHandler<*>? get() = null
+
+    /**
+     * The main method to implement.
+     */
+    fun handle()
+
 }

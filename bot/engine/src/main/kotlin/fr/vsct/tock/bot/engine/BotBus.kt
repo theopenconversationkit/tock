@@ -25,8 +25,8 @@ import fr.vsct.tock.bot.definition.ParameterKey
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.action.ActionPriority
 import fr.vsct.tock.bot.engine.action.ActionNotificationType
+import fr.vsct.tock.bot.engine.action.ActionPriority
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.ContextValue
@@ -53,7 +53,7 @@ import java.util.Locale
 /**
  * The main interface to build a response to a user query.
  */
-interface BotBus {
+interface BotBus : I18nKeyProvider {
 
     companion object {
         /**
@@ -463,4 +463,7 @@ interface BotBus {
         dialog.state.currentIntent = starterIntent
     }
 
+    //i18n provider implementation
+    override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey
+            = i18nProvider.i18nKeyFromLabel(defaultLabel, args)
 }

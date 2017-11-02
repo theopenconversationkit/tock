@@ -27,20 +27,16 @@ import mu.KotlinLogging
  * Base implementation of [StoryHandler].
  * Provides also a convenient implementation of [I18nKeyProvider] to support i18n.
  */
-abstract class StoryHandlerBase : StoryHandler, I18nKeyProvider {
+abstract class StoryHandlerBase<out T : StoryHandlerDefinition> : StoryHandler, I18nKeyProvider {
 
     private val logger = KotlinLogging.logger {}
 
     /**
-     * Wait 1s by default
+     * Handle precondition like checking mandatory entities, and create [StoryHandlerDefinition].
+     * If this function returns null, this implied that [BotBus.end] has been called in this function
+     * (as the [StoryHandlerDefinition.handle] function is not called).
      */
-    open val breath = 1000L
-
-    open fun findStoryDefinition(bus: BotBus): StoryDefinition?
-            = bus
-            .botDefinition
-            .stories
-            .find { it.storyHandler == this }
+    abstract fun computeStoryHandlerDefinition(bus: BotBus): T?
 
     final override fun handle(bus: BotBus) {
         //if not supported user interface, use unknown
@@ -48,12 +44,28 @@ abstract class StoryHandlerBase : StoryHandler, I18nKeyProvider {
             bus.botDefinition.unknownStory.storyHandler.handle(bus)
         } else {
             bus.i18nProvider = this
-            action(bus)
+            val handler = computeStoryHandlerDefinition(bus)
+
+            if (handler == null) {
+                logger.debug { "end called in computeStoryContext - skip action" }
+            } else {
+                handler.handle()
+            }
+
             if (bus.story.lastAction?.metadata?.lastAnswer != true) {
-                logger.warn { "No action sent or Bus.end not called" }
+                logger.warn { "Bus.end not called" }
             }
         }
     }
+
+    /**
+     * Find the story definition of this handler.
+     */
+    open fun findStoryDefinition(bus: BotBus): StoryDefinition?
+            = bus
+            .botDefinition
+            .stories
+            .find { it.storyHandler == this }
 
     /**
      * Handle the action and switch the context to the underlying story definition.
@@ -68,15 +80,18 @@ abstract class StoryHandlerBase : StoryHandler, I18nKeyProvider {
     }
 
     /**
-     * The method to implement.
+     * Wait 1s by default
      */
-    abstract fun action(bus: BotBus)
+    open val breath = 1000L
 
     /**
      * The namespace for [I18nKeyProvider] implementation.
      */
     protected open val i18nNamespace: String = defaultNamespace
 
+    /**
+     * Default i18n prefix.
+     */
     protected fun i18nKeyPrefix(): String = javaClass.kotlin.simpleName?.replace("StoryHandler", "") ?: ""
 
     override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey {
@@ -87,13 +102,6 @@ abstract class StoryHandlerBase : StoryHandler, I18nKeyProvider {
                 prefix,
                 defaultLabel,
                 args)
-    }
-
-    /**
-     * Shortcut method for [i18nKeyFromLabel].
-     */
-    fun i18n(defaultLabel: CharSequence, vararg args: Any?): I18nLabelKey {
-        return i18nKeyFromLabel(defaultLabel, *args)
     }
 
     /**

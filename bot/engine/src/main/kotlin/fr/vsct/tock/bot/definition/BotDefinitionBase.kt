@@ -34,7 +34,7 @@ import fr.vsct.tock.translator.Translator
 import mu.KotlinLogging
 
 /**
- * Base implementation of [BaseDefinition].
+ * Base implementation of [BotDefinition].
  */
 open class BotDefinitionBase(override val botId: String,
                              override val namespace: String,
@@ -57,7 +57,7 @@ open class BotDefinitionBase(override val botId: String,
         val defaultUnknownStory =
                 SimpleStoryDefinition(
                         "tock_unknown_story",
-                        object : StoryHandlerBase() {
+                        object : SimpleStoryHandlerBase() {
                             override fun action(bus: BotBus) {
                                 bus.end(baseI18nKey("Sorry, I didn't understand :("))
                             }
@@ -134,7 +134,7 @@ open class BotDefinitionBase(override val botId: String,
         val defaultKeywordStory =
                 SimpleStoryDefinition(
                         "tock_keyword_story",
-                        object : StoryHandlerBase() {
+                        object : SimpleStoryHandlerBase() {
                             override fun action(bus: BotBus) {
                                 val text = getKeyword(bus)
                                 when (getKeyword(bus)) {

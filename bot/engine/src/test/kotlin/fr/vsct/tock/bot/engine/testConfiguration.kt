@@ -19,8 +19,8 @@ package fr.vsct.tock.bot.engine
 import fr.vsct.tock.bot.definition.BotDefinitionBase
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentAware
+import fr.vsct.tock.bot.definition.SimpleStoryHandlerBase
 import fr.vsct.tock.bot.definition.StoryDefinitionBase
-import fr.vsct.tock.bot.definition.StoryHandlerBase
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.translator.UserInterfaceType
 import fr.vsct.tock.translator.UserInterfaceType.voiceAssistant
@@ -37,7 +37,7 @@ class BotDefinitionTest
 
 enum class StepTest : StoryStep { s1, s2, s3 }
 
-abstract class AbstractStoryHandler : StoryHandlerBase() {
+abstract class AbstractStoryHandler : SimpleStoryHandlerBase() {
     var registeredBus: BotBus? = null
 
     override fun action(bus: BotBus) {

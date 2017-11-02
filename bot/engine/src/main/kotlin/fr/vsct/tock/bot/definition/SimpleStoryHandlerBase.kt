@@ -19,16 +19,16 @@ package fr.vsct.tock.bot.definition
 import fr.vsct.tock.bot.engine.BotBus
 
 /**
- * Receive an analysed sentence or action, and send the answer.
- *
- * Story handlers should usually not directly extend this class, but instead extend [StoryHandlerBase].
+ * For simple stories that do not use custom [StoryHandlerDefinition].
  */
-interface StoryHandler {
+abstract class SimpleStoryHandlerBase : StoryHandlerBase<StoryHandlerDefinition>() {
 
     /**
-     * Receive a message from the bus.
-     *
-     * @param bus the bus used to get the message and send the answer
+     * The method to implement.
      */
-    fun handle(bus: BotBus)
+    abstract fun action(bus: BotBus)
+
+    final override fun computeStoryHandlerDefinition(bus: BotBus): StoryHandlerDefinition
+            = SimpleStoryHandlerDefinition(bus, this)
+
 }

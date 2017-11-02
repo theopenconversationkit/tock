@@ -51,7 +51,7 @@ data class DialogState(
 
     fun removeAllEntityValues() {
         entityValues.forEach {
-            changeValue(it.key, null)
+            removeValue(it.key)
         }
     }
 

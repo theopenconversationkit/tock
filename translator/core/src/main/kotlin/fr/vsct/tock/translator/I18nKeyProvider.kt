@@ -34,12 +34,19 @@ interface I18nKeyProvider {
             namespace: String,
             category: String,
             defaultLabel: CharSequence,
-            args: List<Any?> = emptyList()): I18nLabelKey {
-        return I18nLabelKey(
-                key.toLowerCase(),
-                namespace,
-                category.toLowerCase(),
-                defaultLabel,
-                args)
-    }
+            args: List<Any?> = emptyList()): I18nLabelKey =
+
+            I18nLabelKey(
+                    key.toLowerCase(),
+                    namespace,
+                    category.toLowerCase(),
+                    defaultLabel,
+                    args)
+
+    /**
+     * Shortcut method for [i18nKeyFromLabel].
+     */
+    fun i18n(defaultLabel: CharSequence, vararg args: Any?): I18nLabelKey
+            = i18nKeyFromLabel(defaultLabel, *args)
+
 }
