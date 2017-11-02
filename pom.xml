@@ -31,7 +31,7 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.1.50</kotlin>
+        <kotlin>1.1.51</kotlin>
 
         <slf4j>1.7.25</slf4j>
         <logback>1.2.3</logback>
@@ -40,11 +40,11 @@
         <kodein>4.1.0</kodein>
         <kmongo>3.5.0</kmongo>
         <fongo>2.1.0</fongo>
-        <jackson>2.9.1</jackson>
-        <vertx>3.4.2</vertx>
+        <jackson>2.9.2</jackson>
+        <vertx>3.5.0</vertx>
         <retrofit>2.3.0</retrofit>
-        <okhttp>3.8.1</okhttp>
-        <guava>23.0</guava>
+        <okhttp>3.9.0</okhttp>
+        <guava>23.3-jre</guava>
         <google-auth>1.23.0</google-auth>
         <jasypt>1.9.2</jasypt>
         <commons-csv>1.5</commons-csv>
@@ -53,14 +53,14 @@
         <junit>4.12</junit>
         <mockito-kotlin>1.5.0</mockito-kotlin>
 
-        <plugin.surefire>2.20</plugin.surefire>
+        <plugin.surefire>2.20.1</plugin.surefire>
         <plugin.source>3.0.1</plugin.source>
         <plugin.release>2.5.3</plugin.release>
         <plugin.gpg>1.6</plugin.gpg>
         <plugin.nexus-staging>1.6.8</plugin.nexus-staging>
         <plugin.dokka>0.9.15</plugin.dokka>
         <plugin.assembly>3.1.0</plugin.assembly>
-        <plugin.frontend>1.5</plugin.frontend>
+        <plugin.frontend>1.6</plugin.frontend>
         <plugin.clean>3.0.0</plugin.clean>
         <plugin.jar>3.0.2</plugin.jar>
 
