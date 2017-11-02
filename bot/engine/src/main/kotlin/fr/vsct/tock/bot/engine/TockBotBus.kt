@@ -124,17 +124,17 @@ internal class TockBotBus(
         return answer(action, delay)
     }
 
-    override fun with(priority: ActionPriority): BotBus {
+    override fun withPriority(priority: ActionPriority): BotBus {
         context.priority = priority
         return this
     }
 
-    override fun with(notificationType: ActionNotificationType): BotBus {
+    override fun withNotificationType(notificationType: ActionNotificationType): BotBus {
         context.notificationType = notificationType
         return this
     }
 
-    override fun with(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus {
+    override fun withMessage(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus {
         if (targetConnectorType == connectorType) {
             context.addMessage(messageProvider.invoke())
         }

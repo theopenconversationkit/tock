@@ -403,24 +403,23 @@ interface BotBus : I18nKeyProvider {
     /**
      * Add the specified [ActionPriority] to the bus context.
      */
-    fun with(priority: ActionPriority): BotBus
+    fun withPriority(priority: ActionPriority): BotBus
 
     /**
      * Add the specified [ActionNotificationType] to the bus context.
      */
-    fun with(notificationType: ActionNotificationType): BotBus
+    fun withNotificationType(notificationType: ActionNotificationType): BotBus
 
     /**
      * Add the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.
      */
-    @Deprecated("use with(connectorType, messageProvider) version")
-    fun with(message: ConnectorMessage): BotBus
-            = with(message.connectorType, { message })
+    fun withMessage(message: ConnectorMessage): BotBus
+            = withMessage(message.connectorType, { message })
 
     /**
      * Add the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.
      */
-    fun with(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus
+    fun withMessage(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus
 
     /**
      * Translate and format if needed the text with the optionals args.

@@ -197,17 +197,17 @@ open class BotBusMock(override var userTimeline: UserTimeline,
         return answer(action, delay)
     }
 
-    override fun with(priority: ActionPriority): BotBus {
+    override fun withPriority(priority: ActionPriority): BotBus {
         mockData.priority = priority
         return this
     }
 
-    override fun with(notificationType: ActionNotificationType): BotBus {
+    override fun withNotificationType(notificationType: ActionNotificationType): BotBus {
         mockData.notificationType = notificationType
         return this
     }
 
-    override fun with(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus {
+    override fun withMessage(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus {
         if (targetConnectorType == connectorType) {
             mockData.addMessage(messageProvider.invoke())
         }

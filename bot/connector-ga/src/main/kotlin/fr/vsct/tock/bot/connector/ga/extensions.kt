@@ -59,7 +59,7 @@ val gaConnectorType = ConnectorType("ga", textAndVoiceAssistant)
  * Add a [ConnectorMessage] for Google Assistant.
  */
 fun BotBus.withGoogleAssistant(messageProvider: () -> ConnectorMessage): BotBus {
-    return with(gaConnectorType, messageProvider)
+    return withMessage(gaConnectorType, messageProvider)
 }
 
 /**
@@ -67,7 +67,7 @@ fun BotBus.withGoogleAssistant(messageProvider: () -> ConnectorMessage): BotBus 
  */
 fun BotBus.withGoogleVoiceAssistant(messageProvider: () -> ConnectorMessage): BotBus {
     if (userInterfaceType != textChat) {
-        with(gaConnectorType, messageProvider)
+        withMessage(gaConnectorType, messageProvider)
     }
     return this
 }

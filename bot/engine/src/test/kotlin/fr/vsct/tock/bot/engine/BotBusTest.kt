@@ -40,7 +40,7 @@ class BotBusTest : BotEngineTest() {
 
     @Test
     fun withSignificance_hasToUpdateActionSignificance() {
-        bus.with(ActionPriority.urgent).end()
+        bus.withPriority(ActionPriority.urgent).end()
         verify(connector).send(argForWhich { this is Action && metadata.priority == ActionPriority.urgent }, any())
     }
 

@@ -53,7 +53,7 @@ private val logger = KotlinLogging.logger {}
 val messengerConnectorType = ConnectorType("messenger")
 
 fun BotBus.withMessenger(messageProvider: () -> ConnectorMessage): BotBus {
-    return with(messengerConnectorType, messageProvider)
+    return withMessage(messengerConnectorType, messageProvider)
 }
 
 /**
