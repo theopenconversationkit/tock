@@ -20,7 +20,7 @@
 
     <groupId>fr.vsct.tock</groupId>
     <artifactId>tock-root</artifactId>
-    <version>0.6.8-SNAPSHOT</version>
+    <version>0.7.0-SNAPSHOT</version>
     <packaging>pom</packaging>
     <name>Tock</name>
     <description>Tock, The Open Conversation Kit</description>
