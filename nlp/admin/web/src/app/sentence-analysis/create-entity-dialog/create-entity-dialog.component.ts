@@ -35,11 +35,13 @@ export class CreateEntityDialogComponent implements OnInit {
   roleInitialized: boolean;
 
   error: string;
+  entityTypes:EntityType[];
 
   constructor(public dialogRef: MdDialogRef<CreateEntityDialogComponent>,
-              public state: StateService,
+              private state: StateService,
               @Inject(MD_DIALOG_DATA) private data: any) {
     this.entityProvider = data.entityProvider;
+    this.state.entityTypesSortedByName().subscribe(entities => this.entityTypes =entities);
   }
 
   ngOnInit() {
