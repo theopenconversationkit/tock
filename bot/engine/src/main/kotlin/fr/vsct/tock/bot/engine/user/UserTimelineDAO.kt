@@ -17,9 +17,10 @@
 package fr.vsct.tock.bot.engine.user
 
 import fr.vsct.tock.bot.definition.StoryDefinition
+import fr.vsct.tock.bot.engine.dialog.Dialog
 
 /**
- *
+ * To access [UserTimeline]s.
  */
 interface UserTimelineDAO {
 
@@ -29,7 +30,7 @@ interface UserTimelineDAO {
     fun save(userTimeline: UserTimeline)
 
     /**
-     * Load with last dialog. If no timeline, create a new one.
+     * Load with last dialog. If no timeline exists, creates a new one.
      */
     fun loadWithLastValidDialog(userId: PlayerId, storyDefinitionProvider: (String) -> StoryDefinition): UserTimeline
 
@@ -42,4 +43,10 @@ interface UserTimelineDAO {
      * Remove the timeline and the associated dialogs.
      */
     fun remove(playerId: PlayerId)
+
+    /**
+     * Returns the dialogs of specified client id.
+     */
+    fun getClientDialogs(clientId: String,
+                         storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog>
 }

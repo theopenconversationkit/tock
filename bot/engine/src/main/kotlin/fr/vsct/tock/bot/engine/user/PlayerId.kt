@@ -17,9 +17,23 @@
 package fr.vsct.tock.bot.engine.user
 
 /**
+ * The user identifier.
  *
+ * Contains a (unique) id, a [PlayerType] and an optional clientId.
+ *
+ * The [clientId] field is used in a "not mandatory logging" scenario,
+ * and to manage multi-platform dialogs.
+ *
+ * A [PlayerId] is equals to another [PlayerId] if both [id] are equals.
  */
 data class PlayerId(
         val id: String,
-        val type: PlayerType = PlayerType.user) {
+        val type: PlayerType = PlayerType.user,
+        val clientId: String? = null) {
+
+    override fun equals(other: Any?): Boolean
+            = (other as? PlayerId)?.id == id
+
+    override fun hashCode(): Int
+            = id.hashCode()
 }

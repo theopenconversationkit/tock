@@ -84,9 +84,19 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     private val dialogTextCol = database.getCollection<DialogTextCol>("dialog_text")
 
     init {
-        userTimelineCol.ensureIndex("{playerId:1}", IndexOptions().unique(true))
+        //TODO remove these in 0.8.0
+        try {
+            userTimelineCol.dropIndex("playerId_1")
+            dialogCol.dropIndex("playerIds_1")
+        } catch (e: Exception) {
+            //ignore
+        }
+        //end TODO
+
+        userTimelineCol.ensureIndex("{'playerId.id':1}", IndexOptions().unique(true))
         userTimelineCol.ensureIndex("{lastUpdateDate:1}")
-        dialogCol.ensureIndex("{playerIds:1}")
+        dialogCol.ensureIndex("{'playerIds.id':1}")
+        dialogCol.ensureIndex("{'playerIds.clientId':1}")
         dialogCol.ensureIndex("{lastUpdateDate:1}", IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS))
         dialogTextCol.ensureIndex("{text:1}")
         dialogTextCol.ensureIndex("{text:1, dialogId:1}", IndexOptions().unique(true))
@@ -140,8 +150,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     }
 
     override fun remove(playerId: PlayerId) {
-        dialogCol.deleteMany("{playerIds:${playerId.json}}")
-        userTimelineCol.deleteOne("{playerId:${playerId.json}}")
+        dialogCol.deleteMany("{'playerIds.id':${playerId.id.json}}")
+        userTimelineCol.deleteOne("{'playerId.id':${playerId.id.json}}")
         MongoUserLock.deleteLock(playerId.id)
     }
 
@@ -157,21 +167,10 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
     private fun loadLastValidDialogCol(userId: PlayerId): DialogCol? {
         return dialogCol.aggregate<DialogCol>(
-                pipeline = """[
-                                            {${match}:{playerIds:${userId.json}, lastUpdateDate : {${gt} : ${Instant.now().minusSeconds(60 * 60 * 24).json}}}},
-                                            {${sort}:{lastUpdateDate:-1}},
-                                            {${limit}:1}
-                                           ]"""
-        ).firstOrNull()
-    }
-
-    private fun loadLastDialogCol(userId: PlayerId): DialogCol? {
-        return dialogCol.aggregate<DialogCol>(
-                pipeline = """[
-                                            {${match}:{playerIds:${userId.json}}},
-                                            {${sort}:{lastUpdateDate:-1}},
-                                            {${limit}:1}
-                                           ]"""
+                pipeline = """[{${match}:{'playerIds.id':${userId.id.json}, lastUpdateDate : {${gt} : ${Instant.now().minusSeconds(60 * 60 * 24).json}}}},
+                               {${sort}:{lastUpdateDate:-1}},
+                               {${limit}:1}
+                              ]"""
         ).firstOrNull()
     }
 
@@ -244,7 +243,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             val filter =
                     listOfNotNull(
                             "'applicationIds':{\$in:${applicationsIds.filter { it.isNotEmpty() }.json}}",
-                            if (query.playerId == null) null else "'playerIds':${query.playerId!!.json}",
+                            if (query.playerId == null) null else "'playerIds.id':${query.playerId!!.id.json}",
                             if (query.dialogId == null) null else "'_id':${query.dialogId!!.json}",
                             if (dialogIds.isEmpty()) null else "'_id':{\$in:${dialogIds.json}}",
                             if (query.intentName.isNullOrBlank()) null else "'stories.currentIntent.name':${query.intentName!!.json}"
@@ -265,5 +264,14 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
     override fun getDialog(id: String): DialogReport? {
         return dialogCol.findOneById(id)?.toDialogReport()
+    }
+
+    override fun getClientDialogs(
+            clientId: String,
+            storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog> {
+        return dialogCol
+                .find<DialogCol>("{'playerIds.clientId':${clientId.json}}")
+                .map { it.toDialog(storyDefinitionProvider) }
+                .toList()
     }
 }
