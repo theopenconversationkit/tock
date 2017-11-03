@@ -41,7 +41,7 @@
         <kmongo>3.5.0</kmongo>
         <fongo>2.1.0</fongo>
         <jackson>2.9.2</jackson>
-        <vertx>3.5.0</vertx>
+        <vertx>3.4.2</vertx>
         <retrofit>2.3.0</retrofit>
         <okhttp>3.9.0</okhttp>
         <guava>23.3-jre</guava>
