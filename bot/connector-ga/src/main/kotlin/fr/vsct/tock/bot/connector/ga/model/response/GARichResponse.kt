@@ -37,7 +37,7 @@ data class GARichResponse(
 
         return e.copy(
                 choices = e.choices + listOfNotNull(linkOutSuggestion?.toChoice()),
-                texts = suggestions.mapIndexed { i, s -> "suggestion$i" to s.title }.toMap()
+                texts = e.texts + suggestions.mapIndexed { i, s -> "suggestion$i" to s.title }.toMap()
         )
     }
 
