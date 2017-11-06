@@ -21,5 +21,5 @@ package fr.vsct.tock.bot.connector.rest.client.model
  */
 enum class ClientUserInterfaceType {
 
-    textChat, voiceAssistant
+    textChat, voiceAssistant, textAndVoiceAssistant
 }
