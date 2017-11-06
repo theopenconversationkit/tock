@@ -26,6 +26,7 @@ import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.Parameters
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.translator.raw
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
@@ -72,9 +73,9 @@ fun BotBus.gaFlexibleMessageForList(items: List<GAListItem>,
         gaMessage(
                 richResponse(
                         basicCard(
-                                oneItemTitle ?: one.title,
+                                oneItemTitle ?: one.title.raw,
                                 if (one.image != null) oneItemSubtitle ?: title else title,
-                                if (one.image != null) oneItemDescription else oneItemDescription ?: one.description,
+                                if (one.image != null) oneItemDescription else oneItemDescription ?: one.description?.raw,
                                 one.image
                         ),
                         suggestions + oneItemSuggestions

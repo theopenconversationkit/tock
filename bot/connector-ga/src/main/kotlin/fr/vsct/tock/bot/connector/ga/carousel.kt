@@ -26,6 +26,7 @@ import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.Parameters
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.translator.raw
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
@@ -68,9 +69,9 @@ fun BotBus.gaFlexibleMessageForCarousel(items: List<GACarouselItem>,
             suggestions,
             oneItemSuggestions) { one ->
         basicCard(
-                oneItemTitle ?: one.title,
-                if (one.image != null) oneItemSubtitle ?: one.description else oneItemSubtitle,
-                if (one.image != null) oneItemDescription else oneItemDescription ?: one.description,
+                oneItemTitle ?: one.title.raw,
+                if (one.image != null) oneItemSubtitle ?: one.description?.raw else oneItemSubtitle,
+                if (one.image != null) oneItemDescription else oneItemDescription ?: one.description?.raw,
                 one.image
         )
     }
@@ -89,9 +90,9 @@ fun BotBus.gaFlexibleMessageForCarousel(items: List<GACarouselItem>,
                                         oneItemSuggestions: List<CharSequence> = emptyList(),
                                         oneItemBasicCardProvider: (GACarouselItem) -> GABasicCard = {
                                             basicCard(
-                                                    it.title,
-                                                    if (it.image != null) it.description else null,
-                                                    if (it.image == null) it.description else null,
+                                                    it.title.raw,
+                                                    if (it.image != null) it.description?.raw else null,
+                                                    if (it.image == null) it.description?.raw else null,
                                                     it.image
                                             )
                                         }
