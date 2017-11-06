@@ -73,6 +73,9 @@ class SendChoice(playerId: PlayerId,
         const val STEP_PARAMETER = "_step"
         const val PREVIOUS_INTENT_PARAMETER = "_previous_intent"
 
+        /**
+         * Encode a choice id.
+         */
         fun encodeChoiceId(
                 bus: BotBus,
                 intent: IntentAware,
@@ -81,6 +84,9 @@ class SendChoice(playerId: PlayerId,
             return encodeChoiceId(intent, step, parameters, bus.step, bus.dialog.state.currentIntent)
         }
 
+        /**
+         * Encode a choice id.
+         */
         fun encodeChoiceId(
                 intent: IntentAware,
                 step: StoryStep? = null,
@@ -105,6 +111,9 @@ class SendChoice(playerId: PlayerId,
             }.toString()
         }
 
+        /**
+         * Decode an id - returns the [intentName] and the [parameters] map.
+         */
         fun decodeChoiceId(id: String): Pair<String, Map<String, String>> {
             val questionMarkIndex = id.indexOf("?")
             return if (questionMarkIndex == -1) {
@@ -125,9 +134,17 @@ class SendChoice(playerId: PlayerId,
         return Choice(intentName, parameters)
     }
 
+    /**
+     * The step of this choice (when applicable).
+     */
     fun step(): String? = parameters[STEP_PARAMETER]
 
     internal fun previousIntent(): String? = parameters[PREVIOUS_INTENT_PARAMETER]
+
+    /**
+     * Provides the id used by connectors.
+     */
+    fun toEncodedId(): String = encodeChoiceId(Intent(intentName), null, parameters, null, null)
 
     override fun toString(): String {
         return "SendChoice(intentName='$intentName', parameters=$parameters)"
