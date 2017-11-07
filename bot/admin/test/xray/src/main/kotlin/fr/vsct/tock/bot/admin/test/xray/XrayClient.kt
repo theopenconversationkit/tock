@@ -25,6 +25,7 @@ import fr.vsct.tock.bot.admin.test.xray.model.JiraIssue
 import fr.vsct.tock.bot.admin.test.xray.model.JiraIssueLink
 import fr.vsct.tock.bot.admin.test.xray.model.JiraKey
 import fr.vsct.tock.bot.admin.test.xray.model.JiraTest
+import fr.vsct.tock.bot.admin.test.xray.model.JiraType
 import fr.vsct.tock.bot.admin.test.xray.model.XrayAttachment
 import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildTestStep
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTest
@@ -112,7 +113,7 @@ object XrayClient {
                     .body()?.firstOrNull() ?: error("error during attachment of $content")
 
     fun linkTest(key1: String, key2: String) {
-        xray.linkIssue(JiraIssueLink("relates to", JiraKey(key1), JiraKey(key2))).execute()
+        xray.linkIssue(JiraIssueLink(JiraType("Associate"), JiraKey(key1), JiraKey(key2))).execute()
     }
 
     fun getLabels(key: String): List<String> {

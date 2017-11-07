@@ -257,6 +257,7 @@ object XrayService {
      * @param dialog the dialog used to build the test
      * @param testName the optional test name
      * @param linkedJira the optional User Story ticket related to the test
+     * @param testsPlans the tests plans to include for this test
      * @param labelTestPlansMap a map of label -> test plan key.
      * if [linkedJira] is set, get the labels of this US and add the test to all test plans specified in the map with the retrieved labels.
      *
@@ -265,6 +266,7 @@ object XrayService {
             dialog: DialogReport,
             testName: String = "Test",
             linkedJira: String? = null,
+            testsPlans: List<String>,
             labelTestPlansMap: Map<String, String> = emptyMap()): XrayTest? {
         if (dialog.actions.isEmpty()) {
             logger.warn { "no action for dialog $dialog" }
@@ -330,6 +332,9 @@ object XrayService {
         val jira = XrayClient.createTest(test)
         if (linkedJira != null) {
             XrayClient.linkTest(jira.key, linkedJira)
+            testsPlans.forEach {
+                XrayClient.addTestToTestPlan(jira.key, it)
+            }
             if (labelTestPlansMap.isNotEmpty()) {
                 val labels = XrayClient.getLabels(linkedJira)
                 labels

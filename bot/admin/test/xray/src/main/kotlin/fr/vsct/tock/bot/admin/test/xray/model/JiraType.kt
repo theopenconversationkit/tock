@@ -19,4 +19,5 @@ package fr.vsct.tock.bot.admin.test.xray.model
 /**
  *
  */
-data class JiraIssueLink(val type: JiraType, val inwardIssue: JiraKey, val outwardIssue: JiraKey)
+data class JiraType(val name:String) {
+}
