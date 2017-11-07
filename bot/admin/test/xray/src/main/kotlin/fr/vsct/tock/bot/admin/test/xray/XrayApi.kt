@@ -18,9 +18,10 @@ package fr.vsct.tock.bot.admin.test.xray
 
 import fr.vsct.tock.bot.admin.test.xray.model.JiraAttachment
 import fr.vsct.tock.bot.admin.test.xray.model.JiraIssue
+import fr.vsct.tock.bot.admin.test.xray.model.JiraIssueLink
 import fr.vsct.tock.bot.admin.test.xray.model.JiraTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildTestStep
-import fr.vsct.tock.bot.admin.test.xray.model.XrayPreconditionAssociateTest
+import fr.vsct.tock.bot.admin.test.xray.model.XrayUpdateTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecution
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestStep
@@ -45,6 +46,11 @@ interface XrayApi {
     @GET("/rest/raven/1.0/api/testplan/{testPlanKey}/test")
     fun getTestsOfTestPlan(@Path("testPlanKey") testPlanKey: String): Call<List<XrayTest>>
 
+    @POST("/rest/raven/1.0/api/testplan/{testPlanKey}/test")
+    fun addTestToTestPlans(
+            @Path("testPlanKey") testPlanKey: String,
+            @Body update: XrayUpdateTest): Call<ResponseBody>
+
     @GET("/rest/raven/1.0/api/test")
     fun getTests(@Query("keys") testKeys: String): Call<List<XrayTest>>
 
@@ -64,10 +70,13 @@ interface XrayApi {
     @POST("/rest/raven/1.0/api/precondition/{preConditionKey}/test")
     fun addPrecondition(
             @Path("preConditionKey") preConditionKey: String,
-            @Body associate: XrayPreconditionAssociateTest): Call<ResponseBody>
+            @Body associate: XrayUpdateTest): Call<ResponseBody>
 
     @POST("/rest/api/2/issue")
     fun createTest(@Body test: JiraTest): Call<JiraIssue>
+
+    @POST("/rest/api/2/issueLink")
+    fun linkIssue(@Body link: JiraIssueLink): Call<ResponseBody>
 
     @PUT("/rest/api/2/issue/{id}")
     fun updateTest(@Path("id") id: String, @Body test: JiraTest): Call<ResponseBody>
@@ -79,4 +88,7 @@ interface XrayApi {
             @Part body: MultipartBody.Part,
             @Header("X-Atlassian-Token") token: String = "no-check")
             : Call<List<JiraAttachment>>
+
+    @GET("/rest/api/2/issue/{id}")
+    fun getIssue(@Path("id") id: String): Call<ResponseBody>
 }

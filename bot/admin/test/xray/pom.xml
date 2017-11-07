@@ -37,6 +37,10 @@
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-engine-jackson</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.beust</groupId>
+            <artifactId>klaxon</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>junit</groupId>

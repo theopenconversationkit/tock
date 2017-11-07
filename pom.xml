@@ -41,6 +41,7 @@
         <kmongo>3.5.0</kmongo>
         <fongo>2.1.0</fongo>
         <jackson>2.9.2</jackson>
+        <klaxon>0.32</klaxon>
         <vertx>3.4.2</vertx>
         <retrofit>2.3.0</retrofit>
         <okhttp>3.9.0</okhttp>
@@ -192,6 +193,11 @@
                 <groupId>com.fasterxml.jackson.datatype</groupId>
                 <artifactId>jackson-datatype-jsr310</artifactId>
                 <version>${jackson}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.beust</groupId>
+                <artifactId>klaxon</artifactId>
+                <version>${klaxon}</version>
             </dependency>
 
             <dependency>

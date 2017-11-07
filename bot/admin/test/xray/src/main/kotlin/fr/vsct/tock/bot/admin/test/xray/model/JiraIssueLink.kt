@@ -19,6 +19,4 @@ package fr.vsct.tock.bot.admin.test.xray.model
 /**
  *
  */
-data class XrayPreconditionAssociateTest(
-        val add: List<String>
-)
+data class JiraIssueLink(val type: String, val inwardIssue: JiraKey, val outwardIssue: JiraKey)

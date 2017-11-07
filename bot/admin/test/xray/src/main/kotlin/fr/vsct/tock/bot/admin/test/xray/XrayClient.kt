@@ -16,15 +16,21 @@
 
 package fr.vsct.tock.bot.admin.test.xray
 
+import com.beust.klaxon.JsonObject
+import com.beust.klaxon.Parser
+import com.beust.klaxon.array
+import com.beust.klaxon.obj
 import fr.vsct.tock.bot.admin.test.xray.model.JiraAttachment
 import fr.vsct.tock.bot.admin.test.xray.model.JiraIssue
+import fr.vsct.tock.bot.admin.test.xray.model.JiraIssueLink
+import fr.vsct.tock.bot.admin.test.xray.model.JiraKey
 import fr.vsct.tock.bot.admin.test.xray.model.JiraTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayAttachment
 import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildTestStep
-import fr.vsct.tock.bot.admin.test.xray.model.XrayPreconditionAssociateTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestExecution
 import fr.vsct.tock.bot.admin.test.xray.model.XrayTestStep
+import fr.vsct.tock.bot.admin.test.xray.model.XrayUpdateTest
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.basicAuthInterceptor
 import fr.vsct.tock.shared.create
@@ -88,7 +94,7 @@ object XrayClient {
     fun addPrecondition(preConditionKey: String, jiraId: String) =
             xray.addPrecondition(
                     preConditionKey,
-                    XrayPreconditionAssociateTest(listOf(jiraId))
+                    XrayUpdateTest(listOf(jiraId))
             ).execute().body()
 
     fun updateTest(jiraId: String, test: JiraTest)
@@ -105,5 +111,16 @@ object XrayClient {
                     .execute()
                     .body()?.firstOrNull() ?: error("error during attachment of $content")
 
+    fun linkTest(key1: String, key2: String) {
+        xray.linkIssue(JiraIssueLink("relates to", JiraKey(key1), JiraKey(key2))).execute()
+    }
 
+    fun getLabels(key: String): List<String> {
+        val response = xray.getIssue(key).execute()
+        val body = Parser().parse(StringBuilder(response.body()!!.string())) as JsonObject
+        return body.obj("fields")?.array<String>("labels") ?: emptyList()
+    }
+
+    fun addTestToTestPlan(test: String, testPlan: String)
+            = xray.addTestToTestPlans(testPlan, XrayUpdateTest(listOf(test))).execute()
 }

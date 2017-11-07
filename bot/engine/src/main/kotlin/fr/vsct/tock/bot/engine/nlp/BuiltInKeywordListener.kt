@@ -31,6 +31,9 @@ object BuiltInKeywordListener : NlpListener {
     val testContextKeyword = property("tock_bot_test_context_keyword", "_test_")
     val endTestContextKeyword = property("tock_bot_end_test_context_keyword", "_end_test_")
 
+    /**
+     * The keyword to listen.
+     */
     val keywords: MutableSet<String> = ConcurrentSkipListSet<String>(
             listOf(
                     deleteKeyword,
@@ -39,8 +42,14 @@ object BuiltInKeywordListener : NlpListener {
             )
     )
 
+    /**
+     * The keyword regexp is applicable.
+     */
+    @Volatile
+    var keywordRegexp: Regex? = null
+
     override fun handleKeyword(sentence: String): Intent? {
-        return if (keywords.contains(sentence)) {
+        return if (keywords.contains(sentence) || keywordRegexp?.matches(sentence) == true) {
             Intent.keyword
         } else {
             null
