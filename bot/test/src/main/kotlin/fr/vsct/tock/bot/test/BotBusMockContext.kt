@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.Parameters
 import fr.vsct.tock.bot.definition.StoryDefinition
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendChoice
@@ -90,7 +91,7 @@ class BotBusMockContext(var userTimeline: UserTimeline,
      * Create a choice for this context.
      */
     fun choice(intentName: String,
-               step: StoryStep,
+               step: StoryStep<out StoryHandlerDefinition>,
                vararg parameters: Pair<String, String>): SendChoice
             = SendChoice(userId, applicationId, botId, intentName, step, parameters.toMap())
 
@@ -98,7 +99,7 @@ class BotBusMockContext(var userTimeline: UserTimeline,
      * Create a choice for this context.
      */
     fun choice(intent: IntentAware,
-               step: StoryStep,
+               step: StoryStep<out StoryHandlerDefinition>,
                parameters: Parameters): SendChoice
             = SendChoice(userId, applicationId, botId, intent.wrappedIntent().name, step, parameters.toMap())
 

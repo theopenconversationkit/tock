@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.engine.message
 
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendChoice
@@ -33,7 +34,7 @@ data class Choice(
 ) : Message {
 
     constructor(intentName: String,
-                step: StoryStep,
+                step: StoryStep<out StoryHandlerDefinition>,
                 parameters: Map<String, String> = emptyMap(),
                 delay: Long = 0)
             : this(intentName, parameters + (SendChoice.STEP_PARAMETER to step.name), delay)

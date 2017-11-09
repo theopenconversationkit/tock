@@ -120,14 +120,31 @@ class Bot(botDefinitionBase: BotDefinition) {
                 }
 
         //set current step if necessary
+        var forced = false
         if (action is SendChoice) {
             action.step()?.apply {
+                forced = true
                 story.currentStep = this
             }
         }
 
         //revalidate step
-        story.currentStep = story.findCurrentStep()?.name
+        val step = story.findCurrentStep()
+        story.currentStep = step?.name
+
+        //check the step from the intent
+        if (!forced && step == null && newIntent != null) {
+            story.definition.steps.find { it.supportStarterIntent(newIntent) }
+                    ?.apply {
+                        forced = true
+                        story.currentStep = name
+                    }
+        }
+
+        //reset the step if applicable
+        if (!forced && newIntent != null && step?.supportIntent(newIntent) != true) {
+            story.currentStep = null
+        }
 
         story.actions.add(action)
         return story

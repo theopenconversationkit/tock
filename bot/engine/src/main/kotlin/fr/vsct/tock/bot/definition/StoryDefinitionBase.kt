@@ -19,26 +19,23 @@ package fr.vsct.tock.bot.definition
 import fr.vsct.tock.translator.UserInterfaceType
 
 /**
- * Helper class for StoryDefinition implementation. Usually the implementation is an enum.
- * This interface add a starter (and main) intent with intent name equals to the property of value [name]
- * to the [StoryDefinition].
+ *
  */
-interface StoryDefinitionBase : StoryDefinition {
+class StoryDefinitionBase(
+        val name: String,
+        override val storyHandler: StoryHandler = {} as SimpleStoryHandlerBase,
+        otherStarterIntents: Set<IntentAware> = emptySet(),
+        secondaryIntents: Set<IntentAware> = emptySet(),
+        stepsList: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
+        unsupportedUserInterface: UserInterfaceType? = null
+) : StoryDefinition {
 
-    val otherStarterIntents: Set<IntentAware> get() = emptySet()
-    val otherIntents: Set<IntentAware> get() = emptySet()
+    override val steps: Set<StoryStep<out StoryHandlerDefinition>> = stepsList.toSet()
 
-    /**
-     * Usually StoryStep implementation is also an enum
-     */
-    val stepsArray: Array<out StoryStep> get() = emptyArray()
-    override val steps: Set<StoryStep> get() = stepsArray.toSet()
+    override val unsupportedUserInterfaces: Set<UserInterfaceType> = listOfNotNull(unsupportedUserInterface).toSet()
 
-    val unsupportedUserInterface: UserInterfaceType? get() = null
-    override val unsupportedUserInterfaces: Set<UserInterfaceType> get() = listOfNotNull(unsupportedUserInterface).toSet()
-
-    val name: String
     override val id: String get() = name
-    override val starterIntents: Set<Intent> get() = setOf(Intent(name)) + otherStarterIntents.map { it.wrappedIntent() }.toSet()
-    override val intents: Set<Intent> get() = setOf(Intent(name)) + (otherStarterIntents + otherIntents).map { it.wrappedIntent() }.toSet()
+    override val starterIntents: Set<Intent> = setOf(Intent(name)) + otherStarterIntents.map { it.wrappedIntent() }.toSet()
+    override val intents: Set<Intent> = setOf(Intent(name)) + (otherStarterIntents + secondaryIntents).map { it.wrappedIntent() }.toSet()
+
 }

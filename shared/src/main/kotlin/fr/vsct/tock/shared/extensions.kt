@@ -32,7 +32,21 @@ fun String.withoutNamespace(namespace: String? = null): String
         = if (contains(":")) namespace().let { if (namespace == null || it == namespace) name() else this }
 else this
 
+/**
+ * Returns a map with only not null values.
+ */
 fun <K, V> mapNotNullValues(vararg pairs: Pair<K, V?>): Map<K, V> = mapOf(*pairs).filterValues { it != null }.mapValues { it.value!! }
+
+/**
+ * Map not null values of the [Pair] results of the specified transformation.
+ */
+fun <T, K, V> Iterable<T>.mapNotNullValues(transform: (T) -> Pair<K, V?>): List<Pair<K, V>> =
+        map { transform.invoke(it) }
+                .filter { it.second != null }
+                .map {
+                    @Suppress("UNCHECKED_CAST")
+                    it as Pair<K, V>
+                }
 
 fun <T> Enumeration<T>.toSet(): Set<T> = Collections.list(this).toSet()
 

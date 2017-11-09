@@ -23,6 +23,7 @@ import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.ParameterKey
 import fr.vsct.tock.bot.definition.StoryDefinition
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionNotificationType
@@ -138,7 +139,7 @@ interface BotBus : I18nKeyProvider {
     /**
      * The current [StoryStep] of the [Story].
      */
-    var step: StoryStep?
+    var step: StoryStep<out StoryHandlerDefinition>?
         get() = story.findCurrentStep()
         set(step) {
             story.currentStep = step?.name
@@ -159,11 +160,7 @@ interface BotBus : I18nKeyProvider {
      * or if this parameter is not set.
      */
     fun paramChoice(paramName: String): String? {
-        return if (action is SendChoice) {
-            (action as SendChoice).parameters[paramName]
-        } else {
-            null
-        }
+        return (action as? SendChoice)?.parameters?.get(paramName)
     }
 
     /**
@@ -204,7 +201,7 @@ interface BotBus : I18nKeyProvider {
      */
     fun <T : Value> entityValue(role: String): T? {
         @Suppress("UNCHECKED_CAST")
-        return entities[role]?.value?.value as T?
+        return entities[role]?.value?.value as? T?
     }
 
     /**
@@ -293,7 +290,7 @@ interface BotBus : I18nKeyProvider {
      */
     fun <T : Any> contextValue(name: String): T? {
         @Suppress("UNCHECKED_CAST")
-        return dialog.state.context[name] as T?
+        return dialog.state.context[name] as? T?
     }
 
     /**

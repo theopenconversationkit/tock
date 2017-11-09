@@ -14,22 +14,16 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.definition
+package fr.vsct.tock.bot.connector.ga
 
-import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.connector.ConnectorHandler
+import fr.vsct.tock.bot.definition.ConnectorStoryHandler
+import kotlin.reflect.KClass
 
 /**
- * For simple stories that do not use custom [StoryHandlerDefinition].
+ * To specify [ConnectorStoryHandler] for Google Assistant connector.
  */
-abstract class SimpleStoryHandlerBase(mainIntentName: String? = null)
-    : StoryHandlerBase<StoryHandlerDefinition>(mainIntentName) {
-
-    /**
-     * The method to implement.
-     */
-    abstract fun action(bus: BotBus)
-
-    final override fun setupHandlerDef(bus: BotBus): StoryHandlerDefinition
-            = SimpleStoryHandlerDefinition(bus, this)
-
-}
+@ConnectorHandler(connectorTypeId = GA_CONNECTOR_TYPE_ID)
+@Target(AnnotationTarget.CLASS)
+@MustBeDocumented
+annotation class GAHandler(val value: KClass<out ConnectorStoryHandler<*>>)

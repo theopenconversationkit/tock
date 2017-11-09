@@ -41,6 +41,7 @@ import fr.vsct.tock.bot.connector.ga.model.response.GASimpleResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GASimpleSelect
 import fr.vsct.tock.bot.connector.ga.model.response.GAStructuredResponse
 import fr.vsct.tock.bot.definition.IntentAware
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.action.SendChoice
@@ -50,10 +51,12 @@ import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
+internal const val GA_CONNECTOR_TYPE_ID = "ga"
+
 /**
  * The Google Assistant [ConnectorType].
  */
-val gaConnectorType = ConnectorType("ga", textAndVoiceAssistant)
+val gaConnectorType = ConnectorType(GA_CONNECTOR_TYPE_ID, textAndVoiceAssistant)
 
 /**
  * Add a [ConnectorMessage] for Google Assistant.
@@ -235,7 +238,7 @@ internal fun CharSequence?.setBlankAsNull(): String?
 fun BotBus.optionInfo(
         title: CharSequence,
         targetIntent: IntentAware,
-        step: StoryStep? = null,
+        step: StoryStep<out StoryHandlerDefinition>? = null,
         vararg parameters: Pair<String, String>
 ): GAOptionInfo {
     val t = translate(title)

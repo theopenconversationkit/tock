@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.engine.action
 
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentAware
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.dialog.EventState
@@ -48,7 +49,7 @@ class SendChoice(playerId: PlayerId,
                 applicationId: String,
                 recipientId: PlayerId,
                 intentName: String,
-                step: StoryStep,
+                step: StoryStep<out StoryHandlerDefinition>,
                 parameters: Map<String, String> = emptyMap(),
                 id: String = Dice.newId(),
                 date: Instant = Instant.now(),
@@ -79,7 +80,7 @@ class SendChoice(playerId: PlayerId,
         fun encodeChoiceId(
                 bus: BotBus,
                 intent: IntentAware,
-                step: StoryStep? = null,
+                step: StoryStep<out StoryHandlerDefinition>? = null,
                 parameters: Map<String, String> = emptyMap()): String {
             return encodeChoiceId(intent, step, parameters, bus.step, bus.dialog.state.currentIntent)
         }
@@ -89,9 +90,9 @@ class SendChoice(playerId: PlayerId,
          */
         fun encodeChoiceId(
                 intent: IntentAware,
-                step: StoryStep? = null,
+                step: StoryStep<out StoryHandlerDefinition>? = null,
                 parameters: Map<String, String> = emptyMap(),
-                busStep: StoryStep? = null,
+                busStep: StoryStep<out StoryHandlerDefinition>? = null,
                 currentIntent: Intent? = null): String {
             val currentStep = if (step == null) busStep else step
             return StringBuilder().apply {

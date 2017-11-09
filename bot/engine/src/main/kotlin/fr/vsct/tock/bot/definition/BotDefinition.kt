@@ -90,8 +90,8 @@ interface BotDefinition : I18nKeyProvider {
         return findIntent(stories, intent)
     }
 
-    fun findStoryDefinition(intent: Intent?): StoryDefinition {
-        return findStoryDefinition(intent?.name)
+    fun findStoryDefinition(intent: IntentAware?): StoryDefinition {
+        return findStoryDefinition(intent?.wrappedIntent()?.name)
     }
 
     fun findStoryDefinition(intent: String?): StoryDefinition {

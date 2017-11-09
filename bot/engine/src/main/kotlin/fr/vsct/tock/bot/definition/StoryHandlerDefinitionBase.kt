@@ -16,19 +16,70 @@
 
 package fr.vsct.tock.bot.definition
 
+import fr.vsct.tock.bot.connector.ConnectorHandler
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.shared.mapNotNullValues
 import mu.KotlinLogging
+import java.util.concurrent.ConcurrentHashMap
+import kotlin.reflect.KClass
+import kotlin.reflect.full.findAnnotation
+import kotlin.reflect.full.primaryConstructor
+import kotlin.reflect.full.superclasses
 
 /**
  * Base implementation of [StoryHandlerDefinition].
  */
-abstract class StoryHandlerDefinitionBase<out T : ConnectorStoryHandler<*>>(
+abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(
         val bus: BotBus)
     : BotBus by bus, StoryHandlerDefinition {
 
     companion object {
+
         private val logger = KotlinLogging.logger {}
+
+        private val connectorHandlerMap: MutableMap<KClass<*>, Map<String, KClass<*>>> = ConcurrentHashMap()
+
+        private fun getHandlerMap(kclass: KClass<*>): Map<String, KClass<*>> {
+            return connectorHandlerMap.getOrPut(kclass, {
+                getAllAnnotations(kclass)
+                        .filter { it.annotationClass.findAnnotation<ConnectorHandler>() != null }
+                        .mapNotNullValues { a: Annotation ->
+                            a.annotationClass.findAnnotation<ConnectorHandler>()!!.connectorTypeId to (a.annotationClass.java.getDeclaredMethod("value").invoke(a) as? Class<*>?)?.kotlin
+                        }
+                        .toMap()
+            })
+        }
+
+        private fun getAllAnnotations(kClass: KClass<*>, alreadyFound: MutableSet<KClass<*>> = mutableSetOf()): List<Annotation> {
+            return if (!alreadyFound.contains(kClass)) {
+                val r = kClass.annotations.toMutableList()
+                alreadyFound.add(kClass)
+                kClass.superclasses.forEach {
+                    r.addAll(getAllAnnotations(it, alreadyFound))
+                }
+                r
+            } else {
+                emptyList()
+            }
+        }
+    }
+
+    /**
+     * The method to implement if there is no [StoryStep] in the [StoryDefinition]
+     * or when current [StoryStep] is null
+     */
+    open fun answer() {}
+
+    /**
+     * Default implementation redirect to answer if there is no current step
+     * or if the [StoryStep.answer] method of the current step returns null.
+     */
+    override fun handle() {
+        @Suppress("UNCHECKED_CAST")
+        if ((step as StoryStep<StoryHandlerDefinition>?)?.answer(this) == null) {
+            answer()
+        }
     }
 
     /**
@@ -38,14 +89,21 @@ abstract class StoryHandlerDefinitionBase<out T : ConnectorStoryHandler<*>>(
 
     /**
      * Method to override in order to provide [ConnectorStoryHandler].
+     * Default implementation use annotations annotated with @[ConnectorHandler].
      */
-    open fun provideConnector(connectorType: ConnectorType): T? = null
+    @Suppress("UNCHECKED_CAST")
+    open fun findConnector(connectorType: ConnectorType): T?
+            = getHandlerMap(this::class)[connectorType.id]?.primaryConstructor?.call(this) as T?
+
+    private val cachedConnector: T? by lazy {
+        findConnector(connectorType)
+                .also { if (it == null) logger.warn { "unsupported connector type $connectorType for ${this::class}" } }
+    }
 
     /**
-     * Provides the current [ConnectorStoryHandler] using [provideConnector].
+     * Provides the current [ConnectorStoryHandler] using [findConnector].
      */
-    override val connector: T?
-        get() = provideConnector(connectorType)
-                .also { if (it == null) logger.warn { "unsupported $connectorType for ${this::class}" } }
+    override val connector: T? get() = cachedConnector
+
 
 }

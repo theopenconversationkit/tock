@@ -24,7 +24,8 @@ import fr.vsct.tock.translator.UserInterfaceType
  * The story provides a set of starter intents.
  * When theses intents are detected, The story is started.
  *
- * Story definitions should usually not directly extend this class, but instead extend [StoryDefinitionBase].
+ * Story definitions should usually not directly extend this class,
+ * but instead extend [SimpleStoryHandlerBase] or [StoryDefinitionBase].
  */
 interface StoryDefinition : IntentAware {
 
@@ -52,7 +53,7 @@ interface StoryDefinition : IntentAware {
     /**
      * The steps of the story.
      */
-    val steps: Set<StoryStep>
+    val steps: Set<StoryStep<out StoryHandlerDefinition>>
 
     /**
      * When this story does not support all [UserInterfaceType]s.

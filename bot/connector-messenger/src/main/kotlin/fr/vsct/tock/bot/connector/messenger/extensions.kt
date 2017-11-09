@@ -40,6 +40,7 @@ import fr.vsct.tock.bot.connector.messenger.model.send.UserAction.Companion.extr
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.Parameters
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.action.SendChoice
@@ -47,10 +48,12 @@ import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
 
+internal const val MESSENGER_CONNECTOR_TYPE_ID = "messenger"
+
 /**
  * The messenger connector type.
  */
-val messengerConnectorType = ConnectorType("messenger")
+val messengerConnectorType = ConnectorType(MESSENGER_CONNECTOR_TYPE_ID)
 
 fun BotBus.withMessenger(messageProvider: () -> ConnectorMessage): BotBus {
     return withMessage(messengerConnectorType, messageProvider)
@@ -241,7 +244,7 @@ fun BotBus.quickReply(
         title: CharSequence,
         targetIntent: IntentAware,
         imageUrl: String? = null,
-        step: StoryStep? = null,
+        step: StoryStep<out StoryHandlerDefinition>? = null,
         parameters: Parameters): QuickReply
         = quickReply(title, targetIntent, imageUrl, step, *parameters.toArray())
 
@@ -250,7 +253,7 @@ fun BotBus.quickReply(
         title: CharSequence,
         targetIntent: IntentAware,
         imageUrl: String? = null,
-        step: StoryStep? = null,
+        step: StoryStep<out StoryHandlerDefinition>? = null,
         vararg parameters: Pair<String, String>): QuickReply
         = quickReply(title, targetIntent.wrappedIntent(), imageUrl, step, *parameters)
 
@@ -258,7 +261,7 @@ fun BotBus.quickReply(
         title: CharSequence,
         targetIntent: Intent,
         imageUrl: String? = null,
-        step: StoryStep? = null,
+        step: StoryStep<out StoryHandlerDefinition>? = null,
         parameters: Parameters): QuickReply
         = quickReply(title, targetIntent, imageUrl, step, *parameters.toArray())
 
@@ -266,7 +269,7 @@ fun BotBus.quickReply(
         title: CharSequence,
         targetIntent: Intent,
         imageUrl: String? = null,
-        step: StoryStep? = null,
+        step: StoryStep<out StoryHandlerDefinition>? = null,
         vararg parameters: Pair<String, String>): QuickReply {
     val t = translate(title)
     if (t.length > 20) {
@@ -289,7 +292,7 @@ fun BotBus.postbackButton(
 fun BotBus.postbackButton(
         title: CharSequence,
         targetIntent: IntentAware,
-        step: StoryStep? = null,
+        step: StoryStep<out StoryHandlerDefinition>? = null,
         parameters: Parameters)
         : PostbackButton
         = postbackButton(title, targetIntent, step, *parameters.toArray())
@@ -297,7 +300,7 @@ fun BotBus.postbackButton(
 fun BotBus.postbackButton(
         title: CharSequence,
         targetIntent: IntentAware,
-        step: StoryStep? = null,
+        step: StoryStep<out StoryHandlerDefinition>? = null,
         vararg parameters: Pair<String, String>)
         : PostbackButton {
     val t = translate(title)

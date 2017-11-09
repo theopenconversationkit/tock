@@ -27,7 +27,9 @@ import mu.KotlinLogging
  * Base implementation of [StoryHandler].
  * Provides also a convenient implementation of [I18nKeyProvider] to support i18n.
  */
-abstract class StoryHandlerBase<out T : StoryHandlerDefinition> : StoryHandler, I18nKeyProvider {
+abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
+        private val mainIntentName: String? = null)
+    : StoryHandler, I18nKeyProvider, IntentAware {
 
     private val logger = KotlinLogging.logger {}
 
@@ -36,7 +38,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition> : StoryHandler, 
      * If this function returns null, this implied that [BotBus.end] has been called in this function
      * (as the [StoryHandlerDefinition.handle] function is not called).
      */
-    abstract fun computeStoryHandlerDefinition(bus: BotBus): T?
+    abstract fun setupHandlerDef(bus: BotBus): T?
 
     final override fun handle(bus: BotBus) {
         //if not supported user interface, use unknown
@@ -44,7 +46,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition> : StoryHandler, 
             bus.botDefinition.unknownStory.storyHandler.handle(bus)
         } else {
             bus.i18nProvider = this
-            val handler = computeStoryHandlerDefinition(bus)
+            val handler = setupHandlerDef(bus)
 
             if (handler == null) {
                 logger.debug { "end called in computeStoryContext - skip action" }
@@ -92,7 +94,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition> : StoryHandler, 
     /**
      * Default i18n prefix.
      */
-    protected fun i18nKeyPrefix(): String = javaClass.kotlin.simpleName?.replace("StoryHandler", "") ?: ""
+    protected fun i18nKeyPrefix(): String = findMainIntentName()
 
     override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey {
         val prefix = i18nKeyPrefix()
@@ -117,4 +119,13 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition> : StoryHandler, 
                 args.toList())
     }
 
+    private fun findMainIntentName(): String {
+        return mainIntentName
+                ?: this::class.simpleName?.toLowerCase()?.replace("storyhandler", "")
+                ?: error("unknown main intent name")
+    }
+
+    override fun wrappedIntent(): Intent {
+        return Intent(findMainIntentName())
+    }
 }

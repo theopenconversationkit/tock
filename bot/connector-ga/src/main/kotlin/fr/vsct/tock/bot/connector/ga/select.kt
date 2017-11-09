@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.connector.ga.model.response.GASelectItem
 import fr.vsct.tock.bot.connector.ga.model.response.GASimpleSelect
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.Parameters
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
 
@@ -63,7 +64,7 @@ fun BotBus.selectItem(
 fun BotBus.selectItem(
         title: CharSequence,
         targetIntent: IntentAware,
-        step: StoryStep,
+        step: StoryStep<out StoryHandlerDefinition>,
         optionTitle: CharSequence? = null,
         parameters: Parameters)
         : GASelectItem
@@ -75,7 +76,7 @@ fun BotBus.selectItem(
 fun BotBus.selectItem(
         title: CharSequence,
         targetIntent: IntentAware,
-        step: StoryStep? = null,
+        step: StoryStep<out StoryHandlerDefinition>? = null,
         optionTitle: CharSequence? = null,
         vararg parameters: Pair<String, String>)
         : GASelectItem {

@@ -20,6 +20,7 @@ import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType.builtin
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.Intent.Companion.unknown
+import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.IntentContext
 import fr.vsct.tock.bot.definition.StoryDefinition
 
@@ -52,8 +53,8 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
         return findIntent(intent)
     }
 
-    override fun findStoryDefinition(intent: Intent?): StoryDefinition {
-        return findStoryDefinition(intent?.name)
+    override fun findStoryDefinition(intent: IntentAware?): StoryDefinition {
+        return findStoryDefinition(intent?.wrappedIntent()?.name)
     }
 
     override fun findStoryDefinition(intent: String?): StoryDefinition {

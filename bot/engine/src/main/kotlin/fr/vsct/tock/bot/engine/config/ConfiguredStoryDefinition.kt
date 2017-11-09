@@ -21,6 +21,7 @@ import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.definition.StoryHandler
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.translator.UserInterfaceType
 
@@ -35,6 +36,6 @@ internal class ConfiguredStoryDefinition(configuration: StoryDefinitionConfigura
     override val starterIntents: Set<Intent> = setOf(configuration.intent)
     override val intents: Set<Intent> = starterIntents
     override val storyHandler: StoryHandler = ConfiguredStoryHandler(configuration)
-    override val steps: Set<StoryStep> = emptySet()
+    override val steps: Set<StoryStep<out StoryHandlerDefinition>> = emptySet()
     override val unsupportedUserInterfaces: Set<UserInterfaceType> = emptySet()
 }

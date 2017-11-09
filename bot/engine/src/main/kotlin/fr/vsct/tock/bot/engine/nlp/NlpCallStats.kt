@@ -30,5 +30,5 @@ data class NlpCallStats(val intent: Intent = Intent.unknown,
                         var intentsQualifiers: List<NlpIntentQualifier>? = null) {
 
     fun hasIntent(intent: IntentAware, minProbability: Double = 0.0): Boolean
-            = otherIntentsProbabilities.any { it.intent == intent.wrappedIntent() && it.probability > minProbability }
+            = otherIntentsProbabilities.any { intent.wrap(it.intent) && it.probability > minProbability }
 }

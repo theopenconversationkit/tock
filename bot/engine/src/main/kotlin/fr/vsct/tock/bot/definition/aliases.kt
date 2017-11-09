@@ -16,20 +16,12 @@
 
 package fr.vsct.tock.bot.definition
 
-import fr.vsct.tock.bot.engine.BotBus
-
 /**
- * For simple stories that do not use custom [StoryHandlerDefinition].
+ * Definition aliases.
  */
-abstract class SimpleStoryHandlerBase(mainIntentName: String? = null)
-    : StoryHandlerBase<StoryHandlerDefinition>(mainIntentName) {
+typealias IntentDef = IntentAwareBase
+typealias Handler<T> = StoryHandlerBase<T>
+typealias HandlerDef<T> = StoryHandlerDefinitionBase<T>
+typealias ConnectorDef<T> = ConnectorStoryHandlerBase<T>
+typealias SimpleHandler = SimpleStoryHandlerBase
 
-    /**
-     * The method to implement.
-     */
-    abstract fun action(bus: BotBus)
-
-    final override fun setupHandlerDef(bus: BotBus): StoryHandlerDefinition
-            = SimpleStoryHandlerDefinition(bus, this)
-
-}

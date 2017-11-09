@@ -24,6 +24,7 @@ import fr.vsct.tock.bot.connector.ga.model.response.GARichResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GASuggestion
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.Parameters
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.translator.raw
@@ -136,7 +137,7 @@ fun BotBus.listItem(
 fun BotBus.listItem(
         title: CharSequence,
         targetIntent: IntentAware,
-        step: StoryStep?,
+        step: StoryStep<out StoryHandlerDefinition>?,
         parameters: Parameters)
         : GAListItem
         = listItem(title, targetIntent, step, null, parameters)
@@ -147,7 +148,7 @@ fun BotBus.listItem(
 fun BotBus.listItem(
         title: CharSequence,
         targetIntent: IntentAware,
-        step: StoryStep?,
+        step: StoryStep<out StoryHandlerDefinition>?,
         vararg parameters: Pair<String, String>)
         : GAListItem
         = listItem(title, targetIntent, step, null, *parameters)
@@ -157,7 +158,7 @@ fun BotBus.listItem(
 fun BotBus.listItem(
         title: CharSequence,
         targetIntent: IntentAware,
-        step: StoryStep?,
+        step: StoryStep<out StoryHandlerDefinition>?,
         description: CharSequence? = null,
         parameters: Parameters)
         : GAListItem
@@ -169,7 +170,7 @@ fun BotBus.listItem(
 fun BotBus.listItem(
         title: CharSequence,
         targetIntent: IntentAware,
-        step: StoryStep?,
+        step: StoryStep<out StoryHandlerDefinition>?,
         description: CharSequence? = null,
         vararg parameters: Pair<String, String>)
         : GAListItem {

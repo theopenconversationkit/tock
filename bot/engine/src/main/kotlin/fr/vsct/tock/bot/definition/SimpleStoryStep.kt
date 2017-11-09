@@ -16,20 +16,8 @@
 
 package fr.vsct.tock.bot.definition
 
-import fr.vsct.tock.bot.engine.BotBus
-
 /**
- * For simple stories that do not use custom [StoryHandlerDefinition].
+ * [StoryStep] without custom [StoryHandlerDefinition].
  */
-abstract class SimpleStoryHandlerBase(mainIntentName: String? = null)
-    : StoryHandlerBase<StoryHandlerDefinition>(mainIntentName) {
-
-    /**
-     * The method to implement.
-     */
-    abstract fun action(bus: BotBus)
-
-    final override fun setupHandlerDef(bus: BotBus): StoryHandlerDefinition
-            = SimpleStoryHandlerDefinition(bus, this)
-
+interface SimpleStoryStep : StoryStep<StoryHandlerDefinition> {
 }

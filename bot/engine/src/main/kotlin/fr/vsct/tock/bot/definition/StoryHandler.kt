@@ -19,7 +19,7 @@ package fr.vsct.tock.bot.definition
 import fr.vsct.tock.bot.engine.BotBus
 
 /**
- * Receive an analysed sentence or action, and send the answer.
+ * Receive a sentence or action, and send the answer.
  *
  * Story handlers should usually not directly extend this class, but instead extend [StoryHandlerBase].
  */

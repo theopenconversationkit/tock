@@ -148,5 +148,8 @@ open class BotDefinitionBase(override val botId: String,
                         setOf(Intent.keyword))
     }
 
+    /**
+     * Constructor intended to be used by an enum.
+     */
     constructor(botId: String, stories: Array<out StoryDefinition>) : this(botId, botId, stories.toList(), botId)
 }

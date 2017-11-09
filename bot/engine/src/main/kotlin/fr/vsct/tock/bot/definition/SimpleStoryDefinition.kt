@@ -28,13 +28,13 @@ open class SimpleStoryDefinition(override val id: String,
                                   * starter intents + other intents supported by the story.
                                   */
                                  override val intents: Set<Intent> = starterIntents,
-                                 override val steps: Set<StoryStep> = emptySet(),
+                                 override val steps: Set<StoryStep<StoryHandlerDefinition>> = emptySet(),
                                  override val unsupportedUserInterfaces: Set<UserInterfaceType> = emptySet())
     : StoryDefinition {
 
     constructor(id: String,
                 storyHandler: StoryHandler,
-                steps: Array<out StoryStep> = emptyArray(),
+                steps: Array<out StoryStep<StoryHandlerDefinition>> = emptyArray(),
                 starterIntents: Set<IntentAware>,
                 intents: Set<IntentAware> = starterIntents,
                 unsupportedUserInterfaces: Set<UserInterfaceType> = emptySet()

@@ -14,22 +14,15 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.definition
+package fr.vsct.tock.bot.connector
 
-import fr.vsct.tock.bot.engine.BotBus
+import kotlin.annotation.AnnotationTarget.ANNOTATION_CLASS
 
 /**
- * For simple stories that do not use custom [StoryHandlerDefinition].
+ * Annotation used to annotate [StoryHandlerDefinitionBase] implementation,
+ * in order to provide [ConnectorStoryHandler] for each connector.
+ * Used only by connector implementation.
  */
-abstract class SimpleStoryHandlerBase(mainIntentName: String? = null)
-    : StoryHandlerBase<StoryHandlerDefinition>(mainIntentName) {
-
-    /**
-     * The method to implement.
-     */
-    abstract fun action(bus: BotBus)
-
-    final override fun setupHandlerDef(bus: BotBus): StoryHandlerDefinition
-            = SimpleStoryHandlerDefinition(bus, this)
-
-}
+@Target(ANNOTATION_CLASS)
+@MustBeDocumented
+annotation class ConnectorHandler(val connectorTypeId: String)

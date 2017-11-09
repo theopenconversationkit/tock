@@ -24,6 +24,7 @@ import fr.vsct.tock.bot.connector.ga.model.response.GAExpectedIntent
 import fr.vsct.tock.bot.connector.ga.model.response.GAImage
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.Parameters
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.translator.raw
@@ -156,7 +157,7 @@ fun BotBus.carouselItem(
  */
 fun BotBus.carouselItem(
         targetIntent: IntentAware,
-        step: StoryStep?,
+        step: StoryStep<out StoryHandlerDefinition>?,
         title: CharSequence,
         description: CharSequence? = null,
         image: GAImage? = null,
@@ -169,7 +170,7 @@ fun BotBus.carouselItem(
  */
 fun BotBus.carouselItem(
         targetIntent: IntentAware,
-        step: StoryStep?,
+        step: StoryStep<out StoryHandlerDefinition>?,
         title: CharSequence,
         description: CharSequence? = null,
         image: GAImage? = null,
