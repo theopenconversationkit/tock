@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<md-card>
+<md-card *ngIf="configurations">
   <md-card-title>
     Bot Configurations  <button md-button (click)="refresh()" md-tooltip="Refresh"><md-icon>refresh</md-icon></button>
   </md-card-title>
@@ -26,7 +26,7 @@
   </md-card-subtitle>
   <md-card-content>
     <div>
-      <div *ngIf="(botConfiguration.configurations|async).length ===0">
+      <div *ngIf="configurations.length ===0">
         <h3>No bot configuration detected.</h3>
       </div>
 
@@ -58,7 +58,11 @@
         </md-card-actions>
       </md-card>
 
-      <md-card *ngFor="let conf of (botConfiguration.configurations|async)" class="conf">
+      <div *ngFor="let a of configurations">
+
+      <h2>{{a.botId}}</h2>
+
+      <md-card *ngFor="let conf of a.configurations" class="conf">
         <md-input-container>
           <input mdInput placeholder="Configuration name" [(ngModel)]="conf.name">
         </md-input-container>
@@ -85,6 +89,7 @@
           <button md-raised-button color="primary" (click)="update(conf)">Update</button>
         </md-card-actions>
       </md-card>
+      </div>
     </div>
   </md-card-content>
 </md-card>

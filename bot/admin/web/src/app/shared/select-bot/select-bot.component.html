@@ -14,17 +14,21 @@
   ~ limitations under the License.
   -->
 
-<div *ngIf="(botConfiguration.restConfigurations|async).length ===0">
+<div *ngIf="configurations && configurations.length === 0">
   <h3>No bot configuration detected.</h3>
 </div>
-<div *ngIf="(botConfiguration.restConfigurations|async).length!==0">
-  <md-select (change)="changeConfiguration($event.value)"
-             placeholder="Select a configuration"
-             [ngModel]="configurationId"
+<div *ngIf="configurations && configurations.length !== 0">
+  <md-select (change)="changeBotName($event.value)"
+             placeholder="Select a bot"
+             [ngModel]="currentBotName"
              class="select-configuration">
-    <md-option *ngFor="let conf of (botConfiguration.restConfigurations|async)"
-               [value]="conf._id">{{ conf.name }}
-    </md-option>
+    <md-option *ngFor="let n of botNames" [value]="n">{{ n }}</md-option>
+  </md-select>
+  <md-select (change)="changeConnectorType($event.value)"
+             placeholder="Select a connector"
+             [ngModel]="currentConnectorType"
+             class="select-configuration">
+    <md-option *ngFor="let c of connectorTypes" [value]="c">{{ c.id }}</md-option>
   </md-select>
   <ng-content></ng-content>
 </div>

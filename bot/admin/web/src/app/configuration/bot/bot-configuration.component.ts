@@ -29,14 +29,28 @@ import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 export class BotConfigurationComponent implements OnInit {
 
   newApplicationConfiguration: BotApplicationConfiguration;
+  configurations: BotConfiguration[];
+
 
   constructor(private state: StateService,
-              public botConfiguration: BotConfigurationService,
+              private botConfiguration: BotConfigurationService,
               private snackBar: MdSnackBar,
               private dialog: MdDialog) {
   }
 
   ngOnInit() {
+    this.botConfiguration.configurations.subscribe(confs => {
+      const r = new Map();
+      confs.forEach(c => {
+        const a = r.get(c.botId);
+        if (!a) {
+          r.set(c.botId, [c]);
+        } else {
+          a.push(c);
+        }
+      });
+      this.configurations = Array.from(r).map(e => new BotConfiguration(e[0], e[1]));
+    });
   }
 
   prepareCreate() {
@@ -96,4 +110,10 @@ export class BotConfigurationComponent implements OnInit {
 
   }
 
+}
+
+export class BotConfiguration {
+  constructor(public botId: string, public configurations: BotApplicationConfiguration[]) {
+
+  }
 }

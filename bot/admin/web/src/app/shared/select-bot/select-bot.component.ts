@@ -16,6 +16,8 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
+import {BotApplicationConfiguration, ConnectorType} from "../../core/model/configuration";
+
 @Component({
   selector: 'tock-select-bot',
   templateUrl: './select-bot.component.html',
@@ -29,7 +31,14 @@ export class SelectBotComponent implements OnInit {
   @Output()
   private configurationIdChange = new EventEmitter<string>();
 
-  constructor(public botConfiguration: BotConfigurationService) {
+  configurations: BotApplicationConfiguration[];
+
+  botNames: string[];
+  connectorTypes: ConnectorType[];
+  currentBotName: string;
+  currentConnectorType: ConnectorType;
+
+  constructor(private botConfiguration: BotConfigurationService) {
   }
 
   ngOnInit() {
@@ -37,16 +46,34 @@ export class SelectBotComponent implements OnInit {
       .subscribe(conf => {
         setTimeout(_ => {
           if (conf.length !== 0) {
-            this.changeConfiguration(conf[0]._id);
-          } else {
-            this.changeConfiguration(null);
+            this.botNames = Array.from(new Set(conf.map(c => c.name))).sort();
+            if (!this.configurationId) {
+              this.configurationId = conf[0]._id;
+            }
+            this.changeConf(conf.find(c => c._id === this.configurationId), conf);
           }
         });
       });
   }
 
-  changeConfiguration(applicationConfigurationId: string) {
-    this.configurationId = applicationConfigurationId;
-    this.configurationIdChange.emit(applicationConfigurationId);
+  private changeConf(conf: BotApplicationConfiguration, configurations: BotApplicationConfiguration[]) {
+    this.currentBotName = conf.name;
+    this.currentConnectorType = conf.ownerConnectorType;
+    this.connectorTypes = configurations.filter(c => c.name === conf.name).map(c => c.ownerConnectorType);
+    this.configurationId = conf._id;
+    this.configurations = configurations;
+    this.configurationIdChange.emit(conf._id);
+  }
+
+  changeBotName(botName: string) {
+    this.changeConf(this.configurations.find(c => c.name === botName), this.configurations)
+  }
+
+  changeConnectorType(connectorType: ConnectorType) {
+    this.changeConf(
+      this.configurations.find(
+        c => c.name === this.currentBotName
+          && c.ownerConnectorType.id === connectorType.id),
+      this.configurations)
   }
 }
