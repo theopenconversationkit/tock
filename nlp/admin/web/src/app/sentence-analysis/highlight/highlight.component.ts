@@ -14,7 +14,17 @@
  * limitations under the License.
  */
 
-import {AfterViewInit, Component, ElementRef, Input, OnChanges, OnInit, SimpleChange, ViewChild} from "@angular/core";
+import {
+  AfterViewInit,
+  Component,
+  ElementRef,
+  HostListener,
+  Input,
+  OnChanges,
+  OnInit,
+  SimpleChange,
+  ViewChild
+} from "@angular/core";
 import {
   ClassifiedEntity,
   EntityContainer,
@@ -125,6 +135,14 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
           this.select();
         });
       }
+    }
+  }
+
+
+  @HostListener('window:keyup', ['$event'])
+  keyup(event: KeyboardEvent) {
+    if (event.shiftKey && (event.keyCode === 39 || event.keyCode === 37)) {
+      this.select();
     }
   }
 
@@ -246,7 +264,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
-  isRootSentence() : boolean {
+  isRootSentence(): boolean {
     return this.sentence instanceof Sentence;
   }
 

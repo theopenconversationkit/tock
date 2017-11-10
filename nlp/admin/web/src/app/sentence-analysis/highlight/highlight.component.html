@@ -18,8 +18,7 @@
   <div class="highlight-text">
     <div *ngIf="tokens && !readOnly"
          class="tokens"
-         (mouseup)="select()"
-         (touchend)="select()"><span *ngFor="let t of tokens"
+         (mouseup)="select()" (touchend)="select()"><span *ngFor="let t of tokens"
                                      [style.font-size]="fontSize"
                                      [style.background]="t.color()"
                                      [id]="prefix + t.index">{{t.text}}</span></div>
