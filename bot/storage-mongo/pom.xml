@@ -25,8 +25,8 @@
     </parent>
 
     <artifactId>tock-bot-storage-mongo</artifactId>
-    <name>Tock NLP Bot Mongo</name>
-    <description>Mongo storage implementation for Tock NLP Bot</description>
+    <name>Tock Bot Mongo</name>
+    <description>Mongo storage implementation for Tock Bot</description>
 
     <dependencies>
         <dependency>

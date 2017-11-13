@@ -22,7 +22,7 @@ package fr.vsct.tock.shared.security
 interface ObfuscatorService {
 
     /**
-     * Returns the string obfuscators ton register.
+     * Returns the string obfuscators to register.
      */
     fun stringObfuscators(): List<StringObfuscator>
 }
