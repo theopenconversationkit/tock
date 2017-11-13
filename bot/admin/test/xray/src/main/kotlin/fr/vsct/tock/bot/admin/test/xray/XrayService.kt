@@ -255,7 +255,7 @@ object XrayService {
      * Generate an Xray test.
      *
      * @param dialog the dialog used to build the test
-     * @param testName the optional test name
+     * @param testName the optional test name generator - labels of [linkedJira] are passed as parameter.
      * @param linkedJira the optional User Story ticket related to the test
      * @param testsPlans the tests plans to include for this test
      * @param labelTestPlansMap a map of label -> test plan key.
@@ -264,7 +264,7 @@ object XrayService {
      */
     fun generateXrayTest(
             dialog: DialogReport,
-            testName: String = "Test",
+            testName: (List<String>) -> String = { "Test" },
             linkedJira: String? = null,
             testsPlans: List<String>,
             labelTestPlansMap: Map<String, String> = emptyMap()): XrayTest? {
@@ -321,10 +321,11 @@ object XrayService {
             }
 
         }
+        val labels = linkedJira?.let { XrayClient.getLabels(it) } ?: emptyList()
         //create test
         val test = JiraTest(
                 jiraProject,
-                testName,
+                testName.invoke(labels),
                 "",
                 testTypeField,
                 manualStepsField
@@ -336,7 +337,6 @@ object XrayService {
                 XrayClient.addTestToTestPlan(jira.key, it)
             }
             if (labelTestPlansMap.isNotEmpty()) {
-                val labels = XrayClient.getLabels(linkedJira)
                 labels
                         .filter { labelTestPlansMap.containsKey(it) }
                         .forEach {
