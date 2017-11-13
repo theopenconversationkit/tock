@@ -66,10 +66,16 @@ internal class TockConnectorController constructor(
     val connectorType: ConnectorType get() = connector.connectorType
 
     override fun handle(event: Event) {
-        when (event) {
-            is Action -> handleAction(event, 0)
-            else -> bot.handleEvent(this, event)
+
+        if (!botDefinition.eventListener.listenEvent(this, event)) {
+            when (event) {
+                is Action -> handleAction(event, 0)
+                else -> logger.warn { "unhandled event: $event" }
+            }
+        } else {
+            logger.debug { "handled event: $event" }
         }
+
     }
 
     private fun handleAction(action: Action, nbAttempts: Int) {

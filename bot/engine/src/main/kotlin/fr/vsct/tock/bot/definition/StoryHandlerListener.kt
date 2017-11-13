@@ -24,7 +24,16 @@ import fr.vsct.tock.bot.engine.BotBus
  */
 interface StoryHandlerListener {
 
-    fun startAction(botBus: BotBus, handler: StoryHandler)
+    /**
+     * Called before [StoryHandler.handle].
+     * If it returns false, the [StoryHandlerListener]s registered after this listener
+     * and the [StoryHandler] are not called.
+     * (however [endAction] of each [StoryHandlerListener] is called].
+     */
+    fun startAction(botBus: BotBus, handler: StoryHandler): Boolean = true
 
-    fun endAction(botBus: BotBus, handler: StoryHandler)
+    /**
+     * Called when [StoryHandler] handling is over.
+     */
+    fun endAction(botBus: BotBus, handler: StoryHandler) = Unit
 }

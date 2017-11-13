@@ -27,7 +27,6 @@ import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.config.BotDefinitionWrapper
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.Story
-import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.nlp.NlpController
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.shared.injector
@@ -235,12 +234,6 @@ class Bot(botDefinitionBase: BotDefinition) {
                 }
             }
             action.state.testEvent = userPreferences.test
-        }
-    }
-
-    internal fun handleEvent(controller: ConnectorController, event: Event) {
-        if (!botDefinition.eventListener.listenEvent(controller, event)) {
-            logger.warn { "unhandled event : $event" }
         }
     }
 

@@ -42,12 +42,14 @@ data class Story(
 
     fun findCurrentStep() = currentStep?.let { s -> definition.steps.firstOrNull { it.name == s } }
 
-    private fun StoryHandler.sendStartEvent(bus: BotBus) {
-        BotRepository.storyHandlerListeners.forEach {
+    private fun StoryHandler.sendStartEvent(bus: BotBus): Boolean {
+        //stops immediately if any startAction returns false
+        return BotRepository.storyHandlerListeners.all {
             try {
                 it.startAction(bus, this)
-            } catch(throwable: Throwable) {
+            } catch (throwable: Throwable) {
                 logger.error(throwable)
+                true
             }
         }
     }
@@ -56,7 +58,7 @@ data class Story(
         BotRepository.storyHandlerListeners.forEach {
             try {
                 it.endAction(bus, this)
-            } catch(throwable: Throwable) {
+            } catch (throwable: Throwable) {
                 logger.error(throwable)
             }
         }
@@ -65,8 +67,9 @@ data class Story(
     fun handle(bus: BotBus) {
         definition.storyHandler.apply {
             try {
-                sendStartEvent(bus)
-                handle(bus)
+                if (sendStartEvent(bus)) {
+                    handle(bus)
+                }
             } finally {
                 sendEndEvent(bus)
             }

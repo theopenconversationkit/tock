@@ -20,7 +20,11 @@ import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.event.Event
 
 /**
- * To listen custom events (ie not [fr.vsct.tock.bot.engine.action.Action])
+ * Listen all events - this is the standard process to handle [Event] that are not [Action] (when you need to handle them).
+ *
+ * You can also intercept [Action]s if useful.
+ *
+ * To be declared in [BotDefinition.eventListener].
  */
 interface EventListener {
 
