@@ -20,12 +20,14 @@ import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
+import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.StoryHandlerListener
 import fr.vsct.tock.bot.engine.config.BotConfigurationSynchronizer
+import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.monitoring.RequestTimer
 import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener
 import fr.vsct.tock.bot.engine.nlp.NlpListener
@@ -43,7 +45,17 @@ object BotRepository {
 
     private val botConfigurationDAO: BotApplicationConfigurationDAO by injector.instance()
 
-    internal val connectorProviders: MutableSet<ConnectorProvider> = mutableSetOf()
+    internal val connectorProviders: MutableSet<ConnectorProvider> = mutableSetOf(
+            object : ConnectorProvider {
+                override val connectorType: ConnectorType = ConnectorType.none
+                override fun connector(connectorConfiguration: ConnectorConfiguration): Connector
+                        = object : ConnectorBase(ConnectorType.none) {
+                    override fun register(controller: ConnectorController) = Unit
+
+                    override fun send(event: Event, delayInMs: Long) = Unit
+                }
+            }
+    )
     private val botProviders: MutableSet<BotProvider> = mutableSetOf()
     internal val storyHandlerListeners: MutableList<StoryHandlerListener> = mutableListOf()
     internal val nlpListeners: MutableList<NlpListener> = mutableListOf(BuiltInKeywordListener)
@@ -92,13 +104,13 @@ object BotRepository {
                 configuration: ConnectorConfiguration): BotApplicationConfiguration {
             return with(bot.botDefinition) {
                 val conf = BotApplicationConfiguration(
-                        configuration.applicationId,
+                        configuration.applicationId.run { if (isBlank()) botId else this },
                         botId,
                         namespace,
                         nlpModelName,
                         configuration.type,
                         configuration.ownerConnectorType,
-                        configuration.getName(),
+                        configuration.getName().run { if (isBlank()) botId else this },
                         configuration.getBaseUrl())
 
                 TockConnectorController.register(connector, bot, verticle)
@@ -111,7 +123,22 @@ object BotRepository {
             return connectorProviders.first { it.connectorType == connectorType }
         }
 
-        ConnectorConfigurationRepository.getConfigurations().forEach { conf ->
+        val connectorConfigurations = ConnectorConfigurationRepository.getConfigurations()
+                .run {
+                    if (isEmpty()) {
+                        listOf(
+                                ConnectorConfiguration(
+                                        "",
+                                        "",
+                                        ConnectorType.none,
+                                        ConnectorType.none)
+                        )
+                    } else {
+                        this
+                    }
+                }
+
+        connectorConfigurations.forEach { conf ->
             findConnectorProvider(conf.type)
                     .apply {
                         connector(conf)

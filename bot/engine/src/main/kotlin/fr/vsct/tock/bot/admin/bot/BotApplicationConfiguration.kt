@@ -18,6 +18,9 @@ package fr.vsct.tock.bot.admin.bot
 
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.shared.property
+import java.net.Inet4Address
+import java.net.InetAddress
+import java.net.NetworkInterface
 
 /**
  *
@@ -38,8 +41,20 @@ data class BotApplicationConfiguration(
         val defaultBaseUrl: String =
                 property(
                         "tock_configuration_bot_default_base_url",
-                        "http://localhost:${property("botverticle_port", "8080")}"
+                        "http://${getLocalhostIP()}:${property("botverticle_port", "8080")}"
                 )
+
+        private fun getLocalhostIP(): String {
+            return NetworkInterface.getNetworkInterfaces()
+                    .toList()
+                    .find { it.name.startsWith("eno") }
+                    ?.inetAddresses
+                    ?.toList()
+                    ?.filterIsInstance<Inet4Address>()
+                    ?.map { it.hostAddress }
+                    ?.firstOrNull()
+                    ?: InetAddress.getLocalHost().hostAddress
+        }
     }
 
     @Transient

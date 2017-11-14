@@ -39,16 +39,25 @@ fun registerBot(botDefinition: BotDefinition) = registerBot(BotProviderBase(botD
 fun registerBot(botProvider: BotProvider) = BotRepository.registerBotProvider(botProvider)
 
 /**
- * Install the bot(s).
+ * Register and install a new bot.
  */
-fun installBots(vararg routerHandlers: (Router) -> Unit) {
-    install(routerHandlers.toList(), false)
+fun registerAndInstallBot(botDefinition: BotDefinition) {
+    registerBot(botDefinition)
+    installBots()
+}
+
+/**
+ * Register and install a new bot.
+ */
+fun registerAndInstallBot(botProvider: BotProvider) {
+    registerBot(botProvider)
+    installBots()
 }
 
 /**
  * Install the bot(s).
  */
-fun installBotsAndAdminConnectors(vararg routerHandlers: (Router) -> Unit) {
+fun installBots(vararg routerHandlers: (Router) -> Unit) {
     install(routerHandlers.toList(), true)
 }
 
