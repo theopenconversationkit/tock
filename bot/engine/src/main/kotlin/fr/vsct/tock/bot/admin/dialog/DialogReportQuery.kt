@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.admin.dialog
 
 import fr.vsct.tock.bot.engine.user.PlayerId
+import java.time.ZonedDateTime
 import java.util.Locale
 
 /**
@@ -24,12 +25,14 @@ import java.util.Locale
  */
 data class DialogReportQuery(val namespace: String,
                              val nlpModel: String,
-                             val language: Locale,
+                             val language: Locale? = null,
                              val start: Long = 0,
                              val size: Int = 1,
                              val playerId: PlayerId? = null,
                              val text: String? = null,
                              val dialogId: String? = null,
                              val intentName: String? = null,
-                             val exactMatch:Boolean = false) {
+                             val exactMatch:Boolean = false,
+                             val from: ZonedDateTime? = null,
+                             val to: ZonedDateTime? = null ) {
 }

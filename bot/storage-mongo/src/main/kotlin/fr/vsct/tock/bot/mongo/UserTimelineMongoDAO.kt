@@ -246,6 +246,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                             if (query.playerId == null) null else "'playerIds.id':${query.playerId!!.id.json}",
                             if (query.dialogId == null) null else "'_id':${query.dialogId!!.json}",
                             if (dialogIds.isEmpty()) null else "'_id':{\$in:${dialogIds.json}}",
+                            if (from == null) null else "'lastUpdateDate':{$gt:${from!!.json}}",
+                            if (to == null) null else "'lastUpdateDate':{$lt:${to!!.json}}",
                             if (query.intentName.isNullOrBlank()) null else "'stories.currentIntent.name':${query.intentName!!.json}"
                     ).joinToString(",", "{$and:[", "]}") {
                         "{$it}"
@@ -274,4 +276,10 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 .map { it.toDialog(storyDefinitionProvider) }
                 .toList()
     }
+
+    override fun getDialogsUpdatedFrom(from: Instant, storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog> {
+        return dialogCol
+                .find<DialogCol>("{'lastUpdateDate':{$gt:${from.json}}}")
+                .map { it.toDialog(storyDefinitionProvider) }
+                .toList()    }
 }

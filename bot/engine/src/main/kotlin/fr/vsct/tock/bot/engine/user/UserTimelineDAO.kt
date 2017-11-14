@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.engine.user
 
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import java.time.Instant
 
 /**
  * To access [UserTimeline]s.
@@ -49,4 +50,9 @@ interface UserTimelineDAO {
      */
     fun getClientDialogs(clientId: String,
                          storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog>
+
+    /**
+     * Returns the all dialogs from an instant
+     */
+    fun getDialogsUpdatedFrom(from:Instant, storyDefinitionProvider: (String) -> StoryDefinition) : List<Dialog>
 }

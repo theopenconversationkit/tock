@@ -38,7 +38,15 @@ data class EventState(
         /**
          * The user interface - if different of [ConnectorType].
          */
-        var userInterface: UserInterfaceType? = null) {
+        var userInterface: UserInterfaceType? = null,
+        /**
+         * The current intent of the action.
+         */
+        var intent: String? = null,
+        /**
+         * The current step.
+         */
+        var step: String? = null) {
 
     fun getEntity(role: String): List<ContextValue> {
         return entityValues.filter { it.entity.role == role }

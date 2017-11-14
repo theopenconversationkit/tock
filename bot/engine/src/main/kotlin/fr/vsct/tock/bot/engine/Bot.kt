@@ -146,6 +146,11 @@ class Bot(botDefinitionBase: BotDefinition) {
         }
 
         story.actions.add(action)
+
+        //update action state
+        action.state.intent = dialog.state.currentIntent?.name
+        action.state.step = story.currentStep
+
         return story
     }
 
