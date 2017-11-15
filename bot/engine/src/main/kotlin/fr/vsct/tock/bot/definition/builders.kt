@@ -30,7 +30,7 @@ import kotlin.reflect.KClass
 fun bot(
         botId: String,
         stories: List<StoryDefinition>,
-        namespace: String = botId,
+        namespace: String = "app",
         nlpModelName: String = botId,
         unknownStory: StoryDefinition = defaultUnknownStory,
         hello: IntentAware? = null,

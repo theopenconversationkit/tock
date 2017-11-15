@@ -21,7 +21,7 @@ import java.util.Enumeration
 
 const val TOCK_NAMESPACE: String = "tock"
 
-val defaultNamespace: String = property("tock_default_namespace", "vsc")
+val defaultNamespace: String = property("tock_default_namespace", "app")
 
 fun String.namespace(): String = namespaceAndName().first
 fun String.name(): String = namespaceAndName().second

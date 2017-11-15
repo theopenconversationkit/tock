@@ -87,7 +87,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
     }
 
     companion object {
-        private val users = listProperty("tock_users", listOf(property("tock_user", "admin@vsct.fr")))
+        private val users = listProperty("tock_users", listOf(property("tock_user", "admin@app.com")))
         private val passwords = listProperty("tock_passwords", listOf(property("tock_password", "password")))
         private val organizations = listProperty("tock_organizations", listOf(defaultNamespace))
 

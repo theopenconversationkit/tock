@@ -79,7 +79,7 @@ Départs suivants;departuresarrivals;fr;voiceAssistant;departuresarrivals_dépar
                                         "notok"
                                 ))))
 
-        I18nCsvCodec.importCsv("vsc", export)
+        I18nCsvCodec.importCsv("app", export)
 
         argumentCaptor<I18nLabel>().apply {
             verify(i18nDAO).save(capture())
