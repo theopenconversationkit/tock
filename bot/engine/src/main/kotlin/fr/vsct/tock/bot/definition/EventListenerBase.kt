@@ -39,8 +39,8 @@ open class EventListenerBase : EventListener {
     override fun listenEvent(controller: ConnectorController, event: Event): Boolean {
         logger.debug { "listen event $event" }
 
-        fun StoryDefinition?.sendChoice(event: OneToOneEvent): Boolean =
-                if (this == null) {
+        fun StoryDefinition?.sendChoice(event: OneToOneEvent, force: Boolean = false): Boolean =
+                if (this == null && !force) {
                     false
                 } else {
                     controller.handle(
@@ -48,7 +48,7 @@ open class EventListenerBase : EventListener {
                                     event.userId,
                                     event.applicationId,
                                     event.recipientId,
-                                    mainIntent().name,
+                                    (this?.mainIntent() ?: controller.botDefinition.stories.first().mainIntent()).name,
                                     state = event.state
                             )
                     )
@@ -57,7 +57,7 @@ open class EventListenerBase : EventListener {
 
         with(controller.botDefinition) {
             return when (event) {
-                is StartConversationEvent -> helloStory.sendChoice(event)
+                is StartConversationEvent -> helloStory.sendChoice(event, true)
                 is EndConversationEvent -> goodbyeStory.sendChoice(event)
                 is NoInputEvent -> goodbyeStory.sendChoice(event)
                 else -> false
