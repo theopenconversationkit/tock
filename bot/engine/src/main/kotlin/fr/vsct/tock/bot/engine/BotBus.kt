@@ -208,7 +208,7 @@ interface BotBus : I18nKeyProvider {
      * Returns the current value for the specified entity.
      */
     fun <T : Value> entityValue(entity: Entity): T?
-            = entityValue(entity.role)
+            = entityValue<T>(entity.role)
 
     /**
      * Returns the current text content for the specified entity.
@@ -217,10 +217,22 @@ interface BotBus : I18nKeyProvider {
             = entityContextValue(entity)?.content
 
     /**
+     * Returns the current text content for the specified entity.
+     */
+    fun entityText(role: String): String?
+            = entityContextValue(role)?.content
+
+    /**
      * Returns the current entity ContextValue.
      */
     fun entityContextValue(entity: Entity): ContextValue?
-            = entities[entity.role]?.value
+            = entityContextValue(entity.role)
+
+    /**
+     * Returns the current entity ContextValue.
+     */
+    fun entityContextValue(role: String): ContextValue?
+            = entities[role]?.value
 
     /**
      * Update the current entity value in the dialog.
