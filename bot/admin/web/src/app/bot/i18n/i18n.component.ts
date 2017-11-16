@@ -18,7 +18,7 @@ import {Component, OnInit} from "@angular/core";
 import {I18nLabel} from "../model/i18n";
 import {BotService} from "../bot-service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
-import {MdSnackBar} from "@angular/material";
+import {MdSnackBar, PageEvent} from "@angular/material";
 import {saveAs} from "file-saver";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 import {I18nController} from "./i18n-label.component";
@@ -41,6 +41,10 @@ export class I18nComponent extends I18nController implements OnInit {
   displayUpload: boolean = false;
   public uploader: FileUploader;
 
+  pageEvent: PageEvent;
+  pageSize: number = 5;
+  pageSizeOptions = [5, 10, 25, 100];
+
   constructor(public state: StateService,
               private botService: BotService,
               private snackBar: MdSnackBar) {
@@ -59,6 +63,19 @@ export class I18nComponent extends I18nController implements OnInit {
 
   controller(): I18nController {
     return this
+  }
+
+  pagedItems(): I18nLabel[] {
+    const i = this.i18n;
+    const e = this.pageEvent;
+    if (i.length <= this.pageSize) {
+      return i;
+    } else if (e) {
+      const start = e.pageIndex * e.pageSize;
+      return this.filteredI18n.slice(start, Math.min(start + e.pageSize, i.length));
+    } else {
+      return this.filteredI18n.slice(0, this.pageSize);
+    }
   }
 
   private load() {

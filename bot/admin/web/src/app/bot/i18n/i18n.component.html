@@ -13,7 +13,6 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<br>
 <md-toolbar>
   <md-input-container>
     <input mdInput placeholder="Search" [(ngModel)]="filterString" (keyup)="filter($event.target.value)">
@@ -61,11 +60,16 @@
   </button>
 </md-card>
 
-<md-spinner *ngIf="loading" [color]="accent"></md-spinner>
-
-<md-list dense>
-  <div *ngFor="let i of filteredI18n">
+<md-list dense *ngIf="!loading">
+  <div *ngFor="let i of pagedItems()">
     <h3 *ngIf="i.firstCategory" md-subheader>{{i.category}}</h3>
     <tock-i18n-label [i]="i" [i18nController]="controller()"></tock-i18n-label>
   </div>
 </md-list>
+
+<md-paginator *ngIf="!loading"
+              [length]="filteredI18n.length"
+              [pageSize]="pageSize"
+              [pageSizeOptions]="pageSizeOptions"
+              (page)="pageEvent = $event">
+</md-paginator>
