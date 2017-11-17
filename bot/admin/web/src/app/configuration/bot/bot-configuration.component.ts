@@ -30,7 +30,7 @@ export class BotConfigurationComponent implements OnInit {
 
   newApplicationConfiguration: BotApplicationConfiguration;
   configurations: BotConfiguration[];
-
+  displayTestConfigurations:boolean = false;
 
   constructor(private state: StateService,
               private botConfiguration: BotConfigurationService,

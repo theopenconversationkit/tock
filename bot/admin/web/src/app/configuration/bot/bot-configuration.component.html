@@ -16,12 +16,21 @@
 
 <md-card *ngIf="configurations">
   <md-card-title>
-    Bot Configurations  <button md-button (click)="refresh()" md-tooltip="Refresh"><md-icon>refresh</md-icon></button>
+    Bot Configurations
+    <button md-button (click)="refresh()" md-tooltip="Refresh">
+      <md-icon>refresh</md-icon>
+    </button>
   </md-card-title>
   <md-card-subtitle>
     <button md-button (click)="prepareCreate()" color="primary">
       <md-icon>add_box</md-icon>
       Create a new Configuration
+    </button>
+    <button md-button (click)="displayTestConfigurations = !displayTestConfigurations">
+      <md-icon *ngIf="!displayTestConfigurations">visibility</md-icon>
+      <md-icon *ngIf="displayTestConfigurations">visibility_off</md-icon>
+      <span *ngIf="displayTestConfigurations">Hide test configurations</span>
+      <span *ngIf="!displayTestConfigurations">Display test configurations</span>
     </button>
   </md-card-subtitle>
   <md-card-content>
@@ -35,10 +44,12 @@
           <input mdInput placeholder="Configuration name" [(ngModel)]="newApplicationConfiguration.name">
         </md-input-container>
         <md-input-container>
-          <input mdInput placeholder="Connector type" [ngModel]="newApplicationConfiguration.connectorType.id" [disabled]="true">
+          <input mdInput placeholder="Connector type" [ngModel]="newApplicationConfiguration.connectorType.id"
+                 [disabled]="true">
         </md-input-container>
         <md-input-container>
-          <input mdInput placeholder="Owner connector type" [ngModel]="newApplicationConfiguration.ownerConnectorType?.id" [disabled]="true">
+          <input mdInput placeholder="Owner connector type"
+                 [ngModel]="newApplicationConfiguration.ownerConnectorType?.id" [disabled]="true">
         </md-input-container>
         <md-input-container>
           <input mdInput placeholder="Bot identifier" [(ngModel)]="newApplicationConfiguration.botId">
@@ -60,35 +71,38 @@
 
       <div *ngFor="let a of configurations">
 
-      <h2>{{a.botId}}</h2>
+        <h2>{{a.botId}}</h2>
 
-      <md-card *ngFor="let conf of a.configurations" class="conf">
-        <md-input-container>
-          <input mdInput placeholder="Configuration name" [(ngModel)]="conf.name">
-        </md-input-container>
-        <md-input-container>
-          <input mdInput placeholder="Connector type" [ngModel]="conf.connectorType.id" [disabled]="true">
-        </md-input-container>
-        <md-input-container *ngIf="conf.ownerConnectorType">
-          <input mdInput placeholder="Owner connector type" [ngModel]="conf.ownerConnectorType?.id" [disabled]="true">
-        </md-input-container>
-        <md-input-container>
-          <input mdInput placeholder="Bot identifier" [(ngModel)]="conf.botId" [disabled]="true">
-        </md-input-container>
-        <md-input-container>
-          <input mdInput placeholder="Application identifier" [(ngModel)]="conf.applicationId" [disabled]="true">
-        </md-input-container>
-        <md-input-container>
-          <input mdInput placeholder="Application base url" [(ngModel)]="conf.baseUrl">
-        </md-input-container>
-        <md-input-container>
-          <input mdInput placeholder="Nlp model" [(ngModel)]="conf.nlpModel">
-        </md-input-container>
-        <md-card-actions>
-          <button md-button color="warn" (click)="delete(conf)">Delete</button>
-          <button md-raised-button color="primary" (click)="update(conf)">Update</button>
-        </md-card-actions>
-      </md-card>
+        <div *ngFor="let conf of a.configurations">
+          <md-card *ngIf="!conf.connectorType.isRest() || displayTestConfigurations" class="conf">
+            <md-input-container>
+              <input mdInput placeholder="Configuration name" [(ngModel)]="conf.name">
+            </md-input-container>
+            <md-input-container>
+              <input mdInput placeholder="Connector type" [ngModel]="conf.connectorType.id" [disabled]="true">
+            </md-input-container>
+            <md-input-container *ngIf="conf.ownerConnectorType">
+              <input mdInput placeholder="Owner connector type" [ngModel]="conf.ownerConnectorType?.id"
+                     [disabled]="true">
+            </md-input-container>
+            <md-input-container>
+              <input mdInput placeholder="Bot identifier" [(ngModel)]="conf.botId" [disabled]="true">
+            </md-input-container>
+            <md-input-container>
+              <input mdInput placeholder="Application identifier" [(ngModel)]="conf.applicationId" [disabled]="true">
+            </md-input-container>
+            <md-input-container>
+              <input mdInput placeholder="Application base url" [(ngModel)]="conf.baseUrl">
+            </md-input-container>
+            <md-input-container>
+              <input mdInput placeholder="Nlp model" [(ngModel)]="conf.nlpModel">
+            </md-input-container>
+            <md-card-actions>
+              <button md-button color="warn" (click)="delete(conf)">Delete</button>
+              <button md-raised-button color="primary" (click)="update(conf)">Update</button>
+            </md-card-actions>
+          </md-card>
+        </div>
       </div>
     </div>
   </md-card-content>
