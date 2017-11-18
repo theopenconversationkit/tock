@@ -16,10 +16,12 @@
 
 package fr.vsct.tock.nlp.front.shared
 
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.test.EntityTestErrorQueryResult
 import fr.vsct.tock.nlp.front.shared.test.IntentTestErrorQueryResult
 import fr.vsct.tock.nlp.front.shared.test.TestBuild
 import fr.vsct.tock.nlp.front.shared.test.TestErrorQuery
+import org.litote.kmongo.Id
 import java.util.Locale
 
 /**
@@ -33,9 +35,9 @@ interface ModelTester {
 
     fun searchTestEntityErrors(query: TestErrorQuery): EntityTestErrorQueryResult
 
-    fun deleteTestIntentError(applicationId: String, language: Locale, text: String)
+    fun deleteTestIntentError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String)
 
-    fun deleteTestEntityError(applicationId: String, language: Locale, text: String)
+    fun deleteTestEntityError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String)
 
-    fun getTestBuilds(applicationId: String, language: Locale): List<TestBuild>
+    fun getTestBuilds(applicationId: Id<ApplicationDefinition>, language: Locale): List<TestBuild>
 }

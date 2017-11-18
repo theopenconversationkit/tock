@@ -19,6 +19,7 @@ package fr.vsct.tock.nlp.admin.model
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import org.litote.kmongo.Id
 import java.util.Locale
 
 /**
@@ -30,8 +31,8 @@ data class ApplicationWithIntents(val name: String,
                                   val supportedLocales: Set<Locale>,
                                   val nlpEngineType: NlpEngineType,
                                   val mergeEngineTypes: Boolean = true,
-                                  val supportSubEntities:Boolean = false,
-                                  val _id: String? = null) {
+                                  val supportSubEntities: Boolean = false,
+                                  val _id: Id<ApplicationDefinition>?) {
 
     constructor(application: ApplicationDefinition, intents: List<IntentDefinition>) :
             this(application.name,
@@ -41,19 +42,19 @@ data class ApplicationWithIntents(val name: String,
                     application.nlpEngineType,
                     application.mergeEngineTypes,
                     application.supportSubEntities,
-                    application._id!!)
+                    application._id)
 
     fun toApplication(): ApplicationDefinition {
         return ApplicationDefinition(
                 name,
                 namespace,
-                intents.map { it._id!! }.toSet(),
+                intents.map { it._id }.toSet(),
                 supportedLocales,
                 emptyMap(),
                 nlpEngineType,
                 mergeEngineTypes,
                 supportSubEntities,
-                _id
+                _id!!
         )
     }
 

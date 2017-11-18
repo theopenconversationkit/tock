@@ -46,6 +46,7 @@ import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import fr.vsct.tock.shared.security.StringObfuscatorMode.normal
 import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 import fr.vsct.tock.translator.UserInterfaceType.textChat
+import org.litote.kmongo.Id
 import java.time.Instant
 import java.time.Instant.now
 
@@ -53,7 +54,7 @@ import java.time.Instant.now
  *
  */
 internal data class DialogCol(val playerIds: Set<PlayerId>,
-                              var _id: String,
+                              var _id: Id<Dialog>,
                               val state: DialogStateMongoWrapper,
                               val stories: List<StoryMongoWrapper>,
                               val applicationIds: Set<String> = emptySet(),
@@ -84,7 +85,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
             Dialog(
                     playerIds,
                     _id,
-                    state.toState(it.flatMap { it.actions }.map { it.id to it }.toMap()),
+                    state.toState(it.flatMap { it.actions }.map { it.toActionId() to it }.toMap()),
                     it.toMutableList()
             )
         }
@@ -102,7 +103,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                                     it.state.targetConnectorType,
                                     it.state.userInterface ?: textChat,
                                     it.state.testEvent,
-                                    it.id)
+                                    it.toActionId())
                         },
                 _id
         )
@@ -126,7 +127,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                 state.nextActionState
         )
 
-        fun toState(actionsMap: Map<String, Action>): DialogState {
+        fun toState(actionsMap: Map<Id<Action>, Action>): DialogState {
             return DialogState(
                     currentIntent,
                     entityValues.mapValues { it.value.toEntityStateValue(actionsMap) }.toMutableMap(),
@@ -143,7 +144,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
 
         constructor(value: EntityStateValue) : this(value.value, value.history.map { ArchivedEntityValueWrapper(it) })
 
-        fun toEntityStateValue(actionsMap: Map<String, Action>): EntityStateValue {
+        fun toEntityStateValue(actionsMap: Map<Id<Action>, Action>): EntityStateValue {
             return EntityStateValue(
                     value,
                     history.map { it.toArchivedEntityValue(actionsMap) }.toMutableList()
@@ -153,11 +154,11 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
 
     class ArchivedEntityValueWrapper(
             val entityValue: ContextValue?,
-            val actionId: String?) {
+            val actionId: Id<Action>?) {
 
-        constructor(value: ArchivedEntityValue) : this(value.entityValue, value.action?.id)
+        constructor(value: ArchivedEntityValue) : this(value.entityValue, value.action?.toActionId())
 
-        fun toArchivedEntityValue(actionsMap: Map<String, Action>): ArchivedEntityValue {
+        fun toArchivedEntityValue(actionsMap: Map<Id<Action>, Action>): ArchivedEntityValue {
             return ArchivedEntityValue(
                     entityValue,
                     actionsMap.get(actionId ?: ""))
@@ -197,7 +198,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
             JsonSubTypes.Type(value = SendLocationMongoWrapper::class, name = "location"))
     abstract class ActionMongoWrapper {
 
-        lateinit var id: String
+        lateinit var id: Id<Action>
         lateinit var date: Instant
         lateinit var state: EventState
         lateinit var botMetadata: ActionMetadata
@@ -207,7 +208,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
 
 
         fun assignFrom(action: Action) {
-            id = action.id
+            id = action.toActionId()
             date = action.date
             state = action.state
             botMetadata = action.metadata

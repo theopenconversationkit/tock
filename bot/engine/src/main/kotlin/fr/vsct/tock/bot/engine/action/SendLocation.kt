@@ -21,7 +21,8 @@ import fr.vsct.tock.bot.engine.message.Location
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLocation
-import fr.vsct.tock.shared.Dice
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.time.Instant
 
 /**
@@ -31,7 +32,7 @@ class SendLocation(playerId: PlayerId,
                    applicationId: String,
                    recipientId: PlayerId,
                    val location: UserLocation?,
-                   id: String = Dice.newId(),
+                   id: Id<Action> = newId(),
                    date: Instant = Instant.now(),
                    state: EventState = EventState(),
                    metadata: ActionMetadata = ActionMetadata())

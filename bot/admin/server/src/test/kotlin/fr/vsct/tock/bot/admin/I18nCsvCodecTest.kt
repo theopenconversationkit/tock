@@ -32,6 +32,7 @@ import fr.vsct.tock.translator.I18nLocalizedLabel
 import fr.vsct.tock.translator.UserInterfaceType.textChat
 import fr.vsct.tock.translator.UserInterfaceType.voiceAssistant
 import org.junit.Test
+import org.litote.kmongo.toId
 import java.util.Locale.FRENCH
 import kotlin.test.assertEquals
 
@@ -63,9 +64,9 @@ Départs suivants;departuresarrivals;fr;voiceAssistant;departuresarrivals_dépar
 
     @Test
     fun importCsv_shouldKeepOldI18nLabels_ifNewLabelsAreNotValidated() {
-        whenever(i18nDAO.getLabelById(id)).thenReturn(
+        whenever(i18nDAO.getLabelById(id.toId())).thenReturn(
                 I18nLabel(
-                        id,
+                        id.toId(),
                         defaultNamespace,
                         "departuresarrivals",
                         listOf(I18nLocalizedLabel(

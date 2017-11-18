@@ -18,6 +18,8 @@ package fr.vsct.tock.bot.admin.bot
 
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.shared.property
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.net.Inet4Address
 import java.net.InetAddress
 import java.net.NetworkInterface
@@ -35,7 +37,7 @@ data class BotApplicationConfiguration(
         val name: String = applicationId,
         val baseUrl: String? = defaultBaseUrl,
         val manuallyModified: Boolean = false,
-        val _id: String? = null) {
+        val _id: Id<BotApplicationConfiguration> = newId()) {
 
     companion object {
         val defaultBaseUrl: String =

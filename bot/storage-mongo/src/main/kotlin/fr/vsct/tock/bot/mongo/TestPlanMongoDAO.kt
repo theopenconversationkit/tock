@@ -19,9 +19,10 @@ package fr.vsct.tock.bot.mongo
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanDAO
 import fr.vsct.tock.bot.admin.test.TestPlanExecution
-import org.litote.kmongo.ensureIndex
+import org.litote.kmongo.Id
 import org.litote.kmongo.deleteMany
 import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.find
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
@@ -45,7 +46,7 @@ object TestPlanMongoDAO : TestPlanDAO {
         testPlanCol.save(testPlan)
     }
 
-    override fun removeTestPlan(planId: String) {
+    override fun removeTestPlan(planId: Id<TestPlan>) {
         testPlanCol.deleteOneById(planId)
         testPlanExecutionCol.deleteMany("{'testPlanId':${planId.json}}")
     }
@@ -54,7 +55,7 @@ object TestPlanMongoDAO : TestPlanDAO {
         testPlanExecutionCol.save(testPlan)
     }
 
-    override fun getPlan(testPlanId: String): TestPlan? {
+    override fun getPlan(testPlanId: Id<TestPlan>): TestPlan? {
         return testPlanCol.findOneById(testPlanId)
     }
 
@@ -66,7 +67,7 @@ object TestPlanMongoDAO : TestPlanDAO {
         return testPlanCol.find().sort("{name:1}").toList()
     }
 
-    override fun getPlanExecutions(testPlanId: String): List<TestPlanExecution> {
+    override fun getPlanExecutions(testPlanId: Id<TestPlan>): List<TestPlanExecution> {
         return testPlanExecutionCol.find("{'testPlanId':${testPlanId.json}}").sort("{date:-1}").toList()
     }
 }

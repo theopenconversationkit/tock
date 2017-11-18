@@ -18,10 +18,13 @@ package fr.vsct.tock.bot.admin.test
 
 import fr.vsct.tock.bot.admin.dialog.ActionReport
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.translator.UserInterfaceType
 import fr.vsct.tock.translator.UserInterfaceType.textChat
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.time.Instant
 
 /**
@@ -33,7 +36,7 @@ data class TestActionReport(
         val messages: List<Message>,
         val connectorType: ConnectorType?,
         val userInterfaceType: UserInterfaceType = textChat,
-        val id: String
+        val id: Id<Action>
 ) {
 
     constructor(playerId: PlayerId,
@@ -41,7 +44,7 @@ data class TestActionReport(
                 message: Message,
                 connectorType: ConnectorType?,
                 userInterfaceType: UserInterfaceType,
-                id: String) :
+                id: Id<Action> = newId()) :
             this(
                     playerId,
                     date,
@@ -50,7 +53,15 @@ data class TestActionReport(
                     userInterfaceType,
                     id)
 
-    constructor(report: ActionReport) : this(report.playerId, report.date, report.message, report.connectorType, report.userInterfaceType, report.id)
+    constructor(report: ActionReport) :
+            this(
+                    report.playerId,
+                    report.date,
+                    report.message,
+                    report.connectorType,
+                    report.userInterfaceType,
+                    report.id
+            )
 
     fun findFirstMessage(): Message {
         return messages.first()

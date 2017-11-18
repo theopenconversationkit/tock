@@ -16,14 +16,17 @@
 
 package fr.vsct.tock.nlp.admin.model
 
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.shared.test.EntityTestError
 import fr.vsct.tock.nlp.front.shared.test.IntentTestError
 import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 import fr.vsct.tock.shared.security.decrypt
 import fr.vsct.tock.shared.security.encrypt
+import org.litote.kmongo.Id
 import java.time.Instant
 import java.time.Instant.now
 import java.util.Locale
@@ -33,14 +36,14 @@ import java.util.Locale
  */
 data class SentenceReport(val text: String,
                           val language: Locale,
-                          val applicationId: String,
+                          val applicationId: Id<ApplicationDefinition>,
                           val creationDate: Instant,
                           val updateDate: Instant,
                           val status: ClassifiedSentenceStatus,
                           val classification: ClassificationReport,
                           var key: String? = null) {
 
-    constructor(query: ParseResult, language: Locale, applicationId: String, intentId: String?)
+    constructor(query: ParseResult, language: Locale, applicationId: Id<ApplicationDefinition>, intentId: Id<IntentDefinition>?)
             : this(
             obfuscate(query.retainedQuery)!!,
             language,

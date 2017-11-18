@@ -16,16 +16,18 @@
 
 package fr.vsct.tock.shared.cache
 
+import org.litote.kmongo.Id
+
 /**
  *
  */
 internal interface TockCache {
 
-    fun get(id: String, type: String): Any?
+    fun <T> get(id: Id<T>, type: String): T?
 
-    fun put(id: String, type: String, data: Any)
+    fun <T : Any> put(id: Id<T>, type: String, data: T)
 
-    fun getAll(type: String): Map<String, Any>
+    fun <T> getAll(type: String): Map<Id<T>, Any>
 
-    fun remove(id: String, type: String)
+    fun <T> remove(id: Id<T>, type: String)
 }

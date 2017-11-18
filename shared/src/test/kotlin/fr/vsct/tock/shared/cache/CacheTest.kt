@@ -27,6 +27,8 @@ import fr.vsct.tock.shared.tockInternalInjector
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.litote.kmongo.Id
+import org.litote.kmongo.toId
 import kotlin.test.assertEquals
 
 /**
@@ -35,7 +37,7 @@ import kotlin.test.assertEquals
 class CacheTest {
 
     private val cache: TockCache = mock()
-    val id = "id"
+    val id: Id<String> = "id".toId()
     val type = "type"
     val value: String = "val"
 

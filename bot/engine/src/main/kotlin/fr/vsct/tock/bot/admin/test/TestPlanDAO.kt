@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.admin.test
 
+import org.litote.kmongo.Id
+
 /**
  *
  */
@@ -23,15 +25,15 @@ interface TestPlanDAO {
 
     fun save(testPlan: TestPlan)
 
-    fun removeTestPlan(planId:String)
+    fun removeTestPlan(planId: Id<TestPlan>)
 
     fun save(testPlan: TestPlanExecution)
 
     fun getPlans(): List<TestPlan>
 
-    fun getPlan(testPlanId: String): TestPlan?
+    fun getPlan(testPlanId: Id<TestPlan>): TestPlan?
 
     fun getPlansByApplicationId(applicationId: String): List<TestPlan>
 
-    fun getPlanExecutions(testPlanId: String): List<TestPlanExecution>
+    fun getPlanExecutions(testPlanId: Id<TestPlan>): List<TestPlanExecution>
 }

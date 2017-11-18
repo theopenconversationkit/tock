@@ -19,6 +19,8 @@ package fr.vsct.tock.bot.admin.bot
 import fr.vsct.tock.bot.admin.answer.AnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
 import fr.vsct.tock.bot.definition.Intent
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 
 /**
  *
@@ -29,7 +31,7 @@ data class StoryDefinitionConfiguration(
         val intent: Intent,
         val currentType: AnswerConfigurationType,
         val answers: List<AnswerConfiguration>,
-        val _id: String? = null) {
+        val _id: Id<StoryDefinitionConfiguration> = newId()) {
 
     fun findCurrentAnswer(): AnswerConfiguration {
         return answers.first { it.answerType == currentType }

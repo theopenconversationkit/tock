@@ -24,6 +24,7 @@ import fr.vsct.tock.shared.cache.TockCache
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.getDatabase
 import mu.KotlinLogging
+import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.find
@@ -49,13 +50,20 @@ internal object MongoCache : TockCache {
         c
     }
 
-    override fun getAll(type: String): Map<String, Any> {
-        return col.find("{'type':${type.json}}").map { it.id to it.toValue() }.toMap()
+    override fun <T> getAll(type: String): Map<Id<T>, Any> {
+        return col
+                .find("{'type':${type.json}}")
+                .map {
+                    @Suppress("UNCHECKED_CAST")
+                    it.id as Id<T> to it.toValue()
+                }
+                .toMap()
     }
 
-    override fun get(id: String, type: String): Any? {
+    override fun <T> get(id: Id<T>, type: String): T? {
+        @Suppress("UNCHECKED_CAST")
         return try {
-            col.findOne("{'id':${id.json},'type':${type.json}}")?.toValue()
+            col.findOne("{'id':${id.json},'type':${type.json}}")?.toValue() as T?
         } catch (e: Exception) {
             logger.error(e)
             remove(id, type)
@@ -63,14 +71,14 @@ internal object MongoCache : TockCache {
         }
     }
 
-    override fun put(id: String, type: String, data: Any) {
+    override fun <T : Any> put(id: Id<T>, type: String, data: T) {
         col.replaceOne(
                 "{id:${id.json}, type:${type.json}}",
                 MongoCacheData.fromValue(id, type, data),
                 UpdateOptions().upsert(true))
     }
 
-    override fun remove(id: String, type: String) {
+    override fun <T> remove(id: Id<T>, type: String) {
         col.deleteOne("{'id':${id.json},'type':${type.json}}")
     }
 }

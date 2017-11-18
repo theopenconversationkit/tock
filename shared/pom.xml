@@ -62,6 +62,10 @@
             <groupId>com.fasterxml.jackson.datatype</groupId>
             <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.litote.kmongo</groupId>
+            <artifactId>kmongo-id-jackson</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>io.github.microutils</groupId>

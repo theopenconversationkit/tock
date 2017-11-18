@@ -22,9 +22,10 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.shared.error
 import mu.KotlinLogging
 import org.bson.types.ObjectId
-import org.litote.kmongo.ensureIndex
+import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
@@ -45,9 +46,9 @@ object BotApplicationConfigurationMongoDAO : BotApplicationConfigurationDAO {
         col.ensureIndex("{applicationId:1, botId:1}", IndexOptions().unique(true))
     }
 
-    override fun getConfigurationById(id: String): BotApplicationConfiguration? {
+    override fun getConfigurationById(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration? {
         //TODO remove object id hook
-        return col.findOneById(id) ?: col.findOneById(ObjectId(id))
+        return col.findOneById(id) ?: col.findOneById(ObjectId(id.toString()))
     }
 
     override fun getConfigurationByApplicationIdAndBotId(applicationId: String, botId: String): BotApplicationConfiguration? {
@@ -58,7 +59,7 @@ object BotApplicationConfigurationMongoDAO : BotApplicationConfigurationDAO {
         return try {
             col.save(conf)
             conf
-        } catch(e: Exception) {
+        } catch (e: Exception) {
             //TODO remove object id hook
             logger.error(e)
             val filter = "{applicationId:${conf.applicationId.json}, botId:${conf.botId.json}}"
@@ -69,9 +70,9 @@ object BotApplicationConfigurationMongoDAO : BotApplicationConfigurationDAO {
     }
 
     override fun delete(conf: BotApplicationConfiguration) {
-        col.deleteOneById(conf._id!!)
+        col.deleteOneById(conf._id)
         //TODO remove object id hook
-        col.deleteOneById(ObjectId(conf._id!!))
+        col.deleteOneById(ObjectId(conf._id.toString()))
     }
 
     override fun updateIfNotManuallyModified(conf: BotApplicationConfiguration): BotApplicationConfiguration {

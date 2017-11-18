@@ -16,22 +16,24 @@
 
 package fr.vsct.tock.nlp.front.service.storage
 
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import org.litote.kmongo.Id
 
 /**
  *
  */
 interface IntentDefinitionDAO {
 
-    fun getIntentsByApplicationId(applicationId: String): List<IntentDefinition>
+    fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition>
 
     fun getIntentByNamespaceAndName(namespace:String, name:String): IntentDefinition?
 
-    fun getIntentById(id: String): IntentDefinition?
+    fun getIntentById(id: Id<IntentDefinition>): IntentDefinition?
 
     fun save(intent: IntentDefinition)
 
-    fun deleteIntentById(id:String)
+    fun deleteIntentById(id:Id<IntentDefinition>)
 
     fun getIntentsUsingEntity(entityType:String) : List<IntentDefinition>
 }

@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.mongo
 
 import fr.vsct.tock.bot.engine.event.EventType
 import fr.vsct.tock.bot.engine.user.PlayerId
+import org.litote.kmongo.Id
 import java.time.Instant
 
 /**
@@ -34,5 +35,5 @@ data class DialogStatCol(
         val story: String?,
         val intent: String?,
         val step: String?,
-        val _id: String?) {
+        val _id: Id<DialogStatCol>) {
 }

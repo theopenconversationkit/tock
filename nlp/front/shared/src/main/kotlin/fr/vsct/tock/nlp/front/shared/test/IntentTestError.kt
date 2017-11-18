@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.nlp.front.shared.test
 
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import org.litote.kmongo.Id
 import java.time.Instant
 import java.util.Locale
 
@@ -23,7 +25,7 @@ import java.util.Locale
  *
  */
 data class IntentTestError(
-        val applicationId: String,
+        val applicationId: Id<ApplicationDefinition>,
         val language: Locale,
         val text: String,
         val currentIntent: String,

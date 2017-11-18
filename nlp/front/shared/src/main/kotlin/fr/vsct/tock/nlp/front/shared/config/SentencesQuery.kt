@@ -16,17 +16,18 @@
 
 package fr.vsct.tock.nlp.front.shared.config
 
+import org.litote.kmongo.Id
 import java.util.Locale
 
 /**
  *
  */
-data class SentencesQuery(val applicationId: String,
+data class SentencesQuery(val applicationId: Id<ApplicationDefinition>,
                           val language: Locale,
                           val start: Long = 0,
                           val size: Int = 1,
                           val search: String? = null,
-                          val intentId: String? = null,
+                          val intentId: Id<IntentDefinition>? = null,
                           val status: Set<ClassifiedSentenceStatus> = emptySet(),
                           val notStatus: ClassifiedSentenceStatus? = ClassifiedSentenceStatus.deleted,
                           val onlyExactMatch: Boolean = false,

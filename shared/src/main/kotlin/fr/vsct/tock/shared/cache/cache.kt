@@ -23,6 +23,7 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.provide
 import mu.KotlinLogging
+import org.litote.kmongo.Id
 import java.util.concurrent.TimeUnit
 
 private val logger = KotlinLogging.logger {}
@@ -47,14 +48,14 @@ private fun <T> Any?.replaceNotPresent(): T? {
     }
 }
 
-private fun inMemoryKey(id: String, type: String): Any = id to type
+private fun <T : Any> inMemoryKey(id: Id<T>, type: String): Any = id to type
 
 /**
  * Returns the value for specified id and type.
  * If no value exists, [valueProvider] provides the value to cache.
  * If [valueProvider] throws exception or returns null, no value is cached and null is returned.
  */
-fun <T : Any> getOrCache(id: String, type: String, valueProvider: () -> T?): T? {
+fun <T : Any> getOrCache(id: Id<T>, type: String, valueProvider: () -> T?): T? {
     return inMemoryCache.get(inMemoryKey(id, type)) {
         cache.get(id, type)
                 ?:
@@ -74,7 +75,7 @@ fun <T : Any> getOrCache(id: String, type: String, valueProvider: () -> T?): T? 
  * Returns the value for specified id and type.
  * If no value exists, null is returned.
  */
-fun <T : Any> getFromCache(id: String, type: String): T? {
+fun <T : Any> getFromCache(id: Id<T>, type: String): T? {
     return try {
         inMemoryCache.get(inMemoryKey(id, type)) {
             cache.get(id, type) ?: NOT_PRESENT
@@ -88,7 +89,7 @@ fun <T : Any> getFromCache(id: String, type: String): T? {
 /**
  * Adds in cache the specified value.
  */
-fun <T : Any> putInCache(id: String, type: String, value: T) {
+fun <T : Any> putInCache(id: Id<T>, type: String, value: T) {
     try {
         inMemoryCache.put(inMemoryKey(id, type), value)
         cache.put(id, type, value)
@@ -100,7 +101,7 @@ fun <T : Any> putInCache(id: String, type: String, value: T) {
 /**
  * Remove the value for specified id and type from cache.
  */
-fun removeFromCache(id: String, type: String) {
+fun <T : Any> removeFromCache(id: Id<T>, type: String) {
     inMemoryCache.invalidate(inMemoryKey(id, type))
     cache.remove(id, type)
 }
@@ -108,7 +109,7 @@ fun removeFromCache(id: String, type: String) {
 /**
  * Returns all cached value for specified type.
  */
-fun getCachedValuesForType(type: String): Map<String, Any>
+fun <T> getCachedValuesForType(type: String): Map<Id<T>, Any>
         = cache.getAll(type)
 
 

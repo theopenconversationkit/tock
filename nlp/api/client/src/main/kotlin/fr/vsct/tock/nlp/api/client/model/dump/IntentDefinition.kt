@@ -21,4 +21,4 @@ data class IntentDefinition(val name: String,
                             val applications: Set<String>,
                             val entities: Set<EntityDefinition>,
                             val mandatoryStates: Set<String> = emptySet(),
-                            val _id: String? = null)
+                            val _id: String)

@@ -16,14 +16,16 @@
 
 package fr.vsct.tock.nlp.admin.model
 
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
+import org.litote.kmongo.Id
 
 /**
  *
  */
 data class LogsQuery(val search: String?) : PaginatedQuery() {
 
-    fun toParseRequestLogQuery(applicationId: String): ParseRequestLogQuery =
+    fun toParseRequestLogQuery(applicationId: Id<ApplicationDefinition>): ParseRequestLogQuery =
             ParseRequestLogQuery(
                     applicationId,
                     language,

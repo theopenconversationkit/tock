@@ -41,6 +41,7 @@ import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.longProperty
 import mu.KotlinLogging
+import org.litote.kmongo.Id
 import org.litote.kmongo.MongoOperator.and
 import org.litote.kmongo.MongoOperator.gt
 import org.litote.kmongo.MongoOperator.limit
@@ -264,7 +265,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
     }
 
-    override fun getDialog(id: String): DialogReport? {
+    override fun getDialog(id: Id<Dialog>): DialogReport? {
         return dialogCol.findOneById(id)?.toDialogReport()
     }
 
@@ -281,5 +282,6 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         return dialogCol
                 .find<DialogCol>("{'lastUpdateDate':{$gt:${from.json}}}")
                 .map { it.toDialog(storyDefinitionProvider) }
-                .toList()    }
+                .toList()
+    }
 }

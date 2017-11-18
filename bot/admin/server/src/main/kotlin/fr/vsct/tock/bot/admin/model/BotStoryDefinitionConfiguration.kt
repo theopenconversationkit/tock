@@ -20,6 +20,8 @@ import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
 import fr.vsct.tock.bot.admin.answer.SimpleAnswerConfiguration
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.definition.Intent
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 
 /**
  *
@@ -30,7 +32,7 @@ data class BotStoryDefinitionConfiguration(
         val intent: Intent,
         val currentType: AnswerConfigurationType,
         val answers: List<BotSimpleAnswerConfiguration>,
-        val _id: String? = null) {
+        val _id: Id<StoryDefinitionConfiguration> = newId()) {
 
     constructor(story: StoryDefinitionConfiguration) : this(
             story.storyId,

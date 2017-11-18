@@ -18,6 +18,8 @@ package fr.vsct.tock.nlp.front.shared.config
 
 import fr.vsct.tock.nlp.core.EntitiesRegexp
 import fr.vsct.tock.shared.withNamespace
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.util.Locale
 
 /**
@@ -25,7 +27,7 @@ import java.util.Locale
  */
 data class IntentDefinition(val name: String,
                             val namespace: String,
-                            val applications: Set<String>,
+                            val applications: Set<Id<ApplicationDefinition>>,
                             val entities: Set<EntityDefinition>,
                             val entitiesRegexp: Map<Locale, List<EntitiesRegexp>> = emptyMap(),
                             /**
@@ -34,7 +36,7 @@ data class IntentDefinition(val name: String,
                              * There is no restriction for intents with empty mandatory states set.
                              */
                             val mandatoryStates: Set<String> = emptySet(),
-                            val _id: String? = null) {
+                            val _id: Id<IntentDefinition> = newId()) {
 
     @Transient
     val qualifiedName: String = name.withNamespace(namespace)

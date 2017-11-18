@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.admin.test
 
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.time.Duration
 import java.time.Instant
 
@@ -23,10 +25,10 @@ import java.time.Instant
  *
  */
 data class TestPlanExecution(
-        val testPlanId: String,
+        val testPlanId: Id<TestPlan>,
         val dialogs: List<DialogExecutionReport>,
         val nbErrors: Int,
         val date: Instant = Instant.now(),
         val duration: Duration = Duration.ZERO,
-        val _id: String? = null) {
+        val _id: Id<TestPlanExecution> = newId()) {
 }

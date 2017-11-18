@@ -20,12 +20,14 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Sorts
 import fr.vsct.tock.nlp.front.service.storage.TestModelDAO
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.test.EntityTestError
 import fr.vsct.tock.nlp.front.shared.test.EntityTestErrorQueryResult
 import fr.vsct.tock.nlp.front.shared.test.IntentTestError
 import fr.vsct.tock.nlp.front.shared.test.IntentTestErrorQueryResult
 import fr.vsct.tock.nlp.front.shared.test.TestBuild
 import fr.vsct.tock.nlp.front.shared.test.TestErrorQuery
+import org.litote.kmongo.Id
 import org.litote.kmongo.count
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.ensureIndex
@@ -62,7 +64,7 @@ object TestModelMongoDAO : TestModelDAO {
         c
     }
 
-    override fun getTestBuilds(applicationId: String, language: Locale): List<TestBuild> {
+    override fun getTestBuilds(applicationId: Id<ApplicationDefinition>, language: Locale): List<TestBuild> {
         return buildCol.find("{'language':${language.json},'applicationId':${applicationId.json}}").sort(Sorts.descending("startDate")).toList()
     }
 
@@ -108,7 +110,7 @@ object TestModelMongoDAO : TestModelDAO {
                 ?: if (newError) intentErrorCol.save(intentError.copy(text = textKey(intentError.text)))
     }
 
-    override fun deleteTestIntentError(applicationId: String, language: Locale, text: String) {
+    override fun deleteTestIntentError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String) {
         val filter = "{'text':${textKey(text).json},'language':${language.json},'applicationId':${applicationId.json}}"
         intentErrorCol.deleteOne(filter)
     }
@@ -150,7 +152,7 @@ object TestModelMongoDAO : TestModelDAO {
                 ?: if (newError) entityErrorCol.save(entityError.copy(text = textKey(entityError.text)))
     }
 
-    override fun deleteTestEntityError(applicationId: String, language: Locale, text: String) {
+    override fun deleteTestEntityError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String) {
         val filter = "{'text':${textKey(text).json},'language':${language.json},'applicationId':${applicationId.json}}"
         entityErrorCol.deleteOne(filter)
     }

@@ -24,6 +24,7 @@ import fr.vsct.tock.translator.UserInterfaceType.textChat
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
+import org.litote.kmongo.toId
 import kotlin.test.assertEquals
 
 /**
@@ -53,9 +54,9 @@ class TranslatorTest : AbstractTest() {
         val toTranslate = "aaa"
         val target = "bbb"
         val id = "a"
-        whenever(i18nDAO.getLabelById(id)).thenReturn(
+        whenever(i18nDAO.getLabelById(id.toId())).thenReturn(
                 I18nLabel(
-                        id,
+                        id.toId(),
                         defaultNamespace,
                         category,
                         listOf(I18nLocalizedLabel(
@@ -90,9 +91,9 @@ class TranslatorTest : AbstractTest() {
         val toTranslate = "aaa"
         val target = "bbb"
         val id = "not_yet_cached_id"
-        whenever(i18nDAO.getLabelById(id)).thenReturn(
+        whenever(i18nDAO.getLabelById(id.toId())).thenReturn(
                 I18nLabel(
-                        id,
+                        id.toId(),
                         defaultNamespace,
                         category,
                         listOf(I18nLocalizedLabel(
@@ -113,7 +114,7 @@ class TranslatorTest : AbstractTest() {
 
         assertEquals(target, Translator.translate(key, defaultLocale, textChat).toString())
 
-        verify(i18nDAO).getLabelById(id)
+        verify(i18nDAO).getLabelById(id.toId())
     }
 
     @Test
@@ -131,6 +132,6 @@ class TranslatorTest : AbstractTest() {
 
         assertEquals(toTranslate, Translator.translate(key, defaultLocale, textChat).toString())
 
-        verify(i18nDAO).getLabelById(id)
+        verify(i18nDAO).getLabelById(id.toId())
     }
 }

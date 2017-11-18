@@ -21,9 +21,11 @@ import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.longProperty
 import mu.KotlinLogging
+import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
+import org.litote.kmongo.toId
 import org.litote.kmongo.updateOneById
 import java.lang.Exception
 import java.time.Instant
@@ -34,7 +36,7 @@ import java.time.Instant.now
  */
 internal object MongoUserLock : UserLock {
 
-    data class UserLock(val _id: String, val locked: Boolean = true, val date: Instant = now())
+    data class UserLock(val _id: Id<UserLock>, val locked: Boolean = true, val date: Instant = now())
 
     private val logger = KotlinLogging.logger {}
 
@@ -46,19 +48,19 @@ internal object MongoUserLock : UserLock {
         try {
             var lock = col.findOneById(userId)
             return if (lock == null) {
-                lock = UserLock(userId)
+                lock = UserLock(userId.toId())
                 col.insertOne(lock)
                 logger.debug { "lock user : $userId" }
                 true
             } else {
                 if (!lock.locked) {
                     logger.debug { "lock user : $userId" }
-                    col.updateOneById(lock._id, UserLock(userId, true))
+                    col.updateOneById(lock._id, UserLock(userId.toId(), true))
                     true
                 } else {
                     if (lock.date.plusMillis(lockTimeout).isBefore(now())) {
                         logger.warn { "lock user : $userId because lock date is too old" }
-                        col.updateOneById(lock._id, UserLock(userId, true))
+                        col.updateOneById(lock._id, UserLock(userId.toId(), true))
                         true
                     } else {
                         false
@@ -76,7 +78,7 @@ internal object MongoUserLock : UserLock {
             logger.debug { "release lock for user : $userId" }
             val lock = col.findOneById(userId)
             if (lock != null && lock.locked) {
-                col.updateOneById(userId, UserLock(userId, false))
+                col.updateOneById(userId, UserLock(userId.toId(), false))
             } else {
                 logger.warn { "lock deleted or updated??? : $userId" }
             }

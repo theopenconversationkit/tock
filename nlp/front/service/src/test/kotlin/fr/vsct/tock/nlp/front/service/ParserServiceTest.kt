@@ -25,6 +25,7 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import fr.vsct.tock.shared.defaultLocale
 import org.junit.Test
+import org.litote.kmongo.toId
 import org.mockito.Mockito.verify
 import java.util.Locale
 import kotlin.test.assertEquals
@@ -67,7 +68,7 @@ class ParserServiceTest : AbstractTest() {
         assertEquals(Locale.ITALIAN, locale)
     }
 
-    private val validatedSentence = defaultClassifiedSentence.copy(classification = defaultClassification.copy("new_intent"))
+    private val validatedSentence = defaultClassifiedSentence.copy(classification = defaultClassification.copy("new_intent".toId()))
 
 
     @Test

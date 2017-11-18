@@ -19,6 +19,8 @@ package fr.vsct.tock.nlp.front.service.storage
 import fr.vsct.tock.nlp.front.shared.build.ModelBuild
 import fr.vsct.tock.nlp.front.shared.build.ModelBuildQueryResult
 import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import org.litote.kmongo.Id
 import java.util.Locale
 
 /**
@@ -34,5 +36,5 @@ interface ModelBuildTriggerDAO {
 
     fun save(build: ModelBuild)
 
-    fun builds(applicationId: String, language: Locale, start: Int, size: Int): ModelBuildQueryResult
+    fun builds(applicationId: Id<ApplicationDefinition>, language: Locale, start: Int, size: Int): ModelBuildQueryResult
 }

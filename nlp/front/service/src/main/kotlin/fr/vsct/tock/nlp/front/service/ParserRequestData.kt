@@ -22,6 +22,7 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.parser.IntentQualifier
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
+import org.litote.kmongo.Id
 
 /**
  * Data used in [ParserService].
@@ -33,15 +34,15 @@ internal data class ParserRequestData(
         val intentsQualifiers: Set<IntentQualifier>,
         val intents: List<IntentDefinition>) {
 
-    private val intentsById = intents.map { it._id!! to it }.toMap()
+    private val intentsById = intents.map { it._id to it }.toMap()
     private val intentsByName = intents.map { it.qualifiedName to it }.toMap()
 
-    private fun isIntentEnabled(intentId: String?): Boolean {
+    private fun isIntentEnabled(intentId: Id<IntentDefinition>?): Boolean {
         return intentsQualifiers.isEmpty()
                 || intentsQualifiers.any { intentsByName.containsKey(intentsById[intentId]?.qualifiedName) }
     }
 
-    fun isStateEnabledForIntentId(intentId: String?): Boolean {
+    fun isStateEnabledForIntentId(intentId: Id<IntentDefinition>?): Boolean {
         return isIntentEnabled(intentId) && intentsById[intentId]?.supportStates(query.state.states) ?: true
     }
 

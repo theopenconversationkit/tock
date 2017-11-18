@@ -39,6 +39,8 @@ import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.tockInternalInjector
 import org.junit.After
 import org.junit.Before
+import org.litote.kmongo.newId
+import org.litote.kmongo.toId
 import java.time.Instant
 
 /**
@@ -72,12 +74,12 @@ abstract class AbstractTest {
 
     val namespace = "namespace"
     val appName = "test"
-    val app = ApplicationDefinition(appName, namespace, _id = "id")
+    val app = ApplicationDefinition(appName, namespace, _id = "id".toId())
 
     val defaultIntentName = "$namespace:intent"
-    val defaultIntentDefinition = IntentDefinition(defaultIntentName.name(), namespace, setOf(app._id!!), emptySet(), _id = Dice.newId())
-    val defaultClassification = Classification(defaultIntentDefinition._id!!, emptyList())
-    val defaultClassifiedSentence = ClassifiedSentence("a", defaultLocale, "id", Instant.now(), Instant.now(), ClassifiedSentenceStatus.inbox, defaultClassification, 1.0, 1.0)
+    val defaultIntentDefinition = IntentDefinition(defaultIntentName.name(), namespace, setOf(app._id), emptySet(), _id = newId())
+    val defaultClassification = Classification(defaultIntentDefinition._id, emptyList())
+    val defaultClassifiedSentence = ClassifiedSentence("a", defaultLocale, "id".toId(), Instant.now(), Instant.now(), ClassifiedSentenceStatus.inbox, defaultClassification, 1.0, 1.0)
 
     val parseQuery = ParseQuery(emptyList(), namespace, appName, QueryContext(defaultLocale, Dice.newId()))
 

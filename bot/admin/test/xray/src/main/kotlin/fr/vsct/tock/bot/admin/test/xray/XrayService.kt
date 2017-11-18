@@ -50,6 +50,7 @@ import fr.vsct.tock.shared.listProperty
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.translator.UserInterfaceType
 import mu.KotlinLogging
+import org.litote.kmongo.toId
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -145,7 +146,7 @@ object XrayService {
                     }
                     var stepViewed = false
                     XrayTestExecutionReport(
-                            dialogReport.dialogReportId,
+                            dialogReport.dialogReportId.toString(),
                             OffsetDateTime.ofInstant(dialogReport.date, defaultZoneId),
                             OffsetDateTime.ofInstant(dialogReport.date, defaultZoneId).plus(dialogReport.duration),
                             if (dialogReport.error) "Failed execution ${dialogReport.errorMessage ?: ""}" else "Successful execution",
@@ -206,10 +207,10 @@ object XrayService {
                     botConfiguration.applicationId,
                     botConfiguration.namespace,
                     botConfiguration.nlpModel,
-                    botConfiguration._id!!,
+                    botConfiguration._id,
                     if (startSentence.isBlank()) null else MessageParser.parse(startSentence).first(),
                     botConfiguration.targetConnectorType,
-                    "planKey_${configuration.botConfiguration.applicationId}"
+                    "${planKey}_${configuration.botConfiguration.applicationId}".toId()
             )
         }
     }
@@ -223,7 +224,8 @@ object XrayService {
                             parseStepData(configuration, userInterface, it.id, userId, it.data.raw, it.attachments.firstOrNull { it.fileName == "user.message" }),
                             parseStepData(configuration, userInterface, it.id, botId, it.result.raw, it.attachments.firstOrNull { it.fileName == "bot.message" })
                     )
-                }, test.key)
+                },
+                test.key.toId())
     }
 
     private fun parseStepData(
@@ -247,7 +249,8 @@ object XrayService {
                             MessageParser.parse(replace("\${botUrl}", configuration.botUrl)),
                             configuration.botConfiguration.targetConnectorType,
                             userInterface,
-                            "${if (playerId.type == bot) "b" else "u"}${stepId}")
+                            "${if (playerId.type == bot) "b" else "u"}${stepId}".toId()
+                    )
                 }
     }
 

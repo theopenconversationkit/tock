@@ -16,7 +16,10 @@
 
 package fr.vsct.tock.bot.admin.test
 
+import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.message.Message
+import org.litote.kmongo.Id
 import java.time.Duration
 import java.time.Instant
 
@@ -24,9 +27,9 @@ import java.time.Instant
  *
  */
 data class DialogExecutionReport(
-        val dialogReportId: String,
+        val dialogReportId: Id<Dialog>,
         val error: Boolean = false,
-        val errorActionId: String? = null,
+        val errorActionId: Id<Action>? = null,
         val returnedMessage: Message? = null,
         val errorMessage: String? = null,
         val date: Instant = Instant.now(),

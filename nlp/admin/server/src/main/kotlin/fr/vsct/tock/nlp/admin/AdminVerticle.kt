@@ -34,6 +34,7 @@ import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationImportConfiguration
 import fr.vsct.tock.nlp.front.shared.codec.DumpType
 import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.test.TestErrorQuery
@@ -50,6 +51,7 @@ import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.StaticHandler
 import mu.KLogger
 import mu.KotlinLogging
+import org.litote.kmongo.Id
 import java.util.Locale
 
 /**
@@ -76,12 +78,12 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
         }
 
         blockingJsonGet("/application/:id") { context ->
-            admin.getApplicationWithIntents(context.pathParam("id"))
+            admin.getApplicationWithIntents(context.pathId("id"))
                     ?.takeIf { it.namespace == context.organization }
         }
 
         blockingJsonGet("/application/dump/:id") {
-            val id = it.pathParam("id")
+            val id: Id<ApplicationDefinition> = it.pathId("id")
             if (it.organization == front.getApplicationById(id)?.namespace) {
                 front.export(id, DumpType.full)
             } else {
@@ -90,7 +92,7 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
         }
 
         blockingJsonGet("/sentences/dump/:applicationId") {
-            val id = it.pathParam("applicationId")
+            val id: Id<ApplicationDefinition> = it.pathId("applicationId")
             if (it.organization == front.getApplicationById(id)?.namespace) {
                 front.exportSentences(id, null, DumpType.full)
             } else {
@@ -99,7 +101,7 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
         }
 
         blockingJsonGet("/sentences/dump/:applicationId/:intent") {
-            val id = it.pathParam("applicationId")
+            val id: Id<ApplicationDefinition> = it.pathId("applicationId")
             if (it.organization == front.getApplicationById(id)?.namespace) {
                 front.exportSentences(id, it.pathParam("intent"), DumpType.full)
             } else {
@@ -117,9 +119,9 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
                 val newApp = front.save(application.toApplication().copy(name = application.name.toLowerCase()))
                 //trigger a full rebuild if nlp engine change
                 if (appWithSameName?.nlpEngineType != newApp.nlpEngineType) {
-                    front.triggerBuild(ModelBuildTrigger(newApp._id!!, true))
+                    front.triggerBuild(ModelBuildTrigger(newApp._id, true))
                 }
-                ApplicationWithIntents(newApp, front.getIntentsByApplicationId(newApp._id!!))
+                ApplicationWithIntents(newApp, front.getIntentsByApplicationId(newApp._id))
             } else {
                 unauthorized()
             }
@@ -128,7 +130,7 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
         blockingJsonPost("/application/build/trigger") { context, application: ApplicationWithIntents ->
             val app = front.getApplicationById(application._id!!)
             if (context.organization == app!!.namespace) {
-                front.triggerBuild(ModelBuildTrigger(app._id!!, true))
+                front.triggerBuild(ModelBuildTrigger(app._id, true))
             } else {
                 unauthorized()
             }
@@ -137,7 +139,7 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
         blockingJsonPost("/application/builds") { context, query: PaginatedQuery ->
             val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
             if (context.organization == app?.namespace) {
-                front.builds(app._id!!, query.language, query.start.toInt(), query.size)
+                front.builds(app._id, query.language, query.start.toInt(), query.size)
             } else {
                 unauthorized()
             }
@@ -160,7 +162,7 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
         }
 
         blockingDelete("/application/:id") {
-            val id = it.pathParam("id")
+            val id: Id<ApplicationDefinition> = it.pathId("id")
             if (it.organization == front.getApplicationById(id)?.namespace) {
                 front.deleteApplicationById(id)
             } else {
@@ -169,8 +171,8 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
         }
 
         blockingJsonDelete("/application/:appId/intent/:intentId") {
-            val app = front.getApplicationById(it.pathParam("appId"))
-            val intentId = it.pathParam("intentId")
+            val app = front.getApplicationById(it.pathId("appId"))
+            val intentId: Id<IntentDefinition> = it.pathId("intentId")
             if (it.organization == app?.namespace) {
                 front.removeIntentFromApplication(app, intentId)
             } else {
@@ -179,8 +181,8 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
         }
 
         blockingJsonDelete("/application/:appId/intent/:intentId/entity/:entityType/:role") {
-            val app = front.getApplicationById(it.pathParam("appId"))
-            val intentId = it.pathParam("intentId")
+            val app = front.getApplicationById(it.pathId("appId"))
+            val intentId: Id<IntentDefinition> = it.pathId("intentId")
             val entityType = it.pathParam("entityType")
             val role = it.pathParam("role")
             val intent = front.getIntentById(intentId)!!
@@ -193,7 +195,7 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
 
         blockingJsonDelete("/application/:appId/entity/:entityType/:role") {
             //TODO rights
-            val app = front.getApplicationById(it.pathParam("appId"))!!
+            val app = front.getApplicationById(it.pathId("appId"))!!
             val entityTypeName = it.pathParam("entityType")
             val role = it.pathParam("role")
             val entityType = front.getEntityTypeByName(entityTypeName)!!
@@ -363,12 +365,12 @@ open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticl
 
         blockingJsonGet("/cache/:type") {
             //TODO admin role
-            getCachedValuesForType(it.pathParam("type"))
+            getCachedValuesForType<Any>(it.pathParam("type"))
         }
 
         blockingJsonDelete("/cache/:id/:type") {
             //TODO admin role
-            removeFromCache(it.pathParam("id"), it.pathParam("type"))
+            removeFromCache<Any>(it.pathId("id"), it.pathParam("type"))
             true
         }
     }

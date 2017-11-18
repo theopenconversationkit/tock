@@ -16,7 +16,10 @@
 
 package fr.vsct.tock.nlp.admin.model
 
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQueryResult
+import org.litote.kmongo.Id
 
 /**
  *
@@ -30,8 +33,8 @@ data class LogsReport(
     constructor(
             start: Long,
             result: ParseRequestLogQueryResult,
-            applicationId: String,
-            intentIdFinder: (String) -> String?) :
+            applicationId: Id<ApplicationDefinition>,
+            intentIdFinder: (String) -> Id<IntentDefinition>?) :
             this(
                     result.logs.map { LogReport(it, applicationId, intentIdFinder) },
                     result.total,

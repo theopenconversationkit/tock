@@ -16,13 +16,15 @@
 
 package fr.vsct.tock.nlp.front.shared.monitoring
 
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import org.litote.kmongo.Id
 import java.util.Locale
 
 /**
  *
  */
 data class ParseRequestLogStatQuery(
-        val applicationId: String,
+        val applicationId: Id<ApplicationDefinition>,
         val language: Locale,
         val intent: String?
 )

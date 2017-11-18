@@ -17,17 +17,18 @@
 package fr.vsct.tock.translator
 
 import fr.vsct.tock.shared.defaultNamespace
+import org.litote.kmongo.Id
 import java.util.Locale
 
 /**
  *
  */
 data class I18nLabel(
-        val _id: String,
+        val _id: Id<I18nLabel>,
         val namespace: String = defaultNamespace,
         val category: String,
         val i18n: List<I18nLocalizedLabel>,
-        val defaultLabel:String? = null) {
+        val defaultLabel: String? = null) {
 
     fun findLabel(locale: Locale, userInterfaceType: UserInterfaceType, connectorId: String?): I18nLocalizedLabel?
             = i18n.firstOrNull { it.locale == locale && it.interfaceType == userInterfaceType && it.connectorId == connectorId }

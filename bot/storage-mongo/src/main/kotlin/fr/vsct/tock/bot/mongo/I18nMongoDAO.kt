@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.mongo
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.I18nLabel
+import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
@@ -36,7 +37,7 @@ internal object I18nMongoDAO : I18nDAO {
         return col.find().toList()
     }
 
-    override fun getLabelById(id: String): I18nLabel? {
+    override fun getLabelById(id: Id<I18nLabel>): I18nLabel? {
         return col.findOneById(id)
     }
 
@@ -48,7 +49,7 @@ internal object I18nMongoDAO : I18nDAO {
         i18n.forEach { save(it) }
     }
 
-    override fun deleteByNamespaceAndId(namespace: String, id: String) {
+    override fun deleteByNamespaceAndId(namespace: String, id: Id<I18nLabel>) {
         col.deleteOne("{namespace:${namespace.json}, _id:${id.json}}")
     }
 }

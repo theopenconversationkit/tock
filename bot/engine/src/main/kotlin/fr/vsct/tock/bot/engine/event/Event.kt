@@ -17,8 +17,9 @@
 package fr.vsct.tock.bot.engine.event
 
 import fr.vsct.tock.bot.engine.dialog.EventState
-import fr.vsct.tock.shared.Dice
 import fr.vsct.tock.shared.security.StringObfuscatorMode
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.time.Instant
 
 /**
@@ -26,7 +27,7 @@ import java.time.Instant
  */
 abstract class Event(
         val applicationId: String,
-        val id: String = Dice.newId(),
+        val id: Id<out Event> = newId(),
         val date: Instant = Instant.now(),
         val state: EventState = EventState()
 ) {

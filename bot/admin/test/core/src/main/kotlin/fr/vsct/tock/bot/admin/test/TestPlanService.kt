@@ -17,19 +17,23 @@
 package fr.vsct.tock.bot.admin.test
 
 import com.github.salomonbrys.kodein.instance
+import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.connector.rest.client.ConnectorRestClient
 import fr.vsct.tock.bot.connector.rest.client.model.ClientConnectorType
 import fr.vsct.tock.bot.connector.rest.client.model.ClientMessage
 import fr.vsct.tock.bot.connector.rest.client.model.ClientMessageRequest
 import fr.vsct.tock.bot.connector.rest.client.model.ClientSentence
+import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
+import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDefinition
 import fr.vsct.tock.shared.Dice
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
+import org.litote.kmongo.Id
 import java.time.Duration
 import java.time.Instant
 
@@ -45,7 +49,7 @@ object TestPlanService {
     private val dialogDAO: DialogReportDAO by injector.instance()
 
     fun getPlanExecutions(plan: TestPlan): List<TestPlanExecution> {
-        return testPlanDAO.getPlanExecutions(plan._id!!)
+        return testPlanDAO.getPlanExecutions(plan._id)
     }
 
     fun getTestPlansByNamespaceAndNlpModel(namespace: String, nlpModel: String): List<TestPlan> {
@@ -60,23 +64,23 @@ object TestPlanService {
         return testPlanDAO.getPlansByApplicationId(applicationId)
     }
 
-    fun removeDialogFromTestPlan(plan: TestPlan, dialogId: String) {
+    fun removeDialogFromTestPlan(plan: TestPlan, dialogId: Id<Dialog>) {
         saveTestPlan(plan.copy(dialogs = plan.dialogs.filter { it.id != dialogId }))
     }
 
-    fun addDialogToTestPlan(plan: TestPlan, dialogId: String) {
+    fun addDialogToTestPlan(plan: TestPlan, dialogId: Id<Dialog>) {
         saveTestPlan(plan.copy(dialogs = plan.dialogs + TestDialogReport(dialogDAO.getDialog(dialogId)!!)))
     }
 
     fun removeTestPlan(plan: TestPlan) {
-        testPlanDAO.removeTestPlan(plan._id!!)
+        testPlanDAO.removeTestPlan(plan._id)
     }
 
     fun saveTestPlan(plan: TestPlan) {
         testPlanDAO.save(plan)
     }
 
-    fun getTestPlan(planId: String): TestPlan? {
+    fun getTestPlan(planId: Id<TestPlan>): TestPlan? {
         return testPlanDAO.getPlan(planId)
     }
 
@@ -98,7 +102,7 @@ object TestPlanService {
             }
         }
         val exec = TestPlanExecution(
-                plan._id!!,
+                plan._id,
                 dialogs,
                 nbErrors,
                 duration = Duration.between(start, Instant.now())

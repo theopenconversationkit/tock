@@ -16,14 +16,16 @@
 
 package fr.vsct.tock.bot.admin.model
 
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
+import org.litote.kmongo.Id
 import java.util.Locale
 
 /**
  *
  */
 data class CreateBotIntentRequest(
-        val botConfigurationId: String,
-        val intent:String,
+        val botConfigurationId: Id<BotApplicationConfiguration>,
+        val intent: String,
         val language: Locale,
         val firstSentences: List<String>,
         val reply: String) {

@@ -19,10 +19,12 @@ package fr.vsct.tock.nlp.front.storage.mongo
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.IndexOptions
 import fr.vsct.tock.nlp.front.service.storage.IntentDefinitionDAO
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
-import org.litote.kmongo.ensureIndex
+import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
@@ -42,7 +44,7 @@ object IntentDefinitionMongoDAO : IntentDefinitionDAO {
         c
     }
 
-    override fun getIntentsByApplicationId(applicationId: String): List<IntentDefinition> {
+    override fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition> {
         return col.find("{'applications':${applicationId.json}}").toList()
     }
 
@@ -50,7 +52,7 @@ object IntentDefinitionMongoDAO : IntentDefinitionDAO {
         return col.findOne("{'name':${name.json},'namespace':${namespace.json}}")
     }
 
-    override fun getIntentById(id: String): IntentDefinition? {
+    override fun getIntentById(id: Id<IntentDefinition>): IntentDefinition? {
         return col.findOneById(id)
     }
 
@@ -58,7 +60,7 @@ object IntentDefinitionMongoDAO : IntentDefinitionDAO {
         col.save(intent)
     }
 
-    override fun deleteIntentById(id: String) {
+    override fun deleteIntentById(id: Id<IntentDefinition>) {
         col.deleteOneById(id)
     }
 

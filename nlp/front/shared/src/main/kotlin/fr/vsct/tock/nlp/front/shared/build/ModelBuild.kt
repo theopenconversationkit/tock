@@ -16,6 +16,9 @@
 
 package fr.vsct.tock.nlp.front.shared.build
 
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import org.litote.kmongo.Id
 import java.time.Duration
 import java.time.Instant
 import java.util.Locale
@@ -24,11 +27,11 @@ import java.util.Locale
  *
  */
 data class ModelBuild(
-        val applicationId: String,
-        val language:Locale,
+        val applicationId: Id<ApplicationDefinition>,
+        val language: Locale,
         val type: ModelBuildType,
-        val intentId:String?,
-        val entityTypeName:String?,
+        val intentId: Id<IntentDefinition>?,
+        val entityTypeName: String?,
         val nbSentences: Int,
         val duration: Duration,
         val error: Boolean,

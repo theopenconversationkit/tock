@@ -28,6 +28,7 @@ import fr.vsct.tock.translator.UserInterfaceType.textAndVoiceAssistant
 import fr.vsct.tock.translator.UserInterfaceType.textChat
 import fr.vsct.tock.translator.UserInterfaceType.voiceAssistant
 import mu.KotlinLogging
+import org.litote.kmongo.toId
 import java.text.ChoiceFormat
 import java.text.MessageFormat
 import java.util.Formatter
@@ -79,7 +80,7 @@ object Translator {
 
     private fun loadLabel(id: String): I18nLabel? {
         return try {
-            cache.get(id, { requireNotNull(i18nDAO.getLabelById(id)) }).copy()
+            cache.get(id, { requireNotNull(i18nDAO.getLabelById(id.toId())) }).copy()
         } catch (e: UncheckedExecutionException) {
             null
         }
@@ -100,7 +101,7 @@ object Translator {
             {
                 val defaultLabelKey = key.defaultLabel.toString()
                 val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, defaultLabelKey)
-                val label = I18nLabel(key.key, key.namespace, key.category, listOf(defaultLabel), defaultLabelKey)
+                val label = I18nLabel(key.key.toId(), key.namespace, key.category, listOf(defaultLabel), defaultLabelKey)
                 i18nDAO.save(label)
                 label
             }.invoke()
@@ -134,7 +135,7 @@ object Translator {
                         )
                 )
                 val label = I18nLabel(
-                        key.key,
+                        key.key.toId(),
                         key.namespace,
                         key.category,
                         listOf(defaultLabel, localizedLabel),
@@ -147,7 +148,7 @@ object Translator {
                             I18nLocalizedLabel(locale, targetDefaultUserInterface, defaultLabel.label)
                         else null
                 val label = I18nLabel(
-                        key.key,
+                        key.key.toId(),
                         key.namespace,
                         key.category,
                         listOfNotNull(defaultLabel, interfaceLabel),

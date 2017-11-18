@@ -22,5 +22,5 @@ package fr.vsct.tock.nlp.api.client.model.dump
 data class EntityTypeDefinition(val name: String,
                            val description: String,
                            val subEntities: List<EntityDefinition> = emptyList(),
-                           val _id: String? = null) {
+                           val _id: String) {
 }

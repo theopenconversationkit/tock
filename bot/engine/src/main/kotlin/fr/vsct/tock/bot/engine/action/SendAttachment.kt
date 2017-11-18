@@ -20,7 +20,8 @@ import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.message.Attachment
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.shared.Dice
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.time.Instant
 
 /**
@@ -31,7 +32,7 @@ class SendAttachment(playerId: PlayerId,
                      recipientId: PlayerId,
                      val url: String,
                      val type: AttachmentType,
-                     id: String = Dice.newId(),
+                     id: Id<Action> = newId(),
                      date: Instant = Instant.now(),
                      state: EventState = EventState(),
                      metadata: ActionMetadata = ActionMetadata())

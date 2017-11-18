@@ -32,7 +32,7 @@ internal class ConfiguredStoryDefinition(configuration: StoryDefinitionConfigura
     : StoryDefinition {
 
     val answerType: AnswerConfigurationType = configuration.currentType
-    override val id: String = configuration._id!!
+    override val id: String = configuration._id.toString()
     override val starterIntents: Set<Intent> = setOf(configuration.intent)
     override val intents: Set<Intent> = starterIntents
     override val storyHandler: StoryHandler = ConfiguredStoryHandler(configuration)

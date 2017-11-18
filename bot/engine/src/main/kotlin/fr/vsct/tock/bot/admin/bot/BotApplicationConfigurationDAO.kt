@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.admin.bot
 
+import org.litote.kmongo.Id
+
 /**
  *
  */
@@ -29,7 +31,7 @@ interface BotApplicationConfigurationDAO {
 
     fun getConfigurations(): List<BotApplicationConfiguration>
 
-    fun getConfigurationById(id:String) : BotApplicationConfiguration?
+    fun getConfigurationById(id: Id<BotApplicationConfiguration>) : BotApplicationConfiguration?
 
     fun getConfigurationByApplicationIdAndBotId(applicationId:String, botId:String) : BotApplicationConfiguration?
 

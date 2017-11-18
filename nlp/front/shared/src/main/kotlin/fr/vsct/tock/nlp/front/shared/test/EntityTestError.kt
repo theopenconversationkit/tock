@@ -16,7 +16,10 @@
 
 package fr.vsct.tock.nlp.front.shared.test
 
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import org.litote.kmongo.Id
 import java.time.Instant
 import java.util.Locale
 
@@ -24,10 +27,10 @@ import java.util.Locale
  *
  */
 data class EntityTestError(
-        val applicationId: String,
+        val applicationId: Id<ApplicationDefinition>,
         val language: Locale,
         val text: String,
-        val intentId:String,
+        val intentId: Id<IntentDefinition>?,
         val lastAnalyse: List<ClassifiedEntity>,
         val averageErrorProbability: Double,
         val count: Int = 0,

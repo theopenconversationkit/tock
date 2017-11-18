@@ -16,6 +16,9 @@
 
 package fr.vsct.tock.bot.admin.dialog
 
+import fr.vsct.tock.bot.engine.dialog.Dialog
+import org.litote.kmongo.Id
+
 /**
  *
  */
@@ -23,5 +26,5 @@ interface DialogReportDAO {
 
     fun search(query: DialogReportQuery): DialogReportQueryResult
 
-    fun getDialog(id: String): DialogReport?
+    fun getDialog(id: Id<Dialog>): DialogReport?
 }

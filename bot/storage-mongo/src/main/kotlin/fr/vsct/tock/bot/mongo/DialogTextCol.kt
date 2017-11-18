@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.mongo
 
+import fr.vsct.tock.bot.engine.dialog.Dialog
+import org.litote.kmongo.Id
 import java.time.Instant
 
 /**
@@ -23,6 +25,6 @@ import java.time.Instant
  */
 data class DialogTextCol(
         val text: String,
-        val dialogId: String,
+        val dialogId: Id<Dialog>,
         val date: Instant = Instant.now()) {
 }

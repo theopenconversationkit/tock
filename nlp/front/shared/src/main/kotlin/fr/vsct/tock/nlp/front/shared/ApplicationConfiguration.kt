@@ -25,6 +25,7 @@ import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
+import org.litote.kmongo.Id
 import java.util.Locale
 
 /**
@@ -34,11 +35,11 @@ interface ApplicationConfiguration {
 
     fun save(application: ApplicationDefinition): ApplicationDefinition
 
-    fun deleteApplicationById(id: String)
+    fun deleteApplicationById(id: Id<ApplicationDefinition>)
 
     fun getApplicationByNamespaceAndName(namespace: String, name: String): ApplicationDefinition?
 
-    fun getApplicationById(id: String): ApplicationDefinition?
+    fun getApplicationById(id: Id<ApplicationDefinition>): ApplicationDefinition?
 
     fun getApplications(): List<ApplicationDefinition>
 
@@ -49,14 +50,14 @@ interface ApplicationConfiguration {
      */
     fun removeIntentFromApplication(
             application: ApplicationDefinition,
-            intentId: String): Boolean
+            intentId: Id<IntentDefinition>): Boolean
 
     /**
      * Get the sentences with the specified criteria.
      *
      * @throws error if all parameters are null
      */
-    fun getSentences(intents: Set<String>? = null, language: Locale? = null, status: ClassifiedSentenceStatus? = null): List<ClassifiedSentence>
+    fun getSentences(intents: Set<Id<IntentDefinition>>? = null, language: Locale? = null, status: ClassifiedSentenceStatus? = null): List<ClassifiedSentence>
 
     fun deleteSentencesByStatus(status: ClassifiedSentenceStatus)
 
@@ -79,15 +80,15 @@ interface ApplicationConfiguration {
     fun updateEntityDefinition(namespace: String, applicationName: String, entity: EntityDefinition)
 
 
-    fun getIntentsByApplicationId(applicationId: String): List<IntentDefinition>
+    fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition>
 
-    fun getIntentById(id: String): IntentDefinition?
+    fun getIntentById(id: Id<IntentDefinition>): IntentDefinition?
 
     fun getIntentByNamespaceAndName(namespace: String, name: String): IntentDefinition?
 
     fun save(intent: IntentDefinition)
 
-    fun getIntentIdByQualifiedName(name: String): String?
+    fun getIntentIdByQualifiedName(name: String): Id<IntentDefinition>?
 
     /**
      * Remove entity from intent.

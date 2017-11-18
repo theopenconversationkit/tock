@@ -39,7 +39,7 @@
         <kotlin-logging>1.4.6</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>3.5.0</kmongo>
+        <kmongo>3.5.1</kmongo>
         <fongo>2.1.0</fongo>
         <jackson>2.9.2</jackson>
         <klaxon>0.32</klaxon>
@@ -172,6 +172,16 @@
             <dependency>
                 <groupId>org.litote.kmongo</groupId>
                 <artifactId>kmongo</artifactId>
+                <version>${kmongo}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.litote.kmongo</groupId>
+                <artifactId>kmongo-id</artifactId>
+                <version>${kmongo}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.litote.kmongo</groupId>
+                <artifactId>kmongo-id-jackson</artifactId>
                 <version>${kmongo}</version>
             </dependency>
 

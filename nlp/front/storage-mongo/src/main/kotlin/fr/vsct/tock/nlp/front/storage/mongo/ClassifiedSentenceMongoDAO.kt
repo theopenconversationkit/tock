@@ -21,12 +21,15 @@ import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Sorts
 import com.mongodb.client.model.UpdateOptions
 import fr.vsct.tock.nlp.front.service.storage.ClassifiedSentenceDAO
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.Classification
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.inbox
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
+import org.litote.kmongo.Id
 import org.litote.kmongo.MongoOperator.`in`
 import org.litote.kmongo.MongoOperator.elemMatch
 import org.litote.kmongo.MongoOperator.ne
@@ -51,7 +54,7 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     private data class ClassifiedSentenceCol(val text: String,
                                              val fullText: String = text,
                                              val language: Locale,
-                                             val applicationId: String,
+                                             val applicationId: Id<ApplicationDefinition>,
                                              val creationDate: Instant,
                                              val updateDate: Instant,
                                              val status: ClassifiedSentenceStatus,
@@ -95,7 +98,7 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         c
     }
 
-    override fun getSentences(intents: Set<String>?, language: Locale?, status: ClassifiedSentenceStatus?): List<ClassifiedSentence> {
+    override fun getSentences(intents: Set<Id<IntentDefinition>>?, language: Locale?, status: ClassifiedSentenceStatus?): List<ClassifiedSentence> {
         if (intents == null && language == null && status == null) {
             error("at least one parameter should be not null")
         }
@@ -118,7 +121,7 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         col.deleteMany("{'status':${status.json}}")
     }
 
-    override fun deleteSentencesByApplicationId(applicationId: String) {
+    override fun deleteSentencesByApplicationId(applicationId: Id<ApplicationDefinition>) {
         col.deleteMany("{'applicationId':${applicationId.json}}")
     }
 
@@ -129,7 +132,7 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     override fun search(query: SentencesQuery): SentencesQueryResult {
         with(query) {
             val filterStatus = listOfNotNull(
-                    if (status.isEmpty()) null else status.map { "'$it'" }.joinToString(",", "$`in`:[", "]"),
+                    if (status.isEmpty()) null else status.joinToString(",", "$`in`:[", "]") { "'$it'" },
                     if (status.isNotEmpty() || notStatus == null) null else "$ne:${notStatus!!.json}"
             ).joinToString(",", "status:{", "}")
 
@@ -138,7 +141,7 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                             "'applicationId':${applicationId.json}",
                             "'language':${language.json}",
                             if (search.isNullOrBlank()) null else if (query.onlyExactMatch) "'text':${search!!.json}" else "'fullText':/${search!!.trim()}/i",
-                            if (intentId.isNullOrBlank()) null else "'classification.intentId':${intentId!!.json}",
+                            if (intentId == null) null else "'classification.intentId':${intentId!!.json}",
                             if (filterStatus.isEmpty()) null else filterStatus,
                             if (entityType == null) null else "'classification.entities.type':${entityType!!.json}",
                             if (entityRole == null) null else "'classification.entities.role':${entityRole!!.json}"
@@ -154,20 +157,20 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         }
     }
 
-    override fun switchSentencesIntent(applicationId: String, oldIntentId: String, newIntentId: String) {
+    override fun switchSentencesIntent(applicationId: Id<ApplicationDefinition>, oldIntentId: Id<IntentDefinition>, newIntentId: Id<IntentDefinition>) {
         col.updateMany("{'applicationId':${applicationId.json}, 'classification.intentId':${oldIntentId.json}}", "{$set: {'classification.intentId':${newIntentId.json},'classification.entities':[],'status':'${inbox}'}}")
     }
 
-    override fun removeEntityFromSentences(applicationId: String, intentId: String, entityType: String, role: String) {
+    override fun removeEntityFromSentences(applicationId: Id<ApplicationDefinition>, intentId: Id<IntentDefinition>, entityType: String, role: String) {
         col.updateMany("{'applicationId':${applicationId.json}, 'classification.intentId':${intentId.json}, 'classification.entities':{$elemMatch:{type:${entityType.json},'role':${role.json}}}}", "{$pull:{'classification.entities':{'role':${role.json}}}}")
     }
 
-    override fun removeSubEntityFromSentences(applicationId: String, entityType: String, role: String) {
+    override fun removeSubEntityFromSentences(applicationId: Id<ApplicationDefinition>, entityType: String, role: String) {
         //TODO use 10 levels when this is resolved:  https:jira.mongodb.org/browse/SERVER-831
         (1..1).forEach { removeSubEntitiesFromSentence(applicationId, entityType, role, it) }
     }
 
-    private fun removeSubEntitiesFromSentence(applicationId: String, entityType: String, role: String, level: Int) {
+    private fun removeSubEntitiesFromSentence(applicationId: Id<ApplicationDefinition>, entityType: String, role: String, level: Int) {
         val baseFilter = "classification.entities" + (2..level).joinToString("") { ".subEntities" }
         col.updateMany("""{
             'applicationId':${applicationId.json},

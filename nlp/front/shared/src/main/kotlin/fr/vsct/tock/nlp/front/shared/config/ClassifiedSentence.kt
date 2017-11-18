@@ -23,6 +23,7 @@ import fr.vsct.tock.nlp.core.sample.SampleContext
 import fr.vsct.tock.nlp.core.sample.SampleEntity
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
+import org.litote.kmongo.Id
 import java.time.Instant
 import java.util.Locale
 
@@ -31,7 +32,7 @@ import java.util.Locale
  */
 data class ClassifiedSentence(val text: String,
                               val language: Locale,
-                              val applicationId: String,
+                              val applicationId: Id<ApplicationDefinition>,
                               val creationDate: Instant,
                               val updateDate: Instant,
                               val status: ClassifiedSentenceStatus,
@@ -42,8 +43,8 @@ data class ClassifiedSentence(val text: String,
     constructor(
             query: ParseResult,
             language: Locale,
-            applicationId: String,
-            intentId: String,
+            applicationId: Id<ApplicationDefinition>,
+            intentId: Id<IntentDefinition>,
             lastIntentProbability: Double,
             lastEntityProbability: Double)
             : this(
@@ -76,7 +77,7 @@ data class ClassifiedSentence(val text: String,
      * @param intentProvider intent id -> intent provider
      * @param entityTypeProvider entity type name -> entity type provider
      */
-    fun toSampleExpression(intentProvider: (String) -> Intent, entityTypeProvider: (String) -> EntityType): SampleExpression {
+    fun toSampleExpression(intentProvider: (Id<IntentDefinition>) -> Intent, entityTypeProvider: (String) -> EntityType): SampleExpression {
         return SampleExpression(
                 text,
                 intentProvider.invoke(classification.intentId),

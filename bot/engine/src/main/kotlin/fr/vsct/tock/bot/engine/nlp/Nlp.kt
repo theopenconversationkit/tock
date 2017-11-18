@@ -151,7 +151,7 @@ internal class Nlp : NlpController {
             return QueryContext(
                     userTimeline.userPreferences.locale,
                     sentence.playerId.id,
-                    dialog.id,
+                    dialog.id.toString(),
                     connector.connectorType.toString(),
                     referenceDate = dialog.state.nextActionState?.referenceDate ?: ZonedDateTime.now(defaultZoneId),
                     referenceTimezone = dialog.state.nextActionState?.referenceTimezone ?: defaultZoneId,

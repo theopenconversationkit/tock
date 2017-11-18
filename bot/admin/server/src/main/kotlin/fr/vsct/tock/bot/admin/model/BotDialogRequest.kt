@@ -16,13 +16,15 @@
 
 package fr.vsct.tock.bot.admin.model
 
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
+import org.litote.kmongo.Id
 
 /**
  *
  */
 data class BotDialogRequest(
-        val botApplicationConfigurationId: String,
+        val botApplicationConfigurationId: Id<BotApplicationConfiguration>,
         val message: Message) : ApplicationScopedQuery() {
 }

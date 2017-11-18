@@ -17,9 +17,12 @@
 package fr.vsct.tock.bot.admin.dialog
 
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.translator.UserInterfaceType
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.time.Instant
 
 /**
@@ -31,7 +34,7 @@ data class ActionReport(
         val message: Message,
         val connectorType: ConnectorType?,
         val userInterfaceType: UserInterfaceType,
-        val test:Boolean = false,
-        val id: String
+        val test: Boolean = false,
+        val id: Id<Action> = newId()
 ) {
 }

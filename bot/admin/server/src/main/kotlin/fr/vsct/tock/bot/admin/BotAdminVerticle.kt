@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.admin
 
 import com.github.salomonbrys.kodein.instance
-import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
+import fr.vsct.tock.bot.admin.model.BotConfiguration
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotIntentSearchRequest
 import fr.vsct.tock.bot.admin.model.CreateBotIntentRequest
@@ -73,10 +73,10 @@ open class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
             }
         }
 
-        blockingJsonPost("/configuration/bot") { context, bot: BotApplicationConfiguration ->
+        blockingJsonPost("/configuration/bot") { context, bot: BotConfiguration ->
             if (context.organization == bot.namespace) {
                 if (bot._id != null) {
-                    val conf = BotAdminService.getBotConfigurationById(bot._id!!)
+                    val conf = BotAdminService.getBotConfigurationById(bot._id)
                     if (conf == null || bot.namespace != conf.namespace || bot.botId != conf.botId || bot.applicationId != conf.applicationId) {
                         unauthorized()
                     }
@@ -85,14 +85,14 @@ open class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
                         unauthorized()
                     }
                 }
-                BotAdminService.saveApplicationConfiguration(bot)
+                BotAdminService.saveApplicationConfiguration(bot.toBotApplicationConfiguration())
             } else {
                 unauthorized()
             }
         }
 
         blockingJsonDelete("/configuration/bot/:confId") { context ->
-            BotAdminService.getBotConfigurationById(context.pathParam("confId"))
+            BotAdminService.getBotConfigurationById(context.pathId("confId"))
                     ?.let {
                         if (context.organization == it.namespace) {
                             BotAdminService.deleteApplicationConfiguration(it)
@@ -132,13 +132,13 @@ open class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
         }
 
         blockingJsonPost("/test/plan/:planId/dialog/:dialogId") { context, _: ApplicationScopedQuery ->
-            TestPlanService.addDialogToTestPlan(context.loadTestPlan(), context.pathParam("dialogId"))
+            TestPlanService.addDialogToTestPlan(context.loadTestPlan(), context.pathId("dialogId"))
         }
 
         blockingJsonPost("/test/plan/:planId/dialog/delete/:dialogId") { context, _: ApplicationScopedQuery ->
             TestPlanService.removeDialogFromTestPlan(
                     context.loadTestPlan(),
-                    context.pathParam("dialogId"))
+                    context.pathId("dialogId"))
         }
 
         blockingJsonPost("/test/plan/execute") { context, testPlan: TestPlan ->
@@ -215,7 +215,7 @@ open class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
         }
 
         blockingDelete("/i18n/:id") { context ->
-            i18n.deleteByNamespaceAndId(context.organization, context.pathParam("id"))
+            i18n.deleteByNamespaceAndId(context.organization, context.pathId("id"))
         }
 
         blockingJsonGet("/i18n/export") { context ->
@@ -230,7 +230,7 @@ open class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
     }
 
     fun RoutingContext.loadTestPlan(): TestPlan {
-        return TestPlanService.getTestPlan(pathParam("planId"))?.run {
+        return TestPlanService.getTestPlan(pathId("planId"))?.run {
             if (organization != namespace) {
                 unauthorized()
             } else {

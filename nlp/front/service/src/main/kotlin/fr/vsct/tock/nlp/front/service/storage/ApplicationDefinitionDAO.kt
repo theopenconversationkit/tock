@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.service.storage
 
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import org.litote.kmongo.Id
 
 /**
  *
@@ -25,11 +26,11 @@ interface ApplicationDefinitionDAO {
 
     fun save(application: ApplicationDefinition): ApplicationDefinition
 
-    fun deleteApplicationById(id: String)
+    fun deleteApplicationById(id: Id<ApplicationDefinition>)
 
     fun getApplicationByNamespaceAndName(namespace: String, name: String): ApplicationDefinition?
 
-    fun getApplicationById(id: String): ApplicationDefinition?
+    fun getApplicationById(id: Id<ApplicationDefinition>): ApplicationDefinition?
 
     fun getApplications(): List<ApplicationDefinition>
 

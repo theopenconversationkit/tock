@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.translator
 
+import org.litote.kmongo.Id
+
 /**
  *
  */
@@ -23,12 +25,12 @@ interface I18nDAO {
 
     fun getLabels(): List<I18nLabel>
 
-    fun getLabelById(id: String): I18nLabel?
+    fun getLabelById(id: Id<I18nLabel>): I18nLabel?
 
     fun save(i18n: I18nLabel)
 
     fun save(i18n: List<I18nLabel>)
 
-    fun deleteByNamespaceAndId(namespace: String, id: String)
+    fun deleteByNamespaceAndId(namespace: String, id: Id<I18nLabel>)
 
 }

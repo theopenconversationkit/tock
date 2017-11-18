@@ -52,6 +52,8 @@ import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.handler.UserSessionHandler
 import io.vertx.ext.web.sstore.LocalSessionStore
 import mu.KLogger
+import org.litote.kmongo.Id
+import org.litote.kmongo.toId
 import java.io.File
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
@@ -340,6 +342,8 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
     fun RoutingContext.endJson(result: Any?) {
         this.response().endJson(result)
     }
+
+    fun <T> RoutingContext.pathId(name: String): Id<T> = pathParam(name).toId()
 
     val RoutingContext.organization: String
         get() = (this.user() as UserWithOrg).organization

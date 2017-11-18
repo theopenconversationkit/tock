@@ -32,11 +32,13 @@ import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.provide
 import mu.KotlinLogging
+import org.litote.kmongo.Id
 import java.time.Duration
 import java.time.Instant
 import java.util.Locale
@@ -61,10 +63,10 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
             application: ApplicationDefinition,
             language: Locale,
             type: ModelBuildType,
-            intentId: String?,
+            intentId: Id<IntentDefinition>?,
             entityTypeName: String?,
             builder: () -> Int) {
-        var build = ModelBuild(application._id!!, language, type, intentId, entityTypeName, 0, Duration.ZERO, false, null, Instant.now())
+        var build = ModelBuild(application._id, language, type, intentId, entityTypeName, 0, Duration.ZERO, false, null, Instant.now())
         try {
             build = build.copy(nbSentences = builder.invoke())
         } catch (e: Throwable) {
@@ -82,7 +84,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
             engineType: NlpEngineType,
             onlyIfNotExists: Boolean) {
         logBuild(application, language, ModelBuildType.intent, null, null) {
-            val intentCache = mutableMapOf<String, Intent>()
+            val intentCache = mutableMapOf<Id<IntentDefinition>, Intent>()
             val modelSentences = config.getSentences(application.intents, language, ClassifiedSentenceStatus.model)
             val samples = (modelSentences + validatedSentences).map { it.toSampleExpression({ config.toIntent(it, intentCache) }, { entityTypeByName(it) }) }
             model.updateIntentModel(BuildContext(toApplication(application), language, engineType, onlyIfNotExists), samples)
@@ -93,7 +95,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
     override fun updateEntityModelForIntent(
             validatedSentences: List<ClassifiedSentence>,
             application: ApplicationDefinition,
-            intentId: String,
+            intentId: Id<IntentDefinition>,
             language: Locale,
             engineType: NlpEngineType,
             onlyIfNotExists: Boolean) {
@@ -119,7 +121,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
         logBuild(application, language, ModelBuildType.intentEntities, null, entityTypeDefinition.name) {
             val modelSentences = config.search(
                     SentencesQuery(
-                            application._id!!,
+                            application._id,
                             language,
                             size = Integer.MAX_VALUE,
                             status = setOf(ClassifiedSentenceStatus.model),
@@ -141,7 +143,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
         model.deleteOrphans(
                 config.getApplications()
                         .map {
-                            toApplication(it) to config.getIntentsByApplicationId(it._id!!).map { config.toIntent(it) }.toSet()
+                            toApplication(it) to config.getIntentsByApplicationId(it._id).map { config.toIntent(it) }.toSet()
                         }
                         .toMap(),
                 config.getEntityTypes().map { FrontRepository.toEntityType(it) }

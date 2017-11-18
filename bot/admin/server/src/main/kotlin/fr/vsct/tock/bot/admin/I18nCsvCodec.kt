@@ -28,6 +28,7 @@ import fr.vsct.tock.translator.UserInterfaceType
 import mu.KotlinLogging
 import org.apache.commons.csv.CSVFormat
 import org.apache.commons.csv.CSVPrinter
+import org.litote.kmongo.toId
 import java.io.StringReader
 import java.util.Locale
 
@@ -69,7 +70,7 @@ object I18nCsvCodec {
                             null
                         } else {
                             I18nLabel(
-                                    it[4],
+                                    it[4].toId(),
                                     namespace,
                                     it[1],
                                     listOf(

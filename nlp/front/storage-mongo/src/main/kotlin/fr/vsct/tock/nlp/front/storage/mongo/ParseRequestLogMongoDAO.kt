@@ -20,6 +20,7 @@ import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Sorts
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLog
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQueryResult
@@ -30,6 +31,7 @@ import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
+import org.litote.kmongo.Id
 import org.litote.kmongo.MongoOperator.avg
 import org.litote.kmongo.MongoOperator.cond
 import org.litote.kmongo.MongoOperator.dayOfYear
@@ -56,7 +58,7 @@ import java.util.concurrent.TimeUnit
 object ParseRequestLogMongoDAO : ParseRequestLogDAO {
 
     private data class ParseRequestLogCol(val text: String,
-                                          val applicationId: String,
+                                          val applicationId: Id<ApplicationDefinition>,
                                           val query: ParseQuery,
                                           val result: ParseResult?,
                                           val durationInMS: Long = 0,

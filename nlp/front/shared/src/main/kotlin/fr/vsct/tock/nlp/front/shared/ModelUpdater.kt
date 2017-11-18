@@ -22,6 +22,8 @@ import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import org.litote.kmongo.Id
 import java.util.Locale
 
 /**
@@ -45,7 +47,7 @@ interface ModelUpdater {
     fun updateEntityModelForIntent(
             validatedSentences: List<ClassifiedSentence>,
             application: ApplicationDefinition,
-            intentId: String,
+            intentId: Id<IntentDefinition>,
             language: Locale,
             engineType: NlpEngineType,
             onlyIfNotExists: Boolean = false)
@@ -57,7 +59,7 @@ interface ModelUpdater {
             language: Locale,
             engineType: NlpEngineType,
             onlyIfNotExists: Boolean = false
-            )
+    )
 
     /**
      * Delete orphans intent and entity models.
@@ -82,5 +84,5 @@ interface ModelUpdater {
     /**
      * Get builds sorted by date.
      */
-    fun builds(applicationId: String, language: Locale, start: Int, size: Int): ModelBuildQueryResult
+    fun builds(applicationId: Id<ApplicationDefinition>, language: Locale, start: Int, size: Int): ModelBuildQueryResult
 }

@@ -14,26 +14,40 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.test
+package fr.vsct.tock.bot.admin.model
 
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.engine.message.Message
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
 /**
  *
  */
-data class TestPlan(
-        val dialogs: List<TestDialogReport>,
-        val name: String,
+data class BotConfiguration(
         val applicationId: String,
+        val botId: String,
         val namespace: String,
         val nlpModel: String,
-        val botApplicationConfigurationId: Id<BotApplicationConfiguration>,
-        val startAction: Message? = null,
-        val targetConnectorType: ConnectorType = ConnectorType.none,
-        val _id: Id<TestPlan> = newId()
+        val connectorType: ConnectorType,
+        val ownerConnectorType: ConnectorType? = null,
+        val name: String = applicationId,
+        val baseUrl: String? = BotApplicationConfiguration.defaultBaseUrl,
+        val manuallyModified: Boolean = false,
+        val _id: Id<BotApplicationConfiguration>? = null
 ) {
+    fun toBotApplicationConfiguration(): BotApplicationConfiguration =
+            BotApplicationConfiguration(
+                    applicationId,
+                    botId,
+                    namespace,
+                    nlpModel,
+                    connectorType,
+                    ownerConnectorType,
+                    name,
+                    baseUrl,
+                    manuallyModified,
+                    _id ?: newId()
+            )
+
 }

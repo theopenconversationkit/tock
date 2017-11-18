@@ -28,6 +28,7 @@ import fr.vsct.tock.nlp.front.shared.ModelTester
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.test.EntityTestError
 import fr.vsct.tock.nlp.front.shared.test.EntityTestErrorQueryResult
 import fr.vsct.tock.nlp.front.shared.test.IntentTestError
@@ -38,6 +39,7 @@ import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.provide
 import mu.KotlinLogging
+import org.litote.kmongo.Id
 import java.util.Locale
 
 /**
@@ -68,7 +70,7 @@ object ModelTesterService : ModelTester {
         //at least 100 validated sentences to test the model
         if (sentences.size > 100) {
             logger.info { "Start testing model for $application and locale $locale" }
-            val intentCache = mutableMapOf<String, Intent>()
+            val intentCache = mutableMapOf<Id<IntentDefinition>, Intent>()
             val report = model.testModel(
                     TestContext(
                             CallContext(
@@ -81,7 +83,7 @@ object ModelTesterService : ModelTester {
             )
             modelDAO.saveTestBuild(
                     TestBuild(
-                            application._id!!,
+                            application._id,
                             locale,
                             report.startDate,
                             report.buildModelDuration,
@@ -99,7 +101,7 @@ object ModelTesterService : ModelTester {
             report.intentErrors.forEach {
                 modelDAO.addTestIntentError(
                         IntentTestError(
-                                application._id!!,
+                                application._id,
                                 locale,
                                 it.expression.text,
                                 it.expression.intent.name,
@@ -113,7 +115,7 @@ object ModelTesterService : ModelTester {
                 if (!intentErrorsMap.containsKey(it.text)) {
                     modelDAO.addTestIntentError(
                             IntentTestError(
-                                    application._id!!,
+                                    application._id,
                                     locale,
                                     it.text,
                                     "",
@@ -128,7 +130,7 @@ object ModelTesterService : ModelTester {
             report.entityErrors.forEach {
                 modelDAO.addTestEntityError(
                         EntityTestError(
-                                application._id!!,
+                                application._id,
                                 locale,
                                 it.expression.text,
                                 sentencesMap[it.expression.text]!!.classification.intentId,
@@ -143,10 +145,10 @@ object ModelTesterService : ModelTester {
                 if (!intentErrorsMap.containsKey(it.text) && !entityErrorsMap.containsKey(it.text)) {
                     modelDAO.addTestEntityError(
                             EntityTestError(
-                                    application._id!!,
+                                    application._id,
                                     locale,
                                     it.text,
-                                    "",
+                                    null,
                                     emptyList(),
                                     0.0,
                                     0
@@ -167,15 +169,15 @@ object ModelTesterService : ModelTester {
         return modelDAO.searchTestEntityErrors(query)
     }
 
-    override fun deleteTestIntentError(applicationId: String, language: Locale, text: String) {
+    override fun deleteTestIntentError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String) {
         modelDAO.deleteTestIntentError(applicationId, language, text)
     }
 
-    override fun deleteTestEntityError(applicationId: String, language: Locale, text: String) {
+    override fun deleteTestEntityError(applicationId: Id<ApplicationDefinition>, language: Locale, text: String) {
         modelDAO.deleteTestEntityError(applicationId, language, text)
     }
 
-    override fun getTestBuilds(applicationId: String, language: Locale): List<TestBuild> {
+    override fun getTestBuilds(applicationId: Id<ApplicationDefinition>, language: Locale): List<TestBuild> {
         return modelDAO.getTestBuilds(applicationId, language)
     }
 }

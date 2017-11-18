@@ -26,7 +26,7 @@ data class LogStatsQuery(val intent: String?) : ApplicationScopedQuery() {
 
     fun toStatQuery(application: ApplicationDefinition): ParseRequestLogStatQuery {
         return ParseRequestLogStatQuery(
-                application._id!!,
+                application._id,
                 language,
                 intent
         )

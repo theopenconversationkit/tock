@@ -17,14 +17,15 @@
 package fr.vsct.tock.bot.admin.test
 
 import fr.vsct.tock.bot.admin.dialog.DialogReport
-import fr.vsct.tock.shared.Dice
+import fr.vsct.tock.bot.engine.dialog.Dialog
+import org.litote.kmongo.Id
 
 /**
  *
  */
 data class TestDialogReport(
         val actions: List<TestActionReport> = emptyList(),
-        val id: String = Dice.newId()
+        val id: Id<Dialog>
 ) {
 
     constructor(dialog: DialogReport) : this(dialog.actions.map { TestActionReport(it) }, dialog.id)

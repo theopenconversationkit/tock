@@ -16,11 +16,14 @@
 
 package fr.vsct.tock.nlp.front.shared.build
 
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import org.litote.kmongo.Id
+
 /**
  * Trigger NLP model build.
  */
 data class ModelBuildTrigger(
-        val applicationId: String,
+        val applicationId: Id<ApplicationDefinition>,
         val all: Boolean,
         val onlyIfModelNotExists: Boolean = false) {
 }

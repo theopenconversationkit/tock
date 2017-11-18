@@ -19,21 +19,24 @@ package fr.vsct.tock.nlp.admin.model
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.front.shared.config.Classification
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.shared.test.EntityTestError
 import fr.vsct.tock.nlp.front.shared.test.IntentTestError
+import org.litote.kmongo.Id
+import org.litote.kmongo.toId
 
 /**
  *
  */
 data class ClassificationReport(
-        val intentId: String?,
+        val intentId: Id<IntentDefinition>?,
         val entities: List<ClassifiedEntityReport>,
         val intentProbability: Double?,
         val entitiesProbability: Double?,
         val otherIntentsProbabilities: Map<String, Double>) {
 
-    constructor(query: ParseResult, intentId: String?) : this(
+    constructor(query: ParseResult, intentId: Id<IntentDefinition>?) : this(
             intentId,
             query.entities.map { ClassifiedEntityReport(it) },
             query.intentProbability,
@@ -64,6 +67,6 @@ data class ClassificationReport(
             emptyMap())
 
     fun toClassification(): Classification {
-        return Classification(intentId ?: Intent.UNKNOWN_INTENT, entities.map { it.toClassifiedEntity() })
+        return Classification(intentId ?: Intent.UNKNOWN_INTENT.toId(), entities.map { it.toClassifiedEntity() })
     }
 }

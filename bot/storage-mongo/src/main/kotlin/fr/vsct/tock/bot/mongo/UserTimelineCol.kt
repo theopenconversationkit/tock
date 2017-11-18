@@ -40,12 +40,14 @@ import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 import fr.vsct.tock.shared.security.decrypt
 import fr.vsct.tock.shared.security.encrypt
 import fr.vsct.tock.shared.security.encryptionEnabled
+import org.litote.kmongo.Id
+import org.litote.kmongo.toId
 import java.time.Instant
 import java.time.ZoneId
 import java.util.Locale
 
 internal class UserTimelineCol(
-        val _id: String,
+        val _id: Id<UserTimelineCol>,
         val playerId: PlayerId,
         val userPreferences: UserPreferencesWrapper,
         val userState: UserStateWrapper,
@@ -55,7 +57,7 @@ internal class UserTimelineCol(
         var lastUserActionDate: Instant = lastUpdateDate) {
 
     constructor(newTimeline: UserTimeline, oldTimeline: UserTimelineCol?) : this(
-            newTimeline.playerId.id,
+            newTimeline.playerId.id.toId(),
             newTimeline.playerId,
             UserPreferencesWrapper(newTimeline.userPreferences),
             UserStateWrapper(newTimeline.userState)

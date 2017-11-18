@@ -16,9 +16,12 @@
 
 package fr.vsct.tock.nlp.admin.model
 
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLog
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
+import org.litote.kmongo.Id
 import java.time.Instant
 
 /**
@@ -33,7 +36,7 @@ data class LogReport(val sentence: SentenceReport?,
                      val error: Boolean,
                      val date: Instant) {
 
-    constructor(log: ParseRequestLog, applicationId: String, intentIdFinder: (String) -> String?) :
+    constructor(log: ParseRequestLog, applicationId: Id<ApplicationDefinition>, intentIdFinder: (String) -> Id<IntentDefinition>?) :
             this(
                     if (log.result == null) null
                     else SentenceReport(

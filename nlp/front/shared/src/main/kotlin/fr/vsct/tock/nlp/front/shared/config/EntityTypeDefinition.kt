@@ -16,12 +16,15 @@
 
 package fr.vsct.tock.nlp.front.shared.config
 
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
+
 /**
  *
  */
 data class EntityTypeDefinition(val name: String,
                                 val description: String = "",
                                 val subEntities: List<EntityDefinition> = emptyList(),
-                                val _id: String? = null) {
+                                val _id: Id<EntityTypeDefinition> = newId()) {
 
 }

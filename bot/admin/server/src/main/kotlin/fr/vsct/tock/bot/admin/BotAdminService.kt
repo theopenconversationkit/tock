@@ -59,6 +59,7 @@ import fr.vsct.tock.shared.vertx.UnauthorizedException
 import fr.vsct.tock.translator.I18nLabelKey
 import fr.vsct.tock.translator.Translator
 import mu.KotlinLogging
+import org.litote.kmongo.Id
 import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 
@@ -84,7 +85,7 @@ object BotAdminService {
         }
     }
 
-    fun getBotConfiguration(botApplicationConfigurationId: String, namespace: String): BotApplicationConfiguration {
+    fun getBotConfiguration(botApplicationConfigurationId: Id<BotApplicationConfiguration>, namespace: String): BotApplicationConfiguration {
         val conf = applicationConfigurationDAO.getConfigurationById(botApplicationConfigurationId)
         if (conf?.namespace != namespace) {
             throw UnauthorizedException()
@@ -104,7 +105,7 @@ object BotAdminService {
         applicationConfigurationDAO.delete(conf)
     }
 
-    fun getBotConfigurationById(id: String): BotApplicationConfiguration? {
+    fun getBotConfigurationById(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration? {
         return applicationConfigurationDAO.getConfigurationById(id)
     }
 
@@ -118,7 +119,9 @@ object BotAdminService {
                 .filter { it.namespace == namespace && it.botId == botId }
     }
 
-    fun getBotConfigurationsByNamespaceAndBotConfigurationId(namespace: String, botConfigurationId: String): List<BotApplicationConfiguration> {
+    fun getBotConfigurationsByNamespaceAndBotConfigurationId(
+            namespace: String,
+            botConfigurationId: Id<BotApplicationConfiguration>): List<BotApplicationConfiguration> {
         return applicationConfigurationDAO
                 .getConfigurations()
                 .filter { it.namespace == namespace && it._id == botConfigurationId }
@@ -150,7 +153,7 @@ object BotAdminService {
                         val intent = front.getIntentByNamespaceAndName(request.namespace, it.intent.name)
                         if (intent != null) {
                             val query = SentencesQuery(
-                                    nlpApplication!!._id!!,
+                                    nlpApplication!!._id,
                                     request.language,
                                     size = 3,
                                     intentId = intent._id)
@@ -177,7 +180,7 @@ object BotAdminService {
                 val nlpApplication = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)
                 val intent = front.getIntentByNamespaceAndName(namespace, story.intent.name)
                 if (intent != null) {
-                    front.removeIntentFromApplication(nlpApplication!!, intent._id!!)
+                    front.removeIntentFromApplication(nlpApplication!!, intent._id)
                 }
                 storyDefinitionDAO.delete(story)
             }
@@ -197,7 +200,7 @@ object BotAdminService {
                     IntentDefinition(
                             request.intent,
                             namespace,
-                            setOf(nlpApplication!!._id!!),
+                            setOf(nlpApplication!!._id),
                             emptySet()
                     )
             )
@@ -228,11 +231,11 @@ object BotAdminService {
                             ClassifiedSentence(
                                     it,
                                     request.language,
-                                    nlpApplication._id!!,
+                                    nlpApplication._id,
                                     Instant.now(),
                                     Instant.now(),
                                     ClassifiedSentenceStatus.validated,
-                                    Classification(intentDefinition._id!!, emptyList()),
+                                    Classification(intentDefinition._id, emptyList()),
                                     1.0,
                                     1.0
                             )

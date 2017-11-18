@@ -52,6 +52,7 @@ import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.withNamespace
 import fr.vsct.tock.shared.withoutNamespace
 import mu.KotlinLogging
+import org.litote.kmongo.toId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.Locale
@@ -136,7 +137,7 @@ object ParserService : Parser {
                 executor.executeBlocking {
                     logDAO.save(
                             ParseRequestLog(
-                                    application._id!!,
+                                    application._id,
                                     query,
                                     result,
                                     System.currentTimeMillis() - time
@@ -161,7 +162,7 @@ object ParserService : Parser {
             val validatedSentence = config
                     .search(
                             SentencesQuery(
-                                    application._id!!,
+                                    application._id,
                                     language,
                                     search = q,
                                     status = setOf(validated, model),
@@ -170,7 +171,7 @@ object ParserService : Parser {
                     .sentences
                     .firstOrNull()
 
-            val intents = config.getIntentsByApplicationId(application._id!!)
+            val intents = config.getIntentsByApplicationId(application._id)
 
             val callContext = CallContext(
                     toApplication(application),
@@ -225,7 +226,7 @@ object ParserService : Parser {
                 return ClassifiedSentence(
                         result,
                         language,
-                        application._id!!,
+                        application._id,
                         intentId,
                         result.intentProbability,
                         result.entitiesProbability
@@ -256,7 +257,7 @@ object ParserService : Parser {
                     && !hasSameContent(validatedSentence)) {
                 //do not persist analyse if intent probability is < 0.1
                 val sentence = if ((lastIntentProbability ?: 0.0) > 0.1) this
-                else copy(classification = classification.copy(UNKNOWN_INTENT, emptyList()))
+                else copy(classification = classification.copy(UNKNOWN_INTENT.toId(), emptyList()))
 
                 config.save(sentence)
             }

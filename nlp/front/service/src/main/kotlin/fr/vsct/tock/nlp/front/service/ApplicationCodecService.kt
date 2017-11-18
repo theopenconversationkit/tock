@@ -45,6 +45,9 @@ import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.withoutNamespace
 import mu.KotlinLogging
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
+import org.litote.kmongo.toId
 import java.time.Instant
 
 /**
@@ -55,11 +58,11 @@ object ApplicationCodecService : ApplicationCodec {
     private val logger = KotlinLogging.logger {}
     val config: ApplicationConfiguration  by injector.instance()
 
-    override fun export(applicationId: String, dumpType: DumpType): ApplicationDump {
+    override fun export(applicationId: Id<ApplicationDefinition>, dumpType: DumpType): ApplicationDump {
         val app = config.getApplicationById(applicationId)!!
         val entities = config.getEntityTypes()
         val intents = config.getIntentsByApplicationId(applicationId)
-        val sentences = config.getSentences(intents.map { it._id!! }.toSet())
+        val sentences = config.getSentences(intents.map { it._id }.toSet())
         return ApplicationDump(app, entities, intents, sentences)
     }
 
@@ -75,7 +78,7 @@ object ApplicationCodecService : ApplicationCodec {
 
                 dump.entityTypes.forEach { e ->
                     if (!entityTypeExists(e.name)) {
-                        val newEntity = e.copy(_id = null)
+                        val newEntity = e.copy(_id = newId())
                         config.save(newEntity)
                         report.add(newEntity)
                         logger.debug { "Import entity type $newEntity" }
@@ -91,7 +94,7 @@ object ApplicationCodecService : ApplicationCodec {
                                         name = appName,
                                         intents = emptySet(),
                                         intentStatesMap = emptyMap(),
-                                        _id = null)
+                                        _id = newId())
                                 report.add(appToSave)
                                 logger.debug { "Import application $appToSave" }
                                 config.save(appToSave)
@@ -99,12 +102,12 @@ object ApplicationCodecService : ApplicationCodec {
                                 app
                             }
                         }
-                val appId = app._id!!
+                val appId = app._id
 
                 var intentsIdsMap = dump.intents.map { i ->
                     var intent = config.getIntentByNamespaceAndName(i.namespace, i.name)
                     if (intent == null) {
-                        intent = i.copy(_id = null, applications = setOf(appId))
+                        intent = i.copy(_id = newId(), applications = setOf(appId))
                         config.save(intent)
                         report.add(intent)
                         logger.debug { "Import intent $intent" }
@@ -116,12 +119,12 @@ object ApplicationCodecService : ApplicationCodec {
 
                 //update application intent list
                 config.save(app.copy(
-                        intents = app.intents + intentsIdsMap.values.filterNotNull().toSet(),
+                        intents = app.intents + intentsIdsMap.values.toSet(),
                         intentStatesMap = app.intentStatesMap + dump.application.intentStatesMap.mapKeys { intentsIdsMap[it.key]!! }
                 ))
 
                 //add unknown intent to intent map
-                intentsIdsMap += (Intent.UNKNOWN_INTENT to Intent.UNKNOWN_INTENT)
+                intentsIdsMap += (Intent.UNKNOWN_INTENT.toId<IntentDefinition>() to Intent.UNKNOWN_INTENT.toId<IntentDefinition>())
 
                 dump.sentences.forEach { s ->
                     if (config.search(SentencesQuery(appId, s.language, search = s.text, onlyExactMatch = true)).total == 0L) {
@@ -173,14 +176,14 @@ object ApplicationCodecService : ApplicationCodec {
                         }
                     }
 
-            val appId = app._id!!
+            val appId = app._id
             val intentsByNameMap =
                     config.getIntentsByApplicationId(appId)
                             .groupBy { it.qualifiedName }
                             .mapValues { it.value.first() }
                             .toMutableMap()
             val sentencesMap = config
-                    .getSentences(intentsByNameMap.values.map { it._id!! }.toSet())
+                    .getSentences(intentsByNameMap.values.map { it._id }.toSet())
                     .groupBy { it.text }
                     .toMutableMap()
 
@@ -201,7 +204,7 @@ object ApplicationCodecService : ApplicationCodec {
                                         val i = intent.copy(applications = intent.applications + appId)
                                         config.save(i)
                                         intentsByNameMap[intent.qualifiedName] = i
-                                        config.getSentences(setOf(i._id!!))
+                                        config.getSentences(setOf(i._id))
                                                 .forEach { sentence ->
                                                     sentencesMap.compute(
                                                             sentence.text,
@@ -258,7 +261,7 @@ object ApplicationCodecService : ApplicationCodec {
                                     Instant.now(),
                                     validated,
                                     Classification(
-                                            newIntent._id!!,
+                                            newIntent._id,
                                             s.entities.map { it.toClassifiedEntity() }
                                     ),
                                     1.0,
@@ -282,7 +285,7 @@ object ApplicationCodecService : ApplicationCodec {
         return report
     }
 
-    override fun exportSentences(applicationId: String, intent: String?, dumpType: DumpType): SentencesDump {
+    override fun exportSentences(applicationId: Id<ApplicationDefinition>, intent: String?, dumpType: DumpType): SentencesDump {
         val app = config.getApplicationById(applicationId)!!
         val filteredIntentId = if (intent == null) null else config.getIntentIdByQualifiedName(intent)
         val intents = config
@@ -292,7 +295,7 @@ object ApplicationCodecService : ApplicationCodec {
                 .mapValues { it.value.first() }
         val sentences = config
                 .getSentences(
-                        intents = intents.values.map { it._id!! }.toSet(),
+                        intents = intents.values.map { it._id }.toSet(),
                         status = model)
                 .filter { it.applicationId == applicationId }
         return SentencesDump(

@@ -21,8 +21,9 @@ import com.mongodb.client.model.IndexOptions
 import fr.vsct.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
-import org.litote.kmongo.ensureIndex
+import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
@@ -40,7 +41,7 @@ object ApplicationDefinitionMongoDAO : ApplicationDefinitionDAO {
         c
     }
 
-    override fun deleteApplicationById(id: String) {
+    override fun deleteApplicationById(id: Id<ApplicationDefinition>) {
         col.deleteOneById(id)
     }
 
@@ -53,7 +54,7 @@ object ApplicationDefinitionMongoDAO : ApplicationDefinitionDAO {
         return col.findOne("{'name':${name.json},'namespace':${namespace.json}}")
     }
 
-    override fun getApplicationById(id: String): ApplicationDefinition? {
+    override fun getApplicationById(id: Id<ApplicationDefinition>): ApplicationDefinition? {
         return col.findOneById(id)
     }
 

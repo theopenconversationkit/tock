@@ -17,13 +17,15 @@
 package fr.vsct.tock.shared.cache.mongo
 
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.time.Instant
 
 /**
  *
  */
 internal class MongoCacheData(
-        val id: String,
+        val id: Id<out Any?> = newId(),
         val type: String,
         val s: String? = null,
         val b: ByteArray? = null,
@@ -31,7 +33,7 @@ internal class MongoCacheData(
         val date: Instant = Instant.now()) {
 
     companion object {
-        fun fromValue(id: String, type: String, v: Any): MongoCacheData {
+        fun <T : Any> fromValue(id: Id<T>, type: String, v: T): MongoCacheData {
             return when (v) {
                 is String -> MongoCacheData(id, type, s = v)
                 is ByteArray -> MongoCacheData(id, type, b = v)

@@ -16,20 +16,23 @@
 
 package fr.vsct.tock.nlp.admin.model
 
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
+import org.litote.kmongo.Id
 
 /**
  *
  */
 data class SearchQuery(
         val search: String?,
-        val intentId: String?,
+        val intentId: Id<IntentDefinition>?,
         val status: Set<ClassifiedSentenceStatus> = emptySet(),
         val entityType: String? = null,
         val entityRole: String? = null) : PaginatedQuery() {
 
-    fun toSentencesQuery(applicationId: String): SentencesQuery {
+    fun toSentencesQuery(applicationId: Id<ApplicationDefinition>): SentencesQuery {
         return SentencesQuery(
                 applicationId,
                 language, start,

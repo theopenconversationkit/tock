@@ -18,13 +18,14 @@ package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.shared.Dice
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 
 /**
  *
  */
 data class Dialog(val playerIds: Set<PlayerId>,
-                  var id: String = Dice.newId(),
+                  var id: Id<Dialog> = newId(),
                   val state: DialogState = DialogState(),
                   val stories: MutableList<Story> = mutableListOf()) {
 

@@ -24,9 +24,10 @@ import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.message.Sentence
 import fr.vsct.tock.bot.engine.nlp.NlpCallStats
 import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.shared.Dice
 import fr.vsct.tock.shared.security.StringObfuscatorMode
 import fr.vsct.tock.shared.security.StringObfuscatorService
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.time.Instant
 
 /**
@@ -39,7 +40,7 @@ class SendSentence(
         recipientId: PlayerId,
         val text: CharSequence?,
         val messages: MutableList<ConnectorMessage> = mutableListOf(),
-        id: String = Dice.newId(),
+        id: Id<Action> = newId(),
         date: Instant = Instant.now(),
         state: EventState = EventState(),
         metadata: ActionMetadata = ActionMetadata(),
@@ -68,7 +69,7 @@ class SendSentence(
                 recipientId,
                 StringObfuscatorService.obfuscate(stringText, mode),
                 messages.map { it.obfuscate(mode) }.toMutableList(),
-                id,
+                toActionId(),
                 date,
                 state,
                 metadata,

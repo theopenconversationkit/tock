@@ -16,14 +16,16 @@
 
 package fr.vsct.tock.bot.admin.dialog
 
-import fr.vsct.tock.shared.Dice
+import fr.vsct.tock.bot.engine.dialog.Dialog
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 
 /**
  *
  */
 data class DialogReport(
         val actions: List<ActionReport> = emptyList(),
-        val id: String = Dice.newId()
+        val id: Id<Dialog> = newId()
 ) {
 
 }

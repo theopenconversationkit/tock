@@ -103,7 +103,7 @@ internal object FrontRepository {
     }
 
     fun toApplication(applicationDefinition: ApplicationDefinition): Application {
-        val intentDefinitions = config.getIntentsByApplicationId(applicationDefinition._id!!)
+        val intentDefinitions = config.getIntentsByApplicationId(applicationDefinition._id)
         val intents = intentDefinitions.map {
             Intent(it.qualifiedName,
                     it.entities.map { Entity(entityTypeByName(it.entityTypeName), it.role) },

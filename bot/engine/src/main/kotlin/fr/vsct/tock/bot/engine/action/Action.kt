@@ -14,12 +14,15 @@
  * limitations under the License.
  */
 
+
+
 package fr.vsct.tock.bot.engine.action
 
 import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
+import org.litote.kmongo.Id
 import java.time.Instant
 
 /**
@@ -28,10 +31,13 @@ import java.time.Instant
 abstract class Action(val playerId: PlayerId,
                       val recipientId: PlayerId,
                       applicationId: String,
-                      id: String,
+                      id: Id<Action>,
                       date: Instant,
                       state: EventState,
                       val metadata: ActionMetadata = ActionMetadata()) : Event(applicationId, id, date, state) {
 
     abstract fun toMessage(): Message
+
+    @Suppress("UNCHECKED_CAST")
+    fun toActionId(): Id<Action> = id as Id<Action>
 }

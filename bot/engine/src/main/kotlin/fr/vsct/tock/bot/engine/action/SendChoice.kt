@@ -25,7 +25,8 @@ import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.message.Choice
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.shared.Dice
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.net.URLDecoder.decode
 import java.net.URLEncoder.encode
 import java.nio.charset.StandardCharsets.UTF_8
@@ -39,7 +40,7 @@ class SendChoice(playerId: PlayerId,
                  recipientId: PlayerId,
                  val intentName: String,
                  val parameters: Map<String, String> = emptyMap(),
-                 id: String = Dice.newId(),
+                 id: Id<Action> = newId(),
                  date: Instant = Instant.now(),
                  state: EventState = EventState(),
                  metadata: ActionMetadata = ActionMetadata())
@@ -51,7 +52,7 @@ class SendChoice(playerId: PlayerId,
                 intentName: String,
                 step: StoryStep<out StoryHandlerDefinition>,
                 parameters: Map<String, String> = emptyMap(),
-                id: String = Dice.newId(),
+                id: Id<Action> = newId(),
                 date: Instant = Instant.now(),
                 state: EventState = EventState(),
                 metadata: ActionMetadata = ActionMetadata()) :

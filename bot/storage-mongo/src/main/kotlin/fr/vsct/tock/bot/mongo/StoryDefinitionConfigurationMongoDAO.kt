@@ -53,6 +53,6 @@ object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurationDAO {
     }
 
     override fun delete(story: StoryDefinitionConfiguration) {
-        col.deleteOneById(story._id!!)
+        col.deleteOneById(story._id)
     }
 }

@@ -32,6 +32,7 @@ import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.event.SubscribingEvent
 import fr.vsct.tock.bot.engine.user.PlayerType
 import mu.KotlinLogging
+import org.litote.kmongo.toId
 
 /**
  *
@@ -100,7 +101,7 @@ internal object WebhookActionConverter {
                 message.recipientId(PlayerType.bot),
                 message.message.text ?: "",
                 mutableListOf(message),
-                message.getMessageId()
+                message.getMessageId().toId()
         )
     }
 
@@ -111,7 +112,7 @@ internal object WebhookActionConverter {
                 applicationId,
                 message.recipientId(PlayerType.bot),
                 (attachment.payload as LocationPayload).coordinates.toUserLocation(),
-                message.getMessageId()
+                message.getMessageId().toId()
         )
     }
 
@@ -123,7 +124,7 @@ internal object WebhookActionConverter {
                 message.recipientId(PlayerType.bot),
                 (attachment.payload as UrlPayload).url,
                 SendAttachment.AttachmentType.image,
-                message.getMessageId()
+                message.getMessageId().toId()
         )
     }
 }

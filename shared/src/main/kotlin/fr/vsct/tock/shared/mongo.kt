@@ -27,8 +27,11 @@ import com.mongodb.MongoClientURI
 import com.mongodb.client.MongoDatabase
 import fr.vsct.tock.shared.jackson.addDeserializer
 import fr.vsct.tock.shared.jackson.addSerializer
+import fr.vsct.tock.shared.jackson.hackModule
 import mu.KotlinLogging
 import org.litote.kmongo.KMongo
+import org.litote.kmongo.id.IdGenerator
+import org.litote.kmongo.id.ObjectIdToStringGenerator
 import org.litote.kmongo.util.CollectionNameFormatter
 import org.litote.kmongo.util.KMongoConfiguration
 import java.time.Duration
@@ -53,6 +56,7 @@ val mongoJacksonModules = mutableListOf<Module>()
 
 val mongoClient: MongoClient by lazy {
     CollectionNameFormatter.defaultCollectionNameBuilder = collectionBuilder
+    IdGenerator.defaultGenerator = ObjectIdToStringGenerator
 
     val tockModule = SimpleModule().apply {
         addSerializer(ZoneId::class, ToStringSerializer(ZoneId::class.java))
@@ -63,6 +67,7 @@ val mongoClient: MongoClient by lazy {
         addDeserializer(Duration::class, DurationDeserializer.INSTANCE)
     }
 
+    KMongoConfiguration.registerBsonModule(hackModule)
     KMongoConfiguration.registerBsonModule(tockModule)
     mongoJacksonModules.forEach {
         KMongoConfiguration.registerBsonModule(it)

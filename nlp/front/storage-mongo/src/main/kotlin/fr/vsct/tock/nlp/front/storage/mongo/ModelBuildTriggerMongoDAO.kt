@@ -21,6 +21,8 @@ import fr.vsct.tock.nlp.front.service.storage.ModelBuildTriggerDAO
 import fr.vsct.tock.nlp.front.shared.build.ModelBuild
 import fr.vsct.tock.nlp.front.shared.build.ModelBuildQueryResult
 import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import org.litote.kmongo.Id
 import org.litote.kmongo.count
 import org.litote.kmongo.deleteMany
 import org.litote.kmongo.ensureIndex
@@ -65,7 +67,7 @@ object ModelBuildTriggerMongoDAO : ModelBuildTriggerDAO {
         modelCol.save(build)
     }
 
-    override fun builds(applicationId: String, language: Locale, start: Int, size: Int): ModelBuildQueryResult {
+    override fun builds(applicationId: Id<ApplicationDefinition>, language: Locale, start: Int, size: Int): ModelBuildQueryResult {
         val filter = "{'applicationId':${applicationId.json},'language':${language.json}}"
 
         return ModelBuildQueryResult(

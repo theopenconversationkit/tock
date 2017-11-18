@@ -30,4 +30,4 @@ data class ApplicationDefinition(val name: String,
                                  val nlpEngineType: NlpEngineType = NlpEngineType.opennlp,
                                  val mergeEngineTypes: Boolean = true,
                                  val supportSubEntities:Boolean = false,
-                                 val _id: String? = null)
+                                 val _id: String)

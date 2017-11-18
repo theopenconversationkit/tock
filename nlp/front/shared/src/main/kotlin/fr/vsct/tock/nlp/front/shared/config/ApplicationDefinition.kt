@@ -18,6 +18,8 @@ package fr.vsct.tock.nlp.front.shared.config
 
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.shared.withNamespace
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.util.Locale
 
 /**
@@ -25,13 +27,13 @@ import java.util.Locale
  */
 data class ApplicationDefinition(val name: String,
                                  val namespace: String,
-                                 val intents: Set<String> = emptySet(),
+                                 val intents: Set<Id<IntentDefinition>> = emptySet(),
                                  val supportedLocales: Set<Locale> = emptySet(),
-                                 val intentStatesMap: Map<String, Set<String>> = emptyMap(),
+                                 val intentStatesMap: Map<Id<IntentDefinition>, Set<String>> = emptyMap(),
                                  val nlpEngineType: NlpEngineType = NlpEngineType.opennlp,
                                  val mergeEngineTypes: Boolean = true,
-                                 val supportSubEntities:Boolean = false,
-                                 val _id: String? = null) {
+                                 val supportSubEntities: Boolean = false,
+                                 val _id: Id<ApplicationDefinition> = newId()) {
 
     @Transient
     val qualifiedName: String = name.withNamespace(namespace)

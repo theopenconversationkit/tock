@@ -18,6 +18,7 @@ package fr.vsct.tock.translator
 
 import fr.vsct.tock.shared.defaultNamespace
 import org.junit.Test
+import org.litote.kmongo.toId
 import java.util.Locale
 import kotlin.test.assertNotNull
 
@@ -29,7 +30,7 @@ class I18nLabelTest : AbstractTest() {
     @Test
     fun findLabel_shouldFindALanguageOnlyLocalizedLabel_whenUsingALanguageAndCountryLocale() {
         val label = I18nLabel(
-                "id",
+                "id".toId(),
                 defaultNamespace,
                 " category",
                 listOf(

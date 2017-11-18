@@ -32,6 +32,7 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.listProperty
 import io.vertx.core.AbstractVerticle
 import mu.KotlinLogging
+import org.litote.kmongo.Id
 import java.time.Duration.ofHours
 import java.time.Duration.ofSeconds
 import java.time.LocalTime
@@ -43,7 +44,7 @@ import java.util.concurrent.atomic.AtomicBoolean
  */
 class BuildModelWorkerVerticle : AbstractVerticle() {
 
-    data class ModelRefreshKey(val applicationId: String, val language: Locale)
+    data class ModelRefreshKey(val applicationId: Id<ApplicationDefinition>, val language: Locale)
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -66,8 +67,8 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
             logger.debug { "Rebuild all models for application ${app.name} and nlp engine ${app.nlpEngineType.name}" }
             app.supportedLocales.forEach { locale ->
                 updateModel(
-                        ModelRefreshKey(app._id!!, locale),
-                        FrontClient.search(SentencesQuery(app._id as String, locale, 0, Integer.MAX_VALUE, status = setOf(model))).sentences,
+                        ModelRefreshKey(app._id, locale),
+                        FrontClient.search(SentencesQuery(app._id, locale, 0, Integer.MAX_VALUE, status = setOf(model))).sentences,
                         onlyIfNotExists)
             }
         }
@@ -173,7 +174,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
             executor.setPeriodic(ofHours(1), {
                 logger.debug { "trigger build to check not existing models" }
                 front.getApplications().forEach {
-                    front.triggerBuild(ModelBuildTrigger(it._id!!, true, true))
+                    front.triggerBuild(ModelBuildTrigger(it._id, true, true))
                 }
             })
         }

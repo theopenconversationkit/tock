@@ -16,8 +16,10 @@
 
 package fr.vsct.tock.nlp.front.shared.monitoring
 
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
+import org.litote.kmongo.Id
 import java.time.Instant
 import java.time.Instant.now
 
@@ -25,7 +27,7 @@ import java.time.Instant.now
  *
  */
 data class ParseRequestLog(
-        val applicationId: String,
+        val applicationId: Id<ApplicationDefinition>,
         val query: ParseQuery,
         val result: ParseResult?,
         val durationInMS: Long,
