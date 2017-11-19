@@ -3,7 +3,7 @@
 
 # Tock - The Open Conversation Kit
  
-Build chatbots with ease.
+Build assistants & chatbots with ease.
  
 Full documentation (fr only for now, en coming soon): [https://voyages-sncf-technologies.github.io/tock](https://voyages-sncf-technologies.github.io/tock/index.html)
   
