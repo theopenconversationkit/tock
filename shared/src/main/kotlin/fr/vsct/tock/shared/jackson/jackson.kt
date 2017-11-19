@@ -17,6 +17,7 @@
 package fr.vsct.tock.shared.jackson
 
 import com.fasterxml.jackson.annotation.JsonInclude
+import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
@@ -28,20 +29,19 @@ import com.fasterxml.jackson.databind.KeyDeserializer
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
+import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import org.litote.kmongo.Id
 import org.litote.kmongo.id.IdGenerator
-import org.litote.kmongo.id.ObjectIdToStringGenerator
 import org.litote.kmongo.id.jackson.IdJacksonModule
-import org.litote.kmongo.id.jackson.IdToStringSerializer
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 import kotlin.reflect.full.valueParameters
 
-//TODO remove this one when kmongo 3.6.0 is released
-internal class StringToIdKeyDeserializer(private val idGenerator: IdGenerator? = null) : KeyDeserializer() {
+//TODO remove these 2 classes when kmongo 3.6.0 is released
+private class StringToIdKeyDeserializer(private val idGenerator: IdGenerator? = null) : KeyDeserializer() {
 
     override fun deserializeKey(key: String, ctxt: DeserializationContext): Any
             = IdGenerator
@@ -54,8 +54,14 @@ internal class StringToIdKeyDeserializer(private val idGenerator: IdGenerator? =
 
 }
 
+private class IdKeySerializer : JsonSerializer<Id<*>>() {
+    override fun serialize(value: Id<*>, gen: JsonGenerator, serializers: SerializerProvider) {
+        gen.writeFieldName(value.toString())
+    }
+}
+
 internal val hackModule = SimpleModule().apply {
-    addKeySerializer(Id::class.java, IdToStringSerializer())
+    addKeySerializer(Id::class.java, IdKeySerializer())
     addKeyDeserializer(Id::class.java, StringToIdKeyDeserializer())
 }
 
