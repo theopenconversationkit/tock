@@ -96,7 +96,10 @@ object Translator {
                 }
             }
 
-    fun getOrPersistLabel(key: I18nLabelKey): I18nLabel
+    fun saveIfNotExists(key: I18nLabelKey): I18nLabel
+            = saveIfNotExists(key, defaultLocale)
+
+    fun saveIfNotExists(key: I18nLabelKey, defaultLocale: Locale): I18nLabel
             = getLabel(key) ?:
             {
                 val defaultLabelKey = key.defaultLabel.toString()

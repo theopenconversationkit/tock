@@ -28,6 +28,7 @@
                               [style.background]="t.color()"
                               [id]="t.index"
                               [md-tooltip]="t.display(sentence, state.user)">{{t.text}}</span></div>
+    <button *ngIf="appConfig.answerToSentenceUrl && isRootSentence()" md-icon-button (click)="answerToSentence()" md-tooltip="Set a custom answer" class="answer-button"><md-icon>question_answer</md-icon></button>
     <button *ngIf="isRootSentence()" md-icon-button (click)="copyToClipboard()" md-tooltip="Copy sentence to clipboard" class="copy-button"><md-icon>content_copy</md-icon></button>
     <textarea *ngIf="isRootSentence()" #copy class="copy"></textarea>
   </div>

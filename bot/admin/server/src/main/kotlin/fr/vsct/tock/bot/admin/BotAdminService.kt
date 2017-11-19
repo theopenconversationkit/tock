@@ -205,6 +205,15 @@ object BotAdminService {
                     )
             )
             if (intentDefinition != null) {
+                val labelKey = I18nLabelKey(
+                        Translator.getKeyFromDefaultLabel(request.reply),
+                        namespace,
+                        "simple",
+                        request.reply
+                )
+                //save the label
+                Translator.saveIfNotExists(labelKey, request.language)
+                //create the story
                 storyDefinitionDAO.save(
                         StoryDefinitionConfiguration(
                                 request.intent,
@@ -215,12 +224,7 @@ object BotAdminService {
                                         SimpleAnswerConfiguration(
                                                 listOf(
                                                         SimpleAnswer(
-                                                                I18nLabelKey(
-                                                                        Translator.getKeyFromDefaultLabel(request.reply),
-                                                                        namespace,
-                                                                        "simple",
-                                                                        request.reply
-                                                                ),
+                                                                labelKey,
                                                                 0)
                                                 )
                                         ))

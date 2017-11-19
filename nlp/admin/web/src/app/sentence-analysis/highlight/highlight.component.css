@@ -51,6 +51,12 @@
   right: 0;
 }
 
+.answer-button {
+  position: absolute;
+  top: 0;
+  right: 26px;
+}
+
 .copy {
   position: fixed;
   top: 0;

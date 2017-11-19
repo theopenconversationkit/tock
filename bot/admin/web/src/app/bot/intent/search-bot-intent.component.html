@@ -28,7 +28,7 @@
     </ul>
     <h2>The reply is:</h2>
     <md-list dense>
-        <tock-i18n-label [i]="intent.storyDefinition.answers[0].answers[0].label"></tock-i18n-label>
+        <tock-i18n-label [i]="intent.storyDefinition.answers[0].answers[0].label" [deleteAllowed]="false"></tock-i18n-label>
     </md-list>
     <div class="intent-mention">(intent : {{intent.storyDefinition.intent.name}})</div>
   </md-card-content>

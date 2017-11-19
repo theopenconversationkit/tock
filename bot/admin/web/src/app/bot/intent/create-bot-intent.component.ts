@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, ElementRef, ViewChild} from "@angular/core";
+import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
 import {MdSnackBar} from "@angular/material";
 import {NlpService} from "tock-nlp-admin/src/app/nlp-tabs/nlp.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
@@ -22,13 +22,14 @@ import {NormalizeUtil} from "tock-nlp-admin/src/app/model/commons";
 import {ParseQuery, Sentence} from "tock-nlp-admin/src/app/model/nlp";
 import {BotService} from "../bot-service";
 import {CreateBotIntentRequest} from "../model/bot-intent";
+import {ActivatedRoute} from "@angular/router";
 
 @Component({
   selector: 'tock-create-bot-intent',
   templateUrl: './create-bot-intent.component.html',
   styleUrls: ['./create-bot-intent.component.css']
 })
-export class CreateBotIntentComponent {
+export class CreateBotIntentComponent implements OnInit {
 
   sentence: Sentence;
 
@@ -44,7 +45,17 @@ export class CreateBotIntentComponent {
   constructor(private nlp: NlpService,
               private state: StateService,
               private bot: BotService,
-              private snackBar: MdSnackBar) {
+              private snackBar: MdSnackBar,
+              private route: ActivatedRoute) {
+  }
+
+  ngOnInit(): void {
+    this.route.queryParams.subscribe(params => {
+      this.text = params["text"];
+      if (this.text) {
+        this.onSentence(this.text);
+      }
+    });
   }
 
   onSentence(value: string) {

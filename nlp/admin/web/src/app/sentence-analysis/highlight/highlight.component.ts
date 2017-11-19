@@ -40,6 +40,8 @@ import {CreateEntityDialogComponent} from "../create-entity-dialog/create-entity
 import {User} from "../../model/auth";
 import {Intent} from "../../model/application";
 import {isNullOrUndefined} from "util";
+import {ApplicationConfig} from "../../core/application.config";
+import {Router} from "@angular/router";
 
 @Component({
   selector: 'tock-highlight',
@@ -67,7 +69,9 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   constructor(private nlp: NlpService,
               public state: StateService,
               private snackBar: MdSnackBar,
-              private dialog: MdDialog) {
+              private dialog: MdDialog,
+              private router: Router,
+              public appConfig: ApplicationConfig) {
     this.editable = true;
     this.edited = false;
     this.selectedStart = -1;
@@ -266,6 +270,17 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
 
   isRootSentence(): boolean {
     return this.sentence instanceof Sentence;
+  }
+
+  answerToSentence() {
+    this.router.navigate(
+      [this.appConfig.answerToSentenceUrl],
+      {
+        queryParams: {
+          text: this.sentence.getText()
+        }
+      }
+    );
   }
 
   copyToClipboard() {

@@ -23,4 +23,6 @@ export class ApplicationConfig {
   configurationUrl: string;
   /** url of the display dialogs if it exists */
   displayDialogUrl: string;
+  /** url to answer to sentence if it exists */
+  answerToSentenceUrl: string;
 }

@@ -28,6 +28,9 @@ export class SelectBotComponent implements OnInit {
   @Input()
   configurationId: string;
 
+  @Input()
+  displayConnectorChoice: boolean = true;
+
   @Output()
   private configurationIdChange = new EventEmitter<string>();
 

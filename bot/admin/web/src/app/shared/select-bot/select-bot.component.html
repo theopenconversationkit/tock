@@ -24,7 +24,8 @@
              class="select-configuration">
     <md-option *ngFor="let n of botNames" [value]="n">{{ n }}</md-option>
   </md-select>
-  <md-select (change)="changeConnectorType($event.value)"
+  <md-select *ngIf="displayConnectorChoice"
+             (change)="changeConnectorType($event.value)"
              placeholder="Select a connector"
              [ngModel]="currentConnectorType"
              class="select-configuration">

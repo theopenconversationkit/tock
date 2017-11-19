@@ -31,6 +31,9 @@ export class I18nLabelComponent implements OnInit {
   i: I18nLabel;
 
   @Input()
+  deleteAllowed:boolean = true;
+
+  @Input()
   i18nController: I18nController;
 
   constructor(public state: StateService,

@@ -31,7 +31,7 @@ export class I18nLabel {
   }
 
   defaultLocalizedLabel(): I18nLocalizedLabel {
-    const d = this.label(this.i18n[0].locale, defaultUserInterfaceType)
+    const d = this.label(this.i18n[0].locale, defaultUserInterfaceType);
     return d ? d : this.i18n[0];
   }
 
