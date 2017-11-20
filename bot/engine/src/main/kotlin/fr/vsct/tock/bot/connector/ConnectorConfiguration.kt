@@ -51,4 +51,7 @@ data class ConnectorConfiguration(
     fun getName(): String = parameters.getOrDefault(APPLICATION_NAME, applicationId)
 
     fun getBaseUrl(): String = parameters.getOrDefault(BASE_URL, BotApplicationConfiguration.defaultBaseUrl)
+
+    internal fun parametersWithoutDefaultKeys(): Map<String, String>
+            = parameters.filterKeys { it != APPLICATION_NAME && it != BASE_URL }
 }

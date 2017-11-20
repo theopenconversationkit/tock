@@ -14,12 +14,8 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-import {BotConfigurationService} from "../../core/bot-configuration.service";
-import {BotApplicationConfiguration, ConnectorType, UserInterfaceType} from "../../core/model/configuration";
-import {MdDialog, MdSnackBar} from "@angular/material";
-import {ConfirmDialogComponent} from "tock-nlp-admin/src/app/shared/confirm-dialog/confirm-dialog.component";
-import {StateService} from "tock-nlp-admin/src/app/core/state.service";
+import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
+import {BotApplicationConfiguration} from "../../core/model/configuration";
 
 @Component({
   selector: 'tock-bot-configuration',
@@ -28,92 +24,26 @@ import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 })
 export class BotConfigurationComponent implements OnInit {
 
-  newApplicationConfiguration: BotApplicationConfiguration;
-  configurations: BotConfiguration[];
-  displayTestConfigurations:boolean = false;
+  @Input()
+  configuration: BotApplicationConfiguration;
 
-  constructor(private state: StateService,
-              private botConfiguration: BotConfigurationService,
-              private snackBar: MdSnackBar,
-              private dialog: MdDialog) {
+  @Output()
+  onRemove = new EventEmitter<boolean>();
+
+  @Output()
+  onValidate = new EventEmitter<boolean>();
+
+  constructor() {
   }
 
-  ngOnInit() {
-    this.botConfiguration.configurations.subscribe(confs => {
-      const r = new Map();
-      confs.forEach(c => {
-        const a = r.get(c.botId);
-        if (!a) {
-          r.set(c.botId, [c]);
-        } else {
-          a.push(c);
-        }
-      });
-      this.configurations = Array.from(r).map(e => new BotConfiguration(e[0], e[1]));
-    });
+  ngOnInit(): void {
   }
 
-  prepareCreate() {
-    this.newApplicationConfiguration = new BotApplicationConfiguration(
-      this.state.currentApplication.name,
-      this.state.currentApplication.name,
-      this.state.currentApplication.namespace,
-      this.state.currentApplication.name,
-      new ConnectorType("messenger", UserInterfaceType.textChat),
-      this.state.currentApplication.name);
+  remove() {
+    this.onRemove.emit(true);
   }
 
-  cancelCreate() {
-    this.newApplicationConfiguration = null;
-  }
-
-  refresh() {
-    this.botConfiguration.updateConfigurations();
-    this.snackBar.open(`Configurations reloaded`, "Refresh", {duration: 1000});
-  }
-
-  create() {
-    this.botConfiguration.saveConfiguration(this.newApplicationConfiguration)
-      .subscribe(_ => {
-        this.botConfiguration.updateConfigurations();
-        this.snackBar.open(`Configuration created`, "Creation", {duration: 5000});
-      });
-    this.newApplicationConfiguration = null;
-  }
-
-  update(conf: BotApplicationConfiguration) {
-    this.botConfiguration.saveConfiguration(conf)
-      .subscribe(_ => {
-        this.botConfiguration.updateConfigurations();
-        this.snackBar.open(`Configuration updated`, "Update", {duration: 5000});
-      });
-  }
-
-  delete(conf: BotApplicationConfiguration) {
-    let dialogRef = this.dialog.open(ConfirmDialogComponent, {
-      data: {
-        title: `Delete the configuration`,
-        subtitle: "Are you sure?",
-        action: "Remove"
-      }
-    });
-    dialogRef.afterClosed().subscribe(result => {
-      if (result === "remove") {
-        this.botConfiguration.deleteConfiguration(conf)
-          .subscribe(_ => {
-            this.botConfiguration.updateConfigurations();
-            this.snackBar.open(`Configuration deleted`, "Delete", {duration: 5000});
-          });
-      }
-    });
-
-
-  }
-
-}
-
-export class BotConfiguration {
-  constructor(public botId: string, public configurations: BotApplicationConfiguration[]) {
-
+  update() {
+    this.onValidate.emit(true);
   }
 }

@@ -15,7 +15,6 @@
  */
 
 
-
 export class BotApplicationConfiguration {
 
   constructor(public applicationId: string,
@@ -24,9 +23,10 @@ export class BotApplicationConfiguration {
               public nlpModel: string,
               public connectorType: ConnectorType,
               public name: string,
+              public parameters: Map<string, string>,
               public baseUrl?: string,
               public _id?: string,
-              public ownerConnectorType?: ConnectorType,) {
+              public ownerConnectorType?: ConnectorType) {
   }
 
   static fromJSON(json?: any): BotApplicationConfiguration {
@@ -55,8 +55,16 @@ export class ConnectorType {
     return this.id === "rest";
   }
 
+  isMessenger(): boolean {
+    return this.id === "messenger";
+  }
+
+  isGa(): boolean {
+    return this.id === "ga";
+  }
+
   static fromJSON(json?: any): ConnectorType {
-    if(!json) {
+    if (!json) {
       return null;
     }
     const value = Object.create(ConnectorType.prototype);

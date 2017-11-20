@@ -1,0 +1,64 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<md-card *ngIf="configurations">
+  <md-card-title>
+    Bot Configurations
+    <button md-button (click)="refresh()" md-tooltip="Refresh">
+      <md-icon>refresh</md-icon>
+    </button>
+  </md-card-title>
+  <md-card-subtitle>
+    <button md-button (click)="prepareCreate()" color="primary">
+      <md-icon>add_box</md-icon>
+      Create a new Configuration
+    </button>
+    <button md-button (click)="displayTestConfigurations = !displayTestConfigurations">
+      <md-icon *ngIf="!displayTestConfigurations">visibility</md-icon>
+      <md-icon *ngIf="displayTestConfigurations">visibility_off</md-icon>
+      <span *ngIf="displayTestConfigurations">Hide test configurations</span>
+      <span *ngIf="!displayTestConfigurations">Display test configurations</span>
+    </button>
+  </md-card-subtitle>
+  <md-card-content>
+    <div>
+      <div *ngIf="configurations.length ===0">
+        <h3>No bot configuration detected.</h3>
+      </div>
+
+      <tock-bot-configuration
+        *ngIf="newApplicationConfiguration"
+        [configuration]="newApplicationConfiguration"
+        (onRemove)="cancelCreate()"
+        (onValidate)="create()"
+      ></tock-bot-configuration>
+
+      <div *ngFor="let a of configurations">
+
+        <h2>{{a.botId}}</h2>
+
+        <div *ngFor="let conf of a.configurations">
+          <tock-bot-configuration
+            *ngIf="!conf.connectorType.isRest() || displayTestConfigurations"
+            [configuration]="conf"
+            (onRemove)="remove(conf)"
+            (onValidate)="update(conf)">
+          </tock-bot-configuration>
+        </div>
+      </div>
+    </div>
+  </md-card-content>
+</md-card>

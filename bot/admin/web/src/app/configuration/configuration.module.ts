@@ -21,11 +21,12 @@ import {RouterModule, Routes} from "@angular/router";
 import {ApplicationsComponent} from "tock-nlp-admin/src/app/applications/applications/applications.component";
 import {ApplicationComponent} from "tock-nlp-admin/src/app/applications/application/application.component";
 import {AuthGuard} from "tock-nlp-admin/src/app/core/auth/auth.guard";
-import {BotConfigurationComponent} from "./bot/bot-configuration.component";
+import {BotConfigurationsComponent} from "./bot/bot-configurations.component";
 import {ConfigurationTabsComponent} from "./configuration-tabs.component";
 import {ApplicationsResolver} from "tock-nlp-admin/src/app/applications/applications.resolver";
 import {CommonModule} from "@angular/common";
 import {BotSharedModule} from "../shared/bot-shared.module";
+import {BotConfigurationComponent} from "./bot/bot-configuration.component";
 
 const routes: Routes = [
   {
@@ -42,7 +43,7 @@ const routes: Routes = [
       },
       {
         path: 'bot',
-        component: BotConfigurationComponent,
+        component: BotConfigurationsComponent,
         resolve: {
           application: ApplicationsResolver
         }
@@ -77,6 +78,7 @@ export class BotConfigurationRoutingModule {
 @NgModule({
   declarations: [
     ConfigurationTabsComponent,
+    BotConfigurationsComponent,
     BotConfigurationComponent
   ],
   imports: [

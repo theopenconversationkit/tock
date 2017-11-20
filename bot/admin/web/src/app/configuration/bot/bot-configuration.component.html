@@ -14,96 +14,63 @@
   ~ limitations under the License.
   -->
 
-<md-card *ngIf="configurations">
-  <md-card-title>
-    Bot Configurations
-    <button md-button (click)="refresh()" md-tooltip="Refresh">
-      <md-icon>refresh</md-icon>
-    </button>
-  </md-card-title>
-  <md-card-subtitle>
-    <button md-button (click)="prepareCreate()" color="primary">
-      <md-icon>add_box</md-icon>
-      Create a new Configuration
-    </button>
-    <button md-button (click)="displayTestConfigurations = !displayTestConfigurations">
-      <md-icon *ngIf="!displayTestConfigurations">visibility</md-icon>
-      <md-icon *ngIf="displayTestConfigurations">visibility_off</md-icon>
-      <span *ngIf="displayTestConfigurations">Hide test configurations</span>
-      <span *ngIf="!displayTestConfigurations">Display test configurations</span>
-    </button>
-  </md-card-subtitle>
-  <md-card-content>
-    <div>
-      <div *ngIf="configurations.length ===0">
-        <h3>No bot configuration detected.</h3>
-      </div>
-
-      <md-card *ngIf="newApplicationConfiguration" class="conf">
-        <md-input-container>
-          <input mdInput placeholder="Configuration name" [(ngModel)]="newApplicationConfiguration.name">
-        </md-input-container>
-        <md-input-container>
-          <input mdInput placeholder="Connector type" [ngModel]="newApplicationConfiguration.connectorType.id"
-                 [disabled]="true">
-        </md-input-container>
-        <md-input-container>
-          <input mdInput placeholder="Owner connector type"
-                 [ngModel]="newApplicationConfiguration.ownerConnectorType?.id" [disabled]="true">
-        </md-input-container>
-        <md-input-container>
-          <input mdInput placeholder="Bot identifier" [(ngModel)]="newApplicationConfiguration.botId">
-        </md-input-container>
-        <md-input-container>
-          <input mdInput placeholder="Application identifier" [(ngModel)]="newApplicationConfiguration.applicationId">
-        </md-input-container>
-        <md-input-container>
-          <input mdInput placeholder="Application base url" [(ngModel)]="newApplicationConfiguration.baseUrl">
-        </md-input-container>
-        <md-input-container>
-          <input mdInput placeholder="Nlp model" [(ngModel)]="newApplicationConfiguration.nlpModel">
-        </md-input-container>
-        <md-card-actions>
-          <button md-button (click)="cancelCreate()">Cancel</button>
-          <button md-raised-button color="primary" (click)="create()">Create</button>
-        </md-card-actions>
-      </md-card>
-
-      <div *ngFor="let a of configurations">
-
-        <h2>{{a.botId}}</h2>
-
-        <div *ngFor="let conf of a.configurations">
-          <md-card *ngIf="!conf.connectorType.isRest() || displayTestConfigurations" class="conf">
-            <md-input-container>
-              <input mdInput placeholder="Configuration name" [(ngModel)]="conf.name">
-            </md-input-container>
-            <md-input-container>
-              <input mdInput placeholder="Connector type" [ngModel]="conf.connectorType.id" [disabled]="true">
-            </md-input-container>
-            <md-input-container *ngIf="conf.ownerConnectorType">
-              <input mdInput placeholder="Owner connector type" [ngModel]="conf.ownerConnectorType?.id"
-                     [disabled]="true">
-            </md-input-container>
-            <md-input-container>
-              <input mdInput placeholder="Bot identifier" [(ngModel)]="conf.botId" [disabled]="true">
-            </md-input-container>
-            <md-input-container>
-              <input mdInput placeholder="Application identifier" [(ngModel)]="conf.applicationId" [disabled]="true">
-            </md-input-container>
-            <md-input-container>
-              <input mdInput placeholder="Application base url" [(ngModel)]="conf.baseUrl">
-            </md-input-container>
-            <md-input-container>
-              <input mdInput placeholder="Nlp model" [(ngModel)]="conf.nlpModel">
-            </md-input-container>
-            <md-card-actions>
-              <button md-button color="warn" (click)="delete(conf)">Delete</button>
-              <button md-raised-button color="primary" (click)="update(conf)">Update</button>
-            </md-card-actions>
-          </md-card>
-        </div>
-      </div>
-    </div>
-  </md-card-content>
+<md-card *ngIf="configuration" class="conf">
+  <md-input-container>
+    <input mdInput placeholder="Configuration name" [(ngModel)]="configuration.name">
+  </md-input-container>
+  <md-input-container>
+    <input mdInput
+           placeholder="Connector type"
+           [ngModel]="configuration.connectorType.id"
+           [disabled]="configuration._id">
+  </md-input-container>
+  <md-input-container *ngIf="configuration.connectorType.isRest()">
+    <input mdInput
+           placeholder="Owner connector type"
+           [ngModel]="configuration.ownerConnectorType?.id"
+           [disabled]="true">
+  </md-input-container>
+  <md-input-container>
+    <input mdInput placeholder="Bot identifier" [(ngModel)]="configuration.botId">
+  </md-input-container>
+  <md-input-container>
+    <input mdInput placeholder="Application identifier" [(ngModel)]="configuration.applicationId">
+  </md-input-container>
+  <md-input-container>
+    <input mdInput placeholder="Application base url" [(ngModel)]="configuration.baseUrl">
+  </md-input-container>
+  <md-input-container>
+    <input mdInput placeholder="Nlp model" [(ngModel)]="configuration.nlpModel" [disabled]="true">
+  </md-input-container>
+  <md-expansion-panel *ngIf="configuration.connectorType.isMessenger()">
+    <md-expansion-panel-header>
+      <mat-panel-title>Messenger config</mat-panel-title>
+      <mat-panel-description>Parameters</mat-panel-description>
+    </md-expansion-panel-header>
+    <md-input-container>
+      <input mdInput placeholder="Page Id" [(ngModel)]="configuration.parameters['pageId']">
+    </md-input-container>
+    <md-input-container class="long-text">
+      <input mdInput placeholder="Call Token" [(ngModel)]="configuration.parameters['token']" >
+    </md-input-container>
+    <md-input-container>
+      <input mdInput placeholder="Webhook token" [(ngModel)]="configuration.parameters['verifyToken']">
+    </md-input-container>
+    <md-input-container class="long-text">
+      <input mdInput placeholder="Secret" [(ngModel)]="configuration.parameters['secret']">
+    </md-input-container>
+  </md-expansion-panel>
+  <md-expansion-panel *ngIf="configuration.connectorType.isGa()">
+    <md-expansion-panel-header>
+      <mat-panel-title>Google Assistant config</mat-panel-title>
+      <mat-panel-description>Parameters</mat-panel-description>
+    </md-expansion-panel-header>
+    <md-input-container class="long-text">
+      <input mdInput placeholder="Restricted project ids" [(ngModel)]="configuration.parameters['_project_ids']">
+    </md-input-container>
+  </md-expansion-panel>
+  <md-card-actions>
+    <button md-button color="warn" (click)="remove()">{{configuration._id ? 'Delete' : 'Cancel'}}</button>
+    <button md-raised-button color="primary" (click)="update()">{{configuration._id ? 'Update' : 'Create'}}</button>
+  </md-card-actions>
 </md-card>

@@ -111,7 +111,8 @@ object BotRepository {
                         configuration.type,
                         configuration.ownerConnectorType,
                         configuration.getName().run { if (isBlank()) botId else this },
-                        configuration.getBaseUrl())
+                        configuration.getBaseUrl(),
+                        configuration.parametersWithoutDefaultKeys())
 
                 TockConnectorController.register(connector, bot, verticle)
 
