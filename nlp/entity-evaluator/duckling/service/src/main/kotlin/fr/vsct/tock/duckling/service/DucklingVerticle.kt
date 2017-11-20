@@ -26,6 +26,7 @@ import fr.vsct.tock.shared.vertx.blocking
 import io.vertx.core.Future
 import io.vertx.ext.web.RoutingContext
 import fr.vsct.tock.shared.jackson.mapper
+import mu.KLogger
 import mu.KotlinLogging
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -33,7 +34,7 @@ import java.time.ZonedDateTime
 /**
  *
  */
-class DucklingVerticle : WebVerticle(KotlinLogging.logger {}) {
+class DucklingVerticle : WebVerticle() {
 
     data class ParseRequest(
             val language: String,
@@ -51,6 +52,8 @@ class DucklingVerticle : WebVerticle(KotlinLogging.logger {}) {
     init {
         mapper.registerModule(SimpleModule().addSerializer(Keyword::class.java, KeywordSerializer()))
     }
+
+    override val logger: KLogger = KotlinLogging.logger {}
 
     override fun configure() {
         blockingJsonPost("/parse") {

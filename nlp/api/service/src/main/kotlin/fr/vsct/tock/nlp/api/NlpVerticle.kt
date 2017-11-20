@@ -27,16 +27,19 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.ext.web.RoutingContext
+import mu.KLogger
 import mu.KotlinLogging
 
 /**
  *
  */
-class NlpVerticle : WebVerticle(KotlinLogging.logger {}) {
+class NlpVerticle : WebVerticle() {
 
     override val rootPath: String = "/rest/nlp"
 
     private val executor: Executor by injector.instance()
+
+    override val logger: KLogger = KotlinLogging.logger {}
 
     override fun configure() {
         val front = FrontClient

@@ -52,6 +52,7 @@ import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.handler.UserSessionHandler
 import io.vertx.ext.web.sstore.LocalSessionStore
 import mu.KLogger
+import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 import java.io.File
@@ -63,7 +64,9 @@ import java.util.EnumSet
 /**
  *
  */
-abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
+abstract class WebVerticle() : AbstractVerticle() {
+
+    open protected val logger: KLogger = KotlinLogging.logger {}
 
     private data class AuthenticateRequest(val email: String, val password: String)
 

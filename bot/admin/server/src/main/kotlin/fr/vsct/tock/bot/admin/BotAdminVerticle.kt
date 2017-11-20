@@ -33,12 +33,15 @@ import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.Translator
 import io.vertx.ext.web.RoutingContext
+import mu.KLogger
 import mu.KotlinLogging
 
 /**
  *
  */
-open class BotAdminVerticle : AdminVerticle(KotlinLogging.logger {}) {
+open class BotAdminVerticle : AdminVerticle() {
+
+    override val logger: KLogger = KotlinLogging.logger {}
 
     val i18n: I18nDAO  by injector.instance()
 

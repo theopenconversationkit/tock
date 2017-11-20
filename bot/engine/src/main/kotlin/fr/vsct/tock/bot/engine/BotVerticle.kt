@@ -22,12 +22,15 @@ import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import mu.KLogger
 import mu.KotlinLogging
 
 /**
  *
  */
-class BotVerticle : WebVerticle(KotlinLogging.logger {}) {
+class BotVerticle : WebVerticle() {
+
+    override val logger: KLogger = KotlinLogging.logger {}
 
     private val handlers: MutableMap<String, (Router) -> Unit> = mutableMapOf()
 

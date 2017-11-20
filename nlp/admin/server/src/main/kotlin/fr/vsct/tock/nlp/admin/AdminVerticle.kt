@@ -57,7 +57,9 @@ import java.util.Locale
 /**
  *
  */
-open class AdminVerticle(logger: KLogger = KotlinLogging.logger {}) : WebVerticle(logger) {
+open class AdminVerticle : WebVerticle() {
+
+    override val logger: KLogger = KotlinLogging.logger {}
 
     override val rootPath: String = "/rest/admin"
 
