@@ -124,6 +124,8 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
 
     protected open val authenticatePath: String = "/rest/authenticate"
 
+    protected open val logoutPath: String = "/rest/logout"
+
     private val verticleName: String = this::class.simpleName!!
 
     protected open fun protectedPath(): String = rootPath
@@ -174,7 +176,7 @@ abstract class WebVerticle(protected val logger: KLogger) : AbstractVerticle() {
             })
         }
 
-        router.post("${protectedPath()}/logout").handler {
+        router.post(logoutPath).handler {
             it.clearUser()
             it.success()
         }

@@ -58,7 +58,7 @@ export class AuthService {
   }
 
   logout() {
-    this.rest.post("/logout")
+    this.rest.postNotAuthenticated("/logout")
       .subscribe(_ => {
         this.logged = false;
         this.rest.setAuthToken(null);
