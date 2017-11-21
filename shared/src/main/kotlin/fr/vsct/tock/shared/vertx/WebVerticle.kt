@@ -18,18 +18,16 @@ package fr.vsct.tock.shared.vertx
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.shared.booleanProperty
-import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.listProperty
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.property
+import fr.vsct.tock.shared.security.PropertyBasedAuthProvider
+import fr.vsct.tock.shared.security.TockUser
 import io.vertx.core.AbstractVerticle
-import io.vertx.core.AsyncResult
 import io.vertx.core.Future
-import io.vertx.core.Handler
 import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpMethod.DELETE
 import io.vertx.core.http.HttpMethod.GET
@@ -38,9 +36,7 @@ import io.vertx.core.http.HttpServer
 import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.core.json.JsonObject
-import io.vertx.ext.auth.AbstractUser
 import io.vertx.ext.auth.AuthProvider
-import io.vertx.ext.auth.User
 import io.vertx.ext.web.FileUpload
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
@@ -76,40 +72,6 @@ abstract class WebVerticle() : AbstractVerticle() {
             val organization: String? = null)
 
     private data class BooleanResponse(val success: Boolean = true)
-
-    protected class UserWithOrg(val user: String, val organization: String) : AbstractUser() {
-        override fun doIsPermitted(permissionOrRole: String, handler: Handler<AsyncResult<Boolean>>) {
-            handler.handle(Future.succeededFuture(true))
-        }
-
-        override fun setAuthProvider(authProvider: AuthProvider) {
-            //do nothing
-        }
-
-        override fun principal(): JsonObject {
-            return JsonObject().put("username", user)
-        }
-    }
-
-    companion object {
-        private val users = listProperty("tock_users", listOf(property("tock_user", "admin@app.com")))
-        private val passwords = listProperty("tock_passwords", listOf(property("tock_password", "password")))
-        private val organizations = listProperty("tock_organizations", listOf(defaultNamespace))
-
-        val authProvider: AuthProvider = AuthProvider { authInfo, handler ->
-            val username = authInfo.getString("username")
-            val password = authInfo.getString("password")
-            handler.handle(
-                    users
-                            .indexOfFirst { it == username }
-                            .takeIf { it != -1 }
-                            ?.takeIf { passwords[it] == password }
-                            ?.let { Future.succeededFuture<User>(UserWithOrg(username, organizations[it])) }
-                            ?: Future.failedFuture<User>("invalid credentials")
-            )
-        }
-    }
-
 
     protected val router: Router by lazy {
         Router.router(vertx)
@@ -151,6 +113,7 @@ abstract class WebVerticle() : AbstractVerticle() {
         startServer(startFuture)
     }
 
+
     private fun addAuth(authProvider: AuthProvider) {
         val protectedPath = "${protectedPath()}/*"
         router.route(protectedPath).handler(CookieHandler.create())
@@ -172,7 +135,7 @@ abstract class WebVerticle() : AbstractVerticle() {
                 if (it.succeeded()) {
                     val user = it.result()
                     context.setUser(user)
-                    context.endJson(AuthenticateResponse(true, request.email, (user as UserWithOrg).organization))
+                    context.endJson(AuthenticateResponse(true, request.email, (user as TockUser).namespace))
                 } else {
                     context.endJson(AuthenticateResponse(false))
                 }
@@ -185,6 +148,7 @@ abstract class WebVerticle() : AbstractVerticle() {
         }
     }
 
+    protected open fun currentAuthProvider(): AuthProvider = PropertyBasedAuthProvider
 
     protected open fun authProvider(): AuthProvider? = null
 
@@ -355,7 +319,7 @@ abstract class WebVerticle() : AbstractVerticle() {
     fun <T> RoutingContext.queryId(name: String): Id<T>? = queryParam(name)?.toId()
 
     val RoutingContext.organization: String
-        get() = (this.user() as UserWithOrg).organization
+        get() = (this.user() as TockUser).namespace
 
     fun HttpServerResponse.endJson(result: Any?) {
         if (result == null) {
