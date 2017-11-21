@@ -300,7 +300,7 @@ abstract class WebVerticle() : AbstractVerticle() {
         server.close { e -> logger.info { "$verticleName stopped result : ${e.succeeded()}" } }
     }
 
-    private fun addDevCorsHandler() {
+    open protected fun addDevCorsHandler() {
         if (devEnvironment && booleanProperty("tock_web_use_default_dev_cors_handler", true)) {
             router.route().handler(corsHandler("http://localhost:4200", true))
         }
@@ -349,6 +349,10 @@ abstract class WebVerticle() : AbstractVerticle() {
     }
 
     fun <T> RoutingContext.pathId(name: String): Id<T> = pathParam(name).toId()
+
+    fun RoutingContext.queryParam(name: String): String? = request().getParam(name)
+
+    fun <T> RoutingContext.queryId(name: String): Id<T>? = queryParam(name)?.toId()
 
     val RoutingContext.organization: String
         get() = (this.user() as UserWithOrg).organization
