@@ -38,7 +38,7 @@ val injector: KodeinInjector get() = tockInternalInjector
  * extension function. Pattern:
  * <code>val core: NlpCore get() = injector.provide()</code>
  */
-inline fun <reified T : Any> KodeinInjector.provide(): T = injector.provider<T>().value.invoke()
+inline fun <reified T : Any> KodeinInjector.provide(tag: Any? = null): T = injector.provider<T>(tag).value.invoke()
 
 /**
  * IOC of shared module.
