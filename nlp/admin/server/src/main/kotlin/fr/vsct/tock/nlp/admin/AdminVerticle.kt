@@ -63,7 +63,7 @@ open class AdminVerticle : WebVerticle() {
 
     override val rootPath: String = "/rest/admin"
 
-    override fun authProvider(): AuthProvider? = currentAuthProvider()
+    override fun authProvider(): AuthProvider? = defaultAuthProvider()
 
     fun configureServices() {
         val front = FrontClient

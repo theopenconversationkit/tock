@@ -119,19 +119,24 @@ abstract class WebVerticle() : AbstractVerticle() {
     }
 
 
-    private fun addAuth(authProvider: AuthProvider) {
-        val protectedPath = "${protectedPath()}/*"
-        router.route(protectedPath).handler(CookieHandler.create())
-        router.route(protectedPath).handler(SessionHandler.create(LocalSessionStore.create(vertx))
-                .setSessionTimeout(6 * 60 * 60 * 1000 /*6h*/)
-                .setNagHttps(devEnvironment)
-                .setCookieHttpOnlyFlag(!devEnvironment)
-                .setCookieSecureFlag(!devEnvironment)
-                .setSessionCookieName("tock-session"))
-        router.route(protectedPath).handler(UserSessionHandler.create(authProvider))
+    protected fun addAuth(
+            authProvider: AuthProvider = defaultAuthProvider(),
+            pathsToProtect: List<String> = listOf("${protectedPath()}/*")) {
+
         val authHandler = BasicAuthHandler.create(authProvider)
 
-        router.route(protectedPath).handler(authHandler)
+        pathsToProtect.forEach { protectedPath ->
+            router.route(protectedPath).handler(CookieHandler.create())
+            router.route(protectedPath).handler(SessionHandler.create(LocalSessionStore.create(vertx))
+                    .setSessionTimeout(6 * 60 * 60 * 1000 /*6h*/)
+                    .setNagHttps(devEnvironment)
+                    .setCookieHttpOnlyFlag(!devEnvironment)
+                    .setCookieSecureFlag(!devEnvironment)
+                    .setSessionCookieName("tock-session"))
+            router.route(protectedPath).handler(UserSessionHandler.create(authProvider))
+            router.route(protectedPath).handler(authHandler)
+        }
+
 
         router.post(authenticatePath).handler { context ->
             val request = mapper.readValue<AuthenticateRequest>(context.bodyAsString)
@@ -153,8 +158,14 @@ abstract class WebVerticle() : AbstractVerticle() {
         }
     }
 
-    protected open fun currentAuthProvider(): AuthProvider = PropertyBasedAuthProvider
+    /**
+     * The auth provider provided by default.
+     */
+    protected open fun defaultAuthProvider(): AuthProvider = PropertyBasedAuthProvider
 
+    /**
+     * By default there is no auth provider - ie nothing is protected.
+     */
     protected open fun authProvider(): AuthProvider? = null
 
     protected open fun startServer(startFuture: Future<Void>) {

@@ -34,7 +34,7 @@ class BotVerticle : WebVerticle() {
 
     private val handlers: MutableMap<String, (Router) -> Unit> = mutableMapOf()
 
-    override fun authProvider(): AuthProvider? = currentAuthProvider()
+    override fun authProvider(): AuthProvider? = defaultAuthProvider()
 
     fun registerServices(rootPath: String, installer: (Router) -> Unit) {
         if (!(handlers as Map<String, (Router) -> Unit>).containsKey(rootPath)) {
