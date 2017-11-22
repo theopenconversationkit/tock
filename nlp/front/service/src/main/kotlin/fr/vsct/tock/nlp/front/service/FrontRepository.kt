@@ -41,7 +41,7 @@ internal object FrontRepository {
 
     val config: ApplicationConfiguration get() = injector.provide()
 
-    val entityTypes: MutableMap<String, EntityType> by lazy {
+    val entityTypes: MutableMap<String, EntityType?> by lazy {
         loadEntityTypes()
     }
 
@@ -49,20 +49,25 @@ internal object FrontRepository {
         entityTypes.putAll(loadEntityTypes())
     }
 
-    private fun loadEntityTypes(): MutableMap<String, EntityType> {
+    private fun loadEntityTypes(): MutableMap<String, EntityType?> {
         logger.info { "load entity types" }
         val entityTypesDefinitionMap = config.getEntityTypes().map { it.name to it }.toMap()
         val entityTypesMap = entityTypesDefinitionMap.mapValues { (_, v) -> EntityType(v.name) }
 
-        val entityTypes =
+        val entityTypes: MutableMap<String, EntityType?> =
                 entityTypesMap
                         .mapValues { (_, v) ->
                             v.copy(
-                                    subEntities = entityTypesDefinitionMap[v.name]?.subEntities?.map {
-                                        Entity(
-                                                entityTypesMap[it.entityTypeName] ?: error("entity ${it.entityTypeName} not found"),
-                                                it.role)
-                                    } ?: error("entity ${v.name} not found"))
+                                    subEntities = entityTypesDefinitionMap[v.name]?.subEntities?.mapNotNull {
+                                        entityTypesMap[it.entityTypeName]?.let { e ->
+                                            Entity(e, it.role)
+                                        }.apply {
+                                            if (this == null) {
+                                                logger.error { "entity ${it.entityTypeName} not found" }
+                                            }
+                                        }
+                                    } ?: emptyList<Entity>()
+                            )
                         }
                         .toMap()
                         .toMutableMap()
@@ -76,7 +81,11 @@ internal object FrontRepository {
                         }
                     }
                     entityTypes.putAll(newValues)
-                    newValues[it] ?: error("unknown entity type $it")
+                    val result = newValues[it]
+                    if (result == null) {
+                        logger.error { "unknown entity type $it" }
+                    }
+                    result
                 }
     }
 
@@ -91,7 +100,7 @@ internal object FrontRepository {
         if (entityTypes.isEmpty()) {
             reloadEntityTypes()
         }
-        return entityTypes.getValue(name)
+        return entityTypes.getValue(name) ?: error("unknown entity $name")
     }
 
     fun toEntityType(entityType: EntityTypeDefinition): EntityType {
