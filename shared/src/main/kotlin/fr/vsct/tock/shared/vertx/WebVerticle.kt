@@ -17,16 +17,13 @@
 package fr.vsct.tock.shared.vertx
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.error
-import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.property
-import fr.vsct.tock.shared.provide
 import fr.vsct.tock.shared.security.PropertyBasedAuthProvider
 import fr.vsct.tock.shared.security.TockUser
 import io.vertx.core.AbstractVerticle
@@ -103,19 +100,27 @@ abstract class WebVerticle() : AbstractVerticle() {
     abstract fun healthcheck(): (RoutingContext) -> Unit
 
     override fun start(startFuture: Future<Void>) {
-        injector.provide<Executor>().executeBlocking {
-            router.route().handler(bodyHandler())
-            addDevCorsHandler()
-            authProvider()?.let {
-                addAuth(it)
+        vertx.executeBlocking<Unit>({
+            try {
+                router.route().handler(bodyHandler())
+                addDevCorsHandler()
+                authProvider()?.let {
+                    addAuth(it)
+                }
+
+                configure()
+
+                router.get("$rootPath/healthcheck").handler(healthcheck())
+                it.complete()
+            } catch (e: Throwable) {
+                logger.error(e)
+                it.fail(e)
             }
-
-            configure()
-
-            router.get("$rootPath/healthcheck").handler(healthcheck())
-
-            startServer(startFuture)
-        }
+        },
+                false,
+                {
+                    startServer(startFuture)
+                })
     }
 
 
