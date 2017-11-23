@@ -24,7 +24,7 @@ import java.time.Instant
 /**
  *
  */
-data class DialogStatCol(
+internal data class DialogStatCol(
         val userId: PlayerId,
         val applicationId: String,
         val dialogId: String,

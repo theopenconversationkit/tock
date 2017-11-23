@@ -19,8 +19,8 @@ package fr.vsct.tock.bot.mongo
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import mu.KotlinLogging
-import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.find
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
@@ -30,7 +30,7 @@ import org.litote.kmongo.save
 /**
  *
  */
-object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurationDAO {
+internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurationDAO {
 
     private val logger = KotlinLogging.logger {}
 

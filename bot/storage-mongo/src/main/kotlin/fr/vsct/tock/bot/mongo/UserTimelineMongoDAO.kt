@@ -42,7 +42,9 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.longProperty
 import mu.KotlinLogging
 import org.litote.kmongo.Id
+import org.litote.kmongo.MongoOperator.addToSet
 import org.litote.kmongo.MongoOperator.and
+import org.litote.kmongo.MongoOperator.each
 import org.litote.kmongo.MongoOperator.gt
 import org.litote.kmongo.MongoOperator.limit
 import org.litote.kmongo.MongoOperator.lt
@@ -61,6 +63,7 @@ import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
 import org.litote.kmongo.replaceOne
 import org.litote.kmongo.save
+import org.litote.kmongo.updateOneById
 import java.lang.Exception
 import java.time.Instant
 import java.time.Instant.now
@@ -83,6 +86,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     private val userTimelineCol = database.getCollection<UserTimelineCol>("user_timeline")
     private val dialogCol = database.getCollection<DialogCol>("dialog")
     private val dialogTextCol = database.getCollection<DialogTextCol>("dialog_text")
+    private val clientIdCol = database.getCollection<ClientIdCol>("client_id")
 
     init {
         //TODO remove these in 0.8.0
@@ -112,6 +116,12 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         logger.debug { "create new timeline $userTimeline" }
         userTimelineCol.save(newTimeline)
         logger.debug { "timeline saved $userTimeline" }
+        if (userTimeline.playerId.clientId != null) {
+            clientIdCol.updateOneById(
+                    userTimeline.playerId.clientId!!,
+                    "{ $addToSet: {userIds: { $each : [ ${userTimeline.playerId.id.json} ] } } }",
+                    UpdateOptions().upsert(true))
+        }
         for (dialog in userTimeline.dialogs) {
             //TODO if dialog updated
             val dialogToSave = DialogCol(dialog, newTimeline)
@@ -272,15 +282,17 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     override fun getClientDialogs(
             clientId: String,
             storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog> {
+        val ids = clientIdCol.findOneById(clientId)?.userIds ?: emptySet()
         return dialogCol
-                .find<DialogCol>("{'playerIds.clientId':${clientId.json}}")
+                .find("{'playerIds.id': { \$in : ${ids.json} } }")
+                .sortedByDescending { it.lastUpdateDate }
                 .map { it.toDialog(storyDefinitionProvider) }
                 .toList()
     }
 
     override fun getDialogsUpdatedFrom(from: Instant, storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog> {
         return dialogCol
-                .find<DialogCol>("{'lastUpdateDate':{$gt:${from.json}}}")
+                .find("{'lastUpdateDate':{$gt:${from.json}}}")
                 .map { it.toDialog(storyDefinitionProvider) }
                 .toList()
     }

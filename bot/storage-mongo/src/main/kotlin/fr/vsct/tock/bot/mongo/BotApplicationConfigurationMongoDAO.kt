@@ -36,7 +36,7 @@ import org.litote.kmongo.save
 /**
  *
  */
-object BotApplicationConfigurationMongoDAO : BotApplicationConfigurationDAO {
+internal object BotApplicationConfigurationMongoDAO : BotApplicationConfigurationDAO {
 
     private val logger = KotlinLogging.logger {}
 

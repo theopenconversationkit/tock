@@ -33,7 +33,7 @@ import org.litote.kmongo.sort
 /**
  *
  */
-object TestPlanMongoDAO : TestPlanDAO {
+internal object TestPlanMongoDAO : TestPlanDAO {
 
     private val testPlanCol = MongoBotConfiguration.database.getCollection<TestPlan>()
     private val testPlanExecutionCol = MongoBotConfiguration.database.getCollection<TestPlanExecution>()
