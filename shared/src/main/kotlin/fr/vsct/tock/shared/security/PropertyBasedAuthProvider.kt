@@ -31,10 +31,12 @@ import io.vertx.ext.auth.User
  */
 object PropertyBasedAuthProvider : AuthProvider {
 
+    private val allRoles: Set<String> = TockUserRole.values().map { it.name }.toSet()
+
     private val users: List<String> = listProperty("tock_users", listOf(property("tock_user", "admin@app.com")))
     private val passwords: List<String> = listProperty("tock_passwords", listOf(property("tock_password", "password")))
     private val organizations: List<String> = listProperty("tock_organizations", listOf(defaultNamespace))
-    private val roles: List<Set<String>> = listProperty("tock_roles", listOf("admin")).map { it.split("|").toSet() }
+    private val roles: List<Set<String>> = listProperty("tock_roles", emptyList()).map { it.split("|").toSet() }
 
     override fun authenticate(authInfo: JsonObject, resultHandler: Handler<AsyncResult<User>>) {
         val username = authInfo.getString("username")
@@ -44,7 +46,7 @@ object PropertyBasedAuthProvider : AuthProvider {
                         .indexOfFirst { it == username }
                         .takeIf { it != -1 }
                         ?.takeIf { passwords[it] == password }
-                        ?.let { Future.succeededFuture<User>(TockUser(username, organizations[it], roles.getOrNull(it) ?: emptySet())) }
+                        ?.let { Future.succeededFuture<User>(TockUser(username, organizations[it], roles.getOrNull(it) ?: allRoles)) }
                         ?: Future.failedFuture<User>("invalid credentials")
         )
     }
