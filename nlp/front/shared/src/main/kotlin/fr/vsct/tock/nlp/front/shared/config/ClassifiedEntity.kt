@@ -45,17 +45,21 @@ data class ClassifiedEntity(val type: String,
             value.subEntities.map { ClassifiedEntity(it.value) }
     )
 
-    fun toEntityValue(entityProvider: (String, String) -> Entity): EntityValue
-            = EntityValue(
-            start,
-            end,
-            entityProvider.invoke(type, role),
-            subEntities = subEntities.map {
-                it.toEntityRecognition(entityProvider)
-            }
-    )
+    fun toEntityValue(entityProvider: (String, String) -> Entity?): EntityValue? =
+            entityProvider
+                    .invoke(type, role)
+                    ?.run {
+                        EntityValue(
+                                start,
+                                end,
+                                this,
+                                subEntities = subEntities.mapNotNull {
+                                    it.toEntityRecognition(entityProvider)
+                                }
+                        )
+                    }
 
-    fun toEntityRecognition(entityProvider: (String, String) -> Entity): EntityRecognition
-            = EntityRecognition(toEntityValue(entityProvider), 1.0)
+    fun toEntityRecognition(entityProvider: (String, String) -> Entity?): EntityRecognition?
+            = toEntityValue(entityProvider)?.run { EntityRecognition(this, 1.0) }
 
 }

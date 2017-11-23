@@ -17,7 +17,6 @@
 package fr.vsct.tock.nlp.front.service
 
 import com.github.salomonbrys.kodein.instance
-import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
 import fr.vsct.tock.nlp.core.NlpEngineType
@@ -137,7 +136,7 @@ object ApplicationConfigurationService :
     fun toIntent(intent: IntentDefinition): Intent {
         return Intent(
                 intent.qualifiedName,
-                intent.entities.map { Entity(FrontRepository.entityTypeByName(it.entityTypeName), it.role) },
+                intent.entities.mapNotNull { FrontRepository.toEntity(it.entityTypeName, it.role) },
                 intent.entitiesRegexp)
     }
 

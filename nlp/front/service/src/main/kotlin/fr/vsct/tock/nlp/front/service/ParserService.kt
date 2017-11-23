@@ -111,7 +111,8 @@ object ParserService : Parser {
             .flatMap { it.entities }
             .distinct()
             .filter { it.atStartOfDay == true }
-            .map { it.toEntity() to referenceDate.truncatedTo(ChronoUnit.DAYS) }
+            .mapNotNull { it.toEntity() }
+            .map { it to referenceDate.truncatedTo(ChronoUnit.DAYS) }
             .toMap()
             .takeUnless { it.isEmpty() }
 
@@ -194,7 +195,9 @@ object ParserService : Parser {
                 val entityValues = core.evaluateEntities(
                         callContext,
                         q,
-                        validatedSentence!!.classification.entities.map { it.toEntityRecognition(FrontRepository::toEntity) }
+                        validatedSentence!!.classification
+                                .entities
+                                .mapNotNull { it.toEntityRecognition(FrontRepository::toEntity) }
                 )
                 val intent = config.getIntentById(validatedSentence.classification.intentId)
                 return ParseResult(

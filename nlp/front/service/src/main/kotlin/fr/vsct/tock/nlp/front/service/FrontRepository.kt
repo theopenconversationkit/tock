@@ -96,26 +96,26 @@ internal object FrontRepository {
         return entityTypes.containsKey(name)
     }
 
-    fun entityTypeByName(name: String): EntityType {
+    fun entityTypeByName(name: String): EntityType? {
         if (entityTypes.isEmpty()) {
             reloadEntityTypes()
         }
-        return entityTypes.getValue(name) ?: error("unknown entity $name")
+        return entityTypes.getValue(name) ?: null.apply { error("unknown entity $name") }
     }
 
     fun toEntityType(entityType: EntityTypeDefinition): EntityType {
-        return EntityType(entityType.name, entityType.subEntities.map { it.toEntity() })
+        return EntityType(entityType.name, entityType.subEntities.mapNotNull { it.toEntity() })
     }
 
-    fun toEntity(type: String, role: String): Entity {
-        return Entity(entityTypeByName(type), role)
+    fun toEntity(type: String, role: String): Entity? {
+        return entityTypeByName(type)?.let { Entity(it, role) }
     }
 
     fun toApplication(applicationDefinition: ApplicationDefinition): Application {
         val intentDefinitions = config.getIntentsByApplicationId(applicationDefinition._id)
         val intents = intentDefinitions.map {
             Intent(it.qualifiedName,
-                    it.entities.map { Entity(entityTypeByName(it.entityTypeName), it.role) },
+                    it.entities.mapNotNull { toEntity(it.entityTypeName, it.role) },
                     it.entitiesRegexp.mapValues { it.value.map { EntitiesRegexp(it.regexp) } })
         }
         return Application(applicationDefinition.name, intents, applicationDefinition.supportedLocales)

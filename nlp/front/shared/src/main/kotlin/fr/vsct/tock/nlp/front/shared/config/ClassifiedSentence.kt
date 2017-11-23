@@ -77,22 +77,25 @@ data class ClassifiedSentence(val text: String,
      * @param intentProvider intent id -> intent provider
      * @param entityTypeProvider entity type name -> entity type provider
      */
-    fun toSampleExpression(intentProvider: (Id<IntentDefinition>) -> Intent, entityTypeProvider: (String) -> EntityType): SampleExpression {
+    fun toSampleExpression(intentProvider: (Id<IntentDefinition>) -> Intent, entityTypeProvider: (String) -> EntityType?): SampleExpression {
         return SampleExpression(
                 text,
                 intentProvider.invoke(classification.intentId),
-                classification.entities.map {
+                classification.entities.mapNotNull {
                     toSampleEntity(it, entityTypeProvider)
                 },
                 SampleContext(language))
     }
 
-    private fun toSampleEntity(entity: ClassifiedEntity, entityTypeProvider: (String) -> EntityType): SampleEntity {
-        val entityType = entityTypeProvider.invoke(entity.type)
-        return SampleEntity(
-                Entity(entityType, entity.role),
-                entity.subEntities.map { toSampleEntity(it, entityTypeProvider) },
-                entity.start,
-                entity.end)
+    private fun toSampleEntity(entity: ClassifiedEntity, entityTypeProvider: (String) -> EntityType?): SampleEntity? {
+        return entityTypeProvider
+                .invoke(entity.type)
+                ?.run {
+                    SampleEntity(
+                            Entity(this, entity.role),
+                            entity.subEntities.mapNotNull { toSampleEntity(it, entityTypeProvider) },
+                            entity.start,
+                            entity.end)
+                }
     }
 }

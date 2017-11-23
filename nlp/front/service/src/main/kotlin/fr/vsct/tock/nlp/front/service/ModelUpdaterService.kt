@@ -118,24 +118,26 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
             engineType: NlpEngineType,
             onlyIfNotExists: Boolean) {
         val entityType = entityTypeByName(entityTypeDefinition.name)
-        logBuild(application, language, ModelBuildType.intentEntities, null, entityTypeDefinition.name) {
-            val modelSentences = config.search(
-                    SentencesQuery(
-                            application._id,
-                            language,
-                            size = Integer.MAX_VALUE,
-                            status = setOf(ClassifiedSentenceStatus.model),
-                            entityType = entityTypeDefinition.name)
-            )
-            val samples = (modelSentences.sentences + validatedSentences).map {
-                it.toSampleExpression({ config.toIntent(it) }, { entityType })
-            }
-            model.updateEntityModelForEntityType(
-                    BuildContext(toApplication(application), language, engineType, onlyIfNotExists),
-                    entityType,
-                    samples)
+        if (entityType != null) {
+            logBuild(application, language, ModelBuildType.intentEntities, null, entityTypeDefinition.name) {
+                val modelSentences = config.search(
+                        SentencesQuery(
+                                application._id,
+                                language,
+                                size = Integer.MAX_VALUE,
+                                status = setOf(ClassifiedSentenceStatus.model),
+                                entityType = entityTypeDefinition.name)
+                )
+                val samples = (modelSentences.sentences + validatedSentences).map {
+                    it.toSampleExpression({ config.toIntent(it) }, { entityType })
+                }
+                model.updateEntityModelForEntityType(
+                        BuildContext(toApplication(application), language, engineType, onlyIfNotExists),
+                        entityType,
+                        samples)
 
-            samples.size
+                samples.size
+            }
         }
     }
 

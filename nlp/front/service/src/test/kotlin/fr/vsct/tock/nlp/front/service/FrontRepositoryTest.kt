@@ -50,7 +50,7 @@ class FrontRepositoryTest : AbstractTest() {
 
             entityTypes += EntityTypeDefinition("notPresent")
 
-            assertEquals("notPresent", FrontRepository.entityTypeByName("notPresent").name)
+            assertEquals("notPresent", FrontRepository.entityTypeByName("notPresent")?.name)
         }
     }
 
@@ -60,7 +60,7 @@ class FrontRepositoryTest : AbstractTest() {
             assertTrue(FrontRepository.entityTypeExists("present"))
             assertFalse(FrontRepository.entityTypeExists("notPresent"))
 
-            assertEquals("present", FrontRepository.entityTypeByName("present").name)
+            assertEquals("present", FrontRepository.entityTypeByName("present")?.name)
 
             assertTrue(FrontRepository.entityTypeExists("present"))
             assertFalse(FrontRepository.entityTypeExists("notPresent"))
