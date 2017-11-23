@@ -74,6 +74,14 @@ class SendChoice(playerId: PlayerId,
         const val EXIT_INTENT = "_exit"
         const val STEP_PARAMETER = "_step"
         const val PREVIOUS_INTENT_PARAMETER = "_previous_intent"
+        const val NLP = "_nlp"
+
+        /**
+         * Encode a choice id.
+         */
+        fun encodeNlpChoiceId(nlp: String): String {
+            return "?$NLP=${encode(nlp, UTF_8.name())}"
+        }
 
         /**
          * Encode a choice id.

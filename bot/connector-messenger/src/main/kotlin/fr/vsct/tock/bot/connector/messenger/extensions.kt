@@ -240,6 +240,13 @@ fun BotBus.listElement(
 fun BotBus.locationQuickReply(): QuickReply
         = LocationQuickReply()
 
+/**
+ * This quick reply will not be used as payload, but the [textToSend] will we parsed by the NLP engine.
+ */
+fun BotBus.nlpQuickReply(title: CharSequence, textToSend: CharSequence = title, imageUrl: String? = null): QuickReply
+        = TextQuickReply(translate(title).toString(), SendChoice.encodeNlpChoiceId(translate(textToSend).toString()), imageUrl)
+
+
 fun BotBus.quickReply(
         title: CharSequence,
         targetIntent: IntentAware,
