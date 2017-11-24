@@ -96,7 +96,16 @@ open class AdminVerticle : WebVerticle() {
         blockingJsonGet("/sentences/dump/:applicationId") {
             val id: Id<ApplicationDefinition> = it.pathId("applicationId")
             if (it.organization == front.getApplicationById(id)?.namespace) {
-                front.exportSentences(id, null, DumpType.full)
+                front.exportSentences(id, null, null, DumpType.full)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/sentences/dump/:applicationId") { context, query: SearchQuery ->
+            val id: Id<ApplicationDefinition> = context.pathId("applicationId")
+            if (context.organization == front.getApplicationById(id)?.namespace) {
+                front.exportSentences(id, null, query.toSentencesQuery(id), DumpType.full)
             } else {
                 unauthorized()
             }
@@ -105,7 +114,7 @@ open class AdminVerticle : WebVerticle() {
         blockingJsonGet("/sentences/dump/:applicationId/:intent") {
             val id: Id<ApplicationDefinition> = it.pathId("applicationId")
             if (it.organization == front.getApplicationById(id)?.namespace) {
-                front.exportSentences(id, it.pathParam("intent"), DumpType.full)
+                front.exportSentences(id, it.pathParam("intent"), null, DumpType.full)
             } else {
                 unauthorized()
             }

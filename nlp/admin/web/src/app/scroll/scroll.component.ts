@@ -69,7 +69,7 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
     }
   }
 
-  private paginatedQuery(): PaginatedQuery {
+  protected paginatedQuery(): PaginatedQuery {
     return this.state.createPaginatedQuery(this.cursor, this.pageSize);
   }
 

@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {saveAs} from "file-saver";
 import {Component, Input} from "@angular/core";
 import {PaginatedResult, SearchQuery, Sentence, SentenceStatus} from "../model/nlp";
 import {NlpService} from "../nlp-tabs/nlp.service";
@@ -21,6 +22,7 @@ import {StateService} from "../core/state.service";
 import {ScrollComponent} from "../scroll/scroll.component";
 import {PaginatedQuery} from "../model/commons";
 import {Observable} from "rxjs/Observable";
+import {MdSnackBar} from "@angular/material";
 
 @Component({
   selector: 'tock-sentences-scroll',
@@ -34,12 +36,14 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> {
   @Input() displayProbabilities: boolean = false;
   @Input() displayStatus: boolean = false;
 
-  constructor(state: StateService, private nlp: NlpService) {
+  constructor(state: StateService,
+              private nlp: NlpService,
+              private snackBar: MdSnackBar) {
     super(state);
   }
 
-  search(query: PaginatedQuery): Observable<PaginatedResult<Sentence>> {
-    return this.nlp.searchSentences(new SearchQuery(
+  toSearchQuery(query: PaginatedQuery): SearchQuery {
+    return new SearchQuery(
       query.namespace,
       query.applicationName,
       query.language,
@@ -51,12 +55,24 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> {
       !this.filter.entityType || this.filter.entityType.length === 0 ? null : this.filter.entityType,
       !this.filter.entityRole || this.filter.entityRole.length === 0 ? null : this.filter.entityRole,
       this.filter.modifiedAfter)
-    );
   }
 
+  search(query: PaginatedQuery): Observable<PaginatedResult<Sentence>> {
+    return this.nlp.searchSentences(this.toSearchQuery(query));
+  }
 
   dataEquals(d1: Sentence, d2: Sentence): boolean {
     return d1.text === d2.text
+  }
+
+  downloadSentencesDump() {
+    setTimeout(_ => {
+      this.nlp.getSentencesDump(this.state.currentApplication, this.toSearchQuery(this.paginatedQuery()))
+        .subscribe(blob => {
+          saveAs(blob, this.state.currentApplication.name + "_sentences.json");
+          this.snackBar.open(`Dump provided`, "Dump", {duration: 1000});
+        })
+    });
   }
 }
 

@@ -24,7 +24,7 @@ import java.util.Locale
  *
  */
 data class SentencesQuery(val applicationId: Id<ApplicationDefinition>,
-                          val language: Locale,
+                          val language: Locale? = null,
                           val start: Long = 0,
                           val size: Int = 1,
                           val search: String? = null,

@@ -22,6 +22,7 @@ import fr.vsct.tock.nlp.front.shared.codec.DumpType
 import fr.vsct.tock.nlp.front.shared.codec.ImportReport
 import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import org.litote.kmongo.Id
 
 /**
@@ -59,5 +60,9 @@ interface ApplicationCodec {
      * Export sentences dump.
      * @param intent if specified, only the sentences classified as this intent are exported
      */
-    fun exportSentences(applicationId: Id<ApplicationDefinition>, intent: String?, dumpType: DumpType): SentencesDump
+    fun exportSentences(
+            applicationId: Id<ApplicationDefinition>,
+            intent: String?,
+            query: SentencesQuery?,
+            dumpType: DumpType): SentencesDump
 }

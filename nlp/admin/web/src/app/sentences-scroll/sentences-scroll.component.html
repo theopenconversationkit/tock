@@ -16,16 +16,25 @@
 
 <ng-content></ng-content>
 <div *ngIf="total !== -1">
-  <h1 *ngIf="total === 0">{{title}} is empty!
-    <button md-button (click)="refresh()">
+  <div class="header" *ngIf="total === 0">
+    <h1>{{title}} is empty!</h1>
+    <button md-button (click)="refresh()" class="button">
       <md-icon>refresh</md-icon>
     </button>
-  </h1>
-  <h1 *ngIf="total !== 0"><span *ngIf="total > 10">Estimated</span> {{title}} size : {{total}}
-    <button md-button (click)="refresh()">
+  </div>
+
+  <div class="header" *ngIf="total !== 0">
+    <h1><span *ngIf="total > 10">Estimated</span> {{title}} size : {{total}}</h1>
+    <button md-button (click)="refresh()" class="button">
       <md-icon>refresh</md-icon>
     </button>
-  </h1>
+    <button md-button
+            (click)="downloadSentencesDump()"
+            mdTooltip="Download a sentences dump of the current selection"
+            class="button">
+      <md-icon>cloud_download</md-icon>
+    </button>
+  </div>
   <p></p>
   <div
     infinite-scroll

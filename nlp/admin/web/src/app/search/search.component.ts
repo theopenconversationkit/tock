@@ -63,20 +63,22 @@ export class SearchComponent implements OnInit {
   }
 
   search() {
-    if (this.status) {
-      this.filter.status = [this.status];
-    } else {
-      this.filter.status = [];
-    }
-    if (this.filter.intentId === "-1") {
-      this.filter.intentId = null;
-    }
-    this.fillEntitiesFilter();
+    setTimeout(_ => {
+      if (this.status) {
+        this.filter.status = [this.status];
+      } else {
+        this.filter.status = [];
+      }
+      if (this.filter.intentId === "-1") {
+        this.filter.intentId = null;
+      }
+      this.fillEntitiesFilter();
 
-    if (this.filter.search) {
-      this.filter.search = this.filter.search.trim()
-    }
-    this.scroll.refresh();
+      if (this.filter.search) {
+        this.filter.search = this.filter.search.trim()
+      }
+      this.scroll.refresh();
+    });
   }
 
 }

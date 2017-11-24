@@ -66,7 +66,7 @@ export class NlpService implements OnDestroy {
     return this.rest.delete(`/application/${application._id}/intent/${intent._id}/entity/${entity.entityTypeName}/${entity.role}`);
   }
 
-  removeSubEntity(application: Application, entityType:EntityType, entity: EntityDefinition): Observable<boolean> {
+  removeSubEntity(application: Application, entityType: EntityType, entity: EntityDefinition): Observable<boolean> {
     return this.rest.delete(`/application/${application._id}/entity/${entityType.name}/${entity.role}`);
   }
 
@@ -96,6 +96,10 @@ export class NlpService implements OnDestroy {
 
   searchLogs(query: LogsQuery): Observable<LogsResult> {
     return this.rest.post("/logs/search", query, LogsResult.fromJSON)
+  }
+
+  getSentencesDump(application: Application, query: SearchQuery): Observable<Blob> {
+    return this.rest.post(`/sentences/dump/${application._id}`, query, (r => new Blob([JSON.stringify(r)], {type: 'application/json'}) ));
   }
 
 }

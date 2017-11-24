@@ -14,3 +14,10 @@
  * limitations under the License.
  */
 
+.header {
+  display: inline-flex;
+}
+
+.button {
+  float: right;
+}

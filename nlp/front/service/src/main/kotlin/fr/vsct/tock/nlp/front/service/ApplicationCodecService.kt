@@ -33,7 +33,6 @@ import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.Classification
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
-import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
@@ -285,19 +284,28 @@ object ApplicationCodecService : ApplicationCodec {
         return report
     }
 
-    override fun exportSentences(applicationId: Id<ApplicationDefinition>, intent: String?, dumpType: DumpType): SentencesDump {
+    override fun exportSentences(
+            applicationId: Id<ApplicationDefinition>,
+            intent: String?,
+            query: SentencesQuery?,
+            dumpType: DumpType): SentencesDump {
         val app = config.getApplicationById(applicationId)!!
+
         val filteredIntentId = if (intent == null) null else config.getIntentIdByQualifiedName(intent)
+
         val intents = config
                 .getIntentsByApplicationId(applicationId)
                 .filter { filteredIntentId == null || filteredIntentId == it._id }
                 .groupBy { it._id }
                 .mapValues { it.value.first() }
+
         val sentences = config
-                .getSentences(
-                        intents = intents.values.map { it._id }.toSet(),
-                        status = model)
-                .filter { it.applicationId == applicationId }
+                .search(
+                        (query ?: SentencesQuery(applicationId, intentId = filteredIntentId))
+                                .copy(start = 0, size = Integer.MAX_VALUE)
+                )
+                .sentences
+
         return SentencesDump(
                 app.qualifiedName,
                 sentences = sentences.map { s ->
