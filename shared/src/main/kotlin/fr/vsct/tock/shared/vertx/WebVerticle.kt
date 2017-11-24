@@ -111,8 +111,9 @@ abstract class WebVerticle : AbstractVerticle() {
                             addAuth(it)
                         }
 
-                        configure()
                         router.get("$rootPath/healthcheck").handler(healthcheck())
+                        configure()
+
                         it.complete()
                     } catch (t: Throwable) {
                         logger.error(t)
@@ -244,10 +245,11 @@ abstract class WebVerticle : AbstractVerticle() {
 
         router.route(method, "$rootPath$path")
                 .handler { context ->
-                    if (role == null) {
+                    val user = context.user()
+                    if (user == null || role == null) {
                         sendBlocking(context)
                     } else {
-                        context.user().isAuthorised(role.name) {
+                        user.isAuthorised(role.name) {
                             if (it.succeeded()) {
                                 sendBlocking(context)
                             } else {
