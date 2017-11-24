@@ -32,6 +32,7 @@ import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
 import org.litote.kmongo.Id
 import org.litote.kmongo.MongoOperator.`in`
 import org.litote.kmongo.MongoOperator.elemMatch
+import org.litote.kmongo.MongoOperator.gt
 import org.litote.kmongo.MongoOperator.ne
 import org.litote.kmongo.MongoOperator.pull
 import org.litote.kmongo.MongoOperator.set
@@ -144,7 +145,8 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                             if (intentId == null) null else "'classification.intentId':${intentId!!.json}",
                             if (filterStatus.isEmpty()) null else filterStatus,
                             if (entityType == null) null else "'classification.entities.type':${entityType!!.json}",
-                            if (entityRole == null) null else "'classification.entities.role':${entityRole!!.json}"
+                            if (entityRole == null) null else "'classification.entities.role':${entityRole!!.json}",
+                            if (modifiedAfter == null) null else "updateDate:{$gt: ${modifiedAfter!!.json}}"
                     ).joinToString(",", "{", "}")
             val count = col.count(filter)
             if (count > start) {

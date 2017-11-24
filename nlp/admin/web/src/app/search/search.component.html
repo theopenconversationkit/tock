@@ -22,6 +22,7 @@
           <input mdInput placeholder="Search sentences" [(ngModel)]="filter.search" (keyup.enter)="search()">
         </md-input-container>
         <md-icon color="primary" md-tooltip="Search support regexp (PCRE format)">info</md-icon>
+        <br>
         <md-select placeholder="Intent" [(ngModel)]="filter.intentId" (change)="search()">
           <md-option value="-1">All</md-option>
           <md-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
@@ -47,6 +48,11 @@
           <md-option value="validated">Validated</md-option>
           <md-option value="model">Included in model</md-option>
         </md-select>
+        <md-input-container>
+          <input mdInput [mdDatepicker]="after" placeholder="Modified after" [(ngModel)]="filter.modifiedAfter" (change)="search()">
+          <md-datepicker-toggle mdSuffix [for]="after"></md-datepicker-toggle>
+        </md-input-container>
+        <md-datepicker #after (selectedChanged)="search()"></md-datepicker>
         <button md-button (click)="search()">GO</button>
       </md-card-content>
     </md-card>

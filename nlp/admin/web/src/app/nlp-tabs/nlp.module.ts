@@ -41,6 +41,7 @@ import {AddStateDialogComponent} from "../intents/add-state/add-state-dialog.com
 import {EntitiesComponent} from "../entities/entities.component";
 import {EditEntitiesComponent} from "../sentence-analysis/entities/edit-entities.component";
 import {EntityDetailsComponent} from "../entities/entity-details.component";
+import {MdDatepickerModule, MdNativeDateModule} from "@angular/material";
 
 const routes: Routes = [
   {
@@ -101,7 +102,9 @@ export class NlpRoutingModule {
     NlpRoutingModule,
     ApplicationsModule,
     InfiniteScrollModule,
-    MomentModule
+    MomentModule,
+    MdDatepickerModule,
+    MdNativeDateModule
   ],
   declarations: [
     NlpTabsComponent,

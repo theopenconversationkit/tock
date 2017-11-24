@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.shared.config
 
 import org.litote.kmongo.Id
+import java.time.ZonedDateTime
 import java.util.Locale
 
 /**
@@ -32,5 +33,6 @@ data class SentencesQuery(val applicationId: Id<ApplicationDefinition>,
                           val notStatus: ClassifiedSentenceStatus? = ClassifiedSentenceStatus.deleted,
                           val onlyExactMatch: Boolean = false,
                           val entityType: String? = null,
-                          val entityRole: String? = null) {
+                          val entityRole: String? = null,
+                          val modifiedAfter: ZonedDateTime? = null) {
 }

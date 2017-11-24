@@ -21,6 +21,7 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import org.litote.kmongo.Id
+import java.time.ZonedDateTime
 
 /**
  *
@@ -30,7 +31,8 @@ data class SearchQuery(
         val intentId: Id<IntentDefinition>?,
         val status: Set<ClassifiedSentenceStatus> = emptySet(),
         val entityType: String? = null,
-        val entityRole: String? = null) : PaginatedQuery() {
+        val entityRole: String? = null,
+        val modifiedAfter: ZonedDateTime? = null) : PaginatedQuery() {
 
     fun toSentencesQuery(applicationId: Id<ApplicationDefinition>): SentencesQuery {
         return SentencesQuery(
@@ -41,6 +43,7 @@ data class SearchQuery(
                 intentId,
                 status,
                 entityType = entityType,
-                entityRole = entityRole)
+                entityRole = entityRole,
+                modifiedAfter = modifiedAfter)
     }
 }
