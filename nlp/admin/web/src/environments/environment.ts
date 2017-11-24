@@ -17,8 +17,8 @@
 export const environment = {
   production: false,
   autologin: true,
-  default_user:"admin@vsct.fr",
-  default_namespace:"vsc",
+  default_user:"admin@app.com",
+  default_namespace:"app",
   default_password:"password",
   serverUrl: 'http://localhost:8080/rest'
 };
