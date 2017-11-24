@@ -52,7 +52,7 @@ export class StateService implements AuthListener {
     this.auth.addListener(this);
     //hack for dev env
     if (environment.autologin) {
-      this.auth.login("password", new AuthenticateResponse(true, "admin@app.com", "app"));
+      this.auth.login(environment.default_password, new AuthenticateResponse(true, environment.default_user, environment.default_namespace));
     }
   }
 
