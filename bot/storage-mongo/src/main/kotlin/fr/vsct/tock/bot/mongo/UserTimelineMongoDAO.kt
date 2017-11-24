@@ -283,11 +283,15 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             clientId: String,
             storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog> {
         val ids = clientIdCol.findOneById(clientId)?.userIds ?: emptySet()
-        return dialogCol
-                .find("{'playerIds.id': { \$in : ${ids.json} } }")
-                .sortedByDescending { it.lastUpdateDate }
-                .map { it.toDialog(storyDefinitionProvider) }
-                .toList()
+        return if (ids.isEmpty()) {
+            emptyList()
+        } else {
+            dialogCol
+                    .find("{'playerIds.id': { \$in : ${ids.json} } }")
+                    .sortedByDescending { it.lastUpdateDate }
+                    .map { it.toDialog(storyDefinitionProvider) }
+                    .toList()
+        }
     }
 
     override fun getDialogsUpdatedFrom(from: Instant, storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog> {
