@@ -31,6 +31,7 @@ import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserPreferences
+import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
 import io.vertx.ext.web.RoutingContext
@@ -51,6 +52,7 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
 
     companion object {
         private val logger = KotlinLogging.logger {}
+        private val disabled = booleanProperty("tock_rest_connector_disabled", false)
     }
 
     override val connectorType: ConnectorType = ConnectorType.rest
@@ -65,39 +67,41 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
             .build()
 
     override fun register(controller: ConnectorController) {
-        controller.registerServices(path, { router ->
-            router.post(path).blockingHandler(
-                    { context ->
-                        try {
-                            val message: MessageRequest = mapper.readValue(context.bodyAsString)
+        if (!disabled) {
+            controller.registerServices(path, { router ->
+                router.post(path).blockingHandler(
+                        { context ->
                             try {
-                                currentMessages.put(message.userId, Response(context, message.test))
-                                val action = message.message.toAction(
-                                        PlayerId(message.userId, PlayerType.user),
-                                        applicationId,
-                                        PlayerId(message.recipientId, PlayerType.bot)
-                                )
-                                action.state.targetConnectorType = message.targetConnectorType
-                                controller.handle(action)
-                            } catch (t: Throwable) {
+                                val message: MessageRequest = mapper.readValue(context.bodyAsString)
                                 try {
-                                    logger.error(t)
-                                    send(controller.errorMessage(
+                                    currentMessages.put(message.userId, Response(context, message.test))
+                                    val action = message.message.toAction(
                                             PlayerId(message.userId, PlayerType.user),
                                             applicationId,
-                                            PlayerId(message.recipientId, PlayerType.bot)))
+                                            PlayerId(message.recipientId, PlayerType.bot)
+                                    )
+                                    action.state.targetConnectorType = message.targetConnectorType
+                                    controller.handle(action)
                                 } catch (t: Throwable) {
-                                    logger.error(t)
+                                    try {
+                                        logger.error(t)
+                                        send(controller.errorMessage(
+                                                PlayerId(message.userId, PlayerType.user),
+                                                applicationId,
+                                                PlayerId(message.recipientId, PlayerType.bot)))
+                                    } catch (t: Throwable) {
+                                        logger.error(t)
+                                    }
+                                } finally {
+                                    sendAnswer(message.userId)
                                 }
-                            } finally {
-                                sendAnswer(message.userId)
+                            } catch (t: Throwable) {
+                                logger.error(t)
                             }
-                        } catch (t: Throwable) {
-                            logger.error(t)
-                        }
-                    },
-                    false)
-        })
+                        },
+                        false)
+            })
+        }
     }
 
     private fun sendAnswer(userId: String) {
