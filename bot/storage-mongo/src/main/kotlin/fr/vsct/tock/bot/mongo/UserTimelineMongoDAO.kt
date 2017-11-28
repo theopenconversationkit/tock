@@ -300,4 +300,17 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 .map { it.toDialog(storyDefinitionProvider) }
                 .toList()
     }
+
+    override fun getDialogsUpdatedFromTo(from: Instant, to: Instant, storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog> {
+
+        val filter = listOf("'lastUpdateDate':{$gt:${from!!.json}}",
+                "'lastUpdateDate':{$lt:${to!!.json}}")
+                .joinToString(",", "{$and:[", "]}") {
+                    "{$it}"
+                }
+        return dialogCol
+                .find(filter)
+                .map { it.toDialog(storyDefinitionProvider) }
+                .toList()
+    }
 }
