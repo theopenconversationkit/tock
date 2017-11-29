@@ -22,9 +22,11 @@ import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.dialog.EventState
+import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.message.Choice
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.shared.security.StringObfuscatorMode
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.net.URLDecoder.decode
@@ -142,6 +144,20 @@ class SendChoice(playerId: PlayerId,
 
     override fun toMessage(): Message {
         return Choice(intentName, parameters)
+    }
+
+    override fun obfuscate(mode: StringObfuscatorMode, playerId: PlayerId): Event {
+        return SendChoice(
+                playerId,
+                applicationId,
+                recipientId,
+                intentName,
+                parameters,
+                toActionId(),
+                date,
+                state,
+                metadata
+        )
     }
 
     /**

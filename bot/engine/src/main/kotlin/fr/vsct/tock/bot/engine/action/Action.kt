@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.shared.security.StringObfuscatorMode
 import org.litote.kmongo.Id
 import java.time.Instant
 
@@ -37,6 +38,12 @@ abstract class Action(val playerId: PlayerId,
                       val metadata: ActionMetadata = ActionMetadata()) : Event(applicationId, id, date, state) {
 
     abstract fun toMessage(): Message
+
+    override fun obfuscate(mode: StringObfuscatorMode): Event {
+        return obfuscate(mode, playerId)
+    }
+
+    abstract fun obfuscate(mode: StringObfuscatorMode, playerId: PlayerId): Event
 
     @Suppress("UNCHECKED_CAST")
     fun toActionId(): Id<Action> = id as Id<Action>

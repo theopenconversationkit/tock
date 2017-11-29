@@ -46,7 +46,7 @@ import java.time.Instant
 import java.time.ZoneId
 import java.util.Locale
 
-internal class UserTimelineCol(
+internal data class UserTimelineCol(
         val _id: Id<UserTimelineCol>,
         val playerId: PlayerId,
         val userPreferences: UserPreferencesWrapper,

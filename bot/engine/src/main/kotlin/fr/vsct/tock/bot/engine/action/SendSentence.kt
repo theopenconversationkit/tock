@@ -62,7 +62,7 @@ class SendSentence(
         return Sentence(stringText, messages)
     }
 
-    override fun obfuscate(mode: StringObfuscatorMode): Event {
+    override fun obfuscate(mode: StringObfuscatorMode, playerId:PlayerId): Event {
         return SendSentence(
                 playerId,
                 applicationId,

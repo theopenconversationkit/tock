@@ -167,7 +167,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     }
 
     override fun loadWithoutDialogs(userId: PlayerId): UserTimeline {
-        val timeline = userTimelineCol.findOneById(userId.id)
+        val timeline = userTimelineCol.findOneById(userId.id)?.copy(playerId = userId)
         return if (timeline == null) {
             logger.debug { "no timeline for user $userId" }
             UserTimeline(userId)

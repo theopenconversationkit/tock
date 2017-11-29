@@ -17,10 +17,12 @@
 package fr.vsct.tock.bot.engine.action
 
 import fr.vsct.tock.bot.engine.dialog.EventState
+import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.message.Location
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLocation
+import fr.vsct.tock.shared.security.StringObfuscatorMode
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.time.Instant
@@ -40,5 +42,18 @@ class SendLocation(playerId: PlayerId,
 
     override fun toMessage(): Message {
         return Location(location)
+    }
+
+    override fun obfuscate(mode: StringObfuscatorMode, playerId: PlayerId): Event {
+        return SendLocation(
+                playerId,
+                applicationId,
+                recipientId,
+                location,
+                toActionId(),
+                date,
+                state,
+                metadata
+        )
     }
 }
