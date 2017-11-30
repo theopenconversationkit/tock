@@ -29,3 +29,4 @@ Thumbs.db
 
 #vert.x
 /file-uploads
+*.log
