@@ -36,6 +36,7 @@
         <module>connector-rest-client</module>
         <module>connector-messenger</module>
         <module>connector-ga</module>
+        <module>connector-slack</module>
         <module>storage-mongo</module>
 
         <module>toolkit</module>
@@ -69,6 +70,11 @@
             <dependency>
                 <groupId>fr.vsct.tock</groupId>
                 <artifactId>tock-bot-connector-rest-client</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
+                <artifactId>tock-bot-connector-slack</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
