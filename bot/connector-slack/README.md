@@ -35,14 +35,14 @@ object MyBotConfiguration {
 
 ### Outgoing webhook:
 
-You just have to give slack a url to contact your bot 
+You just have to give slack a url to contact your bot.
 Say your tock bot installation lies at http://my-tock-bot-domain-name, then in our case (with the above configuration) the url will be:
 
 ```
 http://my-tock-bot-domain-name/path-to-my-slack-bot-http-endpoint
 ```
 
-Your bot is ready !!
+Your slack connector is ready to be used !!
 
 ### How to use
 ##### Simple message:
