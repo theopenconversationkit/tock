@@ -32,8 +32,10 @@ import fr.vsct.tock.bot.engine.monitoring.RequestTimer
 import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener
 import fr.vsct.tock.bot.engine.nlp.NlpListener
 import fr.vsct.tock.nlp.api.client.NlpClient
+import fr.vsct.tock.shared.DEFAULT_APP_NAMESPACE
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.tockAppDefaultNamespace
 import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
@@ -146,6 +148,10 @@ object BotRepository {
                                 .let { connector ->
                                     botProviders.forEach { botProvider ->
                                         botProvider.bot().let { bot ->
+                                            //set default namespace to bot namespace if not already set
+                                            if (tockAppDefaultNamespace == DEFAULT_APP_NAMESPACE) {
+                                                tockAppDefaultNamespace = bot.botDefinition.namespace
+                                            }
                                             val appConf = saveApplicationConfigurationAndRegister(connector, bot, conf)
                                             BotConfigurationSynchronizer.monitor(bot)
 

@@ -20,8 +20,10 @@ import java.util.Collections
 import java.util.Enumeration
 
 const val TOCK_NAMESPACE: String = "tock"
-
-val defaultNamespace: String = property("tock_default_namespace", "app")
+const val DEFAULT_APP_NAMESPACE = "app"
+@Volatile
+var tockAppDefaultNamespace: String = property("tock_default_namespace", DEFAULT_APP_NAMESPACE)
+val defaultNamespace: String get() = tockAppDefaultNamespace
 
 fun String.namespace(): String = namespaceAndName().first
 fun String.name(): String = namespaceAndName().second
