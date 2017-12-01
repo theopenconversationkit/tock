@@ -55,9 +55,4 @@ interface UserTimelineDAO {
      * Returns all dialogs updated after the specified Instant.
      */
     fun getDialogsUpdatedFrom(from: Instant, storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog>
-
-    /**
-     * Returns all dialogs updated from to the specified Instants.
-     */
-    fun getDialogsUpdatedFromTo(from: Instant,to : Instant, storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog>
 }

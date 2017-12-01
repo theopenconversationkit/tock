@@ -22,7 +22,6 @@ import com.fasterxml.jackson.annotation.JsonTypeName
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import fr.vsct.tock.bot.admin.dialog.ActionReport
 import fr.vsct.tock.bot.admin.dialog.DialogReport
-import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.action.Action
@@ -43,7 +42,6 @@ import fr.vsct.tock.bot.engine.nlp.NlpCallStats
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
-import fr.vsct.tock.shared.security.StringObfuscatorMode.normal
 import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 import fr.vsct.tock.translator.UserInterfaceType.textChat
 import org.litote.kmongo.Id
@@ -81,7 +79,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
     )
 
     fun toDialog(storyDefinitionProvider: (String) -> StoryDefinition): Dialog {
-        return stories.map { it.toStory(storyDefinitionProvider) }.let {
+        return stories.map { it.toStory(_id, storyDefinitionProvider) }.let {
             Dialog(
                     playerIds,
                     _id,
@@ -94,7 +92,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
     fun toDialogReport(): DialogReport {
         return DialogReport(
                 stories.flatMap { it.actions }
-                        .map { it.toAction() }
+                        .map { it.toAction(_id) }
                         .map {
                             ActionReport(
                                     it.playerId,
@@ -177,12 +175,12 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                 story.currentStep,
                 story.actions.map { getActionWrapper(it) })
 
-        fun toStory(storyDefinitionProvider: (String) -> StoryDefinition): Story {
+        fun toStory(dialogId: Id<Dialog>, storyDefinitionProvider: (String) -> StoryDefinition): Story {
             return Story(
                     storyDefinitionProvider.invoke(storyDefinitionId),
                     currentIntent ?: Intent.unknown,
                     currentStep,
-                    actions.map { it.toAction() }.toMutableList()
+                    actions.map { it.toAction(dialogId) }.toMutableList()
             )
         }
 
@@ -217,35 +215,50 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
             applicationId = action.applicationId
         }
 
-        abstract fun toAction(): Action
+        abstract fun toAction(dialogId: Id<Dialog>): Action
     }
 
     @JsonTypeName(value = "sentence")
     class SendSentenceMongoWrapper(val text: String?,
-                                   val messages: List<AnyValueWrapper>,
+                                   val customMessage: Boolean = false,
                                    val nlpStats: NlpCallStats?)
         : ActionMongoWrapper() {
 
         constructor(sentence: SendSentence) :
                 this(
                         if (sentence.state.testEvent) sentence.stringText else obfuscate(sentence.stringText),
-                        sentence.messages.map { AnyValueWrapper(if (sentence.state.testEvent) it else it.obfuscate(normal)) },
+                        sentence is SendSentenceWithNotLoadedMessage || sentence.messages.isNotEmpty(),
                         sentence.nlpStats) {
             assignFrom(sentence)
         }
 
-        override fun toAction(): Action {
-            return SendSentence(
-                    playerId,
-                    applicationId,
-                    recipientId,
-                    text,
-                    messages.map { it.value as ConnectorMessage }.toMutableList(),
-                    id,
-                    date,
-                    state,
-                    botMetadata,
-                    nlpStats)
+        override fun toAction(dialogId: Id<Dialog>): Action {
+            return if (customMessage) {
+                SendSentenceWithNotLoadedMessage(
+                        dialogId,
+                        playerId,
+                        applicationId,
+                        recipientId,
+                        text,
+                        id,
+                        date,
+                        state,
+                        botMetadata,
+                        nlpStats
+                )
+            } else {
+                SendSentence(
+                        playerId,
+                        applicationId,
+                        recipientId,
+                        text,
+                        mutableListOf(),
+                        id,
+                        date,
+                        state,
+                        botMetadata,
+                        nlpStats)
+            }
         }
     }
 
@@ -257,7 +270,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
             assignFrom(choice)
         }
 
-        override fun toAction(): Action {
+        override fun toAction(dialogId: Id<Dialog>): Action {
             return SendChoice(
                     playerId,
                     applicationId,
@@ -279,7 +292,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
             assignFrom(attachment)
         }
 
-        override fun toAction(): Action {
+        override fun toAction(dialogId: Id<Dialog>): Action {
             return SendAttachment(
                     playerId,
                     applicationId,
@@ -300,7 +313,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
             assignFrom(location)
         }
 
-        override fun toAction(): Action {
+        override fun toAction(dialogId: Id<Dialog>): Action {
             return SendLocation(
                     playerId,
                     applicationId,

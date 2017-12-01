@@ -34,12 +34,12 @@ import java.time.Instant
  * The most important [Action] class.
  * Could be a simple text, or a complex message using one or more [ConnectorMessage].
  */
-class SendSentence(
+open class SendSentence(
         playerId: PlayerId,
         applicationId: String,
         recipientId: PlayerId,
         val text: CharSequence?,
-        val messages: MutableList<ConnectorMessage> = mutableListOf(),
+        open val messages: MutableList<ConnectorMessage> = mutableListOf(),
         id: Id<Action> = newId(),
         date: Instant = Instant.now(),
         state: EventState = EventState(),
@@ -62,7 +62,7 @@ class SendSentence(
         return Sentence(stringText, messages)
     }
 
-    override fun obfuscate(mode: StringObfuscatorMode, playerId:PlayerId): Event {
+    override fun obfuscate(mode: StringObfuscatorMode, playerId: PlayerId): Event {
         return SendSentence(
                 playerId,
                 applicationId,

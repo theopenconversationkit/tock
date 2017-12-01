@@ -28,7 +28,9 @@ import fr.vsct.tock.bot.admin.dialog.DialogReportQueryResult
 import fr.vsct.tock.bot.admin.user.UserReportDAO
 import fr.vsct.tock.bot.admin.user.UserReportQuery
 import fr.vsct.tock.bot.admin.user.UserReportQueryResult
+import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.definition.StoryDefinition
+import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -39,6 +41,7 @@ import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import fr.vsct.tock.shared.longProperty
 import mu.KotlinLogging
 import org.litote.kmongo.Id
@@ -87,6 +90,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     private val dialogCol = database.getCollection<DialogCol>("dialog")
     private val dialogTextCol = database.getCollection<DialogTextCol>("dialog_text")
     private val clientIdCol = database.getCollection<ClientIdCol>("client_id")
+    private val connectorMessageCol = database.getCollection<ConnectorMessageCol>("connector_message")
 
     init {
         //TODO remove these in 0.8.0
@@ -106,6 +110,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         dialogTextCol.ensureIndex("{text:1}")
         dialogTextCol.ensureIndex("{text:1, dialogId:1}", IndexOptions().unique(true))
         dialogTextCol.ensureIndex("{date:1}", IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS))
+        connectorMessageCol.ensureIndex("{date:1}", IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS))
+        connectorMessageCol.ensureIndex("{'_id.dialogId':1}")
     }
 
     override fun save(userTimeline: UserTimeline) {
@@ -116,12 +122,6 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         logger.debug { "create new timeline $userTimeline" }
         userTimelineCol.save(newTimeline)
         logger.debug { "timeline saved $userTimeline" }
-        if (userTimeline.playerId.clientId != null) {
-            clientIdCol.updateOneById(
-                    userTimeline.playerId.clientId!!,
-                    "{ $addToSet: {userIds: { $each : [ ${userTimeline.playerId.id.json} ] } } }",
-                    UpdateOptions().upsert(true))
-        }
         for (dialog in userTimeline.dialogs) {
             //TODO if dialog updated
             val dialogToSave = DialogCol(dialog, newTimeline)
@@ -129,9 +129,29 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             dialogCol.save(dialogToSave)
             logger.debug { "dialog saved $userTimeline" }
         }
-        val dialog = userTimeline.currentDialog()
-        if (dialog != null) {
-            executor.executeBlocking {
+        executor.executeBlocking {
+            if (userTimeline.playerId.clientId != null) {
+                clientIdCol.updateOneById(
+                        userTimeline.playerId.clientId!!,
+                        "{ $addToSet: {userIds: { $each : [ ${userTimeline.playerId.id.json} ] } } }",
+                        UpdateOptions().upsert(true))
+            }
+            for (dialog in userTimeline.dialogs) {
+                dialog.allActions().forEach {
+                    when (it) {
+                        is SendSentenceWithNotLoadedMessage -> if (it.loaded && it.messages.isNotEmpty()) {
+                            saveConnectorMessage(it.toActionId(), dialog.id, it.messages)
+                        }
+                        is SendSentence -> if (it.messages.isNotEmpty()) {
+                            saveConnectorMessage(it.toActionId(), dialog.id, it.messages)
+                        }
+                        else -> {/*do nothing*/
+                        }
+                    }
+                }
+            }
+            val dialog = userTimeline.currentDialog()
+            if (dialog != null) {
                 dialog.allActions().lastOrNull { it.playerId.type == PlayerType.user }
                         ?.let { action ->
                             if (action is SendSentence && action.stringText != null) {
@@ -147,6 +167,16 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         logger.debug { "end saving timeline $userTimeline" }
     }
 
+    private fun saveConnectorMessage(actionId: Id<Action>, dialogId: Id<Dialog>, messages: List<ConnectorMessage>) {
+        connectorMessageCol.save(ConnectorMessageCol(ConnectorMessageColId(actionId, dialogId), messages.map { AnyValueWrapper(it) }))
+    }
+
+    internal fun loadConnectorMessage(actionId: Id<Action>, dialogId: Id<Dialog>): List<ConnectorMessage> {
+        return connectorMessageCol.findOneById(ConnectorMessageColId(actionId, dialogId))
+                ?.messages
+                ?.mapNotNull { it.value as? ConnectorMessage }
+                ?: emptyList()
+    }
 
     override fun loadWithLastValidDialog(userId: PlayerId, storyDefinitionProvider: (String) -> StoryDefinition): UserTimeline {
         val timeline = loadWithoutDialogs(userId)
@@ -297,19 +327,6 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     override fun getDialogsUpdatedFrom(from: Instant, storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog> {
         return dialogCol
                 .find("{'lastUpdateDate':{$gt:${from.json}}}")
-                .map { it.toDialog(storyDefinitionProvider) }
-                .toList()
-    }
-
-    override fun getDialogsUpdatedFromTo(from: Instant, to: Instant, storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog> {
-
-        val filter = listOf("'lastUpdateDate':{$gt:${from!!.json}}",
-                "'lastUpdateDate':{$lt:${to!!.json}}")
-                .joinToString(",", "{$and:[", "]}") {
-                    "{$it}"
-                }
-        return dialogCol
-                .find(filter)
                 .map { it.toDialog(storyDefinitionProvider) }
                 .toList()
     }
