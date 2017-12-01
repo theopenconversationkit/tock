@@ -89,7 +89,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     /**
      * The namespace for [I18nKeyProvider] implementation.
      */
-    protected open val i18nNamespace: String = defaultNamespace
+    protected open val i18nNamespace: String get() = defaultNamespace
 
     /**
      * Default i18n prefix.
