@@ -14,8 +14,18 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.slack.model
+package fr.vsct.tock.bot.connector.slack
 
+import fr.vsct.tock.bot.connector.ConnectorHandler
+import fr.vsct.tock.bot.definition.ConnectorStoryHandler
+import kotlin.reflect.KClass
 
-data class SlackMessageOut(val text: String,
-                           val channel: String? = null) : SlackConnectorMessage()
+/**
+ * To specify [ConnectorStoryHandler] for Slack connector.
+ * [KClass] passed as [value] of this annotation must have a primary constructor
+ * with a single not optional [StoryHandlerDefinitionBase] argument.
+ */
+@ConnectorHandler(connectorTypeId = SLACK_CONNECTOR_TYPE_ID)
+@Target(AnnotationTarget.CLASS)
+@MustBeDocumented
+annotation class SlackHandler(val value: KClass<out ConnectorStoryHandler<*>>)
