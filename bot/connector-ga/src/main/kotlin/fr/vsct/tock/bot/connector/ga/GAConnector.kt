@@ -40,6 +40,7 @@ import fr.vsct.tock.bot.connector.ga.model.response.GASimpleResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GAStatus
 import fr.vsct.tock.bot.connector.ga.model.response.GAStatusCode.INTERNAL
 import fr.vsct.tock.bot.connector.ga.model.response.GAStatusDetail
+import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -51,6 +52,7 @@ import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.longProperty
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.util.concurrent.CopyOnWriteArrayList
@@ -284,7 +286,7 @@ class GAConnector internal constructor(
     private val verifier: IdTokenVerifier by lazy(PUBLICATION) { IdTokenVerifier.Builder().build() }
 
     private val currentMessages: Cache<String, RoutingContextHolder> = CacheBuilder.newBuilder()
-            .expireAfterWrite(1, TimeUnit.MINUTES)
+            .expireAfterWrite(longProperty("tock_ga_request_timeout_ms", 30000), TimeUnit.MILLISECONDS)
             .removalListener { e: RemovalNotification<String, RoutingContextHolder> ->
                 if (e.wasEvicted()) {
                     logger.error { "request not handled for user ${e.key} : ${e.value.actions}" }
@@ -388,6 +390,7 @@ class GAConnector internal constructor(
     internal fun handleRequest(controller: ConnectorController,
                                context: RoutingContext,
                                body: String) {
+        val timerData = BotRepository.requestTimer.start("ga_webhook")
         try {
             logger.debug { "Google Assistant request input : $body" }
             val request: GARequest = mapper.readValue(body)
@@ -398,6 +401,7 @@ class GAConnector internal constructor(
                     currentMessages.put(userId, RoutingContextHolder(context, request))
                     controller.handle(event)
                 } catch (t: Throwable) {
+                    BotRepository.requestTimer.throwable(t, timerData)
                     logger.error(t)
                     send(controller.errorMessage(
                             PlayerId(userId, PlayerType.user),
@@ -409,10 +413,14 @@ class GAConnector internal constructor(
                     }
                 }
             } catch (t: Throwable) {
+                BotRepository.requestTimer.throwable(t, timerData)
                 context.sendTechnicalError(controller, t, body, request)
             }
         } catch (t: Throwable) {
+            BotRepository.requestTimer.throwable(t, timerData)
             context.sendTechnicalError(controller, t, body)
+        } finally {
+            BotRepository.requestTimer.end(timerData)
         }
     }
 
