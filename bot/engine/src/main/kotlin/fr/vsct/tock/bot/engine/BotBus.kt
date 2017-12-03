@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.engine
 
+import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
@@ -85,6 +86,11 @@ interface BotBus : I18nKeyProvider {
      * The last user action.
      */
     val action: Action
+
+    /**
+     * The data specific to the connector (if any).
+     */
+    val connectorData: ConnectorData
 
     //shortcuts
 

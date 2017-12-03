@@ -31,7 +31,7 @@ class BotTest : BotEngineTest() {
 
     @Test
     fun handleSendSentence_whenNotWaitingRawInput_shouldSendNlpQuery() {
-        bot.handle(userAction, userTimeline, connectorController)
+        bot.handle(userAction, userTimeline, connectorController, connectorData)
 
         verify(nlp).parseSentence(any(), any(), any(), any(), any())
     }
@@ -47,7 +47,7 @@ class BotTest : BotEngineTest() {
                 )
         )
         dialog.stories.clear()
-        bot.handle(choice, userTimeline, connectorController)
+        bot.handle(choice, userTimeline, connectorController,connectorData)
 
         assertEquals(story.definition.id, dialog.currentStory()!!.definition.id)
         assertEquals(test.mainIntent(), dialog.currentStory()!!.starterIntent)

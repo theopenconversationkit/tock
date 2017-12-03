@@ -25,6 +25,8 @@ import com.nhaarman.mockito_kotlin.doReturn
 import com.nhaarman.mockito_kotlin.mock
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
+import fr.vsct.tock.bot.connector.ConnectorCallbackBase
+import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.TestStoryDefinition.test
 import fr.vsct.tock.bot.engine.action.Action
@@ -62,6 +64,7 @@ abstract class BotEngineTest {
     val botDefinition = BotDefinitionTest()
     val dialog = Dialog(setOf(userId, botId))
     val story = Story(botDefinition.stories.first(), test.mainIntent())
+    val connectorData = ConnectorData(ConnectorCallbackBase(ConnectorType.none))
 
     val botConfDAO: BotApplicationConfigurationDAO = mock()
     val i18nDAO: I18nDAO = mock()

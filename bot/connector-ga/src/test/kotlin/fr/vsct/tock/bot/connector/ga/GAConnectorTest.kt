@@ -41,7 +41,8 @@ class GAConnectorTest {
     val connector = GAConnector("", "", emptySet())
     val userPreferences: UserPreferences = UserPreferences()
     val controller: ConnectorController = mock {
-        on { handle(any()) } doAnswer {
+        on { connector }.thenReturn(connector)
+        on { handle(any(), any()) } doAnswer {
             userPreferences.fillWith(connector.loadProfile("", PlayerId("a", PlayerType.user))!!)
         }
     }

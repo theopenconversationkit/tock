@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.engine
 
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.Connector
+import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.action.Action
@@ -65,43 +66,54 @@ internal class TockConnectorController constructor(
 
     val connectorType: ConnectorType get() = connector.connectorType
 
-    override fun handle(event: Event) {
-
-        if (!botDefinition.eventListener.listenEvent(this, event)) {
-            when (event) {
-                is Action -> handleAction(event, 0)
-                else -> logger.warn { "unhandled event: $event" }
+    override fun handle(event: Event, data: ConnectorData) {
+        val callback = data.callback
+        try {
+            if (!botDefinition.eventListener.listenEvent(this, event)) {
+                when (event) {
+                    is Action -> handleAction(event, 0, data)
+                    else -> callback.eventSkipped(event)
+                }
+            } else {
+                callback.eventAnswered(event)
             }
-        } else {
-            logger.debug { "handled event: $event" }
+        } catch (t: Throwable) {
+            callback.exceptionThrown(event, t)
         }
-
     }
 
-    private fun handleAction(action: Action, nbAttempts: Int) {
-        val playerId = action.playerId
-        val id = playerId.id
+    private fun handleAction(action: Action, nbAttempts: Int, data: ConnectorData) {
+        val callback = data.callback
+        try {
+            val playerId = action.playerId
+            val id = playerId.id
 
-        logger.debug { "try to lock $playerId" }
-        if (userLock.lock(id)) {
-            try {
-                val userTimeline = userTimelineDAO.loadWithLastValidDialog(action.playerId, { bot.botDefinition.findStoryDefinition(it) })
-                bot.handle(action, userTimeline, this)
-                userTimelineDAO.save(userTimeline)
-            } catch (t: Throwable) {
-                logger.error(t)
-                send(bot.errorActionFor(action))
-            } finally {
-                userLock.releaseLock(id)
-            }
-        } else if (nbAttempts < maxLockedAttempts) {
-            logger.debug { "$playerId locked - wait" }
-            executor.executeBlocking(Duration.ofMillis(lockedAttemptsWaitInMs)) {
-                handleAction(action, nbAttempts + 1)
-            }
+            logger.debug { "try to lock $playerId" }
+            if (userLock.lock(id)) {
+                try {
+                    callback.userLocked(action)
+                    val userTimeline = userTimelineDAO.loadWithLastValidDialog(action.playerId, { bot.botDefinition.findStoryDefinition(it) })
+                    bot.handle(action, userTimeline, this, data)
+                    userTimelineDAO.save(userTimeline)
+                } catch (t: Throwable) {
+                    callback.exceptionThrown(action, t)
+                    send(bot.errorActionFor(action))
+                } finally {
+                    userLock.releaseLock(id)
+                    callback.userLockReleased(action)
+                }
+            } else if (nbAttempts < maxLockedAttempts) {
+                logger.debug { "$playerId locked - wait" }
+                executor.executeBlocking(Duration.ofMillis(lockedAttemptsWaitInMs)) {
+                    handleAction(action, nbAttempts + 1, data)
+                }
 
-        } else {
-            logger.debug { "$playerId locked for $maxLockedAttempts times - skip $action" }
+            } else {
+                logger.debug { "$playerId locked for $maxLockedAttempts times - skip $action" }
+                callback.eventSkipped(action)
+            }
+        } catch (t: Throwable) {
+            callback.exceptionThrown(action, t)
         }
     }
 
@@ -109,12 +121,18 @@ internal class TockConnectorController constructor(
         verticle.registerServices(rootPath, installer)
     }
 
-    fun send(action: Action, delay: Long = 0) {
+    fun send(action: Action, delay: Long = 0) = send(null, null, action, delay)
+
+    internal fun send(data: ConnectorData?, userAction: Action?, action: Action, delay: Long = 0) {
         try {
             logger.debug { "message sent to connector: $action" }
             connector.send(action, delay)
         } catch (t: Throwable) {
             logger.error(t)
+        } finally {
+            if (action.metadata.lastAnswer) {
+                userAction?.let { data?.callback?.eventAnswered(userAction)}
+            }
         }
     }
 

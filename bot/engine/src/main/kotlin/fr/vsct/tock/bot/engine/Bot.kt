@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.engine
 
 import com.github.salomonbrys.kodein.instance
+import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.action.Action
@@ -54,7 +55,7 @@ class Bot(botDefinitionBase: BotDefinition) {
 
     internal val botDefinition: BotDefinitionWrapper = BotDefinitionWrapper(botDefinitionBase)
 
-    fun handle(action: Action, userTimeline: UserTimeline, connector: ConnectorController) {
+    fun handle(action: Action, userTimeline: UserTimeline, connector: ConnectorController, connectorData: ConnectorData) {
         connector as TockConnectorController
 
         if (action.state.targetConnectorType == null) {
@@ -75,7 +76,7 @@ class Bot(botDefinitionBase: BotDefinition) {
         if (!userTimeline.userState.botDisabled) {
             connector.startTypingInAnswerTo(action)
             val story = getStory(action, dialog)
-            val bus = TockBotBus(connector, userTimeline, dialog, action, botDefinition)
+            val bus = TockBotBus(connector, userTimeline, dialog, action, connectorData , botDefinition)
 
             try {
                 currentBus.set(bus)

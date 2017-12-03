@@ -97,6 +97,7 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
                                 }
                             } catch (t: Throwable) {
                                 logger.error(t)
+                                context.fail(t)
                             }
                         },
                         false)

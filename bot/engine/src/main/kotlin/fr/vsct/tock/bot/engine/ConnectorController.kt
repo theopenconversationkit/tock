@@ -17,6 +17,8 @@
 package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.Connector
+import fr.vsct.tock.bot.connector.ConnectorCallbackBase
+import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.event.Event
@@ -40,8 +42,10 @@ interface ConnectorController {
 
     /**
      * Handle an event sent by the connector. the primary goal of this controller.
+     * @param event the event to handle
+     * @param data the optional additional data from the connector
      */
-    fun handle(event: Event)
+    fun handle(event: Event, data: ConnectorData = ConnectorData(ConnectorCallbackBase(connector.connectorType)))
 
     /**
      * Register services at startup.

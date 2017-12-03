@@ -35,7 +35,7 @@ class BotBusTest : BotEngineTest() {
 
     val bus: BotBus by lazy {
         fillTimeline()
-        TockBotBus(connectorController, userTimeline, dialog, userAction, BotDefinitionTest())
+        TockBotBus(connectorController, userTimeline, dialog, userAction, connectorData, BotDefinitionTest())
     }
 
     @Test
@@ -47,14 +47,14 @@ class BotBusTest : BotEngineTest() {
     @Test
     fun step_shouldReturnsAStep_whenTheStepIsDefinedInTheStoryDefinition() {
         userAction = action(Choice("test", StepTest.s1))
-        bot.handle(userAction, userTimeline, connectorController)
+        bot.handle(userAction, userTimeline, connectorController, connectorData)
         assertEquals(StepTest.s1, registeredBus!!.step)
     }
 
     @Test
     fun step_shouldReturnsNull_whenTheStepIsNotDefinedInTheStoryDefinition() {
         userAction = action(Choice("test", mapOf(SendChoice.STEP_PARAMETER to "not defined")))
-        bot.handle(userAction, userTimeline, connectorController)
+        bot.handle(userAction, userTimeline, connectorController, connectorData)
         assertNull(registeredBus!!.step)
     }
 

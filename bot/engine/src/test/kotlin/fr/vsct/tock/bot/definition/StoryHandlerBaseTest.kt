@@ -37,7 +37,7 @@ class StoryHandlerBaseTest : BotEngineTest() {
 
     val bus: BotBus by lazy {
         fillTimeline()
-        TockBotBus(connectorController, userTimeline, dialog, userAction, BotDefinitionTest())
+        TockBotBus(connectorController, userTimeline, dialog, userAction, connectorData, BotDefinitionTest())
     }
 
     @Test

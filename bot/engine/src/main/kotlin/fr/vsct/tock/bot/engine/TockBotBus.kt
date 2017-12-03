@@ -16,13 +16,14 @@
 
 package fr.vsct.tock.bot.engine
 
+import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.action.ActionPriority
 import fr.vsct.tock.bot.engine.action.ActionNotificationType
+import fr.vsct.tock.bot.engine.action.ActionPriority
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
@@ -32,7 +33,6 @@ import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.UserInterfaceType
-import mu.KotlinLogging
 import java.util.Locale
 
 /**
@@ -43,12 +43,9 @@ internal class TockBotBus(
         override val userTimeline: UserTimeline,
         override val dialog: Dialog,
         override val action: Action,
+        override val connectorData: ConnectorData,
         override var i18nProvider: I18nKeyProvider
 ) : BotBus {
-
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
 
     private val bot = connector.bot
 
@@ -97,17 +94,17 @@ internal class TockBotBus(
         }
     }
 
-    private fun answer(action: Action, delay: Long = 0): BotBus {
+    private fun answer(a: Action, delay: Long = 0): BotBus {
         context.currentDelay += delay
-        action.metadata.priority = context.priority
-        if (action is SendSentence) {
-            action.messages.addAll(context.connectorMessages.values)
+        a.metadata.priority = context.priority
+        if (a is SendSentence) {
+            a.messages.addAll(context.connectorMessages.values)
         }
         context.clear()
-        action.state.testEvent = userPreferences.test
+        a.state.testEvent = userPreferences.test
 
-        story.actions.add(action)
-        connector.send(action, context.currentDelay)
+        story.actions.add(a)
+        connector.send(connectorData, action, a, context.currentDelay)
         return this
     }
 

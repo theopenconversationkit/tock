@@ -16,14 +16,16 @@
 
 package fr.vsct.tock.bot.test
 
+import fr.vsct.tock.bot.connector.ConnectorCallbackBase
+import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.action.ActionPriority
 import fr.vsct.tock.bot.engine.action.ActionNotificationType
+import fr.vsct.tock.bot.engine.action.ActionPriority
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.ContextValue
@@ -52,7 +54,8 @@ open class BotBusMock(override var userTimeline: UserTimeline,
                       override var i18nProvider: I18nKeyProvider,
                       override var userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
                       var initialUserPreferences: UserPreferences,
-                      var connectorType: ConnectorType) : BotBus {
+                      var connectorType: ConnectorType,
+                      override var connectorData: ConnectorData = ConnectorData(ConnectorCallbackBase(connectorType))) : BotBus {
 
 
     constructor(context: BotBusMockContext,
