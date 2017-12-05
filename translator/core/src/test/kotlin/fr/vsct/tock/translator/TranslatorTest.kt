@@ -43,6 +43,12 @@ class TranslatorTest : AbstractTest() {
     }
 
     @Test
+    fun formatMessage_shouldHandleWell_SpecialCharInChoiceFormat() {
+        val result = Translator.formatMessage("Hey'{0,choice,0#|1# and %%<b>when</b>%%} ?", defaultLocale, textChat, null, listOf(true))
+        assertEquals("Hey' and <b>when</b> ?", result)
+    }
+
+    @Test
     fun formatMessage_shouldHandleWell_NullArgValue() {
         val result = Translator.formatMessage("a {0}", defaultLocale, textChat, null, listOf(null))
         assertEquals("a ", result)

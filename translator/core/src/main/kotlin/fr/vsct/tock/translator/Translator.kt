@@ -239,7 +239,9 @@ object Translator {
                 null).toString()
     }
 
-    private fun escapeQuotes(text: String): String = text.replace("'", "''")
+    private fun escapeQuotes(text: String): String = text
+            .replace("'", "''")
+            .replace("%%","'")
 
     fun translate(text: String, source: Locale, target: Locale): String {
         val t = escapeQuotes(text)
