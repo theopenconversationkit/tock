@@ -151,17 +151,6 @@ interface BotDefinition : I18nKeyProvider {
     }
 
     /**
-     * Called when error occurs. By default send "technical error".
-     */
-    fun errorActionFor(userAction: Action): Action {
-        return errorAction(
-                userAction.recipientId,
-                userAction.applicationId,
-                userAction.playerId
-        )
-    }
-
-    /**
      * To manage deactivation.
      */
     val botDisabledStory: StoryDefinition?

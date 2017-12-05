@@ -97,7 +97,7 @@ internal class TockConnectorController constructor(
                     userTimelineDAO.save(userTimeline)
                 } catch (t: Throwable) {
                     callback.exceptionThrown(action, t)
-                    send(bot.errorActionFor(action))
+                    send(errorMessage(action.recipientId, action.applicationId, action.playerId))
                 } finally {
                     userLock.releaseLock(id)
                     callback.userLockReleased(action)
@@ -131,7 +131,7 @@ internal class TockConnectorController constructor(
             logger.error(t)
         } finally {
             if (action.metadata.lastAnswer) {
-                userAction?.let { data?.callback?.eventAnswered(userAction)}
+                userAction?.let { data?.callback?.eventAnswered(userAction) }
             }
         }
     }

@@ -76,7 +76,7 @@ class Bot(botDefinitionBase: BotDefinition) {
         if (!userTimeline.userState.botDisabled) {
             connector.startTypingInAnswerTo(action)
             val story = getStory(action, dialog)
-            val bus = TockBotBus(connector, userTimeline, dialog, action, connectorData , botDefinition)
+            val bus = TockBotBus(connector, userTimeline, dialog, action, connectorData, botDefinition)
 
             try {
                 currentBus.set(bus)
@@ -224,10 +224,6 @@ class Bot(botDefinitionBase: BotDefinition) {
             }
             dialog.state.currentIntent = intent
         }
-    }
-
-    internal fun errorActionFor(userAction: Action): Action {
-        return botDefinition.errorActionFor(userAction)
     }
 
     private fun loadProfileIfNotSet(action: Action, userTimeline: UserTimeline, connector: TockConnectorController) {
