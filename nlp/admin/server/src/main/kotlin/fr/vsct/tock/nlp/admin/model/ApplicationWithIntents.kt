@@ -20,6 +20,7 @@ import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import java.util.Locale
 
 /**
@@ -54,7 +55,7 @@ data class ApplicationWithIntents(val name: String,
                 nlpEngineType,
                 mergeEngineTypes,
                 supportSubEntities,
-                _id!!
+                _id ?: newId()
         )
     }
 
