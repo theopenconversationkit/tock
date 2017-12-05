@@ -62,7 +62,7 @@ class Bot(botDefinitionBase: BotDefinition) {
             action.state.targetConnectorType = connector.connectorType
         }
 
-        loadProfileIfNotSet(action, userTimeline, connector)
+        loadProfileIfNotSet(connectorData, action, userTimeline, connector)
 
         val dialog = getDialog(action, userTimeline)
 
@@ -74,7 +74,7 @@ class Bot(botDefinitionBase: BotDefinition) {
         }
 
         if (!userTimeline.userState.botDisabled) {
-            connector.startTypingInAnswerTo(action)
+            connector.startTypingInAnswerTo(action, connectorData)
             val story = getStory(action, dialog)
             val bus = TockBotBus(connector, userTimeline, dialog, action, connectorData, botDefinition)
 
@@ -226,10 +226,14 @@ class Bot(botDefinitionBase: BotDefinition) {
         }
     }
 
-    private fun loadProfileIfNotSet(action: Action, userTimeline: UserTimeline, connector: TockConnectorController) {
+    private fun loadProfileIfNotSet(
+            connectorData: ConnectorData,
+            action: Action,
+            userTimeline: UserTimeline,
+            connector: TockConnectorController) {
         with(userTimeline) {
             if (!userState.profileLoaded) {
-                val pref = connector.loadProfile(action.applicationId, userTimeline.playerId)
+                val pref = connector.loadProfile(connectorData, userTimeline.playerId)
                 if (pref != null) {
                     userState.profileLoaded = true
                     userPreferences.fillWith(pref)

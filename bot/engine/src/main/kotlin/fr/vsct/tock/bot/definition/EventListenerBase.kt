@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.definition
 
+import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.event.EndConversationEvent
@@ -36,7 +37,7 @@ open class EventListenerBase : EventListener {
      * Listen [StartConversationEvent] or [EndConversationEvent] by default
      * (if respectively [BotDefinition.helloStory] or [BotDefinition.goodbyeStory] are set).
      */
-    override fun listenEvent(controller: ConnectorController, event: Event): Boolean {
+    override fun listenEvent(controller: ConnectorController, connectorData: ConnectorData, event: Event): Boolean {
         logger.debug { "listen event $event" }
 
         fun StoryDefinition?.sendChoice(event: OneToOneEvent, force: Boolean = false): Boolean =
@@ -50,7 +51,8 @@ open class EventListenerBase : EventListener {
                                     event.recipientId,
                                     (this?.mainIntent() ?: controller.botDefinition.stories.first().mainIntent()).name,
                                     state = event.state
-                            )
+                            ),
+                            connectorData
                     )
                     true
                 }

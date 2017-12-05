@@ -42,10 +42,14 @@ interface ConnectorController {
 
     /**
      * Handle an event sent by the connector. the primary goal of this controller.
+     *
      * @param event the event to handle
      * @param data the optional additional data from the connector
      */
-    fun handle(event: Event, data: ConnectorData = ConnectorData(ConnectorCallbackBase(connector.connectorType)))
+    fun handle(
+            event: Event,
+            data: ConnectorData = ConnectorData(ConnectorCallbackBase(event.applicationId, connector.connectorType))
+    )
 
     /**
      * Register services at startup.

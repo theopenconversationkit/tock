@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.connector.slack
 
 import fr.vsct.tock.bot.connector.ConnectorBase
+import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.slack.model.SlackConnectorMessage
 import fr.vsct.tock.bot.connector.slack.model.SlackMessageIn
 import fr.vsct.tock.bot.engine.BotRepository.requestTimer
@@ -77,7 +78,7 @@ class SlackConnector(val applicationId: String,
         })
     }
 
-    override fun send(event: Event, delayInMs: Long) {
+    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         logger.info { event }
         logger.info { "event: $event" }
         if (event is Action) {

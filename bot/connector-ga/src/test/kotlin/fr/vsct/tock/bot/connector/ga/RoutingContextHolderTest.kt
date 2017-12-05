@@ -19,8 +19,7 @@ package fr.vsct.tock.bot.connector.ga
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
-import fr.vsct.tock.bot.connector.ga.GAConnector.ActionWithDelay
-import fr.vsct.tock.bot.connector.ga.GAConnector.RoutingContextHolder
+import fr.vsct.tock.bot.connector.ga.GAConnectorCallback.ActionWithDelay
 import fr.vsct.tock.bot.connector.ga.model.request.GAConversation
 import fr.vsct.tock.bot.connector.ga.model.request.GADevice
 import fr.vsct.tock.bot.connector.ga.model.request.GARequest
@@ -58,7 +57,8 @@ class RoutingContextHolderTest {
 
             val p1 = PlayerId("id1", PlayerType.user)
 
-            val holder = RoutingContextHolder(
+            val holder = GAConnectorCallback(
+                    "",
                     context,
                     GARequest(
                             GAUser("userId"),

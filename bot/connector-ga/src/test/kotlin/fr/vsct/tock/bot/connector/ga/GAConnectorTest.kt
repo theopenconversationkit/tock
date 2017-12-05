@@ -21,6 +21,7 @@ import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.doAnswer
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
+import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
@@ -43,7 +44,7 @@ class GAConnectorTest {
     val controller: ConnectorController = mock {
         on { connector }.thenReturn(connector)
         on { handle(any(), any()) } doAnswer {
-            userPreferences.fillWith(connector.loadProfile("", PlayerId("a", PlayerType.user))!!)
+            userPreferences.fillWith(connector.loadProfile((it.arguments[1] as ConnectorData).callback, PlayerId("a", PlayerType.user))!!)
         }
     }
     val context: RoutingContext = mock()

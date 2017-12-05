@@ -21,6 +21,7 @@ import com.github.salomonbrys.kodein.instance
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import fr.vsct.tock.bot.connector.ConnectorBase
+import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
@@ -150,7 +151,7 @@ class MessengerConnector internal constructor(
                                                             try {
                                                                 logger.logError(e, requestTimerData)
                                                                 controller.errorMessage(m.playerId(bot), applicationId, m.recipientId(bot)).let {
-                                                                    send(it)
+                                                                    sendEvent(it)
                                                                     endTypingAnswer(it)
                                                                 }
                                                             } catch (t: Throwable) {
@@ -273,7 +274,7 @@ class MessengerConnector internal constructor(
      * Send the event to messenger asynchronously.
      * Contains checks to ensure that two [Action] for the same recipient are sent sequentially.
      */
-    override fun send(event: Event, delayInMs: Long) {
+    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         val delay = Duration.ofMillis(delayInMs)
         if (event is Action) {
             val id = event.recipientId.id.intern()
@@ -339,9 +340,9 @@ class MessengerConnector internal constructor(
         client.sendAction(getToken(action), ActionRequest(Recipient(action.recipientId.id), typing_off))
     }
 
-    override fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences {
+    override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
         try {
-            val userProfile = client.getUserProfile(applicationTokenMap.getValue(applicationId), Recipient(userId.id))
+            val userProfile = client.getUserProfile(applicationTokenMap.getValue(callback.applicationId), Recipient(userId.id))
             logger.debug { "User profile : $userProfile for $userId" }
             return UserPreferences(
                     userProfile.firstName,

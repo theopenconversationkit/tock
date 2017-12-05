@@ -24,6 +24,8 @@ import fr.vsct.tock.bot.engine.event.Event
  */
 interface ConnectorCallback {
 
+    val applicationId:String
+
     /**
      * Called by [ConnectorController.handle] when the user is locked.
      */

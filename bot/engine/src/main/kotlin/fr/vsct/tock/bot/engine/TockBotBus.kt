@@ -139,7 +139,7 @@ internal class TockBotBus(
     }
 
     override fun reloadProfile() {
-        val newUserPref = connector.loadProfile(applicationId, userId)
+        val newUserPref = connector.loadProfile(connectorData, userId)
         if (newUserPref != null) {
             userTimeline.userState.profileLoaded = true
             userPreferences.fillWith(newUserPref)

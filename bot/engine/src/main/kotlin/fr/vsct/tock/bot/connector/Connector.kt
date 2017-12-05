@@ -39,13 +39,17 @@ interface Connector {
 
     /**
      * Send an event with this connector for the specified delay.
+     *
+     * @param event the event to send
+     * @param callback the initial connector callback
+     * @param delayInMs the optional delay
      */
-    fun send(event: Event, delayInMs: Long = 0)
+    fun send(event: Event, callback: ConnectorCallback, delayInMs: Long = 0)
 
     /**
      * Load user preferences - default implementation returns null.
      */
-    fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences? {
+    fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? {
         //default implementation returns null
         return null
     }

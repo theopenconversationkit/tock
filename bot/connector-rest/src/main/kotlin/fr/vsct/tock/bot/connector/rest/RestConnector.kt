@@ -17,13 +17,11 @@
 package fr.vsct.tock.bot.connector.rest
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.google.common.cache.Cache
-import com.google.common.cache.CacheBuilder
-import com.google.common.cache.RemovalNotification
 import fr.vsct.tock.bot.connector.Connector
+import fr.vsct.tock.bot.connector.ConnectorCallback
+import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.rest.model.MessageRequest
-import fr.vsct.tock.bot.connector.rest.model.MessageResponse
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.dialog.TestContext
@@ -34,21 +32,12 @@ import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
-import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
-import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.TimeUnit
 
 /**
  *
  */
 class RestConnector(val applicationId: String, val path: String) : Connector {
-
-    private data class Response(
-            val context: RoutingContext,
-            val test: Boolean,
-            val actions: MutableList<Action> = CopyOnWriteArrayList()
-    )
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -57,15 +46,6 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
 
     override val connectorType: ConnectorType = ConnectorType.rest
 
-    private val currentMessages: Cache<String, Response> = CacheBuilder.newBuilder()
-            .expireAfterWrite(1, TimeUnit.MINUTES)
-            .removalListener { e: RemovalNotification<String, Response> ->
-                if (e.wasEvicted()) {
-                    logger.error { "request not handled for user ${e.key} : ${e.value.actions}" }
-                }
-            }
-            .build()
-
     override fun register(controller: ConnectorController) {
         if (!disabled) {
             controller.registerServices(path, { router ->
@@ -73,28 +53,23 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
                         { context ->
                             try {
                                 val message: MessageRequest = mapper.readValue(context.bodyAsString)
-                                try {
-                                    currentMessages.put(message.userId, Response(context, message.test))
-                                    val action = message.message.toAction(
-                                            PlayerId(message.userId, PlayerType.user),
-                                            applicationId,
-                                            PlayerId(message.recipientId, PlayerType.bot)
-                                    )
-                                    action.state.targetConnectorType = message.targetConnectorType
-                                    controller.handle(action)
-                                } catch (t: Throwable) {
-                                    try {
-                                        logger.error(t)
-                                        send(controller.errorMessage(
-                                                PlayerId(message.userId, PlayerType.user),
-                                                applicationId,
-                                                PlayerId(message.recipientId, PlayerType.bot)))
-                                    } catch (t: Throwable) {
-                                        logger.error(t)
-                                    }
-                                } finally {
-                                    sendAnswer(message.userId)
-                                }
+                                val action = message.message.toAction(
+                                        PlayerId(message.userId, PlayerType.user),
+                                        applicationId,
+                                        PlayerId(message.recipientId, PlayerType.bot)
+                                )
+                                action.state.targetConnectorType = message.targetConnectorType
+                                controller.handle(
+                                        action,
+                                        ConnectorData(
+                                                RestConnectorCallback(
+                                                        applicationId,
+                                                        message.targetConnectorType,
+                                                        context,
+                                                        message.test
+                                                )
+                                        )
+                                )
                             } catch (t: Throwable) {
                                 logger.error(t)
                                 context.fail(t)
@@ -105,37 +80,20 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
         }
     }
 
-    private fun sendAnswer(userId: String) {
-        val response = currentMessages.getIfPresent(userId)
-        if (response == null) {
-            logger.error { "no message registered for $userId" }
-        } else {
-            val r = mapper.writeValueAsString(MessageResponse(
-                    response.actions.map { it.toMessage() }
-            ))
-            logger.debug { "response : $r" }
-            currentMessages.invalidate(userId)
-            response.context.response().end(r)
-        }
-    }
-
-    override fun send(event: Event, delayInMs: Long) {
+    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+        callback as RestConnectorCallback
         if (event is Action) {
-            val response = currentMessages.getIfPresent(event.recipientId.id)
-            if (response == null) {
-                logger.error { "no message registered for $event" }
-            } else {
-                response.actions.add(event)
-            }
+            callback.actions.add(event)
         } else {
             logger.trace { "unsupported event: $event" }
         }
     }
 
-    override fun loadProfile(applicationId: String, userId: PlayerId): UserPreferences {
+    override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
+        callback as RestConnectorCallback
         //register user as test user if applicable
         return UserPreferences().apply {
-            if (currentMessages.getIfPresent(userId.id)?.test == true) {
+            if (callback.test) {
                 TestContext.setup(this)
             }
         }

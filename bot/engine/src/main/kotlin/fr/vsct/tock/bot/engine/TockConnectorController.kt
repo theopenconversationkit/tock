@@ -69,7 +69,7 @@ internal class TockConnectorController constructor(
     override fun handle(event: Event, data: ConnectorData) {
         val callback = data.callback
         try {
-            if (!botDefinition.eventListener.listenEvent(this, event)) {
+            if (!botDefinition.eventListener.listenEvent(this, data, event)) {
                 when (event) {
                     is Action -> handleAction(event, 0, data)
                     else -> callback.eventSkipped(event)
@@ -97,7 +97,7 @@ internal class TockConnectorController constructor(
                     userTimelineDAO.save(userTimeline)
                 } catch (t: Throwable) {
                     callback.exceptionThrown(action, t)
-                    send(errorMessage(action.recipientId, action.applicationId, action.playerId))
+                    send(data, action, errorMessage(action.recipientId, action.applicationId, action.playerId))
                 } finally {
                     userLock.releaseLock(id)
                     callback.userLockReleased(action)
@@ -121,27 +121,25 @@ internal class TockConnectorController constructor(
         verticle.registerServices(rootPath, installer)
     }
 
-    fun send(action: Action, delay: Long = 0) = send(null, null, action, delay)
-
-    internal fun send(data: ConnectorData?, userAction: Action?, action: Action, delay: Long = 0) {
+    internal fun send(data: ConnectorData, userAction: Action, action: Action, delay: Long = 0) {
         try {
             logger.debug { "message sent to connector: $action" }
-            connector.send(action, delay)
+            connector.send(action, data.callback, delay)
         } catch (t: Throwable) {
             logger.error(t)
         } finally {
             if (action.metadata.lastAnswer) {
-                userAction?.let { data?.callback?.eventAnswered(userAction) }
+                data.callback.eventAnswered(userAction)
             }
         }
     }
 
-    fun loadProfile(applicationId: String, playerId: PlayerId): UserPreferences? {
-        return connector.loadProfile(applicationId, playerId)
+    fun loadProfile(data: ConnectorData, playerId: PlayerId): UserPreferences? {
+        return connector.loadProfile(data.callback, playerId)
     }
 
-    fun startTypingInAnswerTo(action: Action) {
-        connector.send(TypingOnEvent(action.playerId, action.applicationId))
+    fun startTypingInAnswerTo(action: Action, data: ConnectorData) {
+        connector.send(TypingOnEvent(action.playerId, action.applicationId), data.callback)
     }
 
 }

@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.definition
 
+import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.event.Event
 
@@ -32,8 +33,9 @@ interface EventListener {
      * Listen new event.
      *
      * @param controller the controller
+     * @param connectorData the connector specific data
      * @param event the new event
      * @return true if the event is handled
      */
-    fun listenEvent(controller: ConnectorController, event: Event): Boolean
+    fun listenEvent(controller: ConnectorController, connectorData: ConnectorData, event: Event): Boolean
 }

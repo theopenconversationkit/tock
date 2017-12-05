@@ -21,6 +21,7 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorBase
+import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
@@ -54,7 +55,7 @@ object BotRepository {
                         = object : ConnectorBase(ConnectorType.none) {
                     override fun register(controller: ConnectorController) = Unit
 
-                    override fun send(event: Event, delayInMs: Long) = Unit
+                    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) = Unit
                 }
             }
     )

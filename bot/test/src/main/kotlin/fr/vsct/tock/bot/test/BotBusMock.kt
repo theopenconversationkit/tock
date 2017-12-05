@@ -55,7 +55,7 @@ open class BotBusMock(override var userTimeline: UserTimeline,
                       override var userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
                       var initialUserPreferences: UserPreferences,
                       var connectorType: ConnectorType,
-                      override var connectorData: ConnectorData = ConnectorData(ConnectorCallbackBase(connectorType))) : BotBus {
+                      override var connectorData: ConnectorData = ConnectorData(ConnectorCallbackBase(action.applicationId, connectorType))) : BotBus {
 
 
     constructor(context: BotBusMockContext,
