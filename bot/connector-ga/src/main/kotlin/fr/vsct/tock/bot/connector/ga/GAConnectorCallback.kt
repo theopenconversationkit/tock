@@ -272,19 +272,24 @@ internal data class GAConnectorCallback(
     }
 
     fun sendResponse() {
-        if (!answered) {
-            answered = true
-            val gaResponse = buildResponse()
+        try {
+            if (!answered) {
+                answered = true
+                val gaResponse = buildResponse()
 
-            logger.debug { "ga response : $gaResponse" }
+                logger.debug { "ga response : $gaResponse" }
 
-            val writeValueAsString = mapper.writeValueAsString(gaResponse)
+                val writeValueAsString = mapper.writeValueAsString(gaResponse)
 
-            logger.debug { "ga json response: $writeValueAsString" }
+                logger.debug { "ga json response: $writeValueAsString" }
 
-            context.response().end(writeValueAsString)
-        } else {
-            logger.trace { "already answered: $this" }
+                context.response().end(writeValueAsString)
+            } else {
+                logger.trace { "already answered: $this" }
+            }
+        } catch (t: Throwable) {
+            logger.error(t)
+            context.fail(t)
         }
     }
 
