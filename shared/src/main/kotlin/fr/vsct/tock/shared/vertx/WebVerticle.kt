@@ -336,8 +336,13 @@ abstract class WebVerticle : AbstractVerticle() {
     }
 
     open protected fun addDevCorsHandler() {
-        if (devEnvironment && booleanProperty("tock_web_use_default_dev_cors_handler", true)) {
-            router.route().handler(corsHandler("http://localhost:4200", true))
+        if (booleanProperty("tock_web_use_default_cors_handler", devEnvironment)) {
+            router.route().handler(
+                    corsHandler(
+                            property("tock_web_use_default_cors_handler_url", "http://localhost:4200"),
+                            booleanProperty("tock_web_use_default_cors_handler_with_credentials", true)
+                    )
+            )
         }
     }
 
