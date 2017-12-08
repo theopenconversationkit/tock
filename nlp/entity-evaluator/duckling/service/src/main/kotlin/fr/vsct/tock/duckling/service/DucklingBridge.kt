@@ -64,7 +64,6 @@ internal object DucklingBridge {
         initialized = true
     }
 
-
     fun parse(language: String,
               textToParse: String,
               dimensions: List<String>,

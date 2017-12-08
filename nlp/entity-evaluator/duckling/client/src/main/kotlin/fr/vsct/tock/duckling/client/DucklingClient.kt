@@ -99,7 +99,9 @@ internal object DucklingClient {
             referenceDate: ZonedDateTime,
             referenceTimezone: ZoneId,
             textToParse: String): JSONValue? {
-        return service.parse(ParseRequest(language, dimensions, referenceDate, referenceTimezone, textToParse)).execute().body()
+        //duckling does not support well ’ char
+        val text = textToParse.replace("’", "'")
+        return service.parse(ParseRequest(language, dimensions, referenceDate, referenceTimezone, text)).execute().body()
     }
 
     fun healthcheck(): Boolean {

@@ -45,6 +45,13 @@ class DucklingClientIntegrationTest {
     }
 
     @Test
+    fun testCallWithSpecialQuote() {
+        val result = DucklingClient.parse("fr", listOf("time"), now(), systemDefault(), "Aujourd’hui")
+        println(result)
+        assertEquals(LocalDateTime.now().atZone(systemDefault()).withFixedOffsetZone().truncatedTo(ChronoUnit.DAYS), parse(result!![0][":value"][":values"][0][":value"].string(), formatter))
+    }
+
+    @Test
     fun testCallWithReferenceDate() {
         val referenceDate = now()
         val result = DucklingClient.parse("fr", listOf("time"), referenceDate, systemDefault(), "dans 1h")
