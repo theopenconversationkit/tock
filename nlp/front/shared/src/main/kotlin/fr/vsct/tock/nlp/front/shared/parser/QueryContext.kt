@@ -27,7 +27,7 @@ import java.util.Locale
  *
  */
 data class QueryContext(val language: Locale,
-                        val clientId: String,
+                        val clientId: String = Dice.newId(),
                         val clientDevice: String? = null,
                         val dialogId: String = Dice.newId(),
                         val referenceDate: ZonedDateTime = now(UTC),

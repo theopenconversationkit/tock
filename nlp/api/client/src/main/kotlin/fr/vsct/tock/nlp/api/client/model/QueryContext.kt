@@ -21,13 +21,14 @@ import java.time.ZoneOffset.UTC
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
 import java.util.Locale
+import java.util.UUID
 
 /**
  *
  */
 data class QueryContext(val language: Locale,
-                        val clientId: String,
-                        val dialogId: String,
+                        val clientId: String = UUID.randomUUID().toString(),
+                        val dialogId: String = UUID.randomUUID().toString(),
                         val clientDevice: String? = null,
                         val referenceDate: ZonedDateTime = now(UTC),
                         val referenceTimezone: ZoneId = UTC,

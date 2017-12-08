@@ -19,7 +19,7 @@ package fr.vsct.tock.nlp.api.client.model
 /**
  *
  */
-data class QueryState(val states: Set<String>) {
+data class QueryState(val states: Set<String> = emptySet()) {
 
     companion object {
         val noState = QueryState(emptySet())
