@@ -26,6 +26,7 @@ import fr.vsct.tock.bot.connector.ga.model.request.GARequest
 import fr.vsct.tock.bot.connector.ga.model.request.GASurface
 import fr.vsct.tock.bot.connector.ga.model.request.GAUser
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
@@ -41,6 +42,7 @@ class RoutingContextHolderTest {
 
     val bus: BotBus = mock()
     val context: RoutingContext = mock()
+    val controller:ConnectorController = mock()
 
     @Before
     fun init() {
@@ -59,6 +61,7 @@ class RoutingContextHolderTest {
 
             val holder = GAConnectorCallback(
                     "",
+                    controller,
                     context,
                     GARequest(
                             GAUser("userId"),

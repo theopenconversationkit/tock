@@ -21,29 +21,17 @@ import com.github.salomonbrys.kodein.instance
 import com.google.api.client.auth.openidconnect.IdToken
 import com.google.api.client.auth.openidconnect.IdTokenVerifier
 import com.google.api.client.json.jackson2.JacksonFactory
-import com.google.common.base.Throwables
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ga.model.request.GARequest
-import fr.vsct.tock.bot.connector.ga.model.response.GAFinalResponse
-import fr.vsct.tock.bot.connector.ga.model.response.GAItem
-import fr.vsct.tock.bot.connector.ga.model.response.GAResponse
-import fr.vsct.tock.bot.connector.ga.model.response.GAResponseMetadata
-import fr.vsct.tock.bot.connector.ga.model.response.GARichResponse
-import fr.vsct.tock.bot.connector.ga.model.response.GASimpleResponse
-import fr.vsct.tock.bot.connector.ga.model.response.GAStatus
-import fr.vsct.tock.bot.connector.ga.model.response.GAStatusCode
-import fr.vsct.tock.bot.connector.ga.model.response.GAStatusDetail
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
-import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.Executor
-import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
 import io.vertx.ext.web.RoutingContext
@@ -67,61 +55,6 @@ class GAConnector internal constructor(
     private val executor: Executor by injector.instance()
     private val verifier: IdTokenVerifier by lazy(PUBLICATION) { IdTokenVerifier.Builder().build() }
 
-    private fun RoutingContext.sendTechnicalError(
-            controller: ConnectorController,
-            throwable: Throwable,
-            requestBody: String? = null,
-            request: GARequest? = null
-    ) {
-        try {
-            logger.error(throwable)
-            response().end(
-                    mapper.writeValueAsString(
-                            GAResponse(
-                                    request?.conversation?.conversationToken ?: "",
-                                    false,
-                                    emptyList(),
-                                    GAFinalResponse(
-                                            GARichResponse(
-                                                    listOf(
-                                                            GAItem(
-                                                                    GASimpleResponse(
-                                                                            (controller.errorMessage(
-                                                                                    PlayerId(
-                                                                                            controller.botDefinition.botId,
-                                                                                            PlayerType.bot),
-                                                                                    applicationId,
-                                                                                    PlayerId(
-                                                                                            request?.user?.userId ?: "unknown",
-                                                                                            PlayerType.user)
-                                                                            ) as? SendSentence)?.stringText ?: "Technical error"
-                                                                    )
-                                                            )
-                                                    )
-                                            )
-                                    ),
-                                    null,
-                                    GAResponseMetadata(
-                                            GAStatus(
-                                                    GAStatusCode.INTERNAL,
-                                                    throwable.message ?: "error",
-                                                    listOf(
-                                                            GAStatusDetail(
-                                                                    Throwables.getStackTraceAsString(throwable),
-                                                                    requestBody,
-                                                                    request
-                                                            )
-                                                    )
-                                            )
-                                    ),
-                                    false
-                            )
-                    )
-            )
-        } catch (t: Throwable) {
-            logger.error(t)
-        }
-    }
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path, { router ->
@@ -137,7 +70,7 @@ class GAConnector internal constructor(
                         context.fail(400)
                     }
                 } catch (e: Throwable) {
-                    context.sendTechnicalError(controller, e)
+                    context.fail(e)
                 }
             }
         })
@@ -151,11 +84,17 @@ class GAConnector internal constructor(
         try {
             logger.debug { "Google Assistant request input : $body" }
             val request: GARequest = mapper.readValue(body)
-            val event = WebhookActionConverter.toEvent(request, applicationId)
-            controller.handle(event, ConnectorData(GAConnectorCallback(applicationId, context, request)))
+            val callback = GAConnectorCallback(applicationId, controller, context, request)
+            try {
+                val event = WebhookActionConverter.toEvent(request, applicationId)
+                controller.handle(event, ConnectorData(callback))
+            } catch (t: Throwable) {
+                BotRepository.requestTimer.throwable(t, timerData)
+                callback.sendTechnicalError(t, body, request)
+            }
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
-            context.sendTechnicalError(controller, t, body)
+            context.fail(t)
         } finally {
             BotRepository.requestTimer.end(timerData)
         }
@@ -181,6 +120,13 @@ class GAConnector internal constructor(
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         callback as GAConnectorCallback
         callback.addAction(event, delayInMs)
+        if (event is Action) {
+            if (event.metadata.lastAnswer) {
+                callback.sendResponse()
+            }
+        } else {
+            logger.trace { "unsupported event: $event" }
+        }
     }
 
 

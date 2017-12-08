@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector.ga
 
+import com.google.common.base.Throwables
 import fr.vsct.tock.bot.connector.ConnectorCallbackBase
 import fr.vsct.tock.bot.connector.ga.model.GAIntent
 import fr.vsct.tock.bot.connector.ga.model.request.GARequest
@@ -25,11 +26,19 @@ import fr.vsct.tock.bot.connector.ga.model.response.GAFinalResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GAInputPrompt
 import fr.vsct.tock.bot.connector.ga.model.response.GAItem
 import fr.vsct.tock.bot.connector.ga.model.response.GAResponse
+import fr.vsct.tock.bot.connector.ga.model.response.GAResponseMetadata
 import fr.vsct.tock.bot.connector.ga.model.response.GARichResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GASimpleResponse
+import fr.vsct.tock.bot.connector.ga.model.response.GAStatus
+import fr.vsct.tock.bot.connector.ga.model.response.GAStatusCode
+import fr.vsct.tock.bot.connector.ga.model.response.GAStatusDetail
+import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.PlayerType
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
@@ -40,6 +49,7 @@ import java.util.concurrent.CopyOnWriteArrayList
  */
 internal data class GAConnectorCallback(
         override val applicationId: String,
+        val controller: ConnectorController,
         val context: RoutingContext,
         val request: GARequest,
         val actions: MutableList<ActionWithDelay> = CopyOnWriteArrayList()
@@ -261,7 +271,7 @@ internal data class GAConnectorCallback(
         )
     }
 
-    private fun sendResponse() {
+    fun sendResponse() {
         if (!answered) {
             answered = true
             val gaResponse = buildResponse()
@@ -274,7 +284,7 @@ internal data class GAConnectorCallback(
 
             context.response().end(writeValueAsString)
         } else {
-            logger.error { "already answered: $this" }
+            logger.trace { "already answered: $this" }
         }
     }
 
@@ -290,6 +300,62 @@ internal data class GAConnectorCallback(
 
     override fun exceptionThrown(event: Event, throwable: Throwable) {
         super.exceptionThrown(event, throwable)
-        sendResponse()
+        sendTechnicalError(throwable)
+    }
+
+    fun sendTechnicalError(
+            throwable: Throwable,
+            requestBody: String? = null,
+            request: GARequest? = null
+    ) {
+        try {
+            logger.error(throwable)
+            context.response().end(
+                    mapper.writeValueAsString(
+                            GAResponse(
+                                    request?.conversation?.conversationToken ?: "",
+                                    false,
+                                    emptyList(),
+                                    GAFinalResponse(
+                                            GARichResponse(
+                                                    listOf(
+                                                            GAItem(
+                                                                    GASimpleResponse(
+                                                                            (controller.errorMessage(
+                                                                                    PlayerId(
+                                                                                            controller.botDefinition.botId,
+                                                                                            PlayerType.bot),
+                                                                                    applicationId,
+                                                                                    PlayerId(
+                                                                                            request?.user?.userId ?: "unknown",
+                                                                                            PlayerType.user)
+                                                                            ) as? SendSentence)?.stringText ?: "Technical error"
+                                                                    )
+                                                            )
+                                                    )
+                                            )
+                                    ),
+                                    null,
+                                    GAResponseMetadata(
+                                            GAStatus(
+                                                    GAStatusCode.INTERNAL,
+                                                    throwable.message ?: "error",
+                                                    listOf(
+                                                            GAStatusDetail(
+                                                                    Throwables.getStackTraceAsString(throwable),
+                                                                    requestBody,
+                                                                    request
+                                                            )
+                                                    )
+                                            )
+                                    ),
+                                    false
+                            )
+                    )
+            )
+        } catch (t: Throwable) {
+            logger.error(t)
+            context.fail(t)
+        }
     }
 }
