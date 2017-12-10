@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector.slack
 
+import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.slack.model.SlackConnectorMessage
@@ -25,7 +26,9 @@ import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.monitoring.logError
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.vertx.vertx
 import mu.KotlinLogging
@@ -41,6 +44,8 @@ class SlackConnector(val applicationId: String,
     companion object {
         private val logger = KotlinLogging.logger {}
     }
+
+    private val executor: Executor by injector.instance()
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path, { router ->
@@ -79,8 +84,7 @@ class SlackConnector(val applicationId: String,
     }
 
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
-        logger.info { event }
-        logger.info { "event: $event" }
+        logger.debug { "event: $event" }
         if (event is Action) {
             val message = SlackMessageConverter.toMessageOut(event)
             if (message != null) {
@@ -91,7 +95,9 @@ class SlackConnector(val applicationId: String,
 
 
     private fun sendMessage(message: SlackConnectorMessage) {
-        client.sendMessage(outToken1, outToken2, outToken3, message)
+        executor.executeBlocking {
+            client.sendMessage(outToken1, outToken2, outToken3, message)
+        }
     }
 
 }
