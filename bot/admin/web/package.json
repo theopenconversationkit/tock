@@ -1,7 +1,7 @@
 {
   "name": "tock-bot-admin",
   "version": "0.0.0",
-  "license": "MIT",
+  "license": "Apache2",
   "scripts": {
     "ng": "ng",
     "start": "ng serve",

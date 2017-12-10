@@ -18,6 +18,7 @@ package fr.vsct.tock.nlp.api
 
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.front.client.FrontClient
+import fr.vsct.tock.nlp.front.service.UnknownApplicationException
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseIntentEntitiesQuery
@@ -54,9 +55,13 @@ class NlpVerticle : WebVerticle() {
 
         blockingJsonPost("/parse") { _, query: ParseQuery ->
             if (query.queries.isEmpty()) {
-                error("please set queries field with at least one query")
+                badRequest("please set queries field with at least one query")
             }
-            front.parse(query)
+            try {
+                front.parse(query)
+            } catch (e: UnknownApplicationException) {
+                badRequest(e.message ?: "")
+            }
         }
 
         blockingJsonPost("/merge") { _, query: ValuesMergeQuery ->

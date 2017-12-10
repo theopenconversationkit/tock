@@ -121,8 +121,7 @@ object ParserService : Parser {
             intentsQualifiers: Set<IntentQualifier>): ParseResult {
         val time = System.currentTimeMillis()
         with(query) {
-            val application = config.getApplicationByNamespaceAndName(namespace, applicationName)
-                    ?: error("unknown application $namespace:$applicationName")
+            val application = loadApplication(namespace, applicationName)
 
             val language = findLanguage(application, context.language)
 
@@ -157,7 +156,7 @@ object ParserService : Parser {
             val q = formatQuery(queries.first())
             if (q.isEmpty()) {
                 logger.warn { "empty query after format - $query" }
-                return ParseResult(UNKNOWN_INTENT, application.namespace, emptyList(), 0.0, 0.0, q, emptyMap())
+                return ParseResult(UNKNOWN_INTENT, application.namespace, query.context.language, emptyList(), 0.0, 0.0, q, emptyMap())
             }
 
             val validatedSentence = config
@@ -203,6 +202,7 @@ object ParserService : Parser {
                 return ParseResult(
                         intent?.name ?: Intent.UNKNOWN_INTENT.name(),
                         intent?.namespace ?: Intent.UNKNOWN_INTENT.namespace(),
+                        language,
                         entityValues.map { ParsedEntityValue(it.value, 1.0, core.supportValuesMerge(it.entityType)) },
                         1.0,
                         1.0,
@@ -217,6 +217,7 @@ object ParserService : Parser {
                         ParseResult(
                                 intent.withoutNamespace(),
                                 intent.namespace(),
+                                language,
                                 entities.map { ParsedEntityValue(it.value, it.probability, core.supportValuesMerge(it.entityType)) },
                                 intentProbability,
                                 entitiesProbability,
@@ -269,7 +270,7 @@ object ParserService : Parser {
 
     override fun mergeValues(query: ValuesMergeQuery): ValuesMergeResult {
         with(query) {
-            val application = config.getApplicationByNamespaceAndName(namespace, applicationName) ?: error("unknown application $namespace:$applicationName")
+            val application = loadApplication(namespace, applicationName)
 
             val language = findLanguage(application, context.language)
 
@@ -282,6 +283,10 @@ object ParserService : Parser {
             return ValuesMergeResult(ValueTransformer.wrapNullableValue(result?.value), result?.content)
         }
     }
+
+    private fun loadApplication(namespace: String, applicationName: String): ApplicationDefinition
+            = config.getApplicationByNamespaceAndName(namespace, applicationName)
+            ?: throw UnknownApplicationException(namespace, applicationName)
 
     override fun healthcheck(): Boolean {
         return core.healthcheck()

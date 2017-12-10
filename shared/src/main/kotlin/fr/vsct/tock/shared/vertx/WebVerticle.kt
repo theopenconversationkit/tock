@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.shared.vertx
 
+import com.fasterxml.jackson.core.JsonProcessingException
+import com.fasterxml.jackson.module.kotlin.MissingKotlinParameterException
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.devEnvironment
@@ -60,7 +62,7 @@ import java.nio.file.Paths
 import java.util.EnumSet
 
 /**
- * Base class for web Tock [Verticle]s. Provides utility methods.
+ * Base class for web Tock [io.vertx.core.Verticle]s. Provides utility methods.
  */
 abstract class WebVerticle : AbstractVerticle() {
 
@@ -115,6 +117,12 @@ abstract class WebVerticle : AbstractVerticle() {
                         configure()
 
                         it.complete()
+                    } catch (t: MissingKotlinParameterException) {
+                        logger.error(t)
+                        it.fail(BadRequestException(t.message ?: ""))
+                    } catch (t: JsonProcessingException) {
+                        logger.error(t)
+                        it.fail(BadRequestException(t.message ?: ""))
                     } catch (t: Throwable) {
                         logger.error(t)
                         it.fail(t)
@@ -362,7 +370,7 @@ abstract class WebVerticle : AbstractVerticle() {
         return BodyHandler.create().setBodyLimit(verticleLongProperty("body_limit", 1000000L)).setMergeFormAttributes(false)
     }
 
-    // extension methods ->
+// extension methods ->
 
     inline fun <reified T : Any> RoutingContext.readJson(): T {
         return mapper.readValue<T>(this.bodyAsString)
@@ -410,11 +418,9 @@ abstract class WebVerticle : AbstractVerticle() {
         }
     }
 
-    fun unauthorized(): Nothing {
-        throw UnauthorizedException()
-    }
+    fun unauthorized(): Nothing = throw UnauthorizedException()
 
-    fun notFound(): Nothing {
-        throw NotFoundException()
-    }
+    fun notFound(): Nothing = throw NotFoundException()
+
+    fun badRequest(message: String): Nothing = throw BadRequestException(message)
 }

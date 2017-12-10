@@ -20,26 +20,34 @@
 
     <parent>
         <groupId>fr.vsct.tock</groupId>
-        <artifactId>tock-nlp</artifactId>
+        <artifactId>tock-nlp-api</artifactId>
         <version>0.7.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>tock-nlp-api</artifactId>
-    <packaging>pom</packaging>
-    <name>Tock NLP API</name>
-    <description>Root project for Tock NLP API</description>
-
-    <modules>
-        <module>service</module>
-        <module>client</module>
-        <module>doc</module>
-    </modules>
-
-    <dependencies>
-        <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-nlp-entity-value</artifactId>
-        </dependency>
-    </dependencies>
+    <artifactId>tock-nlp-api-doc</artifactId>
+    <name>Tock NLP API Documentation</name>
+    <description>Interface documentation for Tock NLP API</description>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <configuration>
+                    <descriptors>
+                        <descriptor>src/main/assembly/assembly.xml</descriptor>
+                    </descriptors>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>single</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 
 </project>

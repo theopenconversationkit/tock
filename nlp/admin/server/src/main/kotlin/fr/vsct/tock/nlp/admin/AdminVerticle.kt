@@ -44,7 +44,6 @@ import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.security.initEncryptor
-import fr.vsct.tock.shared.vertx.BadRequestException
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.web.RoutingContext
@@ -52,6 +51,7 @@ import io.vertx.ext.web.handler.StaticHandler
 import mu.KLogger
 import mu.KotlinLogging
 import org.litote.kmongo.Id
+import java.nio.charset.StandardCharsets
 import java.util.Locale
 
 /**
@@ -125,7 +125,7 @@ open class AdminVerticle : WebVerticle() {
                     && (application._id == null || context.organization == front.getApplicationById(application._id)?.namespace)) {
                 val appWithSameName = front.getApplicationByNamespaceAndName(application.namespace, application.name)
                 if (appWithSameName != null && appWithSameName._id != application._id) {
-                    throw BadRequestException("Application with same name already exists")
+                    badRequest("Application with same name already exists")
                 }
                 val newApp = front.save(application.toApplication().copy(name = application.name.toLowerCase()))
                 //trigger a full rebuild if nlp engine change
@@ -390,6 +390,16 @@ open class AdminVerticle : WebVerticle() {
         if (!devEnvironment) {
             //serve statics in docker image
             val webRoot = verticleProperty("content_path", "/maven/dist")
+            //swagger yaml
+            router.get("/doc/nlp.yaml").handler { context ->
+                context.vertx().fileSystem().readFile("$webRoot/doc/nlp.yaml") {
+                    if (it.succeeded()) {
+                        context.response().end(it.result().toString(StandardCharsets.UTF_8).replace("_HOST_", verticleProperty("nlp_external_host", "localhost:8888")))
+                    } else {
+                        context.fail(it.cause())
+                    }
+                }
+            }
             router.route("/*").handler(StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(webRoot))
             router.route().failureHandler { context ->
                 val code = if (context.statusCode() > 0) context.statusCode() else 500

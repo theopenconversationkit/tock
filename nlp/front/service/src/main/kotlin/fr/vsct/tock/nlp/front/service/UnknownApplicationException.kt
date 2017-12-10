@@ -14,22 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.api.client.model
-
-import java.util.Locale
-
+package fr.vsct.tock.nlp.front.service
 
 /**
- *
+ * Thrown when no application is found.
  */
-data class NlpResult(val intent: String,
-                     val intentNamespace:String,
-                     val language: Locale,
-                     val entities: List<EntityValue>,
-                     val intentProbability: Double,
-                     val entitiesProbability: Double,
-                     val retainedQuery: String,
-                     val otherIntentsProbabilities: Map<String, Double>) {
-
-    fun firstValue(role: String): EntityValue? = entities.firstOrNull { it.entity.role == role }
+class UnknownApplicationException(namespace: String, applicationName: String) : IllegalStateException("unknown application $namespace:$applicationName") {
 }

@@ -16,11 +16,14 @@
 
 package fr.vsct.tock.nlp.front.shared.parser
 
+import java.util.Locale
+
 /**
  *
  */
 data class ParseResult(val intent: String,
                        val intentNamespace: String,
+                       val language: Locale,
                        val entities: List<ParsedEntityValue>,
                        val intentProbability: Double,
                        val entitiesProbability: Double,

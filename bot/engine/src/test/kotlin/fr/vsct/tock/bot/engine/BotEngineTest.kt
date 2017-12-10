@@ -44,6 +44,7 @@ import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.nlp.api.client.NlpClient
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.shared.Executor
+import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.tockInternalInjector
 import fr.vsct.tock.translator.I18nDAO
@@ -78,6 +79,7 @@ abstract class BotEngineTest {
                 Response.success(
                         NlpResult(test.name,
                                 "test",
+                                defaultLocale,
                                 emptyList(),
                                 1.0,
                                 1.0,
@@ -87,6 +89,7 @@ abstract class BotEngineTest {
                 Response.success(
                         NlpResult(test.name,
                                 "test",
+                                defaultLocale,
                                 emptyList(),
                                 1.0,
                                 1.0,
