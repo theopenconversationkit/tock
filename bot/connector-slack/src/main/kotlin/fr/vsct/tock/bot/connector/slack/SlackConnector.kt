@@ -32,6 +32,7 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.vertx.vertx
 import mu.KotlinLogging
+import java.time.Duration
 
 class SlackConnector(val applicationId: String,
                      val path: String,
@@ -88,14 +89,14 @@ class SlackConnector(val applicationId: String,
         if (event is Action) {
             val message = SlackMessageConverter.toMessageOut(event)
             if (message != null) {
-                sendMessage(message)
+                sendMessage(message, delayInMs)
             }
         }
     }
 
 
-    private fun sendMessage(message: SlackConnectorMessage) {
-        executor.executeBlocking {
+    private fun sendMessage(message: SlackConnectorMessage, delayInMs: Long) {
+        executor.executeBlocking(Duration.ofMillis(delayInMs)) {
             client.sendMessage(outToken1, outToken2, outToken3, message)
         }
     }
