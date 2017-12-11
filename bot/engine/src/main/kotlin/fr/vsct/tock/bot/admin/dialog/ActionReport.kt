@@ -30,6 +30,7 @@ import java.time.Instant
  */
 data class ActionReport(
         val playerId: PlayerId,
+        val recipientId:PlayerId,
         val date: Instant,
         val message: Message,
         val connectorType: ConnectorType?,

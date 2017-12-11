@@ -96,6 +96,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                         .map {
                             ActionReport(
                                     it.playerId,
+                                    it.recipientId,
                                     it.date,
                                     it.toMessage(),
                                     it.state.targetConnectorType,
