@@ -1,0 +1,23 @@
+site_name: 'Tock'
+site_description: 'Pour construire aisément vos prochains bots'
+site_author: 'OUI Technologies'
+site_url: 'https://voyages-sncf-technologies.github.io/tock/fr'
+repo_name: 'tock'
+repo_url: 'https://github.com/voyages-sncf-technologies/tock'
+pages:
+    - Tock - Documentation: index.md
+    - Pour commencer: pour-commencer.md
+theme: 'material'
+theme_dir: 'theme'
+markdown_extensions:
+  - admonition
+  - codehilite(guess_lang=false)
+  - toc(permalink=true)
+copyright: 'Copyright &copy; 2017 OUI Technologies'
+extra:
+  social:
+    - type: 'github'
+      link: 'https://github.com/voyages-sncf-technologies/tock'
+  feature:
+      tabs: true
+  logo: 'assets/images/logo.svg'

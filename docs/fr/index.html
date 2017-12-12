@@ -1,10 +1,14 @@
 
+
+
+
 <!DOCTYPE html>
-<html class="no-js">
+<html lang="" class="no-js">
   <head>
     
       <meta charset="utf-8">
       <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
       
         <meta name="description" content="Pour construire aisément vos prochains bots">
       
@@ -12,12 +16,25 @@
         <link rel="canonical" href="https://voyages-sncf-technologies.github.io/tock/fr/">
       
       
-        <meta name="author" content="Voyages-Sncf Technologies">
+        <meta name="author" content="OUI Technologies">
       
       
-        <link rel="shortcut icon" href="./assets/images/favicon.png">
+        <meta name="lang:clipboard.copy" content="">
       
-      <meta name="generator" content="mkdocs-0.16.3, mkdocs-material-1.5.4">
+        <meta name="lang:clipboard.copied" content="">
+      
+        <meta name="lang:search.language" content="">
+      
+        <meta name="lang:search.result.none" content="Aucun résultat">
+      
+        <meta name="lang:search.result.one" content="1 résultat">
+      
+        <meta name="lang:search.result.other" content="# résultats">
+      
+        <meta name="lang:search.tokenizer" content="">
+      
+      <link rel="shortcut icon" href="./assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.2.2">
     
     
       
@@ -25,17 +42,14 @@
       
     
     
-      <script src="./assets/javascripts/modernizr-56ade86843.js"></script>
-    
-    
-      <link rel="stylesheet" href="./assets/stylesheets/application-b1a1975878.css">
+      <link rel="stylesheet" href="./assets/stylesheets/application.7a4cdee3.css">
       
     
     
+      <script src="./assets/javascripts/modernizr.1aa3b519.js"></script>
+    
+    
       
-        
-        
-        
         <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
         <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
       
@@ -44,9 +58,6 @@
     
     
   </head>
-  
-  
-  
   
     <body>
   
@@ -66,41 +77,46 @@
   <nav class="md-header-nav md-grid">
     <div class="md-flex">
       <div class="md-flex__cell md-flex__cell--shrink">
-        
-          <a href="https://voyages-sncf-technologies.github.io/tock/fr" title="Tock" class="md-logo md-header-nav__button">
-            <img src="./assets/images/logo.svg" width="24" height="24">
-          </a>
-        
+        <a href="https://voyages-sncf-technologies.github.io/tock/fr" title="Tock" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
         <label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
       </div>
       <div class="md-flex__cell md-flex__cell--stretch">
-        <span class="md-flex__ellipsis md-header-nav__title">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
           
             
-              
+              <span class="md-header-nav__topic">
+                Tock
+              </span>
+              <span class="md-header-nav__topic">
+                Tock - Documentation
+              </span>
             
-            Tock - Documentation
           
-        </span>
+        </div>
       </div>
       <div class="md-flex__cell md-flex__cell--shrink">
         
-          <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
           
-<div class="md-search" data-md-component="search">
-  <div class="md-search__overlay"></div>
+            <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+            
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="search"></label>
   <div class="md-search__inner">
     <form class="md-search__form" name="search">
-      <input type="text" class="md-search__input" name="query" required placeholder="Recherche" accesskey="s" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query">
+      <input type="text" class="md-search__input" name="query" required placeholder="Recherche" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query">
       <label class="md-icon md-search__icon" for="search"></label>
-      <button type="reset" class="md-icon md-search__icon" data-md-component="reset">close</button>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset">&#xE5CD;</button>
     </form>
     <div class="md-search__output">
       <div class="md-search__scrollwrap" data-md-scrollfix>
         <div class="md-search-result" data-md-component="result">
-          <div class="md-search-result__meta" data-md-lang-result-none="Aucun résultat" data-md-lang-result-one="1 résultat" data-md-lang-result-other="# résultats">
+          <div class="md-search-result__meta">
             Commencer à écrire pour rechercher
           </div>
           <ol class="md-search-result__list"></ol>
@@ -109,18 +125,19 @@
     </div>
   </div>
 </div>
+          
         
       </div>
-      <div class="md-flex__cell md-flex__cell--shrink">
-        <div class="md-header-nav__source">
-          
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
             
 
 
   
 
 
-  <a href="https://github.com/voyages-sncf-technologies/tock" title="Aller au repository" class="md-source" data-md-source="github">
+  <a href="https://github.com/voyages-sncf-technologies/tock/" title="Aller au repository" class="md-source" data-md-source="github">
     
       <div class="md-source__icon">
         <svg viewBox="0 0 24 24" width="24" height="24">
@@ -133,37 +150,17 @@
     </div>
   </a>
 
-          
+          </div>
         </div>
-      </div>
+      
     </div>
   </nav>
 </header>
     
     <div class="md-container">
       
-      
-        
-
-<nav class="md-tabs" data-md-component="tabs">
-  <div class="md-tabs__inner md-grid">
-    <ul class="md-tabs__list">
-      
-        
-  <li class="md-tabs__item">
-    
-      <a href="." title="Tock - Documentation" class="md-tabs__link md-tabs__link--active">
-        Tock - Documentation
-      </a>
-    
-  </li>
-
-      
         
       
-    </ul>
-  </div>
-</nav>
       
       <main class="md-main">
         <div class="md-main__inner md-grid" data-md-component="container">
@@ -174,11 +171,11 @@
                   <div class="md-sidebar__inner">
                     <nav class="md-nav md-nav--primary" data-md-level="0">
   <label class="md-nav__title md-nav__title--site" for="drawer">
-    
-      <i class="md-logo md-nav__button">
-        <img src="./assets/images/logo.svg">
-      </i>
-    
+    <span class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </span>
     Tock
   </label>
   
@@ -189,7 +186,7 @@
   
 
 
-  <a href="https://github.com/voyages-sncf-technologies/tock" title="Aller au repository" class="md-source" data-md-source="github">
+  <a href="https://github.com/voyages-sncf-technologies/tock/" title="Aller au repository" class="md-source" data-md-source="github">
     
       <div class="md-source__icon">
         <svg viewBox="0 0 24 24" width="24" height="24">
@@ -239,15 +236,97 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#philosophie-du-projet" title="Philosophie du projet" class="md-nav__link">
-    Philosophie du projet
+  <a href="#presentation" title="Présentation" class="md-nav__link">
+    Présentation
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#etat-du-projet" title="Etat du projet" class="md-nav__link">
-    Etat du projet
+  <a href="#une-plateforme-pour-construire-des-modeles-danalyse-du-language-naturel" title="Une plateforme pour construire des modèles d'analyse du language naturel" class="md-nav__link">
+    Une plateforme pour construire des modèles d'analyse du language naturel
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#une-interface-dadministration" title="Une interface d'administration" class="md-nav__link">
+    Une interface d'administration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suivi-de-qualite-des-modeles" title="Suivi de qualité des modèles" class="md-nav__link">
+    Suivi de qualité des modèles
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#la-construction-automatique-des-modeles-est-basee-sur-les-solutions-open-sources-au-choix-de-stanford-corenlp-ou-dapache-opennlp" title="La construction automatique des modèles est basée sur les solutions open-sources (au choix) de Stanford CoreNLP ou d'Apache OpenNLP" class="md-nav__link">
+    La construction automatique des modèles est basée sur les solutions open-sources (au choix) de Stanford CoreNLP ou d'Apache OpenNLP
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#un-outil-de-parsing-de-dates-et-de-types-simples-basee-sur-la-librairie-open-source-duckling-est-egalement-integre-dans-la-stack" title="Un outil de parsing de dates et de types simples basée sur la librairie open-source Duckling est également intégré dans la stack." class="md-nav__link">
+    Un outil de parsing de dates et de types simples basée sur la librairie open-source Duckling est également intégré dans la stack.
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#les-modeles-peuvent-etre-utilises-via-lapi-mis-a-disposition" title="Les modèles peuvent être utilisés via l'API mis à disposition" class="md-nav__link">
+    Les modèles peuvent être utilisés via l'API mis à disposition
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#un-framework-conversationnel" title="Un framework conversationnel" class="md-nav__link">
+    Un framework conversationnel
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gestion-du-contexte-et-de-lhistorique" title="Gestion du contexte et de l'historique" class="md-nav__link">
+    Gestion du contexte et de l'historique
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connecteurs-tiers" title="Connecteurs tiers" class="md-nav__link">
+    Connecteurs tiers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suivi-des-conversations" title="Suivi des conversations" class="md-nav__link">
+    Suivi des conversations
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#genese-du-projet" title="Genèse du projet" class="md-nav__link">
+    Genèse du projet
   </a>
   
 </li>
@@ -308,15 +387,97 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
-  <a href="#philosophie-du-projet" title="Philosophie du projet" class="md-nav__link">
-    Philosophie du projet
+  <a href="#presentation" title="Présentation" class="md-nav__link">
+    Présentation
   </a>
   
 </li>
       
         <li class="md-nav__item">
-  <a href="#etat-du-projet" title="Etat du projet" class="md-nav__link">
-    Etat du projet
+  <a href="#une-plateforme-pour-construire-des-modeles-danalyse-du-language-naturel" title="Une plateforme pour construire des modèles d'analyse du language naturel" class="md-nav__link">
+    Une plateforme pour construire des modèles d'analyse du language naturel
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#une-interface-dadministration" title="Une interface d'administration" class="md-nav__link">
+    Une interface d'administration
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suivi-de-qualite-des-modeles" title="Suivi de qualité des modèles" class="md-nav__link">
+    Suivi de qualité des modèles
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#la-construction-automatique-des-modeles-est-basee-sur-les-solutions-open-sources-au-choix-de-stanford-corenlp-ou-dapache-opennlp" title="La construction automatique des modèles est basée sur les solutions open-sources (au choix) de Stanford CoreNLP ou d'Apache OpenNLP" class="md-nav__link">
+    La construction automatique des modèles est basée sur les solutions open-sources (au choix) de Stanford CoreNLP ou d'Apache OpenNLP
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#un-outil-de-parsing-de-dates-et-de-types-simples-basee-sur-la-librairie-open-source-duckling-est-egalement-integre-dans-la-stack" title="Un outil de parsing de dates et de types simples basée sur la librairie open-source Duckling est également intégré dans la stack." class="md-nav__link">
+    Un outil de parsing de dates et de types simples basée sur la librairie open-source Duckling est également intégré dans la stack.
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#les-modeles-peuvent-etre-utilises-via-lapi-mis-a-disposition" title="Les modèles peuvent être utilisés via l'API mis à disposition" class="md-nav__link">
+    Les modèles peuvent être utilisés via l'API mis à disposition
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#un-framework-conversationnel" title="Un framework conversationnel" class="md-nav__link">
+    Un framework conversationnel
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#gestion-du-contexte-et-de-lhistorique" title="Gestion du contexte et de l'historique" class="md-nav__link">
+    Gestion du contexte et de l'historique
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#connecteurs-tiers" title="Connecteurs tiers" class="md-nav__link">
+    Connecteurs tiers
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#suivi-des-conversations" title="Suivi des conversations" class="md-nav__link">
+    Suivi des conversations
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#genese-du-projet" title="Genèse du projet" class="md-nav__link">
+    Genèse du projet
   </a>
   
 </li>
@@ -349,43 +510,57 @@
             <article class="md-content__inner md-typeset">
               
                 
+                  <a href="https://github.com/voyages-sncf-technologies/tock/edit/master/docs/index.md" title="Editer la page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
                 
                 <h1 id="bienvenue-dans-la-documentation-de-tock">Bienvenue dans la documentation de Tock!<a class="headerlink" href="#bienvenue-dans-la-documentation-de-tock" title="Permanent link">&para;</a></h1>
-<p><strong>Tock</strong> (<em>The Open Conversation Kit</em>) est une initiative visant à promouvoir et à faciliter la construction d’agents conversationnels (ou bots). </p>
-<p>Il s’agit d’une boite à outils qui met à disposition tous les éléments nécessaires pour construire des bots, qu'ils soient simple ou très complexes. </p>
-<p>Contrairement à la plupart des autres solutions disponibles, il ne dépend pas d’API tierces (mais peut en intégrer aisément si nécessaire) : vous gardez le contrôle de vos données et de vos algorithmes.</p>
+<h2 id="presentation">Présentation<a class="headerlink" href="#presentation" title="Permanent link">&para;</a></h2>
+<p><strong>Tock</strong> (<em>The Open Conversation Kit</em>) est une boite à outils permettant de construire des agents conversationnels (ou bots). </p>
+<p>Contrairement à la plupart des autres solutions disponibles, il ne dépend pas d’API tierces (mais peut en intégrer aisément si nécessaire) : il est donc possible de conserver le contrôle complet de ses données et de ses algorithmes.</p>
 <p>L’ensemble est  disponible en open-source sur github : <a href="https://github.com/voyages-sncf-technologies/tock">https://github.com/voyages-sncf-technologies/tock</a> sous la <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE">licence Apache 2</a>. </p>
-<h2 id="philosophie-du-projet">Philosophie du projet<a class="headerlink" href="#philosophie-du-projet" title="Permanent link">&para;</a></h2>
-<p>L’effort principal porte sur l’intégration et l’orchestration d’outils open-source tiers. </p>
-<p>L’approche se veut à la fois humble, pragmatique et itérative : Tock ne redéveloppe pas d’outil open-source existant mais privilégie la réutilisation. De nouvelles fonctionnalités unitaires sont par ailleurs ajoutées régulièrement. </p>
-<p>A ce jour, les librairies <a href="https://stanfordnlp.github.io/CoreNLP/">Stanford CoreNLP</a>, <a href="https://opennlp.apache.org/">Apache OpenNLP</a> ou <a href="https://duckling.wit.ai/">Duckling</a> sont réutilisées et intégrées nativement.</p>
-<p>Par ailleurs, Tock met à disposition les éléments manquants dans la panoplie open-source existante : </p>
-<ul>
-<li>
-<p>Une interface utilisateur permettant de définir des intentions ou des entités</p>
-</li>
-<li>
-<p>Un toolkit conversationnel pour gérer le contexte des dialogues et l’historique des conversations</p>
-</li>
-<li>
-<p>Divers connecteurs à des plateformes tierces </p>
-</li>
-</ul>
+<p>Deux composants majeurs sont disponibles, le moteur NLP (ou <a href="https://fr.wikipedia.org/wiki/Traitement_automatique_du_langage_naturel">TALN</a> en français),
+ et un framework conversationnel qui intègre le NLP et différents connecteurs comme Messenger, Google Assistant ou Slack. </p>
+<p>La composante NLP est indépendante de la partie conversationnelle. Il est donc possible d'utiliser le NLP sans rentrer dans la complexité de le gestion des conversations.</p>
 <p><img alt="schéma Tock" src="./img/tock.png" title="Les différentes composantes de Tock" /></p>
-<h2 id="etat-du-projet">Etat du projet<a class="headerlink" href="#etat-du-projet" title="Permanent link">&para;</a></h2>
-<p>Le projet est en cours de passage en open-source. </p>
-<p>Certaines fonctionnalités de base ont déjà été intégrées, de nombreuses autres vont l’être dans les mois qui viennent. </p>
-<p>A ce stade, Tock est considérée comme étant en version « alpha » : aucune rétrocompatibilité n’est garantie. </p>
-<p>Tock dispose en interne d’une importante batterie de tests unitaires, mais ces tests n’ont pas été passés en open-source car ils présentent des adhérences fortes au métier de <a href="https://www.voyages-sncf.com">voyages-sncf.com</a>. Ces tests seront migrés provisoirement.</p>
+<h2 id="une-plateforme-pour-construire-des-modeles-danalyse-du-language-naturel">Une plateforme pour construire des modèles d'analyse du language naturel<a class="headerlink" href="#une-plateforme-pour-construire-des-modeles-danalyse-du-language-naturel" title="Permanent link">&para;</a></h2>
+<h3 id="une-interface-dadministration">Une interface d'administration<a class="headerlink" href="#une-interface-dadministration" title="Permanent link">&para;</a></h3>
+<p>L'outil principal est constitué par une interface d'administration qui permet de qualifier des 
+phrases afin de construire des modèles de traitement automatique du langage naturel ( <a href="https://fr.wikipedia.org/wiki/Traitement_automatique_du_langage_naturel">TALN</a> ) :</p>
+<p><img alt="Interface d'admin NLP - qualification de phrase" src="./img/tock-nlp-admin.png" title="Exemple de qualification de phrase" /></p>
+<h3 id="suivi-de-qualite-des-modeles">Suivi de qualité des modèles<a class="headerlink" href="#suivi-de-qualite-des-modeles" title="Permanent link">&para;</a></h3>
+<p>Cette interface fournit également les outils pour faire évoluer les modèles et permet de monitorer leurs pertinences :</p>
+<p><img alt="Interface d'admin NLP - QA" src="./img/tock-nlp-admin-qa.png" title="Exemple de monitoring de pertinence" /></p>
+<h3 id="la-construction-automatique-des-modeles-est-basee-sur-les-solutions-open-sources-au-choix-de-stanford-corenlp-ou-dapache-opennlp">La construction automatique des modèles est basée sur les solutions open-sources (au choix) de <a href="https://stanfordnlp.github.io/CoreNLP/">Stanford CoreNLP</a> ou d'<a href="https://opennlp.apache.org/">Apache OpenNLP</a><a class="headerlink" href="#la-construction-automatique-des-modeles-est-basee-sur-les-solutions-open-sources-au-choix-de-stanford-corenlp-ou-dapache-opennlp" title="Permanent link">&para;</a></h3>
+<h3 id="un-outil-de-parsing-de-dates-et-de-types-simples-basee-sur-la-librairie-open-source-duckling-est-egalement-integre-dans-la-stack">Un outil de parsing de dates et de types simples basée sur la librairie open-source <a href="https://duckling.wit.ai/">Duckling</a> est également intégré dans la stack.<a class="headerlink" href="#un-outil-de-parsing-de-dates-et-de-types-simples-basee-sur-la-librairie-open-source-duckling-est-egalement-integre-dans-la-stack" title="Permanent link">&para;</a></h3>
+<h3 id="les-modeles-peuvent-etre-utilises-via-lapi-mis-a-disposition">Les modèles peuvent être utilisés via l'API mis à disposition<a class="headerlink" href="#les-modeles-peuvent-etre-utilises-via-lapi-mis-a-disposition" title="Permanent link">&para;</a></h3>
+<h2 id="un-framework-conversationnel">Un framework conversationnel<a class="headerlink" href="#un-framework-conversationnel" title="Permanent link">&para;</a></h2>
+<p>Ce framework est la deuxième brique qui permet de construire des assistants.</p>
+<p>Elle utilise la brique de TALN de Tock via son API.</p>
+<h3 id="gestion-du-contexte-et-de-lhistorique">Gestion du contexte et de l'historique<a class="headerlink" href="#gestion-du-contexte-et-de-lhistorique" title="Permanent link">&para;</a></h3>
+<p>Ce framework permet de gérer le contexte des dialogues et l’historique des conversations. 
+Il supporte nativement la fusion d'entités 
+(par exemple le fait de préciser la date "demain" puis plus tard "plutôt le soir" met automatiquement la valeur de la date à jour)</p>
+<h3 id="connecteurs-tiers">Connecteurs tiers<a class="headerlink" href="#connecteurs-tiers" title="Permanent link">&para;</a></h3>
+<p>Des connecteurs à Facebook Messenger, Google Assistant et Slack sont disponibles. 
+Il est possible d'en créer facilement d'autres.</p>
+<h3 id="suivi-des-conversations">Suivi des conversations<a class="headerlink" href="#suivi-des-conversations" title="Permanent link">&para;</a></h3>
+<p>Enfin une interface d'administration est mise à disposition et permet de tester le bot et de suivre les conversations du bot. </p>
+<h2 id="genese-du-projet">Genèse du projet<a class="headerlink" href="#genese-du-projet" title="Permanent link">&para;</a></h2>
+<p>Le projet a été initialement construit par l'équipe Innovation de <a href="https://www.oui.sncf/">Oui.sncf</a> 
+pour motoriser l'analyse des commandes vocales sur ses <a href="https://www.oui.sncf/mobile">applications mobiles</a> puis son <a href="https://www.messenger.com/t/oui.sncf">Bot Messenger</a>.</p>
+<p>L'<a href="https://assistant.google.com/services/a/id/164effe7c138100b/">assistant Google OUI.sncf</a> est également basé sur Tock,
+de même que son <a href="https://www.oui.sncf/bot/">OUIbot</a>.</p>
+<p>Il a été open-sourcé dans le but de mutualiser l'effort avec d'autres équipes qui souhaiterait développer de nouveaux bots. </p>
 <h2 id="technologies">Technologies<a class="headerlink" href="#technologies" title="Permanent link">&para;</a></h2>
 <p>La plateforme applicative se base sur la <a href="https://fr.wikipedia.org/wiki/Machine_virtuelle_Java">JVM</a>.</p>
 <p>Le langage de référence est <a href="https://kotlinlang.org/">Kotlin</a>.</p>
 <p>Le reste de la stack applicative est constituée de <a href="http://vertx.io/">Vert.x</a> et <a href="https://www.mongodb.com">MongoDB</a>, même si pour l’instant les applications sont essentiellement développés en « blocking IO ». En cible, l’approche « fibers » ( cf <a href="http://docs.paralleluniverse.co/quasar/">http://docs.paralleluniverse.co/quasar/</a>) sera privilégiée.</p>
-<p>Les interfaces d'administration sont implémentées en <a href="https://angular.io/">Angular</a>/<a href="https://www.typescriptlang.org/">Typescript</a>.</p>
+<p>Les interfaces d'administration sont implémentées en <a href="https://angular.io/">Angular4</a>/<a href="https://www.typescriptlang.org/">Typescript</a>.</p>
+<p>Cependant il est tout à fait possible de développer des applications en utilisant d'autres languages de programmation via les APIs mis à disposition.</p>
 <h2 id="les-differents-projets-open-sources">Les différents projets open-sourcés<a class="headerlink" href="#les-differents-projets-open-sources" title="Permanent link">&para;</a></h2>
 <ul>
 <li>
-<p>Le projet principal se trouve sous licence <a href="https://opennlp.apache.org/">Apache OpenNLP</a> : <a href="https://github.com/voyages-sncf-technologies/tock">https://github.com/voyages-sncf-technologies/tock</a></p>
+<p>Le projet principal se trouve sous licence <a href="https://opennlp.apache.org/">Apache OpenNLP</a>. Le code source est disponible sur GitHub : <a href="https://github.com/voyages-sncf-technologies/tock">https://github.com/voyages-sncf-technologies/tock</a></p>
 </li>
 <li>
 <p>Cependant une dépendance optionnelle,  <a href="https://stanfordnlp.github.io/CoreNLP/">Stanford CoreNLP</a>, est sous licence <a href="https://fr.wikipedia.org/wiki/Licence_publique_g%C3%A9n%C3%A9rale_GNU">GPL</a>. 
@@ -394,8 +569,8 @@
 </ul>
 <p>Enfin deux autres projets sont mis à disposition : </p>
 <ul>
-<li>Le projet contenant les images dockers : <a href="https://github.com/voyages-sncf-technologies/tock-docker">https://github.com/voyages-sncf-technologies/tock-docker</a></li>
-<li>Le projet contenant un exemple d'implémentation de bot : <a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data">https://github.com/voyages-sncf-technologies/tock-bot-open-data</a> </li>
+<li>Un projet contenant des images dockers pour faciliter la prise en main : <a href="https://github.com/voyages-sncf-technologies/tock-docker">https://github.com/voyages-sncf-technologies/tock-docker</a></li>
+<li>Un projet contenant un exemple d'implémentation de bot se basant sur les <a href="https://www.digital.sncf.com/startup/api">API SNCF</a> en Open Data : <a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data">https://github.com/voyages-sncf-technologies/tock-bot-open-data</a> </li>
 </ul>
                 
                   
@@ -438,13 +613,13 @@
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            Copyright &copy; 2017 Voyages-Sncf Technologies
+            Copyright &copy; 2017 OUI Technologies
           </div>
         
         powered by
-        <a href="http://www.mkdocs.org" title="MkDocs">MkDocs</a>
+        <a href="http://www.mkdocs.org">MkDocs</a>
         and
-        <a href="http://squidfunk.github.io/mkdocs-material/" title="Material for MkDocs">
+        <a href="https://squidfunk.github.io/mkdocs-material/">
           Material for MkDocs</a>
       </div>
       
@@ -464,8 +639,12 @@
       
     </div>
     
-      <script src="./assets/javascripts/application-0b7df094bf.js"></script>
-      <script>app.initialize({url:{base:"."}})</script>
+      <script src="./assets/javascripts/application.6cdc17f0.js"></script>
+      
+        
+        
+      
+      <script>app.initialize({version:"0.17.2",url:{base:"."}})</script>
       
     
     
