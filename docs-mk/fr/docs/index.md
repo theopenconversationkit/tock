@@ -11,7 +11,8 @@ L’ensemble est  disponible en open-source sur github : [https://github.com/voy
 Deux composants majeurs sont disponibles, le moteur NLP (ou [TALN](https://fr.wikipedia.org/wiki/Traitement_automatique_du_langage_naturel) en français),
  et un framework conversationnel qui intègre le NLP et différents connecteurs comme Messenger, Google Assistant ou Slack. 
  
-La composante NLP est indépendante de la partie conversationnelle. Il est donc possible d'utiliser le NLP sans rentrer dans la complexité de le gestion des conversations.
+La composante NLP est indépendante de la partie conversationnelle. 
+Il est donc possible d'utiliser le NLP sans rentrer dans la complexité de la gestion des conversations.
 
 ![schéma Tock](img/tock.png "Les différentes composantes de Tock")
 
@@ -34,7 +35,7 @@ Cette interface fournit également les outils pour faire évoluer les modèles e
 
 ### Un outil de parsing de dates et de types simples basée sur la librairie open-source [Duckling](https://duckling.wit.ai/) est également intégré dans la stack.
 
-### Les modèles peuvent être utilisés via l'API mis à disposition
+### Les modèles peuvent être utilisés via l'API mis à disposition.
 
 ## Un framework conversationnel 
 
@@ -43,16 +44,16 @@ Ce framework est la deuxième brique qui permet de construire des assistants.
 Elle utilise la brique de TALN de Tock via son API.
 
 ### Gestion du contexte et de l'historique 
-Ce framework permet de gérer le contexte des dialogues et l’historique des conversations. 
-Il supporte nativement la fusion d'entités 
+La gestion des contextes des dialogues et de l’historique des conversations est automatiquement disponible. 
+Des notions avancées comme la fusion d'entités sont également mis à disposition.
 (par exemple le fait de préciser la date "demain" puis plus tard "plutôt le soir" met automatiquement la valeur de la date à jour)
 
 ### Connecteurs tiers
 Des connecteurs à Facebook Messenger, Google Assistant et Slack sont disponibles. 
-Il est possible d'en créer facilement d'autres.
+Il est possible d'en créer facilement d'autres, que ce soit pour se connecter à d'autres canaux ou pour répondre à des besoins spécifiques.
 
 ### Suivi des conversations
-Enfin une interface d'administration est mise à disposition et permet de tester le bot et de suivre les conversations du bot. 
+Enfin une interface d'administration est mise à disposition et permet de tester les bots et de suivre les conversations des utilisateurs. 
 
 ## Genèse du projet
 
@@ -62,7 +63,7 @@ pour motoriser l'analyse des commandes vocales sur ses [applications mobiles](ht
 L'[assistant Google OUI.sncf](https://assistant.google.com/services/a/id/164effe7c138100b/) est également basé sur Tock,
 de même que son [OUIbot](https://www.oui.sncf/bot/).
 
-Il a été open-sourcé dans le but de mutualiser l'effort avec d'autres équipes qui souhaiterait développer de nouveaux bots. 
+Les outils ont été open-sourcé dans le but de mutualiser l'effort avec d'autres équipes qui souhaiterait développer de nouveaux bots. 
 
 ## Technologies
 
@@ -70,7 +71,7 @@ La plateforme applicative se base sur la [JVM](https://fr.wikipedia.org/wiki/Mac
  
 Le langage de référence est [Kotlin](https://kotlinlang.org/).
 
-Le reste de la stack applicative est constituée de [Vert.x](http://vertx.io/) et [MongoDB](https://www.mongodb.com ), même si pour l’instant les applications sont essentiellement développés en « blocking IO ». En cible, l’approche « fibers » ( cf [http://docs.paralleluniverse.co/quasar/](http://docs.paralleluniverse.co/quasar/)) sera privilégiée.
+Le reste de la panoplie applicative est constituée de [Vert.x](http://vertx.io/) et [MongoDB](https://www.mongodb.com ), même si pour l’instant les applications sont essentiellement développés en « blocking IO ». En cible, l’approche « fibers » ( cf [http://docs.paralleluniverse.co/quasar/](http://docs.paralleluniverse.co/quasar/)) sera privilégiée.
 
 Les interfaces d'administration sont implémentées en [Angular4](https://angular.io/)/[Typescript](https://www.typescriptlang.org/).
 
