@@ -94,7 +94,7 @@
                 Tock
               </span>
               <span class="md-header-nav__topic">
-                Tock - Documentation
+                Présentation
               </span>
             
           
@@ -218,11 +218,11 @@
     
     
       <label class="md-nav__link md-nav__link--active" for="toc">
-        Tock - Documentation
+        Présentation
       </label>
     
-    <a href="." title="Tock - Documentation" class="md-nav__link md-nav__link--active">
-      Tock - Documentation
+    <a href="." title="Présentation" class="md-nav__link md-nav__link--active">
+      Présentation
     </a>
     
       
@@ -251,8 +251,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#une-interface-dadministration" title="Une interface d'administration" class="md-nav__link">
-    Une interface d'administration
+  <a href="#interface-dadministration" title="Interface d'administration" class="md-nav__link">
+    Interface d'administration
   </a>
   
 </li>
@@ -265,22 +265,22 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#la-construction-automatique-des-modeles-est-basee-sur-les-solutions-open-sources-au-choix-de-stanford-corenlp-ou-dapache-opennlp" title="La construction automatique des modèles est basée sur les solutions open-sources (au choix) de Stanford CoreNLP ou d'Apache OpenNLP" class="md-nav__link">
-    La construction automatique des modèles est basée sur les solutions open-sources (au choix) de Stanford CoreNLP ou d'Apache OpenNLP
+  <a href="#stanford-corenlp-ou-apache-opennlp" title="Stanford CoreNLP ou Apache OpenNLP" class="md-nav__link">
+    Stanford CoreNLP ou Apache OpenNLP
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#un-outil-de-parsing-de-dates-et-de-types-simples-basee-sur-la-librairie-open-source-duckling-est-egalement-integre-dans-la-stack" title="Un outil de parsing de dates et de types simples basée sur la librairie open-source Duckling est également intégré dans la stack." class="md-nav__link">
-    Un outil de parsing de dates et de types simples basée sur la librairie open-source Duckling est également intégré dans la stack.
+  <a href="#duckling" title="Duckling" class="md-nav__link">
+    Duckling
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#les-modeles-peuvent-etre-utilises-via-lapi-mis-a-disposition" title="Les modèles peuvent être utilisés via l'API mis à disposition." class="md-nav__link">
-    Les modèles peuvent être utilisés via l'API mis à disposition.
+  <a href="#api-nlp" title="API NLP" class="md-nav__link">
+    API NLP
   </a>
   
 </li>
@@ -366,6 +366,30 @@
   </li>
 
     
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="construire-le-modele/" title="Construire le modèle" class="md-nav__link">
+      Construire le modèle
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="api-nlp/" title="L'API NLP" class="md-nav__link">
+      L'API NLP
+    </a>
+  </li>
+
+    
   </ul>
 </nav>
                   </div>
@@ -402,8 +426,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#une-interface-dadministration" title="Une interface d'administration" class="md-nav__link">
-    Une interface d'administration
+  <a href="#interface-dadministration" title="Interface d'administration" class="md-nav__link">
+    Interface d'administration
   </a>
   
 </li>
@@ -416,22 +440,22 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#la-construction-automatique-des-modeles-est-basee-sur-les-solutions-open-sources-au-choix-de-stanford-corenlp-ou-dapache-opennlp" title="La construction automatique des modèles est basée sur les solutions open-sources (au choix) de Stanford CoreNLP ou d'Apache OpenNLP" class="md-nav__link">
-    La construction automatique des modèles est basée sur les solutions open-sources (au choix) de Stanford CoreNLP ou d'Apache OpenNLP
+  <a href="#stanford-corenlp-ou-apache-opennlp" title="Stanford CoreNLP ou Apache OpenNLP" class="md-nav__link">
+    Stanford CoreNLP ou Apache OpenNLP
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#un-outil-de-parsing-de-dates-et-de-types-simples-basee-sur-la-librairie-open-source-duckling-est-egalement-integre-dans-la-stack" title="Un outil de parsing de dates et de types simples basée sur la librairie open-source Duckling est également intégré dans la stack." class="md-nav__link">
-    Un outil de parsing de dates et de types simples basée sur la librairie open-source Duckling est également intégré dans la stack.
+  <a href="#duckling" title="Duckling" class="md-nav__link">
+    Duckling
   </a>
   
 </li>
         
           <li class="md-nav__item">
-  <a href="#les-modeles-peuvent-etre-utilises-via-lapi-mis-a-disposition" title="Les modèles peuvent être utilisés via l'API mis à disposition." class="md-nav__link">
-    Les modèles peuvent être utilisés via l'API mis à disposition.
+  <a href="#api-nlp" title="API NLP" class="md-nav__link">
+    API NLP
   </a>
   
 </li>
@@ -516,27 +540,35 @@
                 <h1 id="bienvenue-dans-la-documentation-de-tock">Bienvenue dans la documentation de Tock!<a class="headerlink" href="#bienvenue-dans-la-documentation-de-tock" title="Permanent link">&para;</a></h1>
 <h2 id="presentation">Présentation<a class="headerlink" href="#presentation" title="Permanent link">&para;</a></h2>
 <p><strong>Tock</strong> (<em>The Open Conversation Kit</em>) est une boite à outils permettant de construire des agents conversationnels (ou bots). </p>
-<p>Contrairement à la plupart des autres solutions disponibles, il ne dépend pas d’API tierces (mais peut en intégrer aisément si nécessaire) : il est donc possible de conserver le contrôle complet de ses données et de ses algorithmes.</p>
-<p>L’ensemble est  disponible en open-source sur github : <a href="https://github.com/voyages-sncf-technologies/tock">https://github.com/voyages-sncf-technologies/tock</a> sous la <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE">licence Apache 2</a>. </p>
-<p>Deux composants majeurs sont disponibles, le moteur NLP (ou <a href="https://fr.wikipedia.org/wiki/Traitement_automatique_du_langage_naturel">TALN</a> en français),
- et un framework conversationnel qui intègre le NLP et différents connecteurs comme Messenger, Google Assistant ou Slack. </p>
+<p>Contrairement à la plupart des autres solutions, il ne dépend pas d’API tierces (mais peut en intégrer aisément si nécessaire) : il est donc possible de conserver le contrôle complet de ses données et de ses algorithmes.</p>
+<p>Le code source de l'ensemble se trouve sur github : <a href="https://github.com/voyages-sncf-technologies/tock">https://github.com/voyages-sncf-technologies/tock</a> sous la <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE">licence Apache 2</a>. </p>
+<p>Deux composants majeurs sont disponibles, le moteur NLP ( pour Natural Language Processing ou <a href="https://fr.wikipedia.org/wiki/Traitement_automatique_du_langage_naturel">TALN</a> en français),
+ et un framework conversationnel qui intègre les services NLP et différents connecteurs comme Messenger, Google Assistant ou Slack. </p>
 <p>La composante NLP est indépendante de la partie conversationnelle. 
-Il est donc possible d'utiliser le NLP sans rentrer dans la complexité de la gestion des conversations.</p>
+Il est donc possible d'utiliser le NLP sans devoir maîtriser la complexité induite par la gestion des conversations.
+Dans certain cas d'usage importants, comme l'<a href="https://fr.wikipedia.org/wiki/Internet_des_objets">Internet des objets</a>, 
+l'utilisation d'un modèle NLP seule est pertinente.</p>
 <p><img alt="schéma Tock" src="./img/tock.png" title="Les différentes composantes de Tock" /></p>
 <h2 id="une-plateforme-pour-construire-des-modeles-danalyse-du-language-naturel">Une plateforme pour construire des modèles d'analyse du language naturel<a class="headerlink" href="#une-plateforme-pour-construire-des-modeles-danalyse-du-language-naturel" title="Permanent link">&para;</a></h2>
-<h3 id="une-interface-dadministration">Une interface d'administration<a class="headerlink" href="#une-interface-dadministration" title="Permanent link">&para;</a></h3>
+<h3 id="interface-dadministration">Interface d'administration<a class="headerlink" href="#interface-dadministration" title="Permanent link">&para;</a></h3>
 <p>L'outil principal est constitué par une interface d'administration qui permet de qualifier des 
 phrases afin de construire des modèles de traitement automatique du langage naturel ( <a href="https://fr.wikipedia.org/wiki/Traitement_automatique_du_langage_naturel">TALN</a> ) :</p>
 <p><img alt="Interface d'admin NLP - qualification de phrase" src="./img/tock-nlp-admin.png" title="Exemple de qualification de phrase" /></p>
 <h3 id="suivi-de-qualite-des-modeles">Suivi de qualité des modèles<a class="headerlink" href="#suivi-de-qualite-des-modeles" title="Permanent link">&para;</a></h3>
 <p>Cette interface fournit également les outils pour faire évoluer les modèles et permet de monitorer leurs pertinences :</p>
 <p><img alt="Interface d'admin NLP - QA" src="./img/tock-nlp-admin-qa.png" title="Exemple de monitoring de pertinence" /></p>
-<h3 id="la-construction-automatique-des-modeles-est-basee-sur-les-solutions-open-sources-au-choix-de-stanford-corenlp-ou-dapache-opennlp">La construction automatique des modèles est basée sur les solutions open-sources (au choix) de <a href="https://stanfordnlp.github.io/CoreNLP/">Stanford CoreNLP</a> ou d'<a href="https://opennlp.apache.org/">Apache OpenNLP</a><a class="headerlink" href="#la-construction-automatique-des-modeles-est-basee-sur-les-solutions-open-sources-au-choix-de-stanford-corenlp-ou-dapache-opennlp" title="Permanent link">&para;</a></h3>
-<h3 id="un-outil-de-parsing-de-dates-et-de-types-simples-basee-sur-la-librairie-open-source-duckling-est-egalement-integre-dans-la-stack">Un outil de parsing de dates et de types simples basée sur la librairie open-source <a href="https://duckling.wit.ai/">Duckling</a> est également intégré dans la stack.<a class="headerlink" href="#un-outil-de-parsing-de-dates-et-de-types-simples-basee-sur-la-librairie-open-source-duckling-est-egalement-integre-dans-la-stack" title="Permanent link">&para;</a></h3>
-<h3 id="les-modeles-peuvent-etre-utilises-via-lapi-mis-a-disposition">Les modèles peuvent être utilisés via l'API mis à disposition.<a class="headerlink" href="#les-modeles-peuvent-etre-utilises-via-lapi-mis-a-disposition" title="Permanent link">&para;</a></h3>
+<h3 id="stanford-corenlp-ou-apache-opennlp"><a href="https://stanfordnlp.github.io/CoreNLP/">Stanford CoreNLP</a> ou <a href="https://opennlp.apache.org/">Apache OpenNLP</a><a class="headerlink" href="#stanford-corenlp-ou-apache-opennlp" title="Permanent link">&para;</a></h3>
+<p>La construction automatique des modèles est basée sur une de ces solutions open-sources (au choix). 
+Tock fournit un niveau d'indirection qui permet d'intégrer d'autres librairies NLP. 
+L'intégration de <a href="http://nlp.johnsnowlabs.com">SparkNLP</a> est d'ailleurs en cours d'étude.</p>
+<h3 id="duckling"><a href="https://github.com/facebook/duckling">Duckling</a><a class="headerlink" href="#duckling" title="Permanent link">&para;</a></h3>
+<p>Un outil de parsing de dates et de types simples basé sur la librairie open-source <a href="https://github.com/facebook/duckling">Duckling</a> 
+est également intégré par défaut.</p>
+<h3 id="api-nlp">API NLP<a class="headerlink" href="#api-nlp" title="Permanent link">&para;</a></h3>
+<p>Les modèles peuvent être utilisés via l'<a href="./../api/index.html">API</a> mis à disposition.</p>
 <h2 id="un-framework-conversationnel">Un framework conversationnel<a class="headerlink" href="#un-framework-conversationnel" title="Permanent link">&para;</a></h2>
 <p>Ce framework est la deuxième brique qui permet de construire des assistants.</p>
-<p>Elle utilise la brique de TALN de Tock via son API.</p>
+<p>Elle utilise la brique de TALN de Tock via son <a href="./../api/index.html">API</a>.</p>
 <h3 id="gestion-du-contexte-et-de-lhistorique">Gestion du contexte et de l'historique<a class="headerlink" href="#gestion-du-contexte-et-de-lhistorique" title="Permanent link">&para;</a></h3>
 <p>La gestion des contextes des dialogues et de l’historique des conversations est automatiquement disponible. 
 Des notions avancées comme la fusion d'entités sont également mis à disposition.
@@ -547,11 +579,14 @@ Il est possible d'en créer facilement d'autres, que ce soit pour se connecter �
 <h3 id="suivi-des-conversations">Suivi des conversations<a class="headerlink" href="#suivi-des-conversations" title="Permanent link">&para;</a></h3>
 <p>Enfin une interface d'administration est mise à disposition et permet de tester les bots et de suivre les conversations des utilisateurs. </p>
 <h2 id="genese-du-projet">Genèse du projet<a class="headerlink" href="#genese-du-projet" title="Permanent link">&para;</a></h2>
-<p>Le projet a été initialement construit par l'équipe Innovation de <a href="https://www.oui.sncf/">Oui.sncf</a> 
-pour motoriser l'analyse des commandes vocales sur ses <a href="https://www.oui.sncf/mobile">applications mobiles</a> puis son <a href="https://www.messenger.com/t/oui.sncf">Bot Messenger</a>.</p>
+<p>Le projet a été initié en 2016 par l'équipe Innovation de <a href="https://www.oui.sncf/">Oui.sncf</a> 
+dans un premier temps afin de motoriser l'analyse des commandes vocales sur ses <a href="https://www.oui.sncf/mobile">applications mobiles</a>.</p>
+<p>L'outil a ensuite été utilisé pour implémenter son <a href="https://www.messenger.com/t/oui.sncf">Bot Messenger</a>.</p>
+<p>Depuis, une <a href="https://open.voyages-sncf.com/ouiwork/innovation/assistant-google-et-google-home-atelier-de-decouverte-test-et-discussions">équipe dédiée</a> au sein de OUI.sncf fait évoluer et maintient la solution.</p>
 <p>L'<a href="https://assistant.google.com/services/a/id/164effe7c138100b/">assistant Google OUI.sncf</a> est également basé sur Tock,
-de même que son <a href="https://www.oui.sncf/bot/">OUIbot</a>.</p>
-<p>Les outils ont été open-sourcé dans le but de mutualiser l'effort avec d'autres équipes qui souhaiterait développer de nouveaux bots. </p>
+de même que le <a href="https://www.oui.sncf/bot/">OUIbot</a>.</p>
+<p>Les outils ont été open-sourcé dans le but de mutualiser l'effort avec d'autres équipes
+ qui souhaiterait développer des assistants ou bots. </p>
 <h2 id="technologies">Technologies<a class="headerlink" href="#technologies" title="Permanent link">&para;</a></h2>
 <p>La plateforme applicative se base sur la <a href="https://fr.wikipedia.org/wiki/Machine_virtuelle_Java">JVM</a>.</p>
 <p>Le langage de référence est <a href="https://kotlinlang.org/">Kotlin</a>.</p>
@@ -570,7 +605,7 @@ de même que son <a href="https://www.oui.sncf/bot/">OUIbot</a>.</p>
 </ul>
 <p>Enfin deux autres projets sont mis à disposition : </p>
 <ul>
-<li>Un projet contenant des images dockers pour faciliter la prise en main : <a href="https://github.com/voyages-sncf-technologies/tock-docker">https://github.com/voyages-sncf-technologies/tock-docker</a></li>
+<li>Un projet contenant des images dockers avec comme objectif de faciliter la prise en main : <a href="https://github.com/voyages-sncf-technologies/tock-docker">https://github.com/voyages-sncf-technologies/tock-docker</a></li>
 <li>Un projet contenant un exemple d'implémentation de bot se basant sur les <a href="https://www.digital.sncf.com/startup/api">API SNCF</a> en Open Data : <a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data">https://github.com/voyages-sncf-technologies/tock-bot-open-data</a> </li>
 </ul>
                 

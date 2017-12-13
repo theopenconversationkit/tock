@@ -209,8 +209,8 @@
 
 
   <li class="md-nav__item">
-    <a href=".." title="Tock - Documentation" class="md-nav__link">
-      Tock - Documentation
+    <a href=".." title="Présentation" class="md-nav__link">
+      Présentation
     </a>
   </li>
 
@@ -248,6 +248,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#un-exemple-de-bot" title="Un exemple de bot" class="md-nav__link">
+    Un exemple de bot
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#images-docker" title="Images Docker" class="md-nav__link">
     Images Docker
   </a>
@@ -263,8 +270,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#bot-dexemple-base-sur-des-api-open-data" title="Bot d'exemple basé sur des API Open Data" class="md-nav__link">
-    Bot d'exemple basé sur des API Open Data
+  <a href="#bot-dexemple-base-sur-les-api-open-data" title="Bot d'exemple basé sur les API Open Data" class="md-nav__link">
+    Bot d'exemple basé sur les API Open Data
   </a>
   
 </li>
@@ -274,12 +281,43 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#menu-de-linterface-dadministration" title="Menu de l'interface d'administration" class="md-nav__link">
+    Menu de l'interface d'administration
+  </a>
+  
+</li>
+      
       
       
     </ul>
   
 </nav>
     
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../construire-le-modele/" title="Construire le modèle" class="md-nav__link">
+      Construire le modèle
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../api-nlp/" title="L'API NLP" class="md-nav__link">
+      L'API NLP
+    </a>
   </li>
 
     
@@ -304,6 +342,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#un-exemple-de-bot" title="Un exemple de bot" class="md-nav__link">
+    Un exemple de bot
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#images-docker" title="Images Docker" class="md-nav__link">
     Images Docker
   </a>
@@ -319,14 +364,21 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#bot-dexemple-base-sur-des-api-open-data" title="Bot d'exemple basé sur des API Open Data" class="md-nav__link">
-    Bot d'exemple basé sur des API Open Data
+  <a href="#bot-dexemple-base-sur-les-api-open-data" title="Bot d'exemple basé sur les API Open Data" class="md-nav__link">
+    Bot d'exemple basé sur les API Open Data
   </a>
   
 </li>
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#menu-de-linterface-dadministration" title="Menu de l'interface d'administration" class="md-nav__link">
+    Menu de l'interface d'administration
+  </a>
   
 </li>
       
@@ -348,11 +400,17 @@
                 
                 
                 <h1 id="commencer-a-utiliser-tock">Commencer à utiliser Tock<a class="headerlink" href="#commencer-a-utiliser-tock" title="Permanent link">&para;</a></h1>
+<h2 id="un-exemple-de-bot">Un exemple de bot<a class="headerlink" href="#un-exemple-de-bot" title="Permanent link">&para;</a></h2>
+<p>Un bot d'exemple utilisant Tock est mis à disposition sur github : <a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data">https://github.com/voyages-sncf-technologies/tock-bot-open-data</a>.</p>
+<p>Il se base sur les <a href="https://data.sncf.com/">API Open Data de la SNCF</a>, et présente des fonctionnalités minimales permettant de démontrer l’usage de Tock. </p>
+<p>Il s'agit d'un bon point de départ, puisque il comporte également un modèle NLP très simple.
+Bien entendu, comme le modèle n'est pas complet, la qualité du bot est faible, mais suffit cependant à démontrer le principe de l'outil.</p>
+<p>Dans la suite de la documentation, nous nous référerons à cet exemple pour couvrir l'ensemble des fonctionnalités. </p>
 <h2 id="images-docker">Images Docker<a class="headerlink" href="#images-docker" title="Permanent link">&para;</a></h2>
 <p>Des images docker sont mises à disposition pour faciliter le démarrage.</p>
 <p>Ces images sont disponibles dans le <a href="https://hub.docker.com/r/tock/">Hub Docker</a>.</p>
 <p>Le code source utilisé pour construire ces images, ainsi que les fichiers <a href="https://docs.docker.com/compose/">docker-compose</a> 
-utilisés pour démarrer l'ensemble de la boite à outils <em>Tock</em> sont disponibles dans le respository github <a href="https://github.com/voyages-sncf-technologies/tock-docker">https://github.com/voyages-sncf-technologies/tock-docker</a>.</p>
+utilisés pour démarrer l'ensemble de la boite à outils <em>Tock</em> sont disponibles dans le repository github <a href="https://github.com/voyages-sncf-technologies/tock-docker">https://github.com/voyages-sncf-technologies/tock-docker</a>.</p>
 <h3 id="demarrer-linterface-dadministration">Démarrer l'interface d'administration<a class="headerlink" href="#demarrer-linterface-dadministration" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span>    <span class="c1">#get the last docker-compose file</span>
     curl -o docker-compose.yml https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/docker-compose.yml
@@ -363,15 +421,15 @@ utilisés pour démarrer l'ensemble de la boite à outils <em>Tock</em> sont dis
 </pre></div>
 
 
-<p>L'interface d'administration NLP est maintenant disponible sur le port 80 :</p>
-<p><img alt="Interface d'admin NLP - création d'application" src="../img/tock-nlp-admin-1.png" title="Création d'application NLP" /></p>
-<p>Il est donc possible de commencer à qualifier et à créer des intentions et des entités : </p>
-<p><img alt="Interface d'admin NLP - qualification de phrase" src="../img/tock-nlp-admin-2.png" title="Qualification de phrase NLP" /></p>
-<h3 id="bot-dexemple-base-sur-des-api-open-data">Bot d'exemple basé sur des API Open Data<a class="headerlink" href="#bot-dexemple-base-sur-des-api-open-data" title="Permanent link">&para;</a></h3>
-<p>Un bot d'exemple utilisant Tock est mis à disposition sur github : <a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data">https://github.com/voyages-sncf-technologies/tock-bot-open-data</a>.</p>
-<p>Il se base sur les <a href="https://data.sncf.com/">API Open Data de la SNCF</a>, et présente des fonctionnalités minimales permettant de démontrer l’usage de Tock. </p>
-<p>Ce bot sera bientôt disponible sur Facebook Messenger et les futures autres connecteurs mis à disposition. L'interface d'administration dédiée sera également disponible en lecture seule sur le web.</p>
-<p>Une image docker est mis à disposition pour le lancer directement. Les instructions pour la démarrer sont précisés dans le <a href="https://github.com/voyages-sncf-technologies/tock-docker#user-content-run-the-open-data-bot-example">projet github contenant les images docker</a>.</p>
+<p>L'interface d'administration NLP est maintenant disponible sur le port 80 : <a href="http://localhost">http://localhost</a></p>
+<p>l'identifiant par défaut est <em>admin@app.com</em> et le mot de passe <em>password</em>.</p>
+<h3 id="bot-dexemple-base-sur-les-api-open-data">Bot d'exemple basé sur les API Open Data<a class="headerlink" href="#bot-dexemple-base-sur-les-api-open-data" title="Permanent link">&para;</a></h3>
+<p>Une image docker est mis à disposition pour le lancer directement.
+Les instructions pour la démarrer sont précisées dans le <a href="https://github.com/voyages-sncf-technologies/tock-docker#user-content-run-the-open-data-bot-example">projet github contenant les images docker</a>.</p>
+<h2 id="menu-de-linterface-dadministration">Menu de l'interface d'administration<a class="headerlink" href="#menu-de-linterface-dadministration" title="Permanent link">&para;</a></h2>
+<p>Le menu à gauche permet d'accéder aux différentes fonctionnalités.
+La catégorie "NLP" permet de construire et manipuler le modèle.</p>
+<p><img alt="schéma Tock" src="../img/menu.png" title="Menu de l'interface d'administration" /></p>
                 
                   
                 
@@ -390,7 +448,7 @@ utilisés pour démarrer l'ensemble de la boite à outils <em>Tock</em> sont dis
     <div class="md-footer-nav">
       <nav class="md-footer-nav__inner md-grid">
         
-          <a href=".." title="Tock - Documentation" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+          <a href=".." title="Présentation" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
             <div class="md-flex__cell md-flex__cell--shrink">
               <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
             </div>
@@ -399,11 +457,25 @@ utilisés pour démarrer l'ensemble de la boite à outils <em>Tock</em> sont dis
                 <span class="md-footer-nav__direction">
                   Précédent
                 </span>
-                Tock - Documentation
+                Présentation
               </span>
             </div>
           </a>
         
+        
+          <a href="../construire-le-modele/" title="Construire le modèle" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Suivant
+                </span>
+                Construire le modèle
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
         
       </nav>
     </div>

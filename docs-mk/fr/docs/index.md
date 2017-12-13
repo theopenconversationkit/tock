@@ -4,21 +4,23 @@
 
 **Tock** (*The Open Conversation Kit*) est une boite à outils permettant de construire des agents conversationnels (ou bots). 
 
-Contrairement à la plupart des autres solutions disponibles, il ne dépend pas d’API tierces (mais peut en intégrer aisément si nécessaire) : il est donc possible de conserver le contrôle complet de ses données et de ses algorithmes.
+Contrairement à la plupart des autres solutions, il ne dépend pas d’API tierces (mais peut en intégrer aisément si nécessaire) : il est donc possible de conserver le contrôle complet de ses données et de ses algorithmes.
 
-L’ensemble est  disponible en open-source sur github : [https://github.com/voyages-sncf-technologies/tock](https://github.com/voyages-sncf-technologies/tock) sous la [licence Apache 2](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE). 
+Le code source de l'ensemble se trouve sur github : [https://github.com/voyages-sncf-technologies/tock](https://github.com/voyages-sncf-technologies/tock) sous la [licence Apache 2](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE). 
 
-Deux composants majeurs sont disponibles, le moteur NLP (ou [TALN](https://fr.wikipedia.org/wiki/Traitement_automatique_du_langage_naturel) en français),
- et un framework conversationnel qui intègre le NLP et différents connecteurs comme Messenger, Google Assistant ou Slack. 
+Deux composants majeurs sont disponibles, le moteur NLP ( pour Natural Language Processing ou [TALN](https://fr.wikipedia.org/wiki/Traitement_automatique_du_langage_naturel) en français),
+ et un framework conversationnel qui intègre les services NLP et différents connecteurs comme Messenger, Google Assistant ou Slack. 
  
 La composante NLP est indépendante de la partie conversationnelle. 
-Il est donc possible d'utiliser le NLP sans rentrer dans la complexité de la gestion des conversations.
+Il est donc possible d'utiliser le NLP sans devoir maîtriser la complexité induite par la gestion des conversations.
+Dans certain cas d'usage importants, comme l'[Internet des objets](https://fr.wikipedia.org/wiki/Internet_des_objets), 
+l'utilisation d'un modèle NLP seule est pertinente.
 
 ![schéma Tock](img/tock.png "Les différentes composantes de Tock")
 
 ## Une plateforme pour construire des modèles d'analyse du language naturel 
 
-### Une interface d'administration
+### Interface d'administration
 
 L'outil principal est constitué par une interface d'administration qui permet de qualifier des 
 phrases afin de construire des modèles de traitement automatique du langage naturel ( [TALN](https://fr.wikipedia.org/wiki/Traitement_automatique_du_langage_naturel) ) :
@@ -31,17 +33,26 @@ Cette interface fournit également les outils pour faire évoluer les modèles e
 
 ![Interface d'admin NLP - QA](img/tock-nlp-admin-qa.png "Exemple de monitoring de pertinence")
 
-### La construction automatique des modèles est basée sur les solutions open-sources (au choix) de [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/) ou d'[Apache OpenNLP](https://opennlp.apache.org/)
+### [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/) ou [Apache OpenNLP](https://opennlp.apache.org/)
 
-### Un outil de parsing de dates et de types simples basée sur la librairie open-source [Duckling](https://duckling.wit.ai/) est également intégré dans la stack.
+La construction automatique des modèles est basée sur une de ces solutions open-sources (au choix). 
+Tock fournit un niveau d'indirection qui permet d'intégrer d'autres librairies NLP. 
+L'intégration de [SparkNLP](http://nlp.johnsnowlabs.com) est d'ailleurs en cours d'étude.
 
-### Les modèles peuvent être utilisés via l'API mis à disposition.
+### [Duckling](https://github.com/facebook/duckling) 
+
+Un outil de parsing de dates et de types simples basé sur la librairie open-source [Duckling](https://github.com/facebook/duckling) 
+est également intégré par défaut.
+
+### API NLP
+
+Les modèles peuvent être utilisés via l'[API](../api/index.html) mis à disposition.
 
 ## Un framework conversationnel 
 
 Ce framework est la deuxième brique qui permet de construire des assistants.
 
-Elle utilise la brique de TALN de Tock via son API.
+Elle utilise la brique de TALN de Tock via son [API](../api/index.html).
 
 ### Gestion du contexte et de l'historique 
 La gestion des contextes des dialogues et de l’historique des conversations est automatiquement disponible. 
@@ -56,14 +67,19 @@ Il est possible d'en créer facilement d'autres, que ce soit pour se connecter �
 Enfin une interface d'administration est mise à disposition et permet de tester les bots et de suivre les conversations des utilisateurs. 
 
 ## Genèse du projet
+                    
+Le projet a été initié en 2016 par l'équipe Innovation de [Oui.sncf](https://www.oui.sncf/) 
+dans un premier temps afin de motoriser l'analyse des commandes vocales sur ses [applications mobiles](https://www.oui.sncf/mobile).
 
-Le projet a été initialement construit par l'équipe Innovation de [Oui.sncf](https://www.oui.sncf/) 
-pour motoriser l'analyse des commandes vocales sur ses [applications mobiles](https://www.oui.sncf/mobile) puis son [Bot Messenger](https://www.messenger.com/t/oui.sncf).
+L'outil a ensuite été utilisé pour implémenter son [Bot Messenger](https://www.messenger.com/t/oui.sncf).
+
+Depuis, une [équipe dédiée](https://open.voyages-sncf.com/ouiwork/innovation/assistant-google-et-google-home-atelier-de-decouverte-test-et-discussions) au sein de OUI.sncf fait évoluer et maintient la solution.
 
 L'[assistant Google OUI.sncf](https://assistant.google.com/services/a/id/164effe7c138100b/) est également basé sur Tock,
-de même que son [OUIbot](https://www.oui.sncf/bot/).
+de même que le [OUIbot](https://www.oui.sncf/bot/).
 
-Les outils ont été open-sourcé dans le but de mutualiser l'effort avec d'autres équipes qui souhaiterait développer de nouveaux bots. 
+Les outils ont été open-sourcé dans le but de mutualiser l'effort avec d'autres équipes
+ qui souhaiterait développer des assistants ou bots. 
 
 ## Technologies
 
@@ -86,6 +102,6 @@ Cependant il est tout à fait possible de développer des applications en utilis
 
 Enfin deux autres projets sont mis à disposition : 
  
-* Un projet contenant des images dockers pour faciliter la prise en main : [https://github.com/voyages-sncf-technologies/tock-docker](https://github.com/voyages-sncf-technologies/tock-docker)
+* Un projet contenant des images dockers avec comme objectif de faciliter la prise en main : [https://github.com/voyages-sncf-technologies/tock-docker](https://github.com/voyages-sncf-technologies/tock-docker)
 * Un projet contenant un exemple d'implémentation de bot se basant sur les [API SNCF](https://www.digital.sncf.com/startup/api) en Open Data : [https://github.com/voyages-sncf-technologies/tock-bot-open-data](https://github.com/voyages-sncf-technologies/tock-bot-open-data) 
 

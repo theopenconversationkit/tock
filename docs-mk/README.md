@@ -1,4 +1,4 @@
-##How to build the documentation
+## How to build the documentation
 
 * Install [MkDocs](http://www.mkdocs.org/)
 * Install [Material for MkDocs](https://squidfunk.github.io/mkdocs-material/)

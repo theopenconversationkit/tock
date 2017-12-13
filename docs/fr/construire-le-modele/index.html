@@ -13,6 +13,8 @@
         <meta name="description" content="Pour construire aisément vos prochains bots">
       
       
+        <link rel="canonical" href="https://voyages-sncf-technologies.github.io/tock/fr/construire-le-modele/">
+      
       
         <meta name="author" content="OUI Technologies">
       
@@ -31,20 +33,20 @@
       
         <meta name="lang:search.tokenizer" content="">
       
-      <link rel="shortcut icon" href="/tock/fr/assets/images/favicon.png">
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
       <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.2.2">
     
     
       
-        <title>Tock</title>
+        <title>Construire le modèle - Tock</title>
       
     
     
-      <link rel="stylesheet" href="/tock/fr/assets/stylesheets/application.7a4cdee3.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.7a4cdee3.css">
       
     
     
-      <script src="/tock/fr/assets/javascripts/modernizr.1aa3b519.js"></script>
+      <script src="../assets/javascripts/modernizr.1aa3b519.js"></script>
     
     
       
@@ -92,7 +94,7 @@
                 Tock
               </span>
               <span class="md-header-nav__topic">
-                
+                Construire le modèle
               </span>
             
           
@@ -207,7 +209,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/tock/fr/" title="Présentation" class="md-nav__link">
+    <a href=".." title="Présentation" class="md-nav__link">
       Présentation
     </a>
   </li>
@@ -219,7 +221,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/tock/fr/pour-commencer/" title="Pour commencer" class="md-nav__link">
+    <a href="../pour-commencer/" title="Pour commencer" class="md-nav__link">
       Pour commencer
     </a>
   </li>
@@ -229,11 +231,47 @@
       
       
 
+  
 
-  <li class="md-nav__item">
-    <a href="/tock/fr/construire-le-modele/" title="Construire le modèle" class="md-nav__link">
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Construire le modèle
+      </label>
+    
+    <a href="./" title="Construire le modèle" class="md-nav__link md-nav__link--active">
       Construire le modèle
     </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Sommaire</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ajouter-et-qualifier-des-phrases" title="Ajouter et qualifier des phrases" class="md-nav__link">
+    Ajouter et qualifier des phrases
+  </a>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+    
   </li>
 
     
@@ -243,7 +281,7 @@
 
 
   <li class="md-nav__item">
-    <a href="/tock/fr/api-nlp/" title="L'API NLP" class="md-nav__link">
+    <a href="../api-nlp/" title="L'API NLP" class="md-nav__link">
       L'API NLP
     </a>
   </li>
@@ -256,12 +294,61 @@
               </div>
             
             
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Sommaire</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ajouter-et-qualifier-des-phrases" title="Ajouter et qualifier des phrases" class="md-nav__link">
+    Ajouter et qualifier des phrases
+  </a>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
           
           <div class="md-content">
             <article class="md-content__inner md-typeset">
               
-  <h1>404 - Not found</h1>
-
+                
+                  <a href="https://github.com/voyages-sncf-technologies/tock/edit/master/docs/construire-le-modele.md" title="Editer la page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="mise-en-place-dun-modele-nlp">Mise en place d'un modèle NLP<a class="headerlink" href="#mise-en-place-dun-modele-nlp" title="Permanent link">&para;</a></h1>
+<h2 id="ajouter-et-qualifier-des-phrases">Ajouter et qualifier des phrases<a class="headerlink" href="#ajouter-et-qualifier-des-phrases" title="Permanent link">&para;</a></h2>
+<p>Sept catégories sont disponibles :</p>
+<ol>
+<li><strong>Try it</strong> : permet d'ajouter ou de tester l'analyse de nouvelles phrases</li>
+<li><strong>Inbox</strong> : l'ensemble des phrases non encore qualifiées</li>
+<li><strong>Archive</strong> : l'ensembles des phrases archivées, c'est à dire volontairement non encore reconnue par le modèle</li>
+<li><strong>Search</strong> : une interface de recherche avancée qui permet de rechercher les phrases enregistrées, qu'elles soient ou non qualifiées  </li>
+<li><strong>Intents</strong> : la liste des intentions du modèle</li>
+<li><strong>Entities</strong> : la liste des entités du modèle</li>
+<li><strong>Logs</strong> : La liste des requêtes interrogeant le modèle </li>
+</ol>
+<p>L'utilisateur est redirigé par défaut sur la catégorie <em>Inbox</em>.</p>
+<p><img alt="schéma Tock" src="../img/inbox.png" title="Aucune phrase à qualifier" /></p>
+                
+                  
+                
+              
               
                 
               
@@ -272,6 +359,41 @@
       
         
 <footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../pour-commencer/" title="Pour commencer" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Précédent
+                </span>
+                Pour commencer
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../api-nlp/" title="L'API NLP" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Suivant
+                </span>
+                L'API NLP
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
   
   <div class="md-footer-meta md-typeset">
     <div class="md-footer-meta__inner md-grid">
@@ -304,12 +426,12 @@
       
     </div>
     
-      <script src="/tock/fr/assets/javascripts/application.6cdc17f0.js"></script>
+      <script src="../assets/javascripts/application.6cdc17f0.js"></script>
       
         
         
       
-      <script>app.initialize({version:"0.17.2",url:{base:"/tock/fr"}})</script>
+      <script>app.initialize({version:"0.17.2",url:{base:".."}})</script>
       
     
     

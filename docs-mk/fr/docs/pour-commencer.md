@@ -1,5 +1,16 @@
 # Commencer à utiliser Tock
 
+## Un exemple de bot
+
+Un bot d'exemple utilisant Tock est mis à disposition sur github : [https://github.com/voyages-sncf-technologies/tock-bot-open-data](https://github.com/voyages-sncf-technologies/tock-bot-open-data).
+ 
+Il se base sur les [API Open Data de la SNCF](https://data.sncf.com/), et présente des fonctionnalités minimales permettant de démontrer l’usage de Tock. 
+
+Il s'agit d'un bon point de départ, puisque il comporte également un modèle NLP très simple.
+Bien entendu, comme le modèle n'est pas complet, la qualité du bot est faible, mais suffit cependant à démontrer le principe de l'outil.
+
+Dans la suite de la documentation, nous nous référerons à cet exemple pour couvrir l'ensemble des fonctionnalités. 
+
 ## Images Docker
 
 Des images docker sont mises à disposition pour faciliter le démarrage.
@@ -7,7 +18,7 @@ Des images docker sont mises à disposition pour faciliter le démarrage.
 Ces images sont disponibles dans le [Hub Docker](https://hub.docker.com/r/tock/).
 
 Le code source utilisé pour construire ces images, ainsi que les fichiers [docker-compose](https://docs.docker.com/compose/) 
-utilisés pour démarrer l'ensemble de la boite à outils *Tock* sont disponibles dans le respository github [https://github.com/voyages-sncf-technologies/tock-docker](https://github.com/voyages-sncf-technologies/tock-docker).
+utilisés pour démarrer l'ensemble de la boite à outils *Tock* sont disponibles dans le repository github [https://github.com/voyages-sncf-technologies/tock-docker](https://github.com/voyages-sncf-technologies/tock-docker).
 
 ### Démarrer l'interface d'administration
 
@@ -20,21 +31,18 @@ utilisés pour démarrer l'ensemble de la boite à outils *Tock* sont disponible
     docker-compose up
 ``` 
 
-L'interface d'administration NLP est maintenant disponible sur le port 80 :
+L'interface d'administration NLP est maintenant disponible sur le port 80 : [http://localhost](http://localhost)
 
-![Interface d'admin NLP - création d'application](img/tock-nlp-admin-1.png "Création d'application NLP")
+l'identifiant par défaut est *admin@app.com* et le mot de passe *password*.
 
-Il est donc possible de commencer à qualifier et à créer des intentions et des entités : 
+### Bot d'exemple basé sur les API Open Data
 
-![Interface d'admin NLP - qualification de phrase](img/tock-nlp-admin-2.png "Qualification de phrase NLP")
+Une image docker est mis à disposition pour le lancer directement.
+Les instructions pour la démarrer sont précisées dans le [projet github contenant les images docker](https://github.com/voyages-sncf-technologies/tock-docker#user-content-run-the-open-data-bot-example).
 
+## Menu de l'interface d'administration
 
-### Bot d'exemple basé sur des API Open Data
+Le menu à gauche permet d'accéder aux différentes fonctionnalités.
+La catégorie "NLP" permet de construire et manipuler le modèle.
 
-Un bot d'exemple utilisant Tock est mis à disposition sur github : [https://github.com/voyages-sncf-technologies/tock-bot-open-data](https://github.com/voyages-sncf-technologies/tock-bot-open-data).
- 
-Il se base sur les [API Open Data de la SNCF](https://data.sncf.com/), et présente des fonctionnalités minimales permettant de démontrer l’usage de Tock. 
-
-Ce bot sera bientôt disponible sur Facebook Messenger et les futures autres connecteurs mis à disposition. L'interface d'administration dédiée sera également disponible en lecture seule sur le web.
-
-Une image docker est mis à disposition pour le lancer directement. Les instructions pour la démarrer sont précisés dans le [projet github contenant les images docker](https://github.com/voyages-sncf-technologies/tock-docker#user-content-run-the-open-data-bot-example).
+![schéma Tock](img/menu.png "Menu de l'interface d'administration")

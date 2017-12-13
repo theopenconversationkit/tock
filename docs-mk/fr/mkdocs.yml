@@ -5,8 +5,10 @@ site_url: 'https://voyages-sncf-technologies.github.io/tock/fr'
 repo_name: 'tock'
 repo_url: 'https://github.com/voyages-sncf-technologies/tock'
 pages:
-    - Tock - Documentation: index.md
+    - Présentation: index.md
     - Pour commencer: pour-commencer.md
+    - Construire le modèle: construire-le-modele.md
+    - L'API NLP: api-nlp.md
 theme: 'material'
 theme_dir: 'theme'
 markdown_extensions:
