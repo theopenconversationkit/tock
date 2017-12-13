@@ -1,0 +1,158 @@
+swagger: "2.0"
+info:
+  description: "This is the Tock NLP API, that allow to parse NLP requests"
+  version: "0.8.0"
+  title: "Tock NLP API"
+  termsOfService: "https://voyages-sncf-technologies.github.io/tock/fr/"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+host: "_HOST_"
+basePath: "/rest/nlp"
+tags:
+- name: "nlp"
+  description: "Analyse text"
+schemes:
+- "http"
+paths:
+  /parse:
+    post:
+      tags:
+      - "nlp"
+      summary: "parse a sentence"
+      description: "You can pass a list of sentences for STT use cases"
+      operationId: "parse"
+      consumes:
+      - "application/json"
+      produces:
+      - "application/json"
+      parameters:
+      - in: "body"
+        name: "body"
+        description: "Query"
+        required: true
+        schema:
+          $ref: "#/definitions/NlpQuery"
+      responses:
+        200:
+          description: "successful operation"
+          schema:
+            $ref: "#/definitions/NlpResult"
+        400:
+          description: "Invalid query"
+        500:
+          description: "Internal server error"
+
+definitions:
+  NlpQuery:
+    example:
+      queries: [ "Text to parse" ]
+      namespace: "app"
+      applicationName: "app"
+      context:
+        language: "en"
+    type: "object"
+    required: [ "queries", "namespace", "applicationName", "context" ]
+    properties:
+      queries:
+        type: "array"
+        items:
+          type: "string"
+      namespace:
+        type: "string"
+      applicationName:
+        type: "string"
+      context:
+        type: "object"
+        required: [ "language" ]
+        properties:
+          language:
+            type: "string"
+          clientId:
+            type: "string"
+          dialogId:
+            type: "string"
+          clientDevice:
+            type: "string"
+          referenceDate:
+            type: "string"
+            format: "date-time"
+          referenceTimezone:
+            type: "string"
+          test:
+            type: "boolean"
+          registerQuery:
+            type: "boolean"
+      state:
+        type: "object"
+        properties:
+          states:
+            type: "array"
+            items:
+              type: "string"
+
+  NlpResult:
+    type: "object"
+    required: [ "intent", "intentNamespace", "language", "retainedQuery" ]
+    properties:
+      intent:
+        type: "string"
+      intentNamespace:
+        type: "string"
+      language:
+        type: "string"
+      entities:
+        type: "array"
+        items:
+          $ref: "#/definitions/EntityValue"
+      intentProbability:
+        type: "number"
+      entitiesProbability:
+        type: "number"
+      retainedQuery:
+        type: "string"
+      otherIntentsProbabilities:
+        type: object
+        additionalProperties:
+          type: "number"
+
+  EntityValue:
+    type: "object"
+    properties:
+      start:
+        type: "integer"
+      end:
+        type: "integer"
+      entity:
+        $ref: "#/definitions/Entity"
+      value:
+         type: "object"
+      evaluated:
+         type: "boolean"
+      subEntities:
+         type: "array"
+         items:
+          $ref: "#/definitions/EntityValue"
+      probability:
+         type: "number"
+      mergeSupport:
+         type: "boolean"
+
+  Entity:
+    type: "object"
+    properties:
+      entityType:
+        type: "object"
+        properties:
+          name:
+            type: "string"
+          subEntities:
+            type: "array"
+            items:
+              $ref: "#/definitions/Entity"
+      role:
+        type: "string"
+
+externalDocs:
+  description: "Find out more about Tock"
+  url: "https://voyages-sncf-technologies.github.io/tock"
