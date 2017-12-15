@@ -45,6 +45,7 @@ import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue
 import fr.vsct.tock.nlp.front.shared.value.ValueTransformer
 import fr.vsct.tock.shared.Executor
+import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.name
@@ -67,6 +68,8 @@ object ParserService : Parser {
 
     private val executor: Executor by injector.instance()
     private val logDAO: ParseRequestLogDAO by injector.instance()
+
+    private val validateSentenceTest = booleanProperty("tock_parser_validate_sentence_test", false)
 
     private data class CallMetadata(
             val application: ApplicationDefinition,
@@ -244,7 +247,7 @@ object ParserService : Parser {
             }
 
             //check cache for test
-            if (context.test && validatedSentence != null) {
+            if (validateSentenceTest && context.test && validatedSentence != null) {
                 if (!validatedSentence.hasSameContent(toClassifiedSentence())) {
                     error("[TEST MODE] nlp model does not produce same output than validated sentence for query $q")
                 }

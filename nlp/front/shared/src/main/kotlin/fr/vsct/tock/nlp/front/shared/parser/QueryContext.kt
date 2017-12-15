@@ -45,7 +45,7 @@ data class QueryContext(val language: Locale,
                          * returns directly the result without using the NLP model if
                          * [checkExistingQuery] is true
                          */
-                        val checkExistingQuery: Boolean = !test,
+                        val checkExistingQuery: Boolean = true,
                         /**
                          * Add this query in built-in stats.
                          */
