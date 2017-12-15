@@ -53,10 +53,15 @@ export class SearchComponent implements OnInit {
             this.entityRoles = getRoles(this.state.currentIntents.value, this.filter.entityType);
           } else {
             const intent = this.state.findIntentById(this.filter.intentId);
-            this.entityTypes =
-              entities.filter(
-                e => intent.entities.some(intentEntity => intentEntity.entityTypeName === e.name))
-            this.entityRoles = getRoles([intent], this.filter.entityType);
+            if(intent) {
+              this.entityTypes =
+                entities.filter(
+                  e => intent.entities.some(intentEntity => intentEntity.entityTypeName === e.name));
+              this.entityRoles = getRoles([intent], this.filter.entityType);
+            } else {
+              this.entityTypes = [];
+              this.entityRoles = [];
+            }
           }
         }
       );
