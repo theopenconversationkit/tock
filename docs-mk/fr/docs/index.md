@@ -52,7 +52,7 @@ Les modèles peuvent être utilisés via l'[API](../api/index.html) mis à dispo
 
 Ce framework est la deuxième brique qui permet de construire des assistants.
 
-Elle utilise la brique de TALN de Tock via son [API](../api/index.html).
+Elle utilise la brique de TALN de Tock via son [API](../api/).
 
 ### Gestion du contexte et de l'historique 
 La gestion des contextes des dialogues et de l’historique des conversations est automatiquement disponible. 

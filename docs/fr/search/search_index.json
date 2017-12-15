@@ -117,7 +117,7 @@
         }, 
         {
             "location": "/construire-le-modele/", 
-            "text": "Mise en place d'un mod\u00e8le NLP\n\n\nAjouter et qualifier des phrases\n\n\nSept cat\u00e9gories sont disponibles :\n\n\n\n\nTry it\n : permet d'ajouter ou de tester l'analyse de nouvelles phrases\n\n\nInbox\n : l'ensemble des phrases non encore qualifi\u00e9es\n\n\nArchive\n : l'ensembles des phrases archiv\u00e9es, c'est \u00e0 dire volontairement non encore reconnue par le mod\u00e8le\n\n\nSearch\n : une interface de recherche avanc\u00e9e qui permet de rechercher les phrases enregistr\u00e9es, qu'elles soient ou non qualifi\u00e9es  \n\n\nIntents\n : la liste des intentions du mod\u00e8le\n\n\nEntities\n : la liste des entit\u00e9s du mod\u00e8le\n\n\nLogs\n : La liste des requ\u00eates interrogeant le mod\u00e8le \n\n\n\n\nL'utilisateur est redirig\u00e9 par d\u00e9faut sur la cat\u00e9gorie \nInbox\n.", 
+            "text": "Mise en place d'un mod\u00e8le NLP\n\n\nAjouter et qualifier des phrases\n\n\nSept cat\u00e9gories sont disponibles :\n\n\n\n\nTry it\n : permet d'ajouter ou de tester l'analyse de nouvelles phrases\n\n\nInbox\n : l'ensemble des phrases non encore qualifi\u00e9es\n\n\nArchive\n : l'ensembles des phrases archiv\u00e9es, c'est \u00e0 dire volontairement non encore reconnue par le mod\u00e8le\n\n\nSearch\n : une interface de recherche avanc\u00e9e qui permet de rechercher les phrases enregistr\u00e9es, qu'elles soient ou non qualifi\u00e9es  \n\n\nIntents\n : la liste des intentions du mod\u00e8le\n\n\nEntities\n : la liste des entit\u00e9s du mod\u00e8le\n\n\nLogs\n : La liste des requ\u00eates interrogeant le mod\u00e8le \n\n\n\n\nL'utilisateur est redirig\u00e9 par d\u00e9faut sur la cat\u00e9gorie \nInbox\n.\n\n\n\n\nPour ajouter une phrase\n\n\nCliquez sur le menu \nTry It\n puis indiquez votre phrase.\nIl faut lui attribuer une intention en s\u00e9lectionnant \"Create a New Intent\" dans le liste de s\u00e9lection \"Intent\".\n\n\n\n\nSp\u00e9cifier des entit\u00e9s\n\n\nSi n\u00e9cessaire, vous pouvez ensuite sp\u00e9cifier les entit\u00e9s que vous souhaitez que votre mod\u00e8le reconnaisse pour cette intention,\nen s\u00e9lectionnant les portions de phrases correspondantes \u00e0 ces entit\u00e9s, puis en cliquant sur le bouton \"Add New Entity\" qui vient d'appara\u00eetre\n\n\n\n\nA vous de choisir ensuite un type d'entit\u00e9 existant, ou d'en cr\u00e9er un nouveau, puis de donner un role \u00e0 cette entit\u00e9.\n\n\n\n\nType d'entit\u00e9s pr\u00e9d\u00e9finies\n\n\nDans cette fen\u00eatre de cr\u00e9ation d'entit\u00e9s, vous pouvez constater qu'il existe d\u00e9j\u00e0 un certain nombre d'entit\u00e9s (pr\u00e9fix\u00e9es par \nduckling:\n).\nIl s'agit d'entit\u00e9s reconnues par la librairie \u00e9ponyme. Elle seront automatiquement reconnues et valoris\u00e9es pour cette intention si vous les\nsp\u00e9cifiez dans au moins une phrase de cette intention.\n\n\nSp\u00e9cifier plusieurs entit\u00e9s\n\n\nIl est bien s\u00fbr possible d'avoir plusieurs occurrences du m\u00eame role, ou d'un r\u00f4le diff\u00e9rent dans la m\u00eame phrase.\n\n\n\n\nValider la phrase\n\n\nTerminez la qualification de la phrase en cliquant sur le bouton \"Validate\". \nAu bout de 2 phrases qualifi\u00e9es pour une intention donn\u00e9e, il est possible que le 3\u00e8me phrase ajout\u00e9e soit imm\u00e9diatement\nreconnue.\n\n\n\n\nSi elle est qualifi\u00e9e correctement, vous n'avez plus qu'\u00e0 cliquer sur \"Validate\" pour confirmer que la phrase est correcte.\nSi ce n'est pas le cas, \u00e0 vous d'en corriger le sens avant de la valider.\n\n\nVous \u00eates en train de construire votre premier mod\u00e8le !\n\n\nRecherche de phrases\n\n\nL'onglet de recherche\n\n\nL'onglet \nSearch\n permet de parcourir l'ensemble des phrases du mod\u00e8le en utilisant un certains nombre de crit\u00e8res.\nLe plus utilis\u00e9 est la recherche texte simple avec support des expressions r\u00e9guli\u00e8res.\n\n\n\n\nCela permet de consulter les phrases faisant partie de votre mod\u00e8le,\net vous donne la possibilit\u00e9 de faire \u00e9voluer les qualifications de ces phrases au cours du temps.\n\n\nLes diff\u00e9rents \u00e9tats d'une phrase\n\n\nChaque phrase \u00e0 un \u00e9tat (\"Status\") qui peut \u00e9voluer au cours du temps.\n\n\n\n\nInbox\n : La phrase n'a pas encore \u00e9t\u00e9 qualifi\u00e9e et ne fait pas partie du mod\u00e8le\n\n\nValidated\n : La phrase a \u00e9t\u00e9 valid\u00e9e mais n'est pas encore pris en compte dans les mod\u00e8les de NLP (cela peut prendre du temps dans le cas de mod\u00e8les de taille importante)\n\n\nIncluded in model\n : La phrase a \u00e9t\u00e9 valid\u00e9e et a \u00e9t\u00e9 prise en compte dans les mod\u00e8les de NLP\n\n\n\n\nCaract\u00e9ristiques avanc\u00e9es\n\n\nEn cliquant sur le menu \"Applications\", vous acc\u00e9dez \u00e0 la liste des applications disponibles.\n\n\n\n\nEn cliquant sur le bouton de modification, plusieurs options sont disponibles.\n\n\nS\u00e9lection du mod\u00e8le NLP\n\n\nVous avez la possibilit\u00e9 de s\u00e9lectionner la librairie NLP utilis\u00e9e par cette application \u00e0 l'aide du bouton radio \"NLP engine\" :\n\n\n\n\nUtilisation des mod\u00e8les d'entit\u00e9s\n\n\nCette option permet de r\u00e9utiliser des mod\u00e8les d'entit\u00e9s pr\u00e9-construits dans vos nouvelles intentions. \nPar exemple, si vous cr\u00e9ez une intention avec une entit\u00e9 \nduckling:datetime\n, les dates seront automatiquement\nreconnues pour cette intention dans tous les nouvelles phrases attribu\u00e9es \u00e0 cette intention \n(En interne un arbitrage est effectu\u00e9 entre les informations provenant des mod\u00e8les d'entit\u00e9s pr\u00e9-construits et les informations tir\u00e9es de votre propre mod\u00e8le).\n\n\nCette option est activ\u00e9e par d\u00e9faut, il peut \u00eatre utile de la d\u00e9sactiver pour les mod\u00e8les de taille tr\u00e8s importante, pour lesquels\nla d\u00e9tection native sera sup\u00e9rieure dans quasiment tous les cas \u00e0 celle des mod\u00e8les d'entit\u00e9s. \n\n\nSupport des sous-entit\u00e9s\n\n\nSi vous activez cette option, vous allez \u00eatre en mesure de qualifier plusieurs niveaux d'entit\u00e9s :\n\n\n\n\nLe nombre de niveaux n'est pas limit\u00e9, mais il est conseill\u00e9 de ne pas en sp\u00e9cifier plus de 3 ou 4.", 
             "title": "Construire le mod\u00e8le"
         }, 
         {
@@ -129,6 +129,66 @@
             "location": "/construire-le-modele/#ajouter-et-qualifier-des-phrases", 
             "text": "Sept cat\u00e9gories sont disponibles :   Try it  : permet d'ajouter ou de tester l'analyse de nouvelles phrases  Inbox  : l'ensemble des phrases non encore qualifi\u00e9es  Archive  : l'ensembles des phrases archiv\u00e9es, c'est \u00e0 dire volontairement non encore reconnue par le mod\u00e8le  Search  : une interface de recherche avanc\u00e9e qui permet de rechercher les phrases enregistr\u00e9es, qu'elles soient ou non qualifi\u00e9es    Intents  : la liste des intentions du mod\u00e8le  Entities  : la liste des entit\u00e9s du mod\u00e8le  Logs  : La liste des requ\u00eates interrogeant le mod\u00e8le    L'utilisateur est redirig\u00e9 par d\u00e9faut sur la cat\u00e9gorie  Inbox .", 
             "title": "Ajouter et qualifier des phrases"
+        }, 
+        {
+            "location": "/construire-le-modele/#pour-ajouter-une-phrase", 
+            "text": "Cliquez sur le menu  Try It  puis indiquez votre phrase.\nIl faut lui attribuer une intention en s\u00e9lectionnant \"Create a New Intent\" dans le liste de s\u00e9lection \"Intent\".", 
+            "title": "Pour ajouter une phrase"
+        }, 
+        {
+            "location": "/construire-le-modele/#specifier-des-entites", 
+            "text": "Si n\u00e9cessaire, vous pouvez ensuite sp\u00e9cifier les entit\u00e9s que vous souhaitez que votre mod\u00e8le reconnaisse pour cette intention,\nen s\u00e9lectionnant les portions de phrases correspondantes \u00e0 ces entit\u00e9s, puis en cliquant sur le bouton \"Add New Entity\" qui vient d'appara\u00eetre   A vous de choisir ensuite un type d'entit\u00e9 existant, ou d'en cr\u00e9er un nouveau, puis de donner un role \u00e0 cette entit\u00e9.", 
+            "title": "Sp\u00e9cifier des entit\u00e9s"
+        }, 
+        {
+            "location": "/construire-le-modele/#type-dentites-predefinies", 
+            "text": "Dans cette fen\u00eatre de cr\u00e9ation d'entit\u00e9s, vous pouvez constater qu'il existe d\u00e9j\u00e0 un certain nombre d'entit\u00e9s (pr\u00e9fix\u00e9es par  duckling: ).\nIl s'agit d'entit\u00e9s reconnues par la librairie \u00e9ponyme. Elle seront automatiquement reconnues et valoris\u00e9es pour cette intention si vous les\nsp\u00e9cifiez dans au moins une phrase de cette intention.", 
+            "title": "Type d'entit\u00e9s pr\u00e9d\u00e9finies"
+        }, 
+        {
+            "location": "/construire-le-modele/#specifier-plusieurs-entites", 
+            "text": "Il est bien s\u00fbr possible d'avoir plusieurs occurrences du m\u00eame role, ou d'un r\u00f4le diff\u00e9rent dans la m\u00eame phrase.", 
+            "title": "Sp\u00e9cifier plusieurs entit\u00e9s"
+        }, 
+        {
+            "location": "/construire-le-modele/#valider-la-phrase", 
+            "text": "Terminez la qualification de la phrase en cliquant sur le bouton \"Validate\". \nAu bout de 2 phrases qualifi\u00e9es pour une intention donn\u00e9e, il est possible que le 3\u00e8me phrase ajout\u00e9e soit imm\u00e9diatement\nreconnue.   Si elle est qualifi\u00e9e correctement, vous n'avez plus qu'\u00e0 cliquer sur \"Validate\" pour confirmer que la phrase est correcte.\nSi ce n'est pas le cas, \u00e0 vous d'en corriger le sens avant de la valider.  Vous \u00eates en train de construire votre premier mod\u00e8le !", 
+            "title": "Valider la phrase"
+        }, 
+        {
+            "location": "/construire-le-modele/#recherche-de-phrases", 
+            "text": "", 
+            "title": "Recherche de phrases"
+        }, 
+        {
+            "location": "/construire-le-modele/#longlet-de-recherche", 
+            "text": "L'onglet  Search  permet de parcourir l'ensemble des phrases du mod\u00e8le en utilisant un certains nombre de crit\u00e8res.\nLe plus utilis\u00e9 est la recherche texte simple avec support des expressions r\u00e9guli\u00e8res.   Cela permet de consulter les phrases faisant partie de votre mod\u00e8le,\net vous donne la possibilit\u00e9 de faire \u00e9voluer les qualifications de ces phrases au cours du temps.", 
+            "title": "L'onglet de recherche"
+        }, 
+        {
+            "location": "/construire-le-modele/#les-differents-etats-dune-phrase", 
+            "text": "Chaque phrase \u00e0 un \u00e9tat (\"Status\") qui peut \u00e9voluer au cours du temps.   Inbox  : La phrase n'a pas encore \u00e9t\u00e9 qualifi\u00e9e et ne fait pas partie du mod\u00e8le  Validated  : La phrase a \u00e9t\u00e9 valid\u00e9e mais n'est pas encore pris en compte dans les mod\u00e8les de NLP (cela peut prendre du temps dans le cas de mod\u00e8les de taille importante)  Included in model  : La phrase a \u00e9t\u00e9 valid\u00e9e et a \u00e9t\u00e9 prise en compte dans les mod\u00e8les de NLP", 
+            "title": "Les diff\u00e9rents \u00e9tats d'une phrase"
+        }, 
+        {
+            "location": "/construire-le-modele/#caracteristiques-avancees", 
+            "text": "En cliquant sur le menu \"Applications\", vous acc\u00e9dez \u00e0 la liste des applications disponibles.   En cliquant sur le bouton de modification, plusieurs options sont disponibles.", 
+            "title": "Caract\u00e9ristiques avanc\u00e9es"
+        }, 
+        {
+            "location": "/construire-le-modele/#selection-du-modele-nlp", 
+            "text": "Vous avez la possibilit\u00e9 de s\u00e9lectionner la librairie NLP utilis\u00e9e par cette application \u00e0 l'aide du bouton radio \"NLP engine\" :", 
+            "title": "S\u00e9lection du mod\u00e8le NLP"
+        }, 
+        {
+            "location": "/construire-le-modele/#utilisation-des-modeles-dentites", 
+            "text": "Cette option permet de r\u00e9utiliser des mod\u00e8les d'entit\u00e9s pr\u00e9-construits dans vos nouvelles intentions. \nPar exemple, si vous cr\u00e9ez une intention avec une entit\u00e9  duckling:datetime , les dates seront automatiquement\nreconnues pour cette intention dans tous les nouvelles phrases attribu\u00e9es \u00e0 cette intention \n(En interne un arbitrage est effectu\u00e9 entre les informations provenant des mod\u00e8les d'entit\u00e9s pr\u00e9-construits et les informations tir\u00e9es de votre propre mod\u00e8le).  Cette option est activ\u00e9e par d\u00e9faut, il peut \u00eatre utile de la d\u00e9sactiver pour les mod\u00e8les de taille tr\u00e8s importante, pour lesquels\nla d\u00e9tection native sera sup\u00e9rieure dans quasiment tous les cas \u00e0 celle des mod\u00e8les d'entit\u00e9s.", 
+            "title": "Utilisation des mod\u00e8les d'entit\u00e9s"
+        }, 
+        {
+            "location": "/construire-le-modele/#support-des-sous-entites", 
+            "text": "Si vous activez cette option, vous allez \u00eatre en mesure de qualifier plusieurs niveaux d'entit\u00e9s :   Le nombre de niveaux n'est pas limit\u00e9, mais il est conseill\u00e9 de ne pas en sp\u00e9cifier plus de 3 ou 4.", 
+            "title": "Support des sous-entit\u00e9s"
         }, 
         {
             "location": "/api-nlp/", 

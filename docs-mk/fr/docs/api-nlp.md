@@ -1,1 +1,1 @@
-Veuillez consulter sa documentation [ici](../api/index.html).
+Veuillez consulter sa documentation [ici](../api/).
