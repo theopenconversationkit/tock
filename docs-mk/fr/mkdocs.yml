@@ -8,6 +8,7 @@ pages:
     - Présentation: index.md
     - Pour commencer: pour-commencer.md
     - Construire le modèle: construire-le-modele.md
+    - Evaluer la pertinence du modèle: evaluer-la-pertinence-du-modele.md
     - L'API NLP: api-nlp.md
 theme: 'material'
 theme_dir: 'theme'

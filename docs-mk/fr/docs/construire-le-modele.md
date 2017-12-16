@@ -1,8 +1,8 @@
 # Mise en place d'un modèle NLP
 
-## Ajouter et qualifier des phrases
+## Vue d'ensemble
 
-Sept catégories sont disponibles :
+Sept onglets sont disponibles :
 
 1. **Try it** : permet d'ajouter ou de tester l'analyse de nouvelles phrases
 2. **Inbox** : l'ensemble des phrases non encore qualifiées
@@ -15,6 +15,8 @@ Sept catégories sont disponibles :
 L'utilisateur est redirigé par défaut sur la catégorie *Inbox*.
 
 ![schéma Tock](img/inbox.png "Aucune phrase à qualifier")
+
+## Ajouter et qualifier des phrases
 
 ### Pour ajouter une phrase
 
@@ -63,8 +65,8 @@ Vous êtes en train de construire votre premier modèle !
 
 ### L'onglet de recherche
 
-L'onglet **Search** permet de parcourir l'ensemble des phrases du modèle en utilisant un certains nombre de critères.
-Le plus utilisé est la recherche texte simple avec support des expressions régulières.
+L'onglet **Search** permet de parcourir l'ensemble des phrases du modèle en utilisant un certain nombre de critères.
+Le plus utilisé est la recherche texte simple pour lequel il est également possible d'utiliser des expressions régulières.
 
 ![schéma Tock](img/search.png "Recherche d'une phrase")
 
@@ -87,13 +89,13 @@ En cliquant sur le menu "Applications", vous accédez à la liste des applicatio
 
 En cliquant sur le bouton de modification, plusieurs options sont disponibles.
 
-### Sélection du modèle NLP
+### Sélection du moteur NLP
 
 Vous avez la possibilité de sélectionner la librairie NLP utilisée par cette application à l'aide du bouton radio "NLP engine" :
 
-![schéma Tock](img/application.png "Configuration de l'application")
-
 ### Utilisation des modèles d'entités
+
+![schéma Tock](img/application.png "Configuration de l'application")
 
 Cette option permet de réutiliser des modèles d'entités pré-construits dans vos nouvelles intentions. 
 Par exemple, si vous créez une intention avec une entité **duckling:datetime**, les dates seront automatiquement
@@ -103,7 +105,7 @@ reconnues pour cette intention dans tous les nouvelles phrases attribuées à ce
 Cette option est activée par défaut, il peut être utile de la désactiver pour les modèles de taille très importante, pour lesquels
 la détection native sera supérieure dans quasiment tous les cas à celle des modèles d'entités. 
 
-### Support des sous-entités
+### Utiliser les sous-entités
 
 Si vous activez cette option, vous allez être en mesure de qualifier plusieurs niveaux d'entités :
 

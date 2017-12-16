@@ -78,7 +78,7 @@ Depuis, une [équipe dédiée](https://open.voyages-sncf.com/ouiwork/innovation/
 L'[assistant Google OUI.sncf](https://assistant.google.com/services/a/id/164effe7c138100b/) est également basé sur Tock,
 de même que le [OUIbot](https://www.oui.sncf/bot/).
 
-Les outils ont été open-sourcé dans le but de mutualiser l'effort avec d'autres équipes
+Les outils ont été open-sourcés dans le but de mutualiser l'effort avec d'autres équipes
  qui souhaiterait développer des assistants ou bots. 
 
 ## Technologies

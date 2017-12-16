@@ -260,6 +260,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#vue-densemble" title="Vue d'ensemble" class="md-nav__link">
+    Vue d'ensemble
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ajouter-et-qualifier-des-phrases" title="Ajouter et qualifier des phrases" class="md-nav__link">
     Ajouter et qualifier des phrases
   </a>
@@ -343,8 +350,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#selection-du-modele-nlp" title="Sélection du modèle NLP" class="md-nav__link">
-    Sélection du modèle NLP
+  <a href="#selection-du-moteur-nlp" title="Sélection du moteur NLP" class="md-nav__link">
+    Sélection du moteur NLP
   </a>
   
 </li>
@@ -357,8 +364,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#support-des-sous-entites" title="Support des sous-entités" class="md-nav__link">
-    Support des sous-entités
+  <a href="#utiliser-les-sous-entites" title="Utiliser les sous-entités" class="md-nav__link">
+    Utiliser les sous-entités
   </a>
   
 </li>
@@ -374,6 +381,18 @@
   
 </nav>
     
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../evaluer-la-pertinence-du-modele/" title="Evaluer la pertinence du modèle" class="md-nav__link">
+      Evaluer la pertinence du modèle
+    </a>
   </li>
 
     
@@ -410,6 +429,13 @@
     <ul class="md-nav__list" data-md-scrollfix>
       
         <li class="md-nav__item">
+  <a href="#vue-densemble" title="Vue d'ensemble" class="md-nav__link">
+    Vue d'ensemble
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#ajouter-et-qualifier-des-phrases" title="Ajouter et qualifier des phrases" class="md-nav__link">
     Ajouter et qualifier des phrases
   </a>
@@ -493,8 +519,8 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
-  <a href="#selection-du-modele-nlp" title="Sélection du modèle NLP" class="md-nav__link">
-    Sélection du modèle NLP
+  <a href="#selection-du-moteur-nlp" title="Sélection du moteur NLP" class="md-nav__link">
+    Sélection du moteur NLP
   </a>
   
 </li>
@@ -507,8 +533,8 @@
 </li>
         
           <li class="md-nav__item">
-  <a href="#support-des-sous-entites" title="Support des sous-entités" class="md-nav__link">
-    Support des sous-entités
+  <a href="#utiliser-les-sous-entites" title="Utiliser les sous-entités" class="md-nav__link">
+    Utiliser les sous-entités
   </a>
   
 </li>
@@ -536,8 +562,8 @@
                 
                 
                 <h1 id="mise-en-place-dun-modele-nlp">Mise en place d'un modèle NLP<a class="headerlink" href="#mise-en-place-dun-modele-nlp" title="Permanent link">&para;</a></h1>
-<h2 id="ajouter-et-qualifier-des-phrases">Ajouter et qualifier des phrases<a class="headerlink" href="#ajouter-et-qualifier-des-phrases" title="Permanent link">&para;</a></h2>
-<p>Sept catégories sont disponibles :</p>
+<h2 id="vue-densemble">Vue d'ensemble<a class="headerlink" href="#vue-densemble" title="Permanent link">&para;</a></h2>
+<p>Sept onglets sont disponibles :</p>
 <ol>
 <li><strong>Try it</strong> : permet d'ajouter ou de tester l'analyse de nouvelles phrases</li>
 <li><strong>Inbox</strong> : l'ensemble des phrases non encore qualifiées</li>
@@ -549,6 +575,7 @@
 </ol>
 <p>L'utilisateur est redirigé par défaut sur la catégorie <em>Inbox</em>.</p>
 <p><img alt="schéma Tock" src="../img/inbox.png" title="Aucune phrase à qualifier" /></p>
+<h2 id="ajouter-et-qualifier-des-phrases">Ajouter et qualifier des phrases<a class="headerlink" href="#ajouter-et-qualifier-des-phrases" title="Permanent link">&para;</a></h2>
 <h3 id="pour-ajouter-une-phrase">Pour ajouter une phrase<a class="headerlink" href="#pour-ajouter-une-phrase" title="Permanent link">&para;</a></h3>
 <p>Cliquez sur le menu <strong>Try It</strong> puis indiquez votre phrase.
 Il faut lui attribuer une intention en sélectionnant "Create a New Intent" dans le liste de sélection "Intent".</p>
@@ -576,8 +603,8 @@ Si ce n'est pas le cas, à vous d'en corriger le sens avant de la valider.</p>
 <p>Vous êtes en train de construire votre premier modèle !</p>
 <h2 id="recherche-de-phrases">Recherche de phrases<a class="headerlink" href="#recherche-de-phrases" title="Permanent link">&para;</a></h2>
 <h3 id="longlet-de-recherche">L'onglet de recherche<a class="headerlink" href="#longlet-de-recherche" title="Permanent link">&para;</a></h3>
-<p>L'onglet <strong>Search</strong> permet de parcourir l'ensemble des phrases du modèle en utilisant un certains nombre de critères.
-Le plus utilisé est la recherche texte simple avec support des expressions régulières.</p>
+<p>L'onglet <strong>Search</strong> permet de parcourir l'ensemble des phrases du modèle en utilisant un certain nombre de critères.
+Le plus utilisé est la recherche texte simple pour lequel il est également possible d'utiliser des expressions régulières.</p>
 <p><img alt="schéma Tock" src="../img/search.png" title="Recherche d'une phrase" /></p>
 <p>Cela permet de consulter les phrases faisant partie de votre modèle,
 et vous donne la possibilité de faire évoluer les qualifications de ces phrases au cours du temps.</p>
@@ -592,17 +619,17 @@ et vous donne la possibilité de faire évoluer les qualifications de ces phrase
 <p>En cliquant sur le menu "Applications", vous accédez à la liste des applications disponibles.</p>
 <p><img alt="schéma Tock" src="../img/applications.png" title="Liste des applications" /></p>
 <p>En cliquant sur le bouton de modification, plusieurs options sont disponibles.</p>
-<h3 id="selection-du-modele-nlp">Sélection du modèle NLP<a class="headerlink" href="#selection-du-modele-nlp" title="Permanent link">&para;</a></h3>
+<h3 id="selection-du-moteur-nlp">Sélection du moteur NLP<a class="headerlink" href="#selection-du-moteur-nlp" title="Permanent link">&para;</a></h3>
 <p>Vous avez la possibilité de sélectionner la librairie NLP utilisée par cette application à l'aide du bouton radio "NLP engine" :</p>
-<p><img alt="schéma Tock" src="../img/application.png" title="Configuration de l'application" /></p>
 <h3 id="utilisation-des-modeles-dentites">Utilisation des modèles d'entités<a class="headerlink" href="#utilisation-des-modeles-dentites" title="Permanent link">&para;</a></h3>
+<p><img alt="schéma Tock" src="../img/application.png" title="Configuration de l'application" /></p>
 <p>Cette option permet de réutiliser des modèles d'entités pré-construits dans vos nouvelles intentions. 
 Par exemple, si vous créez une intention avec une entité <strong>duckling:datetime</strong>, les dates seront automatiquement
 reconnues pour cette intention dans tous les nouvelles phrases attribuées à cette intention 
 (En interne un arbitrage est effectué entre les informations provenant des modèles d'entités pré-construits et les informations tirées de votre propre modèle).</p>
 <p>Cette option est activée par défaut, il peut être utile de la désactiver pour les modèles de taille très importante, pour lesquels
 la détection native sera supérieure dans quasiment tous les cas à celle des modèles d'entités. </p>
-<h3 id="support-des-sous-entites">Support des sous-entités<a class="headerlink" href="#support-des-sous-entites" title="Permanent link">&para;</a></h3>
+<h3 id="utiliser-les-sous-entites">Utiliser les sous-entités<a class="headerlink" href="#utiliser-les-sous-entites" title="Permanent link">&para;</a></h3>
 <p>Si vous activez cette option, vous allez être en mesure de qualifier plusieurs niveaux d'entités :</p>
 <p><img alt="schéma Tock" src="../img/subentities.png" title="Support des sous-entités" /></p>
 <p>Le nombre de niveaux n'est pas limité, mais il est conseillé de ne pas en spécifier plus de 3 ou 4.</p>
@@ -639,13 +666,13 @@ la détection native sera supérieure dans quasiment tous les cas à celle des m
           </a>
         
         
-          <a href="../api-nlp/" title="L'API NLP" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+          <a href="../evaluer-la-pertinence-du-modele/" title="Evaluer la pertinence du modèle" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
             <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
               <span class="md-flex__ellipsis">
                 <span class="md-footer-nav__direction">
                   Suivant
                 </span>
-                L'API NLP
+                Evaluer la pertinence du modèle
               </span>
             </div>
             <div class="md-flex__cell md-flex__cell--shrink">
