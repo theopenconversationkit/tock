@@ -45,7 +45,7 @@ class DialogColDeserializationTest : AbstractTest() {
     @Test
     fun serializeAndDeserializeAnyValueWrapper_shouldLeftDataInchanged() {
         val value = AnyValueWrapper(
-                UserLocation::class.java,
+                UserLocation::class,
                 UserLocation(1.0, 2.0))
         val s = mapper.writeValueAsString(value)
         val newValue = mapper.readValue<AnyValueWrapper>(s)

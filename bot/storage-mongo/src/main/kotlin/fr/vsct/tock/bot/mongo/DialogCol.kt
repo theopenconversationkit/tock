@@ -113,7 +113,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
             @JsonDeserialize(contentAs = EntityStateValueWrapper::class)
             val entityValues: Map<String, EntityStateValueWrapper>,
             @JsonDeserialize(contentAs = AnyValueWrapper::class)
-            val context: Map<String, AnyValueWrapper>,
+            val context: Map<String, AnyValueWrapper?>,
             var userLocation: UserLocation?,
             var nextActionState: NextUserActionState?) {
 
@@ -130,7 +130,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
             return DialogState(
                     currentIntent,
                     entityValues.mapValues { it.value.toEntityStateValue(actionsMap) }.toMutableMap(),
-                    context.mapValues { it.value.value!! }.toMutableMap(),
+                    context.filter { it.value != null && it.value!!.value != null }.mapValues { it.value!!.value!! }.toMutableMap(),
                     userLocation,
                     nextActionState)
         }

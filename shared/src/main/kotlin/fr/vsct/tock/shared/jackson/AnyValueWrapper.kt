@@ -17,10 +17,13 @@
 package fr.vsct.tock.shared.jackson
 
 import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.AnyValueWrapper.AnyValueDeserializer
+import mu.KotlinLogging
 import kotlin.reflect.KClass
 
 /**
@@ -28,21 +31,38 @@ import kotlin.reflect.KClass
  * Use with care, as it stores the class name in json.
  */
 @JsonDeserialize(using = AnyValueDeserializer::class)
-data class AnyValueWrapper(val klass: Class<*>, val value: Any?) {
+data class AnyValueWrapper(val klass: String, val value: Any?) {
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
     internal class AnyValueDeserializer : JsonDeserializer<AnyValueWrapper>() {
 
         override fun deserialize(jp: JsonParser, context: DeserializationContext): AnyValueWrapper? {
             var fieldName = jp.fieldNameWithValueReady()
             if (fieldName != null) {
-                val classValue = jp.readValueAs(Class::class.java)!!
+                val classValue: Class<*>? =
+                        try {
+                            Class.forName(jp.text)
+                        } catch (e: Exception) {
+                            logger.error(e)
+                            null
+                        }
                 fieldName = jp.fieldNameWithValueReady()
                 if (fieldName != null) {
-                    val value = jp.readValueAs(classValue)!!
-                    jp.checkEndToken()
-                    return AnyValueWrapper(classValue, value)
+                    if (classValue == null) {
+                        jp.readValueAsTree<TreeNode>()
+                        jp.checkEndToken()
+                        return null
+                    } else {
+                        val value = jp.readValueAs(classValue)
+                        jp.checkEndToken()
+                        return AnyValueWrapper(classValue.name, value)
+                    }
                 } else {
-                    return AnyValueWrapper(classValue, null)
+                    jp.checkEndToken()
+                    return if (classValue == null) null else AnyValueWrapper(classValue.name, null)
                 }
             }
             return null
@@ -50,9 +70,9 @@ data class AnyValueWrapper(val klass: Class<*>, val value: Any?) {
 
     }
 
-    constructor(klass: KClass<*>, value: Any?) : this(klass.java, value)
+    constructor(klass: KClass<*>, value: Any?) : this(klass.java.name, value)
 
-    constructor(value: Any) : this(value::class.java, value)
+    constructor(value: Any) : this(value::class, value)
 
 }
 

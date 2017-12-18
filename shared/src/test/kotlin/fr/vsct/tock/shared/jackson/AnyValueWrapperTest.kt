@@ -16,9 +16,11 @@
 
 package fr.vsct.tock.shared.jackson
 
+import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.readValue
 import org.junit.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 /**
  *
@@ -41,5 +43,13 @@ class AnyValueWrapperTest {
         val s = mapper.writeValueAsString(value)
         val newValue = mapper.readValue<AnyValueWrapper>(s)
         assertEquals(value, newValue)
+    }
+
+    @Test
+    fun deserializeUnknownClass_shouldNotFailAndReturnsNull() {
+        val value = AnyValueWrapper("unknown", null)
+        val s = mapper.writeValueAsString(value)
+        val newValue = mapper.readValue<AnyValueWrapper?>(s, object : TypeReference<AnyValueWrapper?>() {})
+        assertNull(newValue)
     }
 }

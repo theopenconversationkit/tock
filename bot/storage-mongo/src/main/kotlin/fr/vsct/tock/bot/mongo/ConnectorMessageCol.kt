@@ -30,6 +30,6 @@ internal data class ConnectorMessageColId(val actionId: Id<Action>, val dialogId
  */
 internal data class ConnectorMessageCol(
         val _id: ConnectorMessageColId,
-        val messages: List<AnyValueWrapper>,
+        val messages: List<AnyValueWrapper?>,
         val date: Instant = now()) {
 }

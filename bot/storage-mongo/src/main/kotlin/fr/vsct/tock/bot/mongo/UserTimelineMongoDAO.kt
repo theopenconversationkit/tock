@@ -174,7 +174,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     internal fun loadConnectorMessage(actionId: Id<Action>, dialogId: Id<Dialog>): List<ConnectorMessage> {
         return connectorMessageCol.findOneById(ConnectorMessageColId(actionId, dialogId))
                 ?.messages
-                ?.mapNotNull { it.value as? ConnectorMessage }
+                ?.mapNotNull { it?.value as? ConnectorMessage }
                 ?: emptyList()
     }
 
