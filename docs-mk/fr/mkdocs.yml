@@ -10,6 +10,7 @@ pages:
     - Construire le modèle: construire-le-modele.md
     - Evaluer la pertinence du modèle: evaluer-la-pertinence-du-modele.md
     - L'API NLP: api-nlp.md
+    - Concevoir un bot: concevoir-un-bot.md
 theme: 'material'
 theme_dir: 'theme'
 markdown_extensions:

@@ -46,7 +46,7 @@ est également intégré par défaut.
 
 ### API NLP
 
-Les modèles peuvent être utilisés via l'[API](../api/index.html) mis à disposition.
+Les modèles peuvent être utilisés via l'[API](../api/) mis à disposition.
 
 ## Un framework conversationnel 
 

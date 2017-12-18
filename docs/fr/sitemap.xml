@@ -4,7 +4,7 @@
     
     <url>
      <loc>https://voyages-sncf-technologies.github.io/tock/fr/</loc>
-     <lastmod>2017-12-16</lastmod>
+     <lastmod>2017-12-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -12,7 +12,7 @@
     
     <url>
      <loc>https://voyages-sncf-technologies.github.io/tock/fr/pour-commencer/</loc>
-     <lastmod>2017-12-16</lastmod>
+     <lastmod>2017-12-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -20,7 +20,7 @@
     
     <url>
      <loc>https://voyages-sncf-technologies.github.io/tock/fr/construire-le-modele/</loc>
-     <lastmod>2017-12-16</lastmod>
+     <lastmod>2017-12-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -28,7 +28,7 @@
     
     <url>
      <loc>https://voyages-sncf-technologies.github.io/tock/fr/evaluer-la-pertinence-du-modele/</loc>
-     <lastmod>2017-12-16</lastmod>
+     <lastmod>2017-12-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     
@@ -36,7 +36,15 @@
     
     <url>
      <loc>https://voyages-sncf-technologies.github.io/tock/fr/api-nlp/</loc>
-     <lastmod>2017-12-16</lastmod>
+     <lastmod>2017-12-18</lastmod>
+     <changefreq>daily</changefreq>
+    </url>
+    
+
+    
+    <url>
+     <loc>https://voyages-sncf-technologies.github.io/tock/fr/concevoir-un-bot/</loc>
+     <lastmod>2017-12-18</lastmod>
      <changefreq>daily</changefreq>
     </url>
     

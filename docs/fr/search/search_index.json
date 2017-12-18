@@ -82,7 +82,7 @@
         }, 
         {
             "location": "/pour-commencer/", 
-            "text": "Commencer \u00e0 utiliser Tock\n\n\nUn exemple de bot\n\n\nUn bot d'exemple utilisant Tock est mis \u00e0 disposition\u00a0sur github : \nhttps://github.com/voyages-sncf-technologies/tock-bot-open-data\n.\n\n\nIl se base sur les \nAPI Open Data de la SNCF\n, et pr\u00e9sente des fonctionnalit\u00e9s minimales permettant de d\u00e9montrer l\u2019usage de Tock. \n\n\nIl s'agit d'un bon point de d\u00e9part, puisque il comporte \u00e9galement un mod\u00e8le NLP tr\u00e8s simple.\nBien entendu, comme le mod\u00e8le n'est pas complet, la qualit\u00e9 du bot est faible, mais suffit cependant \u00e0 d\u00e9montrer le principe de l'outil.\n\n\nDans la suite de la documentation, nous nous r\u00e9f\u00e9rerons \u00e0 cet exemple pour couvrir l'ensemble des fonctionnalit\u00e9s. \n\n\nImages Docker\n\n\nDes images docker sont mises \u00e0 disposition pour faciliter le d\u00e9marrage.\n\n\nCes images sont disponibles dans le \nHub Docker\n.\n\n\nLe code source utilis\u00e9 pour construire ces images, ainsi que les fichiers \ndocker-compose\n \nutilis\u00e9s pour d\u00e9marrer l'ensemble de la boite \u00e0 outils \nTock\n sont disponibles dans le repository github \nhttps://github.com/voyages-sncf-technologies/tock-docker\n.\n\n\nD\u00e9marrer l'interface d'administration\n\n\n    \n#get the last docker-compose file\n\n    curl -o docker-compose.yml https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/docker-compose.yml\n    \n#get the last tag\n\n    curl -o .env https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/.env\n    \n#launch the stack\n\n    docker-compose up\n\n\n\n\n\nL'interface d'administration NLP est maintenant disponible sur le port 80 : \nhttp://localhost\n\n\nl'identifiant par d\u00e9faut est \nadmin@app.com\n et le mot de passe \npassword\n.\n\n\nBot d'exemple bas\u00e9 sur les API Open Data\n\n\nUne image docker est mis \u00e0 disposition pour le lancer directement.\nLes instructions pour la d\u00e9marrer sont pr\u00e9cis\u00e9es dans le \nprojet github contenant les images docker\n.\n\n\nMenu de l'interface d'administration\n\n\nLe menu \u00e0 gauche permet d'acc\u00e9der aux diff\u00e9rentes fonctionnalit\u00e9s.\nLa cat\u00e9gorie \"NLP\" permet de construire et manipuler le mod\u00e8le.", 
+            "text": "Commencer \u00e0 utiliser Tock\n\n\nUn exemple de bot\n\n\nUn bot d'exemple utilisant Tock est mis \u00e0 disposition\u00a0sur github : \nhttps://github.com/voyages-sncf-technologies/tock-bot-open-data\n.\n\n\nIl se base sur les \nAPI Open Data de la SNCF\n, et pr\u00e9sente des fonctionnalit\u00e9s minimales permettant de d\u00e9montrer l\u2019usage de Tock. \n\n\nIl s'agit d'un bon point de d\u00e9part, puisque il comporte \u00e9galement un mod\u00e8le NLP tr\u00e8s simple.\nBien entendu, comme le mod\u00e8le n'est pas complet, la qualit\u00e9 du bot est faible, mais suffit cependant \u00e0 d\u00e9montrer le principe de l'outil.\n\n\nDans la suite de la documentation, nous nous r\u00e9f\u00e9rerons \u00e0 cet exemple pour couvrir l'ensemble des fonctionnalit\u00e9s. \n\n\nImages Docker\n\n\nDes images docker sont mises \u00e0 disposition pour faciliter le d\u00e9marrage.\n\n\nCes images sont disponibles dans le \nHub Docker\n.\n\n\nLe code source utilis\u00e9 pour construire ces images, ainsi que les fichiers \ndocker-compose\n \nutilis\u00e9s pour d\u00e9marrer l'ensemble de la boite \u00e0 outils \nTock\n sont disponibles dans le repository github \nhttps://github.com/voyages-sncf-technologies/tock-docker\n.\n\n\nD\u00e9marrer l'interface d'administration\n\n\n    \n#get the last docker-compose file\n\n    curl -o docker-compose.yml https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/docker-compose.yml\n    \n#get the last tag\n\n    curl -o .env https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/.env\n    \n#launch the stack\n\n    docker-compose up\n\n\n\n\n\nL'interface d'administration NLP est maintenant disponible sur le port 80 : \nhttp://localhost\n\n\nl'identifiant par d\u00e9faut est \nadmin@app.com\n et le mot de passe \npassword\n.\n\n\nBot d'exemple bas\u00e9 sur les API Open Data\n\n\nUne image docker est mis \u00e0 disposition pour le lancer directement.\nLes instructions pour la d\u00e9marrer sont pr\u00e9cis\u00e9es dans le \nprojet github contenant les images docker\n.\n\n\nMenu de l'interface d'administration\n\n\nLe menu \u00e0 gauche permet d'acc\u00e9der aux diff\u00e9rentes fonctionnalit\u00e9s.\n\n\nle menu \nConfiguration\n permet de cr\u00e9er de nouveaux mod\u00e8le et de param\u00e9trer les options importantes.\n\n\nLes menus \nNLP\n et \nNLP QA\n sont d\u00e9di\u00e9s \u00e0 la construction de mod\u00e8les.\n\n\nLes menus \nBuild\n, \nTest\n et \nMonitoring\n sont eux utilis\u00e9s dans le cadre de la construction de bots ou d'assistants.", 
             "title": "Pour commencer"
         }, 
         {
@@ -112,7 +112,7 @@
         }, 
         {
             "location": "/pour-commencer/#menu-de-linterface-dadministration", 
-            "text": "Le menu \u00e0 gauche permet d'acc\u00e9der aux diff\u00e9rentes fonctionnalit\u00e9s.\nLa cat\u00e9gorie \"NLP\" permet de construire et manipuler le mod\u00e8le.", 
+            "text": "Le menu \u00e0 gauche permet d'acc\u00e9der aux diff\u00e9rentes fonctionnalit\u00e9s.  le menu  Configuration  permet de cr\u00e9er de nouveaux mod\u00e8le et de param\u00e9trer les options importantes.  Les menus  NLP  et  NLP QA  sont d\u00e9di\u00e9s \u00e0 la construction de mod\u00e8les.  Les menus  Build ,  Test  et  Monitoring  sont eux utilis\u00e9s dans le cadre de la construction de bots ou d'assistants.", 
             "title": "Menu de l'interface d'administration"
         }, 
         {
@@ -232,8 +232,48 @@
         }, 
         {
             "location": "/api-nlp/", 
-            "text": "Veuillez consulter sa documentation \nici\n.", 
+            "text": "Une API permettant d'analyser une nouvelle phrase \u00e0 partir d'un mod\u00e8le est disponible.\n\n\nVeuillez consulter sa documentation \nici\n.\n\n\nSi vous souhaitez la tester en condition r\u00e9elle, elle est consultable \u00e0 partir des \nimages docker\n\n\u00e0 l'adresse \nhttp://localhost/doc/index.html", 
             "title": "L'API NLP"
+        }, 
+        {
+            "location": "/concevoir-un-bot/", 
+            "text": "Introduction \u00e0 la boite \u00e0 outils conversationnelle\n\n\nConcevoir son premier bot\n\n\nUn bon point de d\u00e9part est de r\u00e9cup\u00e9rer le code source du \nbot Open Data\n \n\n\nSuivez les instructions pour d\u00e9marrer le bot dans l'IDE (ne configurez pas Messenger ou Google Assistant \u00e0 ce stade),\npuis connectez vous \u00e0 l'interface d'administration. Le bot est d'ors et d\u00e9j\u00e0 testable.\n\n\nL'onglet Test\n\n\nVia cet onglet, vous pouvez commencer \u00e0 tester le bot :\n\n\n\n\nL'interface est minimale car il s'agit d'un mode de test. \n\n\nL'objectif reste de faire dialoguer vos utilisateurs avec le bot via des canaux comme Messenger, Google Assistant...\nou vos sites ou applications.\n\n\nL'onglet Monitoring\n\n\nIl est ensuite possible de consulter la discussion que vous venez d'avoir avec le bot via l'onglet Monitoring\n\n\n\n\nIci, le canal est indiqu\u00e9 comme \u00e9tant celui de Messenger puisque il a \u00e9t\u00e9 simul\u00e9 une conversation Messenger.\n\n\nL'onglet Build\n\n\nAjouter une intention avec r\u00e9ponse sp\u00e9cifique\n\n\nVia la cat\u00e9gorie \nAdd new Answer\n, il est possible d'ajouter du comportement sp\u00e9cifique :\n\n\n\n\nPuis de tester ensuite la nouvelle intention et sa r\u00e9ponse :\n\n\n\n\nModification des r\u00e9ponses et internationalisation\n\n\nEnfin il est possible de modifier chaque r\u00e9ponse du bot par type d'interface (chat/voix), par type de connecteur et par langue\nvia l'onglet \ni18n\n.\n\n\nIl est aussi possible de rajouter des r\u00e9ponses alternatives ( \u00e0 chaque fois une r\u00e9ponse de la liste sera choisie au hasard) via cette interface.", 
+            "title": "Concevoir un bot"
+        }, 
+        {
+            "location": "/concevoir-un-bot/#introduction-a-la-boite-a-outils-conversationnelle", 
+            "text": "", 
+            "title": "Introduction \u00e0 la boite \u00e0 outils conversationnelle"
+        }, 
+        {
+            "location": "/concevoir-un-bot/#concevoir-son-premier-bot", 
+            "text": "Un bon point de d\u00e9part est de r\u00e9cup\u00e9rer le code source du  bot Open Data    Suivez les instructions pour d\u00e9marrer le bot dans l'IDE (ne configurez pas Messenger ou Google Assistant \u00e0 ce stade),\npuis connectez vous \u00e0 l'interface d'administration. Le bot est d'ors et d\u00e9j\u00e0 testable.", 
+            "title": "Concevoir son premier bot"
+        }, 
+        {
+            "location": "/concevoir-un-bot/#longlet-test", 
+            "text": "Via cet onglet, vous pouvez commencer \u00e0 tester le bot :   L'interface est minimale car il s'agit d'un mode de test.   L'objectif reste de faire dialoguer vos utilisateurs avec le bot via des canaux comme Messenger, Google Assistant...\nou vos sites ou applications.", 
+            "title": "L'onglet Test"
+        }, 
+        {
+            "location": "/concevoir-un-bot/#longlet-monitoring", 
+            "text": "Il est ensuite possible de consulter la discussion que vous venez d'avoir avec le bot via l'onglet Monitoring   Ici, le canal est indiqu\u00e9 comme \u00e9tant celui de Messenger puisque il a \u00e9t\u00e9 simul\u00e9 une conversation Messenger.", 
+            "title": "L'onglet Monitoring"
+        }, 
+        {
+            "location": "/concevoir-un-bot/#longlet-build", 
+            "text": "", 
+            "title": "L'onglet Build"
+        }, 
+        {
+            "location": "/concevoir-un-bot/#ajouter-une-intention-avec-reponse-specifique", 
+            "text": "Via la cat\u00e9gorie  Add new Answer , il est possible d'ajouter du comportement sp\u00e9cifique :   Puis de tester ensuite la nouvelle intention et sa r\u00e9ponse :", 
+            "title": "Ajouter une intention avec r\u00e9ponse sp\u00e9cifique"
+        }, 
+        {
+            "location": "/concevoir-un-bot/#modification-des-reponses-et-internationalisation", 
+            "text": "Enfin il est possible de modifier chaque r\u00e9ponse du bot par type d'interface (chat/voix), par type de connecteur et par langue\nvia l'onglet  i18n .  Il est aussi possible de rajouter des r\u00e9ponses alternatives ( \u00e0 chaque fois une r\u00e9ponse de la liste sera choisie au hasard) via cette interface.", 
+            "title": "Modification des r\u00e9ponses et internationalisation"
         }
     ]
 }
