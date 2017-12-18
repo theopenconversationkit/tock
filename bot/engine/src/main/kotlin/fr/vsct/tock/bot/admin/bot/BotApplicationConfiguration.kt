@@ -21,7 +21,6 @@ import fr.vsct.tock.shared.property
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.net.Inet4Address
-import java.net.InetAddress
 import java.net.NetworkInterface
 
 /**
@@ -50,13 +49,10 @@ data class BotApplicationConfiguration(
         private fun getLocalhostIP(): String {
             return NetworkInterface.getNetworkInterfaces()
                     .toList()
-                    .find { it.name.startsWith("eno") }
-                    ?.inetAddresses
-                    ?.toList()
-                    ?.filterIsInstance<Inet4Address>()
-                    ?.map { it.hostAddress }
-                    ?.firstOrNull()
-                    ?: InetAddress.getLocalHost().hostAddress
+                    .flatMap { it.inetAddresses.toList().filterIsInstance<Inet4Address>() }
+                    .find { it.hostName.startsWith("192.168.0") }
+                    ?.hostName
+                    ?: "localhost"
         }
     }
 
