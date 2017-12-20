@@ -127,7 +127,9 @@ object XrayService {
             configuration: XrayExecutionConfiguration,
             testPlan: TestPlan): Boolean {
         val now = OffsetDateTime.now()
+        logger.debug { "execute test plan $testPlan" }
         val execution = TockTestClient.executeTestPlan(testPlan)
+        logger.debug { "Test plan execution $execution" }
         val end = OffsetDateTime.now()
 
         val xrayExecution = XrayTestExecution(
