@@ -205,16 +205,19 @@ interface BotBus : I18nKeyProvider {
     /**
      * Returns the current value for the specified entity role.
      */
-    fun <T : Value> entityValue(role: String): T? {
-        @Suppress("UNCHECKED_CAST")
-        return entities[role]?.value?.value as? T?
+    fun <T : Value> entityValue(
+            role: String,
+            valueTransformer: (ContextValue) -> T? = @Suppress("UNCHECKED_CAST") { it.value as? T? }): T? {
+        return entities[role]?.value?.let { valueTransformer.invoke(it) }
     }
 
     /**
      * Returns the current value for the specified entity.
      */
-    fun <T : Value> entityValue(entity: Entity): T?
-            = entityValue<T>(entity.role)
+    fun <T : Value> entityValue(
+            entity: Entity,
+            valueTransformer: (ContextValue) -> T? = @Suppress("UNCHECKED_CAST") { it.value as? T? }): T?
+            = entityValue(entity.role, valueTransformer)
 
     /**
      * Returns the current text content for the specified entity.
