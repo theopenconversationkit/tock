@@ -1,0 +1,798 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Pour construire aisément vos prochains bots">
+      
+      
+        <link rel="canonical" href="https://voyages-sncf-technologies.github.io/tock/fr/developper-un-bot/">
+      
+      
+        <meta name="author" content="OUI Technologies">
+      
+      
+        <meta name="lang:clipboard.copy" content="">
+      
+        <meta name="lang:clipboard.copied" content="">
+      
+        <meta name="lang:search.language" content="">
+      
+        <meta name="lang:search.result.none" content="Aucun résultat">
+      
+        <meta name="lang:search.result.one" content="1 résultat">
+      
+        <meta name="lang:search.result.other" content="# résultats">
+      
+        <meta name="lang:search.tokenizer" content="">
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.2.2">
+    
+    
+      
+        <title>Développer un bot - Tock</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application.7a4cdee3.css">
+      
+    
+    
+      <script src="../assets/javascripts/modernizr.1aa3b519.js"></script>
+    
+    
+      
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    
+    
+  </head>
+  
+    <body>
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://voyages-sncf-technologies.github.io/tock/fr" title="Tock" class="md-header-nav__button md-logo">
+          
+            <i class="md-icon"></i>
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            
+              <span class="md-header-nav__topic">
+                Tock
+              </span>
+              <span class="md-header-nav__topic">
+                Développer un bot
+              </span>
+            
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          
+            <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+            
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="search"></label>
+  <div class="md-search__inner">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" required placeholder="Recherche" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query">
+      <label class="md-icon md-search__icon" for="search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset">&#xE5CD;</button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Commencer à écrire pour rechercher
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+          
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+
+  <a href="https://github.com/voyages-sncf-technologies/tock/" title="Aller au repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      tock
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="drawer">
+    <span class="md-nav__button md-logo">
+      
+        <i class="md-icon"></i>
+      
+    </span>
+    Tock
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/voyages-sncf-technologies/tock/" title="Aller au repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      tock
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Présentation" class="md-nav__link">
+      Présentation
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../pour-commencer/" title="Pour commencer" class="md-nav__link">
+      Pour commencer
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../construire-le-modele/" title="Construire le modèle" class="md-nav__link">
+      Construire le modèle
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../evaluer-la-pertinence-du-modele/" title="Evaluer la pertinence du modèle" class="md-nav__link">
+      Evaluer la pertinence du modèle
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../api-nlp/" title="L'API NLP" class="md-nav__link">
+      L'API NLP
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../presentation-du-bot-open-data/" title="Présentation du bot Open Data" class="md-nav__link">
+      Présentation du bot Open Data
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Développer un bot
+      </label>
+    
+    <a href="./" title="Développer un bot" class="md-nav__link md-nav__link--active">
+      Développer un bot
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Sommaire</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#un-bot-est-un-ensemble-de-stories" title="Un bot est un ensemble de Stories" class="md-nav__link">
+    Un bot est un ensemble de Stories
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#une-story-simple" title="Une Story simple" class="md-nav__link">
+    Une Story simple
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aller-un-peu-plus-loin" title="Aller un peu plus loin" class="md-nav__link">
+    Aller un peu plus loin
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#intentions-secondaires" title="Intentions secondaires" class="md-nav__link">
+    Intentions secondaires
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manipuler-les-entites" title="Manipuler les entités" class="md-nav__link">
+    Manipuler les entités
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utiliser-handlerdef" title="Utiliser HandlerDef" class="md-nav__link">
+    Utiliser HandlerDef
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utiliser-connectordef" title="Utiliser ConnectorDef" class="md-nav__link">
+    Utiliser ConnectorDef
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Sommaire</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#un-bot-est-un-ensemble-de-stories" title="Un bot est un ensemble de Stories" class="md-nav__link">
+    Un bot est un ensemble de Stories
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#une-story-simple" title="Une Story simple" class="md-nav__link">
+    Une Story simple
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#aller-un-peu-plus-loin" title="Aller un peu plus loin" class="md-nav__link">
+    Aller un peu plus loin
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#intentions-secondaires" title="Intentions secondaires" class="md-nav__link">
+    Intentions secondaires
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#manipuler-les-entites" title="Manipuler les entités" class="md-nav__link">
+    Manipuler les entités
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utiliser-handlerdef" title="Utiliser HandlerDef" class="md-nav__link">
+    Utiliser HandlerDef
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#utiliser-connectordef" title="Utiliser ConnectorDef" class="md-nav__link">
+    Utiliser ConnectorDef
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                  <a href="https://github.com/voyages-sncf-technologies/tock/edit/master/docs/developper-un-bot.md" title="Editer la page" class="md-icon md-content__icon">&#xE3C9;</a>
+                
+                
+                <h1 id="introduction-au-framework-conversationnel-tock">Introduction au framework conversationnel Tock<a class="headerlink" href="#introduction-au-framework-conversationnel-tock" title="Permanent link">&para;</a></h1>
+<p>Pour développer un bot ou un assistant avec Tock,
+il est nécessaire aujourd'hui de développer en <a href="https://kotlinlang.org/">Kotlin</a> via un IDE.</p>
+<p>Dans les mois à venir, Tock va supporter d'autres langages mais surtout permettre de scripter les réponses
+via l'interface d'administration. </p>
+<p>Pour bien comprendre ce qui va suivre, il est recommandé de maîtriser le langage Kotlin.</p>
+<h2 id="un-bot-est-un-ensemble-de-stories">Un bot est un ensemble de Stories<a class="headerlink" href="#un-bot-est-un-ensemble-de-stories" title="Permanent link">&para;</a></h2>
+<p>Voici comment le bot open data est défini :</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">openBot</span> <span class="p">=</span> <span class="n">bot</span><span class="p">(</span>
+        <span class="s">&quot;bot_open_data&quot;</span><span class="p">,</span>
+        <span class="n">stories</span> <span class="p">=</span>
+        <span class="n">listOf</span><span class="p">(</span>
+                <span class="n">greetings</span><span class="p">,</span>
+                <span class="n">departures</span><span class="p">,</span>
+                <span class="n">arrivals</span><span class="p">,</span>
+                <span class="n">search</span>
+        <span class="p">),</span>
+        <span class="n">hello</span> <span class="p">=</span> <span class="n">greetings</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Ce bot comporte un identifiant (obligatoire - "bot_open_data") et une liste de <strong>"Story"</strong>.</p>
+<p>Une <em>Story</em> est un regroupement fonctionnel qui correspond à une intention principale et, de manière optionelle,
+à une ou plusieurs intentions dites "secondaires".</p>
+<p>Ici le bot définit 4 <em>Stories</em>, greetings, departures, arrivals et search. 
+Greetings est par ailleurs ( <em>hello = greetings</em>) indiquée comme étant la story présentée par défaut lors du début d'une conversation.</p>
+<h2 id="une-story-simple">Une Story simple<a class="headerlink" href="#une-story-simple" title="Permanent link">&para;</a></h2>
+<p>Comment définit-on une Story? Voici une première version simplifiée de la Story <em>greetings</em> :</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">greetings</span> <span class="p">=</span> <span class="n">story</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="n">bus</span> <span class="p">-&gt;</span>
+    <span class="n">with</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">send</span><span class="p">(</span><span class="s">&quot;Bienvenue chez le Bot Open Data Sncf! :)&quot;</span><span class="p">)</span>
+        <span class="n">send</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock&quot;</span><span class="p">)</span>
+
+        <span class="n">end</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Notez la présence du <em>bus</em>, à partir duquel vous pouvez interagir avec l'utilisateur, et qui permet également d'accèder
+à tous les élements contextuels disponibles.</p>
+<p>Concrètement sela signifie que quand l'intention <em>greetings</em> sera détectée par le modèle NLP, la fonction ci-dessus sera appelée par le framework Tock.</p>
+<p>Le bot envoie donc successivement deux phrases de réponse (<em>bus.send()</em>), puis indique qu'il a terminé à l'aide d'un <em>bus.end()</em>.</p>
+<p>Voici maintenant la version complète de <em>greetings</em> :</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">greetings</span> <span class="p">=</span> <span class="n">story</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="n">bus</span> <span class="p">-&gt;</span>
+    <span class="n">with</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">//cleanup state</span>
+        <span class="n">resetDialogState</span><span class="p">()</span>
+
+        <span class="n">send</span><span class="p">(</span><span class="s">&quot;Bienvenue chez le Bot Open Data Sncf! :)&quot;</span><span class="p">)</span>
+        <span class="n">send</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock&quot;</span><span class="p">)</span>
+
+        <span class="n">withMessenger</span> <span class="p">{</span>
+            <span class="n">buttonsTemplate</span><span class="p">(</span>
+                    <span class="s">&quot;Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d&#39;une gare et constatez le résultat! :) &quot;</span><span class="p">,</span>
+                    <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Itinéraires&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">),</span>
+                    <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Départs&quot;</span><span class="p">,</span> <span class="n">Departures</span><span class="p">),</span>
+                    <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Arrivées&quot;</span><span class="p">,</span> <span class="n">Arrivals</span><span class="p">)</span>
+            <span class="p">)</span>
+        <span class="p">}</span>
+        <span class="n">withGoogleAssistant</span> <span class="p">{</span>
+            <span class="n">gaMessage</span><span class="p">(</span>
+                    <span class="s">&quot;Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d&#39;une gare et constatez le résultat! :) &quot;</span><span class="p">,</span>
+                    <span class="s">&quot;Itinéraires&quot;</span><span class="p">,</span>
+                    <span class="s">&quot;Départs&quot;</span><span class="p">,</span>
+                    <span class="s">&quot;Arrivées&quot;</span><span class="p">)</span>
+        <span class="p">}</span>
+
+        <span class="n">end</span><span class="p">()</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Deux notions ont été ajoutées :</p>
+<ul>
+<li>
+<p><em>resetDialogState()</em> qui permet de repartir d'un contexte utilisateur vide (en oubliant les éventuels échanges précédents)</p>
+</li>
+<li>
+<p>les méthodes <em>withMessenger{}</em> et <em>withGoogleAssistant{}</em> qui permettent de définir des réponses spécifiques pour chaque connecteur.
+Ici un texte avec des boutons pour Messenger, et un texte avec des suggestions pour Google Assistant.</p>
+</li>
+</ul>
+<h2 id="aller-un-peu-plus-loin">Aller un peu plus loin<a class="headerlink" href="#aller-un-peu-plus-loin" title="Permanent link">&para;</a></h2>
+<p>Bien sûr, le <em>Story Handler</em> de <em>greetings</em> ne dépend pas du contexte : la réponse est toujours la même.</p>
+<p>Pour le développement de stories complexes, nous avons besoin d'une abstraction supplémentaire.</p>
+<h3 id="intentions-secondaires">Intentions secondaires<a class="headerlink" href="#intentions-secondaires" title="Permanent link">&para;</a></h3>
+<p>Voici le début de la définition de la story <em>search</em> :</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">story</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+        <span class="s">&quot;search&quot;</span><span class="p">,</span>
+        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
+        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span> <span class="n">bus</span> <span class="p">-&gt;</span>
+
+<span class="p">}</span>
+</pre></div>
+
+
+<p>La story <em>search</em> définit une intention secondaire <em>"de démarrage"</em> (<em>indicate_origin</em>) 
+et une intention secondaire simple (<em>indicate_location</em>)</p>
+<p>Une intention secondaire <em>"de démarrage"</em> est semblable en tout point à une intention principale : 
+dès que le modèle NLP détecte cette intention, il va exécuter la story <em>search</em>, quel que soit le contexte.</p>
+<p>Pour une intention secondaire simple, par contre, la story ne sera exécutée que si la story courante du contexte 
+est <em>déjà</em> la story search. Plusieurs story différentes peuvent donc partager les mêmes intentions secondaires.</p>
+<h3 id="manipuler-les-entites">Manipuler les entités<a class="headerlink" href="#manipuler-les-entites" title="Permanent link">&para;</a></h3>
+<p>Pour récupérer les valeurs des entités, une bonne pratique est de définir des <strong>extensions</strong>. 
+Par exemple voici le code utilisé pour récupérer l'entité <em>destination</em>:</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">destinationEntity</span> <span class="p">=</span> <span class="n">openBot</span><span class="p">.</span><span class="n">entity</span><span class="p">(</span><span class="s">&quot;location&quot;</span><span class="p">,</span> <span class="s">&quot;destination&quot;</span><span class="p">)</span> 
+
+<span class="k">var</span> <span class="py">BotBus</span><span class="p">.</span><span class="n">destination</span><span class="p">:</span> <span class="n">Place</span><span class="p">?</span>
+    <span class="k">get</span><span class="p">()</span> <span class="p">=</span> <span class="n">place</span><span class="p">(</span><span class="n">destinationEntity</span><span class="p">)</span>
+    <span class="k">set</span><span class="p">(</span><span class="n">value</span><span class="p">)</span> <span class="p">=</span> <span class="n">setPlace</span><span class="p">(</span><span class="n">destinationEntity</span><span class="p">,</span> <span class="n">value</span><span class="p">)</span>
+
+<span class="k">private</span> <span class="k">fun</span> <span class="nf">BotBus</span><span class="p">.</span><span class="n">place</span><span class="p">(</span><span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">):</span> <span class="n">Place</span><span class="p">?</span> <span class="p">=</span> <span class="n">entityValue</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="o">::</span><span class="n">placeValue</span><span class="p">)</span><span class="o">?.</span><span class="n">place</span>
+
+<span class="k">private</span> <span class="k">fun</span> <span class="nf">BotBus</span><span class="p">.</span><span class="n">setPlace</span><span class="p">(</span><span class="n">entity</span><span class="p">:</span> <span class="n">Entity</span><span class="p">,</span> <span class="n">place</span><span class="p">:</span> <span class="n">Place</span><span class="p">?)</span> <span class="p">=</span> <span class="n">changeEntityValue</span><span class="p">(</span><span class="n">entity</span><span class="p">,</span> <span class="n">place</span><span class="o">?.</span><span class="n">let</span> <span class="p">{</span> <span class="n">PlaceValue</span><span class="p">(</span><span class="n">place</span><span class="p">)</span> <span class="p">})</span>
+</pre></div>
+
+
+<p>Une entité de type "location" et de role "destination" est créée. 
+Il s'agit de l'entité correspondante dans le modèle NLP.</p>
+<p>Une variable <em>destination</em> est définie, qui va simplifier la manipulation de cette entité dans le code métier.
+Cette variable contient la valeur actuelle de la destination dans le contexte utilisateur.</p>
+<p>Voici une version complétée de la story <em>search</em> qui utilise <em>destination</em> :</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">story</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+        <span class="s">&quot;search&quot;</span><span class="p">,</span>
+        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
+        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span> <span class="n">bus</span> <span class="p">-&gt;</span>
+
+    <span class="n">with</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">//check mandatory entities</span>
+        <span class="k">when</span> <span class="p">{</span>
+            <span class="n">destination</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
+            <span class="n">origin</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Pour quelle origine?&quot;</span><span class="p">)</span>
+            <span class="n">departureDate</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
+            <span class="k">else</span> <span class="p">-&gt;</span> <span class="n">SearchDef</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span>
+        <span class="p">}</span> <span class="k">as</span><span class="p">?</span> <span class="n">SearchDef</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Si il n'y a pas de valeur dans le contexte courant pour la destination, le bot demande de spécifier la destination et en reste là.
+Idem pour l'origine ou la date de départ.</p>
+<p>Si les 3 valeurs obligatoires sont spécifiées, il passe à la réponse proprement dite (<em>SearchDef(bus)</em>).</p>
+<p>La version complète de cette première partie du code est la suivante :</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">story</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+        <span class="s">&quot;search&quot;</span><span class="p">,</span>
+        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
+        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span> <span class="n">bus</span> <span class="p">-&gt;</span>
+
+    <span class="n">with</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">//handle generic location intent</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">isIntent</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">)</span> <span class="p">&amp;&amp;</span> <span class="n">location</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">destination</span> <span class="p">==</span> <span class="k">null</span> <span class="p">||</span> <span class="n">origin</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">destination</span> <span class="p">=</span> <span class="n">returnsAndRemoveLocation</span><span class="p">()</span>
+            <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+                <span class="n">origin</span> <span class="p">=</span> <span class="n">returnsAndRemoveLocation</span><span class="p">()</span>
+            <span class="p">}</span>
+        <span class="p">}</span>    
+
+        <span class="c1">//check mandatory entities</span>
+        <span class="k">when</span> <span class="p">{</span>
+            <span class="n">destination</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
+            <span class="n">origin</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Pour quelle origine?&quot;</span><span class="p">)</span>
+            <span class="n">departureDate</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
+            <span class="k">else</span> <span class="p">-&gt;</span> <span class="n">SearchDef</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span>
+        <span class="p">}</span> <span class="k">as</span><span class="p">?</span> <span class="n">SearchDef</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Dans le cas où l'intention détectée est <em>indicate_location</em>, nous ne savons pas si la localité indiquée représente l'origine ou la destination.
+Il est donc codé une règle simple : 
+Si il existe déjà dans le contexte une origine et pas de destination, la nouvelle localité est en fait la destination.
+Sinon, il s'agit de l'origine. </p>
+<h3 id="utiliser-handlerdef">Utiliser HandlerDef<a class="headerlink" href="#utiliser-handlerdef" title="Permanent link">&para;</a></h3>
+<p>Dans la définition de la story <em>search</em> ci-dessus, vous avez pu noter la récurrence de la notion de <em>SearchDef</em>. 
+Voici le code de cette classe :</p>
+<div class="codehilite"><pre><span></span><span class="n">@GAHandler</span><span class="p">(</span><span class="n">GASearchConnector</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
+<span class="n">@MessengerHandler</span><span class="p">(</span><span class="n">MessengerSearchConnector</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
+<span class="k">class</span> <span class="nc">SearchDef</span><span class="p">(</span><span class="n">bus</span><span class="p">:</span> <span class="n">BotBus</span><span class="p">)</span> <span class="p">:</span> <span class="n">HandlerDef</span><span class="p">&lt;</span><span class="n">SearchConnector</span><span class="p">&gt;(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">private</span> <span class="k">val</span> <span class="py">d</span><span class="p">:</span> <span class="n">Place</span> <span class="p">=</span> <span class="n">bus</span><span class="p">.</span><span class="n">destination</span><span class="o">!!</span>
+    <span class="k">private</span> <span class="k">val</span> <span class="py">o</span><span class="p">:</span> <span class="n">Place</span> <span class="p">=</span> <span class="n">bus</span><span class="p">.</span><span class="n">origin</span><span class="o">!!</span>
+    <span class="k">private</span> <span class="k">val</span> <span class="py">date</span><span class="p">:</span> <span class="n">LocalDateTime</span> <span class="p">=</span> <span class="n">bus</span><span class="p">.</span><span class="n">departureDate</span><span class="o">!!</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">send</span><span class="p">(</span><span class="s">&quot;De {0} à {1}&quot;</span><span class="p">,</span> <span class="n">o</span><span class="p">,</span> <span class="n">d</span><span class="p">)</span>
+        <span class="n">send</span><span class="p">(</span><span class="s">&quot;Départ le {0}&quot;</span><span class="p">,</span> <span class="n">date</span> <span class="k">by</span> <span class="n">datetimeFormat</span><span class="p">)</span>
+        <span class="k">val</span> <span class="py">journeys</span> <span class="p">=</span> <span class="n">SncfOpenDataClient</span><span class="p">.</span><span class="n">journey</span><span class="p">(</span><span class="n">o</span><span class="p">,</span> <span class="n">d</span><span class="p">,</span> <span class="n">date</span><span class="p">)</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">journeys</span><span class="p">.</span><span class="n">isEmpty</span><span class="p">())</span> <span class="p">{</span>
+            <span class="n">end</span><span class="p">(</span><span class="s">&quot;Désolé, aucun itinéraire trouvé :(&quot;</span><span class="p">)</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">send</span><span class="p">(</span><span class="s">&quot;Voici la première proposition :&quot;</span><span class="p">)</span>
+            <span class="n">connector</span><span class="o">?.</span><span class="n">sendFirstJourney</span><span class="p">(</span><span class="n">journeys</span><span class="p">.</span><span class="n">first</span><span class="p">())</span>
+            <span class="n">end</span><span class="p">()</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p><em>SearchDef</em> étend <em>HandlerDef</em> qui est un alias d'une classe du framework Tock.</p>
+<p>C'est en général ici que l'on va définir le code métier des <em>stories</em> complexes. </p>
+<p>Le code est relativement parlant, mais il contient une abstraction supplémentaire, <em>SearchConnector</em>.</p>
+<p><em>SearchConnector</em> est la classe qui définit le comportement spécifique à chaque connecteur, et les annotations
+ <em>@GAHandler(GASearchConnector::class)</em> et <em>@MessengerHandler(MessengerSearchConnector::class)</em> 
+ indiquent les implémentations correspondantes pour les différents connecteurs supportés (respectivement Google Assistant et Messenger).</p>
+<p>Que se passerait t'il si il n'avait pas de connecteur pour Google Assistant par exemple? 
+ La méthode <em>connector?.sendFirstJourney(journeys.first())</em> n'enverrait pas la réponse finale, puisque <em>connector</em> serait <em>null</em>.</p>
+<h3 id="utiliser-connectordef">Utiliser ConnectorDef<a class="headerlink" href="#utiliser-connectordef" title="Permanent link">&para;</a></h3>
+<p>Voici maintenant une version simplifiée de <em>SearchConnector</em> :</p>
+<div class="codehilite"><pre><span></span><span class="k">sealed</span> <span class="k">class</span> <span class="nc">SearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">SearchDef</span><span class="p">)</span> <span class="p">:</span> <span class="n">ConnectorDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span><span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">fun</span> <span class="nf">Section</span><span class="p">.</span><span class="n">title</span><span class="p">():</span> <span class="n">CharSequence</span> <span class="p">=</span> <span class="n">i18n</span><span class="p">(</span><span class="s">&quot;{0} - {1}&quot;</span><span class="p">,</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span>
+
+    <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">journey</span><span class="p">:</span> <span class="n">Journey</span><span class="p">)</span> <span class="p">=</span> <span class="n">sendFirstJourney</span><span class="p">(</span><span class="n">journey</span><span class="p">.</span><span class="n">publicTransportSections</span><span class="p">())</span>
+
+    <span class="k">abstract</span> <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Section</span><span class="p">&gt;)</span>
+
+<span class="p">}</span>
+</pre></div>
+
+
+<p>et son implémentation pour Messenger :</p>
+<div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">MessengerSearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">SearchDef</span><span class="p">)</span> <span class="p">:</span> <span class="n">SearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Section</span><span class="p">&gt;)</span> <span class="p">{</span>
+        <span class="n">withMessage</span><span class="p">(</span>
+                <span class="n">flexibleListTemplate</span><span class="p">(</span>
+                        <span class="n">sections</span><span class="p">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">section</span> <span class="p">-&gt;</span>
+                            <span class="n">with</span><span class="p">(</span><span class="n">section</span><span class="p">)</span> <span class="p">{</span>
+                                <span class="n">listElement</span><span class="p">(</span>
+                                        <span class="n">title</span><span class="p">(),</span>
+                                        <span class="n">content</span><span class="p">(),</span>
+                                        <span class="n">trainImage</span>
+                                <span class="p">)</span>
+                            <span class="p">}</span>
+                        <span class="p">},</span>
+                        <span class="n">compact</span>
+                <span class="p">)</span>
+        <span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Le code spécifique à chaque connecteur est ainsi correctement découplé. </p>
+<p>Le code commun à chaque connecteur est présent dans <em>SearchConnector</em> et le comportement spécifique à
+chaque connecteur se trouve dans les classes dédiées.</p>
+                
+                  
+                
+              
+              
+                
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../presentation-du-bot-open-data/" title="Présentation du bot Open Data" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Précédent
+                </span>
+                Présentation du bot Open Data
+              </span>
+            </div>
+          </a>
+        
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 OUI Technologies
+          </div>
+        
+        powered by
+        <a href="http://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+        
+  <div class="md-footer-social">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+      <a href="https://github.com/voyages-sncf-technologies/tock" class="md-footer-social__link fa fa-github"></a>
+    
+  </div>
+
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application.6cdc17f0.js"></script>
+      
+        
+        
+      
+      <script>app.initialize({version:"0.17.2",url:{base:".."}})</script>
+      
+    
+    
+      
+    
+  </body>
+</html>

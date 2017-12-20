@@ -36,7 +36,7 @@ A vous de choisir ensuite un type d'entité existant, ou d'en créer un nouveau,
 
 ![schéma Tock](img/try-it-3.png "Ajout d'une entité - étape 1")
 
-### Type d'entités prédéfinies
+### Types d'entités prédéfinies
 
 Dans cette fenêtre de création d'entités, vous pouvez constater qu'il existe déjà un certain nombre d'entités (préfixées par **duckling:**).
 Il s'agit d'entités reconnues par la librairie éponyme. Elle seront automatiquement reconnues et valorisées pour cette intention si vous les

@@ -44,10 +44,9 @@ Les instructions pour la démarrer sont précisées dans le [projet github conte
 
 Le menu à gauche permet d'accéder aux différentes fonctionnalités.
 
-le menu **Configuration** permet de créer de nouveaux modèle et de paramétrer les options importantes.
+Le menu **Configuration** permet de créer de nouveaux modèle et de paramétrer les options importantes.
 
 Les menus **NLP** et **NLP QA** sont dédiés à la construction de modèles.
 
 Les menus **Build**, **Test** et **Monitoring** sont eux utilisés dans le cadre de la construction de bots ou d'assistants.
 
-![schéma Tock](img/menu.png "Menu de l'interface d'administration")
