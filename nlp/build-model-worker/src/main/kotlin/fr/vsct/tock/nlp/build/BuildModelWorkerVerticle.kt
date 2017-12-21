@@ -81,6 +81,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
 
                 front.updateIntentsModelForApplication(sentences, app, key.language, app.nlpEngineType, onlyIfNotExists)
                 sentences.groupBy { it.classification.intentId }.forEach { intentId, intentSentences ->
+                    logger.info { "start model update for ${app.name}, intent ${intentId} and ${key.language}" }
                     front.updateEntityModelForIntent(intentSentences, app, intentId, key.language, app.nlpEngineType, onlyIfNotExists)
                 }
 
@@ -88,6 +89,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                 front.getEntityTypes()
                         .filter { it.subEntities.isNotEmpty() }
                         .forEach { entityType ->
+                            logger.info { "start model update for ${app.name}, entity type $entityType and ${key.language}" }
                             front.updateEntityModelForEntityType(
                                     sentences.filter { it.classification.entities.any { it.type == entityType.name } },
                                     app,
@@ -122,6 +124,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                         logger.debug { "Sentences to update : ${validatedSentences.map { it.text }}" }
 
                         val refreshKeyMap = validatedSentences.groupBy { ModelRefreshKey(it.applicationId, it.language) }
+                        logger.info { "Model refresh keys : ${refreshKeyMap.keys}" }
                         refreshKeyMap.forEach {
                             updateModel(it.key, it.value)
                         }
@@ -129,7 +132,8 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                     } else if (deletedSentences.isNotEmpty()) {
                         logger.debug { "Sentences to remove from model : ${deletedSentences.map { it.text }}" }
 
-                        val refreshKeyMap = deletedSentences.map { ModelRefreshKey(it.applicationId, it.language) }
+                        val refreshKeyMap = deletedSentences.map { ModelRefreshKey(it.applicationId, it.language) }.distinct()
+                        logger.info { "Model refresh keys : $refreshKeyMap" }
                         refreshKeyMap.forEach {
                             updateModel(it, emptyList())
                         }
@@ -139,6 +143,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                         val triggers = front.getTriggers()
                         if (triggers.isNotEmpty()) {
                             triggers.forEach { trigger ->
+                                logger.info { "use trigger $trigger" }
                                 front.deleteTrigger(trigger)
                                 front.getApplicationById(trigger.applicationId)?.let {
                                     updateApplicationModels(it, trigger.onlyIfModelNotExists)
@@ -156,6 +161,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                                                 && hour <= testModelTimeframe[1]
                                                 && minute % 10 == 0
                                     }) {
+                                logger.info { "Start testing models" }
                                 front.testModels()
                             } else {
                                 logger.trace { "nothing to do - skip" }
@@ -172,7 +178,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
 
         if (completeModelEnabled) {
             executor.setPeriodic(ofHours(1), {
-                logger.debug { "trigger build to check not existing models" }
+                logger.info { "trigger build to check not existing models" }
                 front.getApplications().forEach {
                     front.triggerBuild(ModelBuildTrigger(it._id, true, true))
                 }

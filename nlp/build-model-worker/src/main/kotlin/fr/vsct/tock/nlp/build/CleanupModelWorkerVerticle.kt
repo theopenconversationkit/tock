@@ -19,6 +19,7 @@ package fr.vsct.tock.nlp.build
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.shared.Executor
+import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.injector
 import io.vertx.core.AbstractVerticle
 import mu.KotlinLogging
@@ -31,15 +32,19 @@ class CleanupModelWorkerVerticle : AbstractVerticle() {
 
     companion object {
         private val logger = KotlinLogging.logger {}
+
+        private val cleanupModelEnabled = booleanProperty("tock_cleanup_model_enabled", true)
     }
 
     private val executor: Executor by injector.instance()
 
     override fun start() {
-        executor.setPeriodic(Duration.ofHours(12), {
-            logger.debug { "remove orphan models..." }
-            FrontClient.deleteOrphans()
-            logger.debug { "end remove orphan models" }
-        })
+        if(cleanupModelEnabled) {
+            executor.setPeriodic(Duration.ofHours(12), {
+                logger.debug { "remove orphan models..." }
+                FrontClient.deleteOrphans()
+                logger.debug { "end remove orphan models" }
+            })
+        }
     }
 }
