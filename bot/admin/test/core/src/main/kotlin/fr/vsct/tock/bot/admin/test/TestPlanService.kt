@@ -17,7 +17,6 @@
 package fr.vsct.tock.bot.admin.test
 
 import com.github.salomonbrys.kodein.instance
-import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.connector.rest.client.ConnectorRestClient
 import fr.vsct.tock.bot.connector.rest.client.model.ClientConnectorType
@@ -28,7 +27,6 @@ import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
-import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDefinition
 import fr.vsct.tock.shared.Dice
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
@@ -134,14 +132,16 @@ object TestPlanService {
 
             dialog.actions.forEach {
                 if (it.playerId.type == PlayerType.user) {
-                    val answer = client.talk(testPlan.applicationId,
-                            ClientMessageRequest(
-                                    playerId,
-                                    botId,
-                                    it.findFirstMessage().toClientMessage(),
-                                    testPlan.targetConnectorType.toClientConnectorType(),
-                                    true
-                            ))
+                    val request = ClientMessageRequest(
+                            playerId,
+                            botId,
+                            it.findFirstMessage().toClientMessage(),
+                            testPlan.targetConnectorType.toClientConnectorType(),
+                            true
+                    )
+                    logger.debug { "ask: $request" }
+                    val answer = client.talk(testPlan.applicationId, request)
+                    logger.debug { "answer: $answer" }
                     expectedBotMessages = answer.body()?.messages?.toMutableList() ?: mutableListOf()
                 } else {
                     if (expectedBotMessages.isEmpty()) {
