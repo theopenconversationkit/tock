@@ -140,9 +140,15 @@ object TestPlanService {
                             true
                     )
                     logger.debug { "ask: $request" }
-                    val answer = client.talk(testPlan.applicationId, request).body()
-                    logger.debug { "answer: $answer" }
-                    expectedBotMessages = answer?.messages?.toMutableList() ?: mutableListOf()
+                    val answer = client.talk(testPlan.applicationId, request)
+                    if (answer.isSuccessful) {
+                        val body = answer.body()
+                        logger.debug { "answer: $body" }
+                        expectedBotMessages = body?.messages?.toMutableList() ?: mutableListOf()
+                    } else {
+                        logger.error { answer.errorBody() }
+                        DialogExecutionReport(dialog.id, true, errorMessage = answer.errorBody()?.toString() ?: "unknown error")
+                    }
                 } else {
                     if (expectedBotMessages.isEmpty()) {
                         return DialogExecutionReport(
