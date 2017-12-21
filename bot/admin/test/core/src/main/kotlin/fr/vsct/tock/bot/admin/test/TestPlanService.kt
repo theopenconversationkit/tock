@@ -140,9 +140,9 @@ object TestPlanService {
                             true
                     )
                     logger.debug { "ask: $request" }
-                    val answer = client.talk(testPlan.applicationId, request)
+                    val answer = client.talk(testPlan.applicationId, request).body()
                     logger.debug { "answer: $answer" }
-                    expectedBotMessages = answer.body()?.messages?.toMutableList() ?: mutableListOf()
+                    expectedBotMessages = answer?.messages?.toMutableList() ?: mutableListOf()
                 } else {
                     if (expectedBotMessages.isEmpty()) {
                         return DialogExecutionReport(
