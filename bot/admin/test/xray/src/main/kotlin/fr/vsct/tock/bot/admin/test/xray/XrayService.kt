@@ -47,6 +47,7 @@ import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.addSerializer
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.listProperty
+import fr.vsct.tock.shared.mapListProperty
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.translator.UserInterfaceType
 import mu.KotlinLogging
@@ -68,9 +69,11 @@ object XrayService {
     private val userId = PlayerId("testUser", user)
     private val botId = PlayerId("testBot", bot)
     private val configurationNames = listProperty("tock_bot_test_configuration_names", emptyList())
+    private val connectorJiraMap = mapListProperty("tock_bot_test_connector_jira_map", emptyMap())
     private val jiraProject: String = property("tock_bot_test_jira_project", "please set a jira project")
     private val testTypeField: String = property("tock_bot_test_jira_xray_test_type_field", "please set a test type field")
     private val manualStepsField: String = property("tock_bot_test_jira_xray_manual_test_field", "please set a manual type field")
+    private val linkedField: String = property("tock_bot_test_jira_linked_field", "")
     private val instant = Instant.now()
 
     init {
@@ -113,7 +116,7 @@ object XrayService {
                         if (testPlan.dialogs.isNotEmpty()) {
                             executePlan(configuration, testPlan)
                         } else {
-                            logger.warn { "empty test plan for $configuration - skipped" }
+                            logger.info { "empty test plan for $configuration - skipped" }
                             null
                         }
                     } finally {
@@ -203,6 +206,10 @@ object XrayService {
         return with(configuration) {
             TestPlan(
                     tests
+                            .filter {
+                                val connectorJiras = connectorJiraMap[configuration.botConfiguration.ownerConnectorType?.id] ?: emptyList()
+                                connectorJiras.isEmpty() || XrayClient.getLinkedIssues(it.key, linkedField).intersect(connectorJiras).isNotEmpty()
+                            }
                             .filter { it.supportConf(configuration.botConfiguration.name) }
                             .map { getDialogReport(configuration, it) },
                     planKey,
@@ -227,6 +234,7 @@ object XrayService {
                             parseStepData(configuration, userInterface, it.id, botId, it.result.raw, it.attachments.firstOrNull { it.fileName == "bot.message" })
                     )
                 },
+                test.findUserInterface(),
                 test.key.toId())
     }
 

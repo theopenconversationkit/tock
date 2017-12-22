@@ -104,6 +104,11 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
                                     it.state.testEvent,
                                     it.toActionId())
                         },
+                stories
+                        .flatMap { it.actions }
+                        .firstOrNull { it.state.userInterface != null }
+                        ?.state?.userInterface
+                        ?: textChat,
                 _id
         )
     }

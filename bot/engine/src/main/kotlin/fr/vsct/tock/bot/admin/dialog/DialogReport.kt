@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.admin.dialog
 
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.translator.UserInterfaceType
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
@@ -25,6 +26,7 @@ import org.litote.kmongo.newId
  */
 data class DialogReport(
         val actions: List<ActionReport> = emptyList(),
+        val userInterface: UserInterfaceType,
         val id: Id<Dialog> = newId()
 ) {
 

@@ -122,6 +122,12 @@ object XrayClient {
         return body.obj("fields")?.array<String>("labels") ?: emptyList()
     }
 
+    fun getLinkedIssues(key: String, linkedField:String): List<String> {
+        val response = xray.getIssue(key).execute()
+        val body = Parser().parse(StringBuilder(response.body()!!.string())) as JsonObject
+        return body.obj("fields")?.array<String>(linkedField) ?: emptyList()
+    }
+
     fun addTestToTestPlan(test: String, testPlan: String)
             = xray.addTestToTestPlans(testPlan, XrayUpdateTest(listOf(test))).execute()
 }

@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.admin.test
 
 import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.translator.UserInterfaceType
 import org.litote.kmongo.Id
 
 /**
@@ -25,8 +26,14 @@ import org.litote.kmongo.Id
  */
 data class TestDialogReport(
         val actions: List<TestActionReport> = emptyList(),
+        val userInterface: UserInterfaceType,
         val id: Id<Dialog>
 ) {
 
-    constructor(dialog: DialogReport) : this(dialog.actions.map { TestActionReport(it) }, dialog.id)
+    constructor(dialog: DialogReport) :
+            this(
+                    dialog.actions.map { TestActionReport(it) },
+                    dialog.userInterface,
+                    dialog.id
+            )
 }

@@ -33,4 +33,11 @@ fun booleanProperty(name: String, defaultValue: Boolean): Boolean = findProperty
 fun listProperty(name: String, defaultValue: List<String>, separator: String = ","): List<String>
         = findProperty(name)?.split(separator) ?: defaultValue
 
+fun mapProperty(name: String, defaultValue: Map<String, String>, entrySeparator: String = "|", keyValueSeparator: String = "="): Map<String, String>
+        = findProperty(name)?.split(entrySeparator)?.map { it.split(keyValueSeparator).let { it[0] to it[1] } }?.toMap() ?: defaultValue
+
+fun mapListProperty(name: String, defaultValue: Map<String, List<String>>, entrySeparator: String = "|", keyValueSeparator: String = "=", listSeparator: String = ","): Map<String, List<String>>
+        = findProperty(name)?.split(entrySeparator)?.map { it.split(keyValueSeparator).let { it[0] to it[1].split(listSeparator) } }?.toMap() ?: defaultValue
+
+
 val devEnvironment: Boolean = property("tock_env", "dev") == "dev"
