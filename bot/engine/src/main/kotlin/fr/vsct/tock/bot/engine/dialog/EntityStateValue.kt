@@ -21,27 +21,39 @@ import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
 
 /**
- *
+ * EntityStateValue is the value of an entity with his history
  */
-data class EntityStateValue(var value: ContextValue?,
-                            val history: MutableList<ArchivedEntityValue> = mutableListOf()) {
+data class EntityStateValue(
+        private var currentValue: ContextValue?,
+        private val oldValues: MutableList<ArchivedEntityValue> = mutableListOf()) {
 
-    constructor(action: Action, entityValue: ContextValue)
+    internal constructor(action: Action, entityValue: ContextValue)
             : this(entityValue, mutableListOf(ArchivedEntityValue(entityValue, action)))
 
-    constructor(entity: Entity, value: Value) : this(ContextValue(entity, value))
+    internal constructor(entity: Entity, value: Value) : this(ContextValue(entity, value))
 
-    fun changeValue(entity: Entity, newValue: Value?, action: Action? = null): EntityStateValue {
+    internal fun changeValue(entity: Entity, newValue: Value?, action: Action? = null): EntityStateValue {
         return changeValue(ContextValue(entity, newValue), action)
     }
 
-    fun changeValue(newValue: ContextValue?, action: Action? = null): EntityStateValue {
-        value = newValue
+    internal fun changeValue(newValue: ContextValue?, action: Action? = null): EntityStateValue {
         //do not change history if previous value is exactly the same
-        if (history.lastOrNull()?.entityValue?.let { newValue != it } ?: true) {
-            history.add(ArchivedEntityValue(newValue, action))
+        if (oldValues.lastOrNull()?.entityValue?.let { currentValue != it } ?: true) {
+            oldValues.add(ArchivedEntityValue(currentValue, action))
         }
+        currentValue = newValue
 
         return this
     }
+
+    /**
+     * Current entity's value
+     */
+    val value: ContextValue? get() = currentValue?.copy()
+
+    /**
+     * Entity's history
+     */
+    val history: List<ArchivedEntityValue> get() = oldValues.toList()
+
 }
