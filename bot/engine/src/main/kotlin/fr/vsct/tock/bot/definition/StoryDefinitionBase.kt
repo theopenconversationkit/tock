@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.definition
 
+import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.translator.UserInterfaceType
 
 /**
@@ -38,4 +39,5 @@ class StoryDefinitionBase(
     override val starterIntents: Set<Intent> = setOf(Intent(name)) + otherStarterIntents.map { it.wrappedIntent() }.toSet()
     override val intents: Set<Intent> = setOf(Intent(name)) + (otherStarterIntents + secondaryIntents).map { it.wrappedIntent() }.toSet()
 
+    fun handle(bus: BotBus) = storyHandler.handle(bus)
 }

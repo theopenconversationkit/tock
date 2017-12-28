@@ -18,9 +18,12 @@ package fr.vsct.tock.bot.test
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.ga.gaConnectorType
 import fr.vsct.tock.bot.connector.messenger.messengerConnectorType
+import fr.vsct.tock.bot.connector.slack.slackConnectorType
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
+import kotlin.test.assertEquals
 
 /**
  * The actions sent by the mocked bus.
@@ -28,10 +31,20 @@ import fr.vsct.tock.bot.engine.action.SendSentence
 data class BotBusMockLog(val action: Action, val delay: Long) {
 
     fun message(connectorType: ConnectorType): ConnectorMessage?
-            = (action as SendSentence).message(connectorType)
+            = (action as? SendSentence)?.message(connectorType)
 
-    fun messenger() = message(messengerConnectorType)
+    fun messenger(): ConnectorMessage? = message(messengerConnectorType)
+
+    fun ga(): ConnectorMessage? = message(gaConnectorType)
+
+    fun slack(): ConnectorMessage? = message(slackConnectorType)
 
     fun text(): String? = (action as SendSentence).stringText
+
+    fun assertText(text: String, message: String? = null)
+            = assertEquals(text, text(), message)
+
+    fun assertMessage(m: ConnectorMessage, message: String? = null)
+            = assertEquals(m, message(m.connectorType), message)
 
 }

@@ -21,7 +21,7 @@ import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
-import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionNotificationType
@@ -88,7 +88,11 @@ open class BotBusMock(override var userTimeline: UserTimeline,
 
     private val logsRepository: List<BotBusMockLog> = mutableListOf()
 
-    val logs: List<BotBusMockLog> get() = checkEndCalled().run { logsRepository }
+    @Deprecated("use answers instead")
+    val logs: List<BotBusMockLog>
+        get() = checkEndCalled().run { logsRepository }
+
+    val answers: List<BotBusMockLog> get() = logs
 
     val firstAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository.first() }
 
@@ -101,6 +105,14 @@ open class BotBusMock(override var userTimeline: UserTimeline,
     private var endCalled: Boolean = false
 
     /**
+     * Run the [StoryHandler] of the current [story].
+     */
+    fun run(): BotBusMock {
+        story.definition.storyHandler.handle(this)
+        return this
+    }
+
+    /**
      * Throws an exception if the end() is not called
      */
     fun checkEndCalled(): BotBusMock {
@@ -111,23 +123,22 @@ open class BotBusMock(override var userTimeline: UserTimeline,
     /**
      * Add an entity set in the current action.
      */
-    fun addActionEntity(contextValue: ContextValue) {
+    fun addActionEntity(contextValue: ContextValue): BotBusMock {
         action.state.entityValues.add(contextValue)
+        return this
     }
 
     /**
      * Add an entity set in the current action.
      */
-    fun addActionEntity(entity: Entity, newValue: Value?) {
-        addActionEntity(ContextValue(entity, newValue))
-    }
+    fun addActionEntity(entity: Entity, newValue: Value?): BotBusMock
+            = addActionEntity(ContextValue(entity, newValue))
 
     /**
      * Simulate an action entity.
      */
-    fun addActionEntity(entity: Entity, textContent: String) {
-        addActionEntity(ContextValue(entity, null, textContent))
-    }
+    fun addActionEntity(entity: Entity, textContent: String): BotBusMock
+            = addActionEntity(ContextValue(entity, null, textContent))
 
     override var applicationId = action.applicationId
     override var botId = action.recipientId
@@ -140,7 +151,7 @@ open class BotBusMock(override var userTimeline: UserTimeline,
     private val mockData: BusMockData = BusMockData()
 
     override var entities: Map<String, EntityStateValue> = dialog.state.entityValues
-    override var intent: Intent? = dialog.state.currentIntent
+    override var intent: IntentAware? = dialog.state.currentIntent
 
     override var nextUserActionState: NextUserActionState?
         get() = dialog.state.nextActionState

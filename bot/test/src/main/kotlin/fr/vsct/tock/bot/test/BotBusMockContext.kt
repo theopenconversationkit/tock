@@ -31,13 +31,14 @@ import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.UserInterfaceType
 
 /**
- * The context for test.
+ * The initial context of the test.
  */
 class BotBusMockContext(var userTimeline: UserTimeline,
                         var dialog: Dialog,
@@ -45,7 +46,6 @@ class BotBusMockContext(var userTimeline: UserTimeline,
                         var action: Action,
                         var botDefinition: BotDefinition,
                         var i18nProvider: I18nKeyProvider,
-                        var storyDefinition: StoryDefinition,
                         var userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
                         var connectorType: ConnectorType = messengerConnectorType) {
 
@@ -65,8 +65,29 @@ class BotBusMockContext(var userTimeline: UserTimeline,
             action,
             botDefinition,
             storyDefinition.storyHandler as I18nKeyProvider,
-            storyDefinition,
             userInterfaceType,
+            connectorType
+    )
+
+    constructor(
+            botDefinition: BotDefinition,
+            storyDefinition: StoryDefinition,
+            applicationId: String = botDefinition.botId,
+            userId: PlayerId = PlayerId("user"),
+            botId: PlayerId = PlayerId("bot", PlayerType.bot),
+            action: Action = SendSentence(userId, applicationId, botId, ""),
+            userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
+            userPreferences: UserPreferences = UserPreferences(),
+            connectorType: ConnectorType = messengerConnectorType)
+            : this(
+            applicationId,
+            userId,
+            botId,
+            botDefinition,
+            storyDefinition,
+            action,
+            userInterfaceType,
+            userPreferences,
             connectorType
     )
 
@@ -114,8 +135,8 @@ class BotBusMockContext(var userTimeline: UserTimeline,
      * Create a choice for this context.
      */
     fun choiceOfId(choiceId: String): SendChoice
-        = decodeChoiceId(choiceId).let { it ->
-            choice(it.first, *it.second.map { it.key to it.value }.toTypedArray())
+            = decodeChoiceId(choiceId).let { it ->
+        choice(it.first, *it.second.map { it.key to it.value }.toTypedArray())
 
     }
 }

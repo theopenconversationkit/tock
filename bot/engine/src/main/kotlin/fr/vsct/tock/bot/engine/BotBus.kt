@@ -20,7 +20,6 @@ import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
-import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.ParameterKey
 import fr.vsct.tock.bot.definition.StoryDefinition
@@ -130,7 +129,7 @@ interface BotBus : I18nKeyProvider {
     /**
      * The current intent.
      */
-    val intent: Intent?
+    val intent: IntentAware?
 
     /**
      * To manage i18n.
@@ -154,7 +153,7 @@ interface BotBus : I18nKeyProvider {
     /**
      * To test if the current intent is owned by the [IntentAware].
      */
-    fun isIntent(intentOwner: IntentAware): Boolean = intentOwner.wrap(intent)
+    fun isIntent(intentOwner: IntentAware): Boolean = intentOwner.wrap(intent?.wrappedIntent())
 
     /**
      * Get the NLP call stats if an NLP call has occurred, null either.
