@@ -16,7 +16,7 @@
         <link rel="canonical" href="https://voyages-sncf-technologies.github.io/tock/fr/developper-un-bot/">
       
       
-        <meta name="author" content="OUI Technologies">
+        <meta name="author" content="VSCT">
       
       
         <meta name="lang:clipboard.copy" content="">
@@ -257,8 +257,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../api-nlp/" title="L'API NLP" class="md-nav__link">
-      L'API NLP
+    <a href="../api-nlp/" title="L'api NLP" class="md-nav__link">
+      L'api NLP
     </a>
   </li>
 
@@ -306,6 +306,13 @@
   
     <label class="md-nav__title" for="toc">Sommaire</label>
     <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ajouter-la-dependance-bot-toolkit" title="Ajouter la dépendance bot-toolkit" class="md-nav__link">
+    Ajouter la dépendance bot-toolkit
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#un-bot-est-un-ensemble-de-stories" title="Un bot est un ensemble de Stories" class="md-nav__link">
@@ -371,6 +378,30 @@
   </li>
 
     
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../tester-le-bot/" title="Tester le bot" class="md-nav__link">
+      Tester le bot
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../kdoc/" title="KDoc" class="md-nav__link">
+      KDoc
+    </a>
+  </li>
+
+    
   </ul>
 </nav>
                   </div>
@@ -390,6 +421,13 @@
   
     <label class="md-nav__title" for="toc">Sommaire</label>
     <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#ajouter-la-dependance-bot-toolkit" title="Ajouter la dépendance bot-toolkit" class="md-nav__link">
+    Ajouter la dépendance bot-toolkit
+  </a>
+  
+</li>
       
         <li class="md-nav__item">
   <a href="#un-bot-est-un-ensemble-de-stories" title="Un bot est un ensemble de Stories" class="md-nav__link">
@@ -463,12 +501,29 @@
                   <a href="https://github.com/voyages-sncf-technologies/tock/edit/master/docs/developper-un-bot.md" title="Editer la page" class="md-icon md-content__icon">&#xE3C9;</a>
                 
                 
-                <h1 id="introduction-au-framework-conversationnel-tock">Introduction au framework conversationnel Tock<a class="headerlink" href="#introduction-au-framework-conversationnel-tock" title="Permanent link">&para;</a></h1>
+                <h1 id="le-langage-dedie-au-conversationnel-de-tock">Le langage dédié au conversationnel de Tock<a class="headerlink" href="#le-langage-dedie-au-conversationnel-de-tock" title="Permanent link">&para;</a></h1>
 <p>Pour développer un bot ou un assistant avec Tock,
-il est nécessaire aujourd'hui de développer en <a href="https://kotlinlang.org/">Kotlin</a> via un IDE.</p>
+il est nécessaire aujourd'hui de développer dans un <a href="https://fr.wikipedia.org/wiki/Langage_d%C3%A9di%C3%A9">Domain Specifique Language (DSL)</a> 
+développé en <a href="https://kotlinlang.org/">Kotlin</a> via un IDE.</p>
 <p>Dans les mois à venir, Tock va supporter d'autres langages mais surtout permettre de scripter les réponses
 via l'interface d'administration. </p>
-<p>Pour bien comprendre ce qui va suivre, il est recommandé de maîtriser le langage Kotlin.</p>
+<p>Pour appréhender complètement ce qui va suivre, il est recommandé de maîtriser les bases du langage Kotlin.</p>
+<h2 id="ajouter-la-dependance-bot-toolkit">Ajouter la dépendance bot-toolkit<a class="headerlink" href="#ajouter-la-dependance-bot-toolkit" title="Permanent link">&para;</a></h2>
+<p>Pour utiliser le framework conversationnel, il faut ajouter la dépendance <em>bot-tookit</em> à votre projet.</p>
+<p>Avec Maven :</p>
+<div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
+            <span class="nt">&lt;groupId&gt;</span>fr.vsct.tock<span class="nt">&lt;/groupId&gt;</span>
+            <span class="nt">&lt;artifactId&gt;</span>bot-toolkit<span class="nt">&lt;/artifactId&gt;</span>
+            <span class="nt">&lt;version&gt;</span>0.7.3<span class="nt">&lt;/version&gt;</span>
+        <span class="nt">&lt;/dependency&gt;</span>
+</pre></div>
+
+
+<p>ou Gradle :</p>
+<div class="codehilite"><pre><span></span>      compile &#39;fr.vsct.tock:bot-toolkit:0.7.3&#39;
+</pre></div>
+
+
 <h2 id="un-bot-est-un-ensemble-de-stories">Un bot est un ensemble de Stories<a class="headerlink" href="#un-bot-est-un-ensemble-de-stories" title="Permanent link">&para;</a></h2>
 <p>Voici comment le bot open data est défini :</p>
 <div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">openBot</span> <span class="p">=</span> <span class="n">bot</span><span class="p">(</span>
@@ -749,6 +804,20 @@ chaque connecteur se trouve dans les classes dédiées.</p>
           </a>
         
         
+          <a href="../tester-le-bot/" title="Tester le bot" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Suivant
+                </span>
+                Tester le bot
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
       </nav>
     </div>
   
@@ -757,7 +826,7 @@ chaque connecteur se trouve dans les classes dédiées.</p>
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            Copyright &copy; 2017 OUI Technologies
+            Copyright &copy; 2017 VSCT
           </div>
         
         powered by

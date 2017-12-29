@@ -1,6 +1,6 @@
 site_name: 'Tock'
 site_description: 'Pour construire aisément vos prochains bots'
-site_author: 'OUI Technologies'
+site_author: 'VSCT'
 site_url: 'https://voyages-sncf-technologies.github.io/tock/fr'
 repo_name: 'tock'
 repo_url: 'https://github.com/voyages-sncf-technologies/tock'
@@ -9,16 +9,18 @@ pages:
     - Pour commencer: pour-commencer.md
     - Construire le modèle: construire-le-modele.md
     - Evaluer la pertinence du modèle: evaluer-la-pertinence-du-modele.md
-    - L'API NLP: api-nlp.md
+    - L'api NLP: api-nlp.md
     - Présentation du bot Open Data: presentation-du-bot-open-data.md
     - Développer un bot: developper-un-bot.md
+    - Tester le bot: tester-le-bot.md
+    - KDoc: kdoc.md
 theme: 'material'
 theme_dir: 'theme'
 markdown_extensions:
   - admonition
   - codehilite(guess_lang=false)
   - toc(permalink=true)
-copyright: 'Copyright &copy; 2017 OUI Technologies'
+copyright: 'Copyright &copy; 2017 VSCT'
 extra:
   social:
     - type: 'github'
@@ -26,3 +28,4 @@ extra:
   feature:
       tabs: true
   logo: 'assets/images/logo.svg'
+

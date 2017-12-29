@@ -1,12 +1,32 @@
-# Introduction au framework conversationnel Tock
+# Le langage dédié au conversationnel de Tock
 
 Pour développer un bot ou un assistant avec Tock,
-il est nécessaire aujourd'hui de développer en [Kotlin](https://kotlinlang.org/) via un IDE.
+il est nécessaire aujourd'hui de développer dans un [Domain Specifique Language (DSL)](https://fr.wikipedia.org/wiki/Langage_d%C3%A9di%C3%A9) 
+développé en [Kotlin](https://kotlinlang.org/) via un IDE.
 
 Dans les mois à venir, Tock va supporter d'autres langages mais surtout permettre de scripter les réponses
 via l'interface d'administration. 
 
-Pour bien comprendre ce qui va suivre, il est recommandé de maîtriser le langage Kotlin.
+Pour appréhender complètement ce qui va suivre, il est recommandé de maîtriser les bases du langage Kotlin.
+
+## Ajouter la dépendance bot-toolkit
+Pour utiliser le framework conversationnel, il faut ajouter la dépendance *bot-tookit* à votre projet.
+
+Avec Maven :
+
+```xml
+        <dependency>
+            <groupId>fr.vsct.tock</groupId>
+            <artifactId>bot-toolkit</artifactId>
+            <version>0.7.3</version>
+        </dependency>
+```
+
+ou Gradle :
+
+```gradle
+      compile 'fr.vsct.tock:bot-toolkit:0.7.3'
+```
 
 ## Un bot est un ensemble de Stories
 
