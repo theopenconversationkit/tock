@@ -1,0 +1,153 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>BotBusMockContext - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.test</a>&nbsp;/&nbsp;<a href=".">BotBusMockContext</a><br/>
+<br/>
+<h1>BotBusMockContext</h1>
+<code><span class="keyword">class </span><span class="identifier">BotBusMockContext</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/test/src/main/kotlin/fr/vsct/tock/bot/test/BotBusMockContext.kt#L43">(source)</a>
+<p>The initial context of the test.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">BotBusMockContext</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/userId">userId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/botId">botId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/botDefinition">botDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/storyDefinition">storyDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/action">action</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a>&nbsp;<span class="symbol">=</span>&nbsp;SendSentence(userId, applicationId, botId, "")<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/userInterfaceType">userInterfaceType</span><span class="symbol">:</span>&nbsp;<span class="identifier">UserInterfaceType</span>&nbsp;<span class="symbol">=</span>&nbsp;UserInterfaceType.textChat<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/userPreferences">userPreferences</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-user-preferences/index.html"><span class="identifier">UserPreferences</span></a>&nbsp;<span class="symbol">=</span>&nbsp;UserPreferences()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a>&nbsp;<span class="symbol">=</span>&nbsp;messengerConnectorType<span class="symbol">)</span></code><br/>
+<code><span class="identifier">BotBusMockContext</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/botDefinition">botDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/storyDefinition">storyDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;botDefinition.botId<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/userId">userId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a>&nbsp;<span class="symbol">=</span>&nbsp;PlayerId("user")<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/botId">botId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a>&nbsp;<span class="symbol">=</span>&nbsp;PlayerId("bot", PlayerType.bot)<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/action">action</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a>&nbsp;<span class="symbol">=</span>&nbsp;SendSentence(userId, applicationId, botId, "")<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/userInterfaceType">userInterfaceType</span><span class="symbol">:</span>&nbsp;<span class="identifier">UserInterfaceType</span>&nbsp;<span class="symbol">=</span>&nbsp;UserInterfaceType.textChat<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/userPreferences">userPreferences</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-user-preferences/index.html"><span class="identifier">UserPreferences</span></a>&nbsp;<span class="symbol">=</span>&nbsp;UserPreferences()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.engine.user.UserPreferences, fr.vsct.tock.bot.connector.ConnectorType)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a>&nbsp;<span class="symbol">=</span>&nbsp;messengerConnectorType<span class="symbol">)</span></code><code><span class="identifier">BotBusMockContext</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(fr.vsct.tock.bot.engine.user.UserTimeline, fr.vsct.tock.bot.engine.dialog.Dialog, fr.vsct.tock.bot.engine.dialog.Story, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.translator.I18nKeyProvider, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.connector.ConnectorType)/userTimeline">userTimeline</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-user-timeline/index.html"><span class="identifier">UserTimeline</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(fr.vsct.tock.bot.engine.user.UserTimeline, fr.vsct.tock.bot.engine.dialog.Dialog, fr.vsct.tock.bot.engine.dialog.Story, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.translator.I18nKeyProvider, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.connector.ConnectorType)/dialog">dialog</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.dialog/-dialog/index.html"><span class="identifier">Dialog</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(fr.vsct.tock.bot.engine.user.UserTimeline, fr.vsct.tock.bot.engine.dialog.Dialog, fr.vsct.tock.bot.engine.dialog.Story, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.translator.I18nKeyProvider, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.connector.ConnectorType)/story">story</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.dialog/-story/index.html"><span class="identifier">Story</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(fr.vsct.tock.bot.engine.user.UserTimeline, fr.vsct.tock.bot.engine.dialog.Dialog, fr.vsct.tock.bot.engine.dialog.Story, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.translator.I18nKeyProvider, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.connector.ConnectorType)/action">action</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(fr.vsct.tock.bot.engine.user.UserTimeline, fr.vsct.tock.bot.engine.dialog.Dialog, fr.vsct.tock.bot.engine.dialog.Story, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.translator.I18nKeyProvider, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.connector.ConnectorType)/botDefinition">botDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(fr.vsct.tock.bot.engine.user.UserTimeline, fr.vsct.tock.bot.engine.dialog.Dialog, fr.vsct.tock.bot.engine.dialog.Story, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.translator.I18nKeyProvider, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.connector.ConnectorType)/i18nProvider">i18nProvider</span><span class="symbol">:</span>&nbsp;<span class="identifier">I18nKeyProvider</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(fr.vsct.tock.bot.engine.user.UserTimeline, fr.vsct.tock.bot.engine.dialog.Dialog, fr.vsct.tock.bot.engine.dialog.Story, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.translator.I18nKeyProvider, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.connector.ConnectorType)/userInterfaceType">userInterfaceType</span><span class="symbol">:</span>&nbsp;<span class="identifier">UserInterfaceType</span>&nbsp;<span class="symbol">=</span>&nbsp;UserInterfaceType.textChat<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$<init>(fr.vsct.tock.bot.engine.user.UserTimeline, fr.vsct.tock.bot.engine.dialog.Dialog, fr.vsct.tock.bot.engine.dialog.Story, fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.translator.I18nKeyProvider, fr.vsct.tock.translator.UserInterfaceType, fr.vsct.tock.bot.connector.ConnectorType)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a>&nbsp;<span class="symbol">=</span>&nbsp;messengerConnectorType<span class="symbol">)</span></code>
+<p>The initial context of the test.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="action.html">action</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">action</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="application-id.html">applicationId</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">applicationId</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="bot-definition.html">botDefinition</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">botDefinition</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="bot-id.html">botId</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">botId</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="connector-type.html">connectorType</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">connectorType</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="dialog.html">dialog</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">dialog</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.dialog/-dialog/index.html"><span class="identifier">Dialog</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="i18n-provider.html">i18nProvider</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">i18nProvider</span><span class="symbol">: </span><span class="identifier">I18nKeyProvider</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="story.html">story</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">story</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.dialog/-story/index.html"><span class="identifier">Story</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="user-id.html">userId</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">userId</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="user-interface-type.html">userInterfaceType</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">userInterfaceType</span><span class="symbol">: </span><span class="identifier">UserInterfaceType</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="user-preferences.html">userPreferences</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">userPreferences</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.user/-user-preferences/index.html"><span class="identifier">UserPreferences</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="user-timeline.html">userTimeline</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">userTimeline</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.user/-user-timeline/index.html"><span class="identifier">UserTimeline</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="choice.html">choice</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">choice</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$choice(kotlin.String, kotlin.Array((kotlin.Pair((kotlin.String, )))))/intentName">intentName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="keyword">vararg</span> <span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$choice(kotlin.String, kotlin.Array((kotlin.Pair((kotlin.String, )))))/parameters">parameters</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><span class="identifier">Pair</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.action/-send-choice/index.html"><span class="identifier">SendChoice</span></a></code><br/>
+<code><span class="keyword">fun </span><span class="identifier">choice</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$choice(kotlin.String, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.Array((kotlin.Pair((kotlin.String, )))))/intentName">intentName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$choice(kotlin.String, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.Array((kotlin.Pair((kotlin.String, )))))/step">step</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="keyword">vararg</span> <span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$choice(kotlin.String, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.Array((kotlin.Pair((kotlin.String, )))))/parameters">parameters</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><span class="identifier">Pair</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.action/-send-choice/index.html"><span class="identifier">SendChoice</span></a></code><br/>
+<code><span class="keyword">fun </span><span class="identifier">choice</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$choice(fr.vsct.tock.bot.definition.IntentAware, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), fr.vsct.tock.bot.definition.Parameters)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$choice(fr.vsct.tock.bot.definition.IntentAware, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), fr.vsct.tock.bot.definition.Parameters)/step">step</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$choice(fr.vsct.tock.bot.definition.IntentAware, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), fr.vsct.tock.bot.definition.Parameters)/parameters">parameters</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-parameters/index.html"><span class="identifier">Parameters</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.action/-send-choice/index.html"><span class="identifier">SendChoice</span></a></code><br/>
+<code><span class="keyword">fun </span><span class="identifier">choice</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$choice(fr.vsct.tock.bot.definition.IntentAware, fr.vsct.tock.bot.definition.Parameters)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$choice(fr.vsct.tock.bot.definition.IntentAware, fr.vsct.tock.bot.definition.Parameters)/parameters">parameters</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-parameters/index.html"><span class="identifier">Parameters</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.action/-send-choice/index.html"><span class="identifier">SendChoice</span></a></code>
+<p>Create a choice for this context.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="choice-of-id.html">choiceOfId</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">choiceOfId</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$choiceOfId(kotlin.String)/choiceId">choiceId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.action/-send-choice/index.html"><span class="identifier">SendChoice</span></a></code>
+<p>Create a choice for this context.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="sentence.html">sentence</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">sentence</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockContext$sentence(kotlin.String)/text">text</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.action/-send-sentence/index.html"><span class="identifier">SendSentence</span></a></code>
+<p>Create a new sentence for this context</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

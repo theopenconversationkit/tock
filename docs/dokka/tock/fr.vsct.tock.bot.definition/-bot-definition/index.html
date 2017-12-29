@@ -1,0 +1,269 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>BotDefinition - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.definition</a>&nbsp;/&nbsp;<a href=".">BotDefinition</a><br/>
+<br/>
+<h1>BotDefinition</h1>
+<code><span class="keyword">interface </span><span class="identifier">BotDefinition</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">I18nKeyProvider</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/definition/BotDefinition.kt#L37">(source)</a>
+<p>The main interface of the bot.</p>
+<p>New bots should usually not directly extend this class, but instead extend <a href="../-bot-definition-base/index.html">BotDefinitionBase</a>.</p>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="bot-disabled-story.html">botDisabledStory</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">botDisabledStory</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code>
+<p>To manage deactivation.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="bot-enabled-story.html">botEnabledStory</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">botEnabledStory</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="bot-id.html">botId</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">botId</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The main bot id. Have to be different for each bot.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="event-listener.html">eventListener</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">eventListener</span><span class="symbol">: </span><a href="../-event-listener/index.html"><span class="identifier">EventListener</span></a></code>
+<p>To handle custom events.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="goodbye-story.html">goodbyeStory</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">goodbyeStory</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code>
+<p>The goodbye story. Used when closing the conversation.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="handle-attachment-story.html">handleAttachmentStory</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">handleAttachmentStory</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code>
+<p>The story that handles <a href="../../fr.vsct.tock.bot.engine.action/-send-attachment/index.html">fr.vsct.tock.bot.engine.action.SendAttachment</a> action. If it's null, current intent is used.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="hello-story.html">helloStory</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">helloStory</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code>
+<p>The hello story. Used for first interaction with no other input.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="keyword-story.html">keywordStory</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">keywordStory</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code>
+<p>To handle keywords - used to bypass nlp.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="namespace.html">namespace</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">namespace</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The namespace of the bot. Have to be the same namespace than the NLP models.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="nlp-model-name.html">nlpModelName</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">nlpModelName</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The name of the main nlp model.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="no-input-story.html">noInputStory</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">noInputStory</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code>
+<p>The no input story. When user does nothing!</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="stories.html">stories</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">stories</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">&gt;</span></code>
+<p>The list of each stories.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="unknown-story.html">unknownStory</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">unknownStory</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code>
+<p>The unknown story. Used where no valid intent is found.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="user-location-story.html">userLocationStory</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">userLocationStory</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code>
+<p>The story that handles <a href="../../fr.vsct.tock.bot.engine.action/-send-location/index.html">fr.vsct.tock.bot.engine.action.SendLocation</a> action. If it's null, current intent is used.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="entity.html">entity</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">entity</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$entity(kotlin.String, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$entity(kotlin.String, kotlin.String)/role">role</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Entity</span></code>
+<p>Returns the entity with the specified name and optional role.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="error-action.html">errorAction</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">errorAction</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$errorAction(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId)/playerId">playerId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$errorAction(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$errorAction(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId)/recipientId">recipientId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a></code>
+<p>Called when error occurs. By default send "technical error".</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="find-intent.html">findIntent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$findIntent(kotlin.String)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-intent/index.html"><span class="identifier">Intent</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="find-intent-for-bot.html">findIntentForBot</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findIntentForBot</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$findIntentForBot(kotlin.String, fr.vsct.tock.bot.definition.IntentContext)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$findIntentForBot(kotlin.String, fr.vsct.tock.bot.definition.IntentContext)/context">context</span><span class="symbol">:</span>&nbsp;<a href="../-intent-context/index.html"><span class="identifier">IntentContext</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-intent/index.html"><span class="identifier">Intent</span></a></code>
+<p>This is the method called by the bot after a NLP request.
+Overrides it if you need more control on intent choice.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="find-story-definition.html">findStoryDefinition</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryDefinition</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$findStoryDefinition(fr.vsct.tock.bot.definition.IntentAware)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryDefinition</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$findStoryDefinition(kotlin.String)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="i18n-key-from-label.html">i18nKeyFromLabel</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">i18nKeyFromLabel</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$i18nKeyFromLabel(kotlin.CharSequence, kotlin.collections.List((kotlin.Any)))/defaultLabel">defaultLabel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$i18nKeyFromLabel(kotlin.CharSequence, kotlin.collections.List((kotlin.Any)))/args">args</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">I18nLabelKey</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="is-disabled-intent.html">isDisabledIntent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isDisabledIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$isDisabledIntent(fr.vsct.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="is-enabled-intent.html">isEnabledIntent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isEnabledIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$isEnabledIntent(fr.vsct.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="find-intent.html">findIntent</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">findIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition.Companion$findIntent(kotlin.collections.List((fr.vsct.tock.bot.definition.StoryDefinition)), kotlin.String)/stories">stories</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition.Companion$findIntent(kotlin.collections.List((fr.vsct.tock.bot.definition.StoryDefinition)), kotlin.String)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-intent/index.html"><span class="identifier">Intent</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="find-story-definition.html">findStoryDefinition</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">findStoryDefinition</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition.Companion$findStoryDefinition(kotlin.collections.List((fr.vsct.tock.bot.definition.StoryDefinition)), kotlin.String, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.definition.StoryDefinition)/stories">stories</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition.Companion$findStoryDefinition(kotlin.collections.List((fr.vsct.tock.bot.definition.StoryDefinition)), kotlin.String, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.definition.StoryDefinition)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition.Companion$findStoryDefinition(kotlin.collections.List((fr.vsct.tock.bot.definition.StoryDefinition)), kotlin.String, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.definition.StoryDefinition)/unknownStory">unknownStory</span><span class="symbol">:</span>&nbsp;<a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition.Companion$findStoryDefinition(kotlin.collections.List((fr.vsct.tock.bot.definition.StoryDefinition)), kotlin.String, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.definition.StoryDefinition)/keywordStory">keywordStory</span><span class="symbol">:</span>&nbsp;<a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Extension Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.test/start-mock.html">startMock</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">BotDefinition</span><span class="symbol">.</span><span class="identifier">startMock</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test$startMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType)/storyDefinition">storyDefinition</span><span class="symbol">:</span>&nbsp;<a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a>&nbsp;<span class="symbol">=</span>&nbsp;helloStory ?: stories.first()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$startMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a>&nbsp;<span class="symbol">=</span>&nbsp;messengerConnectorType<span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.test/-bot-bus-mock/index.html"><span class="identifier">BotBusMock</span></a></code>
+<p>Provides a mock initialized with the specified <a href="../-story-definition/index.html">StoryDefinition</a> and starts the story.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.test/to-bus-mock.html">toBusMock</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">BotDefinition</span><span class="symbol">.</span><span class="identifier">toBusMock</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test$toBusMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType)/storyDefinition">storyDefinition</span><span class="symbol">:</span>&nbsp;<a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a>&nbsp;<span class="symbol">=</span>&nbsp;helloStory ?: stories.first()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$toBusMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a>&nbsp;<span class="symbol">=</span>&nbsp;messengerConnectorType<span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.test/-bot-bus-mock/index.html"><span class="identifier">BotBusMock</span></a></code>
+<p>Provides a mock initialized with the specified <a href="../-story-definition/index.html">StoryDefinition</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-bot-definition-base/index.html">BotDefinitionBase</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BotDefinitionBase</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">BotDefinition</span></code>
+<p>Base implementation of BotDefinition.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

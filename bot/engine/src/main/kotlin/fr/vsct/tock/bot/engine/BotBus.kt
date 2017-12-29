@@ -52,7 +52,9 @@ import fr.vsct.tock.translator.UserInterfaceType
 import java.util.Locale
 
 /**
- * The main interface to build a response to a user query.
+ * A new bus is generated for each user request.
+ *
+ * This interface is used by bot implementations to reply to this request.
  */
 interface BotBus : I18nKeyProvider {
 
@@ -82,7 +84,7 @@ interface BotBus : I18nKeyProvider {
      */
     var story: Story
     /**
-     * The last user action.
+     * The user action.
      */
     val action: Action
 

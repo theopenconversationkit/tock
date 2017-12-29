@@ -1,0 +1,77 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Dialog - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine.dialog</a>&nbsp;/&nbsp;<a href=".">Dialog</a><br/>
+<br/>
+<h1>Dialog</h1>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">Dialog</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/dialog/Dialog.kt#L27">(source)</a>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">Dialog</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.Dialog$<init>(kotlin.collections.Set((fr.vsct.tock.bot.engine.user.PlayerId)), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.dialog.Dialog)), fr.vsct.tock.bot.engine.dialog.DialogState, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.Story)))/playerIds">playerIds</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.Dialog$<init>(kotlin.collections.Set((fr.vsct.tock.bot.engine.user.PlayerId)), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.dialog.Dialog)), fr.vsct.tock.bot.engine.dialog.DialogState, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.Story)))/id">id</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><span class="identifier">Dialog</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;newId()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.Dialog$<init>(kotlin.collections.Set((fr.vsct.tock.bot.engine.user.PlayerId)), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.dialog.Dialog)), fr.vsct.tock.bot.engine.dialog.DialogState, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.Story)))/state">state</span><span class="symbol">:</span>&nbsp;<a href="../-dialog-state/index.html"><span class="identifier">DialogState</span></a>&nbsp;<span class="symbol">=</span>&nbsp;DialogState()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.Dialog$<init>(kotlin.collections.Set((fr.vsct.tock.bot.engine.user.PlayerId)), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.dialog.Dialog)), fr.vsct.tock.bot.engine.dialog.DialogState, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.Story)))/stories">stories</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../-story/index.html"><span class="identifier">Story</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;mutableListOf()<span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="id.html">id</a></p>
+</td>
+<td>
+<code><span class="keyword">var </span><span class="identifier">id</span><span class="symbol">: </span><span class="identifier">Id</span><span class="symbol">&lt;</span><span class="identifier">Dialog</span><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="player-ids.html">playerIds</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">playerIds</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="state.html">state</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">state</span><span class="symbol">: </span><a href="../-dialog-state/index.html"><span class="identifier">DialogState</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="stories.html">stories</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">stories</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../-story/index.html"><span class="identifier">Story</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="all-actions.html">allActions</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">allActions</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../fr.vsct.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="current-story.html">currentStory</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">currentStory</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-story/index.html"><span class="identifier">Story</span></a><span class="symbol">?</span></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

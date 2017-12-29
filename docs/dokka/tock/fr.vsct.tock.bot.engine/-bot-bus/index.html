@@ -1,0 +1,530 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>BotBus - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine</a>&nbsp;/&nbsp;<a href=".">BotBus</a><br/>
+<br/>
+<h1>BotBus</h1>
+<code><span class="keyword">interface </span><span class="identifier">BotBus</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">I18nKeyProvider</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/BotBus.kt#L59">(source)</a>
+<p>A new bus is generated for each user request.</p>
+<p>This interface is used by bot implementations to reply to this request.</p>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="action.html">action</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">action</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a></code>
+<p>The user action.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="application-id.html">applicationId</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">applicationId</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The current application id.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="bot-definition.html">botDefinition</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">botDefinition</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a></code>
+<p>The bot definition of the current bot.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="bot-id.html">botId</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">botId</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a></code>
+<p>The current bot id.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="connector-data.html">connectorData</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">connectorData</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector-data/index.html"><span class="identifier">ConnectorData</span></a></code>
+<p>The data specific to the connector (if any).</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="dialog.html">dialog</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">dialog</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.dialog/-dialog/index.html"><span class="identifier">Dialog</span></a></code>
+<p>The current dialog history for this user.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="entities.html">entities</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">entities</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.dialog/-entity-state-value/index.html"><span class="identifier">EntityStateValue</span></a><span class="symbol">&gt;</span></code>
+<p>The entities in the dialog state.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="i18n-provider.html">i18nProvider</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">var </span><span class="identifier">i18nProvider</span><span class="symbol">: </span><span class="identifier">I18nKeyProvider</span></code>
+<p>To manage i18n.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="intent.html">intent</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">intent</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.definition/-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">?</span></code>
+<p>The current intent.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="next-user-action-state.html">nextUserActionState</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">var </span><span class="identifier">nextUserActionState</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.dialog/-next-user-action-state/index.html"><span class="identifier">NextUserActionState</span></a><span class="symbol">?</span></code>
+<p>Qualify the next user action.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="step.html">step</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">var </span><span class="identifier">step</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.definition/-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span><span class="symbol">?</span></code>
+<p>The current <a href="../../fr.vsct.tock.bot.definition/-story-step/index.html">StoryStep</a> of the <a href="../../fr.vsct.tock.bot.engine.dialog/-story/index.html">Story</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="story.html">story</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">var </span><span class="identifier">story</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.dialog/-story/index.html"><span class="identifier">Story</span></a></code>
+<p>The current story.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="target-connector-type.html">targetConnectorType</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">targetConnectorType</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code>
+<p>The <a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html">ConnectorType</a> used by the response.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="user-id.html">userId</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">userId</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a></code>
+<p>The current user id.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="user-interface-type.html">userInterfaceType</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">userInterfaceType</span><span class="symbol">: </span><span class="identifier">UserInterfaceType</span></code>
+<p>The current user interface type.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="user-locale.html">userLocale</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">userLocale</span><span class="symbol">: </span><span class="identifier">Locale</span></code>
+<p>The current user <a href="#">Locale</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="user-preferences.html">userPreferences</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">userPreferences</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.user/-user-preferences/index.html"><span class="identifier">UserPreferences</span></a></code>
+<p>User preferences of the current user.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="user-timeline.html">userTimeline</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">userTimeline</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.user/-user-timeline/index.html"><span class="identifier">UserTimeline</span></a></code>
+<p>The user timeline. Get history and data abgout the user.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="boolean-choice.html">booleanChoice</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">booleanChoice</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$booleanChoice(fr.vsct.tock.bot.definition.ParameterKey)/key">key</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-parameter-key/index.html"><span class="identifier">ParameterKey</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Returns true if the specified choice as the "true" value, false either.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="change-context-value.html">changeContextValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">changeContextValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$changeContextValue(kotlin.String, kotlin.Any)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$changeContextValue(kotlin.String, kotlin.Any)/value">value</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">changeContextValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$changeContextValue(fr.vsct.tock.bot.definition.ParameterKey, kotlin.Any)/key">key</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-parameter-key/index.html"><span class="identifier">ParameterKey</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$changeContextValue(fr.vsct.tock.bot.definition.ParameterKey, kotlin.Any)/value">value</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Update persistent context value.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="change-entity-value.html">changeEntityValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">changeEntityValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$changeEntityValue(kotlin.String, fr.vsct.tock.bot.engine.dialog.ContextValue)/role">role</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$changeEntityValue(kotlin.String, fr.vsct.tock.bot.engine.dialog.ContextValue)/newValue">newValue</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.dialog/-context-value/index.html"><span class="identifier">ContextValue</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">changeEntityValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$changeEntityValue(fr.vsct.tock.nlp.api.client.model.Entity, fr.vsct.tock.nlp.entity.Value)/entity">entity</span><span class="symbol">:</span>&nbsp;<span class="identifier">Entity</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$changeEntityValue(fr.vsct.tock.nlp.api.client.model.Entity, fr.vsct.tock.nlp.entity.Value)/newValue">newValue</span><span class="symbol">:</span>&nbsp;<span class="identifier">Value</span><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">changeEntityValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$changeEntityValue(fr.vsct.tock.nlp.api.client.model.Entity, fr.vsct.tock.bot.engine.dialog.ContextValue)/entity">entity</span><span class="symbol">:</span>&nbsp;<span class="identifier">Entity</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$changeEntityValue(fr.vsct.tock.nlp.api.client.model.Entity, fr.vsct.tock.bot.engine.dialog.ContextValue)/newValue">newValue</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.dialog/-context-value/index.html"><span class="identifier">ContextValue</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Update the current entity value in the dialog.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">changeEntityValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$changeEntityValue(fr.vsct.tock.nlp.api.client.model.Entity, kotlin.String)/entity">entity</span><span class="symbol">:</span>&nbsp;<span class="identifier">Entity</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$changeEntityValue(fr.vsct.tock.nlp.api.client.model.Entity, kotlin.String)/textContent">textContent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Update the current entity text value in the dialog.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="choice.html">choice</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">choice</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$choice(fr.vsct.tock.bot.definition.ParameterKey)/key">key</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-parameter-key/index.html"><span class="identifier">ParameterKey</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code>
+<p>Returns the value of the specified choice parameter, null if the user action is not a <a href="../../fr.vsct.tock.bot.engine.action/-send-choice/index.html">SendChoice</a>
+or if this parameter is not set.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="context-value.html">contextValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span> <span class="identifier">contextValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$contextValue(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">?</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span> <span class="identifier">contextValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$contextValue(fr.vsct.tock.bot.definition.ParameterKey)/key">key</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-parameter-key/index.html"><span class="identifier">ParameterKey</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">?</span></code>
+<p>Returns the persistent current context value.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="end.html">end</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">end</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$end(kotlin.Long)/delay">delay</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">end</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$end(kotlin.CharSequence, kotlin.Long, kotlin.Array((kotlin.Any)))/i18nText">i18nText</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$end(kotlin.CharSequence, kotlin.Long, kotlin.Array((kotlin.Any)))/delay">delay</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0<span class="symbol">, </span><span class="keyword">vararg</span> <span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$end(kotlin.CharSequence, kotlin.Long, kotlin.Array((kotlin.Any)))/i18nArgs">i18nArgs</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">end</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$end(kotlin.CharSequence, kotlin.Array((kotlin.Any)))/i18nText">i18nText</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="keyword">vararg</span> <span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$end(kotlin.CharSequence, kotlin.Array((kotlin.Any)))/i18nArgs">i18nArgs</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">end</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$end(fr.vsct.tock.bot.engine.message.Message, kotlin.Long)/message">message</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.message/-message/index.html"><span class="identifier">Message</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$end(fr.vsct.tock.bot.engine.message.Message, kotlin.Long)/delay">delay</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">end</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$end(fr.vsct.tock.bot.engine.action.Action, kotlin.Long)/action">action</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$end(fr.vsct.tock.bot.engine.action.Action, kotlin.Long)/delay">delay</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">end</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$end(fr.vsct.tock.bot.engine.message.MessagesList, kotlin.Long)/messages">messages</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.message/-messages-list/index.html"><span class="identifier">MessagesList</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$end(fr.vsct.tock.bot.engine.message.MessagesList, kotlin.Long)/initialDelay">initialDelay</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="end-raw-text.html">endRawText</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">endRawText</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$endRawText(kotlin.CharSequence, kotlin.Long)/plainText">plainText</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$endRawText(kotlin.CharSequence, kotlin.Long)/delay">delay</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span></code>
+<p>Send text that should not be translated, and terminate bot actions.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="entity-context-value.html">entityContextValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">entityContextValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$entityContextValue(fr.vsct.tock.nlp.api.client.model.Entity)/entity">entity</span><span class="symbol">:</span>&nbsp;<span class="identifier">Entity</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.dialog/-context-value/index.html"><span class="identifier">ContextValue</span></a><span class="symbol">?</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">entityContextValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$entityContextValue(kotlin.String)/role">role</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.dialog/-context-value/index.html"><span class="identifier">ContextValue</span></a><span class="symbol">?</span></code>
+<p>Returns the current entity ContextValue.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="entity-text.html">entityText</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">entityText</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$entityText(fr.vsct.tock.nlp.api.client.model.Entity)/entity">entity</span><span class="symbol">:</span>&nbsp;<span class="identifier">Entity</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">entityText</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$entityText(kotlin.String)/role">role</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code>
+<p>Returns the current text content for the specified entity.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="entity-value.html">entityValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Value</span><span class="symbol">&gt;</span> <span class="identifier">entityValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$entityValue(kotlin.String, kotlin.Function1((fr.vsct.tock.bot.engine.dialog.ContextValue, fr.vsct.tock.bot.engine.BotBus.entityValue.T)))/role">role</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$entityValue(kotlin.String, kotlin.Function1((fr.vsct.tock.bot.engine.dialog.ContextValue, fr.vsct.tock.bot.engine.BotBus.entityValue.T)))/valueTransformer">valueTransformer</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="../../fr.vsct.tock.bot.engine.dialog/-context-value/index.html"><span class="identifier">ContextValue</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">T</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;@Suppress("UNCHECKED_CAST") { it.value as? T? }<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">?</span></code>
+<p>Returns the current value for the specified entity role.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Value</span><span class="symbol">&gt;</span> <span class="identifier">entityValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$entityValue(fr.vsct.tock.nlp.api.client.model.Entity, kotlin.Function1((fr.vsct.tock.bot.engine.dialog.ContextValue, fr.vsct.tock.bot.engine.BotBus.entityValue.T)))/entity">entity</span><span class="symbol">:</span>&nbsp;<span class="identifier">Entity</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$entityValue(fr.vsct.tock.nlp.api.client.model.Entity, kotlin.Function1((fr.vsct.tock.bot.engine.dialog.ContextValue, fr.vsct.tock.bot.engine.BotBus.entityValue.T)))/valueTransformer">valueTransformer</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="../../fr.vsct.tock.bot.engine.dialog/-context-value/index.html"><span class="identifier">ContextValue</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">T</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;@Suppress("UNCHECKED_CAST") { it.value as? T? }<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">?</span></code>
+<p>Returns the current value for the specified entity.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="get-bus-context-value.html">getBusContextValue</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getBusContextValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$getBusContextValue(kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">getBusContextValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$getBusContextValue(fr.vsct.tock.bot.definition.ParameterKey)/key">key</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-parameter-key/index.html"><span class="identifier">ParameterKey</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span></code>
+<p>Returns the non persistent current context value.
+Bus context values are useful to store a temporary (ie request scoped) state.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="has-action-entity.html">hasActionEntity</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">hasActionEntity</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$hasActionEntity(kotlin.String)/role">role</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">hasActionEntity</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$hasActionEntity(fr.vsct.tock.nlp.api.client.model.Entity)/entity">entity</span><span class="symbol">:</span>&nbsp;<span class="identifier">Entity</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Returns true if the current action has the specified entity role.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="i18n-key-from-label.html">i18nKeyFromLabel</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">i18nKeyFromLabel</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$i18nKeyFromLabel(kotlin.CharSequence, kotlin.collections.List((kotlin.Any)))/defaultLabel">defaultLabel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$i18nKeyFromLabel(kotlin.CharSequence, kotlin.collections.List((kotlin.Any)))/args">args</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">I18nLabelKey</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="is-intent.html">isIntent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$isIntent(fr.vsct.tock.bot.definition.IntentAware)/intentOwner">intentOwner</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>To test if the current intent is owned by the <a href="../../fr.vsct.tock.bot.definition/-intent-aware/index.html">IntentAware</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="nlp-stats.html">nlpStats</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">nlpStats</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.nlp/-nlp-call-stats/index.html"><span class="identifier">NlpCallStats</span></a><span class="symbol">?</span></code>
+<p>Get the NLP call stats if an NLP call has occurred, null either.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="param-choice.html">paramChoice</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">paramChoice</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$paramChoice(kotlin.String)/paramName">paramName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">paramChoice</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$paramChoice(fr.vsct.tock.bot.definition.ParameterKey)/key">key</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-parameter-key/index.html"><span class="identifier">ParameterKey</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code>
+<p>Returns the value of the specified choice parameter, null if the user action is not a <a href="../../fr.vsct.tock.bot.engine.action/-send-choice/index.html">SendChoice</a>
+or if this parameter is not set.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="reload-profile.html">reloadProfile</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">reloadProfile</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Reload the user profile.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="remove-all-entity-values.html">removeAllEntityValues</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">removeAllEntityValues</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Remove all current entity values.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="remove-entity-value.html">removeEntityValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">removeEntityValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$removeEntityValue(kotlin.String)/role">role</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">removeEntityValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$removeEntityValue(fr.vsct.tock.nlp.api.client.model.Entity)/entity">entity</span><span class="symbol">:</span>&nbsp;<span class="identifier">Entity</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Remove entity value for the specified role.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="reset-dialog-state.html">resetDialogState</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">resetDialogState</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Remove all entities and context values.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="send.html">send</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">send</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$send(kotlin.CharSequence, kotlin.Long, kotlin.Array((kotlin.Any)))/i18nText">i18nText</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$send(kotlin.CharSequence, kotlin.Long, kotlin.Array((kotlin.Any)))/delay">delay</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0<span class="symbol">, </span><span class="keyword">vararg</span> <span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$send(kotlin.CharSequence, kotlin.Long, kotlin.Array((kotlin.Any)))/i18nArgs">i18nArgs</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">send</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$send(kotlin.CharSequence, kotlin.Array((kotlin.Any)))/i18nText">i18nText</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="keyword">vararg</span> <span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$send(kotlin.CharSequence, kotlin.Array((kotlin.Any)))/i18nArgs">i18nArgs</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">send</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$send(kotlin.Long)/delay">delay</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">send</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$send(fr.vsct.tock.bot.engine.message.Message, kotlin.Long)/message">message</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.message/-message/index.html"><span class="identifier">Message</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$send(fr.vsct.tock.bot.engine.message.Message, kotlin.Long)/delay">delay</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">send</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$send(fr.vsct.tock.bot.engine.action.Action, kotlin.Long)/action">action</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$send(fr.vsct.tock.bot.engine.action.Action, kotlin.Long)/delay">delay</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="send-raw-text.html">sendRawText</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">sendRawText</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$sendRawText(kotlin.CharSequence, kotlin.Long)/plainText">plainText</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$sendRawText(kotlin.CharSequence, kotlin.Long)/delay">delay</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span></code>
+<p>Send text that should not be translated.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="set-bus-context-value.html">setBusContextValue</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">setBusContextValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$setBusContextValue(kotlin.String, kotlin.Any)/key">key</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$setBusContextValue(kotlin.String, kotlin.Any)/value">value</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setBusContextValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$setBusContextValue(fr.vsct.tock.bot.definition.ParameterKey, kotlin.Any)/key">key</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-parameter-key/index.html"><span class="identifier">ParameterKey</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$setBusContextValue(fr.vsct.tock.bot.definition.ParameterKey, kotlin.Any)/value">value</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Update the non persistent current context value.
+Bus context values are useful to store a temporary (ie request scoped) state.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="switch-story.html">switchStory</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">switchStory</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$switchStory(fr.vsct.tock.bot.definition.StoryDefinition)/storyDefinition">storyDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Switch the context to the underlying story definition (start a new <a href="../../fr.vsct.tock.bot.engine.dialog/-story/index.html">Story</a>).</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="translate.html">translate</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">translate</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$translate(kotlin.CharSequence, kotlin.Array((kotlin.Any)))/text">text</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="keyword">vararg</span> <span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$translate(kotlin.CharSequence, kotlin.Array((kotlin.Any)))/args">args</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a></code>
+<p>Translate and format if needed the text with the optionals args.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">translate</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$translate(fr.vsct.tock.translator.I18nLabelKey)/key">key</span><span class="symbol">:</span>&nbsp;<span class="identifier">I18nLabelKey</span><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a></code>
+<p>Translate the specified key.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="with-message.html">withMessage</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">withMessage</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$withMessage(fr.vsct.tock.bot.connector.ConnectorMessage)/message">message</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span></code><br/>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">withMessage</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$withMessage(fr.vsct.tock.bot.connector.ConnectorType, kotlin.Function0((fr.vsct.tock.bot.connector.ConnectorMessage)))/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$withMessage(fr.vsct.tock.bot.connector.ConnectorType, kotlin.Function0((fr.vsct.tock.bot.connector.ConnectorMessage)))/messageProvider">messageProvider</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span></code>
+<p>Add the specified <a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html">ConnectorMessage</a> to the bus context if the <a href="target-connector-type.html">targetConnectorType</a> is compatible.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="with-notification-type.html">withNotificationType</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">withNotificationType</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$withNotificationType(fr.vsct.tock.bot.engine.action.ActionNotificationType)/notificationType">notificationType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.action/-action-notification-type/index.html"><span class="identifier">ActionNotificationType</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span></code>
+<p>Add the specified <a href="../../fr.vsct.tock.bot.engine.action/-action-notification-type/index.html">ActionNotificationType</a> to the bus context.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="with-priority.html">withPriority</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">withPriority</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$withPriority(fr.vsct.tock.bot.engine.action.ActionPriority)/priority">priority</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.action/-action-priority/index.html"><span class="identifier">ActionPriority</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span></code>
+<p>Add the specified <a href="../../fr.vsct.tock.bot.engine.action/-action-priority/index.html">ActionPriority</a> to the bus context.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="retrieve-current-bus.html">retrieveCurrentBus</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">retrieveCurrentBus</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BotBus</span><span class="symbol">?</span></code>
+<p>Helper method to returns the current bus,
+linked to the thread currently used by the handler.
+(warning: advanced usage only).</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.test/-bot-bus-mock/index.html">BotBusMock</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BotBusMock</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">BotBus</span></code>
+<p>A Bus mock used in unit tests.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.definition/-connector-story-handler/index.html">ConnectorStoryHandler</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">ConnectorStoryHandler</span><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">BotBus</span></code>
+<p>Handler for specific <a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html">ConnectorType</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.definition/-connector-story-handler-base/index.html">ConnectorStoryHandlerBase</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ConnectorStoryHandlerBase</span><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">BotBus</span><span class="symbol">, </span><a href="../../fr.vsct.tock.bot.definition/-connector-story-handler/index.html"><span class="identifier">ConnectorStoryHandler</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span></code>
+<p>Base implementation of <a href="../../fr.vsct.tock.bot.definition/-connector-story-handler/index.html">ConnectorStoryHandler</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.definition/-story-handler-definition/index.html">StoryHandlerDefinition</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">StoryHandlerDefinition</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">BotBus</span></code>
+<p>Story handler definitions are used in <a href="../../fr.vsct.tock.bot.definition/-story-handler/index.html">StoryHandler</a> to provide custom context and to manage specific connector behaviour.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.definition/-story-handler-definition-base/index.html">StoryHandlerDefinitionBase</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">StoryHandlerDefinitionBase</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-connector-story-handler-base/index.html"><span class="identifier">ConnectorStoryHandlerBase</span></a><span class="symbol">&lt;</span><span class="identifier">*</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">BotBus</span><span class="symbol">, </span><a href="../../fr.vsct.tock.bot.definition/-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a></code>
+<p>Base implementation of <a href="../../fr.vsct.tock.bot.definition/-story-handler-definition/index.html">StoryHandlerDefinition</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

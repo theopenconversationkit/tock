@@ -1,0 +1,69 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>ConnectorController - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine</a>&nbsp;/&nbsp;<a href=".">ConnectorController</a><br/>
+<br/>
+<h1>ConnectorController</h1>
+<code><span class="keyword">interface </span><span class="identifier">ConnectorController</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/ConnectorController.kt#L31">(source)</a>
+<p>Controller to connect <a href="../../fr.vsct.tock.bot.connector/-connector/index.html">Connector</a> and <a href="#">Bot</a>.</p>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="bot-definition.html">botDefinition</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">botDefinition</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a></code>
+<p>The bot definition served by the controller.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="connector.html">connector</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">connector</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector/index.html"><span class="identifier">Connector</span></a></code>
+<p>The connector used by the controller.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="error-message.html">errorMessage</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">errorMessage</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.ConnectorController$errorMessage(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId)/playerId">playerId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.ConnectorController$errorMessage(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.ConnectorController$errorMessage(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId)/recipientId">recipientId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a></code>
+<p>Returns an error message (technical error).</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="handle.html">handle</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">handle</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.ConnectorController$handle(fr.vsct.tock.bot.engine.event.Event, fr.vsct.tock.bot.connector.ConnectorData)/event">event</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.ConnectorController$handle(fr.vsct.tock.bot.engine.event.Event, fr.vsct.tock.bot.connector.ConnectorData)/data">data</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-data/index.html"><span class="identifier">ConnectorData</span></a>&nbsp;<span class="symbol">=</span>&nbsp;ConnectorData(ConnectorCallbackBase(event.applicationId, connector.connectorType))<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Handle an event sent by the connector. the primary goal of this controller.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="register-services.html">registerServices</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">registerServices</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.ConnectorController$registerServices(kotlin.String, kotlin.Function1((io.vertx.ext.web.Router, kotlin.Unit)))/rootPath">rootPath</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.ConnectorController$registerServices(kotlin.String, kotlin.Function1((io.vertx.ext.web.Router, kotlin.Unit)))/installer">installer</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">Router</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Register services at startup.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

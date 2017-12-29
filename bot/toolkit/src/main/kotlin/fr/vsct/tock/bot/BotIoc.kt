@@ -27,19 +27,28 @@ import fr.vsct.tock.translator.noop.noOpTranslatorModule
 import mu.KotlinLogging
 
 /**
- *
+ * Bot module configuration.
  */
 object BotIoc {
 
     private val logger = KotlinLogging.logger {}
 
+    /**
+     * The core modules of the bot.
+     */
     val coreModules: List<Module> =
             listOf(sharedModule, botModule, botMongoModule, noOpTranslatorModule)
 
+    /**
+     * Start the bot with the specified additional [modules].
+     */
     fun setup(vararg modules: Module) {
         setup(modules.toList())
     }
 
+    /**
+     * Start the bot with the specified additional [modules].
+     */
     fun setup(modules: List<Module>) {
         //init jackson
         BotEngineJacksonConfiguration.init()

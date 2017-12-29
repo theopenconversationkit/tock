@@ -1,0 +1,140 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>SimpleStoryHandlerBase - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.definition</a>&nbsp;/&nbsp;<a href=".">SimpleStoryHandlerBase</a><br/>
+<br/>
+<h1>SimpleStoryHandlerBase</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">SimpleStoryHandlerBase</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler-base/index.html"><span class="identifier">StoryHandlerBase</span></a><span class="symbol">&lt;</span><a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/definition/SimpleStoryHandlerBase.kt#L24">(source)</a>
+<p>For simple stories that do not use custom <a href="../-story-handler-definition/index.html">StoryHandlerDefinition</a>.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">SimpleStoryHandlerBase</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.SimpleStoryHandlerBase$<init>(kotlin.String)/mainIntentName">mainIntentName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span></code>
+<p>For simple stories that do not use custom <a href="../-story-handler-definition/index.html">StoryHandlerDefinition</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-story-handler-base/breath.html">breath</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">breath</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a></code>
+<p>Wait 1s by default</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-story-handler-base/i18n-namespace.html">i18nNamespace</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">i18nNamespace</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The namespace for <a href="#">I18nKeyProvider</a> implementation.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="action.html">action</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">action</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.SimpleStoryHandlerBase$action(fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>The method to implement.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="setup-handler-def.html">setupHandlerDef</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">setupHandlerDef</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.SimpleStoryHandlerBase$setupHandlerDef(fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a></code>
+<p>Handle precondition like checking mandatory entities, and create <a href="../-story-handler-definition/index.html">StoryHandlerDefinition</a>.
+If this function returns null, this implied that <a href="../../fr.vsct.tock.bot.engine/-bot-bus/end.html">BotBus.end</a> has been called in this function
+(as the <a href="../-story-handler-definition/handle.html">StoryHandlerDefinition.handle</a> function is not called).</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-story-handler-base/find-story-definition.html">findStoryDefinition</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findStoryDefinition</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$findStoryDefinition(fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code>
+<p>Find the story definition of this handler.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-story-handler-base/handle.html">handle</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">handle</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$handle(fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Receive a message from the bus.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-story-handler-base/handle-and-switch-story.html">handleAndSwitchStory</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">handleAndSwitchStory</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$handleAndSwitchStory(fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Handle the action and switch the context to the underlying story definition.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-story-handler-base/i18n-key.html">i18nKey</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">i18nKey</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$i18nKey(kotlin.String, kotlin.CharSequence, kotlin.Array((kotlin.Any)))/key">key</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$i18nKey(kotlin.String, kotlin.CharSequence, kotlin.Array((kotlin.Any)))/defaultLabel">defaultLabel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="keyword">vararg</span> <span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$i18nKey(kotlin.String, kotlin.CharSequence, kotlin.Array((kotlin.Any)))/args">args</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">I18nLabelKey</span></code>
+<p>Get I18nKey with specified key. Current namespace is used.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-story-handler-base/i18n-key-from-label.html">i18nKeyFromLabel</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">i18nKeyFromLabel</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$i18nKeyFromLabel(kotlin.CharSequence, kotlin.collections.List((kotlin.Any)))/defaultLabel">defaultLabel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$i18nKeyFromLabel(kotlin.CharSequence, kotlin.collections.List((kotlin.Any)))/args">args</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">I18nLabelKey</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../-story-handler-base/i18n-key-prefix.html">i18nKeyPrefix</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">i18nKeyPrefix</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Default i18n prefix.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-story-handler-base/wrapped-intent.html">wrappedIntent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">wrappedIntent</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-intent/index.html"><span class="identifier">Intent</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

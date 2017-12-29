@@ -42,7 +42,9 @@ import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 
 /**
+ * Advanced bot configuration.
  *
+ * [registerAndInstallBot] method is the preferred way to start a bot in most use cases.
  */
 object BotRepository {
 
@@ -148,7 +150,7 @@ object BotRepository {
                         connector(conf)
                                 .let { connector ->
                                     botProviders.forEach { botProvider ->
-                                        botProvider.bot().let { bot ->
+                                        Bot(botProvider.botDefinition()).let { bot ->
                                             //set default namespace to bot namespace if not already set
                                             if (tockAppDefaultNamespace == DEFAULT_APP_NAMESPACE) {
                                                 tockAppDefaultNamespace = bot.botDefinition.namespace

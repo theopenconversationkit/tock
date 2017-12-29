@@ -28,7 +28,7 @@ import mu.KotlinLogging
 /**
  *
  */
-class BotVerticle : WebVerticle() {
+internal class BotVerticle : WebVerticle() {
 
     override val logger: KLogger = KotlinLogging.logger {}
 

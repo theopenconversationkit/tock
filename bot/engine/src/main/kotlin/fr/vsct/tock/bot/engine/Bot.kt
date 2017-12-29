@@ -36,7 +36,7 @@ import mu.KotlinLogging
 /**
  *
  */
-class Bot(botDefinitionBase: BotDefinition) {
+internal class Bot(botDefinitionBase: BotDefinition) {
 
     companion object {
         private val currentBus = ThreadLocal<BotBus>()
@@ -53,8 +53,11 @@ class Bot(botDefinitionBase: BotDefinition) {
 
     private val nlp: NlpController by injector.instance()
 
-    internal val botDefinition: BotDefinitionWrapper = BotDefinitionWrapper(botDefinitionBase)
+    val botDefinition: BotDefinitionWrapper = BotDefinitionWrapper(botDefinitionBase)
 
+    /**
+     * Handle the user action.
+     */
     fun handle(action: Action, userTimeline: UserTimeline, connector: ConnectorController, connectorData: ConnectorData) {
         connector as TockConnectorController
 

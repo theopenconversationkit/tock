@@ -1,0 +1,93 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>StoryHandlerDefinitionBase - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.definition</a>&nbsp;/&nbsp;<a href=".">StoryHandlerDefinitionBase</a><br/>
+<br/>
+<h1>StoryHandlerDefinitionBase</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">StoryHandlerDefinitionBase</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-connector-story-handler-base/index.html"><span class="identifier">ConnectorStoryHandlerBase</span></a><span class="symbol">&lt;</span><span class="identifier">*</span><span class="symbol">&gt;</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">, </span><a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/definition/StoryHandlerDefinitionBase.kt#L33">(source)</a>
+<p>Base implementation of <a href="../-story-handler-definition/index.html">StoryHandlerDefinition</a>.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">StoryHandlerDefinitionBase</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerDefinitionBase$<init>(fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span></code>
+<p>Base implementation of <a href="../-story-handler-definition/index.html">StoryHandlerDefinition</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="bus.html">bus</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">bus</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="connector.html">connector</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">connector</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">?</span></code>
+<p>Provides the current <a href="../-connector-story-handler/index.html">ConnectorStoryHandler</a> using <a href="find-connector.html">findConnector</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="connector-type.html">connectorType</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">connectorType</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code>
+<p>Shortcut for <a href="../../fr.vsct.tock.bot.engine/-bot-bus/target-connector-type.html">BotBus.targetConnectorType</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="answer.html">answer</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">answer</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>The method to implement if there is no <a href="../-story-step/index.html">StoryStep</a> in the <a href="../-story-definition/index.html">StoryDefinition</a>
+or when current <a href="../-story-step/index.html">StoryStep</a> is null</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="find-connector.html">findConnector</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findConnector</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerDefinitionBase$findConnector(fr.vsct.tock.bot.connector.ConnectorType)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">?</span></code>
+<p>Method to override in order to provide <a href="../-connector-story-handler/index.html">ConnectorStoryHandler</a>.
+Default implementation use annotations annotated with @<a href="../../fr.vsct.tock.bot.connector/-connector-handler/index.html">ConnectorHandler</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="handle.html">handle</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">handle</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Default implementation redirect to answer if there is no current step
+or if the <a href="../-story-step/answer.html">StoryStep.answer</a> method of the current step returns null.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

@@ -1,0 +1,225 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>SendChoice - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine.action</a>&nbsp;/&nbsp;<a href=".">SendChoice</a><br/>
+<br/>
+<h1>SendChoice</h1>
+<code><span class="keyword">class </span><span class="identifier">SendChoice</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-action/index.html"><span class="identifier">Action</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/action/SendChoice.kt#L40">(source)</a>
+<p>A user choice (click on a button or direct action).</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">SendChoice</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/playerId">playerId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/recipientId">recipientId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/intentName">intentName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/step">step</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/parameters">parameters</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyMap()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/id">id</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="../-action/index.html"><span class="identifier">Action</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;newId()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/date">date</span><span class="symbol">:</span>&nbsp;<span class="identifier">Instant</span>&nbsp;<span class="symbol">=</span>&nbsp;Instant.now()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/state">state</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.dialog/-event-state/index.html"><span class="identifier">EventState</span></a>&nbsp;<span class="symbol">=</span>&nbsp;EventState()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/metadata">metadata</span><span class="symbol">:</span>&nbsp;<a href="../-action-metadata/index.html"><span class="identifier">ActionMetadata</span></a>&nbsp;<span class="symbol">=</span>&nbsp;ActionMetadata()<span class="symbol">)</span></code><code><span class="identifier">SendChoice</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/playerId">playerId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/recipientId">recipientId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/intentName">intentName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/parameters">parameters</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyMap()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/id">id</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="../-action/index.html"><span class="identifier">Action</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;newId()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/date">date</span><span class="symbol">:</span>&nbsp;<span class="identifier">Instant</span>&nbsp;<span class="symbol">=</span>&nbsp;Instant.now()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/state">state</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.dialog/-event-state/index.html"><span class="identifier">EventState</span></a>&nbsp;<span class="symbol">=</span>&nbsp;EventState()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$<init>(fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, kotlin.collections.Map((kotlin.String, )), org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/metadata">metadata</span><span class="symbol">:</span>&nbsp;<a href="../-action-metadata/index.html"><span class="identifier">ActionMetadata</span></a>&nbsp;<span class="symbol">=</span>&nbsp;ActionMetadata()<span class="symbol">)</span></code>
+<p>A user choice (click on a button or direct action).</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="intent-name.html">intentName</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">intentName</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="parameters.html">parameters</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">parameters</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-action/metadata.html">metadata</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">metadata</span><span class="symbol">: </span><a href="../-action-metadata/index.html"><span class="identifier">ActionMetadata</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../-action/player-id.html">playerId</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">playerId</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../-action/recipient-id.html">recipientId</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">recipientId</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="obfuscate.html">obfuscate</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">obfuscate</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$obfuscate(fr.vsct.tock.shared.security.StringObfuscatorMode, fr.vsct.tock.bot.engine.user.PlayerId)/mode">mode</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security/-string-obfuscator-mode/index.html"><span class="identifier">StringObfuscatorMode</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice$obfuscate(fr.vsct.tock.shared.security.StringObfuscatorMode, fr.vsct.tock.bot.engine.user.PlayerId)/playerId">playerId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="step.html">step</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">step</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code>
+<p>The step of this choice (when applicable).</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="to-encoded-id.html">toEncodedId</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">toEncodedId</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Provides the id used by connectors.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="to-message.html">toMessage</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">toMessage</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.message/-message/index.html"><span class="identifier">Message</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="to-string.html">toString</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">toString</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-action/obfuscate.html">obfuscate</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">obfuscate</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$obfuscate(fr.vsct.tock.shared.security.StringObfuscatorMode)/mode">mode</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security/-string-obfuscator-mode/index.html"><span class="identifier">StringObfuscatorMode</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a></code>
+<p>Obfuscate the event - by default this method does nothing.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-action/to-action-id.html">toActionId</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">toActionId</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Id</span><span class="symbol">&lt;</span><a href="../-action/index.html"><span class="identifier">Action</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-e-x-i-t_-i-n-t-e-n-t.html">EXIT_INTENT</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">EXIT_INTENT</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-i-m-a-g-e_-p-a-r-a-m-e-t-e-r.html">IMAGE_PARAMETER</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">IMAGE_PARAMETER</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-n-l-p.html">NLP</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">NLP</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-p-r-e-v-i-o-u-s_-i-n-t-e-n-t_-p-a-r-a-m-e-t-e-r.html">PREVIOUS_INTENT_PARAMETER</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">PREVIOUS_INTENT_PARAMETER</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-s-t-e-p_-p-a-r-a-m-e-t-e-r.html">STEP_PARAMETER</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">STEP_PARAMETER</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-t-i-t-l-e_-p-a-r-a-m-e-t-e-r.html">TITLE_PARAMETER</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">TITLE_PARAMETER</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-u-r-l_-p-a-r-a-m-e-t-e-r.html">URL_PARAMETER</a></p>
+</td>
+<td>
+<code><span class="keyword">const</span> <span class="keyword">val </span><span class="identifier">URL_PARAMETER</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="decode-choice-id.html">decodeChoiceId</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">decodeChoiceId</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice.Companion$decodeChoiceId(kotlin.String)/id">id</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-pair/index.html"><span class="identifier">Pair</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code>
+<p>Decode an id - returns the <a href="intent-name.html">intentName</a> and the <a href="parameters.html">parameters</a> map.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="encode-choice-id.html">encodeChoiceId</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">encodeChoiceId</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice.Companion$encodeChoiceId(fr.vsct.tock.bot.engine.BotBus, fr.vsct.tock.bot.definition.IntentAware, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )))/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice.Companion$encodeChoiceId(fr.vsct.tock.bot.engine.BotBus, fr.vsct.tock.bot.definition.IntentAware, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )))/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice.Companion$encodeChoiceId(fr.vsct.tock.bot.engine.BotBus, fr.vsct.tock.bot.definition.IntentAware, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )))/step">step</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice.Companion$encodeChoiceId(fr.vsct.tock.bot.engine.BotBus, fr.vsct.tock.bot.definition.IntentAware, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )))/parameters">parameters</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyMap()<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code><br/>
+<code><span class="keyword">fun </span><span class="identifier">encodeChoiceId</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice.Companion$encodeChoiceId(fr.vsct.tock.bot.definition.IntentAware, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )), fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), fr.vsct.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice.Companion$encodeChoiceId(fr.vsct.tock.bot.definition.IntentAware, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )), fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), fr.vsct.tock.bot.definition.Intent)/step">step</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice.Companion$encodeChoiceId(fr.vsct.tock.bot.definition.IntentAware, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )), fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), fr.vsct.tock.bot.definition.Intent)/parameters">parameters</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyMap()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice.Companion$encodeChoiceId(fr.vsct.tock.bot.definition.IntentAware, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )), fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), fr.vsct.tock.bot.definition.Intent)/busStep">busStep</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice.Companion$encodeChoiceId(fr.vsct.tock.bot.definition.IntentAware, fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), kotlin.collections.Map((kotlin.String, )), fr.vsct.tock.bot.definition.StoryStep((fr.vsct.tock.bot.definition.StoryHandlerDefinition)), fr.vsct.tock.bot.definition.Intent)/currentIntent">currentIntent</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Encode a choice id.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="encode-nlp-choice-id.html">encodeNlpChoiceId</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">encodeNlpChoiceId</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.action.SendChoice.Companion$encodeNlpChoiceId(kotlin.String)/nlp">nlp</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Encode a choice id.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

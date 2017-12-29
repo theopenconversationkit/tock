@@ -1,0 +1,68 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>fr.vsct.tock.bot.test - tock</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">tock</a>&nbsp;/&nbsp;<a href=".">fr.vsct.tock.bot.test</a><br/>
+<br/>
+<h2>Package fr.vsct.tock.bot.test</h2>
+<p>Utility methods for unit tests.</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-bot-bus-mock/index.html">BotBusMock</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BotBusMock</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a></code>
+<p>A Bus mock used in unit tests.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-bot-bus-mock-context/index.html">BotBusMockContext</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">BotBusMockContext</span></code>
+<p>The initial context of the test.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-bot-bus-mock-log/index.html">BotBusMockLog</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">BotBusMockLog</span></code>
+<p>The actions sent by the mocked bus.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="start-mock.html">startMock</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">.</span><span class="identifier">startMock</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test$startMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType)/storyDefinition">storyDefinition</span><span class="symbol">:</span>&nbsp;<a href="../fr.vsct.tock.bot.definition/-story-definition/index.html"><span class="identifier">StoryDefinition</span></a>&nbsp;<span class="symbol">=</span>&nbsp;helloStory ?: stories.first()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$startMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a>&nbsp;<span class="symbol">=</span>&nbsp;messengerConnectorType<span class="symbol">)</span><span class="symbol">: </span><a href="-bot-bus-mock/index.html"><span class="identifier">BotBusMock</span></a></code>
+<p>Provides a mock initialized with the specified <a href="../fr.vsct.tock.bot.definition/-story-definition/index.html">StoryDefinition</a> and starts the story.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="to-bus-mock.html">toBusMock</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">.</span><span class="identifier">toBusMock</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test$toBusMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType)/storyDefinition">storyDefinition</span><span class="symbol">:</span>&nbsp;<a href="../fr.vsct.tock.bot.definition/-story-definition/index.html"><span class="identifier">StoryDefinition</span></a>&nbsp;<span class="symbol">=</span>&nbsp;helloStory ?: stories.first()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$toBusMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a>&nbsp;<span class="symbol">=</span>&nbsp;messengerConnectorType<span class="symbol">)</span><span class="symbol">: </span><a href="-bot-bus-mock/index.html"><span class="identifier">BotBusMock</span></a></code>
+<p>Provides a mock initialized with the specified <a href="../fr.vsct.tock.bot.definition/-story-definition/index.html">StoryDefinition</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

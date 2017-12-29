@@ -20,7 +20,7 @@ import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.shared.property
 
 /**
- *
+ * Used by [Connector] implementation to register new [ConnectorConfiguration].
  */
 object ConnectorConfigurationRepository {
 
@@ -51,6 +51,9 @@ object ConnectorConfigurationRepository {
         }
     }
 
+    /**
+     * Add a new configuration.
+     */
     fun addConfiguration(conf: ConnectorConfiguration) {
         configurations += conf
     }

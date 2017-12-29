@@ -1,0 +1,157 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>StoryDefinitionExtended - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.definition</a>&nbsp;/&nbsp;<a href=".">StoryDefinitionExtended</a><br/>
+<br/>
+<h1>StoryDefinitionExtended</h1>
+<code><span class="keyword">interface </span><span class="identifier">StoryDefinitionExtended</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/definition/StoryDefinitionExtended.kt#L28">(source)</a>
+<p>Helper methods for StoryDefinition implementation.
+Usually direct implementations are enums.
+This interface add a starter (and main) intent with intent name equals to the property of value <a href="name.html">name</a>
+to the <a href="../-story-definition/index.html">StoryDefinition</a>.
+Warning: advanced usage only.</p>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="id.html">id</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">id</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>An unique identifier for a given bot.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="intents.html">intents</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">intents</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">&gt;</span></code>
+<p>The complete list of intents supported by the story.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="name.html">name</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">name</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="other-starter-intents.html">otherStarterIntents</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">otherStarterIntents</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="secondary-intents.html">secondaryIntents</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">secondaryIntents</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="starter-intents.html">starterIntents</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">starterIntents</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">&gt;</span></code>
+<p>One or more intents that start the story.
+Usually, you don't have the same starter intent in two different story definition.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="steps.html">steps</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">steps</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="../-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code>
+<p>The steps of the story.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="steps-array.html">stepsArray</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">stepsArray</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-array/index.html"><span class="identifier">Array</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="../-story-step/index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code>
+<p>StoryStep implementation could be an enum</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="unsupported-user-interface.html">unsupportedUserInterface</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">unsupportedUserInterface</span><span class="symbol">: </span><span class="identifier">UserInterfaceType</span><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="unsupported-user-interfaces.html">unsupportedUserInterfaces</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">unsupportedUserInterfaces</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><span class="identifier">UserInterfaceType</span><span class="symbol">&gt;</span></code>
+<p>When this story does not support all <a href="#">UserInterfaceType</a>s.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-story-definition/story-handler.html">storyHandler</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">storyHandler</span><span class="symbol">: </span><a href="../-story-handler/index.html"><span class="identifier">StoryHandler</span></a></code>
+<p>The story handler of the story.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-story-definition/is-starter-intent.html">isStarterIntent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isStarterIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryDefinition$isStarterIntent(fr.vsct.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../-story-definition/main-intent.html">mainIntent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">mainIntent</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-intent/index.html"><span class="identifier">Intent</span></a></code>
+<p>The "referent" intent for this story.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-story-definition/support-intent.html">supportIntent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryDefinition$supportIntent(fr.vsct.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../-story-definition/wrapped-intent.html">wrappedIntent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">wrappedIntent</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-intent/index.html"><span class="identifier">Intent</span></a></code>
+<p>Implementation for <a href="../-intent-aware/index.html">IntentAware</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

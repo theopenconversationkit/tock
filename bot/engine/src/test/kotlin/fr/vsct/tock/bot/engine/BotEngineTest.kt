@@ -137,7 +137,7 @@ abstract class BotEngineTest {
 
     val registeredBus: BotBus? get() = (story.definition as TestStoryDefinition).registeredBus
 
-    val bot: Bot by lazy {
+    internal val bot: Bot by lazy {
         fillTimeline()
         Bot(botDefinition)
     }

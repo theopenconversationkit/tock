@@ -1,0 +1,116 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>fr.vsct.tock.bot.connector - tock</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">tock</a>&nbsp;/&nbsp;<a href=".">fr.vsct.tock.bot.connector</a><br/>
+<br/>
+<h2>Package fr.vsct.tock.bot.connector</h2>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-connector/index.html">Connector</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">Connector</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-connector-base/index.html">ConnectorBase</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">ConnectorBase</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-connector/index.html"><span class="identifier">Connector</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-connector-callback/index.html">ConnectorCallback</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">ConnectorCallback</span></code>
+<p>Used by connector implementations to check lifecycle of an user event.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-connector-callback-base/index.html">ConnectorCallbackBase</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ConnectorCallbackBase</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-connector-callback/index.html"><span class="identifier">ConnectorCallback</span></a></code>
+<p>Base implementation of <a href="-connector-callback/index.html">ConnectorCallback</a> - add logging and <a href="../fr.vsct.tock.bot.engine.monitoring/-request-timer/index.html">RequestTimer</a> monitoring.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-connector-configuration/index.html">ConnectorConfiguration</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">ConnectorConfiguration</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-connector-data/index.html">ConnectorData</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ConnectorData</span></code>
+<p>The connector data that connector sends to the <a href="#">ConnectorController</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-connector-message/index.html">ConnectorMessage</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">ConnectorMessage</span></code>
+<p>Connector specific message format.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-connector-provider/index.html">ConnectorProvider</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">ConnectorProvider</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-connector-type/index.html">ConnectorType</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">ConnectorType</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Annotations</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-connector-handler/index.html">ConnectorHandler</a></p>
+</td>
+<td>
+<code><span class="keyword">annotation</span> <span class="keyword">class </span><span class="identifier">ConnectorHandler</span></code>
+<p>Annotation used to annotate <a href="#">StoryHandlerDefinitionBase</a> implementation,
+in order to provide <a href="#">ConnectorStoryHandler</a> for each connector.
+Used only by connector implementation.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Exceptions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-connector-exception/index.html">ConnectorException</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">ConnectorException</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-exception/index.html"><span class="identifier">Exception</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

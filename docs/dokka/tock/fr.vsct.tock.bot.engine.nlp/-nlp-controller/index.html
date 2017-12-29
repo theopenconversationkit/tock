@@ -1,0 +1,46 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>NlpController - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine.nlp</a>&nbsp;/&nbsp;<a href=".">NlpController</a><br/>
+<br/>
+<h1>NlpController</h1>
+<code><span class="keyword">interface </span><span class="identifier">NlpController</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/nlp/NlpController.kt#L30">(source)</a>
+<p>Send NLP requests.</p>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="import-nlp-dump.html">importNlpDump</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">importNlpDump</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpController$importNlpDump(java.io.InputStream)/stream">stream</span><span class="symbol">:</span>&nbsp;<span class="identifier">InputStream</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Import a NLP dump (configuration and sentences of NLP model).</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="import-nlp-plain-dump.html">importNlpPlainDump</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">importNlpPlainDump</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpController$importNlpPlainDump(fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump)/dump">dump</span><span class="symbol">:</span>&nbsp;<span class="identifier">ApplicationDump</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Import a NLP dump (configuration and sentences of NLP model).</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="parse-sentence.html">parseSentence</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">parseSentence</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpController$parseSentence(fr.vsct.tock.bot.engine.action.SendSentence, fr.vsct.tock.bot.engine.user.UserTimeline, fr.vsct.tock.bot.engine.dialog.Dialog, fr.vsct.tock.bot.engine.ConnectorController, fr.vsct.tock.bot.definition.BotDefinition)/sentence">sentence</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.action/-send-sentence/index.html"><span class="identifier">SendSentence</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpController$parseSentence(fr.vsct.tock.bot.engine.action.SendSentence, fr.vsct.tock.bot.engine.user.UserTimeline, fr.vsct.tock.bot.engine.dialog.Dialog, fr.vsct.tock.bot.engine.ConnectorController, fr.vsct.tock.bot.definition.BotDefinition)/userTimeline">userTimeline</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-user-timeline/index.html"><span class="identifier">UserTimeline</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpController$parseSentence(fr.vsct.tock.bot.engine.action.SendSentence, fr.vsct.tock.bot.engine.user.UserTimeline, fr.vsct.tock.bot.engine.dialog.Dialog, fr.vsct.tock.bot.engine.ConnectorController, fr.vsct.tock.bot.definition.BotDefinition)/dialog">dialog</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.dialog/-dialog/index.html"><span class="identifier">Dialog</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpController$parseSentence(fr.vsct.tock.bot.engine.action.SendSentence, fr.vsct.tock.bot.engine.user.UserTimeline, fr.vsct.tock.bot.engine.dialog.Dialog, fr.vsct.tock.bot.engine.ConnectorController, fr.vsct.tock.bot.definition.BotDefinition)/connector">connector</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-connector-controller/index.html"><span class="identifier">ConnectorController</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpController$parseSentence(fr.vsct.tock.bot.engine.action.SendSentence, fr.vsct.tock.bot.engine.user.UserTimeline, fr.vsct.tock.bot.engine.dialog.Dialog, fr.vsct.tock.bot.engine.ConnectorController, fr.vsct.tock.bot.definition.BotDefinition)/botDefinition">botDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Parse a sentence and set intent and entities in context.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>
