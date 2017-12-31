@@ -1,0 +1,87 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>UrlPayload - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.connector.messenger.model.send</a>&nbsp;/&nbsp;<a href=".">UrlPayload</a><br/>
+<br/>
+<h1>UrlPayload</h1>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">UrlPayload</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-payload/index.html"><span class="identifier">Payload</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-messenger/src/main/kotlin/fr/vsct/tock/bot/connector/messenger/model/send/UrlPayload.kt#L27">(source)</a>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">UrlPayload</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload$<init>(kotlin.String, kotlin.String, kotlin.Boolean)/url">url</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload$<init>(kotlin.String, kotlin.String, kotlin.Boolean)/attachmentId">attachmentId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload$<init>(kotlin.String, kotlin.String, kotlin.Boolean)/reusable">reusable</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">?</span><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="attachment-id.html">attachmentId</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">attachmentId</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="reusable.html">reusable</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">reusable</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="url.html">url</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">url</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-payload/obfuscate.html">obfuscate</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">obfuscate</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.model.send.Payload$obfuscate(fr.vsct.tock.shared.security.StringObfuscatorMode)/mode">mode</span><span class="symbol">:</span>&nbsp;<span class="identifier">StringObfuscatorMode</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-payload/index.html"><span class="identifier">Payload</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../-payload/to-sentence-element.html">toSentenceElement</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toSentenceElement</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.message/-sentence-element/index.html"><span class="identifier">SentenceElement</span></a><span class="symbol">?</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="get-url-payload.html">getUrlPayload</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getUrlPayload</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload.Companion$getUrlPayload(fr.vsct.tock.bot.engine.action.SendAttachment)/attachment">attachment</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.action/-send-attachment/index.html"><span class="identifier">SendAttachment</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">UrlPayload</span></code>
+<p>Create an UrlPayload from an url.
+Uses default cache configuration.</p>
+<code><span class="keyword">fun </span><span class="identifier">getUrlPayload</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload.Companion$getUrlPayload(kotlin.String, kotlin.String, kotlin.Boolean)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload.Companion$getUrlPayload(kotlin.String, kotlin.String, kotlin.Boolean)/url">url</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload.Companion$getUrlPayload(kotlin.String, kotlin.String, kotlin.Boolean)/useCache">useCache</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">UrlPayload</span></code>
+<p>Create an UrlPayload from an url.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

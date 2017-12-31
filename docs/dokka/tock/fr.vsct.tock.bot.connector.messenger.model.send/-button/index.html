@@ -1,0 +1,68 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>Button - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.connector.messenger.model.send</a>&nbsp;/&nbsp;<a href=".">Button</a><br/>
+<br/>
+<h1>Button</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Button</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-user-action/index.html"><span class="identifier">UserAction</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-messenger/src/main/kotlin/fr/vsct/tock/bot/connector/messenger/model/send/Button.kt#L24">(source)</a>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">Button</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.model.send.Button$<init>(fr.vsct.tock.bot.connector.messenger.model.send.ButtonType)/type">type</span><span class="symbol">:</span>&nbsp;<a href="../-button-type/index.html"><span class="identifier">ButtonType</span></a><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="type.html">type</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">type</span><span class="symbol">: </span><a href="../-button-type/index.html"><span class="identifier">ButtonType</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="to-choice.html">toChoice</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">toChoice</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.message/-choice/index.html"><span class="identifier">Choice</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-postback-button/index.html">PostbackButton</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">PostbackButton</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Button</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../-url-button/index.html">UrlButton</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">UrlButton</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Button</span></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

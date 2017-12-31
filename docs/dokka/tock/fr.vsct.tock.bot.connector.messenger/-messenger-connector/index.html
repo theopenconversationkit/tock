@@ -1,0 +1,159 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>MessengerConnector - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.connector.messenger</a>&nbsp;/&nbsp;<a href=".">MessengerConnector</a><br/>
+<br/>
+<h1>MessengerConnector</h1>
+<code><span class="keyword">class </span><span class="identifier">MessengerConnector</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-base/index.html"><span class="identifier">ConnectorBase</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-messenger/src/main/kotlin/fr/vsct/tock/bot/connector/messenger/MessengerConnector.kt#L67">(source)</a>
+<p>Contains built-in checks to ensure that two <a href="../../fr.vsct.tock.bot.connector.messenger.model.send/-message-request/index.html">MessageRequest</a> for the same recipient are sent sequentially.</p>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="client.html">client</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">client</span><span class="symbol">: </span><span class="identifier">MessengerClient</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="page-id.html">pageId</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">pageId</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="path.html">path</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">path</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="token.html">token</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">token</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="verify-token.html">verifyToken</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">verifyToken</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector/-connector-base/connector-type.html">connectorType</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">connectorType</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code>
+<p>The type of the connector.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="end-typing-answer.html">endTypingAnswer</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">endTypingAnswer</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$endTypingAnswer(fr.vsct.tock.bot.engine.action.Action)/action">action</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="load-profile.html">loadProfile</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">loadProfile</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$loadProfile(fr.vsct.tock.bot.connector.ConnectorCallback, fr.vsct.tock.bot.engine.user.PlayerId)/callback">callback</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-callback/index.html"><span class="identifier">ConnectorCallback</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$loadProfile(fr.vsct.tock.bot.connector.ConnectorCallback, fr.vsct.tock.bot.engine.user.PlayerId)/userId">userId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.user/-user-preferences/index.html"><span class="identifier">UserPreferences</span></a></code>
+<p>Load user preferences - default implementation returns null.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="register.html">register</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">register</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$register(fr.vsct.tock.bot.engine.ConnectorController)/controller">controller</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-connector-controller/index.html"><span class="identifier">ConnectorController</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Register the connector for the specified controller.
+There is usually one controller by application.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="send.html">send</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">send</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$send(fr.vsct.tock.bot.engine.event.Event, fr.vsct.tock.bot.connector.ConnectorCallback, kotlin.Long)/event">event</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$send(fr.vsct.tock.bot.engine.event.Event, fr.vsct.tock.bot.connector.ConnectorCallback, kotlin.Long)/callback">callback</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-callback/index.html"><span class="identifier">ConnectorCallback</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$send(fr.vsct.tock.bot.engine.event.Event, fr.vsct.tock.bot.connector.ConnectorCallback, kotlin.Long)/delayInMs">delayInMs</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Send the event to messenger asynchronously.
+Contains checks to ensure that two <a href="../../fr.vsct.tock.bot.engine.action/-action/index.html">Action</a> for the same recipient are sent sequentially.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="send-event.html">sendEvent</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">sendEvent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$sendEvent(fr.vsct.tock.bot.engine.event.Event, kotlin.Function1((fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest, )), kotlin.Function1((kotlin.String, kotlin.Unit)), kotlin.Function1((fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest, )))/event">event</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$sendEvent(fr.vsct.tock.bot.engine.event.Event, kotlin.Function1((fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest, )), kotlin.Function1((kotlin.String, kotlin.Unit)), kotlin.Function1((fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest, )))/transformMessageRequest">transformMessageRequest</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="../../fr.vsct.tock.bot.connector.messenger.model.send/-message-request/index.html"><span class="identifier">MessageRequest</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector.messenger.model.send/-message-request/index.html"><span class="identifier">MessageRequest</span></a>&nbsp;<span class="symbol">=</span>&nbsp;{ it }<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$sendEvent(fr.vsct.tock.bot.engine.event.Event, kotlin.Function1((fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest, )), kotlin.Function1((kotlin.String, kotlin.Unit)), kotlin.Function1((fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest, )))/postMessage">postMessage</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a>&nbsp;<span class="symbol">=</span>&nbsp;{}<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$sendEvent(fr.vsct.tock.bot.engine.event.Event, kotlin.Function1((fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest, )), kotlin.Function1((kotlin.String, kotlin.Unit)), kotlin.Function1((fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest, )))/transformActionRequest">transformActionRequest</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="../../fr.vsct.tock.bot.connector.messenger.model.send/-action-request/index.html"><span class="identifier">ActionRequest</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector.messenger.model.send/-action-request/index.html"><span class="identifier">ActionRequest</span></a>&nbsp;<span class="symbol">=</span>&nbsp;{ it }<span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector.messenger.model.send/-send-response/index.html"><span class="identifier">SendResponse</span></a><span class="symbol">?</span></code>
+<p>Send an action to messenger.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="send-event-after-opt-in.html">sendEventAfterOptIn</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">sendEventAfterOptIn</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$sendEventAfterOptIn(fr.vsct.tock.bot.engine.event.Event)/event">event</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code>
+<p>Send the first action after an optin request, using the recipient.user_ref property.
+See https://developers.facebook.com/docs/messenger-platform/plugin-reference/checkbox-plugin#implementation for more details.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector/-connector-base/to-string.html">toString</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toString</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Companion Object Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="get-connector-by-page-id.html">getConnectorByPageId</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getConnectorByPageId</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector.Companion$getConnectorByPageId(kotlin.String)/pageId">pageId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">MessengerConnector</span><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="healthcheck.html">healthcheck</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">healthcheck</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

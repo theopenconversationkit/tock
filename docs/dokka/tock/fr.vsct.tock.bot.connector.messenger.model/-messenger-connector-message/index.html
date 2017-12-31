@@ -1,0 +1,81 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>MessengerConnectorMessage - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.connector.messenger.model</a>&nbsp;/&nbsp;<a href=".">MessengerConnectorMessage</a><br/>
+<br/>
+<h1>MessengerConnectorMessage</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">MessengerConnectorMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-messenger/src/main/kotlin/fr/vsct/tock/bot/connector/messenger/model/MessengerConnectorMessage.kt#L27">(source)</a>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">MessengerConnectorMessage</span><span class="symbol">(</span><span class="symbol">)</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="connector-type.html">connectorType</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">connectorType</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code>
+<p>The connector type.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector/-connector-message/obfuscate.html">obfuscate</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">obfuscate</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.ConnectorMessage$obfuscate(fr.vsct.tock.shared.security.StringObfuscatorMode)/mode">mode</span><span class="symbol">:</span>&nbsp;<span class="identifier">StringObfuscatorMode</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a></code>
+<p>Obfuscate the message - by default this method does nothing.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector/-connector-message/to-sentence-element.html">toSentenceElement</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toSentenceElement</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.message/-sentence-element/index.html"><span class="identifier">SentenceElement</span></a><span class="symbol">?</span></code>
+<p>Transforms this message into a generic <a href="../../fr.vsct.tock.bot.engine.message/-sentence-element/index.html">SentenceElement</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector.messenger.model.send/-message/index.html">Message</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Message</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">MessengerConnectorMessage</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector.messenger.model.webhook/-webhook/index.html">Webhook</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Webhook</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">MessengerConnectorMessage</span></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

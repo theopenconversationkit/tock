@@ -32,14 +32,18 @@
 <p><a href="action.html">action</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">action</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a></code></td>
+<code><span class="keyword">val </span><span class="identifier">action</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a></code>
+<p>The action sent.</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="delay.html">delay</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">delay</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a></code></td>
+<code><span class="keyword">val </span><span class="identifier">delay</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a></code>
+<p>The delay before the action is sent.</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -51,49 +55,63 @@
 <p><a href="assert-message.html">assertMessage</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">assertMessage</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockLog$assertMessage(fr.vsct.tock.bot.connector.ConnectorMessage, kotlin.String)/m">m</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockLog$assertMessage(fr.vsct.tock.bot.connector.ConnectorMessage, kotlin.String)/message">message</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">&lt;ERROR CLASS&gt;</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">assertMessage</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockLog$assertMessage(fr.vsct.tock.bot.connector.ConnectorMessage, kotlin.String)/m">m</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockLog$assertMessage(fr.vsct.tock.bot.connector.ConnectorMessage, kotlin.String)/message">message</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">&lt;ERROR CLASS&gt;</span></code>
+<p>Assert that log contains specified <a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html">ConnectorMessage</a>.</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="assert-text.html">assertText</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">assertText</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockLog$assertText(kotlin.String, kotlin.String)/text">text</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockLog$assertText(kotlin.String, kotlin.String)/message">message</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">&lt;ERROR CLASS&gt;</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">assertText</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockLog$assertText(kotlin.String, kotlin.String)/text">text</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockLog$assertText(kotlin.String, kotlin.String)/message">message</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">&lt;ERROR CLASS&gt;</span></code>
+<p>Assert that log contains specified text.</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="ga.html">ga</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">ga</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">?</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">ga</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">?</span></code>
+<p>The Google Assistant message if any.</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="message.html">message</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">message</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockLog$message(fr.vsct.tock.bot.connector.ConnectorType)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">?</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">message</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.BotBusMockLog$message(fr.vsct.tock.bot.connector.ConnectorType)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">?</span></code>
+<p>The message of the specified <a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html">ConnectorType</a> if it exists.</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="messenger.html">messenger</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">messenger</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">?</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">messenger</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">?</span></code>
+<p>The Messenger message if any.</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="slack.html">slack</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">slack</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">?</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">slack</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">?</span></code>
+<p>The Slack message if any.</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="text.html">text</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">text</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">text</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code>
+<p>The text message if any.</p>
+</td>
 </tr>
 </tbody>
 </table>

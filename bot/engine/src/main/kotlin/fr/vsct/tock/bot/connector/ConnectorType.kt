@@ -19,10 +19,18 @@ package fr.vsct.tock.bot.connector
 import fr.vsct.tock.translator.UserInterfaceType
 
 /**
- *
+ * A connector identifier.
  */
-data class ConnectorType(val id: String,
-                         val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat) {
+data class ConnectorType(
+        /**
+         * An unique id.
+         */
+        val id: String,
+        /**
+         * The preferred [UserInterfaceType] of the connector.
+         */
+        val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat
+) {
 
     companion object {
         /**

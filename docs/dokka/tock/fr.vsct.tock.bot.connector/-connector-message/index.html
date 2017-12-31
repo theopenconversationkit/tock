@@ -32,7 +32,7 @@
 <p><a href="obfuscate.html">obfuscate</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">obfuscate</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.ConnectorMessage$obfuscate(fr.vsct.tock.shared.security.StringObfuscatorMode)/mode">mode</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security/-string-obfuscator-mode/index.html"><span class="identifier">StringObfuscatorMode</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">ConnectorMessage</span></code>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">obfuscate</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.ConnectorMessage$obfuscate(fr.vsct.tock.shared.security.StringObfuscatorMode)/mode">mode</span><span class="symbol">:</span>&nbsp;<span class="identifier">StringObfuscatorMode</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">ConnectorMessage</span></code>
 <p>Obfuscate the message - by default this method does nothing.</p>
 </td>
 </tr>
@@ -44,6 +44,39 @@
 <code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toSentenceElement</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.message/-sentence-element/index.html"><span class="identifier">SentenceElement</span></a><span class="symbol">?</span></code>
 <p>Transforms this message into a generic <a href="../../fr.vsct.tock.bot.engine.message/-sentence-element/index.html">SentenceElement</a>.</p>
 </td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector.ga/-g-a-request-connector-message/index.html">GARequestConnectorMessage</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">GARequestConnectorMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">ConnectorMessage</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector.ga/-g-a-response-connector-message/index.html">GAResponseConnectorMessage</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">GAResponseConnectorMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">ConnectorMessage</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector.messenger.model/-messenger-connector-message/index.html">MessengerConnectorMessage</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">MessengerConnectorMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">ConnectorMessage</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector.slack.model/-slack-connector-message/index.html">SlackConnectorMessage</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">SlackConnectorMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">ConnectorMessage</span></code></td>
 </tr>
 </tbody>
 </table>

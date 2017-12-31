@@ -26,7 +26,7 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import io.vertx.ext.web.Router
 
 /**
- * Controller to connect [Connector] and [Bot].
+ * Controller to connect [Connector] and [BotDefinition].
  */
 interface ConnectorController {
 

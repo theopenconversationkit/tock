@@ -19,7 +19,9 @@ package fr.vsct.tock.bot.connector
 /**
  * The connector data that connector sends to the [ConnectorController]
  */
-open class ConnectorData(val callback: ConnectorCallback) {
-
-
-}
+open class ConnectorData(
+        /**
+         * The callback (used mostly in synchronous [Connector]).
+         */
+        val callback: ConnectorCallback
+)

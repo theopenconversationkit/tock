@@ -30,7 +30,7 @@
 </td>
 <td>
 <code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">connectorType</span><span class="symbol">: </span><a href="../-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code>
-<p>The type of the connector</p>
+<p>The type of the connector.</p>
 </td>
 </tr>
 </tbody>
@@ -77,6 +77,34 @@ There is usually one controller by application.</p>
 <code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">send</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.Connector$send(fr.vsct.tock.bot.engine.event.Event, fr.vsct.tock.bot.connector.ConnectorCallback, kotlin.Long)/event">event</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.Connector$send(fr.vsct.tock.bot.engine.event.Event, fr.vsct.tock.bot.connector.ConnectorCallback, kotlin.Long)/callback">callback</span><span class="symbol">:</span>&nbsp;<a href="../-connector-callback/index.html"><span class="identifier">ConnectorCallback</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.Connector$send(fr.vsct.tock.bot.engine.event.Event, fr.vsct.tock.bot.connector.ConnectorCallback, kotlin.Long)/delayInMs">delayInMs</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
 <p>Send an event with this connector for the specified delay.</p>
 </td>
+</tr>
+</tbody>
+</table>
+<h3>Inheritors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector.ga/-g-a-connector/index.html">GAConnector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">GAConnector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">ConnectorBase</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector.messenger/-messenger-connector/index.html">MessengerConnector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">MessengerConnector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">ConnectorBase</span></code>
+<p>Contains built-in checks to ensure that two <a href="../../fr.vsct.tock.bot.connector.messenger.model.send/-message-request/index.html">MessageRequest</a> for the same recipient are sent sequentially.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector.slack/-slack-connector/index.html">SlackConnector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">SlackConnector</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">ConnectorBase</span></code></td>
 </tr>
 </tbody>
 </table>

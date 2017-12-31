@@ -358,31 +358,49 @@ interface BotBus : I18nKeyProvider {
      */
     fun setBusContextValue(key: ParameterKey, value: Any?) = setBusContextValue(key.keyName, value)
 
+    /**
+     * Send previously registered [ConnectorMessage] as last bot answer.
+     */
     fun end(delay: Long = 0): BotBus {
         return endRawText(null, delay)
     }
 
+    /**
+     * Send i18nText as last bot answer.
+     */
     fun end(i18nText: CharSequence, delay: Long = 0, vararg i18nArgs: Any?): BotBus {
         return endRawText(translate(i18nText, *i18nArgs), delay)
     }
 
+    /**
+     * Send i18nText as last bot answer.
+     */
     fun end(i18nText: CharSequence, vararg i18nArgs: Any?): BotBus {
         return endRawText(translate(i18nText, *i18nArgs))
     }
 
     /**
-     * Send text that should not be translated, and terminate bot actions.
+     * Send text that should not be translated as last bot answer.
      */
     fun endRawText(plainText: CharSequence?, delay: Long = 0): BotBus {
         return end(SendSentence(botId, applicationId, userId, plainText), delay)
     }
 
+    /**
+     * Send [Message] as last bot answer.
+     */
     fun end(message: Message, delay: Long = 0): BotBus {
         return end(message.toAction(this), delay)
     }
 
+    /**
+     * Send [Action] as last bot answer.
+     */
     fun end(action: Action, delay: Long = 0): BotBus
 
+    /**
+     * Send [MessagesList] as last bot answer.
+     */
     fun end(messages: MessagesList, initialDelay: Long = 0): BotBus {
         messages.messages.forEachIndexed { i, m ->
             val wait = initialDelay + m.delay
@@ -392,18 +410,26 @@ interface BotBus : I18nKeyProvider {
                 send(m.toAction(this), wait)
             }
         }
-        return this;
+        return this
     }
 
-
+    /**
+     * Send i18nText.
+     */
     fun send(i18nText: CharSequence, delay: Long = 0, vararg i18nArgs: Any?): BotBus {
         return sendRawText(translate(i18nText, *i18nArgs), delay)
     }
 
+    /**
+     * Send i18nText.
+     */
     fun send(i18nText: CharSequence, vararg i18nArgs: Any?): BotBus {
         return sendRawText(translate(i18nText, *i18nArgs))
     }
 
+    /**
+     * Send previously registered [ConnectorMessage].
+     */
     fun send(delay: Long = 0): BotBus {
         return sendRawText(null, delay)
     }
@@ -413,10 +439,16 @@ interface BotBus : I18nKeyProvider {
      */
     fun sendRawText(plainText: CharSequence?, delay: Long = 0): BotBus
 
+    /**
+     * Send [Message].
+     */
     fun send(message: Message, delay: Long = 0): BotBus {
         return send(message.toAction(this), delay)
     }
 
+    /**
+     * Send [Action].
+     */
     fun send(action: Action, delay: Long = 0): BotBus
 
     /**

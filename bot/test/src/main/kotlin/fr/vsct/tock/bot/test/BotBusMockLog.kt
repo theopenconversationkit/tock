@@ -28,22 +28,51 @@ import kotlin.test.assertEquals
 /**
  * The actions sent by the mocked bus.
  */
-data class BotBusMockLog(val action: Action, val delay: Long) {
+data class BotBusMockLog(
+        /**
+         * The action sent.
+         */
+        val action: Action,
+        /**
+         * The delay before the action is sent.
+         */
+        val delay: Long) {
 
+    /**
+     * The message of the specified [ConnectorType] if it exists.
+     */
     fun message(connectorType: ConnectorType): ConnectorMessage?
             = (action as? SendSentence)?.message(connectorType)
 
+    /**
+     * The Messenger message if any.
+     */
     fun messenger(): ConnectorMessage? = message(messengerConnectorType)
 
+    /**
+     * The Google Assistant message if any.
+     */
     fun ga(): ConnectorMessage? = message(gaConnectorType)
 
+    /**
+     * The Slack message if any.
+     */
     fun slack(): ConnectorMessage? = message(slackConnectorType)
 
+    /**
+     * The text message if any.
+     */
     fun text(): String? = (action as SendSentence).stringText
 
+    /**
+     * Assert that log contains specified text.
+     */
     fun assertText(text: String, message: String? = null)
             = assertEquals(text, text(), message)
 
+    /**
+     * Assert that log contains specified [ConnectorMessage].
+     */
     fun assertMessage(m: ConnectorMessage, message: String? = null)
             = assertEquals(m, message(m.connectorType), message)
 

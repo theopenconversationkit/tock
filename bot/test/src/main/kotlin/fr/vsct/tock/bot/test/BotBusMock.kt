@@ -44,7 +44,7 @@ import java.util.Locale
 /**
  * A Bus mock used in unit tests.
  *
- * The send result actions are available in the [logsRepository] property.
+ * The answers of the bot are available in the [answers] property.
  */
 open class BotBusMock(override var userTimeline: UserTimeline,
                       override var dialog: Dialog,
@@ -92,14 +92,29 @@ open class BotBusMock(override var userTimeline: UserTimeline,
     val logs: List<BotBusMockLog>
         get() = checkEndCalled().run { logsRepository }
 
+    /**
+     * The list of all bot answers recorded.
+     */
     val answers: List<BotBusMockLog> get() = logs
 
+    /**
+     * The first answer recorded.
+     */
     val firstAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository.first() }
 
+    /**
+     * The second answer recorded.
+     */
     val secondAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository[1] }
 
+    /**
+     * The third answer recorded.
+     */
     val thirdAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository[2] }
 
+    /**
+     * The last answer recorded.
+     */
     val lastAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository.last() }
 
     private var endCalled: Boolean = false

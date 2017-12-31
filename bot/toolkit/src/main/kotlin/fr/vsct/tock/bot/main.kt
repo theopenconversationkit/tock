@@ -55,7 +55,7 @@ fun registerAndInstallBot(botProvider: BotProvider) {
 }
 
 /**
- * Install the bot(s).
+ * Install the bot(s) with the specified additional router handlers.
  */
 fun installBots(vararg routerHandlers: (Router) -> Unit) {
     install(routerHandlers.toList(), true)

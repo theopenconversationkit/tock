@@ -4,6 +4,7 @@ site_author: 'VSCT'
 site_url: 'https://voyages-sncf-technologies.github.io/tock/fr'
 repo_name: 'tock'
 repo_url: 'https://github.com/voyages-sncf-technologies/tock'
+edit_uri: ''
 pages:
     - Présentation: index.md
     - Pour commencer: pour-commencer.md
@@ -14,8 +15,10 @@ pages:
     - Développer un bot: developper-un-bot.md
     - Tester le bot: tester-le-bot.md
     - KDoc: kdoc.md
-theme: 'material'
-theme_dir: 'theme'
+theme:
+  name: 'material'
+  language: 'fr'
+  logo: 'assets/images/logo.svg'
 markdown_extensions:
   - admonition
   - codehilite(guess_lang=false)
@@ -25,7 +28,6 @@ extra:
   social:
     - type: 'github'
       link: 'https://github.com/voyages-sncf-technologies/tock'
-  feature:
-      tabs: true
-  logo: 'assets/images/logo.svg'
+  search:
+    language: 'fr'
 

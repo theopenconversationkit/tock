@@ -22,12 +22,15 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserPreferences
 
 /**
+ * A connector connects bots to users via a dedicated interface (like Messenger, Google Assistant, Slack... ).
  *
+ * There is one Connector for each user front-end application.
+ * See [fr.vsct.tock.bot.connector.messenger.MessengerConnector] or [fr.vsct.tock.bot.connector.ga.GAConnector] for examples of [Connector] implementations.
  */
 interface Connector {
 
     /**
-     * The type of the connector
+     * The type of the connector.
      */
     val connectorType: ConnectorType
 

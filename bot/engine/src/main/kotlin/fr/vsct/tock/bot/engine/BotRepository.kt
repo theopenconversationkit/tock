@@ -44,7 +44,7 @@ import io.vertx.ext.web.RoutingContext
 /**
  * Advanced bot configuration.
  *
- * [registerAndInstallBot] method is the preferred way to start a bot in most use cases.
+ * [fr.vsct.tock.bot.registerAndInstallBot] method is the preferred way to start a bot in most use cases.
  */
 object BotRepository {
 
@@ -81,22 +81,40 @@ object BotRepository {
         }
     }
 
+    /**
+     * Register a new [ConnectorProvider].
+     */
     fun registerConnectorProvider(connectorProvider: ConnectorProvider) {
         connectorProviders.add(connectorProvider)
     }
 
+    /**
+     * Register a new [BotProvider].
+     */
     fun registerBotProvider(bot: BotProvider) {
         botProviders.add(bot)
     }
 
+    /**
+     * Register a new [StoryHandlerListener].
+     */
     fun registerStoryHandlerListener(listener: StoryHandlerListener) {
         storyHandlerListeners.add(listener)
     }
 
+    /**
+     * Register an new [NlpListener].
+     */
     fun registerNlpListener(listener: NlpListener) {
         nlpListeners.add(listener)
     }
 
+    /**
+     * Install the bot(s).
+     *
+     * @param routerHandlers the additional router handlers
+     * @param adminRestConnectorInstaller the (optional) linked [fr.vsct.tock.bot.connector.rest.RestConnector] installer.
+     */
     fun installBots(
             routerHandlers: List<(Router) -> Unit>,
             adminRestConnectorInstaller: (BotApplicationConfiguration) -> ConnectorConfiguration? = { null }
