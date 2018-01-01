@@ -369,6 +369,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#demarrer-et-connecter-le-bot" title="Démarrer et connecter le bot" class="md-nav__link">
+    Démarrer et connecter le bot
+  </a>
+  
+</li>
+      
       
       
     </ul>
@@ -481,6 +488,13 @@
         
       </ul>
     </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#demarrer-et-connecter-le-bot" title="Démarrer et connecter le bot" class="md-nav__link">
+    Démarrer et connecter le bot
+  </a>
   
 </li>
       
@@ -769,6 +783,27 @@ Voici le code de cette classe :</p>
 <p>Le code spécifique à chaque connecteur est ainsi correctement découplé. </p>
 <p>Le code commun à chaque connecteur est présent dans <em>SearchConnector</em> et le comportement spécifique à
 chaque connecteur se trouve dans les classes dédiées.</p>
+<h2 id="demarrer-et-connecter-le-bot">Démarrer et connecter le bot<a class="headerlink" href="#demarrer-et-connecter-le-bot" title="Permanent link">&para;</a></h2>
+<p>Pour démarrer le bot, il suffit de rajouter dans votre <em>main</em> principal l'appel suivant:</p>
+<div class="codehilite"><pre><span></span><span class="n">registerAndInstallBot</span><span class="p">(</span><span class="n">openBot</span><span class="p">)</span>
+</pre></div>
+
+
+<p>où la variable <em>openBot</em> est le bot que vous avez défini au départ</p>
+<p>Il est également nécessaire de spécifier quels connecteurs sont utilisés.
+Par exemple, pour connecter le bot à Messenger et à Google Assistant:</p>
+<div class="codehilite"><pre><span></span><span class="n">addMessengerConnector</span><span class="p">(..)</span>
+<span class="n">addGoogleAssistantConnector</span><span class="p">(..)</span>
+<span class="n">registerAndInstallBot</span><span class="p">(</span><span class="n">openBot</span><span class="p">)</span>
+</pre></div>
+
+
+<p>La documentation pour chaque connecteur se trouve dans le README des projects correspondants. Trois sont disponibles à l'heure actuelle :</p>
+<ul>
+<li><a href="https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-messenger">Messenger</a></li>
+<li><a href="https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-ga">Google Assistant</a></li>
+<li><a href="https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-slack">Slack</a></li>
+</ul>
                 
                   
                 

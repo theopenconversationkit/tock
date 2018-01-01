@@ -20,17 +20,15 @@ Then you can configure your connector for your bot:
 
 
 ```kotlin
-object MyBotConfiguration {
-    fun registerSlackConnector() {
-        addSlackConnector("my-bot-id",
-                "/path-to-my-slack-bot-http-endpoint",
-                "my-bot-name",
-                "slackToken1",
-                "slackToken2",
-                "slackToken3"
-                )
-    }
-}
+
+addSlackConnector(
+    "my-bot-id",
+    "/path-to-my-slack-bot-http-endpoint",
+    "my-bot-name",
+    "slackToken1",
+    "slackToken2",
+    "slackToken3"
+    )
 ```
 
 ### Outgoing webhook:
@@ -115,3 +113,8 @@ val story = story("story") { bus ->
     }
 }
 ```
+
+### Other options
+
+Look at [KDoc](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector.slack/index.html)
+ for other options

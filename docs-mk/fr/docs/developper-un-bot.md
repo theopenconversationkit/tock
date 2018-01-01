@@ -317,3 +317,29 @@ Le code spécifique à chaque connecteur est ainsi correctement découplé.
 
 Le code commun à chaque connecteur est présent dans *SearchConnector* et le comportement spécifique à
 chaque connecteur se trouve dans les classes dédiées.
+
+## Démarrer et connecter le bot
+
+Pour démarrer le bot, il suffit de rajouter dans votre *main* principal l'appel suivant:
+
+```kotlin
+registerAndInstallBot(openBot)
+``` 
+
+où la variable *openBot* est le bot que vous avez défini au départ
+
+Il est également nécessaire de spécifier quels connecteurs sont utilisés.
+Par exemple, pour connecter le bot à Messenger et à Google Assistant:
+
+```kotlin
+addMessengerConnector(..)
+addGoogleAssistantConnector(..)
+registerAndInstallBot(openBot)
+
+```
+
+La documentation pour chaque connecteur se trouve dans le README des projects correspondants. Trois sont disponibles à l'heure actuelle :
+
+* [Messenger](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-messenger)
+* [Google Assistant](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-ga)
+* [Slack](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-slack)
