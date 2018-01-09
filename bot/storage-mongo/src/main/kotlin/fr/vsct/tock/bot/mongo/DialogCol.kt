@@ -144,28 +144,32 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
 
     data class EntityStateValueWrapper(
             val value: ContextValue?,
-            val history: List<ArchivedEntityValueWrapper>) {
+            val history: List<ArchivedEntityValueWrapper>,
+            val lastUpdate: Instant = now()) {
 
-        constructor(value: EntityStateValue) : this(value.value, value.history.map { ArchivedEntityValueWrapper(it) })
+        constructor(value: EntityStateValue) : this(value.value, value.history.map { ArchivedEntityValueWrapper(it) }, value.lastUpdate)
 
         fun toEntityStateValue(actionsMap: Map<Id<Action>, Action>): EntityStateValue {
             return EntityStateValue(
                     value,
-                    history.map { it.toArchivedEntityValue(actionsMap) }.toMutableList()
+                    history.map { it.toArchivedEntityValue(actionsMap) }.toMutableList(),
+                    lastUpdate
             )
         }
     }
 
     class ArchivedEntityValueWrapper(
             val entityValue: ContextValue?,
-            val actionId: Id<Action>?) {
+            val actionId: Id<Action>?,
+            val date: Instant = Instant.now()) {
 
-        constructor(value: ArchivedEntityValue) : this(value.entityValue, value.action?.toActionId())
+        constructor(value: ArchivedEntityValue) : this(value.entityValue, value.action?.toActionId(), value.date)
 
         fun toArchivedEntityValue(actionsMap: Map<Id<Action>, Action>): ArchivedEntityValue {
             return ArchivedEntityValue(
                     entityValue,
-                    actionsMap.get(actionId ?: ""))
+                    actionsMap.get(actionId ?: ""),
+                    date)
         }
     }
 

@@ -17,7 +17,12 @@
 package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.bot.engine.action.Action
+import java.time.Instant
 
+/**
+ * An archived (old) entity value.
+ */
 data class ArchivedEntityValue(
         val entityValue: ContextValue?,
-        val action: Action?)
+        val action: Action?,
+        val date: Instant = action?.date ?: Instant.now())

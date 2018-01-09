@@ -29,8 +29,9 @@ import kotlin.test.assertTrue
 class EntityStateValueTest {
 
     @Test
-    fun should_add_to_history_when_change_value() {
+    fun changeValue_shouldAddToHistory_whenChangeValue() {
         val state = EntityStateValue(null)
+        var updateDate = state.lastUpdate
 
         assertNull(state.value)
         assertTrue(state.history.isEmpty())
@@ -39,20 +40,28 @@ class EntityStateValueTest {
 
         val value1 = NumberValue(1)
 
+        Thread.sleep(1)
         state.changeValue(entity, value1)
 
         assertEquals(value1, state.value?.value)
         assertEquals(1, state.history.size)
         assertNull(state.history[0].entityValue?.value)
+        assertEquals(state.history[0].date, updateDate)
+        assertTrue(state.lastUpdate > updateDate)
 
+        updateDate = state.lastUpdate
         val value2 = NumberValue(2)
 
+        Thread.sleep(1)
         state.changeValue(entity, value2)
 
         assertEquals(value2, state.value?.value)
         assertEquals(2, state.history.size)
         assertNull(state.history[0].entityValue?.value)
         assertEquals(value1, state.history[1].entityValue?.value)
+        assertEquals(state.history[1].date, updateDate)
+        assertTrue(state.lastUpdate > updateDate)
     }
+
 
 }

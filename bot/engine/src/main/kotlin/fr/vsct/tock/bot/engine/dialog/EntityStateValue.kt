@@ -19,13 +19,16 @@ package fr.vsct.tock.bot.engine.dialog
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
+import java.time.Instant
+import java.time.Instant.now
 
 /**
  * EntityStateValue is the value of an entity with his history
  */
 data class EntityStateValue(
-        private var currentValue: ContextValue?,
-        private val oldValues: MutableList<ArchivedEntityValue> = mutableListOf()) {
+        private var _value: ContextValue?,
+        private val _history: MutableList<ArchivedEntityValue> = mutableListOf(),
+        private var _lastUpdate: Instant = now()) {
 
     internal constructor(action: Action, entityValue: ContextValue)
             : this(entityValue, mutableListOf(ArchivedEntityValue(entityValue, action)))
@@ -38,10 +41,11 @@ data class EntityStateValue(
 
     internal fun changeValue(newValue: ContextValue?, action: Action? = null): EntityStateValue {
         //do not change history if previous value is exactly the same
-        if (oldValues.lastOrNull()?.entityValue?.let { currentValue != it } ?: true) {
-            oldValues.add(ArchivedEntityValue(currentValue, action))
+        if (_history.lastOrNull()?.entityValue != newValue) {
+            _history.add(ArchivedEntityValue(_value, action, _lastUpdate))
         }
-        currentValue = newValue
+        _value = newValue
+        _lastUpdate = now()
 
         return this
     }
@@ -49,11 +53,16 @@ data class EntityStateValue(
     /**
      * Current entity's value
      */
-    val value: ContextValue? get() = currentValue?.copy()
+    val value: ContextValue? get() = _value?.copy()
 
     /**
-     * Entity's history
+     * Entity's history. First is older.
      */
-    val history: List<ArchivedEntityValue> get() = oldValues.toList()
+    val history: List<ArchivedEntityValue> get() = _history.toList()
+
+    /**
+     * The last update date of the value.
+     */
+    val lastUpdate: Instant get() = _lastUpdate
 
 }
