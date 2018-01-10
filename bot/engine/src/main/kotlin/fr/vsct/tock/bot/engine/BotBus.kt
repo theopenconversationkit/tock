@@ -284,7 +284,7 @@ interface BotBus : I18nKeyProvider {
      * Remove entity value for the specified role.
      */
     fun removeEntityValue(role: String) {
-        dialog.state.removeValue(role)
+        dialog.state.resetValue(role)
     }
 
     /**
@@ -297,11 +297,13 @@ interface BotBus : I18nKeyProvider {
      * Remove all current entity values.
      */
     fun removeAllEntityValues() {
-        dialog.state.removeAllEntityValues()
+        dialog.state.resetAllEntityValues()
     }
 
     /**
-     * Remove all entities and context values.
+     * Reset all entity values, context values, [fr.vsct.tock.bot.engine.dialog.DialogState.userLocation] and [fr.vsct.tock.bot.engine.dialog.DialogState.nextActionState]
+     * but keep entity values history.
+     * @see [fr.vsct.tock.bot.engine.dialog.DialogState.resetState]
      */
     fun resetDialogState() {
         dialog.state.resetState()

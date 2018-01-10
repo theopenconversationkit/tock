@@ -22,45 +22,107 @@ import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
 
 /**
- *
+ * The [Dialog] state.
  */
 data class DialogState(
+        /**
+         * The current [Intent] of the dialog, can be null.
+         */
         var currentIntent: Intent? = null,
+        /**
+         * The current entity values (with their history).
+         */
         val entityValues: MutableMap<String, EntityStateValue> = mutableMapOf(),
+        /**
+         * The context of the dialog, a versatile map.
+         */
         val context: MutableMap<String, Any> = mutableMapOf(),
+        /**
+         * The current [UserLocation] if any.
+         */
         var userLocation: UserLocation? = null,
+        /**
+         * The [NextUserActionState] if any.
+         * If not null, it will be applied to the next user action, with NLP custom qualifiers.
+         */
         var nextActionState: NextUserActionState? = null) {
 
+    /**
+     * Set a new entity value. Remove previous entity values history.
+     *
+     * @role the role of the entity
+     * @value the new entity value
+     */
     fun setValue(role: String, value: ContextValue) {
         entityValues[role] = EntityStateValue(value)
     }
 
+    /**
+     * Set a new entity value. Remove previous entity values history.
+     *
+     * @entity the entity
+     * @value the new entity value
+     */
     fun setValue(entity: Entity, value: Value) {
         entityValues[entity.role] = EntityStateValue(entity, value)
     }
 
+    /**
+     * Change an entity value. Keep previous entity values history.
+     *
+     * @entity the entity
+     * @newValue the new entity value
+     */
     fun changeValue(entity: Entity, newValue: Value?) {
         entityValues[entity.role]?.changeValue(entity, newValue)
                 ?: if (newValue != null) setValue(entity, newValue)
     }
 
+    /**
+     * Change an entity value. Keep previous entity values history.
+     *
+     * @role the role of the entity
+     * @newValue the new entity value
+     */
     fun changeValue(role: String, newValue: ContextValue?) {
         entityValues[role]?.changeValue(newValue)
                 ?: if (newValue != null) setValue(role, newValue)
     }
 
-    fun removeAllEntityValues() {
+    /**
+     * Reset all entity values. Keep entity values history.
+     */
+    fun resetAllEntityValues() {
         entityValues.forEach {
-            removeValue(it.key)
+            resetValue(it.key)
         }
     }
 
-    fun removeValue(role: String) {
+    /**
+     * Reset the value of an entity. Keep entity values history.
+     *
+     * @role the role of the entity
+     */
+    fun resetValue(role: String) {
         changeValue(role, null)
     }
 
+    /**
+     * Same than [resetState] but remove also entity values history.
+     */
+    fun cleanupState() {
+        entityValues.clear()
+        context.clear()
+        userLocation = null
+        nextActionState = null
+    }
+
+    /**
+     * Reset all entity values, context values, [userLocation] and [nextActionState]
+     * but keep entity values history.
+     */
     fun resetState() {
-        removeAllEntityValues()
+        resetAllEntityValues()
         context.clear()
         userLocation = null
         nextActionState = null
