@@ -35,17 +35,23 @@ data class EntityStateValue(
 
     internal constructor(entity: Entity, value: Value) : this(ContextValue(entity, value))
 
+    init {
+        if (value != null) {
+            _history.add(ArchivedEntityValue(value, null, _lastUpdate))
+        }
+    }
+
     internal fun changeValue(entity: Entity, newValue: Value?, action: Action? = null): EntityStateValue {
         return changeValue(ContextValue(entity, newValue), action)
     }
 
     internal fun changeValue(newValue: ContextValue?, action: Action? = null): EntityStateValue {
+        _lastUpdate = now()
+        _value = newValue
         //do not change history if previous value is exactly the same
         if (_history.lastOrNull()?.entityValue != newValue) {
-            _history.add(ArchivedEntityValue(_value, action, _lastUpdate))
+            _history.add(ArchivedEntityValue(newValue, action, _lastUpdate))
         }
-        _value = newValue
-        _lastUpdate = now()
 
         return this
     }
@@ -56,7 +62,14 @@ data class EntityStateValue(
     val value: ContextValue? get() = _value?.copy()
 
     /**
-     * Entity's history. First is older.
+     * Returns previous values for this entity.
+     */
+    val previousValues: List<ArchivedEntityValue>
+        get() = _history.run { if (isEmpty()) emptyList() else subList(0, size - 1) }
+
+    /**
+     * Entity's all history. First is older. Last in current value.
+     * Could be empty if there is no history and current value is null.
      */
     val history: List<ArchivedEntityValue> get() = _history.toList()
 

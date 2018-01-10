@@ -31,10 +31,10 @@ class EntityStateValueTest {
     @Test
     fun changeValue_shouldAddToHistory_whenChangeValue() {
         val state = EntityStateValue(null)
-        var updateDate = state.lastUpdate
 
         assertNull(state.value)
         assertTrue(state.history.isEmpty())
+        assertTrue(state.previousValues.isEmpty())
 
         val entity = Entity(EntityType("test"), "role")
 
@@ -45,11 +45,11 @@ class EntityStateValueTest {
 
         assertEquals(value1, state.value?.value)
         assertEquals(1, state.history.size)
-        assertNull(state.history[0].entityValue?.value)
-        assertEquals(state.history[0].date, updateDate)
-        assertTrue(state.lastUpdate > updateDate)
+        assertEquals(value1, state.history[0].entityValue?.value)
+        assertEquals(state.history[0].date, state.lastUpdate)
+        assertTrue(state.previousValues.isEmpty())
 
-        updateDate = state.lastUpdate
+        val updateDate = state.lastUpdate
         val value2 = NumberValue(2)
 
         Thread.sleep(1)
@@ -57,10 +57,13 @@ class EntityStateValueTest {
 
         assertEquals(value2, state.value?.value)
         assertEquals(2, state.history.size)
-        assertNull(state.history[0].entityValue?.value)
-        assertEquals(value1, state.history[1].entityValue?.value)
-        assertEquals(state.history[1].date, updateDate)
+        assertEquals(value1, state.history[0].entityValue?.value)
+        assertEquals(state.history[0].date, updateDate)
+        assertEquals(value2, state.history[1].entityValue?.value)
+        assertEquals(state.history[1].date, state.lastUpdate)
         assertTrue(state.lastUpdate > updateDate)
+        assertEquals(value1, state.previousValues[0].entityValue?.value)
+        assertEquals(state.previousValues[0].date, updateDate)
     }
 
 
