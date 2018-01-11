@@ -46,6 +46,11 @@ interface UserTimelineDAO {
     fun remove(playerId: PlayerId)
 
     /**
+     * Remove all timelines and associated dialogs of a client.
+     */
+    fun removeClient(clientId: String)
+
+    /**
      * Returns the dialogs of specified client id.
      */
     fun getClientDialogs(clientId: String,

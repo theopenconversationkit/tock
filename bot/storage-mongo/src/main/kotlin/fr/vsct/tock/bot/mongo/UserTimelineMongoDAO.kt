@@ -196,6 +196,10 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         MongoUserLock.deleteLock(playerId.id)
     }
 
+    override fun removeClient(clientId: String) {
+        clientIdCol.findOneById(clientId)?.userIds?.forEach { remove(PlayerId(it)) }
+    }
+
     override fun loadWithoutDialogs(userId: PlayerId): UserTimeline {
         val timeline = userTimelineCol.findOneById(userId.id)?.copy(playerId = userId)
         return if (timeline == null) {
