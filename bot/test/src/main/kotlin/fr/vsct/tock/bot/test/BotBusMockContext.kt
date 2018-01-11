@@ -34,8 +34,11 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
+import fr.vsct.tock.shared.provide
 import fr.vsct.tock.translator.I18nKeyProvider
+import fr.vsct.tock.translator.TranslatorEngine
 import fr.vsct.tock.translator.UserInterfaceType
+import testInjector
 
 /**
  * The initial context of the test.
@@ -47,7 +50,11 @@ class BotBusMockContext(var userTimeline: UserTimeline,
                         var botDefinition: BotDefinition,
                         var i18nProvider: I18nKeyProvider,
                         var userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
-                        var connectorType: ConnectorType = messengerConnectorType) {
+                        var connectorType: ConnectorType = messengerConnectorType,
+                        /**
+                         * The translator used to translate labels - default is NoOp.
+                         */
+                        var translator: TranslatorEngine = testInjector.provide()) {
 
     constructor(applicationId: String,
                 userId: PlayerId,
@@ -57,7 +64,8 @@ class BotBusMockContext(var userTimeline: UserTimeline,
                 action: Action = SendSentence(userId, applicationId, botId, ""),
                 userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
                 userPreferences: UserPreferences = UserPreferences(),
-                connectorType: ConnectorType = messengerConnectorType)
+                connectorType: ConnectorType = messengerConnectorType,
+                translator: TranslatorEngine = testInjector.provide())
             : this(
             UserTimeline(userId, userPreferences),
             Dialog(setOf(userId, botId)),
@@ -66,7 +74,8 @@ class BotBusMockContext(var userTimeline: UserTimeline,
             botDefinition,
             storyDefinition.storyHandler as I18nKeyProvider,
             userInterfaceType,
-            connectorType
+            connectorType,
+            translator
     )
 
     constructor(
@@ -78,7 +87,8 @@ class BotBusMockContext(var userTimeline: UserTimeline,
             action: Action = SendSentence(userId, applicationId, botId, ""),
             userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
             userPreferences: UserPreferences = UserPreferences(),
-            connectorType: ConnectorType = messengerConnectorType)
+            connectorType: ConnectorType = messengerConnectorType,
+            translator: TranslatorEngine = testInjector.provide())
             : this(
             applicationId,
             userId,
@@ -88,7 +98,8 @@ class BotBusMockContext(var userTimeline: UserTimeline,
             action,
             userInterfaceType,
             userPreferences,
-            connectorType
+            connectorType,
+            translator
     )
 
     val applicationId = action.applicationId

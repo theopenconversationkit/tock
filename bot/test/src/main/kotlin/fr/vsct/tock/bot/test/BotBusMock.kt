@@ -37,8 +37,13 @@ import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
+import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.shared.provide
 import fr.vsct.tock.translator.I18nKeyProvider
+import fr.vsct.tock.translator.I18nLabelKey
+import fr.vsct.tock.translator.TranslatorEngine
 import fr.vsct.tock.translator.UserInterfaceType
+import testInjector
 import java.util.Locale
 
 /**
@@ -55,7 +60,11 @@ open class BotBusMock(override var userTimeline: UserTimeline,
                       override var userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
                       var initialUserPreferences: UserPreferences,
                       var connectorType: ConnectorType,
-                      override var connectorData: ConnectorData = ConnectorData(ConnectorCallbackBase(action.applicationId, connectorType))) : BotBus {
+                      override var connectorData: ConnectorData = ConnectorData(ConnectorCallbackBase(action.applicationId, connectorType)),
+                      /**
+                       * The translator used to translate labels - default is NoOp.
+                       */
+                      var translator: TranslatorEngine = testInjector.provide()) : BotBus {
 
 
     constructor(context: BotBusMockContext,
@@ -77,7 +86,9 @@ open class BotBusMock(override var userTimeline: UserTimeline,
             context.i18nProvider,
             action.state.userInterface ?: context.userInterfaceType,
             context.userPreferences.copy(),
-            context.connectorType
+            context.connectorType,
+            ConnectorData(ConnectorCallbackBase(action.applicationId, context.connectorType)),
+            context.translator
     )
 
     init {
@@ -196,14 +207,14 @@ open class BotBusMock(override var userTimeline: UserTimeline,
     }
 
     /**
-     * Returns the non persistent current mockData value.
+     * Returns the non persistent current value.
      */
     override fun getBusContextValue(name: String): Any? {
         return mockData.contextMap[name]
     }
 
     /**
-     * Update the non persistent current mockData value.
+     * Update the non persistent current value.
      */
     override fun setBusContextValue(key: String, value: Any?) {
         if (value == null) {
@@ -246,4 +257,12 @@ open class BotBusMock(override var userTimeline: UserTimeline,
     override fun reloadProfile() {
         userPreferences.fillWith(initialUserPreferences)
     }
+
+    override fun translate(key: I18nLabelKey?): CharSequence =
+            if (key == null) ""
+            else translator.translate(
+                    key.defaultLabel.toString(),
+                    defaultLocale,
+                    userTimeline.userPreferences.locale
+            )
 }
