@@ -17,9 +17,9 @@
 import {Injectable, OnDestroy} from "@angular/core";
 import {Observable} from "rxjs";
 import {Application, ApplicationImportConfiguration, Intent, ModelBuildQueryResult} from "../model/application";
-import {RestService} from "../core/rest/rest.service";
-import {StateService} from "../core/state.service";
-import {Entry, PaginatedQuery} from "../model/commons";
+import {RestService} from "./rest/rest.service";
+import {StateService} from "./state.service";
+import {ApplicationScopedQuery, Entry, PaginatedQuery} from "../model/commons";
 import {NlpEngineType} from "../model/nlp";
 import {FileUploader} from "ng2-file-upload";
 
@@ -123,15 +123,15 @@ export class ApplicationService implements OnDestroy {
   }
 
   getApplicationDump(application: Application): Observable<Blob> {
-    return this.rest.get(`/application/dump/${application._id}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'}) ));
+    return this.rest.get(`/application/dump/${application._id}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
   getSentencesDump(application: Application): Observable<Blob> {
-    return this.rest.get(`/sentences/dump/${application._id}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'}) ));
+    return this.rest.get(`/sentences/dump/${application._id}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
   getSentencesDumpForIntent(application: Application, intent: Intent): Observable<Blob> {
-    return this.rest.get(`/sentences/dump/${application._id}/${intent.qualifiedName()}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'}) ));
+    return this.rest.get(`/sentences/dump/${application._id}/${intent.qualifiedName()}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
   prepareApplicationDumpUploader(uploader: FileUploader, configuration: ApplicationImportConfiguration) {
@@ -152,5 +152,9 @@ export class ApplicationService implements OnDestroy {
       url = `/dump/sentences`;
     }
     this.rest.setFileUploaderOptions(uploader, url);
+  }
+
+  getAlexaExport(query: ApplicationScopedQuery): Observable<Blob> {
+    return this.rest.post(`/alexa/export`, query, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 }

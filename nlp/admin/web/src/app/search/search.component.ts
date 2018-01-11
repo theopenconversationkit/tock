@@ -53,7 +53,7 @@ export class SearchComponent implements OnInit {
             this.entityRoles = getRoles(this.state.currentIntents.value, this.filter.entityType);
           } else {
             const intent = this.state.findIntentById(this.filter.intentId);
-            if(intent) {
+            if (intent) {
               this.entityTypes =
                 entities.filter(
                   e => intent.entities.some(intentEntity => intentEntity.entityTypeName === e.name));
@@ -85,5 +85,6 @@ export class SearchComponent implements OnInit {
       this.scroll.refresh();
     });
   }
+
 
 }

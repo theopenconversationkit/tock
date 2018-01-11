@@ -374,6 +374,16 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
+        blockingJsonPost("/alexa/export")
+        { context, query: ApplicationScopedQuery ->
+            val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
+            if (app != null && context.organization == app.namespace) {
+                front.exportIntentsSchema(app._id, query.language)
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonGet("/cache/:type") {
             //TODO admin role
             getCachedValuesForType<Any>(it.pathParam("type"))

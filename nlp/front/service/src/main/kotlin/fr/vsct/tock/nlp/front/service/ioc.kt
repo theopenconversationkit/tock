@@ -19,12 +19,14 @@ package fr.vsct.tock.nlp.front.service
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
+import fr.vsct.tock.nlp.front.service.alexa.AlexaCodecService
 import fr.vsct.tock.nlp.front.shared.ApplicationCodec
 import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
 import fr.vsct.tock.nlp.front.shared.ApplicationMonitor
 import fr.vsct.tock.nlp.front.shared.ModelTester
 import fr.vsct.tock.nlp.front.shared.ModelUpdater
 import fr.vsct.tock.nlp.front.shared.Parser
+import fr.vsct.tock.nlp.front.shared.codec.alexa.AlexaCodec
 
 /**
  *
@@ -36,4 +38,5 @@ val frontModule = Kodein.Module {
     bind<ApplicationCodec>() with provider { ApplicationCodecService }
     bind<ApplicationMonitor>() with provider { ApplicationMonitorService }
     bind<ModelTester>() with provider { ModelTesterService }
+    bind<AlexaCodec>() with provider { AlexaCodecService }
 }

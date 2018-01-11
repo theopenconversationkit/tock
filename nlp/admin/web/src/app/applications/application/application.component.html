@@ -61,12 +61,14 @@
     </md-card>
   </md-card-content>
   <md-card-actions *ngIf="!uploadDump">
-    <button *ngIf="applications.length !== 0" (click)="cancel()" md-button>Cancel</button>
     <button (click)="uploadDump = true" md-button>
       Upload Dump
     </button>
     <button *ngIf="!newApplication" md-raised-button (click)="triggerBuild()" color="accent">Trigger Build
     </button>
+    <button *ngIf="!newApplication" md-button (click)="exportAlexa = true">Alexa Export</button>
+    <hr>
+    <button *ngIf="applications.length !== 0" (click)="cancel()" md-button>Cancel</button>
     <button *ngIf="!newApplication" md-raised-button (click)="deleteApplication()" color="warn">Delete Application
     </button>
     <button *ngIf="newApplication" md-raised-button (click)="saveApplication()" color="primary">Create new Application
@@ -74,6 +76,15 @@
     <button *ngIf="!newApplication" md-raised-button (click)="saveApplication()" color="primary">Update Application
     </button>
   </md-card-actions>
+</md-card>
+
+<md-card *ngIf="exportAlexa">
+  <md-select placeholder="select Locale to export" [(ngModel)]="alexaLocale">
+    <md-option *ngFor="let locale of application.supportedLocales" [value]="locale">
+      {{state.localeName(locale)}}
+    </md-option>
+  </md-select>
+  <button  md-button (click)="downloadAlexaExport()">Export</button>
 </md-card>
 
 <tock-application-upload *ngIf="uploadDump" (closed)="uploadDump = false" [applicationName]="application.name"></tock-application-upload>
