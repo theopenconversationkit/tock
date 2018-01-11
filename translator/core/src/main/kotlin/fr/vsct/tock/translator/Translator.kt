@@ -50,7 +50,7 @@ object Translator {
      * Set it to true if you want to enable i18n.
      */
     @Volatile
-    var enabled: Boolean = booleanProperty("tock_i18n_enabled", false)
+    var enabled: Boolean = booleanProperty("tock_i18n_enabled", true)
 
     private val keyLabelRegex = "[^\\p{L}_]+".toRegex()
     private val defaultInterface: UserInterfaceType = textChat
