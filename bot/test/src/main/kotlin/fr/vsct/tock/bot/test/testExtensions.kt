@@ -20,19 +20,29 @@ import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.messenger.messengerConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.StoryDefinition
+import fr.vsct.tock.bot.engine.user.UserPreferences
+import fr.vsct.tock.shared.defaultLocale
+import java.util.Locale
 
 /**
  * Provides a mock initialized with the specified [StoryDefinition] and starts the story.
  */
 fun BotDefinition.startMock(
         storyDefinition: StoryDefinition = helloStory ?: stories.first(),
-        connectorType: ConnectorType = messengerConnectorType): BotBusMock
-        = toBusMock(storyDefinition, connectorType).run()
+        connectorType: ConnectorType = messengerConnectorType,
+        locale: Locale = defaultLocale): BotBusMock
+        = toBusMock(storyDefinition, connectorType, locale).run()
 
 /**
  * Provides a mock initialized with the specified [StoryDefinition].
  */
 fun BotDefinition.toBusMock(
         storyDefinition: StoryDefinition = helloStory ?: stories.first(),
-        connectorType: ConnectorType = messengerConnectorType): BotBusMock
-        = BotBusMock(BotBusMockContext(this, storyDefinition, connectorType = connectorType))
+        connectorType: ConnectorType = messengerConnectorType,
+        locale: Locale = defaultLocale): BotBusMock
+        = BotBusMock(
+        BotBusMockContext(
+                this,
+                storyDefinition,
+                userPreferences = UserPreferences(locale = locale),
+                connectorType = connectorType))
