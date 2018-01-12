@@ -21,9 +21,24 @@ import java.time.temporal.TemporalAccessor
 
 val defaultUserInterface: UserInterfaceType = UserInterfaceType.textChat
 
-infix fun TemporalAccessor?.by(formatter: DateTimeFormatter): DateTemplate {
-    return DateTemplate(this, formatter)
-}
+/**
+ * Format a [TemporalAccessor] this the specified [dateFormatPattern] used to create a [DateTimeFormatter].
+ */
+infix fun TemporalAccessor?.by(dateFormatPattern: String): DateTemplate
+        = by(DateTimeFormatter.ofPattern(dateFormatPattern))
+
+/**
+ * Format a [TemporalAccessor] this the specified [DateTimeFormatter].
+ */
+infix fun TemporalAccessor?.by(formatter: DateTimeFormatter): DateTemplate
+        = DateTemplate(this, formatter)
+
+
+/**
+ * Format a [TemporalAccessor] this the specified [DateTimeFormatterProvider].
+ */
+infix fun TemporalAccessor?.by(formatterProvider: DateTimeFormatterProvider): DateTemplate
+        = DateTemplate(this, formatterProvider)
 
 /**
  * Transform this String in a [RawString] - ie a not-to-translate String.

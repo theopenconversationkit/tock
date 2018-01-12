@@ -23,13 +23,22 @@ import java.util.Formatter
 import java.util.Locale
 
 /**
- *
+ * A date template is used to format a date (or a [TemporalAccessor]) for all supported [Locale] in the i18n process.
  */
-class DateTemplate(val date: TemporalAccessor?, val dateFormatter: DateTimeFormatter) : Formattable {
+class DateTemplate(
+        private val date: TemporalAccessor?,
+        private val formatterProvider: DateTimeFormatterProvider) : Formattable {
 
-    fun format(locale: Locale): String {
+    constructor(date: TemporalAccessor?, dateFormatter: DateTimeFormatter) :
+            this(
+                    date,
+                    object : DateTimeFormatterProvider {
+                        override fun provide(locale: Locale): DateTimeFormatter = dateFormatter.withLocale(locale)
+                    })
+
+    private fun format(locale: Locale): String {
         return date?.let {
-            dateFormatter.withLocale(locale).format(it)
+            formatterProvider.provide(locale).format(it)
         } ?: ""
     }
 
