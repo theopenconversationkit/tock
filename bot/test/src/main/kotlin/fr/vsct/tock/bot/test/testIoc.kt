@@ -16,6 +16,11 @@
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
+import com.nhaarman.mockito_kotlin.mock
+import fr.vsct.tock.shared.injector
+import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.noop.noOpTranslatorModule
 
 
@@ -25,15 +30,23 @@ import fr.vsct.tock.translator.noop.noOpTranslatorModule
 val testModules = mutableListOf(noOpTranslatorModule)
 
 /**
+ * The test [Kodein] injected.
+ */
+var testKodein: Kodein = Kodein {
+    import(
+            Kodein.Module {
+                bind<I18nDAO>() with provider { mock<I18nDAO>() }
+            })
+    testModules.forEach { import(it) }
+}
+/**
  * [KodeinInjector] used in tests.
  */
 val testInjector: KodeinInjector
         by lazy {
+            injector.inject(testKodein)
             KodeinInjector().apply {
-
-                inject(Kodein {
-                    testModules.forEach { import(it) }
-                })
+                inject(testKodein)
             }
         }
 

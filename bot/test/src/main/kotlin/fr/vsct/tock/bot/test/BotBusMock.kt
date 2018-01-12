@@ -41,6 +41,7 @@ import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.provide
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
+import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.TranslatorEngine
 import fr.vsct.tock.translator.UserInterfaceType
 import testInjector
@@ -260,9 +261,14 @@ open class BotBusMock(override var userTimeline: UserTimeline,
 
     override fun translate(key: I18nLabelKey?): CharSequence =
             if (key == null) ""
-            else translator.translate(
-                    key.defaultLabel.toString(),
-                    defaultLocale,
-                    userTimeline.userPreferences.locale
-            )
+            else Translator.formatMessage(
+                    translator.translate(
+                            key.defaultLabel.toString(),
+                            defaultLocale,
+                            userTimeline.userPreferences.locale
+                    ),
+                    userTimeline.userPreferences.locale,
+                    userInterfaceType,
+                    targetConnectorType.id,
+                    key.args)
 }
