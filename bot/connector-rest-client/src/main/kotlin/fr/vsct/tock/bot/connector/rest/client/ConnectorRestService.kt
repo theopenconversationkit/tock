@@ -22,12 +22,16 @@ import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.POST
 import retrofit2.http.Path
+import java.util.Locale
 
 /**
  *
  */
 interface ConnectorRestService {
 
-    @POST("/rest/{appId}")
-    fun talk(@Path("appId") appId: String, @Body request: ClientMessageRequest): Call<ClientMessageResponse>
+    @POST("/rest/{appId}/{locale}")
+    fun talk(
+            @Path("appId") appId: String,
+            @Path("locale") locale: Locale,
+            @Body request: ClientMessageRequest): Call<ClientMessageResponse>
 }

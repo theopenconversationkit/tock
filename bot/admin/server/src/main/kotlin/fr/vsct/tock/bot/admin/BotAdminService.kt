@@ -282,16 +282,19 @@ object BotAdminService {
         val conf = getBotConfiguration(request.botApplicationConfigurationId, request.namespace)
         return try {
             val restClient = getRestClient(conf)
-            val response = restClient.talk(conf.applicationId,
+            val response = restClient.talk(
+                    conf.applicationId,
+                    request.language,
                     ClientMessageRequest(
-                            "test_${conf._id}",
-                            "test_bot_${conf._id}",
+                            "test_${conf._id}_${request.language}",
+                            "test_bot_${conf._id}_${request.language}",
                             request.message.toClientMessage(),
                             conf.targetConnectorType.toClientConnectorType()))
 
             if (response.isSuccessful) {
                 BotDialogResponse(response.body()?.messages ?: emptyList())
             } else {
+                logger.error { response.errorBody()?.string() }
                 BotDialogResponse(listOf(ClientSentence("technical error :(")))
             }
         } catch (throwable: Throwable) {

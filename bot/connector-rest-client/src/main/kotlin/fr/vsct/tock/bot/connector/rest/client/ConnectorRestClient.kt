@@ -29,6 +29,7 @@ import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Response
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 /**
@@ -70,7 +71,7 @@ class ConnectorRestClient(baseUrl: String = System.getenv("tock_bot_rest_url") ?
     /**
      * Analyse a sentence and returns the result.
      */
-    fun talk(appId: String, query: ClientMessageRequest): Response<ClientMessageResponse> {
-        return rest.talk(appId, query).execute()
+    fun talk(appId: String, locale: Locale, query: ClientMessageRequest): Response<ClientMessageResponse> {
+        return rest.talk(appId, locale, query).execute()
     }
 }

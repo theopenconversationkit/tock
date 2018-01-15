@@ -33,6 +33,7 @@ import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
 import mu.KotlinLogging
+import java.util.Locale
 
 /**
  *
@@ -49,7 +50,7 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
     override fun register(controller: ConnectorController) {
         if (!disabled) {
             controller.registerServices(path, { router ->
-                router.post(path).blockingHandler(
+                router.post("$path/:locale").blockingHandler(
                         { context ->
                             try {
                                 val message: MessageRequest = mapper.readValue(context.bodyAsString)
@@ -58,6 +59,7 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
                                         applicationId,
                                         PlayerId(message.recipientId, PlayerType.bot)
                                 )
+                                val locale = Locale.forLanguageTag(context.pathParam("locale"))
                                 action.state.targetConnectorType = message.targetConnectorType
                                 controller.handle(
                                         action,
@@ -66,7 +68,8 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
                                                         applicationId,
                                                         message.targetConnectorType,
                                                         context,
-                                                        message.test
+                                                        message.test,
+                                                        locale
                                                 )
                                         )
                                 )
@@ -93,6 +96,7 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
         callback as RestConnectorCallback
         //register user as test user if applicable
         return UserPreferences().apply {
+            locale = callback.locale
             if (callback.test) {
                 TestContext.setup(this)
             }

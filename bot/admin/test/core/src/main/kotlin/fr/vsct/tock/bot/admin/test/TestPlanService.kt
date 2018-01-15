@@ -120,7 +120,9 @@ object TestPlanService {
             var expectedBotMessages: MutableList<ClientMessage> = mutableListOf()
             //send first action if specified
             if (testPlan.startAction != null) {
-                client.talk(testPlan.applicationId,
+                client.talk(
+                        testPlan.applicationId,
+                        testPlan.locale,
                         ClientMessageRequest(
                                 playerId,
                                 botId,
@@ -140,7 +142,7 @@ object TestPlanService {
                             true
                     )
                     logger.debug { "ask: $request" }
-                    val answer = client.talk(testPlan.applicationId, request)
+                    val answer = client.talk(testPlan.applicationId, testPlan.locale, request)
                     if (answer.isSuccessful) {
                         val body = answer.body()
                         logger.debug { "answer: $body" }

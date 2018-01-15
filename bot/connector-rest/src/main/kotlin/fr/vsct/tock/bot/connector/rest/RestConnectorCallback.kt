@@ -24,6 +24,7 @@ import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.shared.jackson.mapper
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
+import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -34,6 +35,7 @@ internal class RestConnectorCallback(
         connectorType: ConnectorType,
         val context: RoutingContext,
         val test: Boolean,
+        val locale: Locale,
         val actions: MutableList<Action> = CopyOnWriteArrayList()
 ) : ConnectorCallbackBase(applicationId, connectorType) {
 

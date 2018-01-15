@@ -42,6 +42,7 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType.bot
 import fr.vsct.tock.bot.engine.user.PlayerType.user
 import fr.vsct.tock.bot.jackson.BotEngineJacksonConfiguration
+import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.defaultZoneId
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.addSerializer
@@ -56,6 +57,7 @@ import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
 import java.util.Base64
+import java.util.Locale
 
 /**
  *
@@ -74,6 +76,7 @@ object XrayService {
     private val testTypeField: String = property("tock_bot_test_jira_xray_test_type_field", "please set a test type field")
     private val manualStepsField: String = property("tock_bot_test_jira_xray_manual_test_field", "please set a manual type field")
     private val linkedField: String = property("tock_bot_test_jira_linked_field", "")
+    private val locale: Locale = Locale.forLanguageTag(property("tock_bot_test_locale", defaultLocale.toLanguageTag()))
     private val instant = Instant.now()
 
     init {
@@ -217,6 +220,7 @@ object XrayService {
                     botConfiguration.namespace,
                     botConfiguration.nlpModel,
                     botConfiguration._id,
+                    locale,
                     if (startSentence.isBlank()) null else MessageParser.parse(startSentence).first(),
                     botConfiguration.targetConnectorType,
                     "${planKey}_${configuration.botConfiguration.applicationId}".toId()

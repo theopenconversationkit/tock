@@ -19,8 +19,10 @@ package fr.vsct.tock.bot.admin.test
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.message.Message
+import fr.vsct.tock.shared.defaultLocale
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
+import java.util.Locale
 
 /**
  *
@@ -32,6 +34,7 @@ data class TestPlan(
         val namespace: String,
         val nlpModel: String,
         val botApplicationConfigurationId: Id<BotApplicationConfiguration>,
+        val locale: Locale = defaultLocale,
         val startAction: Message? = null,
         val targetConnectorType: ConnectorType = ConnectorType.none,
         val _id: Id<TestPlan> = newId()
