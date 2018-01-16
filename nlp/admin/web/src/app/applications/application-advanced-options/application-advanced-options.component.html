@@ -1,0 +1,40 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<md-expansion-panel>
+  <md-expansion-panel-header>
+    Advanced options
+  </md-expansion-panel-header>
+  <div>
+    <button md-raised-button (click)="uploadDump = true" color="accent">Upload Dump</button>
+    <button md-raised-button (click)="triggerBuild()" color="accent">Trigger Build</button>
+    <button md-raised-button (click)="exportAlexa = true" color="accent">Alexa Export</button>
+  </div>
+
+  <md-card *ngIf="exportAlexa">
+    <md-select placeholder="select Locale to export" [(ngModel)]="alexaLocale">
+      <md-option *ngFor="let locale of application.supportedLocales" [value]="locale">
+        {{state.localeName(locale)}}
+      </md-option>
+    </md-select>
+    <button md-button (click)="downloadAlexaExport()">Export</button>
+    <button md-button (click)="exportAlexa = false"> Cancel</button>
+  </md-card>
+
+  <tock-application-upload *ngIf="uploadDump" (closed)="uploadDump = false"
+                           [applicationName]="application.name"></tock-application-upload>
+
+</md-expansion-panel>

@@ -21,8 +21,6 @@ import {StateService} from "../../core/state.service";
 import {Application} from "../../model/application";
 import {ConfirmDialogComponent} from "../../shared/confirm-dialog/confirm-dialog.component";
 import {ApplicationService} from "../../core/applications.service";
-import {saveAs} from "file-saver";
-import {ApplicationScopedQuery} from "../../model/commons";
 
 @Component({
   selector: 'tock-application',
@@ -36,10 +34,6 @@ export class ApplicationComponent implements OnInit {
   newApplication: boolean;
   newLocale: string;
   nlpEngineType: string;
-
-  uploadDump: boolean = false;
-  exportAlexa: boolean = false;
-  alexaLocale: string;
 
   constructor(private route: ActivatedRoute,
               private snackBar: MdSnackBar,
@@ -57,7 +51,6 @@ export class ApplicationComponent implements OnInit {
           this.application = this.applications.find(a => a._id === id);
           if (this.application) {
             this.application = this.application.clone();
-            this.alexaLocale = this.application.supportedLocales[0];
           }
         } else {
           this.newApplication = true;
@@ -132,28 +125,6 @@ export class ApplicationComponent implements OnInit {
   addLocale(newLocale: string) {
     this.application.supportedLocales.push(newLocale);
     this.snackBar.open(`${this.state.localeName(newLocale)} added`, "Locale", {duration: 1000});
-  }
-
-  triggerBuild() {
-    this.applicationService.triggerBuild(this.application).subscribe(_ =>
-      this.snackBar.open(`Application build started`, "Build", {duration: 1000})
-    )
-  }
-
-  downloadAlexaExport() {
-    setTimeout(_ => {
-      const query = new ApplicationScopedQuery(
-        this.application.namespace,
-        this.application.name,
-        this.alexaLocale
-      );
-      this.applicationService.getAlexaExport(query)
-        .subscribe(blob => {
-          this.exportAlexa = false;
-          saveAs(blob, this.application.name + "_alexa.json");
-          this.snackBar.open(`Alexa export file provided`, "Alexa", {duration: 1000});
-        })
-    });
   }
 
 }

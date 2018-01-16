@@ -24,6 +24,7 @@ import {ApplicationsResolver} from "./applications.resolver";
 import {ApplicationComponent} from "./application/application.component";
 import {ApplicationUploadComponent} from "./application-upload/application-upload.component";
 import {FileUploadModule} from "ng2-file-upload";
+import {ApplicationAdvancedOptionsComponent} from "./application-advanced-options/application-advanced-options.component";
 
 const routes: Routes = [
   {
@@ -47,6 +48,7 @@ const routes: Routes = [
       }]
   }
 ];
+
 @NgModule({
   imports: [RouterModule.forChild(routes)],
   exports: [RouterModule]
@@ -64,6 +66,7 @@ export class ApplicationsRoutingModule {
   declarations: [
     ApplicationsComponent,
     ApplicationComponent,
+    ApplicationAdvancedOptionsComponent,
     ApplicationUploadComponent
   ],
   providers: [
