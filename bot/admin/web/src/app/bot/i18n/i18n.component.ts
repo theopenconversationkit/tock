@@ -38,7 +38,10 @@ export class I18nComponent extends I18nController implements OnInit {
   private doNotFilterByCategory = "All";
   selectedCategory: string = this.doNotFilterByCategory;
   allCategories: string[] = [];
+
+  displayImportExport: boolean = false;
   displayUpload: boolean = false;
+  uploadType: string = "Csv";
   public uploader: FileUploader;
 
   pageEvent: PageEvent;
@@ -168,16 +171,38 @@ export class I18nComponent extends I18nController implements OnInit {
       .subscribe(_ => this.snackBar.open(`All labels validated`, "Validate", {duration: 3000}));
   }
 
-  downloadExport() {
-    this.botService.downloadI18nLabelsExport()
+  downloadCsv() {
+    this.botService.downloadI18nLabelsCsv()
       .subscribe(blob => {
         saveAs(blob, "labels.csv");
         this.snackBar.open(`Export provided`, "Export", {duration: 1000});
       })
   }
 
+  downloadJson() {
+    this.botService.downloadI18nLabelsJson()
+      .subscribe(blob => {
+        saveAs(blob, "labels.json");
+        this.snackBar.open(`Export provided`, "Export", {duration: 1000});
+      })
+  }
+
+  prepareCsvUpload() {
+    this.displayUpload = true;
+    this.uploadType = 'Csv';
+  }
+
+  prepareJsonUpload() {
+    this.displayUpload = true;
+    this.uploadType = 'Json';
+  }
+
   upload() {
-    this.botService.prepareApplicationDumpUploader(this.uploader);
+    if(this.uploadType === 'Csv') {
+      this.botService.prepareI18nCsvDumpUploader(this.uploader);
+    } else {
+      this.botService.prepareI18nJsonDumpUploader(this.uploader);
+    }
     this.uploader.uploadAll()
   }
 

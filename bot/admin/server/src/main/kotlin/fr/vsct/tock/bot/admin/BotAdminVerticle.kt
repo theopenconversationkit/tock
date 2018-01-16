@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.admin
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.admin.model.BotConfiguration
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
@@ -29,6 +30,7 @@ import fr.vsct.tock.bot.admin.test.TestPlanService
 import fr.vsct.tock.nlp.admin.AdminVerticle
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.Translator
@@ -221,12 +223,21 @@ open class BotAdminVerticle : AdminVerticle() {
             i18n.deleteByNamespaceAndId(context.organization, context.pathId("id"))
         }
 
-        blockingJsonGet("/i18n/export") { context ->
+        blockingJsonGet("/i18n/export/csv") { context ->
             I18nCsvCodec.exportCsv(context.organization)
         }
 
-        blockingUploadPost("/i18n/import") { context, content ->
+        blockingUploadPost("/i18n/import/csv") { context, content ->
             I18nCsvCodec.importCsv(context.organization, content)
+        }
+
+        blockingJsonGet("/i18n/export/json") { context ->
+            mapper.writeValueAsString(i18n.getLabels().filter { it.namespace == context.organization })
+        }
+
+        blockingUploadPost("/i18n/import/json") { context, content ->
+            val labels: List<I18nLabel> = mapper.readValue(content)
+            i18n.save(labels.filter { it.namespace == context.organization })
         }
 
         configureStaticHandling()

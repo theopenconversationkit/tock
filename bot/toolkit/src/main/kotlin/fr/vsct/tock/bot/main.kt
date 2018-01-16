@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot
 
+import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.rest.addRestConnector
@@ -25,7 +26,11 @@ import fr.vsct.tock.bot.definition.BotProviderBase
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.nlp.NlpController
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.resource
 import fr.vsct.tock.shared.resourceAsStream
+import fr.vsct.tock.translator.I18nDAO
+import fr.vsct.tock.translator.I18nLabel
 import io.vertx.ext.web.Router
 
 /**
@@ -80,4 +85,14 @@ private fun install(routerHandlers: List<(Router) -> Unit>, installRestConnector
 fun importNlpDump(path: String) {
     val nlp: NlpController by injector.instance()
     nlp.importNlpDump(resourceAsStream(path))
+}
+
+/**
+ * Import a dump of all i18n labels.
+ * @path the dump path in the classpath
+ */
+fun importI18nDump(path: String) {
+    val i18n: I18nDAO by injector.instance()
+    val labels: List<I18nLabel> = mapper.readValue(resource(path))
+    i18n.save(labels)
 }

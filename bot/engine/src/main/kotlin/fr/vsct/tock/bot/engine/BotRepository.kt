@@ -70,11 +70,13 @@ object BotRepository {
     /**
      * Request timer for connectors.
      */
+    @Volatile
     var requestTimer: RequestTimer = object : RequestTimer {}
 
     /**
      * healthcheck handler to answer to GET /healthcheck.
      */
+    @Volatile
     var healthcheckHandler: (RoutingContext) -> Unit = {
         executor.executeBlocking {
             it.response().setStatusCode(if (nlpClient.healthcheck()) 200 else 500).end()

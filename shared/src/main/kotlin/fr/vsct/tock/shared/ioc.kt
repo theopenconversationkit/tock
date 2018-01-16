@@ -25,7 +25,7 @@ import fr.vsct.tock.shared.cache.mongo.MongoCache
 import fr.vsct.tock.shared.vertx.vertxExecutor
 
 /**
- * internal injector - reset it only for tests.
+ * internal injector - reset only for tests.
  */
 var tockInternalInjector = KodeinInjector()
 

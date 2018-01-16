@@ -17,10 +17,13 @@
 package fr.vsct.tock.bot.connector
 
 /**
- *
+ * Base implementation of [Connector]. Connector implementations should usually extend this class.
  */
 abstract class ConnectorBase(override val connectorType: ConnectorType) : Connector {
 
+    /**
+     * Returns [connectorType.toString] method.
+     */
     override fun toString(): String = connectorType.toString()
 
 }

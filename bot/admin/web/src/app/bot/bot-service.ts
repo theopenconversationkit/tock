@@ -66,12 +66,20 @@ export class BotService {
     return this.rest.delete(`/i18n/${label._id}`);
   }
 
-  downloadI18nLabelsExport(): Observable<Blob> {
-    return this.rest.get("/i18n/export", (r => new Blob([r], {type: 'text/csv'}) ))
+  downloadI18nLabelsCsv(): Observable<Blob> {
+    return this.rest.get("/i18n/export/csv", (r => new Blob([r], {type: 'text/csv'}) ))
   }
 
-  prepareApplicationDumpUploader(uploader: FileUploader) {
-    this.rest.setFileUploaderOptions(uploader, "/i18n/import");
+  downloadI18nLabelsJson(): Observable<Blob> {
+    return this.rest.get("/i18n/export/json", (r => new Blob([r], {type: 'application/json'}) ))
+  }
+
+  prepareI18nCsvDumpUploader(uploader: FileUploader) {
+    this.rest.setFileUploaderOptions(uploader, "/i18n/import/csv");
+  }
+
+  prepareI18nJsonDumpUploader(uploader: FileUploader) {
+    this.rest.setFileUploaderOptions(uploader, "/i18n/import/json");
   }
 
 }

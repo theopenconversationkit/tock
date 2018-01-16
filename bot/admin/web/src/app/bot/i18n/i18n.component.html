@@ -35,29 +35,48 @@
   <button md-button (click)="validateAll()" md-tooltip="Validate all existing labels">Validate all</button>
   <button md-button (click)="complete()">Complete all fields</button>
 
-  <button md-icon-button (click)="downloadExport()" md-tooltip="Download Csv">
-    <md-icon>file_download</md-icon>
-  </button>
-  <button md-icon-button (click)="displayUpload = true" md-tooltip="Upload Csv">
-    <md-icon>file_upload</md-icon>
+  <button md-icon-button (click)="displayImportExport = true" md-tooltip="Import / Export">
+    <md-icon>import_export</md-icon>
   </button>
 </md-toolbar>
 
-<md-card *ngIf="displayUpload">
-  <md-card-title>Upload a Csv File</md-card-title>
-  <md-card-content>
-    <p>
-      <label for="file">Please select a CSV file:</label>
-      <input id="file" type="file" ng2FileSelect [uploader]="uploader"/>
-    </p>
-  </md-card-content>
-  <button (click)="displayUpload = false" md-button>
-    Cancel
+<md-card *ngIf="displayImportExport">
+  <md-card-title>Import / Export Panel</md-card-title>
+
+  <button md-raised-button (click)="displayImportExport = false" color="accent">Close Panel</button>
+  <button md-button (click)="downloadCsv()" md-tooltip="Download Csv">
+    <md-icon>file_download</md-icon>
+    Download CSV
   </button>
-  <button (click)="upload()" [disabled]="!uploader.getNotUploadedItems().length" md-raised-button
-          color="primary">
-    Upload
+  <button md-button (click)="prepareCsvUpload()" md-tooltip="Upload Csv">
+    <md-icon>file_upload</md-icon>
+    Upload CSV
   </button>
+  <button md-button (click)="downloadJson()" md-tooltip="Download JSON">
+    <md-icon>file_download</md-icon>
+    Download JSON
+  </button>
+  <button md-button (click)="prepareJsonUpload()" md-tooltip="Upload JSON">
+    <md-icon>file_upload</md-icon>
+    Upload JSON
+  </button>
+
+  <md-card *ngIf="displayUpload">
+    <md-card-title>Upload a {{uploadType}} File</md-card-title>
+    <md-card-content>
+      <p>
+        <label for="file">Please select a {{uploadType}} file:</label>
+        <input id="file" type="file" ng2FileSelect [uploader]="uploader"/>
+      </p>
+    </md-card-content>
+    <button (click)="displayUpload = false" md-button>
+      Cancel
+    </button>
+    <button (click)="upload()" [disabled]="!uploader.getNotUploadedItems().length" md-raised-button
+            color="primary">
+      Upload
+    </button>
+  </md-card>
 </md-card>
 
 <md-list dense *ngIf="!loading">
