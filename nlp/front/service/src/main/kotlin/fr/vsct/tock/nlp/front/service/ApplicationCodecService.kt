@@ -308,13 +308,19 @@ object ApplicationCodecService : ApplicationCodec {
 
         return SentencesDump(
                 app.qualifiedName,
-                sentences = sentences.map { s ->
-                    SentenceDump(
-                            s.text,
-                            intents[s.classification.intentId]!!.qualifiedName,
-                            s.classification.entities.map { SentenceEntityDump(it) },
-                            s.language
-                    )
+                sentences = sentences.mapNotNull { s ->
+                    val sentenceIntent = intents[s.classification.intentId]
+                    if (sentenceIntent == null) {
+                        logger.warn { "unknown intent ${s.classification.intentId}" }
+                        null
+                    } else {
+                        SentenceDump(
+                                s.text,
+                                sentenceIntent.qualifiedName,
+                                s.classification.entities.map { SentenceEntityDump(it) },
+                                s.language
+                        )
+                    }
                 }
         )
     }

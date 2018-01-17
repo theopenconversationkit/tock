@@ -19,8 +19,18 @@ package fr.vsct.tock.nlp.front.service
 import com.nhaarman.mockito_kotlin.any
 import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
+import fr.vsct.tock.nlp.front.shared.codec.DumpType
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.nlp.front.shared.config.Classification
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
+import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
+import fr.vsct.tock.shared.defaultLocale
 import org.junit.Before
 import org.junit.Test
+import org.litote.kmongo.toId
+import java.time.Instant.now
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 
 /**
@@ -39,5 +49,32 @@ class ApplicationCodecServiceTest : AbstractTest() {
 
         val report = ApplicationCodecService.import(namespace, dump)
         assertFalse(report.modified)
+    }
+
+    @Test
+    fun exportSentence_shouldNotFail_whenSentenceIntentIsUnknown() {
+        val appId = "id".toId<ApplicationDefinition>()
+        val app = ApplicationDefinition("test", "test", _id = appId)
+        val sentences = listOf(
+                ClassifiedSentence(
+                        "text",
+                        defaultLocale,
+                        appId,
+                        now(),
+                        now(),
+                        ClassifiedSentenceStatus.model,
+                        Classification("unknwIntentId".toId(), emptyList()),
+                        null,
+                        null
+                )
+        )
+
+        whenever(context.config.getApplicationById(appId)).thenReturn(app)
+        whenever(context.config.getIntentsByApplicationId(appId)).thenReturn(emptyList())
+        whenever(context.config.search(any())).thenReturn(SentencesQueryResult(1, sentences))
+
+        val dump = ApplicationCodecService.exportSentences(appId, null, null, DumpType.full)
+
+        assertEquals(0, dump.sentences.size)
     }
 }
