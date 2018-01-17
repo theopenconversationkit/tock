@@ -73,7 +73,11 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
             logger.error(e)
             build = build.copy(error = true, errorMessage = e.message)
         } finally {
-            triggerDAO.save(build.copy(duration = Duration.between(build.date, Instant.now())))
+            try {
+                triggerDAO.save(build.copy(duration = Duration.between(build.date, Instant.now())))
+            } catch (e: Exception) {
+                logger.error(e)
+            }
         }
     }
 

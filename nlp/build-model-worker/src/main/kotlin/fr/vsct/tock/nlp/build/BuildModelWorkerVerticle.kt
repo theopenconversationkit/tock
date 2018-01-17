@@ -75,7 +75,11 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
 
         private fun updateModel(key: ModelRefreshKey, sentences: List<ClassifiedSentence>, onlyIfNotExists: Boolean = false) {
             try {
-                val app = front.getApplicationById(key.applicationId)!!
+                val app = front.getApplicationById(key.applicationId)
+                if (app == null) {
+                    logger.warn { "Unknown application : $key" }
+                    return
+                }
                 logger.info { "start model update for ${app.name} and ${key.language}" }
                 logger.trace { "Sentences : ${sentences.map { it.text }}" }
 
@@ -104,6 +108,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
             } catch (e: Throwable) {
                 logger.error(e)
             } finally {
+                logger.info { "end model update for ${key.language}" }
                 front.switchSentencesStatus(sentences, model)
             }
         }
