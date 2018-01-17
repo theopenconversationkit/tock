@@ -137,7 +137,7 @@ export class I18nComponent extends I18nController implements OnInit {
     const hideValidated = this.filterOption == "not_validated";
     const v = value ? value.trim().toLowerCase() : "";
     this.filteredI18n = this.i18n.filter(i => {
-      return (!hideValidated || i.i18n.some(label => !label.validated))
+      return (!hideValidated || i.i18n.some(label => !label.validated && label.label.length !== 0))
         && (!hideNotValidated || i.i18n.some(label => label.validated))
         && (v.length === 0 || i.i18n.some(label => label.label.length !== 0 && label.label.toLowerCase().indexOf(v) !== -1))
         && (this.selectedCategory === this.doNotFilterByCategory || i.category === this.selectedCategory)
