@@ -198,9 +198,8 @@ open class BotAdminVerticle : AdminVerticle() {
             BotAdminService.deleteBotIntent(context.organization, context.pathParam("intentId"))
         }
 
-        blockingJsonGet("/i18n") { _ ->
-            //TODO filter by namespace
-            i18n.getLabels()
+        blockingJsonGet("/i18n") { context ->
+            i18n.getLabels().filter { it.namespace == context.organization }
         }
 
         blockingJsonPost("/i18n/complete") { context, labels: List<I18nLabel> ->
