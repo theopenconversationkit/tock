@@ -31,21 +31,21 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.2.10</kotlin>
+        <kotlin>1.2.20</kotlin>
 
         <slf4j>1.7.25</slf4j>
         <logback>1.2.3</logback>
-        <kotlin-logging>1.4.8</kotlin-logging>
+        <kotlin-logging>1.5.3</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>3.6.0</kmongo>
+        <kmongo>3.6.1</kmongo>
         <fongo>2.1.0</fongo>
-        <jackson>2.9.2</jackson>
-        <klaxon>0.32</klaxon>
+        <jackson>2.9.3</jackson>
+        <klaxon>2.0.11</klaxon>
         <vertx>3.4.2</vertx>
         <retrofit>2.3.0</retrofit>
         <okhttp>3.9.1</okhttp>
-        <guava>23.5-jre</guava>
+        <guava>23.6-jre</guava>
         <google-auth>1.23.0</google-auth>
         <jasypt>1.9.2</jasypt>
         <commons-csv>1.5</commons-csv>
