@@ -26,6 +26,7 @@ import java.util.Locale
 interface AlexaCodec {
 
     fun exportIntentsSchema(
+            invocationName:String,
             applicationId: Id<ApplicationDefinition>,
             localeToExport: Locale,
             filter: AlexaFilter? = null): AlexaIntentsSchema

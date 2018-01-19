@@ -37,6 +37,10 @@
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-nlp-front-shared</artifactId>
         </dependency>
+        <dependency>
+            <groupId>com.kcthota</groupId>
+            <artifactId>emoji4j</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

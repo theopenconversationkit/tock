@@ -16,16 +16,30 @@
 
 package fr.vsct.tock.nlp.front.shared.codec.alexa
 
-data class AlexaFilter(val intents: List<AlexaIntentFilter> = emptyList())
+import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+
+data class AlexaFilter(val intents: List<AlexaIntentFilter> = emptyList()) {
+
+    fun findSlot(intent: IntentDefinition, entity: EntityDefinition): AlexaSlotFilter? =
+            intents.firstOrNull { it.intent == intent.name }?.slots?.firstOrNull { it.name == entity.role }
+}
 
 data class AlexaIntentFilter(
         val intent: String,
-        val slots: List<AlexaSlot> = emptyList())
+        val slots: List<AlexaSlotFilter> = emptyList())
+
+data class AlexaSlotFilter(
+        val name: String,
+        val type: String,
+        val targetName: String = name.replace("-", "_"),
+        val targetType: String = type.replace("-", "_"))
 
 data class AlexaIntentsSchema(
         val languageModel: AlexaLanguageModel)
 
 data class AlexaLanguageModel(
+        val invocationName: String = "",
         val types: List<AlexaType> = emptyList(),
         val intents: List<AlexaIntent> = emptyList())
 

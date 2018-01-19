@@ -18,6 +18,7 @@ package fr.vsct.tock.nlp.front.ioc
 
 import fr.vsct.tock.nlp.front.service.alexa.AlexaCodecService
 import fr.vsct.tock.nlp.front.shared.codec.alexa.AlexaFilter
+import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.property
 import org.junit.Before
@@ -31,9 +32,10 @@ import java.util.Locale
  */
 class FrontIocIntegrationTest {
 
-    val applicationId = property("test_app_id", "5a3a73c13ae6273867758544")
-    val rootFile = File(property("test_export_dir", "/home/groupevsc.com/lionel_usubelli/Téléchargements"))
-    val localeToExport = Locale.forLanguageTag(property("test_locale", "fr"))
+    val invocationName = property("test_application_name", "")
+    val applicationId = property("test_app_id", "")
+    val rootFile = File(property("test_export_dir", ""))
+    val localeToExport = Locale.forLanguageTag(property("test_locale", defaultLocale.toLanguageTag()))
 
     @Before
     fun before() {
@@ -44,6 +46,7 @@ class FrontIocIntegrationTest {
     fun generateAlexaSchema() {
         val filterFile = File(rootFile, "alexa.json")
         val export = AlexaCodecService.exportIntentsSchema(
+                invocationName,
                 applicationId.toId(),
                 localeToExport,
                 if (filterFile.exists())

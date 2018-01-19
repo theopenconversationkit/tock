@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.front.service.alexa
 
+import emoji4j.EmojiUtils
 import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
 import fr.vsct.tock.nlp.front.shared.codec.alexa.AlexaCodec
 import fr.vsct.tock.nlp.front.shared.codec.alexa.AlexaFilter
@@ -29,6 +30,7 @@ import fr.vsct.tock.nlp.front.shared.codec.alexa.AlexaTypeDefinitionName
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
+import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.name
@@ -48,33 +50,59 @@ object AlexaCodecService : AlexaCodec {
             sentences: List<ClassifiedSentence>,
             filter: AlexaFilter?
     ): List<AlexaIntent> {
-        return intents.map {
-            AlexaIntent(
-                    it.name,
-                    exportSamples(
-                            it,
-                            sentences,
-                            filter
-                    ),
-                    it.entities.map {
-                        AlexaSlot(it.role, it.entityTypeName.name())
-                    })
-        }
+        return intents
+                .map { intent ->
+                    AlexaIntent(
+                            intent.name + "_intent",
+                            exportSamples(
+                                    intent,
+                                    sentences,
+                                    filter
+                            ),
+                            intent.entities
+                                    .filter { entity ->
+                                        filter == null
+                                                || filter.intents.first { intent.name == it.intent }.slots.any { it.name == entity.role }
+                                    }
+                                    .map {
+                                        AlexaSlot(
+                                                (filter?.findSlot(intent, it)?.targetName
+                                                        ?: it.role) + "_slot",
+                                                filter?.findSlot(intent, it)?.targetType ?: it.entityTypeName.name()
+                                        )
+                                    })
+                }
     }
 
     private fun exportAlexaTypes(
             intents: List<IntentDefinition>,
             sentences: List<ClassifiedSentence>,
             filter: AlexaFilter?): List<AlexaType> {
+
         return intents
-                .flatMap { intent -> intent.entities.map { entity -> entity.entityTypeName.name() } }
-                .distinct()
-                .filter { typeName -> filter == null || filter.intents.any { it.slots.any { it.type == typeName } } }
-                .map { typeName -> AlexaType(typeName, exportAlexaTypeDefinition(typeName, sentences)) }
+                .flatMap { intent -> intent.entities.map { entity -> intent to entity } }
+                .filter { (intent, entity) ->
+                    filter == null || filter.findSlot(intent, entity) != null
+                }
+                .map { (intent, entity) ->
+                    AlexaType(
+                            filter?.findSlot(intent, entity)?.targetType
+                                    ?: entity.entityTypeName.name().replace("-", "_"),
+                            exportAlexaTypeDefinition(intent, entity, sentences)
+                                    .distinctBy { type -> type.name.value.toLowerCase().trim() }
+                    )
+                }
+                .groupBy { it.name }
+                .map { (_, types) ->
+                    types.first().run {
+                        copy(values = (values + types.subList(1, types.size).flatMap { it.values }).distinct())
+                    }
+                }
                 .toList()
     }
 
     override fun exportIntentsSchema(
+            invocationName: String,
             applicationId: Id<ApplicationDefinition>,
             localeToExport: Locale,
             filter: AlexaFilter?): AlexaIntentsSchema {
@@ -91,6 +119,7 @@ object AlexaCodecService : AlexaCodec {
 
         return AlexaIntentsSchema(
                 AlexaLanguageModel(
+                        invocationName,
                         exportAlexaTypes(intents, sentences, filter),
                         exportAlexaIntents(intents, sentences, filter)
                 )
@@ -102,47 +131,77 @@ object AlexaCodecService : AlexaCodec {
             sentences: List<ClassifiedSentence>,
             filter: AlexaFilter?): List<String> {
 
-        val filteredTypeNames = filter?.intents?.flatMap { it.slots.map { it.type } }?.toSet()
+        val filteredRoles = filter?.intents?.first { it.intent == intent.name }?.slots?.map { it.name }?.toSet()
+
+        val startByLetter = "^[a-zA-Z\\{].*".toRegex()
+        val nonChar = "[^a-zA-ZáàâäãåçéèêëíìîïñóòôöõúùûüýÿÁÀÂÄÃÅÇÉÈÊËÍÌÎÏÑÓÒÔÖÕÚÙÛÜÝŸ\\{\\}_\\-']".toRegex()
 
         return sentences
                 .filter { it.classification.intentId == intent._id }
-                .filter { filter == null || it.classification.entities.all { filteredTypeNames!!.contains(it.type) } }
+                .filter { filter == null || it.classification.entities.all { filteredRoles!!.contains(it.role) } }
                 .map { sentence ->
                     var t = sentence.text
                     sentence
                             .classification
                             .entities
-                            .asReversed()
+                            .sortedByDescending { it.start }
                             .forEach {
-                                t = t.substring(0, it.start) + "{${it.role}}" + t.substring(it.end, t.length)
+                                t = t.substring(0, it.start) + "{${it.role}_slot}" + t.substring(it.end, t.length)
                             }
                     t
                 }
-                .distinct()
                 .filter { !it.contains("*") && !it.contains("google", true) }
+                .map { sentence -> sentence.replace("'{", " {") }
+                .map { sentence -> EmojiUtils.removeAllEmojis(sentence) }
+                .map { sentence -> sentence.replace("☺", " ") }
+                .map { sentence -> sentence.replace(nonChar, " ") }
+                .map { sentence -> sentence.replace("( )*-+( )*".toRegex(), "-") }
+                .map { sentence -> sentence.replace("( )*_+( )*".toRegex(), "_") }
+                .map { sentence -> sentence.replace(" ' ", "") }
+                .map { sentence -> sentence.replace("}-".toRegex(), "} ") }
+                .map { sentence -> sentence.replace("-{", " {") }
+                .map { sentence -> sentence.replace("}_".toRegex(), "} ") }
+                .map { sentence -> sentence.replace("_{", " {") }
+                .map { sentence -> sentence.replace("}", "} ") }
+                .map { sentence -> sentence.replace("{", " {") }
+                .map { it.trim() }
+                .map { sentence -> sentence.replace(" +".toRegex(), " ") }
+                .filter { it.matches(startByLetter) }
+                .groupBy { it }
+                .entries
+                .sortedByDescending { it.value.size }
+                .map { it.key }
+                .distinct()
     }
 
     private fun exportAlexaTypeDefinition(
-            typeName: String,
+            intent: IntentDefinition,
+            entity: EntityDefinition,
             sentences: List<ClassifiedSentence>): List<AlexaTypeDefinition> {
         return sentences
+                .filter { it.classification.intentId == intent._id }
                 .flatMap { sentence ->
                     sentence
                             .classification
                             .entities
-                            .filter { it.type.name() == typeName }
+                            .filter { it.type == entity.entityTypeName }
+                            .distinct()
                             .map {
                                 sentence.text.substring(it.start, it.end).replace("\n", "")
                             }
                 }
                 .distinct()
-                .filter { !it.contains("*") && !it.contains("google", true) }
+                .filter {
+                    !it.contains("*")
+                            && !it.contains("google", true)
+                }
                 .map {
                     AlexaTypeDefinition(
                             null,
                             AlexaTypeDefinitionName(
-                                    it,
-                                    emptyList()
+                                    it.replace("-", "_")
+                                            .replace("\"", " "),
+                                    emptyList()//getSamplesFor(typeName, sentences)
                             )
                     )
                 }

@@ -378,7 +378,7 @@ open class AdminVerticle : WebVerticle() {
         { context, query: ApplicationScopedQuery ->
             val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
             if (app != null && context.organization == app.namespace) {
-                front.exportIntentsSchema(app._id, query.language)
+                front.exportIntentsSchema("appName", app._id, query.language)
             } else {
                 unauthorized()
             }
