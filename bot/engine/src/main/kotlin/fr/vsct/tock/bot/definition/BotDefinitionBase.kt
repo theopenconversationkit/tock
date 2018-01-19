@@ -20,7 +20,6 @@ import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
-import fr.vsct.tock.bot.engine.dialog.TestContext
 import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener.deleteKeyword
 import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener.endTestContextKeyword
 import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener.testContextKeyword
@@ -77,7 +76,7 @@ open class BotDefinitionBase(override val botId: String,
                             setOf(bus.userId, bus.botId)
                     )
             )
-            TestContext.setup(bus)
+            bus.botDefinition.testBehaviour.setup(bus)
             if (sendEnd) {
                 bus.end(bus.baseI18nKey("test context activated (user state cleaned)"))
             }
@@ -87,9 +86,9 @@ open class BotDefinitionBase(override val botId: String,
             bus.userTimeline.dialogs.add(
                     Dialog(
                             setOf(bus.userId, bus.botId)))
-            TestContext.cleanup(bus)
+            bus.botDefinition.testBehaviour.cleanup(bus)
             if (sendEnd) {
-                bus.end(bus.baseI18nKey("test context desactivated"))
+                bus.end(bus.baseI18nKey("test context disabled"))
             }
         }
 

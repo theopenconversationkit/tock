@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.connector.rest
 import fr.vsct.tock.bot.connector.ConnectorCallbackBase
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.rest.model.MessageResponse
+import fr.vsct.tock.bot.definition.TestBehaviour
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.shared.jackson.mapper
@@ -28,13 +29,13 @@ import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
- *
+ * [ConnectorCallback] for [RestConnector].
  */
 internal class RestConnectorCallback(
         applicationId: String,
         connectorType: ConnectorType,
         val context: RoutingContext,
-        val test: Boolean,
+        val testContext: TestBehaviour?,
         val locale: Locale,
         val actions: MutableList<Action> = CopyOnWriteArrayList()
 ) : ConnectorCallbackBase(applicationId, connectorType) {

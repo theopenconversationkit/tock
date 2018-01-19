@@ -24,7 +24,6 @@ import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.rest.model.MessageRequest
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.bot.engine.dialog.TestContext
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
@@ -68,7 +67,7 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
                                                         applicationId,
                                                         message.targetConnectorType,
                                                         context,
-                                                        message.test,
+                                                        if (message.test) controller.botDefinition.testBehaviour else null,
                                                         locale
                                                 )
                                         )
@@ -97,9 +96,7 @@ class RestConnector(val applicationId: String, val path: String) : Connector {
         //register user as test user if applicable
         return UserPreferences().apply {
             locale = callback.locale
-            if (callback.test) {
-                TestContext.setup(this)
-            }
+            callback.testContext?.setup(this, callback.connectorType, locale)
         }
     }
 }

@@ -155,11 +155,26 @@ interface BotDefinition : I18nKeyProvider {
      */
     val botDisabledStory: StoryDefinition?
 
-    fun isDisabledIntent(intent: Intent?): Boolean = intent != null && botDisabledStory?.isStarterIntent(intent) ?: false
 
+    /**
+     * Is this intent disable the bot?
+     */
+    fun isBotDisabledIntent(intent: Intent?): Boolean = intent != null && botDisabledStory?.isStarterIntent(intent) ?: false
+
+    /**
+     * To manage reactivation.
+     */
     val botEnabledStory: StoryDefinition?
 
-    fun isEnabledIntent(intent: Intent?): Boolean = intent != null && botEnabledStory?.isStarterIntent(intent) ?: false
+    /**
+     * Is this intent is reactivating the bot?
+     */
+    fun isBotEnabledIntent(intent: Intent?): Boolean = intent != null && botEnabledStory?.isStarterIntent(intent) ?: false
+
+    /**
+     * Returns a [TestBehaviour]. Used in Integration Tests.
+     */
+    val testBehaviour: TestBehaviour get() = TestBehaviourBase()
 
     override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey {
         val prefix = javaClass.kotlin.simpleName?.replace("Definition", "") ?: ""

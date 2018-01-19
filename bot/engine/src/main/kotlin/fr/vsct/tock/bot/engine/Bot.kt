@@ -71,7 +71,7 @@ internal class Bot(botDefinitionBase: BotDefinition) {
 
         parseAction(action, userTimeline, dialog, connector)
 
-        if (botDefinition.isEnabledIntent(dialog.state.currentIntent)) {
+        if (botDefinition.isBotEnabledIntent(dialog.state.currentIntent)) {
             logger.debug { "Enable bot for $action" }
             userTimeline.userState.botDisabled = false
         }

@@ -26,8 +26,8 @@ import mu.KotlinLogging
  * Base implementation of [ConnectorCallback] - add logging and [RequestTimer] monitoring.
  */
 open class ConnectorCallbackBase(
-        override val applicationId:String,
-        private val connectorType: ConnectorType
+        override val applicationId: String,
+        val connectorType: ConnectorType
 ) : ConnectorCallback {
 
     private val requestTimerData = requestTimer.start("${connectorType.id}_response")

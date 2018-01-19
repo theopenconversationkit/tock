@@ -14,44 +14,44 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.dialog
+package fr.vsct.tock.bot.definition
 
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.user.UserPreferences
-import fr.vsct.tock.shared.property
+import java.util.Locale
 
 /**
- * Define values for test context.
+ * Define values and behaviour for integration tests.
  */
-object TestContext {
+interface TestBehaviour {
 
     /**
      * The default first name used in tests.
      */
-    val firstName = property("tock_bot_test_first_name", "Joe")
+    val firstName: String
     /**
      * The default last name used in tests.
      */
-    val lastName = property("tock_bot_test_last_name", "Hisaishi")
+    val lastName: String
 
     /**
-     * Setup the bus for test context.
+     * Setup [UserPreferences] from the bus.
      */
     fun setup(bus: BotBus) {
         bus.userTimeline.userState.cleanup()
         bus.userTimeline.userState.profileLoaded = true
-        setup(bus.userPreferences)
+        setup(bus.userPreferences, bus.targetConnectorType, bus.userLocale)
     }
 
     /**
      * Setup user preferences for test context.
      */
-    fun setup(userPreferences: UserPreferences) {
-        with(userPreferences) {
-            test = true
-            firstName = TestContext.firstName
-            lastName = TestContext.lastName
-        }
+    fun setup(userPreferences: UserPreferences, connectorType: ConnectorType, locale: Locale) {
+        userPreferences.test = true
+        userPreferences.firstName = firstName
+        userPreferences.lastName = lastName
+        userPreferences.locale = locale
     }
 
     fun cleanup(bus: BotBus) {
