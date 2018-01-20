@@ -23,13 +23,15 @@ import java.util.Locale
  *
  */
 data class NlpResult(val intent: String,
-                     val intentNamespace:String,
+                     val intentNamespace: String,
                      val language: Locale,
                      val entities: List<EntityValue>,
                      val intentProbability: Double,
                      val entitiesProbability: Double,
                      val retainedQuery: String,
-                     val otherIntentsProbabilities: Map<String, Double>) {
+                     val otherIntentsProbabilities: Map<String, Double> = emptyMap()) {
 
     fun firstValue(role: String): EntityValue? = entities.firstOrNull { it.entity.role == role }
+
+    fun entityTextContent(value: EntityValue): String = retainedQuery.substring(value.start, value.end)
 }

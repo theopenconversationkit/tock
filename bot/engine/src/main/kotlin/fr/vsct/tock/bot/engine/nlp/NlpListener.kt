@@ -17,11 +17,14 @@
 package fr.vsct.tock.bot.engine.nlp
 
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.engine.dialog.ContextValue
+import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 
 /**
- * Used to monitor nlp request on bot side.
+ * Used to customize behaviour of NLP parsing - and also to monitor NLP requests - on bot side.
  * Need to be registered using [fr.vsct.tock.bot.engine.BotRepository.registerNlpListener].
  */
 interface NlpListener {
@@ -34,12 +37,17 @@ interface NlpListener {
     fun handleKeyword(sentence: String): Intent? = null
 
     /**
+     * Allow custom entity evaluation - default returns empty list.
+     */
+    fun evaluateEntities(userTimeline: UserTimeline, dialog: Dialog, nlpResult: NlpResult): List<ContextValue> = emptyList()
+
+    /**
      * Called when nlp request is successful.
      */
-    fun success(query: NlpQuery, result: NlpResult)
+    fun success(query: NlpQuery, result: NlpResult) = Unit
 
     /**
      * Called when nlp request is throwing an error.
      */
-    fun error(query: NlpQuery, throwable: Throwable?)
+    fun error(query: NlpQuery, throwable: Throwable?) = Unit
 }

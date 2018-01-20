@@ -87,7 +87,16 @@ internal class Nlp : NlpController {
                                         IntentContext(userTimeline, dialog, sentence)
                                 )
 
-                                sentence.state.entityValues.addAll(nlpResult.entities.map { ContextValue(nlpResult.retainedQuery, it) })
+                                val customEntityEvaluations = BotRepository.nlpListeners.flatMap {
+                                    it.evaluateEntities(userTimeline, dialog, nlpResult)
+                                }
+                                sentence.state.entityValues.addAll(
+                                        customEntityEvaluations +
+                                                nlpResult.entities
+                                                        .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
+                                                        .map { ContextValue(nlpResult, it) }
+                                )
+
                                 sentence.nlpStats = NlpCallStats(
                                         intent,
                                         nlpResult.intentProbability,

@@ -17,8 +17,6 @@
 package fr.vsct.tock.bot.engine.nlp
 
 import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.nlp.api.client.model.NlpQuery
-import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.shared.property
 import java.util.concurrent.ConcurrentSkipListSet
 
@@ -56,11 +54,4 @@ object BuiltInKeywordListener : NlpListener {
         }
     }
 
-    override fun error(query: NlpQuery, throwable: Throwable?) {
-        //do nothing
-    }
-
-    override fun success(query: NlpQuery, result: NlpResult) {
-        //do nothing
-    }
 }

@@ -21,11 +21,18 @@ import com.nhaarman.mockito_kotlin.argumentCaptor
 import com.nhaarman.mockito_kotlin.never
 import com.nhaarman.mockito_kotlin.verify
 import fr.vsct.tock.bot.engine.BotEngineTest
+import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.dialog.ContextValue
+import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
+import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
+import fr.vsct.tock.nlp.api.client.model.NlpResult
+import fr.vsct.tock.nlp.entity.Value
 import org.junit.Test
+import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
@@ -68,5 +75,22 @@ class NlpTest : BotEngineTest() {
             assertFalse(firstValue.context.test)
             assertTrue(firstValue.context.registerQuery)
         }
+    }
+
+    @Test
+    fun parseSentence_shouldUseNlpListenersEntityEvaluation_WhenAvailable() {
+        val customValue = ContextValue(entityB, object : Value {}, "b")
+        val nlpListener = object : NlpListener {
+            override fun evaluateEntities(userTimeline: UserTimeline, dialog: Dialog, nlpResult: NlpResult): List<ContextValue> {
+                return listOf(customValue)
+            }
+        }
+        BotRepository.nlpListeners.add(nlpListener)
+        Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
+
+        assertEquals(3, userAction.state.entityValues.size)
+        assertTrue(userAction.state.entityValues.contains(customValue))
+        assertTrue(userAction.state.entityValues.contains(ContextValue(nlpResult, entityAValue)))
+        assertTrue(userAction.state.entityValues.contains(ContextValue(nlpResult, entityCValue)))
     }
 }

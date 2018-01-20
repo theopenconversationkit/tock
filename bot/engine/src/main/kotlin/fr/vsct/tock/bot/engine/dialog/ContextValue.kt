@@ -18,22 +18,52 @@ package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.api.client.model.EntityValue
+import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.entity.Value
 
 /**
- *
+ * A potential or already evaluated value linked to an entity.
  */
 data class ContextValue(
+        /**
+         * If extracted from a sentence, start position of the text content in this sentence.
+         */
         val start: Int?,
+        /**
+         * If extracted from a sentence, end position of the text content in this sentence.
+         */
         val end: Int?,
+        /**
+         * The linked [Entity].
+         */
         val entity: Entity,
+        /**
+         * Text content if any.
+         */
         val content: String?,
-        var value: Value? = null,
-        var evaluated: Boolean = false,
+        /**
+         * Value if any.
+         */
+        val value: Value? = null,
+        /**
+         * Is the value has been evaluated?
+         */
+        val evaluated: Boolean = false,
+        /**
+         * Sub entity values if any.
+         */
         val subEntities: List<ContextValue> = emptyList(),
-        var probability: Double = 1.0,
+        /**
+         * The probability of the value.
+         */
+        val probability: Double = 1.0,
+        /**
+         * Does this value support merge?
+         */
         val mergeSupport: Boolean = false
 ) {
+
+    constructor(nlpResult: NlpResult, value: EntityValue) : this(nlpResult.retainedQuery, value)
 
     constructor(sentence: String, value: EntityValue)
             : this(
@@ -59,12 +89,5 @@ data class ContextValue(
     override fun toString(): String {
         return if (evaluated) value?.toString() ?: "null" else content ?: "no content"
     }
-
-    fun changeValue(newValue: Value?): ContextValue {
-        value = newValue
-        evaluated = true
-        return this
-    }
-
 
 }

@@ -23,7 +23,7 @@ import java.time.Instant
 import java.time.Instant.now
 
 /**
- * EntityStateValue is the value of an entity with his history
+ * EntityStateValue is the current value of an entity with its history.
  */
 data class EntityStateValue(
         private var _value: ContextValue?,

@@ -42,6 +42,9 @@ import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.nlp.api.client.NlpClient
+import fr.vsct.tock.nlp.api.client.model.Entity
+import fr.vsct.tock.nlp.api.client.model.EntityType
+import fr.vsct.tock.nlp.api.client.model.EntityValue
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultLocale
@@ -74,27 +77,27 @@ abstract class BotEngineTest {
         on { translate(any(), any(), any()) } doReturn ("ok")
     }
 
+
+    val entityA = Entity(EntityType("a"), "a")
+    val entityAValue = EntityValue(0, 1, entityA, null, false)
+    val entityB = Entity(EntityType("a"), "b")
+    val entityBValue = EntityValue(2, 3, entityB, null, false)
+    val entityC = Entity(EntityType("c"), "c")
+    val entityCValue = EntityValue(4, 5, entityC, null, false)
+
+    val nlpResult = NlpResult(test.name,
+            "test",
+            defaultLocale,
+            listOf(entityAValue, entityBValue, entityCValue),
+            1.0,
+            1.0,
+            "a b c",
+            emptyMap())
+
     val nlpClient: NlpClient = mock() {
-        on { parse(any()) } doReturn (
-                Response.success(
-                        NlpResult(test.name,
-                                "test",
-                                defaultLocale,
-                                emptyList(),
-                                1.0,
-                                1.0,
-                                "",
-                                emptyMap())))
-        on { parseIntentEntities(any()) } doReturn (
-                Response.success(
-                        NlpResult(test.name,
-                                "test",
-                                defaultLocale,
-                                emptyList(),
-                                1.0,
-                                1.0,
-                                "",
-                                emptyMap())))
+        on { parse(any()) } doReturn (Response.success(nlpResult))
+
+        on { parseIntentEntities(any()) } doReturn (Response.success(nlpResult))
     }
     internal val nlp: NlpController = mock()
     val executor: Executor = mock()
