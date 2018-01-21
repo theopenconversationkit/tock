@@ -32,6 +32,7 @@ import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
+import fr.vsct.tock.bot.engine.dialog.Snapshot
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
@@ -44,7 +45,7 @@ import fr.vsct.tock.translator.I18nLabelKey
 import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.TranslatorEngine
 import fr.vsct.tock.translator.UserInterfaceType
-import testInjector
+import mu.KotlinLogging
 import java.util.Locale
 
 /**
@@ -52,82 +53,62 @@ import java.util.Locale
  *
  * The answers of the bot are available in the [answers] property.
  */
-open class BotBusMock(override var userTimeline: UserTimeline,
-                      override var dialog: Dialog,
-                      override var story: Story,
-                      override var action: Action,
-                      override var botDefinition: BotDefinition,
-                      override var i18nProvider: I18nKeyProvider,
-                      override var userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
-                      var initialUserPreferences: UserPreferences,
-                      var connectorType: ConnectorType,
-                      override var connectorData: ConnectorData = ConnectorData(ConnectorCallbackBase(action.applicationId, connectorType)),
-                      /**
-                       * The translator used to translate labels - default is NoOp.
-                       */
-                      var translator: TranslatorEngine = testInjector.provide()) : BotBus {
+open class BotBusMock(val context: BotBusMockContext,
+                      override val action: Action = context.firstAction) : BotBus {
 
-
-    constructor(context: BotBusMockContext,
-                action: Action = context.action)
-            : this(
-            context.userTimeline,
-            if (action is SendChoice)
-                context.dialog.copy(
-                        state = context.dialog.state.copy(
-                                currentIntent = context.botDefinition.findIntent(action.intentName)))
-            else context.dialog,
-            context.story.apply {
-                if (action is SendChoice && action.step() != null) {
-                    currentStep = action.step()
-                }
-            },
-            action,
-            context.botDefinition,
-            context.i18nProvider,
-            action.state.userInterface ?: context.userInterfaceType,
-            context.userPreferences.copy(),
-            context.connectorType,
-            ConnectorData(ConnectorCallbackBase(action.applicationId, context.connectorType)),
-            context.translator
-    )
-
-    init {
-        if (dialog.stories.isEmpty()) {
-            dialog.stories.add(story)
-        }
-    }
+    private val logger = KotlinLogging.logger {}
 
     private val logsRepository: List<BotBusMockLog> = mutableListOf()
-
-    @Deprecated("use answers instead")
-    val logs: List<BotBusMockLog>
-        get() = checkEndCalled().run { logsRepository }
 
     /**
      * The list of all bot answers recorded.
      */
-    val answers: List<BotBusMockLog> get() = logs
+    val answers: List<BotBusMockLog> get() = checkEndCalled().run { context.answers }
 
     /**
      * The first answer recorded.
      */
-    val firstAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository.first() }
+    val firstAnswer: BotBusMockLog get() = checkEndCalled().run { context.firstAnswer }
 
     /**
      * The second answer recorded.
      */
-    val secondAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository[1] }
+    val secondAnswer: BotBusMockLog get() = checkEndCalled().run { context.secondAnswer }
 
     /**
      * The third answer recorded.
      */
-    val thirdAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository[2] }
+    val thirdAnswer: BotBusMockLog get() = checkEndCalled().run { context.thirdAnswer }
 
     /**
      * The last answer recorded.
      */
-    val lastAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository.last() }
+    val lastAnswer: BotBusMockLog get() = checkEndCalled().run { context.lastAnswer }
+
+    /**
+     * The list of bot answers for this bus.
+     */
+    val busAnswers: List<BotBusMockLog> get() = checkEndCalled().run { logsRepository }
+
+    /**
+     * The first answer for this bus.
+     */
+    val firstBusAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository.first() }
+
+    /**
+     * The second answer for this bus.
+     */
+    val secondBusAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository[1] }
+
+    /**
+     * The third answer for this bus.
+     */
+    val thirdBusAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository[2] }
+
+    /**
+     * The last answer for this bus.
+     */
+    val lastBusAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository.last() }
 
     private var endCalled: Boolean = false
 
@@ -158,27 +139,76 @@ open class BotBusMock(override var userTimeline: UserTimeline,
     /**
      * Add an entity set in the current action.
      */
-    fun addActionEntity(entity: Entity, newValue: Value?): BotBusMock
-            = addActionEntity(ContextValue(entity, newValue))
+    fun addActionEntity(entity: Entity, newValue: Value?): BotBusMock = addActionEntity(ContextValue(entity, newValue))
 
     /**
      * Simulate an action entity.
      */
-    fun addActionEntity(entity: Entity, textContent: String): BotBusMock
-            = addActionEntity(ContextValue(entity, null, textContent))
+    fun addActionEntity(entity: Entity, textContent: String): BotBusMock = addActionEntity(ContextValue(entity, null, textContent))
 
-    override var applicationId = action.applicationId
-    override var botId = action.recipientId
-    override var userId = action.playerId
-    override var userPreferences: UserPreferences = userTimeline.userPreferences
-    override var userLocale: Locale = userPreferences.locale
-    override var targetConnectorType: ConnectorType = action.state.targetConnectorType ?: connectorType
+    override var userTimeline: UserTimeline
+        get() = context.userTimeline
+        set(value) {
+            context.userTimeline = value
+        }
+    override var dialog: Dialog
+        get() = context.dialog
+        set(value) {
+            context.dialog = value
+        }
+    override var story: Story
+        get() = context.story
+        set(value) {
+            context.story = value
+        }
+    override var botDefinition: BotDefinition
+        get() = context.botDefinition
+        set(value) {
+            context.botDefinition = value
+        }
+    override var i18nProvider: I18nKeyProvider
+        get() = context.i18nProvider
+        set(value) {
+            context.i18nProvider = value
+        }
+    override var userInterfaceType: UserInterfaceType
+        get() = context.userInterfaceType
+        set(value) {
+            context.userInterfaceType = value
+        }
+    var connectorType: ConnectorType
+        get() = context.connectorType
+        set(value) {
+            context.connectorType = value
+        }
 
+    override var connectorData: ConnectorData = ConnectorData(ConnectorCallbackBase(action.applicationId, connectorType))
+    /**
+     * The translator used to translate labels - default is NoOp.
+     */
+    val translator: TranslatorEngine get() = context.testContext.testInjector.provide()
+    override val applicationId get() = action.applicationId
+    override val botId get() = action.recipientId
+    override val userId get() = action.playerId
+    override val userPreferences: UserPreferences get() = userTimeline.userPreferences
+    override val userLocale: Locale get() = userPreferences.locale
+    override var targetConnectorType: ConnectorType
+        get() = action.state.targetConnectorType ?: connectorType
+        set(value) {
+            action.state.targetConnectorType = value
+            connectorType = value
+        }
 
     private val mockData: BusMockData = BusMockData()
 
-    override var entities: Map<String, EntityStateValue> = dialog.state.entityValues
-    override var intent: IntentAware? = dialog.state.currentIntent
+    override val entities: Map<String, EntityStateValue>
+        get() = dialog.state.entityValues
+
+    override var intent: IntentAware?
+        get() = dialog.state.currentIntent
+        set(value) {
+            dialog.state.currentIntent = value?.wrappedIntent()
+        }
 
     override var nextUserActionState: NextUserActionState?
         get() = dialog.state.nextActionState
@@ -186,8 +216,38 @@ open class BotBusMock(override var userTimeline: UserTimeline,
             dialog.state.nextActionState = value
         }
 
+    init {
+        val a = action
+        if (a is SendChoice) {
+            context.dialog.state.currentIntent = context.botDefinition.findIntent(a.intentName)
+            context.story.apply {
+                if (a.step() != null) {
+                    currentStep = a.step()
+                }
+            }
+        }
+        if (a.state.intent != null) {
+            context.dialog.state.currentIntent = context.botDefinition.findIntent(a.state.intent!!)
+        }
+        a.state.entityValues.forEach {
+            dialog.state.changeValue(it)
+        }
+
+        if (dialog.stories.isEmpty()) {
+            dialog.stories.add(story)
+        }
+        if (a != context.firstAction) {
+            story.actions.add(a)
+        }
+        if (a.state.userInterface != null) {
+            context.userInterfaceType = a.state.userInterface!!
+        }
+    }
+
+
     open fun sendAction(action: Action, delay: Long) {
         (logsRepository as MutableList).add(BotBusMockLog(action, delay))
+        (context.logsRepository as MutableList).add(BotBusMockLog(action, delay))
     }
 
     private fun answer(action: Action, delay: Long = 0): BotBus {
@@ -203,8 +263,16 @@ open class BotBusMock(override var userTimeline: UserTimeline,
 
         endCalled = action.metadata.lastAnswer
 
+        if (endCalled) {
+            addSnapshot()
+        }
+
         sendAction(action, mockData.currentDelay)
         return this
+    }
+
+    private fun addSnapshot() {
+        context.snapshots.add(Snapshot(dialog.state.entityValues.values.mapNotNull { it.value }))
     }
 
     /**
@@ -256,7 +324,7 @@ open class BotBusMock(override var userTimeline: UserTimeline,
     }
 
     override fun reloadProfile() {
-        userPreferences.fillWith(initialUserPreferences)
+        userPreferences.fillWith(context.initialUserPreferences)
     }
 
     override fun translate(key: I18nLabelKey?): CharSequence =

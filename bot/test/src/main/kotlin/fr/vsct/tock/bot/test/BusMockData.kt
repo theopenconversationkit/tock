@@ -18,8 +18,8 @@ package fr.vsct.tock.bot.test
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.engine.action.ActionPriority
 import fr.vsct.tock.bot.engine.action.ActionNotificationType
+import fr.vsct.tock.bot.engine.action.ActionPriority
 
 /**
  *

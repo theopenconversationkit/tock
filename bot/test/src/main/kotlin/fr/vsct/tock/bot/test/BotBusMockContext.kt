@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.test
 
+import currentTestContext
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.messenger.messengerConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
@@ -28,33 +29,30 @@ import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendChoice.Companion.decodeChoiceId
 import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.engine.dialog.Snapshot
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
-import fr.vsct.tock.shared.provide
 import fr.vsct.tock.translator.I18nKeyProvider
-import fr.vsct.tock.translator.TranslatorEngine
 import fr.vsct.tock.translator.UserInterfaceType
-import testInjector
 
 /**
- * The initial context of the test.
+ * The context of the test.
  */
-class BotBusMockContext(var userTimeline: UserTimeline,
-                        var dialog: Dialog,
-                        var story: Story,
-                        var action: Action,
-                        var botDefinition: BotDefinition,
-                        var i18nProvider: I18nKeyProvider,
-                        var userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
-                        var connectorType: ConnectorType = messengerConnectorType,
-                        /**
-                         * The translator used to translate labels - default is NoOp.
-                         */
-                        var translator: TranslatorEngine = testInjector.provide()) {
+data class BotBusMockContext(var userTimeline: UserTimeline,
+                             var dialog: Dialog,
+                             var story: Story,
+                             var firstAction: Action,
+                             var botDefinition: BotDefinition,
+                             var i18nProvider: I18nKeyProvider,
+                             var userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
+                             var connectorType: ConnectorType = messengerConnectorType,
+                             val testContext: TestContext = currentTestContext,
+                             val snapshots: MutableList<Snapshot> = mutableListOf()) {
 
     constructor(applicationId: String,
                 userId: PlayerId,
@@ -65,7 +63,7 @@ class BotBusMockContext(var userTimeline: UserTimeline,
                 userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
                 userPreferences: UserPreferences = UserPreferences(),
                 connectorType: ConnectorType = messengerConnectorType,
-                translator: TranslatorEngine = testInjector.provide())
+                testContext: TestContext = currentTestContext)
             : this(
             UserTimeline(userId, userPreferences),
             Dialog(setOf(userId, botId)),
@@ -75,7 +73,7 @@ class BotBusMockContext(var userTimeline: UserTimeline,
             storyDefinition.storyHandler as I18nKeyProvider,
             userInterfaceType,
             connectorType,
-            translator
+            testContext
     )
 
     constructor(
@@ -88,7 +86,7 @@ class BotBusMockContext(var userTimeline: UserTimeline,
             userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
             userPreferences: UserPreferences = UserPreferences(),
             connectorType: ConnectorType = messengerConnectorType,
-            translator: TranslatorEngine = testInjector.provide())
+            testContext: TestContext = currentTestContext)
             : this(
             applicationId,
             userId,
@@ -99,54 +97,99 @@ class BotBusMockContext(var userTimeline: UserTimeline,
             userInterfaceType,
             userPreferences,
             connectorType,
-            translator
+            testContext
     )
 
-    val applicationId = action.applicationId
-    val botId = action.recipientId
-    val userId = action.playerId
-    val userPreferences: UserPreferences = userTimeline.userPreferences
+    val applicationId get() = firstAction.applicationId
+    val botId get() = firstAction.recipientId
+    val userId get() = firstAction.playerId
+    val userPreferences: UserPreferences get() = userTimeline.userPreferences
+    val initialUserPreferences: UserPreferences = userPreferences.copy()
+    internal val logsRepository: List<BotBusMockLog> = mutableListOf()
 
     /**
-     * Create a new sentence for this context
+     * The list of all bot answers recorded.
      */
-    fun sentence(text: String): SendSentence = SendSentence(userId, applicationId, botId, text)
+    val answers: List<BotBusMockLog> get() = logsRepository
+
+    /**
+     * The first answer recorded.
+     */
+    val firstAnswer: BotBusMockLog get() = logsRepository.first()
+
+    /**
+     * The second answer recorded.
+     */
+    val secondAnswer: BotBusMockLog get() = logsRepository[1]
+
+    /**
+     * The third answer recorded.
+     */
+    val thirdAnswer: BotBusMockLog get() = logsRepository[2]
+
+    /**
+     * The last answer recorded.
+     */
+    val lastAnswer: BotBusMockLog get() = logsRepository.last()
+
+    /**
+     * Reset user preferences.
+     */
+    fun resetUserPreferences(userPreferences: UserPreferences) {
+        this.userPreferences.fillWith(userPreferences)
+        initialUserPreferences.fillWith(userPreferences)
+    }
+
+    /**
+     * Create a new sentence for this context.
+     */
+    fun sentence(
+            text: String,
+            vararg entityValues: ContextValue): SendSentence = sentence(text, entityValues = entityValues.toList())
+
+    /**
+     * Create a new sentence for this context.
+     */
+    fun sentence(
+            text: String,
+            intent: IntentAware? = null,
+            entityValues: List<ContextValue> = emptyList()
+    ): SendSentence =
+            SendSentence(userId, applicationId, botId, text).apply {
+                state.intent = intent?.wrappedIntent()?.name
+                state.entityValues.addAll(entityValues)
+            }
 
     /**
      * Create a choice for this context.
      */
     fun choice(intentName: String,
-               vararg parameters: Pair<String, String>): SendChoice
-            = SendChoice(userId, applicationId, botId, intentName, parameters.toMap())
+               vararg parameters: Pair<String, String>): SendChoice = SendChoice(userId, applicationId, botId, intentName, parameters.toMap())
 
     /**
      * Create a choice for this context.
      */
     fun choice(intentName: String,
                step: StoryStep<out StoryHandlerDefinition>,
-               vararg parameters: Pair<String, String>): SendChoice
-            = SendChoice(userId, applicationId, botId, intentName, step, parameters.toMap())
+               vararg parameters: Pair<String, String>): SendChoice = SendChoice(userId, applicationId, botId, intentName, step, parameters.toMap())
 
     /**
      * Create a choice for this context.
      */
     fun choice(intent: IntentAware,
                step: StoryStep<out StoryHandlerDefinition>,
-               parameters: Parameters): SendChoice
-            = SendChoice(userId, applicationId, botId, intent.wrappedIntent().name, step, parameters.toMap())
+               parameters: Parameters): SendChoice = SendChoice(userId, applicationId, botId, intent.wrappedIntent().name, step, parameters.toMap())
 
     /**
      * Create a choice for this context.
      */
     fun choice(intent: IntentAware,
-               parameters: Parameters): SendChoice
-            = SendChoice(userId, applicationId, botId, intent.wrappedIntent().name, parameters.toMap())
+               parameters: Parameters): SendChoice = SendChoice(userId, applicationId, botId, intent.wrappedIntent().name, parameters.toMap())
 
     /**
      * Create a choice for this context.
      */
-    fun choiceOfId(choiceId: String): SendChoice
-            = decodeChoiceId(choiceId).let { it ->
+    fun choiceOfId(choiceId: String): SendChoice = decodeChoiceId(choiceId).let { it ->
         choice(it.first, *it.second.map { it.key to it.value }.toTypedArray())
 
     }
