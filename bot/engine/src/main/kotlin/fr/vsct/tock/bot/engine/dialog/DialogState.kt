@@ -81,6 +81,13 @@ data class DialogState(
     /**
      * Change an entity value. Keep previous entity values history.
      *
+     * @newValue the new entity value
+     */
+    fun changeValue(newValue: ContextValue) = changeValue(newValue.entity.role, newValue)
+
+    /**
+     * Change an entity value. Keep previous entity values history.
+     *
      * @role the role of the entity
      * @newValue the new entity value
      */

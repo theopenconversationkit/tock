@@ -20,7 +20,7 @@ import java.util.Locale
 
 
 /**
- *
+ * The result of the [NlpQuery].
  */
 data class NlpResult(val intent: String,
                      val intentNamespace: String,

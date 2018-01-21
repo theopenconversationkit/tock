@@ -18,6 +18,8 @@ package fr.vsct.tock.bot.engine.user
 
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.engine.dialog.Snapshot
+import org.litote.kmongo.Id
 import java.time.Instant
 
 /**
@@ -60,4 +62,9 @@ interface UserTimelineDAO {
      * Returns all dialogs updated after the specified Instant.
      */
     fun getDialogsUpdatedFrom(from: Instant, storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog>
+
+    /**
+     * Get the snapshots of a dialog.
+     */
+    fun getSnapshots(dialogId: Id<Dialog>): List<Snapshot>
 }

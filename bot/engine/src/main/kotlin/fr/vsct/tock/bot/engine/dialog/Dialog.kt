@@ -18,18 +18,34 @@ package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.UserTimelineDAO
+import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.provide
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
 /**
- *
+ * A dialog is a conversation between users and bots.
+ * Conversation history is split into a list of [stories].
+ * The dialog has a (current) [state].
  */
 data class Dialog(val playerIds: Set<PlayerId>,
                   var id: Id<Dialog> = newId(),
                   val state: DialogState = DialogState(),
                   val stories: MutableList<Story> = mutableListOf()) {
 
+    /**
+     * The current story.
+     */
     fun currentStory(): Story? = stories.lastOrNull()
 
+    /**
+     * All past actions.
+     */
     fun allActions(): List<Action> = stories.flatMap { it.actions }
+
+    /**
+     * The [Snapshots] of the dialog.
+     */
+    val snapshots: List<Snapshot> by lazy { injector.provide<UserTimelineDAO>().getSnapshots(id) }
 }

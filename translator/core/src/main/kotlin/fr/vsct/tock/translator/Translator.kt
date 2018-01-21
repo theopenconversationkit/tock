@@ -47,7 +47,7 @@ object Translator {
 
     /**
      * Translator and i18n support is enable by default.
-     * Set it to false if you want to enable i18n.
+     * Set it to false if you want to disable i18n.
      */
     @Volatile
     var enabled: Boolean = booleanProperty("tock_i18n_enabled", true)

@@ -33,6 +33,7 @@ import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.engine.dialog.Snapshot
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserTimeline
@@ -78,8 +79,7 @@ import java.util.concurrent.TimeUnit.DAYS
 internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogReportDAO {
 
     //wrapper to workaround the 1024 chars limit for String indexes
-    private fun textKey(text: String): String
-            = if (text.length > 512) text.substring(0, Math.min(512, text.length)) else text
+    private fun textKey(text: String): String = if (text.length > 512) text.substring(0, Math.min(512, text.length)) else text
 
     private val logger = KotlinLogging.logger {}
 
@@ -91,17 +91,9 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     private val dialogTextCol = database.getCollection<DialogTextCol>("dialog_text")
     private val clientIdCol = database.getCollection<ClientIdCol>("client_id")
     private val connectorMessageCol = database.getCollection<ConnectorMessageCol>("connector_message")
+    private val snapshotCol = database.getCollection<SnapshotCol>("dialog_snapshot")
 
     init {
-        //TODO remove these in 0.8.0
-        try {
-            userTimelineCol.dropIndex("playerId_1")
-            dialogCol.dropIndex("playerIds_1")
-        } catch (e: Exception) {
-            //ignore
-        }
-        //end TODO
-
         userTimelineCol.ensureIndex("{'playerId.id':1}", IndexOptions().unique(true))
         userTimelineCol.ensureIndex("{lastUpdateDate:1}")
         dialogCol.ensureIndex("{'playerIds.id':1}")
@@ -112,6 +104,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         dialogTextCol.ensureIndex("{date:1}", IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS))
         connectorMessageCol.ensureIndex("{date:1}", IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS))
         connectorMessageCol.ensureIndex("{'_id.dialogId':1}")
+        snapshotCol.ensureIndex("{lastUpdateDate:1}", IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS))
     }
 
     override fun save(userTimeline: UserTimeline) {
@@ -137,6 +130,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                         UpdateOptions().upsert(true))
             }
             for (dialog in userTimeline.dialogs) {
+                addSnapshot(dialog)
+
                 dialog.allActions().forEach {
                     when (it) {
                         is SendSentenceWithNotLoadedMessage -> if (it.loaded && it.messages.isNotEmpty()) {
@@ -333,5 +328,19 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 .find("{'lastUpdateDate':{$gt:${from.json}}}")
                 .map { it.toDialog(storyDefinitionProvider) }
                 .toList()
+    }
+
+    private fun addSnapshot(dialog: Dialog) {
+        val snapshot = Snapshot(dialog.state.entityValues.values.mapNotNull { it.value })
+        val existingSnapshot = snapshotCol.findOneById(dialog.id)
+        if (existingSnapshot == null) {
+            snapshotCol.insertOne(SnapshotCol(dialog.id, listOf(snapshot)))
+        } else {
+            snapshotCol.save(existingSnapshot.copy(snapshots = existingSnapshot.snapshots + snapshot, lastUpdateDate = now()))
+        }
+    }
+
+    override fun getSnapshots(dialogId: Id<Dialog>): List<Snapshot> {
+        return snapshotCol.findOneById(dialogId)?.snapshots ?: emptyList()
     }
 }

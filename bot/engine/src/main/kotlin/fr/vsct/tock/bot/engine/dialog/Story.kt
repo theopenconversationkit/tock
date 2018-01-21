@@ -26,7 +26,8 @@ import fr.vsct.tock.shared.error
 import mu.KotlinLogging
 
 /**
- *
+ * A Story is a small unit of conversation about a specific topic.
+ * It is linked to at least one intent - the [starterIntent].
  */
 data class Story(
         val definition: StoryDefinition,
