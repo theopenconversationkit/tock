@@ -78,6 +78,7 @@ object XrayService {
     private val linkedField: String = property("tock_bot_test_jira_linked_field", "")
     private val locale: Locale = Locale.forLanguageTag(property("tock_bot_test_locale", defaultLocale.toLanguageTag()))
     private val instant = Instant.now()
+    private val jiraRegisteredBotUrl: String = property("tock_bot_test_jira_registered_bot_url", "\${botUrl}")
 
     init {
         BotEngineJacksonConfiguration.init()
@@ -157,7 +158,8 @@ object XrayService {
                             dialogReport.dialogReportId.toString(),
                             OffsetDateTime.ofInstant(dialogReport.date, defaultZoneId),
                             OffsetDateTime.ofInstant(dialogReport.date, defaultZoneId).plus(dialogReport.duration),
-                            if (dialogReport.error) "Failed execution ${dialogReport.errorMessage ?: ""}" else "Successful execution",
+                            if (dialogReport.error) "Failed execution ${dialogReport.errorMessage
+                                    ?: ""}" else "Successful execution",
                             if (dialogReport.error) FAIL else PASS,
                             if (dialog == null) {
                                 emptyList()
@@ -165,38 +167,38 @@ object XrayService {
                                 dialog.actions.filter {
                                     it.playerId.type == bot
                                 }.map {
-                                    val status = if (!dialogReport.error) {
-                                        PASS
-                                    } else if (stepViewed) {
-                                        TODO
-                                    } else if (dialogReport.errorActionId == it.id) {
-                                        stepViewed = true
-                                        FAIL
-                                    } else {
-                                        PASS
-                                    }
-                                    XrayTestExecutionStepReport(
-                                            when (status) {
-                                                PASS -> "Test successful"
-                                                TODO -> "Skipped"
-                                                FAIL ->
-                                                    if (dialogReport.returnedMessage != null) {
-                                                        "TestFailed : ${dialogReport.returnedMessage?.toPrettyString()}"
-                                                    } else if (dialogReport.errorMessage != null) {
-                                                        "TestFailed : ${dialogReport.errorMessage}"
-                                                    } else {
-                                                        "Test failed"
-                                                    }
-                                            },
-                                            status
-                                    )
-                                }
+                                            val status = if (!dialogReport.error) {
+                                                PASS
+                                            } else if (stepViewed) {
+                                                TODO
+                                            } else if (dialogReport.errorActionId == it.id) {
+                                                stepViewed = true
+                                                FAIL
+                                            } else {
+                                                PASS
+                                            }
+                                            XrayTestExecutionStepReport(
+                                                    when (status) {
+                                                        PASS -> "Test successful"
+                                                        TODO -> "Skipped"
+                                                        FAIL ->
+                                                            if (dialogReport.returnedMessage != null) {
+                                                                "TestFailed : ${dialogReport.returnedMessage?.toPrettyString()}"
+                                                            } else if (dialogReport.errorMessage != null) {
+                                                                "TestFailed : ${dialogReport.errorMessage}"
+                                                            } else {
+                                                                "Test failed"
+                                                            }
+                                                    },
+                                                    status
+                                            )
+                                        }
                             }
                     )
                 }
         )
         return if (
-        XrayClient.sendTestExecution(xrayExecution).isSuccessful
+                XrayClient.sendTestExecution(xrayExecution).isSuccessful
                 && execution.nbErrors == 0) {
             xrayExecution.tests.all { it.status == PASS }
         } else {
@@ -210,7 +212,8 @@ object XrayService {
             TestPlan(
                     tests
                             .filter {
-                                val connectorJiras = connectorJiraMap[configuration.botConfiguration.ownerConnectorType?.id] ?: emptyList()
+                                val connectorJiras = connectorJiraMap[configuration.botConfiguration.ownerConnectorType?.id]
+                                        ?: emptyList()
                                 connectorJiras.isEmpty() || XrayClient.getLinkedIssues(it.key, linkedField).intersect(connectorJiras).isNotEmpty()
                             }
                             .filter { it.supportConf(configuration.botConfiguration.name) }
@@ -260,7 +263,7 @@ object XrayService {
                     TestActionReport(
                             playerId,
                             instant,
-                            MessageParser.parse(replace("\${botUrl}", configuration.botUrl)),
+                            MessageParser.parse(replace(jiraRegisteredBotUrl, configuration.botUrl)),
                             configuration.botConfiguration.targetConnectorType,
                             userInterface,
                             "${if (playerId.type == bot) "b" else "u"}${stepId}".toId()

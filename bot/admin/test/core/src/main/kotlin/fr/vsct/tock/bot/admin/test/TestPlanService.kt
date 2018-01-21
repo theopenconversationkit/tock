@@ -117,7 +117,7 @@ object TestPlanService {
         val playerId = Dice.newId()
         val botId = Dice.newId()
         return try {
-            var expectedBotMessages: MutableList<ClientMessage> = mutableListOf()
+            var botMessages: MutableList<ClientMessage> = mutableListOf()
             //send first action if specified
             if (testPlan.startAction != null) {
                 client.talk(
@@ -146,26 +146,27 @@ object TestPlanService {
                     if (answer.isSuccessful) {
                         val body = answer.body()
                         logger.debug { "answer: $body" }
-                        expectedBotMessages = body?.messages?.toMutableList() ?: mutableListOf()
+                        botMessages = body?.messages?.toMutableList() ?: mutableListOf()
                     } else {
                         logger.error { answer.errorBody()?.toString() }
-                        DialogExecutionReport(dialog.id, true, errorMessage = answer.errorBody()?.toString() ?: "unknown error")
+                        DialogExecutionReport(dialog.id, true, errorMessage = answer.errorBody()?.toString()
+                                ?: "unknown error")
                     }
                 } else {
-                    if (expectedBotMessages.isEmpty()) {
+                    if (botMessages.isEmpty()) {
                         return DialogExecutionReport(
                                 dialog.id,
                                 true,
                                 it.id,
                                 errorMessage = "(no answer but one expected)")
                     }
-                    val expectedMessage = expectedBotMessages.removeAt(0)
-                    if (!expectedMessage.deepEquals(it)) {
+                    val botMessage = botMessages.removeAt(0)
+                    if (!botMessage.deepEquals(it)) {
                         return DialogExecutionReport(
                                 dialog.id,
                                 true,
                                 it.id,
-                                expectedMessage.toMessage())
+                                botMessage.toMessage())
                     }
                 }
             }
