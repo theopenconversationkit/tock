@@ -207,7 +207,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
     private fun loadLastValidDialogCol(userId: PlayerId): DialogCol? {
         return dialogCol.aggregate<DialogCol>(
-                pipeline = """[{${match}:{'playerIds.id':${userId.id.json}, lastUpdateDate : {${gt} : ${Instant.now().minusSeconds(60 * 60 * 24).json}}}},
+                """[{${match}:{'playerIds.id':${userId.id.json}, lastUpdateDate : {${gt} : ${Instant.now().minusSeconds(60 * 60 * 24).json}}}},
                                {${sort}:{lastUpdateDate:-1}},
                                {${limit}:1}
                               ]"""
