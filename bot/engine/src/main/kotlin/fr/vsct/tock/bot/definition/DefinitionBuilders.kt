@@ -101,7 +101,7 @@ fun story(
         secondaryIntents: Set<IntentAware> = emptySet(),
         steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
         unsupportedUserInterface: UserInterfaceType? = null,
-        handler: (BotBus) -> Unit)
+        handler: (BotBus).() -> Unit)
         : StoryDefinitionBase =
         StoryDefinitionBase(
                 intentName,
@@ -144,7 +144,7 @@ inline fun <reified T : StoryHandlerDefinition> story(
         unsupportedUserInterface: UserInterfaceType? = null,
         //parameter added to bypass compiler limitation
         defClass: KClass<T> = T::class,
-        crossinline handlerDefGenerator: (BotBus) -> T?
+        crossinline handlerDefGenerator: BotBus.() -> T
 )
         : StoryDefinitionBase =
         StoryDefinitionBase(intentName,
