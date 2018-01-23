@@ -148,7 +148,7 @@ object TestPlanService {
                         logger.debug { "answer: $body" }
                         botMessages = body?.messages?.toMutableList() ?: mutableListOf()
                     } else {
-                        logger.error { answer.errorBody()?.toString() }
+                        logger.error { answer.errorBody()?.string() }
                         DialogExecutionReport(dialog.id, true, errorMessage = answer.errorBody()?.toString()
                                 ?: "unknown error")
                     }
