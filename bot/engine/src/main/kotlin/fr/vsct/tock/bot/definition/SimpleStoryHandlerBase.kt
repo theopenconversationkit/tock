@@ -29,7 +29,6 @@ abstract class SimpleStoryHandlerBase(mainIntentName: String? = null)
      */
     abstract fun action(bus: BotBus)
 
-    final override fun setupHandlerDef(bus: BotBus): StoryHandlerDefinition
-            = SimpleStoryHandlerDefinition(bus, this)
+    override fun newHandlerDefinition(bus: BotBus): StoryHandlerDefinition = SimpleStoryHandlerDefinition(bus, this)
 
 }

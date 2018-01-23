@@ -31,7 +31,7 @@ interface StoryStep<T : StoryHandlerDefinition> {
      *
      * Default implementation returns null.
      */
-    fun answer(handler: T): Unit? = null
+    fun answer(): T.() -> Any? = { null }
 
     /**
      * The main intent of the step.
@@ -51,10 +51,8 @@ interface StoryStep<T : StoryHandlerDefinition> {
      */
     val secondaryIntents: Set<IntentAware> get() = emptySet()
 
-    fun supportStarterIntent(i: Intent): Boolean
-            = intent?.wrap(i) == true || otherStarterIntents.any { it.wrap(i) }
+    fun supportStarterIntent(i: Intent): Boolean = intent?.wrap(i) == true || otherStarterIntents.any { it.wrap(i) }
 
-    fun supportIntent(i: Intent): Boolean
-            = supportStarterIntent(i) || secondaryIntents.any { it.wrap(i) }
+    fun supportIntent(i: Intent): Boolean = supportStarterIntent(i) || secondaryIntents.any { it.wrap(i) }
 
 }

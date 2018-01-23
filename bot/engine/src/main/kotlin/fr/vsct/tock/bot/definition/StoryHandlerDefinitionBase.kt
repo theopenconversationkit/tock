@@ -77,7 +77,7 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(
      */
     override fun handle() {
         @Suppress("UNCHECKED_CAST")
-        if ((step as StoryStep<StoryHandlerDefinition>?)?.answer(this) == null) {
+        if ((step as StoryStep<StoryHandlerDefinition>?)?.answer()?.invoke(this) == null) {
             answer()
         }
     }
@@ -92,8 +92,7 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(
      * Default implementation use annotations annotated with @[ConnectorHandler].
      */
     @Suppress("UNCHECKED_CAST")
-    open fun findConnector(connectorType: ConnectorType): T?
-            = getHandlerMap(this::class)[connectorType.id]?.primaryConstructor?.call(this) as T?
+    open fun findConnector(connectorType: ConnectorType): T? = getHandlerMap(this::class)[connectorType.id]?.primaryConstructor?.call(this) as T?
 
     private val cachedConnector: T? by lazy {
         findConnector(connectorType)

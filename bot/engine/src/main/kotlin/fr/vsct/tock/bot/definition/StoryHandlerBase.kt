@@ -34,11 +34,36 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     private val logger = KotlinLogging.logger {}
 
     /**
+     * Check preconditions - if [BotBus.end] is called,
+     * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
+     */
+    open fun checkPreconditions(): BotBus.() -> Unit = {}
+
+    /**
+     * Instantiate new instance of [T].
+     */
+    abstract fun newHandlerDefinition(bus: BotBus): T
+
+    /**
      * Handle precondition like checking mandatory entities, and create [StoryHandlerDefinition].
      * If this function returns null, this implied that [BotBus.end] has been called in this function
      * (as the [StoryHandlerDefinition.handle] function is not called).
      */
-    abstract fun setupHandlerDef(bus: BotBus): T?
+    open fun setupHandlerDefinition(bus: BotBus): T? {
+        checkPreconditions().invoke(bus)
+        return if (isEndCalled(bus)) {
+            null
+        } else {
+            newHandlerDefinition(bus)
+        }
+    }
+
+
+    /**
+     * Has [BotBus.end] been already called?
+     */
+    private fun isEndCalled(bus:BotBus) : Boolean =
+        bus.dialog.allActions().lastOrNull()?.run { this !== bus.action && metadata.lastAnswer} ?: false
 
     final override fun handle(bus: BotBus) {
         //if not supported user interface, use unknown
@@ -46,7 +71,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
             bus.botDefinition.unknownStory.storyHandler.handle(bus)
         } else {
             bus.i18nProvider = this
-            val handler = setupHandlerDef(bus)
+            val handler = setupHandlerDefinition(bus)
 
             if (handler == null) {
                 logger.debug { "end called in computeStoryContext - skip action" }
@@ -63,8 +88,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     /**
      * Find the story definition of this handler.
      */
-    open fun findStoryDefinition(bus: BotBus): StoryDefinition?
-            = bus
+    open fun findStoryDefinition(bus: BotBus): StoryDefinition? = bus
             .botDefinition
             .stories
             .find { it.storyHandler == this }
