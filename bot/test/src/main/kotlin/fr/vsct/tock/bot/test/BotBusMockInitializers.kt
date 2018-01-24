@@ -18,48 +18,56 @@ package fr.vsct.tock.bot.test
 
 import currentTestContext
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.messenger.messengerConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserPreferences
-import fr.vsct.tock.shared.defaultLocale
 import java.util.Locale
 
 /**
  * Provides a mock initialized with the specified [StoryDefinition] and starts the story.
  */
-fun BotDefinition.startMock(
-        storyDefinition: StoryDefinition = helloStory ?: stories.first(),
-        connectorType: ConnectorType = messengerConnectorType,
-        locale: Locale = defaultLocale,
-        userId: PlayerId = PlayerId("user"),
-        testContext: TestContext = currentTestContext): BotBusMock = toBusMock(storyDefinition, connectorType, locale, userId, testContext).run()
+fun BotDefinition.startNewBusMock(
+        testContext: TestContext = currentTestContext,
+        story: StoryDefinition = testContext.defaultStoryDefinition(this),
+        connectorType: ConnectorType = testContext.defaultConnectorType(),
+        locale: Locale = testContext.defaultLocale(),
+        userId: PlayerId = testContext.defaultPlayerId()): BotBusMock = newBusMock(testContext, story, connectorType, locale, userId).run()
 
 /**
  * Provides a mock initialized with the specified [StoryDefinition].
  */
-fun BotDefinition.toBusMock(
-        storyDefinition: StoryDefinition = helloStory ?: stories.first(),
-        connectorType: ConnectorType = messengerConnectorType,
-        locale: Locale = defaultLocale,
-        userId: PlayerId = PlayerId("user"),
-        testContext: TestContext = currentTestContext)
-        : BotBusMock = BotBusMock(toBusMockContext(storyDefinition, connectorType, locale, userId, testContext))
+fun BotDefinition.newBusMock(
+        testContext: TestContext = currentTestContext,
+        story: StoryDefinition = testContext.defaultStoryDefinition(this),
+        connectorType: ConnectorType = testContext.defaultConnectorType(),
+        locale: Locale = testContext.defaultLocale(),
+        userId: PlayerId = testContext.defaultPlayerId())
+        : BotBusMock = BotBusMock(newBusMockContext(testContext, story, connectorType, locale, userId))
 
 /**
  * Provides a mock context initialized with the specified [StoryDefinition].
  */
-fun BotDefinition.toBusMockContext(
-        storyDefinition: StoryDefinition = helloStory ?: stories.first(),
-        connectorType: ConnectorType = messengerConnectorType,
-        locale: Locale = defaultLocale,
-        userId: PlayerId = PlayerId("user"),
-        testContext: TestContext = currentTestContext
+fun BotDefinition.newBusMockContext(
+        testContext: TestContext = currentTestContext,
+        story: StoryDefinition = testContext.defaultStoryDefinition(this),
+        connectorType: ConnectorType = testContext.defaultConnectorType(),
+        locale: Locale = testContext.defaultLocale(),
+        userId: PlayerId = testContext.defaultPlayerId()
 ): BotBusMockContext = BotBusMockContext(
         this,
-        storyDefinition,
+        story,
         userId = userId,
         userPreferences = UserPreferences(locale = locale),
         connectorType = connectorType,
         testContext = testContext)
+
+/**
+ * Provides a mock context initialized with the specified [TestContext] and runs the story.
+ */
+fun startBusMock(testContext: TestContext = currentTestContext): BotBusMock = busMock(testContext).run()
+
+/**
+ * Provides a mock context initialized with the specified [TestContext].
+ */
+fun busMock(testContext: TestContext = currentTestContext): BotBusMock = BotBusMock(testContext.botBusMockContext)

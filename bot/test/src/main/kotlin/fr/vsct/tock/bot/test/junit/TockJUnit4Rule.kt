@@ -17,7 +17,6 @@
 package fr.vsct.tock.bot.test.junit
 
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.messenger.messengerConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -25,8 +24,7 @@ import fr.vsct.tock.bot.test.BotBusMock
 import fr.vsct.tock.bot.test.BotBusMockContext
 import fr.vsct.tock.bot.test.TestContext
 import fr.vsct.tock.bot.test.TestLifecycle
-import fr.vsct.tock.bot.test.toBusMockContext
-import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.bot.test.newBusMockContext
 import org.junit.rules.TestRule
 import org.junit.runner.Description
 import org.junit.runners.model.Statement
@@ -39,42 +37,54 @@ open class TockJUnit4Rule<out T : TestContext>(
         val botDefinition: BotDefinition,
         @Suppress("UNCHECKED_CAST") val lifecycle: TestLifecycle<T> = TestLifecycle(TestContext() as T)) : TestRule {
 
+    /**
+     * The [TestContext].
+     */
     val testContext: T get() = lifecycle.testContext
 
     /**
      * Provides a mock initialized with the specified [StoryDefinition] and starts the story.
      */
-    fun startMock(
-            storyDefinition: StoryDefinition = botDefinition.helloStory ?: botDefinition.stories.first(),
-            connectorType: ConnectorType = messengerConnectorType,
-            locale: Locale = defaultLocale,
-            userId: PlayerId = PlayerId("user"))
-            : BotBusMock = toBusMock(storyDefinition, connectorType, locale, userId).run()
+    fun startNewBusMock(
+            story: StoryDefinition = testContext.defaultStoryDefinition(botDefinition),
+            connectorType: ConnectorType = testContext.defaultConnectorType(),
+            locale: Locale = testContext.defaultLocale(),
+            userId: PlayerId = testContext.defaultPlayerId())
+            : BotBusMock = newBusMock(story, connectorType, locale, userId).run()
 
     /**
      * Provides a mock initialized with the specified [StoryDefinition].
      */
-    fun toBusMock(
-            storyDefinition: StoryDefinition = botDefinition.helloStory ?: botDefinition.stories.first(),
-            connectorType: ConnectorType = messengerConnectorType,
-            locale: Locale = defaultLocale,
-            userId: PlayerId = PlayerId("user"))
-            : BotBusMock = BotBusMock(toBusMockContext(storyDefinition, connectorType, locale, userId))
+    fun newBusMock(
+            story: StoryDefinition = testContext.defaultStoryDefinition(botDefinition),
+            connectorType: ConnectorType = testContext.defaultConnectorType(),
+            locale: Locale = testContext.defaultLocale(),
+            userId: PlayerId = testContext.defaultPlayerId())
+            : BotBusMock = BotBusMock(newBusMockContext(story, connectorType, locale, userId))
 
     /**
      * Provides a mock context initialized with the specified [StoryDefinition].
      */
-    fun toBusMockContext(
-            storyDefinition: StoryDefinition = botDefinition.helloStory ?: botDefinition.stories.first(),
-            connectorType: ConnectorType = messengerConnectorType,
-            locale: Locale = defaultLocale,
-            userId: PlayerId = PlayerId("user")
-    ): BotBusMockContext = botDefinition.toBusMockContext(storyDefinition, connectorType, locale, userId, testContext)
+    fun newBusMockContext(
+            story: StoryDefinition = testContext.defaultStoryDefinition(botDefinition),
+            connectorType: ConnectorType = testContext.defaultConnectorType(),
+            locale: Locale = testContext.defaultLocale(),
+            userId: PlayerId = testContext.defaultPlayerId()
+    ): BotBusMockContext = botDefinition.newBusMockContext(testContext, story, connectorType, locale, userId)
             .apply {
                 testContext.botBusMockContext = this
                 lifecycle.configureTestIoc()
             }
 
+    /**
+     * Provides a mock context initialized with the current [testContext] and runs the bus.
+     */
+    fun startBusMock(): BotBusMock = busMock().run()
+
+    /**
+     * Provides a mock context initialized with the current [testContext].
+     */
+    fun busMock(): BotBusMock = BotBusMock(testContext.botBusMockContext)
 
     override fun apply(base: Statement, description: Description): Statement {
         return object : Statement() {

@@ -26,15 +26,22 @@ import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.admin.test.TestPlanDAO
 import fr.vsct.tock.bot.admin.user.UserReportDAO
+import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.messenger.messengerConnectorType
+import fr.vsct.tock.bot.definition.BotDefinition
+import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.nlp.NlpController
+import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.nlp.api.client.NlpClient
+import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.sharedModule
 import fr.vsct.tock.translator.I18nDAO
 import testModules
 import testTranslatorModule
+import java.util.Locale
 
 /**
  *
@@ -105,6 +112,9 @@ open class TestContext {
                 }
             }
 
+    /**
+     * Default mocked Tock Ioc.
+     */
     open fun importModule(): Kodein.Builder.() -> Unit = {
         import(sharedModule, true)
         import(testTranslatorModule, true)
@@ -131,11 +141,42 @@ open class TestContext {
      */
     val testInjector: KodeinInjector by lazy { createTestInjector() }
 
+    /**
+     * Default test [testInjector] creation.
+     */
     open fun createTestInjector(): KodeinInjector {
         injector.inject(testKodein)
         val newTestInjector = KodeinInjector()
         newTestInjector.inject(testKodein)
         return newTestInjector
     }
+
+    /**
+     * Default [StoryDefinition] if none is provided.
+     */
+    open fun defaultStoryDefinition(botDefinition: BotDefinition): StoryDefinition =
+            if (::botBusMockContext.isInitialized) botBusMockContext.story.definition
+            else botDefinition.helloStory ?: botDefinition.stories.first()
+
+    /**
+     * Default [ConnectorType] if none is provided.
+     */
+    open fun defaultConnectorType(): ConnectorType =
+            if (::botBusMockContext.isInitialized) botBusMockContext.connectorType
+            else messengerConnectorType
+
+    /**
+     * Default [Locale] if none is provided.
+     */
+    open fun defaultLocale(): Locale =
+            if (::botBusMockContext.isInitialized) botBusMockContext.userPreferences.locale
+            else defaultLocale
+
+    /**
+     * Default [PlayerId] if none is provided.
+     */
+    open fun defaultPlayerId(): PlayerId =
+            if (::botBusMockContext.isInitialized) botBusMockContext.firstAction.playerId
+            else PlayerId("user")
 
 }
