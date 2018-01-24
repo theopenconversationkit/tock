@@ -54,7 +54,8 @@ object I18nCsvCodec {
                 .forEach { l ->
                     l.i18n.sortedWith(compareBy({ it.locale.language }, { it.interfaceType }))
                             .forEach { i ->
-                                printer.printRecord(*(listOf(i.label, l.category, i.locale.language, i.interfaceType, l._id, i.validated, i.connectorId ?: "") + i.alternatives).toTypedArray())
+                                printer.printRecord(*(listOf(i.label, l.category, i.locale.language, i.interfaceType, l._id, i.validated, i.connectorId
+                                        ?: "") + i.alternatives).toTypedArray())
                             }
                 }
         return sb.toString()
@@ -86,7 +87,7 @@ object I18nCsvCodec {
                             )
                         }
                     }
-                    .filter { it.i18n.first().validated }
+                    .filter { it.i18n.any { it.validated } }
                     .groupBy { it._id }
                     .map { (key, value) ->
                         value

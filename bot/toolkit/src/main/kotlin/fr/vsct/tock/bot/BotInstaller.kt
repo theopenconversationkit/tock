@@ -90,9 +90,14 @@ fun importNlpDump(path: String) {
 /**
  * Import a dump of all i18n labels.
  * @path the dump path in the classpath
+ * @replaceAllLabels should preexisting labels be replaced?
  */
-fun importI18nDump(path: String) {
+fun importI18nDump(path: String, replaceAllLabels: Boolean = false) {
     val i18n: I18nDAO by injector.instance()
     val labels: List<I18nLabel> = mapper.readValue(resource(path))
-    i18n.save(labels)
+    if (replaceAllLabels) {
+        i18n.save(labels)
+    } else {
+        i18n.saveIfNotExist(labels)
+    }
 }

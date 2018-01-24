@@ -31,6 +31,8 @@ interface I18nDAO {
 
     fun save(i18n: List<I18nLabel>)
 
+    fun saveIfNotExist(i18n: List<I18nLabel>)
+
     fun deleteByNamespaceAndId(namespace: String, id: Id<I18nLabel>)
 
 }

@@ -49,6 +49,11 @@ internal object I18nMongoDAO : I18nDAO {
         i18n.forEach { save(it) }
     }
 
+    override fun saveIfNotExist(i18n: List<I18nLabel>) {
+        val existingIds = getLabels().map { it._id }.toSet()
+        save(i18n.filterNot { existingIds.contains(it._id) })
+    }
+
     override fun deleteByNamespaceAndId(namespace: String, id: Id<I18nLabel>) {
         col.deleteOne("{namespace:${namespace.json}, _id:${id.json}}")
     }
