@@ -35,6 +35,8 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
+import fr.vsct.tock.nlp.front.shared.evaluation.EntityEvaluationQuery
+import fr.vsct.tock.nlp.front.shared.evaluation.EntityEvaluationResult
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeResult
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLog
@@ -109,8 +111,7 @@ object ParserService : Parser {
         return setMetadataAndParse(query, emptySet())
     }
 
-    private fun getReferenceDateByEntityMap(intents: List<IntentDefinition>, referenceDate: ZonedDateTime): Map<Entity, ZonedDateTime>?
-            = intents
+    private fun getReferenceDateByEntityMap(intents: List<IntentDefinition>, referenceDate: ZonedDateTime): Map<Entity, ZonedDateTime>? = intents
             .flatMap { it.entities }
             .distinct()
             .filter { it.atStartOfDay == true }
@@ -271,6 +272,27 @@ object ParserService : Parser {
         }
     }
 
+    override fun evaluateEntities(query: EntityEvaluationQuery): EntityEvaluationResult {
+        with(query) {
+            val application = loadApplication(namespace, applicationName)
+
+            val language = findLanguage(application, context.language)
+
+            val referenceDate = context.referenceDate.withZoneSameInstant(context.referenceTimezone)
+
+            val callContext = CallContext(toApplication(application), language, application.nlpEngineType, EntityEvaluationContext(referenceDate))
+
+            val result = core.evaluateEntities(
+                    callContext,
+                    text,
+                    query.entities.map { it.toEntityRecognition() })
+
+            return EntityEvaluationResult(
+                    result.map { ParsedEntityValue(it.value, it.probability, core.supportValuesMerge(it.entityType)) }
+            )
+        }
+    }
+
     override fun mergeValues(query: ValuesMergeQuery): ValuesMergeResult {
         with(query) {
             val application = loadApplication(namespace, applicationName)
@@ -287,8 +309,7 @@ object ParserService : Parser {
         }
     }
 
-    private fun loadApplication(namespace: String, applicationName: String): ApplicationDefinition
-            = config.getApplicationByNamespaceAndName(namespace, applicationName)
+    private fun loadApplication(namespace: String, applicationName: String): ApplicationDefinition = config.getApplicationByNamespaceAndName(namespace, applicationName)
             ?: throw UnknownApplicationException(namespace, applicationName)
 
     override fun healthcheck(): Boolean {

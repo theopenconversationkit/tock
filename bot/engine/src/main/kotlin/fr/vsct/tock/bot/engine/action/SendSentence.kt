@@ -24,6 +24,7 @@ import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.message.Sentence
 import fr.vsct.tock.bot.engine.nlp.NlpCallStats
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.shared.security.StringObfuscatorMode
 import fr.vsct.tock.shared.security.StringObfuscatorService
 import org.litote.kmongo.Id
@@ -44,7 +45,11 @@ open class SendSentence(
         date: Instant = Instant.now(),
         state: EventState = EventState(),
         metadata: ActionMetadata = ActionMetadata(),
-        var nlpStats: NlpCallStats? = null)
+        var nlpStats: NlpCallStats? = null,
+        /**
+         * Used by analysed nlp (ie Alexa).
+         */
+        val precomputedNlp:NlpResult? = null)
     : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
 
     @Transient
@@ -80,4 +85,6 @@ open class SendSentence(
     override fun toString(): String {
         return if (stringText != null) stringText else if (messages.isNotEmpty()) messages.toString() else ""
     }
+
+    fun hasEmptyText() : Boolean = precomputedNlp == null  && text.isNullOrBlank()
 }

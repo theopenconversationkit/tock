@@ -26,6 +26,8 @@ import fr.vsct.tock.nlp.api.client.model.NlpIntentEntitiesQuery
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
+import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationQuery
+import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationResult
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
 import okhttp3.MultipartBody
@@ -80,6 +82,10 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
 
     override fun parseIntentEntities(query: NlpIntentEntitiesQuery): Response<NlpResult> {
         return nlpService.parseIntentEntities(query).execute()
+    }
+
+    override fun evaluateEntities(query: EntityEvaluationQuery): Response<EntityEvaluationResult> {
+        return nlpService.evaluateEntities(query).execute()
     }
 
     override fun mergeValues(query: ValuesMergeQuery): Response<ValuesMergeResult> {

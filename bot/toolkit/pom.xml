@@ -51,6 +51,10 @@
         </dependency>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
+            <artifactId>tock-bot-connector-alexa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-connector-rest</artifactId>
         </dependency>
         <dependency>

@@ -20,6 +20,7 @@ import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.service.UnknownApplicationException
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
+import fr.vsct.tock.nlp.front.shared.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseIntentEntitiesQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
@@ -62,6 +63,10 @@ class NlpVerticle : WebVerticle() {
             } catch (e: UnknownApplicationException) {
                 badRequest(e.message ?: "")
             }
+        }
+
+        blockingJsonPost("/evaluate") { _, query: EntityEvaluationQuery ->
+            front.evaluateEntities(query)
         }
 
         blockingJsonPost("/merge") { _, query: ValuesMergeQuery ->

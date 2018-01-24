@@ -174,7 +174,7 @@ internal class Bot(botDefinitionBase: BotDefinition) {
                     parseAttachment(action, dialog)
                 }
                 is SendSentence -> {
-                    if (!action.text.isNullOrBlank()) {
+                    if (!action.hasEmptyText()) {
                         nlp.parseSentence(action, userTimeline, dialog, connector, botDefinition)
                     }
                 }

@@ -20,6 +20,8 @@ import fr.vsct.tock.nlp.api.client.model.NlpIntentEntitiesQuery
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
+import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationQuery
+import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationResult
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
 import retrofit2.Response
@@ -39,6 +41,11 @@ interface NlpClient {
      * Analyse a sentence and returns entities values, given a predefined intent.
      */
     fun parseIntentEntities(query: NlpIntentEntitiesQuery): Response<NlpResult>
+
+    /**
+     * Evaluate entities.
+     */
+    fun evaluateEntities(query: EntityEvaluationQuery): Response<EntityEvaluationResult>
 
     /**
      * Merge values and returns the result if found.

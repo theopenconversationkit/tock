@@ -20,6 +20,8 @@ import fr.vsct.tock.nlp.api.client.model.NlpIntentEntitiesQuery
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
+import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationQuery
+import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationResult
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
 import okhttp3.MultipartBody
@@ -40,6 +42,9 @@ internal interface NlpService {
 
     @POST("parse/intent/entities")
     fun parseIntentEntities(@Body query: NlpIntentEntitiesQuery): Call<NlpResult>
+
+    @POST("evaluate")
+    fun evaluateEntities(@Body query: EntityEvaluationQuery): Call<EntityEvaluationResult>
 
     @POST("merge")
     fun mergeValues(@Body query: ValuesMergeQuery): Call<ValuesMergeResult>

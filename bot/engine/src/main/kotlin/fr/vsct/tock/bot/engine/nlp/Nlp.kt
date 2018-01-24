@@ -32,12 +32,15 @@ import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.NlpClient
 import fr.vsct.tock.nlp.api.client.model.Entity
+import fr.vsct.tock.nlp.api.client.model.EntityValue
 import fr.vsct.tock.nlp.api.client.model.NlpIntentEntitiesQuery
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.QueryContext
 import fr.vsct.tock.nlp.api.client.model.QueryState
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
+import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationQuery
+import fr.vsct.tock.nlp.api.client.model.evaluation.EntityToEvaluate
 import fr.vsct.tock.nlp.api.client.model.merge.ValueToMerge
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
@@ -78,49 +81,92 @@ internal class Nlp : NlpController {
 
             toNlpQuery().let { query ->
                 try {
-                    logger.debug { "Sending sentence '${sentence.stringText}' to NLP" }
-                    parse(query)
-                            ?.let { nlpResult ->
-                                listenNlpSuccessCall(query, nlpResult)
-                                val intent = botDefinition.findIntentForBot(
-                                        nlpResult.intent,
-                                        IntentContext(userTimeline, dialog, sentence)
-                                )
+                    val result = if (sentence.precomputedNlp == null) {
+                        parse(query)
+                    } else {
+                        evaluateEntitiesForPrecomputedNlp(query, sentence.precomputedNlp)
+                    }
 
-                                val customEntityEvaluations = BotRepository.nlpListeners.flatMap {
-                                    it.evaluateEntities(userTimeline, dialog, nlpResult)
-                                }
-                                sentence.state.entityValues.addAll(
-                                        customEntityEvaluations +
-                                                nlpResult.entities
-                                                        .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
-                                                        .map { ContextValue(nlpResult, it) }
-                                )
+                    result?.let { nlpResult ->
+                        listenNlpSuccessCall(query, nlpResult)
+                        val intent = botDefinition.findIntentForBot(
+                                nlpResult.intent,
+                                IntentContext(userTimeline, dialog, sentence)
+                        )
 
-                                sentence.nlpStats = NlpCallStats(
-                                        intent,
-                                        nlpResult.intentProbability,
-                                        nlpResult.entitiesProbability,
-                                        nlpResult.otherIntentsProbabilities
-                                                .map {
-                                                    NlpIntentStat(
-                                                            botDefinition.findIntent(it.key.name()),
-                                                            it.value
-                                                    )
-                                                },
-                                        dialog.state.nextActionState?.intentsQualifiers
-                                )
-                                dialog.apply {
-                                    state.currentIntent = intent
-                                    state.mergeEntityValuesFromAction(sentence)
-                                }
-                            } ?: listenNlpErrorCall(query, null)
+                        val customEntityEvaluations = BotRepository.nlpListeners.flatMap {
+                            it.evaluateEntities(userTimeline, dialog, nlpResult)
+                        }
+                        sentence.state.entityValues.addAll(
+                                customEntityEvaluations +
+                                        nlpResult.entities
+                                                .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
+                                                .map { ContextValue(nlpResult, it) }
+                        )
+
+                        sentence.nlpStats = NlpCallStats(
+                                intent,
+                                nlpResult.intentProbability,
+                                nlpResult.entitiesProbability,
+                                nlpResult.otherIntentsProbabilities
+                                        .map {
+                                            NlpIntentStat(
+                                                    botDefinition.findIntent(it.key.name()),
+                                                    it.value
+                                            )
+                                        },
+                                dialog.state.nextActionState?.intentsQualifiers
+                        )
+                        dialog.apply {
+                            state.currentIntent = intent
+                            state.mergeEntityValuesFromAction(sentence)
+                        }
+                    } ?: listenNlpErrorCall(query, null)
                 } catch (t: Throwable) {
                     logger.error(t)
                     listenNlpErrorCall(query, t)
                 }
             }
         }
+
+        private fun evaluateEntitiesForPrecomputedNlp(nlpQuery: NlpQuery, nlpResult: NlpResult): NlpResult {
+            fun EntityValue.toEntityToEvaluate(): EntityToEvaluate = EntityToEvaluate(
+                    start,
+                    end,
+                    entity,
+                    subEntities.map { it.toEntityToEvaluate() }
+            )
+
+            return try {
+                if (nlpResult.entities.isEmpty()) {
+                    nlpResult
+                } else {
+                    val response = nlpClient.evaluateEntities(
+                            EntityEvaluationQuery(
+                                    nlpQuery.namespace,
+                                    nlpQuery.applicationName,
+                                    nlpQuery.context,
+                                    nlpResult.entities.map { it.toEntityToEvaluate() },
+                                    nlpResult.retainedQuery
+                            )
+                    )
+                    val result = response.body()
+                    if (response.isSuccessful && result != null) {
+                        nlpResult.copy(
+                                entities = result.values
+                                        + nlpResult.entities.filter { e ->
+                                    result.values.none { it.start == e.start }
+                                })
+                    } else {
+                        nlpResult
+                    }
+                }
+            } catch (exception: Exception) {
+                logger.error(exception)
+                nlpResult
+            }
+        }
+
 
         private fun findKeyword(sentence: String?): Intent? {
             if (sentence != null) {
@@ -248,6 +294,7 @@ internal class Nlp : NlpController {
         }
 
         private fun parse(request: NlpQuery): NlpResult? {
+            logger.debug { "Sending sentence '${sentence.stringText}' to NLP" }
             val intentsQualifiers = dialog.state.nextActionState?.intentsQualifiers
             val useQualifiers = intentsQualifiers != null && intentsQualifiers.isNotEmpty()
             val response = if (!useQualifiers) {

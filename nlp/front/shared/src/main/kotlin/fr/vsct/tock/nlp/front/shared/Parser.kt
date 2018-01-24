@@ -21,6 +21,8 @@ import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeResult
 import fr.vsct.tock.nlp.front.shared.parser.ParseIntentEntitiesQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
+import fr.vsct.tock.nlp.front.shared.evaluation.EntityEvaluationQuery
+import fr.vsct.tock.nlp.front.shared.evaluation.EntityEvaluationResult
 
 /**
  *
@@ -37,6 +39,11 @@ interface Parser {
      * This is useful when a result is expected and you just need to know the entities.
      */
     fun parseIntentEntities(query: ParseIntentEntitiesQuery): ParseResult
+
+    /**
+     * Evaluate entities.
+     */
+    fun evaluateEntities(query: EntityEvaluationQuery): EntityEvaluationResult
 
     /**
      * Merge entity values of same type.
