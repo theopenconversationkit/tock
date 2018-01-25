@@ -16,14 +16,26 @@
 
 package fr.vsct.tock.bot.connector.ga.model.response
 
-//TODO
+/**
+ * @see https://developers.google.com/actions/reference/rest/Shared.Types/AppResponse#orderupdate
+ */
 data class GAOrderUpdate(
-        /*  val orderState: GAOrderState,
-          val orderManagementActions: GAAction,*/
-        val updateTime: String/*,
+        val googleOrderId: String,
+        val actionOrderId: String,
+        val orderState: GAOrderState,
+        val orderManagementActions: List<GAAction>,
+        val receipt: GAReceipt,
+        val updateTime: String,
         val totalPrice: GAPrice,
-        val lineItemUpdates:
-        */
-) {
+        //TODO
+        val lineItemUpdates: GALineItemUpdate,
+        //TODO
+        val infoExtension: String,
+        val userNotification: GAUserNotification,
+        val rejectionInfo: GARejectionInfo,
+        val cancellationInfo: GACancellationInfo,
+        val inTransitInfo: GAInTransitInfo,
+        val fulfillmentInfo: GAFulfillmentInfo,
+        val returnInfo: GAReturnInfo
+)
 
-}
