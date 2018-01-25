@@ -16,9 +16,14 @@
 
 package fr.vsct.tock.shared
 
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.JsonTokenId
+import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.Module
+import com.fasterxml.jackson.databind.deser.std.StdScalarDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer
+import com.fasterxml.jackson.datatype.jsr310.DecimalUtils
 import com.fasterxml.jackson.datatype.jsr310.deser.DurationDeserializer
 import com.fasterxml.jackson.datatype.jsr310.deser.JSR310StringParsableDeserializer
 import com.fasterxml.jackson.datatype.jsr310.ser.DurationSerializer
@@ -29,6 +34,7 @@ import fr.vsct.tock.shared.jackson.addDeserializer
 import fr.vsct.tock.shared.jackson.addSerializer
 import fr.vsct.tock.shared.jackson.hackModule
 import mu.KotlinLogging
+import org.litote.bson4jackson.types.Decimal128
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.id.IdGenerator
 import org.litote.kmongo.id.ObjectIdToStringGenerator
@@ -64,7 +70,26 @@ val mongoClient: MongoClient by lazy {
         addSerializer(ZoneOffset::class, ToStringSerializer(ZoneOffset::class.java))
         addDeserializer(ZoneOffset::class, JSR310StringParsableDeserializer.ZONE_OFFSET)
         addSerializer(Duration::class, DurationSerializer.INSTANCE)
-        addDeserializer(Duration::class, DurationDeserializer.INSTANCE)
+        addDeserializer(Duration::class, object : StdScalarDeserializer<Duration>(Duration::class.java) {
+
+            override fun deserialize(parser: JsonParser, context: DeserializationContext): Duration? {
+                return if (parser.currentTokenId() == JsonTokenId.ID_EMBEDDED_OBJECT) {
+                    val e = parser.embeddedObject
+                    when (e) {
+                        is Decimal128 -> {
+                            val b = e.bigDecimalValue()
+                            val seconds = b.toLong()
+                            val nanoseconds = DecimalUtils.extractNanosecondDecimal(b, seconds)
+                            Duration.ofSeconds(seconds, nanoseconds.toLong())
+                        }
+                        is Duration -> e
+                        else -> error("unsupported duration $e")
+                    }
+                } else {
+                    DurationDeserializer.INSTANCE.deserialize(parser, context)
+                }
+            }
+        })
     }
 
     KMongoConfiguration.registerBsonModule(hackModule)
