@@ -32,7 +32,6 @@ import com.mongodb.MongoClientURI
 import com.mongodb.client.MongoDatabase
 import fr.vsct.tock.shared.jackson.addDeserializer
 import fr.vsct.tock.shared.jackson.addSerializer
-import fr.vsct.tock.shared.jackson.hackModule
 import mu.KotlinLogging
 import org.litote.bson4jackson.types.Decimal128
 import org.litote.kmongo.KMongo
@@ -92,7 +91,6 @@ val mongoClient: MongoClient by lazy {
         })
     }
 
-    KMongoConfiguration.registerBsonModule(hackModule)
     KMongoConfiguration.registerBsonModule(tockModule)
     mongoJacksonModules.forEach {
         KMongoConfiguration.registerBsonModule(it)
