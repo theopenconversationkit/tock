@@ -17,61 +17,27 @@
 package fr.vsct.tock.shared.jackson
 
 import com.fasterxml.jackson.annotation.JsonInclude
-import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
-import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonSerializer
-import com.fasterxml.jackson.databind.KeyDeserializer
 import com.fasterxml.jackson.databind.MapperFeature
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
-import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import org.litote.kmongo.Id
-import org.litote.kmongo.id.IdGenerator
 import org.litote.kmongo.id.jackson.IdJacksonModule
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
-import kotlin.reflect.full.valueParameters
-
-//TODO remove these 2 classes when kmongo 3.6.0 is released
-private class StringToIdKeyDeserializer(private val idGenerator: IdGenerator? = null) : KeyDeserializer() {
-
-    override fun deserializeKey(key: String, ctxt: DeserializationContext): Any
-            = IdGenerator
-            .defaultGenerator
-            .idClass
-            .constructors
-            .firstOrNull { it.valueParameters.size == 1 && it.valueParameters.first().type.classifier == String::class }
-            ?.call(key)
-            ?: error("no constructor with a single string arg found for ${IdGenerator.defaultGenerator.idClass}")
-
-}
-
-private class IdKeySerializer : JsonSerializer<Id<*>>() {
-    override fun serialize(value: Id<*>, gen: JsonGenerator, serializers: SerializerProvider) {
-        gen.writeFieldName(value.toString())
-    }
-}
-
-internal val hackModule = SimpleModule().apply {
-    addKeySerializer(Id::class.java, IdKeySerializer())
-    addKeyDeserializer(Id::class.java, StringToIdKeyDeserializer())
-}
 
 val mapper: ObjectMapper by lazy {
     jacksonObjectMapper()
             .findAndRegisterModules()
             //force java time module
             .registerModule(JavaTimeModule())
-            //register id module
-            .registerModule(hackModule)
             .registerModule(IdJacksonModule())
             .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
             .setSerializationInclusion(JsonInclude.Include.NON_NULL)
