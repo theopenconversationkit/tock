@@ -28,11 +28,6 @@
     <name>Tock Bot Messenger Connector</name>
     <description>Bot Connector for Facebook Messenger</description>
 
-    <properties>
-        <commons-codec>1.11</commons-codec>
-        <commons-lang>3.7</commons-lang>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
@@ -41,12 +36,10 @@
         <dependency>
             <groupId>commons-codec</groupId>
             <artifactId>commons-codec</artifactId>
-            <version>${commons-codec}</version>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>${commons-lang}</version>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>

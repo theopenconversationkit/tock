@@ -50,6 +50,8 @@
         <jasypt>1.9.2</jasypt>
         <commons-csv>1.5</commons-csv>
         <emoji>5.0</emoji>
+        <commons-codec>1.11</commons-codec>
+        <commons-lang>3.7</commons-lang>
 
         <junit>4.12</junit>
         <mockito-kotlin>1.5.0</mockito-kotlin>
@@ -310,6 +312,17 @@
                         <artifactId>jackson-core</artifactId>
                     </exclusion>
                 </exclusions>
+            </dependency>
+
+            <dependency>
+                <groupId>commons-codec</groupId>
+                <artifactId>commons-codec</artifactId>
+                <version>${commons-codec}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.apache.commons</groupId>
+                <artifactId>commons-lang3</artifactId>
+                <version>${commons-lang}</version>
             </dependency>
 
             <dependency>
