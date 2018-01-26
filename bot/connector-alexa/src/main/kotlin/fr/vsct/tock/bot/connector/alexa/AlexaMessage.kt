@@ -18,25 +18,12 @@ package fr.vsct.tock.bot.connector.alexa
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.translator.UserInterfaceType
-import mu.KotlinLogging
-
-private val logger = KotlinLogging.logger {}
-
-internal const val ALEXA_CONNECTOR_TYPE_ID = "alexa"
 
 /**
- * The Alexa [ConnectorType].
+ *
  */
-val alexaConnectorType = ConnectorType(ALEXA_CONNECTOR_TYPE_ID, UserInterfaceType.voiceAssistant)
+data class AlexaMessage(val end:Boolean) : ConnectorMessage {
 
-/**
- * Add a [ConnectorMessage] for Alexa.
- */
-fun BotBus.withAlexa(messageProvider: () -> ConnectorMessage): BotBus {
-    return withMessage(alexaConnectorType, messageProvider)
+    override val connectorType: ConnectorType = alexaConnectorType
+
 }
-
-fun BotBus.alexaEndConversation(): ConnectorMessage = AlexaMessage(true)
-

@@ -74,14 +74,20 @@ internal data class AlexaConnectorCallback(
     fun buildResponse(): SpeechletResponse {
         val answer = actions.mapNotNull { it.action as? SendSentence }
                 .mapNotNull { it.stringText }
-                .joinToString(".")
+                .joinToString(" . ")
+        val end = actions.map { it.action }.filterIsInstance<SendSentence>().any {
+            (it.message(alexaConnectorType) as? AlexaMessage?)?.end ?: false
+        }
         val speech = if (answer.isSSML()) SsmlOutputSpeech().apply { ssml = answer }
         else PlainTextOutputSpeech().apply { text = answer }
-        return SpeechletResponse.newAskResponse(
-                speech,
-                Reprompt().apply { outputSpeech = speech }
-
-        )
+        return if (end) {
+            SpeechletResponse.newTellResponse(speech)
+        } else {
+            SpeechletResponse.newAskResponse(
+                    speech,
+                    Reprompt().apply { outputSpeech = speech }
+            )
+        }
     }
 
     fun sendResponse() {
