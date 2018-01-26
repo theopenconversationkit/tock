@@ -75,8 +75,8 @@ open class AdminVerticle : WebVerticle() {
             front.getApplications().filter {
                 it.namespace == context.organization
             }.map {
-                admin.getApplicationWithIntents(it)
-            }
+                        admin.getApplicationWithIntents(it)
+                    }
         }
 
         blockingJsonGet("/application/:id") { context ->
@@ -277,8 +277,8 @@ open class AdminVerticle : WebVerticle() {
             front.getApplications().filter {
                 it.namespace == context.organization
             }.map {
-                admin.getApplicationWithIntents(it)
-            }
+                        admin.getApplicationWithIntents(it)
+                    }
         }
 
         blockingJsonGet("/entity-types")
@@ -378,7 +378,7 @@ open class AdminVerticle : WebVerticle() {
         { context, query: ApplicationScopedQuery ->
             val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
             if (app != null && context.organization == app.namespace) {
-                front.exportIntentsSchema("appName", app._id, query.language)
+                front.exportIntentsSchema(app.name, app._id, query.language)
             } else {
                 unauthorized()
             }

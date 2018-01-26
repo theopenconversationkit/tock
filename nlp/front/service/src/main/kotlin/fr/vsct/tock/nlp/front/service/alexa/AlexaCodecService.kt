@@ -199,9 +199,8 @@ object AlexaCodecService : AlexaCodec {
                     AlexaTypeDefinition(
                             null,
                             AlexaTypeDefinitionName(
-                                    it.replace("-", "_")
-                                            .replace("\"", " "),
-                                    emptyList()//getSamplesFor(typeName, sentences)
+                                    it.replace("-", "_").replace("\"", " "),
+                                    emptyList()
                             )
                     )
                 }
