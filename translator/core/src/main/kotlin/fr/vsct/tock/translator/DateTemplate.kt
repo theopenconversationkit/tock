@@ -42,6 +42,11 @@ class DateTemplate(
         } ?: ""
     }
 
+    /**
+     * To immediately format this date with the given locale.
+     */
+    internal fun formatTo(locale: Locale): RawString = format(locale).raw
+
     override fun formatTo(formatter: Formatter, flags: Int, width: Int, precision: Int) {
         formatter.format(format(formatter.locale()))
     }

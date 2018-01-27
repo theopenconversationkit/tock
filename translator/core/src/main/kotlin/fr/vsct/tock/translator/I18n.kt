@@ -18,27 +18,36 @@ package fr.vsct.tock.translator
 
 import java.time.format.DateTimeFormatter
 import java.time.temporal.TemporalAccessor
+import java.util.Locale
 
 val defaultUserInterface: UserInterfaceType = UserInterfaceType.textChat
 
 /**
  * Format a [TemporalAccessor] this the specified [dateFormatPattern] used to create a [DateTimeFormatter].
  */
-infix fun TemporalAccessor?.by(dateFormatPattern: String): DateTemplate
-        = by(DateTimeFormatter.ofPattern(dateFormatPattern))
+infix fun TemporalAccessor?.by(dateFormatPattern: String): DateTemplate = by(DateTimeFormatter.ofPattern(dateFormatPattern))
 
 /**
  * Format a [TemporalAccessor] this the specified [DateTimeFormatter].
  */
-infix fun TemporalAccessor?.by(formatter: DateTimeFormatter): DateTemplate
-        = DateTemplate(this, formatter)
+infix fun TemporalAccessor?.by(formatter: DateTimeFormatter): DateTemplate = DateTemplate(this, formatter)
 
 
 /**
  * Format a [TemporalAccessor] this the specified [DateTimeFormatterProvider].
  */
-infix fun TemporalAccessor?.by(formatterProvider: DateTimeFormatterProvider): DateTemplate
-        = DateTemplate(this, formatterProvider)
+infix fun TemporalAccessor?.by(formatterProvider: DateTimeFormatterProvider): DateTemplate = DateTemplate(this, formatterProvider)
+
+/**
+ * To immediately format this date with the given locale.
+ */
+fun TemporalAccessor?.formatWith(formatter: DateTimeFormatter, locale: Locale): CharSequence? = if (this == null) null else by(formatter).formatTo(locale)
+
+/**
+ * To immediately format this date with the given locale.
+ */
+fun TemporalAccessor?.formatWith(formatterProvider: DateTimeFormatterProvider, locale: Locale): CharSequence? = if (this == null) null else by(formatterProvider).formatTo(locale)
+
 
 /**
  * Transform this String in a [RawString] - ie a not-to-translate String.

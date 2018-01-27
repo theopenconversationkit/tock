@@ -18,32 +18,27 @@ package fr.vsct.tock.translator
 
 import org.junit.Test
 import java.time.DayOfWeek
-import java.time.LocalDate.now
-import java.util.Formatter
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import java.util.Locale
 import kotlin.test.assertEquals
 
 /**
  *
  */
-class DateTemplateTest {
+class I18nTest {
 
     @Test
-    fun formatTo_shouldWorks_forAllLocales() {
-        val date = now().with(DayOfWeek.FRIDAY)
-        val dateTemplate = date by "EEEE"
-        var formatter = Formatter(Locale.ENGLISH)
-        dateTemplate.formatTo(formatter, 0, 0, 0)
+    fun formatWith_shouldWorks_forAllLocales() {
+        val date = LocalDate.now().with(DayOfWeek.FRIDAY)
+        val format = DateTimeFormatter.ofPattern("EEEE")
         assertEquals(
                 "Friday",
-                formatter.toString()
+                date.formatWith(format, Locale.ENGLISH).toString()
         )
-        formatter = Formatter(Locale.FRENCH)
-        dateTemplate.formatTo(formatter, 0, 0, 0)
         assertEquals(
                 "vendredi",
-                formatter.toString()
+                date.formatWith(format, Locale.FRENCH).toString()
         )
     }
-
 }
