@@ -41,8 +41,7 @@ data class BotBusMockLog(
     /**
      * The message of the specified [ConnectorType] if it exists.
      */
-    fun message(connectorType: ConnectorType): ConnectorMessage?
-            = (action as? SendSentence)?.message(connectorType)
+    fun message(connectorType: ConnectorType): ConnectorMessage? = (action as? SendSentence)?.message(connectorType)
 
     /**
      * The Messenger message if any.
@@ -67,13 +66,21 @@ data class BotBusMockLog(
     /**
      * Assert that log contains specified text.
      */
-    fun assertText(text: String, message: String? = null)
-            = assertEquals(text, text(), message)
+    fun assertText(text: String, errorMessage: String? = null) = assertEquals(text, text(), errorMessage)
+
+    /**
+     * Assert that log contains specified text.
+     */
+    infix fun assert(text: String) = assertText(text)
 
     /**
      * Assert that log contains specified [ConnectorMessage].
      */
-    fun assertMessage(m: ConnectorMessage, message: String? = null)
-            = assertEquals(m, message(m.connectorType), message)
+    fun assertMessage(message: ConnectorMessage, errorMessage: String? = null) = assertEquals(message, message(message.connectorType), errorMessage)
+
+    /**
+     * Assert that log contains specified message.
+     */
+    infix fun assert(message: ConnectorMessage) = assertMessage(message)
 
 }
