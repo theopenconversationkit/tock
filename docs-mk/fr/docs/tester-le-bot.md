@@ -10,7 +10,7 @@ Avec Maven :
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>bot-test</artifactId>
-            <version>0.7.3</version>
+            <version>0.8.0</version>
             <scope>test</scope>
         </dependency>
 ```
@@ -18,24 +18,24 @@ Avec Maven :
 ou Gradle :
 
 ```gradle
-      testCompile 'fr.vsct.tock:bot-test:0.7.3'
+      testCompile 'fr.vsct.tock:bot-test:0.8.0'
 ``` 
 
 L'ensemble de ce framework est documenté au format KDoc [ici](../dokka/tock/fr.vsct.tock.bot.test). 
 
 ## Ecrire un test simple
 
-Afin de tester la story **greetings** du bot Open Data, il suffit d'utiliser l'extension *startMock()*
+Afin de tester la story **greetings** du bot Open Data, il suffit d'utiliser l'extension *startNewBusMock()*
  qui permet d'obtenir un mock du bus conversationnel. Le test unitaire s'écrit alors ainsi :   
 
 ```kotlin
 
     @Test
-    fun greetings_shouldDisplayWelcomeMessage() {
-        val bus = openBot.startMock()
-
-        bus.firstAnswer.assertText("Bienvenue chez le Bot Open Data Sncf! :)")
-        bus.secondAnswer.assertText("Il s'agit d'un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock")
+    fun `greetings story displays welcome message WHEN locale is fr`() {
+        with(openBot.startNewBusMock(locale = Locale.FRENCH)) {
+            firstAnswer.assertText("Bienvenue chez le Bot Open Data Sncf! :)")
+            secondAnswer.assertText("Il s'agit d'un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock")
+        } 
     }
 ```
 
@@ -43,32 +43,31 @@ Comme le connector par défaut est celui de Messenger, il est possible de tester
 
 ```kotlin
 
-     with(bus) {
-            lastAnswer.assertMessage(
-                               buttonsTemplate(
-                                       "Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d'une gare et constatez le résultat! :) ",
-                                       postbackButton("Itinéraires", search),
-                                       postbackButton("Départs", Departures),
-                                       postbackButton("Arrivées", Arrivals)
-                               )
-                       )
-     }
+     lastAnswer.assertMessage(
+            buttonsTemplate(
+                  "Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d'une gare et constatez le résultat! :)",
+                  postbackButton("Itinéraires", search),
+                  postbackButton("Départs", Departures),
+                  postbackButton("Arrivées", Arrivals)
+            )
+     )
 ```
 
 Pour tester le message spécifique à Google Assistant (ou tout autre connecteur),
  il est nécessaire de spécifier le connecteur que l'on souhaite tester :
  
 ```kotlin
-    val bus = openBot.startMock(connectorType = gaConnectorType)
-    with(bus) {
-                lastAnswer.assertMessage(
-                        gaMessage(
-                                "Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d'une gare et constatez le résultat! :) ",
-                                "Itinéraires",
-                                "Départs",
-                                "Arrivées")
+    with(openBot.startNewBusMock(connectorType = gaConnectorType, locale = Locale.FRENCH)) {
+         firstAnswer.assertText("Bienvenue chez le Bot Open Data Sncf! :)")
+         secondAnswer.assertText("Il s'agit d'un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock")
+         lastAnswer.assertMessage(
+               gaMessage(
+                      "Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d'une gare et constatez le résultat! :)",
+                      "Itinéraires",
+                      "Départs",
+                      "Arrivées")
                 )
-            }
+    }
 ```
 
 ## Tester une Story spécifique
@@ -80,10 +79,10 @@ Supposons que nous souhaitons la story **search**, nous devons préciser la stor
 ```kotlin
 
     @Test
-    fun search_shouldAskForDestination_WhenNoDestinationInContext() {
-        val bus = openBot.startMock(search)
-
-        bus.firstAnswer.assertText("Pour quelle destination?")
+    fun `search story asks for destination WHEN there is no destination in context`() {
+        with(openBot.startNewBusMock(search, locale = Locale.FRENCH)) {
+             firstAnswer.assertText("Pour quelle destination?")
+        }
     }
 
 ```
@@ -95,48 +94,36 @@ Il est possible de simuler un dialogue complet. Par exemple, on simule ici que l
 ```kotlin
 
     @Test
-    fun search_shouldAskForOrigin_WhenThereIsDestinationButNoOriginInContext() {
-        val bus = openBot.startMock(search)
-
-        with(bus) {
-            firstAnswer.assertText("Pour quelle destination?")
-
-            destination = mockedDestination
-
-            run()
-
-            secondAnswer.assertText("Pour quelle origine?")
+    fun `search story asks for origin WHEN there is a destination but no origin in context`() {
+        with(openBot.startNewBusMock(story = search, locale = Locale.FRENCH)) {
+             firstAnswer.assertText("Pour quelle destination?")
+             destination = mockedDestination
+        }
+        with(openBot.startBusMock()) {
+             firstBusAnswer.assertText("Pour quelle origine?")
+             origin = mockedOrigin
         }
     }
 
 ``` 
 
-La variable *destination* du contexte est mise à jour, puis un appel au bus est simulé avec la fonction *run()*.
-
-Il est possible de modifier toutes les valeurs du bus mocké. Dans l'exemple suivant, on simule l'intention secondaire *indicate_location*
+Il est possible de modifier toutes les valeurs du bus mocké à l'initialisation. Dans l'exemple suivant, on simule l'intention secondaire *indicate_location*
 afin d'indiquer l'origine : 
 
 ```kotlin
 
     @Test
-    fun search_shouldAskForDepartureDate_WhenThereIsDestinationAndOriginButNoDepartureDateInContext() {
-        val bus = openBot.startMock(search)
-
-        with(bus) {
-            firstAnswer.assertText("Pour quelle destination?")
-
-            destination = mockedDestination
-
-            run()
-
-            secondAnswer.assertText("Pour quelle origine?")
-
-            intent = indicate_location
-            location = mockedOrigin
-
-            run()
-
-            thirdAnswer.assertText("Quand souhaitez-vous partir?")
-        }
+    fun `search story asks for departure date WHEN there is a destination and an origin but no departure date in context`() {
+         with(openBot.newBusMock(search, locale = Locale.FRENCH)) {
+             destination = mockedDestination
+             intent = indicate_location
+             location = mockedOrigin
+         
+             run()
+         
+             firstAnswer.assertText("Quand souhaitez-vous partir?")
+         }
     }
-```   
+```  
+
+La variable *destination* du contexte est mise à jour, puis un appel au bus est simulé avec la fonction *run()*. 

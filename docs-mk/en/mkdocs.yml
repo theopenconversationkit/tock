@@ -1,0 +1,29 @@
+site_name: 'Tock'
+site_description: 'Build assistants & chatbots with ease.'
+site_author: 'VSCT'
+site_url: 'https://voyages-sncf-technologies.github.io/tock/en'
+repo_name: 'tock'
+repo_url: 'https://github.com/voyages-sncf-technologies/tock'
+edit_uri: ''
+pages:
+    - Introduction: index.md
+    - Getting Started: getting-started.md
+    - Build NLP model: build-nlp-model.md
+    - Evaluate the model: evaluate-the-model.md
+    - The NLP API: the-nlp-api.md
+    - The Open Data Bot: the-open-data-bot.md
+    - Code a bot: code-a-bot.md
+    - Test the bot: test-the-bot.md
+    - KDoc: kdoc.md
+theme:
+  name: 'material'
+  logo: 'assets/images/logo.svg'
+markdown_extensions:
+  - admonition
+  - codehilite(guess_lang=false)
+  - toc(permalink=true)
+copyright: 'Copyright &copy; 2017 VSCT'
+extra:
+  social:
+    - type: 'github'
+      link: 'https://github.com/voyages-sncf-technologies/tock'

@@ -18,14 +18,14 @@ Avec Maven :
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>bot-toolkit</artifactId>
-            <version>0.7.3</version>
+            <version>0.8.0</version>
         </dependency>
 ```
 
 ou Gradle :
 
 ```gradle
-      compile 'fr.vsct.tock:bot-toolkit:0.7.3'
+      compile 'fr.vsct.tock:bot-toolkit:0.8.0'
 ```
 
 ## Un bot est un ensemble de Stories
@@ -52,59 +52,55 @@ Une *Story* est un regroupement fonctionnel qui correspond à une intention prin
 à une ou plusieurs intentions dites "secondaires".
 
 Ici le bot définit 4 *Stories*, greetings, departures, arrivals et search. 
-Greetings est par ailleurs ( *hello = greetings*) indiquée comme étant la story présentée par défaut lors du début d'une conversation.
+*greetings* est par ailleurs ( *hello = greetings*) indiquée comme étant la story présentée par défaut lors du début d'une conversation.
 
 ## Une Story simple 
 
 Comment définit-on une Story? Voici une première version simplifiée de la Story *greetings* :
 
 ```kotlin
-val greetings = story("greetings") { bus ->
-    with(bus) {
-        send("Bienvenue chez le Bot Open Data Sncf! :)")
-        send("Il s'agit d'un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock")
-
-        end()
-    }
+val greetings = story("greetings") {
+    send("Bienvenue chez le Bot Open Data Sncf! :)")
+    end("Il s'agit d'un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock")
 }
 ```
 
-Notez la présence du *bus*, à partir duquel vous pouvez interagir avec l'utilisateur, et qui permet également d'accèder
+Notez que dans le corps de la fonction, *this* est de type [BotBus](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.engine/-bot-bus/index.html),
+à partir duquel vous pouvez interagir avec l'utilisateur, et qui permet également d'accèder
 à tous les élements contextuels disponibles.
 
 Concrètement sela signifie que quand l'intention *greetings* sera détectée par le modèle NLP, la fonction ci-dessus sera appelée par le framework Tock.
 
-Le bot envoie donc successivement deux phrases de réponse (*bus.send()*), puis indique qu'il a terminé à l'aide d'un *bus.end()*.
+Le bot envoie donc successivement une première phrase de réponse (*bus.send()*), puis un deuxième en indiquant que c'est 
+la dernière phrase de sa réponse à l'aide d'un *bus.end()*.
 
 Voici maintenant la version complète de *greetings* :
 
 ```kotlin
-val greetings = story("greetings") { bus ->
-    with(bus) {
-        //cleanup state
-        resetDialogState()
+val greetings = story("greetings") {
+    //cleanup state
+    resetDialogState()
 
-        send("Bienvenue chez le Bot Open Data Sncf! :)")
-        send("Il s'agit d'un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock")
+    send("Bienvenue chez le Bot Open Data Sncf! :)")
+    send("Il s'agit d'un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock")
 
-        withMessenger {
-            buttonsTemplate(
-                    "Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d'une gare et constatez le résultat! :) ",
-                    postbackButton("Itinéraires", search),
-                    postbackButton("Départs", Departures),
-                    postbackButton("Arrivées", Arrivals)
-            )
-        }
-        withGoogleAssistant {
-            gaMessage(
-                    "Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d'une gare et constatez le résultat! :) ",
-                    "Itinéraires",
-                    "Départs",
-                    "Arrivées")
-        }
-
-        end()
+    withMessenger {
+        buttonsTemplate(
+              "Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d'une gare et constatez le résultat! :) ",
+              postbackButton("Itinéraires", search),
+              postbackButton("Départs", Departures),
+              postbackButton("Arrivées", Arrivals)
+        )
     }
+    withGoogleAssistant {
+       gaMessage(
+              "Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d'une gare et constatez le résultat! :) ",
+              "Itinéraires",
+              "Départs",
+              "Arrivées")
+       }
+
+    end()
 }
 ``` 
 
@@ -129,7 +125,7 @@ Voici le début de la définition de la story *search* :
 val search = story<SearchDef>(
         "search",
         setOf(indicate_origin),
-        setOf(indicate_location)) { bus ->
+        setOf(indicate_location)) {
    
 }
 ``` 
@@ -175,17 +171,14 @@ Voici une version complétée de la story *search* qui utilise *destination* :
 val search = story<SearchDef>(
         "search",
         setOf(indicate_origin),
-        setOf(indicate_location)) { bus ->
+        setOf(indicate_location)) {
 
-    with(bus) {
         //check mandatory entities
         when {
             destination == null -> end("Pour quelle destination?")
             origin == null -> end("Pour quelle origine?")
             departureDate == null -> end("Quand souhaitez-vous partir?")
-            else -> SearchDef(bus)
-        } as? SearchDef
-    }
+        } 
 }
 
 ``` 
@@ -193,7 +186,7 @@ val search = story<SearchDef>(
 Si il n'y a pas de valeur dans le contexte courant pour la destination, le bot demande de spécifier la destination et en reste là.
 Idem pour l'origine ou la date de départ.
 
-Si les 3 valeurs obligatoires sont spécifiées, il passe à la réponse proprement dite (*SearchDef(bus)*).
+Si les 3 valeurs obligatoires sont spécifiées, il passe à la réponse proprement dite développée dans la classe (*SearchDef*).
 
 La version complète de cette première partie du code est la suivante :
 
@@ -202,9 +195,8 @@ La version complète de cette première partie du code est la suivante :
 val search = story<SearchDef>(
         "search",
         setOf(indicate_origin),
-        setOf(indicate_location)) { bus ->
+        setOf(indicate_location)) {
 
-    with(bus) {
         //handle generic location intent
         if (isIntent(indicate_location) && location != null) {
             if (destination == null || origin != null) {
@@ -219,9 +211,7 @@ val search = story<SearchDef>(
             destination == null -> end("Pour quelle destination?")
             origin == null -> end("Pour quelle origine?")
             departureDate == null -> end("Quand souhaitez-vous partir?")
-            else -> SearchDef(bus)
-        } as? SearchDef
-    }
+        }
 }
 
 ```
@@ -233,7 +223,7 @@ Sinon, il s'agit de l'origine.
 
 ### Utiliser HandlerDef
 
-Dans la définition de la story *search* ci-dessus, vous avez pu noter la récurrence de la notion de *SearchDef*. 
+Dans la définition de la story *search* ci-dessus, vous avez pu noter le typage générique *SearchDef*. 
 Voici le code de cette classe :
 
 ```kotlin
@@ -282,9 +272,9 @@ sealed class SearchConnector(context: SearchDef) : ConnectorDef<SearchDef>(conte
 
     fun Section.title(): CharSequence = i18n("{0} - {1}", from, to)
 
-    fun sendFirstJourney(journey: Journey) = sendFirstJourney(journey.publicTransportSections())
-
-    abstract fun sendFirstJourney(sections: List<Section>)
+    fun sendFirstJourney(journey: Journey) = withMessage(sendFirstJourney(journey.publicTransportSections()))
+    
+    abstract fun sendFirstJourney(sections: List<Section>): ConnectorMessage
 
 }
 ``` 
@@ -294,28 +284,23 @@ et son implémentation pour Messenger :
 ```kotlin
 class MessengerSearchConnector(context: SearchDef) : SearchConnector(context) {
 
-    override fun sendFirstJourney(sections: List<Section>) {
-        withMessage(
-                flexibleListTemplate(
-                        sections.map { section ->
-                            with(section) {
-                                listElement(
-                                        title(),
-                                        content(),
-                                        trainImage
-                                )
-                            }
-                        },
-                        compact
-                )
-        )
-    }
+    override fun sendFirstJourney(sections: List<Section>): ConnectorMessage =
+          flexibleListTemplate(
+                sections.map { section ->
+                      with(section) {
+                          listElement(
+                                title(),
+                                content(),
+                                trainImage
+                          )
+                      }
+                },
+                compact
+          )
 }
 ```
 
-Le code spécifique à chaque connecteur est ainsi correctement découplé. 
-
-Le code commun à chaque connecteur est présent dans *SearchConnector* et le comportement spécifique à
+Le code spécifique à chaque connecteur est ainsi correctement découplé. Le code commun à chaque connecteur est présent dans *SearchConnector* et le comportement spécifique à
 chaque connecteur se trouve dans les classes dédiées.
 
 ## Démarrer et connecter le bot
@@ -326,7 +311,7 @@ Pour démarrer le bot, il suffit de rajouter dans votre *main* principal l'appel
 registerAndInstallBot(openBot)
 ``` 
 
-où la variable *openBot* est le bot que vous avez défini au départ
+où la variable *openBot* est le bot que vous avez défini au départ.
 
 Il est également nécessaire de spécifier quels connecteurs sont utilisés.
 Par exemple, pour connecter le bot à Messenger et à Google Assistant:

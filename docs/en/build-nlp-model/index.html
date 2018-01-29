@@ -1,0 +1,741 @@
+
+
+
+
+<!DOCTYPE html>
+<html lang="en" class="no-js">
+  <head>
+    
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width,initial-scale=1">
+      <meta http-equiv="x-ua-compatible" content="ie=edge">
+      
+        <meta name="description" content="Build assistants & chatbots with ease.">
+      
+      
+        <link rel="canonical" href="https://voyages-sncf-technologies.github.io/tock/en/build-nlp-model/">
+      
+      
+        <meta name="author" content="VSCT">
+      
+      
+        <meta name="lang:clipboard.copy" content="Copy to clipboard">
+      
+        <meta name="lang:clipboard.copied" content="Copied to clipboard">
+      
+        <meta name="lang:search.language" content="en">
+      
+        <meta name="lang:search.result.none" content="No matching documents">
+      
+        <meta name="lang:search.result.one" content="1 matching document">
+      
+        <meta name="lang:search.result.other" content="# matching documents">
+      
+        <meta name="lang:search.tokenizer" content="[\s\-]+">
+      
+      <link rel="shortcut icon" href="../assets/images/favicon.png">
+      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.2.2">
+    
+    
+      
+        <title>Build NLP model - Tock</title>
+      
+    
+    
+      <link rel="stylesheet" href="../assets/stylesheets/application.7a4cdee3.css">
+      
+    
+    
+      <script src="../assets/javascripts/modernizr.1aa3b519.js"></script>
+    
+    
+      
+        <link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Roboto:300,400,400i,700|Roboto+Mono">
+        <style>body,input{font-family:"Roboto","Helvetica Neue",Helvetica,Arial,sans-serif}code,kbd,pre{font-family:"Roboto Mono","Courier New",Courier,monospace}</style>
+      
+      <link rel="stylesheet" href="https://fonts.googleapis.com/icon?family=Material+Icons">
+    
+    
+    
+  </head>
+  
+    <body>
+  
+    <svg class="md-svg">
+      <defs>
+        
+        
+          <svg xmlns="http://www.w3.org/2000/svg" width="416" height="448" viewBox="0 0 416 448" id="github"><path fill="currentColor" d="M160 304q0 10-3.125 20.5t-10.75 19T128 352t-18.125-8.5-10.75-19T96 304t3.125-20.5 10.75-19T128 256t18.125 8.5 10.75 19T160 304zm160 0q0 10-3.125 20.5t-10.75 19T288 352t-18.125-8.5-10.75-19T256 304t3.125-20.5 10.75-19T288 256t18.125 8.5 10.75 19T320 304zm40 0q0-30-17.25-51T296 232q-10.25 0-48.75 5.25Q229.5 240 208 240t-39.25-2.75Q130.75 232 120 232q-29.5 0-46.75 21T56 304q0 22 8 38.375t20.25 25.75 30.5 15 35 7.375 37.25 1.75h42q20.5 0 37.25-1.75t35-7.375 30.5-15 20.25-25.75T360 304zm56-44q0 51.75-15.25 82.75-9.5 19.25-26.375 33.25t-35.25 21.5-42.5 11.875-42.875 5.5T212 416q-19.5 0-35.5-.75t-36.875-3.125-38.125-7.5-34.25-12.875T37 371.5t-21.5-28.75Q0 312 0 260q0-59.25 34-99-6.75-20.5-6.75-42.5 0-29 12.75-54.5 27 0 47.5 9.875t47.25 30.875Q171.5 96 212 96q37 0 70 8 26.25-20.5 46.75-30.25T376 64q12.75 25.5 12.75 54.5 0 21.75-6.75 42 34 40 34 99.5z"/></svg>
+        
+      </defs>
+    </svg>
+    <input class="md-toggle" data-md-toggle="drawer" type="checkbox" id="drawer">
+    <input class="md-toggle" data-md-toggle="search" type="checkbox" id="search">
+    <label class="md-overlay" data-md-component="overlay" for="drawer"></label>
+    
+      <header class="md-header" data-md-component="header">
+  <nav class="md-header-nav md-grid">
+    <div class="md-flex">
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <a href="https://voyages-sncf-technologies.github.io/tock/en" title="Tock" class="md-header-nav__button md-logo">
+          
+            <img src="../assets/images/logo.svg" width="24" height="24">
+          
+        </a>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        <label class="md-icon md-icon--menu md-header-nav__button" for="drawer"></label>
+      </div>
+      <div class="md-flex__cell md-flex__cell--stretch">
+        <div class="md-flex__ellipsis md-header-nav__title" data-md-component="title">
+          
+            
+              <span class="md-header-nav__topic">
+                Tock
+              </span>
+              <span class="md-header-nav__topic">
+                Build NLP model
+              </span>
+            
+          
+        </div>
+      </div>
+      <div class="md-flex__cell md-flex__cell--shrink">
+        
+          
+            <label class="md-icon md-icon--search md-header-nav__button" for="search"></label>
+            
+<div class="md-search" data-md-component="search" role="dialog">
+  <label class="md-search__overlay" for="search"></label>
+  <div class="md-search__inner">
+    <form class="md-search__form" name="search">
+      <input type="text" class="md-search__input" name="query" required placeholder="Search" autocapitalize="off" autocorrect="off" autocomplete="off" spellcheck="false" data-md-component="query">
+      <label class="md-icon md-search__icon" for="search"></label>
+      <button type="reset" class="md-icon md-search__icon" data-md-component="reset">&#xE5CD;</button>
+    </form>
+    <div class="md-search__output">
+      <div class="md-search__scrollwrap" data-md-scrollfix>
+        <div class="md-search-result" data-md-component="result">
+          <div class="md-search-result__meta">
+            Type to start searching
+          </div>
+          <ol class="md-search-result__list"></ol>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+          
+        
+      </div>
+      
+        <div class="md-flex__cell md-flex__cell--shrink">
+          <div class="md-header-nav__source">
+            
+
+
+  
+
+
+  <a href="https://github.com/voyages-sncf-technologies/tock" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      tock
+    </div>
+  </a>
+
+          </div>
+        </div>
+      
+    </div>
+  </nav>
+</header>
+    
+    <div class="md-container">
+      
+        
+      
+      
+      <main class="md-main">
+        <div class="md-main__inner md-grid" data-md-component="container">
+          
+            
+              <div class="md-sidebar md-sidebar--primary" data-md-component="navigation">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    <nav class="md-nav md-nav--primary" data-md-level="0">
+  <label class="md-nav__title md-nav__title--site" for="drawer">
+    <span class="md-nav__button md-logo">
+      
+        <img src="../assets/images/logo.svg" width="24" height="24">
+      
+    </span>
+    Tock
+  </label>
+  
+    <div class="md-nav__source">
+      
+
+
+  
+
+
+  <a href="https://github.com/voyages-sncf-technologies/tock" title="Go to repository" class="md-source" data-md-source="github">
+    
+      <div class="md-source__icon">
+        <svg viewBox="0 0 24 24" width="24" height="24">
+          <use xlink:href="#github" width="24" height="24"></use>
+        </svg>
+      </div>
+    
+    <div class="md-source__repository">
+      tock
+    </div>
+  </a>
+
+    </div>
+  
+  <ul class="md-nav__list" data-md-scrollfix>
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href=".." title="Introduction" class="md-nav__link">
+      Introduction
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../getting-started/" title="Getting Started" class="md-nav__link">
+      Getting Started
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+  
+
+
+  <li class="md-nav__item md-nav__item--active">
+    
+    <input class="md-toggle md-nav__toggle" data-md-toggle="toc" type="checkbox" id="toc">
+    
+      
+    
+    
+      <label class="md-nav__link md-nav__link--active" for="toc">
+        Build NLP model
+      </label>
+    
+    <a href="./" title="Build NLP model" class="md-nav__link md-nav__link--active">
+      Build NLP model
+    </a>
+    
+      
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" title="Overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-and-qualify-sentences" title="Add and Qualify Sentences" class="md-nav__link">
+    Add and Qualify Sentences
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#add-a-new-sentence" title="Add a New Sentence" class="md-nav__link">
+    Add a New Sentence
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#declaring-entities" title="Declaring Entities" class="md-nav__link">
+    Declaring Entities
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#built-in-entities" title="Built-in Entities" class="md-nav__link">
+    Built-in Entities
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate-a-sentence" title="Validate a Sentence" class="md-nav__link">
+    Validate a Sentence
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#explore-the-model" title="Explore the Model" class="md-nav__link">
+    Explore the Model
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-search-tab" title="The Search Tab" class="md-nav__link">
+    The Search Tab
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#states-of-a-sentence" title="States of a Sentence" class="md-nav__link">
+    States of a Sentence
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-features" title="Advanced Features" class="md-nav__link">
+    Advanced Features
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nlp-engine-selection" title="Nlp Engine Selection" class="md-nav__link">
+    Nlp Engine Selection
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-built-in-entity-models" title="Use Built-in Entity Models" class="md-nav__link">
+    Use Built-in Entity Models
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-sub-entities" title="Use sub-entities" class="md-nav__link">
+    Use sub-entities
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+    
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../evaluate-the-model/" title="Evaluate the model" class="md-nav__link">
+      Evaluate the model
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../the-nlp-api/" title="The NLP API" class="md-nav__link">
+      The NLP API
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../the-open-data-bot/" title="The Open Data Bot" class="md-nav__link">
+      The Open Data Bot
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../code-a-bot/" title="Code a bot" class="md-nav__link">
+      Code a bot
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../test-the-bot/" title="Test the bot" class="md-nav__link">
+      Test the bot
+    </a>
+  </li>
+
+    
+      
+      
+      
+
+
+  <li class="md-nav__item">
+    <a href="../kdoc/" title="KDoc" class="md-nav__link">
+      KDoc
+    </a>
+  </li>
+
+    
+  </ul>
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+            
+              <div class="md-sidebar md-sidebar--secondary" data-md-component="toc">
+                <div class="md-sidebar__scrollwrap">
+                  <div class="md-sidebar__inner">
+                    
+<nav class="md-nav md-nav--secondary">
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="toc">Table of contents</label>
+    <ul class="md-nav__list" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#overview" title="Overview" class="md-nav__link">
+    Overview
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#add-and-qualify-sentences" title="Add and Qualify Sentences" class="md-nav__link">
+    Add and Qualify Sentences
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#add-a-new-sentence" title="Add a New Sentence" class="md-nav__link">
+    Add a New Sentence
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#declaring-entities" title="Declaring Entities" class="md-nav__link">
+    Declaring Entities
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#built-in-entities" title="Built-in Entities" class="md-nav__link">
+    Built-in Entities
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#validate-a-sentence" title="Validate a Sentence" class="md-nav__link">
+    Validate a Sentence
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#explore-the-model" title="Explore the Model" class="md-nav__link">
+    Explore the Model
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#the-search-tab" title="The Search Tab" class="md-nav__link">
+    The Search Tab
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#states-of-a-sentence" title="States of a Sentence" class="md-nav__link">
+    States of a Sentence
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#advanced-features" title="Advanced Features" class="md-nav__link">
+    Advanced Features
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#nlp-engine-selection" title="Nlp Engine Selection" class="md-nav__link">
+    Nlp Engine Selection
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-built-in-entity-models" title="Use Built-in Entity Models" class="md-nav__link">
+    Use Built-in Entity Models
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#use-sub-entities" title="Use sub-entities" class="md-nav__link">
+    Use sub-entities
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+      
+      
+    </ul>
+  
+</nav>
+                  </div>
+                </div>
+              </div>
+            
+          
+          <div class="md-content">
+            <article class="md-content__inner md-typeset">
+              
+                
+                
+                <h1 id="build-a-new-nlp-model">Build a New NLP Model<a class="headerlink" href="#build-a-new-nlp-model" title="Permanent link">&para;</a></h1>
+<h2 id="overview">Overview<a class="headerlink" href="#overview" title="Permanent link">&para;</a></h2>
+<p>Seven tabs are available:</p>
+<ol>
+<li><strong>Try it</strong> : add (or test) a new sentence</li>
+<li><strong>Inbox</strong> : not yet qualified sentences</li>
+<li><strong>Archive</strong> : the set of archived sentences, i. e. marked as not yet recognized by the model.</li>
+<li><strong>Search</strong> : an advanced search interface that lets you search for sentences, whether or not they are qualified.</li>
+<li><strong>Intents</strong> : the list of the model's intentions</li>
+<li><strong>Entities</strong> : the list of model entities</li>
+<li><strong>Logs</strong> : the last queries requested via the NLP API </li>
+</ol>
+<p>The user is redirected by default to <em>Inbox</em>.</p>
+<p><img alt="schéma Tock" src="../img/inbox.png" title="Inbox empty" /></p>
+<h2 id="add-and-qualify-sentences">Add and Qualify Sentences<a class="headerlink" href="#add-and-qualify-sentences" title="Permanent link">&para;</a></h2>
+<h3 id="add-a-new-sentence">Add a New Sentence<a class="headerlink" href="#add-a-new-sentence" title="Permanent link">&para;</a></h3>
+<p>Click on the <em>Try It</em> menu and enter the new sentence. The add a new user intent by selecting "Create a New Intent" in the "Intent" selection list.</p>
+<p><img alt="schéma Tock" src="../img/try-it-1.png" title="Create a new intent" /></p>
+<h3 id="declaring-entities">Declaring Entities<a class="headerlink" href="#declaring-entities" title="Permanent link">&para;</a></h3>
+<p>If necessary, you can specify the entities of this new intent, by selecting the text of these entities, and then clicking on the "Add New Entity" button that has just appeared.
+<img alt="schéma Tock" src="../img/try-it-2.png" title="Select Entity" /></p>
+<p>It's up to you to choose an existing entity type, or create a new one, and then give that entity a role.</p>
+<p><img alt="schéma Tock" src="../img/try-it-3.png" title="Add Entity - step 1" /></p>
+<h3 id="built-in-entities">Built-in Entities<a class="headerlink" href="#built-in-entities" title="Permanent link">&para;</a></h3>
+<p>In the window "Add Entity", you can see that there are already pre-existing entities (prefixed by <strong>duckling</strong>). These are the entities recognized by the eponymous library. These entities will be recognized and valued automatically if you specify them in at least one sentence of the intent.</p>
+<h3 id="validate-a-sentence">Validate a Sentence<a class="headerlink" href="#validate-a-sentence" title="Permanent link">&para;</a></h3>
+<p>If you think that the sentence is  qualified correctly, you just have to click on "Validate" to confirm that the sentence is ok. If this is not the case, it's up to you to correct the meaning before validating it.</p>
+<p><img alt="schéma Tock" src="../img/try-it-4.png" title="Add Entity - step 2" /></p>
+<p>You are building your first model!</p>
+<h2 id="explore-the-model">Explore the Model<a class="headerlink" href="#explore-the-model" title="Permanent link">&para;</a></h2>
+<h3 id="the-search-tab">The Search Tab<a class="headerlink" href="#the-search-tab" title="Permanent link">&para;</a></h3>
+<p>The <strong>Search</strong> tab allows you to browse all the sentences of the model. The most used criterion is the full text search input (regular expressions are allowed).
+<img alt="schéma Tock" src="../img/search.png" title="Search sentences" /></p>
+<p>You can then consult the sentences that are part of your model, and also change the qualifications of these sentences over time.</p>
+<h3 id="states-of-a-sentence">States of a Sentence<a class="headerlink" href="#states-of-a-sentence" title="Permanent link">&para;</a></h3>
+<p>Each sentence has a state:</p>
+<ul>
+<li><strong>Inbox</strong> : The sentence has not been qualified yet and is not included in the model</li>
+<li><strong>Validated</strong> : The sentence has been validated but is not yet included in the NLP model (this can take some time for large models)</li>
+<li><strong>Included in model</strong> : The sentence has been validated and is included in the model</li>
+</ul>
+<h2 id="advanced-features">Advanced Features<a class="headerlink" href="#advanced-features" title="Permanent link">&para;</a></h2>
+<p>By clicking on the "Applications"menu, you get the list of existing applications.</p>
+<p><img alt="schéma Tock" src="../img/applications.png" title="Applications list" /></p>
+<p>Then click of the <em>edit</em> button of the application you want to configure.</p>
+<h3 id="nlp-engine-selection">Nlp Engine Selection<a class="headerlink" href="#nlp-engine-selection" title="Permanent link">&para;</a></h3>
+<p>You can select the NLP library used by this application with the "NLP engine" radio button:</p>
+<h3 id="use-built-in-entity-models">Use Built-in Entity Models<a class="headerlink" href="#use-built-in-entity-models" title="Permanent link">&para;</a></h3>
+<p><img alt="schéma Tock" src="../img/application.png" title="Configure application" /></p>
+<p>This option allows you to reuse built-in entity models (ie duckling) in your new intent. For example, if you create an intent with a duckling:datetime entity, the dates will automatically be recognized for that intent in all new sentences assigned to that intent (Internally, a merge is performed between the info given by the built-in entity models and the info of your own model).</p>
+<p>This option is enabled by default, it can be useful to disable it for very large models, for which the NER detection will perform better in almost all cases.</p>
+<h3 id="use-sub-entities">Use sub-entities<a class="headerlink" href="#use-sub-entities" title="Permanent link">&para;</a></h3>
+<p>If you enable this option, you will be able to qualify multiple levels of entities:</p>
+<p><img alt="schéma Tock" src="../img/subentities.png" title="Sub entities support" /></p>
+<p>The number of levels is not limited, but it is advisable not to specify more than 3 or 4.</p>
+                
+                  
+                
+              
+              
+                
+              
+            </article>
+          </div>
+        </div>
+      </main>
+      
+        
+<footer class="md-footer">
+  
+    <div class="md-footer-nav">
+      <nav class="md-footer-nav__inner md-grid">
+        
+          <a href="../getting-started/" title="Getting Started" class="md-flex md-footer-nav__link md-footer-nav__link--prev" rel="prev">
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-back md-footer-nav__button"></i>
+            </div>
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Previous
+                </span>
+                Getting Started
+              </span>
+            </div>
+          </a>
+        
+        
+          <a href="../evaluate-the-model/" title="Evaluate the model" class="md-flex md-footer-nav__link md-footer-nav__link--next" rel="next">
+            <div class="md-flex__cell md-flex__cell--stretch md-footer-nav__title">
+              <span class="md-flex__ellipsis">
+                <span class="md-footer-nav__direction">
+                  Next
+                </span>
+                Evaluate the model
+              </span>
+            </div>
+            <div class="md-flex__cell md-flex__cell--shrink">
+              <i class="md-icon md-icon--arrow-forward md-footer-nav__button"></i>
+            </div>
+          </a>
+        
+      </nav>
+    </div>
+  
+  <div class="md-footer-meta md-typeset">
+    <div class="md-footer-meta__inner md-grid">
+      <div class="md-footer-copyright">
+        
+          <div class="md-footer-copyright__highlight">
+            Copyright &copy; 2017 VSCT
+          </div>
+        
+        powered by
+        <a href="http://www.mkdocs.org">MkDocs</a>
+        and
+        <a href="https://squidfunk.github.io/mkdocs-material/">
+          Material for MkDocs</a>
+      </div>
+      
+        
+  <div class="md-footer-social">
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+    
+      <a href="https://github.com/voyages-sncf-technologies/tock" class="md-footer-social__link fa fa-github"></a>
+    
+  </div>
+
+      
+    </div>
+  </div>
+</footer>
+      
+    </div>
+    
+      <script src="../assets/javascripts/application.6cdc17f0.js"></script>
+      
+      <script>app.initialize({version:"0.17.2",url:{base:".."}})</script>
+      
+    
+    
+      
+    
+  </body>
+</html>

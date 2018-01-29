@@ -1,0 +1,334 @@
+# Tock's Conversationnal Language
+
+To develop a bot or an assistant with Tock,
+you can use its conversationnal DSL (Domain Specific Language) 
+developed in [Kotlin](https://kotlinlang.org/).
+
+## Add the bot-toolkit Dependency
+
+The bot-toolkit dependency is required:
+
+With Maven:
+
+```xml
+        <dependency>
+            <groupId>fr.vsct.tock</groupId>
+            <artifactId>bot-toolkit</artifactId>
+            <version>0.8.0</version>
+        </dependency>
+```
+
+With Gradle:
+
+```gradle
+      compile 'fr.vsct.tock:bot-toolkit:0.8.0'
+```
+
+## A Bot is a Set of Stories
+
+This is how the open data bot is defined:
+
+```kotlin
+val openBot = bot(
+        "bot_open_data",
+        stories =
+        listOf(
+                greetings,
+                departures,
+                arrivals,
+                search
+        ),
+        hello = greetings
+)
+```
+
+This bot has an unique identifier (required - "bot_open_data") and a list of **"Story"**.
+ 
+A *Story* is a functional subset that has a main intention and, optionally,
+one or more so-called "secondary" intentions.
+
+Here the bot defines 4 *Stories*, greetings, departures, arrivals and search. 
+Greetings is also set (*hello = greetings*) as the default story used for a new dialog.
+
+## A Simple Story 
+
+How do you define a story? Here is a first simplified version of the story *greetings*:
+
+```kotlin
+val greetings = story("greetings") { 
+        send("Welcome to the Tock Open Data Bot! :)")
+        end("This is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock")
+}
+```
+
+Note that in the body of the function, *this* has a [BotBus](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.engine/-bot-bus/index.html) type.
+From which you can interact with the user, and which also allows you to access
+to all available contextual elements.
+
+When the intention *greetings* will be detected by the NLP model, 
+the function above will be called by the Tock framework.
+
+The bot sends successively a first response sentence (*bus.send()*), then a second one indicating that it is
+the last sentence of his answer using a *bus.end()*.
+
+Here is the full version of *greetings*:
+
+
+```kotlin
+val greetings = story("greetings") { 
+    //cleanup state
+    resetDialogState()
+
+    send("Welcome to the Tock Open Data Bot! :)")
+    send("This is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock")
+
+    withMessenger {
+        buttonsTemplate(
+                "The bot is very limited, but ask him a route or the next departures from a station in France, and see the result! :)",
+                postbackButton("Itineraries", search),
+                postbackButton("Departures", Departures),
+                postbackButton("Arrivals", Arrivals)
+        )
+    }
+    withGoogleAssistant {
+        gaMessage(
+                "The bot is very limited, but ask him a route or the next departures from a station in France, and see the result! :)",
+                "Itineraries",
+                "Departures",
+                "Arrivals")
+    }
+
+    end()
+}
+``` 
+
+Two notions have been added:
+
+- *resetDialogState()* which cleanup the state (forgetting any previous context).
+
+- the *withMessenger{}* and *withGoogleAssistant{}* methods that define specific responses for each connector -
+Here it's a text with buttons for Messenger, and a text with suggestions for Google Assistant.
+
+## Complex Stories
+
+Of course, the *StoryHandler* of *greetings* does not depend on the context: the answer is always the same.
+
+### Secondary Intentions
+
+Here is the beginning of the definition of the *search* story :
+
+```kotlin
+val search = story<SearchDef>(
+        "search",
+        setOf(indicate_origin),
+        setOf(indicate_location)) {
+   
+}
+``` 
+
+The story **search** defines a secondary *starter* intent (*indicate_origin*)
+and a simple secondary intention (*indicate_location*).
+
+A secondary *starter* intent is similar in every respect to the main intention:
+as soon as the NLP model detects this intention, it will execute the story *search*, regardless of the context.
+
+For a simple secondary intention, on the other hand, the story will be executed only if the current story of the context
+is *already* the **search** story . Several different stories can therefore share the same secondary intentions.
+
+### Handle Entities
+
+To retrieve entity values, it is good practice to define Kotlin **extensions**.
+For example here is the code used to retrieve the *destination* entity:
+
+```kotlin
+
+val destinationEntity = openBot.entity("location", "destination") 
+
+var BotBus.destination: Place?
+    get() = place(destinationEntity)
+    set(value) = setPlace(destinationEntity, value)
+    
+private fun BotBus.place(entity: Entity): Place? = entityValue(entity, ::placeValue)?.place
+
+private fun BotBus.setPlace(entity: Entity, place: Place?) = changeEntityValue(entity, place?.let { PlaceValue(place) })
+    
+```
+
+An entity of type "location" and role "destination" is created.
+There is a corresponding entity in the NLP model.
+
+A variable *destination* is defined, which will simplify the handling of this entity in the conversational code.
+This variable contains the current value of the destination in the user context.
+
+Here's a full version of the *search* story that uses *destination*:
+ 
+```kotlin
+
+val search = story<SearchDef>(
+        "search",
+        setOf(indicate_origin),
+        setOf(indicate_location)) {
+
+        //check mandatory entities
+        when {
+            destination == null -> end("For which destination?")
+            origin == null -> end("For which origin?")
+            departureDate == null -> end("When?")
+        } 
+}
+
+``` 
+
+If there is no value in the current context for the destination, the bot asks to specify the destination and stays there.
+Same behaviour for the origin or date of departure.
+
+If the 3 required values are specified, then the real answer developed in the *SearchDef* class is used.
+
+Here is the full version of this first part of the code:
+
+```kotlin
+
+val search = story<SearchDef>(
+        "search",
+        setOf(indicate_origin),
+        setOf(indicate_location)) {
+
+        //handle generic location intent
+        if (isIntent(indicate_location) && location != null) {
+            if (destination == null || origin != null) {
+                destination = returnsAndRemoveLocation()
+            } else {
+                origin = returnsAndRemoveLocation()
+            }
+        }    
+    
+        //check mandatory entities
+        when {
+            destination == null -> end("For which destination?")
+            origin == null -> end("For which origin?")
+            departureDate == null -> end("When?")
+        } 
+}
+
+```
+
+In the case where the detected intention is *indicate_location*, we do not know if the locality represents the origin or the destination.
+
+A simple rule is then used:
+If there is already in the context an origin and no destination, the new locality is actually the destination.
+Otherwise, it is the origin.
+
+### Use HandlerDef
+
+In the *search* story above, you may have noted the generic *SearchDef* typing.
+Here is the code of this class:
+
+```kotlin
+@GAHandler(GASearchConnector::class)
+@MessengerHandler(MessengerSearchConnector::class)
+class SearchDef(bus: BotBus) : HandlerDef<SearchConnector>(bus) {
+   
+    private val d: Place = bus.destination!!
+    private val o: Place = bus.origin!!
+    private val date: LocalDateTime = bus.departureDate!!
+
+    override fun answer() {
+        send("From {0} to {1}", o, d)
+        send("Departure on {0}", date by datetimeFormat)
+        val journeys = SncfOpenDataClient.journey(o, d, date)
+        if (journeys.isEmpty()) {
+            end("Sorry, no routes found :(")
+        } else {
+            send("Here is the first proposal:")
+            connector?.sendFirstJourney(journeys.first())
+            end()
+        }
+    }
+}
+```
+
+*SearchDef* extends *HandlerDef* which is an alias of a Tock framework class.
+
+It is usually here that the code of complex *stories* is defined.
+
+The code contains an additional abstraction: **SearchConnector**.
+
+*SearchConnector* is the class that defines the behavior specific to each connector, and the annotations
+**@GAHandler**(GASearchConnector::class) and **@MessengerHandler**(MessengerSearchConnector::class) 
+indicate the corresponding implementations for the different supported connectors (respectively Google Assistant and Messenger).
+ 
+
+What would happen there is no connector for Google Assistant for example, and if a call from Google Assistant is answered?
+
+
+The *connector?.sendFirstJourney(journeys.first())* method call would not send the final response,
+since *connector* would be *null*.
+
+### Use ConnectorDef
+
+Here is a simplified version of *SearchConnector* :
+
+```kotlin
+sealed class SearchConnector(context: SearchDef) : ConnectorDef<SearchDef>(context) {
+
+    fun Section.title(): CharSequence = i18n("{0} - {1}", from, to)
+
+    fun sendFirstJourney(journey: Journey) = withMessage(sendFirstJourney(journey.publicTransportSections()))
+    
+    abstract fun sendFirstJourney(sections: List<Section>): ConnectorMessage
+
+}
+``` 
+
+And its Messenger implementation:
+
+```kotlin
+class MessengerSearchConnector(context: SearchDef) : SearchConnector(context) {
+
+    override fun sendFirstJourney(sections: List<Section>): ConnectorMessage =
+          flexibleListTemplate(
+                sections.map { section ->
+                      with(section) {
+                          listElement(
+                                title(),
+                                content(),
+                                trainImage
+                          )
+                      }
+                },
+                compact
+          )
+}
+```
+
+The code specific to each connector is thus decoupled correctly.
+The code common to each connector is present in *SearchConnector* and the behavior specific to
+each connector is specified in the dedicated classes.
+
+## Start and Connect the Bot
+
+To start the bot, simply add the following call to your main function:
+
+```kotlin
+registerAndInstallBot(openBot)
+``` 
+
+where the *openBot* variable is the bot you originally defined.
+
+You need also to specify which connectors are used.
+For example, to connect the bot to Messenger and Google Assistant:
+
+```kotlin
+addMessengerConnector(..)
+addGoogleAssistantConnector(..)
+registerAndInstallBot(openBot)
+
+```
+
+The documentation for each connector is in the README file of the corresponding sub-projects. 
+
+Three are available at the moment:
+
+* [Messenger](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-messenger)
+* [Google Assistant](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-ga)
+* [Slack](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-slack)

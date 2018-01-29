@@ -91,7 +91,7 @@ En cliquant sur le bouton de modification, plusieurs options sont disponibles.
 
 ### Sélection du moteur NLP
 
-Vous avez la possibilité de sélectionner la librairie NLP utilisée par cette application à l'aide du bouton radio "NLP engine" :
+Vous avez la possibilité de sélectionner la librairie NLP utilisée par cette application à l'aide du bouton radio "NLP engine".
 
 ### Utilisation des modèles d'entités
 

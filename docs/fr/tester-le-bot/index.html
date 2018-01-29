@@ -424,57 +424,56 @@
 <div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>fr.vsct.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>bot-test<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>0.7.3<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;version&gt;</span>0.8.0<span class="nt">&lt;/version&gt;</span>
             <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 
 
 <p>ou Gradle :</p>
-<div class="codehilite"><pre><span></span>      testCompile &#39;fr.vsct.tock:bot-test:0.7.3&#39;
+<div class="codehilite"><pre><span></span>      testCompile &#39;fr.vsct.tock:bot-test:0.8.0&#39;
 </pre></div>
 
 
 <p>L'ensemble de ce framework est documenté au format KDoc <a href="../../dokka/tock/fr.vsct.tock.bot.test">ici</a>. </p>
 <h2 id="ecrire-un-test-simple">Ecrire un test simple<a class="headerlink" href="#ecrire-un-test-simple" title="Permanent link">&para;</a></h2>
-<p>Afin de tester la story <strong>greetings</strong> du bot Open Data, il suffit d'utiliser l'extension <em>startMock()</em>
+<p>Afin de tester la story <strong>greetings</strong> du bot Open Data, il suffit d'utiliser l'extension <em>startNewBusMock()</em>
  qui permet d'obtenir un mock du bus conversationnel. Le test unitaire s'écrit alors ainsi :   </p>
 <div class="codehilite"><pre><span></span>    <span class="n">@Test</span>
-    <span class="k">fun</span> <span class="nf">greetings_shouldDisplayWelcomeMessage</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">val</span> <span class="py">bus</span> <span class="p">=</span> <span class="n">openBot</span><span class="p">.</span><span class="n">startMock</span><span class="p">()</span>
-
-        <span class="n">bus</span><span class="p">.</span><span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Bienvenue chez le Bot Open Data Sncf! :)&quot;</span><span class="p">)</span>
-        <span class="n">bus</span><span class="p">.</span><span class="n">secondAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock&quot;</span><span class="p">)</span>
+    <span class="k">fun</span> <span class="err">`</span><span class="nf">greetings</span> <span class="n">story</span> <span class="n">displays</span> <span class="n">welcome</span> <span class="n">message</span> <span class="n">WHEN</span> <span class="n">locale</span> <span class="k">is</span> <span class="n">fr</span><span class="err">`</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">with</span><span class="p">(</span><span class="n">openBot</span><span class="p">.</span><span class="n">startNewBusMock</span><span class="p">(</span><span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span><span class="p">))</span> <span class="p">{</span>
+            <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Bienvenue chez le Bot Open Data Sncf! :)&quot;</span><span class="p">)</span>
+            <span class="n">secondAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock&quot;</span><span class="p">)</span>
+        <span class="p">}</span> 
     <span class="p">}</span>
 </pre></div>
 
 
 <p>Comme le connector par défaut est celui de Messenger, il est possible de tester de la même manière le message spécifique à Messenger : </p>
-<div class="codehilite"><pre><span></span>     <span class="n">with</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">lastAnswer</span><span class="p">.</span><span class="n">assertMessage</span><span class="p">(</span>
-                               <span class="n">buttonsTemplate</span><span class="p">(</span>
-                                       <span class="s">&quot;Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d&#39;une gare et constatez le résultat! :) &quot;</span><span class="p">,</span>
-                                       <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Itinéraires&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">),</span>
-                                       <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Départs&quot;</span><span class="p">,</span> <span class="n">Departures</span><span class="p">),</span>
-                                       <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Arrivées&quot;</span><span class="p">,</span> <span class="n">Arrivals</span><span class="p">)</span>
-                               <span class="p">)</span>
-                       <span class="p">)</span>
-     <span class="p">}</span>
+<div class="codehilite"><pre><span></span>     <span class="n">lastAnswer</span><span class="p">.</span><span class="n">assertMessage</span><span class="p">(</span>
+            <span class="n">buttonsTemplate</span><span class="p">(</span>
+                  <span class="s">&quot;Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d&#39;une gare et constatez le résultat! :)&quot;</span><span class="p">,</span>
+                  <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Itinéraires&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">),</span>
+                  <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Départs&quot;</span><span class="p">,</span> <span class="n">Departures</span><span class="p">),</span>
+                  <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Arrivées&quot;</span><span class="p">,</span> <span class="n">Arrivals</span><span class="p">)</span>
+            <span class="p">)</span>
+     <span class="p">)</span>
 </pre></div>
 
 
 <p>Pour tester le message spécifique à Google Assistant (ou tout autre connecteur),
  il est nécessaire de spécifier le connecteur que l'on souhaite tester :</p>
-<div class="codehilite"><pre><span></span>    <span class="k">val</span> <span class="py">bus</span> <span class="p">=</span> <span class="n">openBot</span><span class="p">.</span><span class="n">startMock</span><span class="p">(</span><span class="n">connectorType</span> <span class="p">=</span> <span class="n">gaConnectorType</span><span class="p">)</span>
-    <span class="n">with</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
-                <span class="n">lastAnswer</span><span class="p">.</span><span class="n">assertMessage</span><span class="p">(</span>
-                        <span class="n">gaMessage</span><span class="p">(</span>
-                                <span class="s">&quot;Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d&#39;une gare et constatez le résultat! :) &quot;</span><span class="p">,</span>
-                                <span class="s">&quot;Itinéraires&quot;</span><span class="p">,</span>
-                                <span class="s">&quot;Départs&quot;</span><span class="p">,</span>
-                                <span class="s">&quot;Arrivées&quot;</span><span class="p">)</span>
+<div class="codehilite"><pre><span></span>    <span class="n">with</span><span class="p">(</span><span class="n">openBot</span><span class="p">.</span><span class="n">startNewBusMock</span><span class="p">(</span><span class="n">connectorType</span> <span class="p">=</span> <span class="n">gaConnectorType</span><span class="p">,</span> <span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span><span class="p">))</span> <span class="p">{</span>
+         <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Bienvenue chez le Bot Open Data Sncf! :)&quot;</span><span class="p">)</span>
+         <span class="n">secondAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock&quot;</span><span class="p">)</span>
+         <span class="n">lastAnswer</span><span class="p">.</span><span class="n">assertMessage</span><span class="p">(</span>
+               <span class="n">gaMessage</span><span class="p">(</span>
+                      <span class="s">&quot;Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d&#39;une gare et constatez le résultat! :)&quot;</span><span class="p">,</span>
+                      <span class="s">&quot;Itinéraires&quot;</span><span class="p">,</span>
+                      <span class="s">&quot;Départs&quot;</span><span class="p">,</span>
+                      <span class="s">&quot;Arrivées&quot;</span><span class="p">)</span>
                 <span class="p">)</span>
-            <span class="p">}</span>
+    <span class="p">}</span>
 </pre></div>
 
 
@@ -482,10 +481,10 @@
 <p>Dans les exemples précédents, il n'était pas nécessaire d'indiquer la story à tester (<em>greetings</em> étant la story par défaut).
 Supposons que nous souhaitons la story <strong>search</strong>, nous devons préciser la story à tester de la manière suivante  : </p>
 <div class="codehilite"><pre><span></span>    <span class="n">@Test</span>
-    <span class="k">fun</span> <span class="nf">search_shouldAskForDestination_WhenNoDestinationInContext</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">val</span> <span class="py">bus</span> <span class="p">=</span> <span class="n">openBot</span><span class="p">.</span><span class="n">startMock</span><span class="p">(</span><span class="n">search</span><span class="p">)</span>
-
-        <span class="n">bus</span><span class="p">.</span><span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
+    <span class="k">fun</span> <span class="err">`</span><span class="nf">search</span> <span class="n">story</span> <span class="n">asks</span> <span class="k">for</span> <span class="n">destination</span> <span class="n">WHEN</span> <span class="n">there</span> <span class="k">is</span> <span class="n">no</span> <span class="n">destination</span> <span class="k">in</span> <span class="n">context</span><span class="err">`</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">with</span><span class="p">(</span><span class="n">openBot</span><span class="p">.</span><span class="n">startNewBusMock</span><span class="p">(</span><span class="n">search</span><span class="p">,</span> <span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span><span class="p">))</span> <span class="p">{</span>
+             <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
+        <span class="p">}</span>
     <span class="p">}</span>
 </pre></div>
 
@@ -493,47 +492,37 @@ Supposons que nous souhaitons la story <strong>search</strong>, nous devons pré
 <h2 id="tester-un-dialogue">Tester un dialogue<a class="headerlink" href="#tester-un-dialogue" title="Permanent link">&para;</a></h2>
 <p>Il est possible de simuler un dialogue complet. Par exemple, on simule ici que l'utilisateur indique la destination :</p>
 <div class="codehilite"><pre><span></span>    <span class="n">@Test</span>
-    <span class="k">fun</span> <span class="nf">search_shouldAskForOrigin_WhenThereIsDestinationButNoOriginInContext</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">val</span> <span class="py">bus</span> <span class="p">=</span> <span class="n">openBot</span><span class="p">.</span><span class="n">startMock</span><span class="p">(</span><span class="n">search</span><span class="p">)</span>
-
-        <span class="n">with</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
-
-            <span class="n">destination</span> <span class="p">=</span> <span class="n">mockedDestination</span>
-
-            <span class="n">run</span><span class="p">()</span>
-
-            <span class="n">secondAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Pour quelle origine?&quot;</span><span class="p">)</span>
+    <span class="k">fun</span> <span class="err">`</span><span class="nf">search</span> <span class="n">story</span> <span class="n">asks</span> <span class="k">for</span> <span class="n">origin</span> <span class="n">WHEN</span> <span class="n">there</span> <span class="k">is</span> <span class="n">a</span> <span class="n">destination</span> <span class="n">but</span> <span class="n">no</span> <span class="n">origin</span> <span class="k">in</span> <span class="n">context</span><span class="err">`</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">with</span><span class="p">(</span><span class="n">openBot</span><span class="p">.</span><span class="n">startNewBusMock</span><span class="p">(</span><span class="n">story</span> <span class="p">=</span> <span class="n">search</span><span class="p">,</span> <span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span><span class="p">))</span> <span class="p">{</span>
+             <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
+             <span class="n">destination</span> <span class="p">=</span> <span class="n">mockedDestination</span>
+        <span class="p">}</span>
+        <span class="n">with</span><span class="p">(</span><span class="n">openBot</span><span class="p">.</span><span class="n">startBusMock</span><span class="p">())</span> <span class="p">{</span>
+             <span class="n">firstBusAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Pour quelle origine?&quot;</span><span class="p">)</span>
+             <span class="n">origin</span> <span class="p">=</span> <span class="n">mockedOrigin</span>
         <span class="p">}</span>
     <span class="p">}</span>
 </pre></div>
 
 
-<p>La variable <em>destination</em> du contexte est mise à jour, puis un appel au bus est simulé avec la fonction <em>run()</em>.</p>
-<p>Il est possible de modifier toutes les valeurs du bus mocké. Dans l'exemple suivant, on simule l'intention secondaire <em>indicate_location</em>
+<p>Il est possible de modifier toutes les valeurs du bus mocké à l'initialisation. Dans l'exemple suivant, on simule l'intention secondaire <em>indicate_location</em>
 afin d'indiquer l'origine : </p>
 <div class="codehilite"><pre><span></span>    <span class="n">@Test</span>
-    <span class="k">fun</span> <span class="nf">search_shouldAskForDepartureDate_WhenThereIsDestinationAndOriginButNoDepartureDateInContext</span><span class="p">()</span> <span class="p">{</span>
-        <span class="k">val</span> <span class="py">bus</span> <span class="p">=</span> <span class="n">openBot</span><span class="p">.</span><span class="n">startMock</span><span class="p">(</span><span class="n">search</span><span class="p">)</span>
+    <span class="k">fun</span> <span class="err">`</span><span class="nf">search</span> <span class="n">story</span> <span class="n">asks</span> <span class="k">for</span> <span class="n">departure</span> <span class="n">date</span> <span class="n">WHEN</span> <span class="n">there</span> <span class="k">is</span> <span class="n">a</span> <span class="n">destination</span> <span class="n">and</span> <span class="n">an</span> <span class="n">origin</span> <span class="n">but</span> <span class="n">no</span> <span class="n">departure</span> <span class="n">date</span> <span class="k">in</span> <span class="n">context</span><span class="err">`</span><span class="p">()</span> <span class="p">{</span>
+         <span class="n">with</span><span class="p">(</span><span class="n">openBot</span><span class="p">.</span><span class="n">newBusMock</span><span class="p">(</span><span class="n">search</span><span class="p">,</span> <span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span><span class="p">))</span> <span class="p">{</span>
+             <span class="n">destination</span> <span class="p">=</span> <span class="n">mockedDestination</span>
+             <span class="n">intent</span> <span class="p">=</span> <span class="n">indicate_location</span>
+             <span class="n">location</span> <span class="p">=</span> <span class="n">mockedOrigin</span>
 
-        <span class="n">with</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
-            <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
+             <span class="n">run</span><span class="p">()</span>
 
-            <span class="n">destination</span> <span class="p">=</span> <span class="n">mockedDestination</span>
-
-            <span class="n">run</span><span class="p">()</span>
-
-            <span class="n">secondAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Pour quelle origine?&quot;</span><span class="p">)</span>
-
-            <span class="n">intent</span> <span class="p">=</span> <span class="n">indicate_location</span>
-            <span class="n">location</span> <span class="p">=</span> <span class="n">mockedOrigin</span>
-
-            <span class="n">run</span><span class="p">()</span>
-
-            <span class="n">thirdAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
-        <span class="p">}</span>
+             <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
+         <span class="p">}</span>
     <span class="p">}</span>
 </pre></div>
+
+
+<p>La variable <em>destination</em> du contexte est mise à jour, puis un appel au bus est simulé avec la fonction <em>run()</em>. </p>
                 
                   
                 

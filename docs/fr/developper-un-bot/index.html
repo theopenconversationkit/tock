@@ -526,13 +526,13 @@ via l'interface d'administration. </p>
 <div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>fr.vsct.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>bot-toolkit<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>0.7.3<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;version&gt;</span>0.8.0<span class="nt">&lt;/version&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 
 
 <p>ou Gradle :</p>
-<div class="codehilite"><pre><span></span>      compile &#39;fr.vsct.tock:bot-toolkit:0.7.3&#39;
+<div class="codehilite"><pre><span></span>      compile &#39;fr.vsct.tock:bot-toolkit:0.8.0&#39;
 </pre></div>
 
 
@@ -556,51 +556,47 @@ via l'interface d'administration. </p>
 <p>Une <em>Story</em> est un regroupement fonctionnel qui correspond à une intention principale et, de manière optionelle,
 à une ou plusieurs intentions dites "secondaires".</p>
 <p>Ici le bot définit 4 <em>Stories</em>, greetings, departures, arrivals et search. 
-Greetings est par ailleurs ( <em>hello = greetings</em>) indiquée comme étant la story présentée par défaut lors du début d'une conversation.</p>
+<em>greetings</em> est par ailleurs ( <em>hello = greetings</em>) indiquée comme étant la story présentée par défaut lors du début d'une conversation.</p>
 <h2 id="une-story-simple">Une Story simple<a class="headerlink" href="#une-story-simple" title="Permanent link">&para;</a></h2>
 <p>Comment définit-on une Story? Voici une première version simplifiée de la Story <em>greetings</em> :</p>
-<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">greetings</span> <span class="p">=</span> <span class="n">story</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="n">bus</span> <span class="p">-&gt;</span>
-    <span class="n">with</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
-        <span class="n">send</span><span class="p">(</span><span class="s">&quot;Bienvenue chez le Bot Open Data Sncf! :)&quot;</span><span class="p">)</span>
-        <span class="n">send</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock&quot;</span><span class="p">)</span>
-
-        <span class="n">end</span><span class="p">()</span>
-    <span class="p">}</span>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">greetings</span> <span class="p">=</span> <span class="n">story</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="n">send</span><span class="p">(</span><span class="s">&quot;Bienvenue chez le Bot Open Data Sncf! :)&quot;</span><span class="p">)</span>
+    <span class="n">end</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock&quot;</span><span class="p">)</span>
 <span class="p">}</span>
 </pre></div>
 
 
-<p>Notez la présence du <em>bus</em>, à partir duquel vous pouvez interagir avec l'utilisateur, et qui permet également d'accèder
+<p>Notez que dans le corps de la fonction, <em>this</em> est de type <a href="https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.engine/-bot-bus/index.html">BotBus</a>,
+à partir duquel vous pouvez interagir avec l'utilisateur, et qui permet également d'accèder
 à tous les élements contextuels disponibles.</p>
 <p>Concrètement sela signifie que quand l'intention <em>greetings</em> sera détectée par le modèle NLP, la fonction ci-dessus sera appelée par le framework Tock.</p>
-<p>Le bot envoie donc successivement deux phrases de réponse (<em>bus.send()</em>), puis indique qu'il a terminé à l'aide d'un <em>bus.end()</em>.</p>
+<p>Le bot envoie donc successivement une première phrase de réponse (<em>bus.send()</em>), puis un deuxième en indiquant que c'est 
+la dernière phrase de sa réponse à l'aide d'un <em>bus.end()</em>.</p>
 <p>Voici maintenant la version complète de <em>greetings</em> :</p>
-<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">greetings</span> <span class="p">=</span> <span class="n">story</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span> <span class="n">bus</span> <span class="p">-&gt;</span>
-    <span class="n">with</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
-        <span class="c1">//cleanup state</span>
-        <span class="n">resetDialogState</span><span class="p">()</span>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">greetings</span> <span class="p">=</span> <span class="n">story</span><span class="p">(</span><span class="s">&quot;greetings&quot;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//cleanup state</span>
+    <span class="n">resetDialogState</span><span class="p">()</span>
 
-        <span class="n">send</span><span class="p">(</span><span class="s">&quot;Bienvenue chez le Bot Open Data Sncf! :)&quot;</span><span class="p">)</span>
-        <span class="n">send</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock&quot;</span><span class="p">)</span>
+    <span class="n">send</span><span class="p">(</span><span class="s">&quot;Bienvenue chez le Bot Open Data Sncf! :)&quot;</span><span class="p">)</span>
+    <span class="n">send</span><span class="p">(</span><span class="s">&quot;Il s&#39;agit d&#39;un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock&quot;</span><span class="p">)</span>
 
-        <span class="n">withMessenger</span> <span class="p">{</span>
-            <span class="n">buttonsTemplate</span><span class="p">(</span>
-                    <span class="s">&quot;Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d&#39;une gare et constatez le résultat! :) &quot;</span><span class="p">,</span>
-                    <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Itinéraires&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">),</span>
-                    <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Départs&quot;</span><span class="p">,</span> <span class="n">Departures</span><span class="p">),</span>
-                    <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Arrivées&quot;</span><span class="p">,</span> <span class="n">Arrivals</span><span class="p">)</span>
-            <span class="p">)</span>
-        <span class="p">}</span>
-        <span class="n">withGoogleAssistant</span> <span class="p">{</span>
-            <span class="n">gaMessage</span><span class="p">(</span>
-                    <span class="s">&quot;Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d&#39;une gare et constatez le résultat! :) &quot;</span><span class="p">,</span>
-                    <span class="s">&quot;Itinéraires&quot;</span><span class="p">,</span>
-                    <span class="s">&quot;Départs&quot;</span><span class="p">,</span>
-                    <span class="s">&quot;Arrivées&quot;</span><span class="p">)</span>
-        <span class="p">}</span>
-
-        <span class="n">end</span><span class="p">()</span>
+    <span class="n">withMessenger</span> <span class="p">{</span>
+        <span class="n">buttonsTemplate</span><span class="p">(</span>
+              <span class="s">&quot;Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d&#39;une gare et constatez le résultat! :) &quot;</span><span class="p">,</span>
+              <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Itinéraires&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">),</span>
+              <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Départs&quot;</span><span class="p">,</span> <span class="n">Departures</span><span class="p">),</span>
+              <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Arrivées&quot;</span><span class="p">,</span> <span class="n">Arrivals</span><span class="p">)</span>
+        <span class="p">)</span>
     <span class="p">}</span>
+    <span class="n">withGoogleAssistant</span> <span class="p">{</span>
+       <span class="n">gaMessage</span><span class="p">(</span>
+              <span class="s">&quot;Il est volontairement très limité, mais demandez lui un itinéraire ou les départs à partir d&#39;une gare et constatez le résultat! :) &quot;</span><span class="p">,</span>
+              <span class="s">&quot;Itinéraires&quot;</span><span class="p">,</span>
+              <span class="s">&quot;Départs&quot;</span><span class="p">,</span>
+              <span class="s">&quot;Arrivées&quot;</span><span class="p">)</span>
+       <span class="p">}</span>
+
+    <span class="n">end</span><span class="p">()</span>
 <span class="p">}</span>
 </pre></div>
 
@@ -623,7 +619,7 @@ Ici un texte avec des boutons pour Messenger, et un texte avec des suggestions p
 <div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">story</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
         <span class="s">&quot;search&quot;</span><span class="p">,</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
-        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span> <span class="n">bus</span> <span class="p">-&gt;</span>
+        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
 
 <span class="p">}</span>
 </pre></div>
@@ -658,31 +654,27 @@ Cette variable contient la valeur actuelle de la destination dans le contexte ut
 <div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">story</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
         <span class="s">&quot;search&quot;</span><span class="p">,</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
-        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span> <span class="n">bus</span> <span class="p">-&gt;</span>
+        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
 
-    <span class="n">with</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
         <span class="c1">//check mandatory entities</span>
         <span class="k">when</span> <span class="p">{</span>
             <span class="n">destination</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
             <span class="n">origin</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Pour quelle origine?&quot;</span><span class="p">)</span>
             <span class="n">departureDate</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
-            <span class="k">else</span> <span class="p">-&gt;</span> <span class="n">SearchDef</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span>
-        <span class="p">}</span> <span class="k">as</span><span class="p">?</span> <span class="n">SearchDef</span>
-    <span class="p">}</span>
+        <span class="p">}</span> 
 <span class="p">}</span>
 </pre></div>
 
 
 <p>Si il n'y a pas de valeur dans le contexte courant pour la destination, le bot demande de spécifier la destination et en reste là.
 Idem pour l'origine ou la date de départ.</p>
-<p>Si les 3 valeurs obligatoires sont spécifiées, il passe à la réponse proprement dite (<em>SearchDef(bus)</em>).</p>
+<p>Si les 3 valeurs obligatoires sont spécifiées, il passe à la réponse proprement dite développée dans la classe (<em>SearchDef</em>).</p>
 <p>La version complète de cette première partie du code est la suivante :</p>
 <div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">story</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
         <span class="s">&quot;search&quot;</span><span class="p">,</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
-        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span> <span class="n">bus</span> <span class="p">-&gt;</span>
+        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
 
-    <span class="n">with</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span> <span class="p">{</span>
         <span class="c1">//handle generic location intent</span>
         <span class="k">if</span> <span class="p">(</span><span class="n">isIntent</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">)</span> <span class="p">&amp;&amp;</span> <span class="n">location</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
             <span class="k">if</span> <span class="p">(</span><span class="n">destination</span> <span class="p">==</span> <span class="k">null</span> <span class="p">||</span> <span class="n">origin</span> <span class="p">!=</span> <span class="k">null</span><span class="p">)</span> <span class="p">{</span>
@@ -697,9 +689,7 @@ Idem pour l'origine ou la date de départ.</p>
             <span class="n">destination</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
             <span class="n">origin</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Pour quelle origine?&quot;</span><span class="p">)</span>
             <span class="n">departureDate</span> <span class="p">==</span> <span class="k">null</span> <span class="p">-&gt;</span> <span class="n">end</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
-            <span class="k">else</span> <span class="p">-&gt;</span> <span class="n">SearchDef</span><span class="p">(</span><span class="n">bus</span><span class="p">)</span>
-        <span class="p">}</span> <span class="k">as</span><span class="p">?</span> <span class="n">SearchDef</span>
-    <span class="p">}</span>
+        <span class="p">}</span>
 <span class="p">}</span>
 </pre></div>
 
@@ -709,7 +699,7 @@ Il est donc codé une règle simple :
 Si il existe déjà dans le contexte une origine et pas de destination, la nouvelle localité est en fait la destination.
 Sinon, il s'agit de l'origine. </p>
 <h3 id="utiliser-handlerdef">Utiliser HandlerDef<a class="headerlink" href="#utiliser-handlerdef" title="Permanent link">&para;</a></h3>
-<p>Dans la définition de la story <em>search</em> ci-dessus, vous avez pu noter la récurrence de la notion de <em>SearchDef</em>. 
+<p>Dans la définition de la story <em>search</em> ci-dessus, vous avez pu noter le typage générique <em>SearchDef</em>. 
 Voici le code de cette classe :</p>
 <div class="codehilite"><pre><span></span><span class="n">@GAHandler</span><span class="p">(</span><span class="n">GASearchConnector</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
 <span class="n">@MessengerHandler</span><span class="p">(</span><span class="n">MessengerSearchConnector</span><span class="o">::</span><span class="k">class</span><span class="p">)</span>
@@ -749,9 +739,9 @@ Voici le code de cette classe :</p>
 
     <span class="k">fun</span> <span class="nf">Section</span><span class="p">.</span><span class="n">title</span><span class="p">():</span> <span class="n">CharSequence</span> <span class="p">=</span> <span class="n">i18n</span><span class="p">(</span><span class="s">&quot;{0} - {1}&quot;</span><span class="p">,</span> <span class="n">from</span><span class="p">,</span> <span class="n">to</span><span class="p">)</span>
 
-    <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">journey</span><span class="p">:</span> <span class="n">Journey</span><span class="p">)</span> <span class="p">=</span> <span class="n">sendFirstJourney</span><span class="p">(</span><span class="n">journey</span><span class="p">.</span><span class="n">publicTransportSections</span><span class="p">())</span>
+    <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">journey</span><span class="p">:</span> <span class="n">Journey</span><span class="p">)</span> <span class="p">=</span> <span class="n">withMessage</span><span class="p">(</span><span class="n">sendFirstJourney</span><span class="p">(</span><span class="n">journey</span><span class="p">.</span><span class="n">publicTransportSections</span><span class="p">()))</span>
 
-    <span class="k">abstract</span> <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Section</span><span class="p">&gt;)</span>
+    <span class="k">abstract</span> <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Section</span><span class="p">&gt;):</span> <span class="n">ConnectorMessage</span>
 
 <span class="p">}</span>
 </pre></div>
@@ -760,28 +750,24 @@ Voici le code de cette classe :</p>
 <p>et son implémentation pour Messenger :</p>
 <div class="codehilite"><pre><span></span><span class="k">class</span> <span class="nc">MessengerSearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">:</span> <span class="n">SearchDef</span><span class="p">)</span> <span class="p">:</span> <span class="n">SearchConnector</span><span class="p">(</span><span class="n">context</span><span class="p">)</span> <span class="p">{</span>
 
-    <span class="k">override</span> <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Section</span><span class="p">&gt;)</span> <span class="p">{</span>
-        <span class="n">withMessage</span><span class="p">(</span>
-                <span class="n">flexibleListTemplate</span><span class="p">(</span>
-                        <span class="n">sections</span><span class="p">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">section</span> <span class="p">-&gt;</span>
-                            <span class="n">with</span><span class="p">(</span><span class="n">section</span><span class="p">)</span> <span class="p">{</span>
-                                <span class="n">listElement</span><span class="p">(</span>
-                                        <span class="n">title</span><span class="p">(),</span>
-                                        <span class="n">content</span><span class="p">(),</span>
-                                        <span class="n">trainImage</span>
-                                <span class="p">)</span>
-                            <span class="p">}</span>
-                        <span class="p">},</span>
-                        <span class="n">compact</span>
-                <span class="p">)</span>
-        <span class="p">)</span>
-    <span class="p">}</span>
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">sendFirstJourney</span><span class="p">(</span><span class="n">sections</span><span class="p">:</span> <span class="n">List</span><span class="p">&lt;</span><span class="n">Section</span><span class="p">&gt;):</span> <span class="n">ConnectorMessage</span> <span class="p">=</span>
+          <span class="n">flexibleListTemplate</span><span class="p">(</span>
+                <span class="n">sections</span><span class="p">.</span><span class="n">map</span> <span class="p">{</span> <span class="n">section</span> <span class="p">-&gt;</span>
+                      <span class="n">with</span><span class="p">(</span><span class="n">section</span><span class="p">)</span> <span class="p">{</span>
+                          <span class="n">listElement</span><span class="p">(</span>
+                                <span class="n">title</span><span class="p">(),</span>
+                                <span class="n">content</span><span class="p">(),</span>
+                                <span class="n">trainImage</span>
+                          <span class="p">)</span>
+                      <span class="p">}</span>
+                <span class="p">},</span>
+                <span class="n">compact</span>
+          <span class="p">)</span>
 <span class="p">}</span>
 </pre></div>
 
 
-<p>Le code spécifique à chaque connecteur est ainsi correctement découplé. </p>
-<p>Le code commun à chaque connecteur est présent dans <em>SearchConnector</em> et le comportement spécifique à
+<p>Le code spécifique à chaque connecteur est ainsi correctement découplé. Le code commun à chaque connecteur est présent dans <em>SearchConnector</em> et le comportement spécifique à
 chaque connecteur se trouve dans les classes dédiées.</p>
 <h2 id="demarrer-et-connecter-le-bot">Démarrer et connecter le bot<a class="headerlink" href="#demarrer-et-connecter-le-bot" title="Permanent link">&para;</a></h2>
 <p>Pour démarrer le bot, il suffit de rajouter dans votre <em>main</em> principal l'appel suivant:</p>
@@ -789,7 +775,7 @@ chaque connecteur se trouve dans les classes dédiées.</p>
 </pre></div>
 
 
-<p>où la variable <em>openBot</em> est le bot que vous avez défini au départ</p>
+<p>où la variable <em>openBot</em> est le bot que vous avez défini au départ.</p>
 <p>Il est également nécessaire de spécifier quels connecteurs sont utilisés.
 Par exemple, pour connecter le bot à Messenger et à Google Assistant:</p>
 <div class="codehilite"><pre><span></span><span class="n">addMessengerConnector</span><span class="p">(..)</span>

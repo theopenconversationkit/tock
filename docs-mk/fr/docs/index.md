@@ -95,7 +95,7 @@ Cependant il est tout à fait possible de développer des applications en utilis
 
 ## Les différents projets open-sourcés
 
-* Le projet principal se trouve sous licence [Apache OpenNLP](https://opennlp.apache.org/). Le code source est disponible sur GitHub : [https://github.com/voyages-sncf-technologies/tock](https://github.com/voyages-sncf-technologies/tock)
+* Le projet principal se trouve sous licence [Apache](https://github.com/voyages-sncf-technologies/tock/blob/master/LICENSE). Le code source est disponible sur GitHub : [https://github.com/voyages-sncf-technologies/tock](https://github.com/voyages-sncf-technologies/tock)
 
 * Cependant une dépendance optionnelle,  [Stanford CoreNLP](https://stanfordnlp.github.io/CoreNLP/), est sous licence [GPL](https://fr.wikipedia.org/wiki/Licence_publique_g%C3%A9n%C3%A9rale_GNU). 
  Le code utilisant cette dépendance se trouve donc dans un projet à part, sous licence GPL : [https://github.com/voyages-sncf-technologies/tock-corenlp](https://github.com/voyages-sncf-technologies/tock-corenlp)

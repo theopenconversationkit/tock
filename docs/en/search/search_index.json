@@ -1,0 +1,354 @@
+{
+    "docs": [
+        {
+            "location": "/", 
+            "text": "Tock, The Open Conversation Kit\n\n\nIntroduction\n\n\nTock\n is a toolkit for building conversational agents (or bots).\n\n\nUnlike other toolkits, it does not depend on third-party APIs (but can easily integrate with them if necessary),\n and is fully Open Source, so you get complete control over your data and algorithms.\n\n\nThe source code is on github: \nhttps://github.com/voyages-sncf-technologies/tock\n under the \nApache 2 license\n.\n\n\nTwo major components are available:\n\n\n\n\nThe NLP (Natural Language Processing) stack\n\n\nA conversational framework that uses NLP services and provides connectors (for Messenger, Google Assistant and Slack at this time).\n\n\n\n\nThe NLP stack is independent of the conversational framework.\nIt is therefore possible to use the NLP without having to masterize the complexity induced by the management of conversations and contexts.\n\n\n\n\nA Platform to Build NLP Models\n\n\nAdministration Interface\n\n\nWith the administration interface, you can qualify\nsentences in order to build \nNLP\n models:\n\n\n\n\nQuality Monitoring\n\n\nThis interface also provides stats about realtime usage:\n\n\n\n\nStanford CoreNLP\n or \nApache OpenNLP\n\n\nThe underlying NLP engine is based on one of these open-source solutions (you can select the engine via the admin interface).\nTock provides a level of indirection that allows integration with other NLP libraries.\nThe integration of \nSparkNLP\n is also planned.\n\n\nDuckling\n\n\nA date and simple types parsing tool based on the open-source \nDuckling library\n\nis also integrated by default, in order to find and evaluate entities.\n\n\nNLP API\n\n\nThe models can be tested via the provided \nAPI\n.\n\n\nA Conversational Framework\n\n\nThe Tock Conversational Framework provides all you need to create and manage dialogs. \n\n\nKotlin\n is used as core language of the stack.\n\n\nThe framework uses the Tock NLP stack via its \nAPI\n.\n\n\nContext and History Management\n\n\nDialog contexts and conversation history management are supported.\nAdvanced features like entity values merge are also provided.\n\n\nThird party connectors\n\n\nConnectors to Facebook Messenger, Google Assistant and Slack are available.\nIt is easy to create others, whether to connect to other channels (please contribute!) or for custom needs.\n\n\nConversations monitoring\n\n\nYou can also test the bots and follow the conversations of users directly in the admin interface.\n\n\nGenesis of the project\n\n\nThe project was initiated in 2016 by the Innovation Team of \noui.sncf\n\nas a first step to build voice commands feature in its \nmobile applications\n.\n\n\nThe toolkit was then used to implement its \nMessenger Bot\n (fr only).\n\n\nSince, a dedicated team at oui.sncf maintains the stack.\n\n\nThe \noui.sncf Google Assistant\n is also based on Tock,\nas well as the web-based \nOUIbot\n (fr only for now).\n\n\nThe tools were open-sourced in the hope they will be useful. Contributions are welcomed.\n\n\nTechnologies\n\n\nThe application platform is the \nJVM\n.\n\n\nThe core language is \nKotlin\n.\n\n\nVert.x\n and \nMongoDB\n are also used internally. \n\n\nThe administration interfaces are implemented in \nAngular4\n / \nTypescript\n.\n\n\nOpen-sourced projects\n\n\n\n\n\n\nThe main project is under \nApache 2 license\n. The source code is available on GitHub: \nhttps://github.com/voyages-sncf-technologies/tock\n\n\n\n\n\n\nHowever an optional dependency, \nStanford CoreNLP\n, is under \nGPL license\n.\n The code using this dependency is therefore located in a separate project, under GPL license: \nhttps://github.com/voyages-sncf-technologies/tock-corenlp\n\n\n\n\n\n\nFinally two other projects are available:\n\n\n\n\nA project containing docker images: \nhttps://github.com/voyages-sncf-technologies/tock-docker\n\n\nA project containing an example of a bot implementation based on the Open Data \nSNCF APIs\n: \nhttps://github.com/voyages-sncf-technologies/tock-bot-open-data", 
+            "title": "Introduction"
+        }, 
+        {
+            "location": "/#tock-the-open-conversation-kit", 
+            "text": "", 
+            "title": "Tock, The Open Conversation Kit"
+        }, 
+        {
+            "location": "/#introduction", 
+            "text": "Tock  is a toolkit for building conversational agents (or bots).  Unlike other toolkits, it does not depend on third-party APIs (but can easily integrate with them if necessary),\n and is fully Open Source, so you get complete control over your data and algorithms.  The source code is on github:  https://github.com/voyages-sncf-technologies/tock  under the  Apache 2 license .  Two major components are available:   The NLP (Natural Language Processing) stack  A conversational framework that uses NLP services and provides connectors (for Messenger, Google Assistant and Slack at this time).   The NLP stack is independent of the conversational framework.\nIt is therefore possible to use the NLP without having to masterize the complexity induced by the management of conversations and contexts.", 
+            "title": "Introduction"
+        }, 
+        {
+            "location": "/#a-platform-to-build-nlp-models", 
+            "text": "", 
+            "title": "A Platform to Build NLP Models"
+        }, 
+        {
+            "location": "/#administration-interface", 
+            "text": "With the administration interface, you can qualify\nsentences in order to build  NLP  models:", 
+            "title": "Administration Interface"
+        }, 
+        {
+            "location": "/#quality-monitoring", 
+            "text": "This interface also provides stats about realtime usage:", 
+            "title": "Quality Monitoring"
+        }, 
+        {
+            "location": "/#stanford-corenlp-or-apache-opennlp", 
+            "text": "The underlying NLP engine is based on one of these open-source solutions (you can select the engine via the admin interface).\nTock provides a level of indirection that allows integration with other NLP libraries.\nThe integration of  SparkNLP  is also planned.", 
+            "title": "Stanford CoreNLP or Apache OpenNLP"
+        }, 
+        {
+            "location": "/#duckling", 
+            "text": "A date and simple types parsing tool based on the open-source  Duckling library \nis also integrated by default, in order to find and evaluate entities.", 
+            "title": "Duckling"
+        }, 
+        {
+            "location": "/#nlp-api", 
+            "text": "The models can be tested via the provided  API .", 
+            "title": "NLP API"
+        }, 
+        {
+            "location": "/#a-conversational-framework", 
+            "text": "The Tock Conversational Framework provides all you need to create and manage dialogs.   Kotlin  is used as core language of the stack.  The framework uses the Tock NLP stack via its  API .", 
+            "title": "A Conversational Framework"
+        }, 
+        {
+            "location": "/#context-and-history-management", 
+            "text": "Dialog contexts and conversation history management are supported.\nAdvanced features like entity values merge are also provided.", 
+            "title": "Context and History Management"
+        }, 
+        {
+            "location": "/#third-party-connectors", 
+            "text": "Connectors to Facebook Messenger, Google Assistant and Slack are available.\nIt is easy to create others, whether to connect to other channels (please contribute!) or for custom needs.", 
+            "title": "Third party connectors"
+        }, 
+        {
+            "location": "/#conversations-monitoring", 
+            "text": "You can also test the bots and follow the conversations of users directly in the admin interface.", 
+            "title": "Conversations monitoring"
+        }, 
+        {
+            "location": "/#genesis-of-the-project", 
+            "text": "The project was initiated in 2016 by the Innovation Team of  oui.sncf \nas a first step to build voice commands feature in its  mobile applications .  The toolkit was then used to implement its  Messenger Bot  (fr only).  Since, a dedicated team at oui.sncf maintains the stack.  The  oui.sncf Google Assistant  is also based on Tock,\nas well as the web-based  OUIbot  (fr only for now).  The tools were open-sourced in the hope they will be useful. Contributions are welcomed.", 
+            "title": "Genesis of the project"
+        }, 
+        {
+            "location": "/#technologies", 
+            "text": "The application platform is the  JVM .  The core language is  Kotlin .  Vert.x  and  MongoDB  are also used internally.   The administration interfaces are implemented in  Angular4  /  Typescript .", 
+            "title": "Technologies"
+        }, 
+        {
+            "location": "/#open-sourced-projects", 
+            "text": "The main project is under  Apache 2 license . The source code is available on GitHub:  https://github.com/voyages-sncf-technologies/tock    However an optional dependency,  Stanford CoreNLP , is under  GPL license .\n The code using this dependency is therefore located in a separate project, under GPL license:  https://github.com/voyages-sncf-technologies/tock-corenlp    Finally two other projects are available:   A project containing docker images:  https://github.com/voyages-sncf-technologies/tock-docker  A project containing an example of a bot implementation based on the Open Data  SNCF APIs :  https://github.com/voyages-sncf-technologies/tock-bot-open-data", 
+            "title": "Open-sourced projects"
+        }, 
+        {
+            "location": "/getting-started/", 
+            "text": "Getting Started\n\n\nA Sample Bot\n\n\nA sample bot using Tock is available: \nhttps://github.com/voyages-sncf-technologies/tock-bot-open-data\n.\n\n\nIt uses \nOpen Data SNCF API\n (french trainlines itineraries).\n\n\nThis is a good starting point, since it also includes a very simple NLP model.\nOf course, as the model is not big, the quality of the bot is low, but still it's enough to demonstrate the use of the toolkit.\n\n\nDocker Images\n\n\nDocker images are available in the \nDocker Hub\n.\n\n\nThe source code used to build these images, as well as the docker-compose files used to start the Tock toolkit, are available in the github repository \nhttps://github.com/voyages-sncf-technologies/tock-docker\n.\n\n\nStart the NLP stack\n\n\n    \n#get the last docker-compose file\n\n    curl -o docker-compose.yml https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/docker-compose.yml\n    \n#get the last tag\n\n    curl -o .env https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/.env\n    \n#launch the stack\n\n    docker-compose up\n\n\n\n\n\nThe admin webapp is now available on port 80: \nhttp://localhost\n\n\nThe default login is \nadmin@app.com\n and the password is \npassword\n.\n\n\nSample bot based on Open Data APIs\n\n\nA docker image is available to launch it directly. The instructions are specified in the \ngithub project containing the docker images\n.\n\n\nAdministration Interface Menu\n\n\nThe \nConfiguration\n menu allows you to create new models and configure them.\n\n\nThe \nNLP\n and \nNLP QA\n menus are dedicated to building NLP models.\n\n\nThe \nBuild\n, \nTest\n and \nMonitoring\n menus are used for building bots or assistants.", 
+            "title": "Getting Started"
+        }, 
+        {
+            "location": "/getting-started/#getting-started", 
+            "text": "", 
+            "title": "Getting Started"
+        }, 
+        {
+            "location": "/getting-started/#a-sample-bot", 
+            "text": "A sample bot using Tock is available:  https://github.com/voyages-sncf-technologies/tock-bot-open-data .  It uses  Open Data SNCF API  (french trainlines itineraries).  This is a good starting point, since it also includes a very simple NLP model.\nOf course, as the model is not big, the quality of the bot is low, but still it's enough to demonstrate the use of the toolkit.", 
+            "title": "A Sample Bot"
+        }, 
+        {
+            "location": "/getting-started/#docker-images", 
+            "text": "Docker images are available in the  Docker Hub .  The source code used to build these images, as well as the docker-compose files used to start the Tock toolkit, are available in the github repository  https://github.com/voyages-sncf-technologies/tock-docker .", 
+            "title": "Docker Images"
+        }, 
+        {
+            "location": "/getting-started/#start-the-nlp-stack", 
+            "text": "#get the last docker-compose file \n    curl -o docker-compose.yml https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/docker-compose.yml\n     #get the last tag \n    curl -o .env https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/.env\n     #launch the stack \n    docker-compose up  The admin webapp is now available on port 80:  http://localhost  The default login is  admin@app.com  and the password is  password .", 
+            "title": "Start the NLP stack"
+        }, 
+        {
+            "location": "/getting-started/#sample-bot-based-on-open-data-apis", 
+            "text": "A docker image is available to launch it directly. The instructions are specified in the  github project containing the docker images .", 
+            "title": "Sample bot based on Open Data APIs"
+        }, 
+        {
+            "location": "/getting-started/#administration-interface-menu", 
+            "text": "The  Configuration  menu allows you to create new models and configure them.  The  NLP  and  NLP QA  menus are dedicated to building NLP models.  The  Build ,  Test  and  Monitoring  menus are used for building bots or assistants.", 
+            "title": "Administration Interface Menu"
+        }, 
+        {
+            "location": "/build-nlp-model/", 
+            "text": "Build a New NLP Model\n\n\nOverview\n\n\nSeven tabs are available:\n\n\n\n\nTry it\n : add (or test) a new sentence\n\n\nInbox\n : not yet qualified sentences\n\n\nArchive\n : the set of archived sentences, i. e. marked as not yet recognized by the model.\n\n\nSearch\n : an advanced search interface that lets you search for sentences, whether or not they are qualified.\n\n\nIntents\n : the list of the model's intentions\n\n\nEntities\n : the list of model entities\n\n\nLogs\n : the last queries requested via the NLP API \n\n\n\n\nThe user is redirected by default to \nInbox\n.\n\n\n\n\nAdd and Qualify Sentences\n\n\nAdd a New Sentence\n\n\nClick on the \nTry It\n menu and enter the new sentence. The add a new user intent by selecting \"Create a New Intent\" in the \"Intent\" selection list.\n\n\n\n\nDeclaring Entities\n\n\nIf necessary, you can specify the entities of this new intent, by selecting the text of these entities, and then clicking on the \"Add New Entity\" button that has just appeared.\n\n\n\nIt's up to you to choose an existing entity type, or create a new one, and then give that entity a role.\n\n\n\n\nBuilt-in Entities\n\n\nIn the window \"Add Entity\", you can see that there are already pre-existing entities (prefixed by \nduckling\n). These are the entities recognized by the eponymous library. These entities will be recognized and valued automatically if you specify them in at least one sentence of the intent.\n\n\nValidate a Sentence\n\n\nIf you think that the sentence is  qualified correctly, you just have to click on \"Validate\" to confirm that the sentence is ok. If this is not the case, it's up to you to correct the meaning before validating it.\n\n\n\n\nYou are building your first model!\n\n\nExplore the Model\n\n\nThe Search Tab\n\n\nThe \nSearch\n tab allows you to browse all the sentences of the model. The most used criterion is the full text search input (regular expressions are allowed).\n\n\n\nYou can then consult the sentences that are part of your model, and also change the qualifications of these sentences over time.\n\n\nStates of a Sentence\n\n\nEach sentence has a state:\n\n\n\n\nInbox\n : The sentence has not been qualified yet and is not included in the model\n\n\nValidated\n : The sentence has been validated but is not yet included in the NLP model (this can take some time for large models)\n\n\nIncluded in model\n : The sentence has been validated and is included in the model\n\n\n\n\nAdvanced Features\n\n\nBy clicking on the \"Applications\"menu, you get the list of existing applications.\n\n\n\n\nThen click of the \nedit\n button of the application you want to configure.\n\n\nNlp Engine Selection\n\n\nYou can select the NLP library used by this application with the \"NLP engine\" radio button:\n\n\nUse Built-in Entity Models\n\n\n\n\nThis option allows you to reuse built-in entity models (ie duckling) in your new intent. For example, if you create an intent with a duckling:datetime entity, the dates will automatically be recognized for that intent in all new sentences assigned to that intent (Internally, a merge is performed between the info given by the built-in entity models and the info of your own model).\n\n\nThis option is enabled by default, it can be useful to disable it for very large models, for which the NER detection will perform better in almost all cases.\n\n\nUse sub-entities\n\n\nIf you enable this option, you will be able to qualify multiple levels of entities:\n\n\n\n\nThe number of levels is not limited, but it is advisable not to specify more than 3 or 4.", 
+            "title": "Build NLP model"
+        }, 
+        {
+            "location": "/build-nlp-model/#build-a-new-nlp-model", 
+            "text": "", 
+            "title": "Build a New NLP Model"
+        }, 
+        {
+            "location": "/build-nlp-model/#overview", 
+            "text": "Seven tabs are available:   Try it  : add (or test) a new sentence  Inbox  : not yet qualified sentences  Archive  : the set of archived sentences, i. e. marked as not yet recognized by the model.  Search  : an advanced search interface that lets you search for sentences, whether or not they are qualified.  Intents  : the list of the model's intentions  Entities  : the list of model entities  Logs  : the last queries requested via the NLP API    The user is redirected by default to  Inbox .", 
+            "title": "Overview"
+        }, 
+        {
+            "location": "/build-nlp-model/#add-and-qualify-sentences", 
+            "text": "", 
+            "title": "Add and Qualify Sentences"
+        }, 
+        {
+            "location": "/build-nlp-model/#add-a-new-sentence", 
+            "text": "Click on the  Try It  menu and enter the new sentence. The add a new user intent by selecting \"Create a New Intent\" in the \"Intent\" selection list.", 
+            "title": "Add a New Sentence"
+        }, 
+        {
+            "location": "/build-nlp-model/#declaring-entities", 
+            "text": "If necessary, you can specify the entities of this new intent, by selecting the text of these entities, and then clicking on the \"Add New Entity\" button that has just appeared.  It's up to you to choose an existing entity type, or create a new one, and then give that entity a role.", 
+            "title": "Declaring Entities"
+        }, 
+        {
+            "location": "/build-nlp-model/#built-in-entities", 
+            "text": "In the window \"Add Entity\", you can see that there are already pre-existing entities (prefixed by  duckling ). These are the entities recognized by the eponymous library. These entities will be recognized and valued automatically if you specify them in at least one sentence of the intent.", 
+            "title": "Built-in Entities"
+        }, 
+        {
+            "location": "/build-nlp-model/#validate-a-sentence", 
+            "text": "If you think that the sentence is  qualified correctly, you just have to click on \"Validate\" to confirm that the sentence is ok. If this is not the case, it's up to you to correct the meaning before validating it.   You are building your first model!", 
+            "title": "Validate a Sentence"
+        }, 
+        {
+            "location": "/build-nlp-model/#explore-the-model", 
+            "text": "", 
+            "title": "Explore the Model"
+        }, 
+        {
+            "location": "/build-nlp-model/#the-search-tab", 
+            "text": "The  Search  tab allows you to browse all the sentences of the model. The most used criterion is the full text search input (regular expressions are allowed).  You can then consult the sentences that are part of your model, and also change the qualifications of these sentences over time.", 
+            "title": "The Search Tab"
+        }, 
+        {
+            "location": "/build-nlp-model/#states-of-a-sentence", 
+            "text": "Each sentence has a state:   Inbox  : The sentence has not been qualified yet and is not included in the model  Validated  : The sentence has been validated but is not yet included in the NLP model (this can take some time for large models)  Included in model  : The sentence has been validated and is included in the model", 
+            "title": "States of a Sentence"
+        }, 
+        {
+            "location": "/build-nlp-model/#advanced-features", 
+            "text": "By clicking on the \"Applications\"menu, you get the list of existing applications.   Then click of the  edit  button of the application you want to configure.", 
+            "title": "Advanced Features"
+        }, 
+        {
+            "location": "/build-nlp-model/#nlp-engine-selection", 
+            "text": "You can select the NLP library used by this application with the \"NLP engine\" radio button:", 
+            "title": "Nlp Engine Selection"
+        }, 
+        {
+            "location": "/build-nlp-model/#use-built-in-entity-models", 
+            "text": "This option allows you to reuse built-in entity models (ie duckling) in your new intent. For example, if you create an intent with a duckling:datetime entity, the dates will automatically be recognized for that intent in all new sentences assigned to that intent (Internally, a merge is performed between the info given by the built-in entity models and the info of your own model).  This option is enabled by default, it can be useful to disable it for very large models, for which the NER detection will perform better in almost all cases.", 
+            "title": "Use Built-in Entity Models"
+        }, 
+        {
+            "location": "/build-nlp-model/#use-sub-entities", 
+            "text": "If you enable this option, you will be able to qualify multiple levels of entities:   The number of levels is not limited, but it is advisable not to specify more than 3 or 4.", 
+            "title": "Use sub-entities"
+        }, 
+        {
+            "location": "/evaluate-the-model/", 
+            "text": "Evaluate the relevance of a NLP model\n\n\nTabs\n\n\nFive tabs are used to control the relevance of the model:\n\n\n\n\nStats\n : Monitores model perfomance in production:\n\n\nself-evaluation of the model about its relevance in terms of recognition of intent and entities\n\n\nnumber of calls and errors\n\n\naverage execution time\n\n\n\n\n\n\nTest Trend\n : evolution of the relevance of \npartial model tests\n \n\n\nIntent Errors\n : the list of intent errors found with partial model tests\n\n\nEntity Errors\n : the list of entity errors found with partial model tests\n\n\nModel Builds\n : the cimplete list of model builds\n\n\n\n\nPartial Model Tests\n\n\nPartial model tests is a way to detect qualifications errors.\n\n\nTemporarily models are built from a random part of the whole sentence set of the model (90% for example)\nand then tested against the remaining sentences. \n\n\nThe process is repeated a number of times and the most frequent errors are pushed to an admin user.\n\n\nPartial model tests are useful only with large models.\n\n\nIntent errors\n\n\nClick on the \nIntent Errors\n tab:\n\n\n\n\nSince the picture above is built from a very simple model, no real error has been detected.\n We can nevertheless note that in some cases the model is systematically wrong with a high probability.  \n\n\nEntity errors\n\n\nThese errors can be viewed via the \nEntity Errors\n tab.", 
+            "title": "Evaluate the model"
+        }, 
+        {
+            "location": "/evaluate-the-model/#evaluate-the-relevance-of-a-nlp-model", 
+            "text": "", 
+            "title": "Evaluate the relevance of a NLP model"
+        }, 
+        {
+            "location": "/evaluate-the-model/#tabs", 
+            "text": "Five tabs are used to control the relevance of the model:   Stats  : Monitores model perfomance in production:  self-evaluation of the model about its relevance in terms of recognition of intent and entities  number of calls and errors  average execution time    Test Trend  : evolution of the relevance of  partial model tests    Intent Errors  : the list of intent errors found with partial model tests  Entity Errors  : the list of entity errors found with partial model tests  Model Builds  : the cimplete list of model builds", 
+            "title": "Tabs"
+        }, 
+        {
+            "location": "/evaluate-the-model/#partial-model-tests", 
+            "text": "Partial model tests is a way to detect qualifications errors.  Temporarily models are built from a random part of the whole sentence set of the model (90% for example)\nand then tested against the remaining sentences.   The process is repeated a number of times and the most frequent errors are pushed to an admin user.  Partial model tests are useful only with large models.", 
+            "title": "Partial Model Tests"
+        }, 
+        {
+            "location": "/evaluate-the-model/#intent-errors", 
+            "text": "Click on the  Intent Errors  tab:   Since the picture above is built from a very simple model, no real error has been detected.\n We can nevertheless note that in some cases the model is systematically wrong with a high probability.", 
+            "title": "Intent errors"
+        }, 
+        {
+            "location": "/evaluate-the-model/#entity-errors", 
+            "text": "These errors can be viewed via the  Entity Errors  tab.", 
+            "title": "Entity errors"
+        }, 
+        {
+            "location": "/the-nlp-api/", 
+            "text": "You can test a model via the Tock NLP API.\n\n\nPlease consult the documentation \nhere\n.\n\n\nIf you want to test the API, run the \ndocker images\n\nand open the url \nhttp://localhost/doc/index.html", 
+            "title": "The NLP API"
+        }, 
+        {
+            "location": "/the-open-data-bot/", 
+            "text": "Getting Started with the Conversational Framework\n\n\nThe Open Data Bot\n\n\nA good starting point is the source code of the \nOpen Data Bot\n \n\n\nFollow the instructions of the README file of the project, to start the bot in the IDE (do not configure Messenger or Google Assistant at this point),\nthen connect to the administration interface. The bot is already testable.\n\n\nThe Test Tab\n\n\nGo to this tab, and test the bot:\n\n\n\n\nThis is a test mode, so the interface is minimal.\n\n\nThe real goal is to have your users interact with the bot via channels like Messenger, Google Assistant ...\nor your sites or applications.\n\n\nThe Monitoring Tab\n\n\nIt is then possible to consult the discussion that you just had with the bot via the Monitoring tab:\n\n\n\n\nIn this sample, this dialog has the Messenger flag, as it was tested for this channel.\n\n\nThe Build Tab\n\n\nAdd a new answer\n\n\nWith the category \nAdd new Answer\n, it is possible to add directly a new answer:\n\n\n\n\nThen test the new intention and its answer:\n\n\n\n\nModify the Answers and Internationalization\n\n\nFinally it is possible to modify each answer of the bot, by type of interface (chat / voice), by type of connector and by language\nwith the \n i18n \n tab.\n\n\nThe ability to add alternative answers (a response from the list will be chosen each time at random) is also provided (with the \"plus\" button).", 
+            "title": "The Open Data Bot"
+        }, 
+        {
+            "location": "/the-open-data-bot/#getting-started-with-the-conversational-framework", 
+            "text": "", 
+            "title": "Getting Started with the Conversational Framework"
+        }, 
+        {
+            "location": "/the-open-data-bot/#the-open-data-bot", 
+            "text": "A good starting point is the source code of the  Open Data Bot    Follow the instructions of the README file of the project, to start the bot in the IDE (do not configure Messenger or Google Assistant at this point),\nthen connect to the administration interface. The bot is already testable.", 
+            "title": "The Open Data Bot"
+        }, 
+        {
+            "location": "/the-open-data-bot/#the-test-tab", 
+            "text": "Go to this tab, and test the bot:   This is a test mode, so the interface is minimal.  The real goal is to have your users interact with the bot via channels like Messenger, Google Assistant ...\nor your sites or applications.", 
+            "title": "The Test Tab"
+        }, 
+        {
+            "location": "/the-open-data-bot/#the-monitoring-tab", 
+            "text": "It is then possible to consult the discussion that you just had with the bot via the Monitoring tab:   In this sample, this dialog has the Messenger flag, as it was tested for this channel.", 
+            "title": "The Monitoring Tab"
+        }, 
+        {
+            "location": "/the-open-data-bot/#the-build-tab", 
+            "text": "", 
+            "title": "The Build Tab"
+        }, 
+        {
+            "location": "/the-open-data-bot/#add-a-new-answer", 
+            "text": "With the category  Add new Answer , it is possible to add directly a new answer:   Then test the new intention and its answer:", 
+            "title": "Add a new answer"
+        }, 
+        {
+            "location": "/the-open-data-bot/#modify-the-answers-and-internationalization", 
+            "text": "Finally it is possible to modify each answer of the bot, by type of interface (chat / voice), by type of connector and by language\nwith the   i18n   tab.  The ability to add alternative answers (a response from the list will be chosen each time at random) is also provided (with the \"plus\" button).", 
+            "title": "Modify the Answers and Internationalization"
+        }, 
+        {
+            "location": "/code-a-bot/", 
+            "text": "Tock's Conversationnal Language\n\n\nTo develop a bot or an assistant with Tock,\nyou can use its conversationnal DSL (Domain Specific Language) \ndeveloped in \nKotlin\n.\n\n\nAdd the bot-toolkit Dependency\n\n\nThe bot-toolkit dependency is required:\n\n\nWith Maven:\n\n\n        \ndependency\n\n            \ngroupId\nfr.vsct.tock\n/groupId\n\n            \nartifactId\nbot-toolkit\n/artifactId\n\n            \nversion\n0.8.0\n/version\n\n        \n/dependency\n\n\n\n\n\n\nWith Gradle:\n\n\n      compile \nfr.vsct.tock:bot-toolkit:0.8.0\n\n\n\n\n\n\nA Bot is a Set of Stories\n\n\nThis is how the open data bot is defined:\n\n\nval\n \nopenBot\n \n=\n \nbot\n(\n\n        \nbot_open_data\n,\n\n        \nstories\n \n=\n\n        \nlistOf\n(\n\n                \ngreetings\n,\n\n                \ndepartures\n,\n\n                \narrivals\n,\n\n                \nsearch\n\n        \n),\n\n        \nhello\n \n=\n \ngreetings\n\n\n)\n\n\n\n\n\n\nThis bot has an unique identifier (required - \"bot_open_data\") and a list of \n\"Story\"\n.\n\n\nA \nStory\n is a functional subset that has a main intention and, optionally,\none or more so-called \"secondary\" intentions.\n\n\nHere the bot defines 4 \nStories\n, greetings, departures, arrivals and search. \nGreetings is also set (\nhello = greetings\n) as the default story used for a new dialog.\n\n\nA Simple Story\n\n\nHow do you define a story? Here is a first simplified version of the story \ngreetings\n:\n\n\nval\n \ngreetings\n \n=\n \nstory\n(\ngreetings\n)\n \n{\n \n        \nsend\n(\nWelcome to the Tock Open Data Bot! :)\n)\n\n        \nend\n(\nThis is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock\n)\n\n\n}\n\n\n\n\n\n\nNote that in the body of the function, \nthis\n has a \nBotBus\n type.\nFrom which you can interact with the user, and which also allows you to access\nto all available contextual elements.\n\n\nWhen the intention \ngreetings\n will be detected by the NLP model, \nthe function above will be called by the Tock framework.\n\n\nThe bot sends successively a first response sentence (\nbus.send()\n), then a second one indicating that it is\nthe last sentence of his answer using a \nbus.end()\n.\n\n\nHere is the full version of \ngreetings\n:\n\n\nval\n \ngreetings\n \n=\n \nstory\n(\ngreetings\n)\n \n{\n \n    \n//cleanup state\n\n    \nresetDialogState\n()\n\n\n    \nsend\n(\nWelcome to the Tock Open Data Bot! :)\n)\n\n    \nsend\n(\nThis is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock\n)\n\n\n    \nwithMessenger\n \n{\n\n        \nbuttonsTemplate\n(\n\n                \nThe bot is very limited, but ask him a route or the next departures from a station in France, and see the result! :)\n,\n\n                \npostbackButton\n(\nItineraries\n,\n \nsearch\n),\n\n                \npostbackButton\n(\nDepartures\n,\n \nDepartures\n),\n\n                \npostbackButton\n(\nArrivals\n,\n \nArrivals\n)\n\n        \n)\n\n    \n}\n\n    \nwithGoogleAssistant\n \n{\n\n        \ngaMessage\n(\n\n                \nThe bot is very limited, but ask him a route or the next departures from a station in France, and see the result! :)\n,\n\n                \nItineraries\n,\n\n                \nDepartures\n,\n\n                \nArrivals\n)\n\n    \n}\n\n\n    \nend\n()\n\n\n}\n\n\n\n\n\n\nTwo notions have been added:\n\n\n\n\n\n\nresetDialogState()\n which cleanup the state (forgetting any previous context).\n\n\n\n\n\n\nthe \nwithMessenger{}\n and \nwithGoogleAssistant{}\n methods that define specific responses for each connector -\nHere it's a text with buttons for Messenger, and a text with suggestions for Google Assistant.\n\n\n\n\n\n\nComplex Stories\n\n\nOf course, the \nStoryHandler\n of \ngreetings\n does not depend on the context: the answer is always the same.\n\n\nSecondary Intentions\n\n\nHere is the beginning of the definition of the \nsearch\n story :\n\n\nval\n \nsearch\n \n=\n \nstory\nSearchDef\n(\n\n        \nsearch\n,\n\n        \nsetOf\n(\nindicate_origin\n),\n\n        \nsetOf\n(\nindicate_location\n))\n \n{\n\n\n\n}\n\n\n\n\n\n\nThe story \nsearch\n defines a secondary \nstarter\n intent (\nindicate_origin\n)\nand a simple secondary intention (\nindicate_location\n).\n\n\nA secondary \nstarter\n intent is similar in every respect to the main intention:\nas soon as the NLP model detects this intention, it will execute the story \nsearch\n, regardless of the context.\n\n\nFor a simple secondary intention, on the other hand, the story will be executed only if the current story of the context\nis \nalready\n the \nsearch\n story . Several different stories can therefore share the same secondary intentions.\n\n\nHandle Entities\n\n\nTo retrieve entity values, it is good practice to define Kotlin \nextensions\n.\nFor example here is the code used to retrieve the \ndestination\n entity:\n\n\nval\n \ndestinationEntity\n \n=\n \nopenBot\n.\nentity\n(\nlocation\n,\n \ndestination\n)\n \n\n\nvar\n \nBotBus\n.\ndestination\n:\n \nPlace\n?\n\n    \nget\n()\n \n=\n \nplace\n(\ndestinationEntity\n)\n\n    \nset\n(\nvalue\n)\n \n=\n \nsetPlace\n(\ndestinationEntity\n,\n \nvalue\n)\n\n\n\nprivate\n \nfun\n \nBotBus\n.\nplace\n(\nentity\n:\n \nEntity\n):\n \nPlace\n?\n \n=\n \nentityValue\n(\nentity\n,\n \n::\nplaceValue\n)\n?.\nplace\n\n\n\nprivate\n \nfun\n \nBotBus\n.\nsetPlace\n(\nentity\n:\n \nEntity\n,\n \nplace\n:\n \nPlace\n?)\n \n=\n \nchangeEntityValue\n(\nentity\n,\n \nplace\n?.\nlet\n \n{\n \nPlaceValue\n(\nplace\n)\n \n})\n\n\n\n\n\n\nAn entity of type \"location\" and role \"destination\" is created.\nThere is a corresponding entity in the NLP model.\n\n\nA variable \ndestination\n is defined, which will simplify the handling of this entity in the conversational code.\nThis variable contains the current value of the destination in the user context.\n\n\nHere's a full version of the \nsearch\n story that uses \ndestination\n:\n\n\nval\n \nsearch\n \n=\n \nstory\nSearchDef\n(\n\n        \nsearch\n,\n\n        \nsetOf\n(\nindicate_origin\n),\n\n        \nsetOf\n(\nindicate_location\n))\n \n{\n\n\n        \n//check mandatory entities\n\n        \nwhen\n \n{\n\n            \ndestination\n \n==\n \nnull\n \n-\n \nend\n(\nFor which destination?\n)\n\n            \norigin\n \n==\n \nnull\n \n-\n \nend\n(\nFor which origin?\n)\n\n            \ndepartureDate\n \n==\n \nnull\n \n-\n \nend\n(\nWhen?\n)\n\n        \n}\n \n\n}\n\n\n\n\n\n\nIf there is no value in the current context for the destination, the bot asks to specify the destination and stays there.\nSame behaviour for the origin or date of departure.\n\n\nIf the 3 required values are specified, then the real answer developed in the \nSearchDef\n class is used.\n\n\nHere is the full version of this first part of the code:\n\n\nval\n \nsearch\n \n=\n \nstory\nSearchDef\n(\n\n        \nsearch\n,\n\n        \nsetOf\n(\nindicate_origin\n),\n\n        \nsetOf\n(\nindicate_location\n))\n \n{\n\n\n        \n//handle generic location intent\n\n        \nif\n \n(\nisIntent\n(\nindicate_location\n)\n \n \nlocation\n \n!=\n \nnull\n)\n \n{\n\n            \nif\n \n(\ndestination\n \n==\n \nnull\n \n||\n \norigin\n \n!=\n \nnull\n)\n \n{\n\n                \ndestination\n \n=\n \nreturnsAndRemoveLocation\n()\n\n            \n}\n \nelse\n \n{\n\n                \norigin\n \n=\n \nreturnsAndRemoveLocation\n()\n\n            \n}\n\n        \n}\n    \n\n        \n//check mandatory entities\n\n        \nwhen\n \n{\n\n            \ndestination\n \n==\n \nnull\n \n-\n \nend\n(\nFor which destination?\n)\n\n            \norigin\n \n==\n \nnull\n \n-\n \nend\n(\nFor which origin?\n)\n\n            \ndepartureDate\n \n==\n \nnull\n \n-\n \nend\n(\nWhen?\n)\n\n        \n}\n \n\n}\n\n\n\n\n\n\nIn the case where the detected intention is \nindicate_location\n, we do not know if the locality represents the origin or the destination.\n\n\nA simple rule is then used:\nIf there is already in the context an origin and no destination, the new locality is actually the destination.\nOtherwise, it is the origin.\n\n\nUse HandlerDef\n\n\nIn the \nsearch\n story above, you may have noted the generic \nSearchDef\n typing.\nHere is the code of this class:\n\n\n@GAHandler\n(\nGASearchConnector\n::\nclass\n)\n\n\n@MessengerHandler\n(\nMessengerSearchConnector\n::\nclass\n)\n\n\nclass\n \nSearchDef\n(\nbus\n:\n \nBotBus\n)\n \n:\n \nHandlerDef\nSearchConnector\n(\nbus\n)\n \n{\n\n\n    \nprivate\n \nval\n \nd\n:\n \nPlace\n \n=\n \nbus\n.\ndestination\n!!\n\n    \nprivate\n \nval\n \no\n:\n \nPlace\n \n=\n \nbus\n.\norigin\n!!\n\n    \nprivate\n \nval\n \ndate\n:\n \nLocalDateTime\n \n=\n \nbus\n.\ndepartureDate\n!!\n\n\n    \noverride\n \nfun\n \nanswer\n()\n \n{\n\n        \nsend\n(\nFrom {0} to {1}\n,\n \no\n,\n \nd\n)\n\n        \nsend\n(\nDeparture on {0}\n,\n \ndate\n \nby\n \ndatetimeFormat\n)\n\n        \nval\n \njourneys\n \n=\n \nSncfOpenDataClient\n.\njourney\n(\no\n,\n \nd\n,\n \ndate\n)\n\n        \nif\n \n(\njourneys\n.\nisEmpty\n())\n \n{\n\n            \nend\n(\nSorry, no routes found :(\n)\n\n        \n}\n \nelse\n \n{\n\n            \nsend\n(\nHere is the first proposal:\n)\n\n            \nconnector\n?.\nsendFirstJourney\n(\njourneys\n.\nfirst\n())\n\n            \nend\n()\n\n        \n}\n\n    \n}\n\n\n}\n\n\n\n\n\n\nSearchDef\n extends \nHandlerDef\n which is an alias of a Tock framework class.\n\n\nIt is usually here that the code of complex \nstories\n is defined.\n\n\nThe code contains an additional abstraction: \nSearchConnector\n.\n\n\nSearchConnector\n is the class that defines the behavior specific to each connector, and the annotations\n\n@GAHandler\n(GASearchConnector::class) and \n@MessengerHandler\n(MessengerSearchConnector::class) \nindicate the corresponding implementations for the different supported connectors (respectively Google Assistant and Messenger).\n\u00a0\n\n\nWhat would happen there is no connector for Google Assistant for example, and if a call from Google Assistant is answered?\n\n\nThe \nconnector?.sendFirstJourney(journeys.first())\n method call would not send the final response,\nsince \nconnector\n would be \nnull\n.\n\n\nUse ConnectorDef\n\n\nHere is a simplified version of \nSearchConnector\n :\n\n\nsealed\n \nclass\n \nSearchConnector\n(\ncontext\n:\n \nSearchDef\n)\n \n:\n \nConnectorDef\nSearchDef\n(\ncontext\n)\n \n{\n\n\n    \nfun\n \nSection\n.\ntitle\n():\n \nCharSequence\n \n=\n \ni18n\n(\n{0} - {1}\n,\n \nfrom\n,\n \nto\n)\n\n\n    \nfun\n \nsendFirstJourney\n(\njourney\n:\n \nJourney\n)\n \n=\n \nwithMessage\n(\nsendFirstJourney\n(\njourney\n.\npublicTransportSections\n()))\n\n\n    \nabstract\n \nfun\n \nsendFirstJourney\n(\nsections\n:\n \nList\nSection\n):\n \nConnectorMessage\n\n\n\n}\n\n\n\n\n\n\nAnd its Messenger implementation:\n\n\nclass\n \nMessengerSearchConnector\n(\ncontext\n:\n \nSearchDef\n)\n \n:\n \nSearchConnector\n(\ncontext\n)\n \n{\n\n\n    \noverride\n \nfun\n \nsendFirstJourney\n(\nsections\n:\n \nList\nSection\n):\n \nConnectorMessage\n \n=\n\n          \nflexibleListTemplate\n(\n\n                \nsections\n.\nmap\n \n{\n \nsection\n \n-\n\n                      \nwith\n(\nsection\n)\n \n{\n\n                          \nlistElement\n(\n\n                                \ntitle\n(),\n\n                                \ncontent\n(),\n\n                                \ntrainImage\n\n                          \n)\n\n                      \n}\n\n                \n},\n\n                \ncompact\n\n          \n)\n\n\n}\n\n\n\n\n\n\nThe code specific to each connector is thus decoupled correctly.\nThe code common to each connector is present in \nSearchConnector\n and the behavior specific to\neach connector is specified in the dedicated classes.\n\n\nStart and Connect the Bot\n\n\nTo start the bot, simply add the following call to your main function:\n\n\nregisterAndInstallBot\n(\nopenBot\n)\n\n\n\n\n\n\nwhere the \nopenBot\n variable is the bot you originally defined.\n\n\nYou need also to specify which connectors are used.\nFor example, to connect the bot to Messenger and Google Assistant:\n\n\naddMessengerConnector\n(..)\n\n\naddGoogleAssistantConnector\n(..)\n\n\nregisterAndInstallBot\n(\nopenBot\n)\n\n\n\n\n\n\nThe documentation for each connector is in the README file of the corresponding sub-projects. \n\n\nThree are available at the moment:\n\n\n\n\nMessenger\n\n\nGoogle Assistant\n\n\nSlack", 
+            "title": "Code a bot"
+        }, 
+        {
+            "location": "/code-a-bot/#tocks-conversationnal-language", 
+            "text": "To develop a bot or an assistant with Tock,\nyou can use its conversationnal DSL (Domain Specific Language) \ndeveloped in  Kotlin .", 
+            "title": "Tock's Conversationnal Language"
+        }, 
+        {
+            "location": "/code-a-bot/#add-the-bot-toolkit-dependency", 
+            "text": "The bot-toolkit dependency is required:  With Maven:           dependency \n             groupId fr.vsct.tock /groupId \n             artifactId bot-toolkit /artifactId \n             version 0.8.0 /version \n         /dependency   With Gradle:        compile  fr.vsct.tock:bot-toolkit:0.8.0", 
+            "title": "Add the bot-toolkit Dependency"
+        }, 
+        {
+            "location": "/code-a-bot/#a-bot-is-a-set-of-stories", 
+            "text": "This is how the open data bot is defined:  val   openBot   =   bot ( \n         bot_open_data , \n         stories   = \n         listOf ( \n                 greetings , \n                 departures , \n                 arrivals , \n                 search \n         ), \n         hello   =   greetings  )   This bot has an unique identifier (required - \"bot_open_data\") and a list of  \"Story\" .  A  Story  is a functional subset that has a main intention and, optionally,\none or more so-called \"secondary\" intentions.  Here the bot defines 4  Stories , greetings, departures, arrivals and search. \nGreetings is also set ( hello = greetings ) as the default story used for a new dialog.", 
+            "title": "A Bot is a Set of Stories"
+        }, 
+        {
+            "location": "/code-a-bot/#a-simple-story", 
+            "text": "How do you define a story? Here is a first simplified version of the story  greetings :  val   greetings   =   story ( greetings )   {  \n         send ( Welcome to the Tock Open Data Bot! :) ) \n         end ( This is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock )  }   Note that in the body of the function,  this  has a  BotBus  type.\nFrom which you can interact with the user, and which also allows you to access\nto all available contextual elements.  When the intention  greetings  will be detected by the NLP model, \nthe function above will be called by the Tock framework.  The bot sends successively a first response sentence ( bus.send() ), then a second one indicating that it is\nthe last sentence of his answer using a  bus.end() .  Here is the full version of  greetings :  val   greetings   =   story ( greetings )   {  \n     //cleanup state \n     resetDialogState () \n\n     send ( Welcome to the Tock Open Data Bot! :) ) \n     send ( This is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock ) \n\n     withMessenger   { \n         buttonsTemplate ( \n                 The bot is very limited, but ask him a route or the next departures from a station in France, and see the result! :) , \n                 postbackButton ( Itineraries ,   search ), \n                 postbackButton ( Departures ,   Departures ), \n                 postbackButton ( Arrivals ,   Arrivals ) \n         ) \n     } \n     withGoogleAssistant   { \n         gaMessage ( \n                 The bot is very limited, but ask him a route or the next departures from a station in France, and see the result! :) , \n                 Itineraries , \n                 Departures , \n                 Arrivals ) \n     } \n\n     end ()  }   Two notions have been added:    resetDialogState()  which cleanup the state (forgetting any previous context).    the  withMessenger{}  and  withGoogleAssistant{}  methods that define specific responses for each connector -\nHere it's a text with buttons for Messenger, and a text with suggestions for Google Assistant.", 
+            "title": "A Simple Story"
+        }, 
+        {
+            "location": "/code-a-bot/#complex-stories", 
+            "text": "Of course, the  StoryHandler  of  greetings  does not depend on the context: the answer is always the same.", 
+            "title": "Complex Stories"
+        }, 
+        {
+            "location": "/code-a-bot/#secondary-intentions", 
+            "text": "Here is the beginning of the definition of the  search  story :  val   search   =   story SearchDef ( \n         search , \n         setOf ( indicate_origin ), \n         setOf ( indicate_location ))   {  }   The story  search  defines a secondary  starter  intent ( indicate_origin )\nand a simple secondary intention ( indicate_location ).  A secondary  starter  intent is similar in every respect to the main intention:\nas soon as the NLP model detects this intention, it will execute the story  search , regardless of the context.  For a simple secondary intention, on the other hand, the story will be executed only if the current story of the context\nis  already  the  search  story . Several different stories can therefore share the same secondary intentions.", 
+            "title": "Secondary Intentions"
+        }, 
+        {
+            "location": "/code-a-bot/#handle-entities", 
+            "text": "To retrieve entity values, it is good practice to define Kotlin  extensions .\nFor example here is the code used to retrieve the  destination  entity:  val   destinationEntity   =   openBot . entity ( location ,   destination )   var   BotBus . destination :   Place ? \n     get ()   =   place ( destinationEntity ) \n     set ( value )   =   setPlace ( destinationEntity ,   value )  private   fun   BotBus . place ( entity :   Entity ):   Place ?   =   entityValue ( entity ,   :: placeValue ) ?. place  private   fun   BotBus . setPlace ( entity :   Entity ,   place :   Place ?)   =   changeEntityValue ( entity ,   place ?. let   {   PlaceValue ( place )   })   An entity of type \"location\" and role \"destination\" is created.\nThere is a corresponding entity in the NLP model.  A variable  destination  is defined, which will simplify the handling of this entity in the conversational code.\nThis variable contains the current value of the destination in the user context.  Here's a full version of the  search  story that uses  destination :  val   search   =   story SearchDef ( \n         search , \n         setOf ( indicate_origin ), \n         setOf ( indicate_location ))   { \n\n         //check mandatory entities \n         when   { \n             destination   ==   null   -   end ( For which destination? ) \n             origin   ==   null   -   end ( For which origin? ) \n             departureDate   ==   null   -   end ( When? ) \n         }   }   If there is no value in the current context for the destination, the bot asks to specify the destination and stays there.\nSame behaviour for the origin or date of departure.  If the 3 required values are specified, then the real answer developed in the  SearchDef  class is used.  Here is the full version of this first part of the code:  val   search   =   story SearchDef ( \n         search , \n         setOf ( indicate_origin ), \n         setOf ( indicate_location ))   { \n\n         //handle generic location intent \n         if   ( isIntent ( indicate_location )     location   !=   null )   { \n             if   ( destination   ==   null   ||   origin   !=   null )   { \n                 destination   =   returnsAndRemoveLocation () \n             }   else   { \n                 origin   =   returnsAndRemoveLocation () \n             } \n         }     \n\n         //check mandatory entities \n         when   { \n             destination   ==   null   -   end ( For which destination? ) \n             origin   ==   null   -   end ( For which origin? ) \n             departureDate   ==   null   -   end ( When? ) \n         }   }   In the case where the detected intention is  indicate_location , we do not know if the locality represents the origin or the destination.  A simple rule is then used:\nIf there is already in the context an origin and no destination, the new locality is actually the destination.\nOtherwise, it is the origin.", 
+            "title": "Handle Entities"
+        }, 
+        {
+            "location": "/code-a-bot/#use-handlerdef", 
+            "text": "In the  search  story above, you may have noted the generic  SearchDef  typing.\nHere is the code of this class:  @GAHandler ( GASearchConnector :: class )  @MessengerHandler ( MessengerSearchConnector :: class )  class   SearchDef ( bus :   BotBus )   :   HandlerDef SearchConnector ( bus )   { \n\n     private   val   d :   Place   =   bus . destination !! \n     private   val   o :   Place   =   bus . origin !! \n     private   val   date :   LocalDateTime   =   bus . departureDate !! \n\n     override   fun   answer ()   { \n         send ( From {0} to {1} ,   o ,   d ) \n         send ( Departure on {0} ,   date   by   datetimeFormat ) \n         val   journeys   =   SncfOpenDataClient . journey ( o ,   d ,   date ) \n         if   ( journeys . isEmpty ())   { \n             end ( Sorry, no routes found :( ) \n         }   else   { \n             send ( Here is the first proposal: ) \n             connector ?. sendFirstJourney ( journeys . first ()) \n             end () \n         } \n     }  }   SearchDef  extends  HandlerDef  which is an alias of a Tock framework class.  It is usually here that the code of complex  stories  is defined.  The code contains an additional abstraction:  SearchConnector .  SearchConnector  is the class that defines the behavior specific to each connector, and the annotations @GAHandler (GASearchConnector::class) and  @MessengerHandler (MessengerSearchConnector::class) \nindicate the corresponding implementations for the different supported connectors (respectively Google Assistant and Messenger).\n\u00a0  What would happen there is no connector for Google Assistant for example, and if a call from Google Assistant is answered?  The  connector?.sendFirstJourney(journeys.first())  method call would not send the final response,\nsince  connector  would be  null .", 
+            "title": "Use HandlerDef"
+        }, 
+        {
+            "location": "/code-a-bot/#use-connectordef", 
+            "text": "Here is a simplified version of  SearchConnector  :  sealed   class   SearchConnector ( context :   SearchDef )   :   ConnectorDef SearchDef ( context )   { \n\n     fun   Section . title ():   CharSequence   =   i18n ( {0} - {1} ,   from ,   to ) \n\n     fun   sendFirstJourney ( journey :   Journey )   =   withMessage ( sendFirstJourney ( journey . publicTransportSections ())) \n\n     abstract   fun   sendFirstJourney ( sections :   List Section ):   ConnectorMessage  }   And its Messenger implementation:  class   MessengerSearchConnector ( context :   SearchDef )   :   SearchConnector ( context )   { \n\n     override   fun   sendFirstJourney ( sections :   List Section ):   ConnectorMessage   = \n           flexibleListTemplate ( \n                 sections . map   {   section   - \n                       with ( section )   { \n                           listElement ( \n                                 title (), \n                                 content (), \n                                 trainImage \n                           ) \n                       } \n                 }, \n                 compact \n           )  }   The code specific to each connector is thus decoupled correctly.\nThe code common to each connector is present in  SearchConnector  and the behavior specific to\neach connector is specified in the dedicated classes.", 
+            "title": "Use ConnectorDef"
+        }, 
+        {
+            "location": "/code-a-bot/#start-and-connect-the-bot", 
+            "text": "To start the bot, simply add the following call to your main function:  registerAndInstallBot ( openBot )   where the  openBot  variable is the bot you originally defined.  You need also to specify which connectors are used.\nFor example, to connect the bot to Messenger and Google Assistant:  addMessengerConnector (..)  addGoogleAssistantConnector (..)  registerAndInstallBot ( openBot )   The documentation for each connector is in the README file of the corresponding sub-projects.   Three are available at the moment:   Messenger  Google Assistant  Slack", 
+            "title": "Start and Connect the Bot"
+        }, 
+        {
+            "location": "/test-the-bot/", 
+            "text": "Use the Test Framework\n\n\nTock provides extensions in order to help writing better unit tests.\n\n\nTo use them, you need to add the \nbot-test\n dependency to your project.\n\n\nWith Maven :\n\n\n        \ndependency\n\n            \ngroupId\nfr.vsct.tock\n/groupId\n\n            \nartifactId\nbot-test\n/artifactId\n\n            \nversion\n0.8.0\n/version\n\n            \nscope\ntest\n/scope\n\n        \n/dependency\n\n\n\n\n\n\nWith Gradle :\n\n\n      testCompile \nfr.vsct.tock:bot-test:0.8.0\n\n\n\n\n\n\nThis framework is documented in KDoc format \nhere\n. \n\n\nWrite a Simple Test\n\n\nTo test the \ngreetings\n story of the Open Data bot, just use the \nstartNewBusMock()\n extension: \n\n\n    \n@Test\n\n    \nfun\n \n`\ngreetings\n \nstory\n \ndisplays\n \nwelcome\n \nmessage\n`\n()\n \n{\n\n        \nwith\n(\nrule\n.\nstartNewBusMock\n())\n \n{\n\n            \nfirstAnswer\n.\nassertText\n(\nWelcome to the Tock Open Data Bot! :)\n)\n\n            \nsecondAnswer\n.\nassertText\n(\nThis is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock\n)\n\n        \n}\n\n    \n}\n\n\n\n\n\n\nSince the default connector is Messenger, it is possible to test the message specific to Messenger in the same way:\n\n\n    \n@Test\n\n    \nfun\n \n`\ngreetings\n \nstory\n \ndisplays\n \nwelcome\n \nmessage\n \nwith\n \nMessenger\n \ndedicated\n \nmessage\n`\n()\n \n{\n\n        \nwith\n(\nrule\n.\nstartNewBusMock\n())\n \n{\n\n            \nlastAnswer\n.\nassertMessage\n(\n\n                    \nbuttonsTemplate\n(\n\n                            \nThe bot is very limited, but ask him a route or the next departures from a station in France, and see the result! :)\n,\n\n                            \npostbackButton\n(\nItineraries\n,\n \nsearch\n),\n\n                            \npostbackButton\n(\nDepartures\n,\n \nDepartures\n),\n\n                            \npostbackButton\n(\nArrivals\n,\n \nArrivals\n)\n\n                    \n)\n\n            \n)\n\n        \n}\n\n    \n}\n\n\n\n\n\n\nTo test the message specific to Google Assistant (or any other connector),\n  you need to indicate the connector to be tested:\n\n\n    \n@Test\n\n    \nfun\n \n`\ngreetings\n \nstory\n \ndisplays\n \nwelcome\n \nmessage\n \nwith\n \nGA\n \ndedicated\n \nmessage\n \nWHEN\n \ncontext\n \ncontains\n \nGA\n \nconnector\n`\n()\n \n{\n\n        \nwith\n(\nrule\n.\nstartNewBusMock\n(\nconnectorType\n \n=\n \ngaConnectorType\n))\n \n{\n\n            \nfirstAnswer\n.\nassertText\n(\nWelcome to the Tock Open Data Bot! :)\n)\n\n            \nsecondAnswer\n.\nassertText\n(\nThis is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock\n)\n\n            \nlastAnswer\n.\nassertMessage\n(\n\n                    \ngaMessage\n(\n\n                            \nThe bot is very limited, but ask him a route or the next departures from a station in France, and see the result! :)\n,\n\n                            \nItineraries\n,\n\n                            \nDepartures\n,\n\n                            \nArrivals\n\n                    \n)\n\n            \n)\n\n        \n}\n\n    \n}\n\n\n\n\n\n\nTest a specific Story\n\n\nIn the previous examples, it was useless to specify the story to test (\ngreetings\n being the default story).\n\n\nSuppose you want to test the \nsearch\n story, then you need to indicate the story to test as follows:\n\n\n    \n@Test\n\n    \nfun\n \n`\nsearch\n \nstory\n \nasks\n \nfor\n \ndestination\n \nWHEN\n \nthere\n \nis\n \nno\n \ndestination\n \nin\n \ncontext\n`\n()\n \n{\n\n        \nwith\n(\nrule\n.\nstartNewBusMock\n(\nstory\n \n=\n \nsearch\n))\n \n{\n\n            \nfirstAnswer\n.\nassertText\n(\nFor which destination?\n)\n\n        \n}\n\n    \n}\n\n\n\n\n\n\nTest a Conversation\n\n\nYou can simulate a whole conversation. For example, here the user indicates the destination, then the origin:\n\n\n    \n@Test\n\n    \nfun\n \n`\nsearch\n \nstory\n \nasks\n \nfor\n \norigin\n \nWHEN\n \nthere\n \nis\n \na\n \ndestination\n \nBUT\n \nno\n \norigin\n \nin\n \ncontext\n`\n()\n \n{\n\n        \nwith\n(\nrule\n.\nstartNewBusMock\n(\nstory\n \n=\n \nsearch\n))\n \n{\n\n            \nfirstAnswer\n.\nassertText\n(\nFor which destination?\n)\n\n            \ndestination\n \n=\n \nmockedDestination\n\n        \n}\n\n        \nwith\n(\nrule\n.\nstartBusMock\n())\n \n{\n\n            \nfirstBusAnswer\n.\nassertText\n(\nFor which origin?\n)\n\n            \norigin\n \n=\n \nmockedOrigin\n\n        \n}\n\n        \nwith\n(\nrule\n.\nstartBusMock\n())\n \n{\n\n            \nfirstBusAnswer\n.\nassertText\n(\nWhen?\n)\n\n        \n}\n\n    \n}\n\n\n\n\n\n\nIt is possible to modify all the values of the mocked bus at initialization.\n\n\nIn the following example, the use of the secondary intent \nindicate_location\n is simulated to indicate the origin:\n\n\n    \n@Test\n\n    \nfun\n \n`\nsearch\n \nstory\n \nasks\n \nfor\n \ndeparture\n \ndate\n \nWHEN\n \nthere\n \nis\n \na\n \ndestination\n \nand\n \nan\n \norigin\n \nbut\n \nno\n \ndeparture\n \ndate\n \nin\n \ncontext\n`\n()\n \n{\n\n         \nwith\n(\nopenBot\n.\nnewBusMock\n(\nsearch\n,\n \nlocale\n \n=\n \nLocale\n.\nFRENCH\n))\n \n{\n\n             \ndestination\n \n=\n \nmockedDestination\n\n             \nintent\n \n=\n \nindicate_location\n\n             \nlocation\n \n=\n \nmockedOrigin\n\n\n             \nrun\n()\n\n\n             \nfirstAnswer\n.\nassertText\n(\nWhen?\n)\n\n         \n}\n\n    \n}\n\n\n\n\n\n\nThe \ndestination\n variable is updated, then a call to the bus is simulated with the function \nrun()\n.", 
+            "title": "Test the bot"
+        }, 
+        {
+            "location": "/test-the-bot/#use-the-test-framework", 
+            "text": "Tock provides extensions in order to help writing better unit tests.  To use them, you need to add the  bot-test  dependency to your project.  With Maven :           dependency \n             groupId fr.vsct.tock /groupId \n             artifactId bot-test /artifactId \n             version 0.8.0 /version \n             scope test /scope \n         /dependency   With Gradle :        testCompile  fr.vsct.tock:bot-test:0.8.0   This framework is documented in KDoc format  here .", 
+            "title": "Use the Test Framework"
+        }, 
+        {
+            "location": "/test-the-bot/#write-a-simple-test", 
+            "text": "To test the  greetings  story of the Open Data bot, just use the  startNewBusMock()  extension:        @Test \n     fun   ` greetings   story   displays   welcome   message ` ()   { \n         with ( rule . startNewBusMock ())   { \n             firstAnswer . assertText ( Welcome to the Tock Open Data Bot! :) ) \n             secondAnswer . assertText ( This is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock ) \n         } \n     }   Since the default connector is Messenger, it is possible to test the message specific to Messenger in the same way:       @Test \n     fun   ` greetings   story   displays   welcome   message   with   Messenger   dedicated   message ` ()   { \n         with ( rule . startNewBusMock ())   { \n             lastAnswer . assertMessage ( \n                     buttonsTemplate ( \n                             The bot is very limited, but ask him a route or the next departures from a station in France, and see the result! :) , \n                             postbackButton ( Itineraries ,   search ), \n                             postbackButton ( Departures ,   Departures ), \n                             postbackButton ( Arrivals ,   Arrivals ) \n                     ) \n             ) \n         } \n     }   To test the message specific to Google Assistant (or any other connector),\n  you need to indicate the connector to be tested:       @Test \n     fun   ` greetings   story   displays   welcome   message   with   GA   dedicated   message   WHEN   context   contains   GA   connector ` ()   { \n         with ( rule . startNewBusMock ( connectorType   =   gaConnectorType ))   { \n             firstAnswer . assertText ( Welcome to the Tock Open Data Bot! :) ) \n             secondAnswer . assertText ( This is a Tock framework demonstration bot: https://github.com/voyages-sncf-technologies/tock ) \n             lastAnswer . assertMessage ( \n                     gaMessage ( \n                             The bot is very limited, but ask him a route or the next departures from a station in France, and see the result! :) , \n                             Itineraries , \n                             Departures , \n                             Arrivals \n                     ) \n             ) \n         } \n     }", 
+            "title": "Write a Simple Test"
+        }, 
+        {
+            "location": "/test-the-bot/#test-a-specific-story", 
+            "text": "In the previous examples, it was useless to specify the story to test ( greetings  being the default story).  Suppose you want to test the  search  story, then you need to indicate the story to test as follows:       @Test \n     fun   ` search   story   asks   for   destination   WHEN   there   is   no   destination   in   context ` ()   { \n         with ( rule . startNewBusMock ( story   =   search ))   { \n             firstAnswer . assertText ( For which destination? ) \n         } \n     }", 
+            "title": "Test a specific Story"
+        }, 
+        {
+            "location": "/test-the-bot/#test-a-conversation", 
+            "text": "You can simulate a whole conversation. For example, here the user indicates the destination, then the origin:       @Test \n     fun   ` search   story   asks   for   origin   WHEN   there   is   a   destination   BUT   no   origin   in   context ` ()   { \n         with ( rule . startNewBusMock ( story   =   search ))   { \n             firstAnswer . assertText ( For which destination? ) \n             destination   =   mockedDestination \n         } \n         with ( rule . startBusMock ())   { \n             firstBusAnswer . assertText ( For which origin? ) \n             origin   =   mockedOrigin \n         } \n         with ( rule . startBusMock ())   { \n             firstBusAnswer . assertText ( When? ) \n         } \n     }   It is possible to modify all the values of the mocked bus at initialization.  In the following example, the use of the secondary intent  indicate_location  is simulated to indicate the origin:       @Test \n     fun   ` search   story   asks   for   departure   date   WHEN   there   is   a   destination   and   an   origin   but   no   departure   date   in   context ` ()   { \n          with ( openBot . newBusMock ( search ,   locale   =   Locale . FRENCH ))   { \n              destination   =   mockedDestination \n              intent   =   indicate_location \n              location   =   mockedOrigin \n\n              run () \n\n              firstAnswer . assertText ( When? ) \n          } \n     }   The  destination  variable is updated, then a call to the bus is simulated with the function  run() .", 
+            "title": "Test a Conversation"
+        }, 
+        {
+            "location": "/kdoc/", 
+            "text": "A KDoc documentation is \nprovided\n.", 
+            "title": "KDoc"
+        }
+    ]
+}
