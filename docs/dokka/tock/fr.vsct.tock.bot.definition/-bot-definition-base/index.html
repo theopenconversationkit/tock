@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.definition</a>&nbsp;/&nbsp;<a href=".">BotDefinitionBase</a><br/>
 <br/>
 <h1>BotDefinitionBase</h1>
-<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BotDefinitionBase</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-bot-definition/index.html"><span class="identifier">BotDefinition</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/definition/BotDefinitionBase.kt#L39">(source)</a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">BotDefinitionBase</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-bot-definition/index.html"><span class="identifier">BotDefinition</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/definition/BotDefinitionBase.kt#L37">(source)</a>
 <p>Base implementation of <a href="../-bot-definition/index.html">BotDefinition</a>.</p>
 <h3>Constructors</h3>
 <table>
@@ -43,7 +43,9 @@
 <p><a href="bot-enabled-story.html">botEnabledStory</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">botEnabledStory</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code></td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">botEnabledStory</span><span class="symbol">: </span><a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a><span class="symbol">?</span></code>
+<p>To manage reactivation.</p>
+</td>
 </tr>
 <tr>
 <td>
@@ -155,6 +157,20 @@
 </tr>
 </tbody>
 </table>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../-bot-definition/test-behaviour.html">testBehaviour</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">testBehaviour</span><span class="symbol">: </span><a href="../-test-behaviour/index.html"><span class="identifier">TestBehaviour</span></a></code>
+<p>Returns a <a href="../-test-behaviour/index.html">TestBehaviour</a>. Used in Integration Tests.</p>
+</td>
+</tr>
+</tbody>
+</table>
 <h3>Inherited Functions</h3>
 <table>
 <tbody>
@@ -210,17 +226,21 @@ Overrides it if you need more control on intent choice.</p>
 </tr>
 <tr>
 <td>
-<p><a href="../-bot-definition/is-disabled-intent.html">isDisabledIntent</a></p>
+<p><a href="../-bot-definition/is-bot-disabled-intent.html">isBotDisabledIntent</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isDisabledIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$isDisabledIntent(fr.vsct.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isBotDisabledIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$isBotDisabledIntent(fr.vsct.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Is this intent disable the bot?</p>
+</td>
 </tr>
 <tr>
 <td>
-<p><a href="../-bot-definition/is-enabled-intent.html">isEnabledIntent</a></p>
+<p><a href="../-bot-definition/is-bot-enabled-intent.html">isBotEnabledIntent</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isEnabledIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$isEnabledIntent(fr.vsct.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">isBotEnabledIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.BotDefinition$isBotEnabledIntent(fr.vsct.tock.bot.definition.Intent)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Is this intent is reactivating the bot?</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -281,20 +301,29 @@ Overrides it if you need more control on intent choice.</p>
 <tbody>
 <tr>
 <td>
-<p><a href="../../fr.vsct.tock.bot.test/start-mock.html">startMock</a></p>
+<p><a href="../../fr.vsct.tock.bot.test/new-bus-mock.html">newBusMock</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><a href="../-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">.</span><span class="identifier">startMock</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test$startMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType)/storyDefinition">storyDefinition</span><span class="symbol">:</span>&nbsp;<a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a>&nbsp;<span class="symbol">=</span>&nbsp;helloStory ?: stories.first()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$startMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a>&nbsp;<span class="symbol">=</span>&nbsp;messengerConnectorType<span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.test/-bot-bus-mock/index.html"><span class="identifier">BotBusMock</span></a></code>
-<p>Provides a mock initialized with the specified <a href="../-story-definition/index.html">StoryDefinition</a> and starts the story.</p>
+<code><span class="keyword">fun </span><a href="../-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">.</span><span class="identifier">newBusMock</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test$newBusMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.test.TestContext, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/testContext">testContext</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.test/-test-context/index.html"><span class="identifier">TestContext</span></a>&nbsp;<span class="symbol">=</span>&nbsp;currentTestContext<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$newBusMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.test.TestContext, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/story">story</span><span class="symbol">:</span>&nbsp;<a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultStoryDefinition(this)<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$newBusMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.test.TestContext, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultConnectorType()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$newBusMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.test.TestContext, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/locale">locale</span><span class="symbol">:</span>&nbsp;<span class="identifier">Locale</span>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultLocale()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$newBusMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.test.TestContext, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/userId">userId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultPlayerId()<span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.test/-bot-bus-mock/index.html"><span class="identifier">BotBusMock</span></a></code>
+<p>Provides a mock initialized with the specified <a href="../-story-definition/index.html">StoryDefinition</a>.</p>
 </td>
 </tr>
 <tr>
 <td>
-<p><a href="../../fr.vsct.tock.bot.test/to-bus-mock.html">toBusMock</a></p>
+<p><a href="../../fr.vsct.tock.bot.test/new-bus-mock-context.html">newBusMockContext</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><a href="../-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">.</span><span class="identifier">toBusMock</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test$toBusMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType)/storyDefinition">storyDefinition</span><span class="symbol">:</span>&nbsp;<a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a>&nbsp;<span class="symbol">=</span>&nbsp;helloStory ?: stories.first()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$toBusMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a>&nbsp;<span class="symbol">=</span>&nbsp;messengerConnectorType<span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.test/-bot-bus-mock/index.html"><span class="identifier">BotBusMock</span></a></code>
-<p>Provides a mock initialized with the specified <a href="../-story-definition/index.html">StoryDefinition</a>.</p>
+<code><span class="keyword">fun </span><a href="../-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">.</span><span class="identifier">newBusMockContext</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test$newBusMockContext(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.test.TestContext, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/testContext">testContext</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.test/-test-context/index.html"><span class="identifier">TestContext</span></a>&nbsp;<span class="symbol">=</span>&nbsp;currentTestContext<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$newBusMockContext(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.test.TestContext, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/story">story</span><span class="symbol">:</span>&nbsp;<a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultStoryDefinition(this)<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$newBusMockContext(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.test.TestContext, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultConnectorType()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$newBusMockContext(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.test.TestContext, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/locale">locale</span><span class="symbol">:</span>&nbsp;<span class="identifier">Locale</span>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultLocale()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$newBusMockContext(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.test.TestContext, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/userId">userId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultPlayerId()<span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.test/-bot-bus-mock-context/index.html"><span class="identifier">BotBusMockContext</span></a></code>
+<p>Provides a mock context initialized with the specified <a href="../-story-definition/index.html">StoryDefinition</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.test/start-new-bus-mock.html">startNewBusMock</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="../-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">.</span><span class="identifier">startNewBusMock</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test$startNewBusMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.test.TestContext, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/testContext">testContext</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.test/-test-context/index.html"><span class="identifier">TestContext</span></a>&nbsp;<span class="symbol">=</span>&nbsp;currentTestContext<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$startNewBusMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.test.TestContext, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/story">story</span><span class="symbol">:</span>&nbsp;<a href="../-story-definition/index.html"><span class="identifier">StoryDefinition</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultStoryDefinition(this)<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$startNewBusMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.test.TestContext, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultConnectorType()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$startNewBusMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.test.TestContext, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/locale">locale</span><span class="symbol">:</span>&nbsp;<span class="identifier">Locale</span>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultLocale()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test$startNewBusMock(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.test.TestContext, fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/userId">userId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultPlayerId()<span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.test/-bot-bus-mock/index.html"><span class="identifier">BotBusMock</span></a></code>
+<p>Provides a mock initialized with the specified <a href="../-story-definition/index.html">StoryDefinition</a> and starts the story.</p>
 </td>
 </tr>
 </tbody>

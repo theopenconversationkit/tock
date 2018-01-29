@@ -32,3 +32,4 @@ fr.vsct.tock.bot.engine.nlp
 fr.vsct.tock.bot.engine.stt
 fr.vsct.tock.bot.engine.user
 fr.vsct.tock.bot.test
+fr.vsct.tock.bot.test.junit

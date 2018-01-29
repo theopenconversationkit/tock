@@ -17,28 +17,38 @@
 <p><a href="-archived-entity-value/index.html">ArchivedEntityValue</a></p>
 </td>
 <td>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">ArchivedEntityValue</span></code></td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">ArchivedEntityValue</span></code>
+<p>An archived (old) entity value.</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="-context-value/index.html">ContextValue</a></p>
 </td>
 <td>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">ContextValue</span></code></td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">ContextValue</span></code>
+<p>A potential or already evaluated value linked to an entity.</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="-dialog/index.html">Dialog</a></p>
 </td>
 <td>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">Dialog</span></code></td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">Dialog</span></code>
+<p>A dialog is a conversation between users and bots.
+Conversation history is split into a list of <a href="-dialog/stories.html">stories</a>.
+The dialog has a (current) <a href="-dialog/state.html">state</a>.</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="-dialog-state/index.html">DialogState</a></p>
 </td>
 <td>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">DialogState</span></code></td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">DialogState</span></code>
+<p>The <a href="-dialog/index.html">Dialog</a> state.</p>
+</td>
 </tr>
 <tr>
 <td>
@@ -46,7 +56,7 @@
 </td>
 <td>
 <code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">EntityStateValue</span></code>
-<p>EntityStateValue is the value of an entity with his history</p>
+<p>EntityStateValue is the current value of an entity with its history.</p>
 </td>
 </tr>
 <tr>
@@ -69,18 +79,21 @@
 </tr>
 <tr>
 <td>
-<p><a href="-story/index.html">Story</a></p>
+<p><a href="-snapshot/index.html">Snapshot</a></p>
 </td>
 <td>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">Story</span></code></td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">Snapshot</span></code>
+<p>A "snapshot" is a readonly view of the state in the dialog, usually after a bot reply.</p>
+</td>
 </tr>
 <tr>
 <td>
-<p><a href="-test-context/index.html">TestContext</a></p>
+<p><a href="-story/index.html">Story</a></p>
 </td>
 <td>
-<code><span class="keyword">object </span><span class="identifier">TestContext</span></code>
-<p>Define values for test context.</p>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">Story</span></code>
+<p>A Story is a small unit of conversation about a specific topic.
+It is linked to at least one intent - the <a href="-story/starter-intent.html">starterIntent</a>.</p>
 </td>
 </tr>
 </tbody>

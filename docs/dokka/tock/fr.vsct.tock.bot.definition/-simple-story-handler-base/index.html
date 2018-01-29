@@ -61,13 +61,11 @@
 </tr>
 <tr>
 <td>
-<p><a href="setup-handler-def.html">setupHandlerDef</a></p>
+<p><a href="new-handler-definition.html">newHandlerDefinition</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">setupHandlerDef</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.SimpleStoryHandlerBase$setupHandlerDef(fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a></code>
-<p>Handle precondition like checking mandatory entities, and create <a href="../-story-handler-definition/index.html">StoryHandlerDefinition</a>.
-If this function returns null, this implied that <a href="../../fr.vsct.tock.bot.engine/-bot-bus/end.html">BotBus.end</a> has been called in this function
-(as the <a href="../-story-handler-definition/handle.html">StoryHandlerDefinition.handle</a> function is not called).</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">newHandlerDefinition</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.SimpleStoryHandlerBase$newHandlerDefinition(fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a></code>
+<p>Instantiate new instance of <a href="#">T</a>.</p>
 </td>
 </tr>
 </tbody>
@@ -75,6 +73,16 @@ If this function returns null, this implied that <a href="../../fr.vsct.tock.bot
 <h3>Inherited Functions</h3>
 <table>
 <tbody>
+<tr>
+<td>
+<p><a href="../-story-handler-base/check-preconditions.html">checkPreconditions</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">checkPreconditions</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Check preconditions - if <a href="../../fr.vsct.tock.bot.engine/-bot-bus/end.html">BotBus.end</a> is called,
+<a href="../-story-handler-definition/handle.html">StoryHandlerDefinition.handle</a> is not called and the handling of bot answer is over.</p>
+</td>
+</tr>
 <tr>
 <td>
 <p><a href="../-story-handler-base/find-story-definition.html">findStoryDefinition</a></p>
@@ -125,6 +133,17 @@ If this function returns null, this implied that <a href="../../fr.vsct.tock.bot
 <td>
 <code><span class="keyword">fun </span><span class="identifier">i18nKeyPrefix</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
 <p>Default i18n prefix.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-story-handler-base/setup-handler-definition.html">setupHandlerDefinition</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setupHandlerDefinition</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$setupHandlerDefinition(fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">?</span></code>
+<p>Handle precondition like checking mandatory entities, and create <a href="../-story-handler-definition/index.html">StoryHandlerDefinition</a>.
+If this function returns null, this implied that <a href="../../fr.vsct.tock.bot.engine/-bot-bus/end.html">BotBus.end</a> has been called in this function
+(as the <a href="../-story-handler-definition/handle.html">StoryHandlerDefinition.handle</a> function is not called).</p>
 </td>
 </tr>
 <tr>

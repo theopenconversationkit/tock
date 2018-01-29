@@ -1,0 +1,113 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>TockJUnit4Rule - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.test.junit</a>&nbsp;/&nbsp;<a href=".">TockJUnit4Rule</a><br/>
+<br/>
+<h1>TockJUnit4Rule</h1>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">TockJUnit4Rule</span><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.test/-test-context/index.html"><span class="identifier">TestContext</span></a><span class="symbol">&gt;</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/test/src/main/kotlin/fr/vsct/tock/bot/test/junit/TockJUnit4Rule.kt#L36">(source)</a>
+<p>A JUnit4 Rule to initialize the context for each call.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">TockJUnit4Rule</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.junit.TockJUnit4Rule$<init>(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.test.TestLifecycle((fr.vsct.tock.bot.test.junit.TockJUnit4Rule.T)))/botDefinition">botDefinition</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.junit.TockJUnit4Rule$<init>(fr.vsct.tock.bot.definition.BotDefinition, fr.vsct.tock.bot.test.TestLifecycle((fr.vsct.tock.bot.test.junit.TockJUnit4Rule.T)))/lifecycle">lifecycle</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.test/-test-lifecycle/index.html"><span class="identifier">TestLifecycle</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;TestLifecycle(TestContext() as T)<span class="symbol">)</span></code>
+<p>A JUnit4 Rule to initialize the context for each call.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="bot-definition.html">botDefinition</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">botDefinition</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="lifecycle.html">lifecycle</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">lifecycle</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.test/-test-lifecycle/index.html"><span class="identifier">TestLifecycle</span></a><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="test-context.html">testContext</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">testContext</span><span class="symbol">: </span><span class="identifier">T</span></code>
+<p>The <a href="../../fr.vsct.tock.bot.test/-test-context/index.html">TestContext</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="apply.html">apply</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">apply</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.junit.TockJUnit4Rule$apply(, )/base">base</span><span class="symbol">:</span>&nbsp;<span class="identifier">&lt;ERROR CLASS&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.junit.TockJUnit4Rule$apply(, )/description">description</span><span class="symbol">:</span>&nbsp;<span class="identifier">&lt;ERROR CLASS&gt;</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">&lt;ERROR CLASS&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="bus-mock.html">busMock</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">busMock</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.test/-bot-bus-mock/index.html"><span class="identifier">BotBusMock</span></a></code>
+<p>Provides a mock context initialized with the current <a href="test-context.html">testContext</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="new-bus-mock.html">newBusMock</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">newBusMock</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.junit.TockJUnit4Rule$newBusMock(fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/story">story</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-definition/index.html"><span class="identifier">StoryDefinition</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultStoryDefinition(botDefinition)<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.junit.TockJUnit4Rule$newBusMock(fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultConnectorType()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.junit.TockJUnit4Rule$newBusMock(fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/locale">locale</span><span class="symbol">:</span>&nbsp;<span class="identifier">Locale</span>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultLocale()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.junit.TockJUnit4Rule$newBusMock(fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/userId">userId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultPlayerId()<span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.test/-bot-bus-mock/index.html"><span class="identifier">BotBusMock</span></a></code>
+<p>Provides a mock initialized with the specified <a href="../../fr.vsct.tock.bot.definition/-story-definition/index.html">StoryDefinition</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="new-bus-mock-context.html">newBusMockContext</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">newBusMockContext</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.junit.TockJUnit4Rule$newBusMockContext(fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/story">story</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-definition/index.html"><span class="identifier">StoryDefinition</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultStoryDefinition(botDefinition)<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.junit.TockJUnit4Rule$newBusMockContext(fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultConnectorType()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.junit.TockJUnit4Rule$newBusMockContext(fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/locale">locale</span><span class="symbol">:</span>&nbsp;<span class="identifier">Locale</span>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultLocale()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.junit.TockJUnit4Rule$newBusMockContext(fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/userId">userId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultPlayerId()<span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.test/-bot-bus-mock-context/index.html"><span class="identifier">BotBusMockContext</span></a></code>
+<p>Provides a mock context initialized with the specified <a href="../../fr.vsct.tock.bot.definition/-story-definition/index.html">StoryDefinition</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="start-bus-mock.html">startBusMock</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">startBusMock</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.test/-bot-bus-mock/index.html"><span class="identifier">BotBusMock</span></a></code>
+<p>Provides a mock context initialized with the current <a href="test-context.html">testContext</a> and runs the bus.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="start-new-bus-mock.html">startNewBusMock</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">startNewBusMock</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.junit.TockJUnit4Rule$startNewBusMock(fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/story">story</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-definition/index.html"><span class="identifier">StoryDefinition</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultStoryDefinition(botDefinition)<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.junit.TockJUnit4Rule$startNewBusMock(fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/connectorType">connectorType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultConnectorType()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.junit.TockJUnit4Rule$startNewBusMock(fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/locale">locale</span><span class="symbol">:</span>&nbsp;<span class="identifier">Locale</span>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultLocale()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.test.junit.TockJUnit4Rule$startNewBusMock(fr.vsct.tock.bot.definition.StoryDefinition, fr.vsct.tock.bot.connector.ConnectorType, java.util.Locale, fr.vsct.tock.bot.engine.user.PlayerId)/userId">userId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a>&nbsp;<span class="symbol">=</span>&nbsp;testContext.defaultPlayerId()<span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.test/-bot-bus-mock/index.html"><span class="identifier">BotBusMock</span></a></code>
+<p>Provides a mock initialized with the specified <a href="../../fr.vsct.tock.bot.definition/-story-definition/index.html">StoryDefinition</a> and starts the story.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

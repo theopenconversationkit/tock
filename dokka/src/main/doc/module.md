@@ -121,3 +121,7 @@ User core classes, contains [UserTimeline] and [PlayerId] classes
 # Package fr.vsct.tock.bot.test
 
 Utility methods for unit tests
+
+# Package fr.vsct.tock.bot.test.junit
+
+JUnit utilities

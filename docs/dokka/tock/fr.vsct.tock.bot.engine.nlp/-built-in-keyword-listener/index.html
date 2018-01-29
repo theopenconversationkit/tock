@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine.nlp</a>&nbsp;/&nbsp;<a href=".">BuiltInKeywordListener</a><br/>
 <br/>
 <h1>BuiltInKeywordListener</h1>
-<code><span class="keyword">object </span><span class="identifier">BuiltInKeywordListener</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-nlp-listener/index.html"><span class="identifier">NlpListener</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/nlp/BuiltInKeywordListener.kt#L28">(source)</a>
+<code><span class="keyword">object </span><span class="identifier">BuiltInKeywordListener</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-nlp-listener/index.html"><span class="identifier">NlpListener</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/nlp/BuiltInKeywordListener.kt#L26">(source)</a>
 <p>Built-in listener to start <a href="#">BotDefinition.keywordStory</a>.</p>
 <h3>Properties</h3>
 <table>
@@ -59,15 +59,6 @@
 <tbody>
 <tr>
 <td>
-<p><a href="error.html">error</a></p>
-</td>
-<td>
-<code><span class="keyword">fun </span><span class="identifier">error</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener$error(fr.vsct.tock.nlp.api.client.model.NlpQuery, kotlin.Throwable)/query">query</span><span class="symbol">:</span>&nbsp;<span class="identifier">NlpQuery</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener$error(fr.vsct.tock.nlp.api.client.model.NlpQuery, kotlin.Throwable)/throwable">throwable</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html"><span class="identifier">Throwable</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
-<p>Called when nlp request is throwing an error.</p>
-</td>
-</tr>
-<tr>
-<td>
 <p><a href="handle-keyword.html">handleKeyword</a></p>
 </td>
 <td>
@@ -75,12 +66,35 @@
 <p>Used to handle "secret" keywords.</p>
 </td>
 </tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
 <tr>
 <td>
-<p><a href="success.html">success</a></p>
+<p><a href="../-nlp-listener/error.html">error</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">success</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener$success(fr.vsct.tock.nlp.api.client.model.NlpQuery, fr.vsct.tock.nlp.api.client.model.NlpResult)/query">query</span><span class="symbol">:</span>&nbsp;<span class="identifier">NlpQuery</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener$success(fr.vsct.tock.nlp.api.client.model.NlpQuery, fr.vsct.tock.nlp.api.client.model.NlpResult)/result">result</span><span class="symbol">:</span>&nbsp;<span class="identifier">NlpResult</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">error</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpListener$error(fr.vsct.tock.nlp.api.client.model.NlpQuery, kotlin.Throwable)/query">query</span><span class="symbol">:</span>&nbsp;<span class="identifier">NlpQuery</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpListener$error(fr.vsct.tock.nlp.api.client.model.NlpQuery, kotlin.Throwable)/throwable">throwable</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-throwable/index.html"><span class="identifier">Throwable</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Called when nlp request is throwing an error.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-nlp-listener/evaluate-entities.html">evaluateEntities</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">evaluateEntities</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpListener$evaluateEntities(fr.vsct.tock.bot.engine.user.UserTimeline, fr.vsct.tock.bot.engine.dialog.Dialog, fr.vsct.tock.nlp.api.client.model.NlpResult)/userTimeline">userTimeline</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-user-timeline/index.html"><span class="identifier">UserTimeline</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpListener$evaluateEntities(fr.vsct.tock.bot.engine.user.UserTimeline, fr.vsct.tock.bot.engine.dialog.Dialog, fr.vsct.tock.nlp.api.client.model.NlpResult)/dialog">dialog</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.dialog/-dialog/index.html"><span class="identifier">Dialog</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpListener$evaluateEntities(fr.vsct.tock.bot.engine.user.UserTimeline, fr.vsct.tock.bot.engine.dialog.Dialog, fr.vsct.tock.nlp.api.client.model.NlpResult)/nlpResult">nlpResult</span><span class="symbol">:</span>&nbsp;<span class="identifier">NlpResult</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../fr.vsct.tock.bot.engine.dialog/-context-value/index.html"><span class="identifier">ContextValue</span></a><span class="symbol">&gt;</span></code>
+<p>Allow custom entity evaluation - default returns empty list.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-nlp-listener/success.html">success</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">success</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpListener$success(fr.vsct.tock.nlp.api.client.model.NlpQuery, fr.vsct.tock.nlp.api.client.model.NlpResult)/query">query</span><span class="symbol">:</span>&nbsp;<span class="identifier">NlpQuery</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpListener$success(fr.vsct.tock.nlp.api.client.model.NlpQuery, fr.vsct.tock.nlp.api.client.model.NlpResult)/result">result</span><span class="symbol">:</span>&nbsp;<span class="identifier">NlpResult</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
 <p>Called when nlp request is successful.</p>
 </td>
 </tr>

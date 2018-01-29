@@ -64,6 +64,7 @@
 <td>
 <a href="../fr.vsct.tock.bot.engine.dialog/-archived-entity-value/index.html">fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue</a></td>
 <td>
+<p>An archived (old) entity value.</p>
 </td>
 </tr>
 <tr>
@@ -146,7 +147,7 @@
 <td>
 <a href="../fr.vsct.tock.bot.test/-bot-bus-mock-context/index.html">fr.vsct.tock.bot.test.BotBusMockContext</a></td>
 <td>
-<p>The initial context of the test.</p>
+<p>The context of the test.</p>
 </td>
 </tr>
 <tr>
@@ -263,6 +264,7 @@ see <a href="https://developers.facebook.com/docs/messenger-platform/webhook-ref
 <td>
 <a href="../fr.vsct.tock.bot.connector/-connector-base/index.html">fr.vsct.tock.bot.connector.ConnectorBase</a></td>
 <td>
+<p>Base implementation of <a href="../fr.vsct.tock.bot.connector/-connector/index.html">Connector</a>. Connector implementations should usually extend this class.</p>
 </td>
 </tr>
 <tr>
@@ -365,12 +367,16 @@ Used only by connector implementation.</p>
 <td>
 <a href="../fr.vsct.tock.bot.engine.dialog/-context-value/index.html">fr.vsct.tock.bot.engine.dialog.ContextValue</a></td>
 <td>
+<p>A potential or already evaluated value linked to an entity.</p>
 </td>
 </tr>
 <tr>
 <td>
 <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/index.html">fr.vsct.tock.bot.engine.dialog.Dialog</a></td>
 <td>
+<p>A dialog is a conversation between users and bots.
+Conversation history is split into a list of <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/stories.html">stories</a>.
+The dialog has a (current) <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/state.html">state</a>.</p>
 </td>
 </tr>
 <tr>
@@ -407,6 +413,7 @@ Used only by connector implementation.</p>
 <td>
 <a href="../fr.vsct.tock.bot.engine.dialog/-dialog-state/index.html">fr.vsct.tock.bot.engine.dialog.DialogState</a></td>
 <td>
+<p>The <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/index.html">Dialog</a> state.</p>
 </td>
 </tr>
 <tr>
@@ -426,7 +433,7 @@ Used only by connector implementation.</p>
 <td>
 <a href="../fr.vsct.tock.bot.engine.dialog/-entity-state-value/index.html">fr.vsct.tock.bot.engine.dialog.EntityStateValue</a></td>
 <td>
-<p>EntityStateValue is the value of an entity with his history</p>
+<p>EntityStateValue is the current value of an entity with its history.</p>
 </td>
 </tr>
 <tr>
@@ -1081,7 +1088,7 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 <td>
 <a href="../fr.vsct.tock.bot.engine.nlp/-nlp-listener/index.html">fr.vsct.tock.bot.engine.nlp.NlpListener</a></td>
 <td>
-<p>Used to monitor nlp request on bot side.
+<p>Used to customize behaviour of NLP parsing - and also to monitor NLP requests - on bot side.
 Need to be registered using <a href="../fr.vsct.tock.bot.engine/-bot-repository/register-nlp-listener.html">fr.vsct.tock.bot.engine.BotRepository.registerNlpListener</a>.</p>
 </td>
 </tr>
@@ -1407,6 +1414,13 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.engine.dialog/-snapshot/index.html">fr.vsct.tock.bot.engine.dialog.Snapshot</a></td>
+<td>
+<p>A "snapshot" is a readonly view of the state in the dialog, usually after a bot reply.</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.engine.event/-start-conversation-event/index.html">fr.vsct.tock.bot.engine.event.StartConversationEvent</a></td>
 <td>
 <p>Event created when starting a conversation - connector support is not required!</p>
@@ -1416,6 +1430,8 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 <td>
 <a href="../fr.vsct.tock.bot.engine.dialog/-story/index.html">fr.vsct.tock.bot.engine.dialog.Story</a></td>
 <td>
+<p>A Story is a small unit of conversation about a specific topic.
+It is linked to at least one intent - the <a href="../fr.vsct.tock.bot.engine.dialog/-story/starter-intent.html">starterIntent</a>.</p>
 </td>
 </tr>
 <tr>
@@ -1531,14 +1547,33 @@ Used to manage workflow in a <a href="../fr.vsct.tock.bot.definition/-story-hand
 </tr>
 <tr>
 <td>
-<a href="../fr.vsct.tock.bot.engine.dialog/-test-context/index.html">fr.vsct.tock.bot.engine.dialog.TestContext</a></td>
+<a href="../fr.vsct.tock.bot.definition/-test-behaviour/index.html">fr.vsct.tock.bot.definition.TestBehaviour</a></td>
 <td>
-<p>Define values for test context.</p>
+<p>Define values and behaviour for integration tests.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.definition/-test-behaviour-base/index.html">fr.vsct.tock.bot.definition.TestBehaviourBase</a></td>
+<td>
+<p>Base implementation of <a href="../fr.vsct.tock.bot.definition/-test-behaviour/index.html">TestBehaviour</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.test/-test-context/index.html">fr.vsct.tock.bot.test.TestContext</a></td>
+<td>
 </td>
 </tr>
 <tr>
 <td>
 <a href="../fr.vsct.tock.bot.admin.test/-test-dialog-report/index.html">fr.vsct.tock.bot.admin.test.TestDialogReport</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.test/-test-lifecycle/index.html">fr.vsct.tock.bot.test.TestLifecycle</a></td>
 <td>
 </td>
 </tr>
@@ -1576,6 +1611,13 @@ Used to manage workflow in a <a href="../fr.vsct.tock.bot.definition/-story-hand
 <td>
 <a href="../fr.vsct.tock.bot.engine.user/-time-boxed-flag/index.html">fr.vsct.tock.bot.engine.user.TimeBoxedFlag</a></td>
 <td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.test.junit/-tock-j-unit4-rule/index.html">fr.vsct.tock.bot.test.junit.TockJUnit4Rule</a></td>
+<td>
+<p>A JUnit4 Rule to initialize the context for each call.</p>
 </td>
 </tr>
 <tr>
