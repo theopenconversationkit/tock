@@ -19,9 +19,8 @@ package fr.vsct.tock.nlp.api.client.model
 /**
  *
  */
-class NlpQuery(val queries: List<String>,
-               val namespace: String,
-               val applicationName: String,
-               val context: QueryContext,
-               val state: QueryState = QueryState.noState) {
-}
+data class NlpQuery(val queries: List<String>,
+                    val namespace: String,
+                    val applicationName: String,
+                    val context: QueryContext,
+                    val state: QueryState = QueryState.noState)
