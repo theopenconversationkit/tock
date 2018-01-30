@@ -17,17 +17,17 @@ pages:
     - KDoc: kdoc.md
 theme:
   name: 'material'
+  custom_dir: 'theme'
   language: 'fr'
   logo: 'assets/images/logo.svg'
 markdown_extensions:
   - admonition
   - codehilite(guess_lang=false)
   - toc(permalink=true)
-copyright: 'Copyright &copy; 2017 VSCT'
+copyright: 'Copyright &copy; 2018 VSCT'
 extra:
   social:
     - type: 'github'
       link: 'https://github.com/voyages-sncf-technologies/tock'
   search:
     language: 'fr'
-

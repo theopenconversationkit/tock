@@ -18,6 +18,7 @@ pages:
 theme:
   name: 'material'
   logo: 'assets/images/logo.svg'
+  custom_dir: 'theme'
 markdown_extensions:
   - admonition
   - codehilite(guess_lang=false)

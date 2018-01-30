@@ -54,7 +54,7 @@ import java.util.Locale
 /**
  * A new bus is generated for each user request.
  *
- * This interface is used by bot implementations to reply to this request.
+ * The bus is used by bot implementations to reply to the user request.
  */
 interface BotBus : I18nKeyProvider {
 

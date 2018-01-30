@@ -18,7 +18,15 @@
 <html lang="en">
 <head>
     <script type="text/javascript">
-        window.location = "https://voyages-sncf-technologies.github.io/tock/fr";
+        try {
+            if(navigator.language && navigator.language.toLowerCase().indexOf("fr") !== -1) {
+                window.location = "https://voyages-sncf-technologies.github.io/tock/fr";
+            } else {
+                window.location = "https://voyages-sncf-technologies.github.io/tock/en";
+            }
+        }catch(e) {
+            window.location = "https://voyages-sncf-technologies.github.io/tock/en";
+        }
     </script>
 </head>
 <body>

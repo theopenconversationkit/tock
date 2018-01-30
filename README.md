@@ -5,6 +5,6 @@
  
 Build assistants & chatbots with ease.
  
-Full documentation (fr only for now, en coming soon): [https://voyages-sncf-technologies.github.io/tock](https://voyages-sncf-technologies.github.io/tock/index.html)
+Full documentation: [https://voyages-sncf-technologies.github.io/tock](https://voyages-sncf-technologies.github.io/tock/index.html)
   
 **Warning**: this is an alpha quality release, use at your own risk
