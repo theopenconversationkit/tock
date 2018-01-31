@@ -145,7 +145,26 @@ data class BotBusMockContext(var userTimeline: UserTimeline,
      */
     fun sentence(
             text: String,
-            vararg entityValues: ContextValue): SendSentence = sentence(text, entityValues = entityValues.toList())
+            vararg entityValues: ContextValue): SendSentence =
+            sentence(text, entityValues.toList())
+
+    /**
+     * Create a new sentence for this context.
+     */
+    fun sentence(
+            text: String,
+            entityValues: List<ContextValue> = emptyList()): SendSentence =
+            sentence(text, null as IntentAware?, entityValues.toList())
+
+
+    /**
+     * Create a new sentence for this context.
+     */
+    fun sentence(
+            text: String,
+            intent: IntentAware? = null,
+            vararg entityValues: ContextValue
+    ) = sentence(text, intent, entityValues.toList())
 
     /**
      * Create a new sentence for this context.
