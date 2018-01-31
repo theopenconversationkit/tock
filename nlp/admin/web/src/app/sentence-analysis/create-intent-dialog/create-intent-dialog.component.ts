@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import { Component, OnInit } from '@angular/core';
+import {Component, OnInit} from '@angular/core';
 import {MdDialogRef} from "@angular/material";
 
 @Component({
@@ -24,7 +24,7 @@ import {MdDialogRef} from "@angular/material";
 })
 export class CreateIntentDialogComponent implements OnInit {
 
-  name:string;
+  name: string;
 
   constructor(public dialogRef: MdDialogRef<CreateIntentDialogComponent>) {
 
@@ -33,8 +33,15 @@ export class CreateIntentDialogComponent implements OnInit {
   ngOnInit() {
   }
 
+  format() {
+    if (this.name) {
+      this.name = this.name.replace(/[^A-Za-z_-]*/g, '').toLowerCase().trim();
+    }
+  }
+
   save() {
-    this.dialogRef.close({name:this.name.toLowerCase().trim()});
+    this.format();
+    this.dialogRef.close({name: this.name.trim()});
   }
 
 }

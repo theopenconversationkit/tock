@@ -35,13 +35,13 @@ export class CreateEntityDialogComponent implements OnInit {
   roleInitialized: boolean;
 
   error: string;
-  entityTypes:EntityType[];
+  entityTypes: EntityType[];
 
   constructor(public dialogRef: MdDialogRef<CreateEntityDialogComponent>,
               private state: StateService,
               @Inject(MD_DIALOG_DATA) private data: any) {
     this.entityProvider = data.entityProvider;
-    this.state.entityTypesSortedByName().subscribe(entities => this.entityTypes =entities);
+    this.state.entityTypesSortedByName().subscribe(entities => this.entityTypes = entities);
   }
 
   ngOnInit() {
@@ -53,23 +53,25 @@ export class CreateEntityDialogComponent implements OnInit {
     this.role = entityNameFromQualifiedName(entityType.name);
   }
 
-  onTypeKeyDown(event) {
-    if (!this.roleInitialized) {
-      setTimeout(() => this.role = this.type);
+  onTypeKeyUp(event) {
+    if (this.type) {
+      this.type = this.type.replace(/[^A-Za-z:_-]*/g, '').toLowerCase().trim();
+      if (!this.roleInitialized) {
+        this.role = this.type;
+      }
     }
   }
 
-  onRoleKeyDown(event) {
+  onRoleKeyUp(event) {
     this.roleInitialized = true;
-  }
-
-  onTypeChange() {
-    if (!this.roleInitialized) {
-      this.role = this.type;
+    if (this.role) {
+      this.role = this.role.replace(/[^A-Za-z_-]*/g, '').toLowerCase().trim();
     }
   }
 
   save() {
+    this.onTypeKeyUp(null);
+    this.onRoleKeyUp(null);
     this.error = undefined;
     let name = this.type;
     if (!name || name.length === 0) {
@@ -80,13 +82,11 @@ export class CreateEntityDialogComponent implements OnInit {
         return;
       }
     } else if (name.indexOf(':') === -1) {
-      name = `${this.state.user.organization}:${name.trim().toLowerCase()}`;
+      name = `${this.state.user.organization}:${name}`;
     }
     let role = this.role;
     if (!role || role.length === 0) {
       role = entityNameFromQualifiedName(name);
-    } else {
-      role = role.trim().toLowerCase();
     }
 
     if (this.entityProvider.hasEntityRole(role)) {

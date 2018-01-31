@@ -35,7 +35,7 @@
     Or create :
 
     <md-input-container>
-      <input mdInput placeholder="Entity Type" [(ngModel)]="type" (keydown)="onTypeKeyDown($event)" (change)="onTypeChange()">
+      <input mdInput placeholder="Entity Type" [(ngModel)]="type" (keyup)="onTypeKeyUp($event)">
     </md-input-container>
   </p>
 
@@ -43,7 +43,7 @@
     With role :
 
     <md-input-container>
-      <input mdInput placeholder="Role" [(ngModel)]="role" (keydown)="onRoleKeyDown($event)">
+      <input mdInput placeholder="Role" [(ngModel)]="role" (keyup)="onRoleKeyUp($event)">
     </md-input-container>
   </p>
 
