@@ -26,7 +26,7 @@ import {
   SearchQuery,
   Sentence,
   SentencesResult,
-  UpdateEntityDefinitionQuery
+  UpdateEntityDefinitionQuery, UpdateSentencesQuery, UpdateSentencesReport
 } from "../model/nlp";
 import {Observable} from "rxjs";
 import {Application, Intent} from "../model/application";
@@ -92,6 +92,10 @@ export class NlpService implements OnDestroy {
 
   searchSentences(query: SearchQuery): Observable<SentencesResult> {
     return this.rest.post("/sentences/search", query, SentencesResult.fromJSON)
+  }
+
+  updateSentences(query: UpdateSentencesQuery): Observable<UpdateSentencesReport> {
+    return this.rest.post("/sentences/update", query, UpdateSentencesReport.fromJSON)
   }
 
   searchLogs(query: LogsQuery): Observable<LogsResult> {

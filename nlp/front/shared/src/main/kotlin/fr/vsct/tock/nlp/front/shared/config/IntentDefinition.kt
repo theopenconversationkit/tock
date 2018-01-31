@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.shared.config
 
 import fr.vsct.tock.nlp.core.EntitiesRegexp
+import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.shared.withNamespace
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -43,6 +44,14 @@ data class IntentDefinition(val name: String,
 
     fun findEntity(type: String, role: String): EntityDefinition? {
         return entities.firstOrNull { it.entityTypeName == type && it.role == role }
+    }
+
+    fun findEntity(entity: Entity): EntityDefinition? {
+        return findEntity(entity.entityType.name, entity.role)
+    }
+
+    fun hasEntity(entity: Entity): Boolean {
+        return findEntity(entity) != null
     }
 
     fun supportStates(states: Set<String>): Boolean {

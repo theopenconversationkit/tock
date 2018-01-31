@@ -41,7 +41,8 @@ internal object FrontRepository {
 
     val config: ApplicationConfiguration get() = injector.provide()
 
-    val entityTypes: MutableMap<String, EntityType?> by lazy {
+    //internal for tests
+    internal val entityTypes: MutableMap<String, EntityType?> by lazy {
         loadEntityTypes()
     }
 
@@ -62,10 +63,10 @@ internal object FrontRepository {
                                         entityTypesMap[it.entityTypeName]?.let { e ->
                                             Entity(e, it.role)
                                         }.apply {
-                                            if (this == null) {
-                                                logger.error { "entity ${it.entityTypeName} not found" }
-                                            }
-                                        }
+                                                    if (this == null) {
+                                                        logger.error { "entity ${it.entityTypeName} not found" }
+                                                    }
+                                                }
                                     } ?: emptyList<Entity>()
                             )
                         }
@@ -100,11 +101,25 @@ internal object FrontRepository {
         if (entityTypes.isEmpty()) {
             reloadEntityTypes()
         }
-        return entityTypes.getValue(name) ?: null.apply { error("unknown entity $name") }
+        return entityTypes.getValue(name) ?: null.apply { logger.error { "unknown entity $name" } }
     }
 
-    fun toEntityType(entityType: EntityTypeDefinition): EntityType {
-        return EntityType(entityType.name, entityType.subEntities.mapNotNull { it.toEntity() })
+    fun addNewEntityType(entityType: EntityTypeDefinition) {
+        if (entityTypeByName(entityType.name) == null) {
+            entityTypes.put(
+                    entityType.name,
+                    EntityType(
+                            entityType.name,
+                            entityType.subEntities.mapNotNull {
+                                it.toEntity()
+                            }
+                    )
+            )
+        }
+    }
+
+    fun toEntityType(entityType: EntityTypeDefinition): EntityType? {
+        return entityTypeByName(entityType.name)
     }
 
     fun toEntity(type: String, role: String): Entity? {

@@ -14,21 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.front.shared.config
-
-import fr.vsct.tock.nlp.core.Entity
-import fr.vsct.tock.shared.name
+package fr.vsct.tock.nlp.admin.model
 
 /**
  *
  */
-data class EntityDefinition(val entityTypeName: String,
-                            val role: String = entityTypeName.name(),
-                            /**
-                             * To evaluate time.
-                             */
-                            val atStartOfDay: Boolean? = null) {
-
-    constructor(entity: Entity) : this(entity.entityType.name, entity.role)
-
+data class UpdateSentencesReport(val nbUpdates:Int = 0) {
 }

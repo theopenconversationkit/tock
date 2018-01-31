@@ -550,7 +550,7 @@ export class SearchQuery extends PaginatedQuery {
               public status?: SentenceStatus[],
               public entityType?: string,
               public entityRole?: string,
-              public modifiedAfter?:Date) {
+              public modifiedAfter?: Date) {
     super(namespace, applicationName, language, start, size)
   }
 }
@@ -814,6 +814,30 @@ export class TestBuildStat {
     return json ? json.map(TestBuildStat.fromJSON) : [];
   }
 
+}
+
+export class UpdateSentencesQuery extends ApplicationScopedQuery {
+
+  constructor(public namespace: string,
+              public applicationName: string,
+              public language: string,
+              public searchQuery: SearchQuery,
+              public newIntentId?: string) {
+    super(namespace, applicationName, language)
+  }
+}
+
+export class UpdateSentencesReport {
+  constructor(public nbUpdates: number) {
+  }
+
+  static fromJSON(json?: any): UpdateSentencesReport {
+    const value = Object.create(UpdateSentencesReport.prototype);
+
+    const result = Object.assign(value, json, {});
+
+    return result;
+  }
 }
 
 function hashCode(str: string): number {

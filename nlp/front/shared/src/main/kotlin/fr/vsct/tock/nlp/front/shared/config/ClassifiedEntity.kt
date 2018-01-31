@@ -46,8 +46,7 @@ data class ClassifiedEntity(val type: String,
     )
 
     fun toEntityValue(entityProvider: (String, String) -> Entity?): EntityValue? =
-            entityProvider
-                    .invoke(type, role)
+            toEntity(entityProvider)
                     ?.run {
                         EntityValue(
                                 start,
@@ -59,7 +58,7 @@ data class ClassifiedEntity(val type: String,
                         )
                     }
 
-    fun toEntityRecognition(entityProvider: (String, String) -> Entity?): EntityRecognition?
-            = toEntityValue(entityProvider)?.run { EntityRecognition(this, 1.0) }
+    fun toEntityRecognition(entityProvider: (String, String) -> Entity?): EntityRecognition? = toEntityValue(entityProvider)?.run { EntityRecognition(this, 1.0) }
 
+    fun toEntity(entityProvider: (String, String) -> Entity?): Entity? = entityProvider.invoke(type, role)
 }

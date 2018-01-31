@@ -16,9 +16,11 @@
 
 import {Component, OnInit, ViewChild} from "@angular/core";
 import {SentenceFilter, SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.component";
-import {EntityType, getRoles, SentenceStatus} from "../model/nlp";
+import {EntityType, getRoles, SentenceStatus, UpdateSentencesQuery} from "../model/nlp";
 import {StateService} from "../core/state.service";
 import {ActivatedRoute} from "@angular/router";
+import {NlpService} from "../nlp-tabs/nlp.service";
+import {MdSnackBar} from "@angular/material";
 
 @Component({
   selector: 'tock-search',
@@ -31,10 +33,13 @@ export class SearchComponent implements OnInit {
   status: SentenceStatus;
   entityTypes: EntityType[];
   entityRoles: string[];
+  update: SentencesUpdate = new SentencesUpdate();
 
   @ViewChild(SentencesScrollComponent) scroll;
 
   constructor(public state: StateService,
+              private nlp: NlpService,
+              private snackBar: MdSnackBar,
               private route: ActivatedRoute) {
   }
 
@@ -86,5 +91,32 @@ export class SearchComponent implements OnInit {
     });
   }
 
+  updateSentences() {
+    this.nlp.updateSentences(
+      new UpdateSentencesQuery(
+        this.state.currentApplication.namespace,
+        this.state.currentApplication.name,
+        this.state.currentLocale,
+        this.scroll.toSearchQuery(this.state.createPaginatedQuery(0, 10000)),
+        this.update.newIntentId
+      )
+    ).subscribe(r => {
+      const n = r.nbUpdates;
+      if (n === 0) {
+        this.snackBar.open(`No sentence updated`, "UPDATE", {duration: 1000})
+      } else if (n === 1) {
+        this.snackBar.open(`1 sentence updated`, "UPDATE", {duration: 1000})
+      } else {
+        this.snackBar.open(`${n} sentences updated`, "UPDATE", {duration: 1000})
+      }
+      this.scroll.refresh();
+    });
+  }
+}
+
+export class SentencesUpdate {
+
+  constructor(public newIntentId?: string) {
+  }
 
 }

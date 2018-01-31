@@ -67,6 +67,15 @@ interface ApplicationConfiguration {
 
     fun switchSentencesStatus(sentences: List<ClassifiedSentence>, newStatus: ClassifiedSentenceStatus)
 
+    /**
+     * Switch specified sentences to a new intent.
+     *
+     * @return the number of sentences updated
+     */
+    fun switchSentencesIntent(
+            sentences: List<ClassifiedSentence>,
+            targetApplication: ApplicationDefinition,
+            targetIntentId: Id<IntentDefinition>) : Int
 
     fun save(entityType: EntityTypeDefinition)
 

@@ -28,6 +28,7 @@ import fr.vsct.tock.nlp.admin.model.ParseQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.admin.model.UpdateEntityDefinitionQuery
+import fr.vsct.tock.nlp.admin.model.UpdateSentencesQuery
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
@@ -244,6 +245,15 @@ open class AdminVerticle : WebVerticle() {
         { context, s: SearchQuery ->
             if (context.organization == s.namespace) {
                 admin.searchSentences(s)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/sentences/update")
+        { context, s: UpdateSentencesQuery ->
+            if (context.organization == s.namespace && context.organization == s.searchQuery.namespace) {
+                admin.updateSentences(s)
             } else {
                 unauthorized()
             }

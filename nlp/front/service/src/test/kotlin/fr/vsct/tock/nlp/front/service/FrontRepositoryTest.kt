@@ -23,6 +23,7 @@ import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertNull
 import kotlin.test.assertTrue
 
 /**
@@ -54,8 +55,8 @@ class FrontRepositoryTest : AbstractTest() {
         }
     }
 
-    @Test(expected = IllegalStateException::class)
-    fun entityTypeByName_shouldFail_whenNoEntityTypeIsFound() {
+    @Test
+    fun entityTypeByName_shouldNotFail_whenNoEntityTypeIsFound() {
         with(context) {
             assertTrue(FrontRepository.entityTypeExists("present"))
             assertFalse(FrontRepository.entityTypeExists("notPresent"))
@@ -65,8 +66,8 @@ class FrontRepositoryTest : AbstractTest() {
             assertTrue(FrontRepository.entityTypeExists("present"))
             assertFalse(FrontRepository.entityTypeExists("notPresent"))
 
-            //thow exception
-            FrontRepository.entityTypeByName("notPresent")
+            //should return null
+            assertNull(FrontRepository.entityTypeByName("notPresent"))
         }
     }
 }

@@ -152,7 +152,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
                             toApplication(it) to config.getIntentsByApplicationId(it._id).map { config.toIntent(it) }.toSet()
                         }
                         .toMap(),
-                config.getEntityTypes().map { FrontRepository.toEntityType(it) }
+                config.getEntityTypes().mapNotNull { FrontRepository.toEntityType(it) }
         )
     }
 

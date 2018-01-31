@@ -20,14 +20,15 @@ import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
 import fr.vsct.tock.nlp.core.NlpEngineType
+import fr.vsct.tock.nlp.front.service.FrontRepository.addNewEntityType
 import fr.vsct.tock.nlp.front.service.FrontRepository.config
-import fr.vsct.tock.nlp.front.service.FrontRepository.toEntityType
 import fr.vsct.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import fr.vsct.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import fr.vsct.tock.nlp.front.service.storage.IntentDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
@@ -107,7 +108,7 @@ object ApplicationConfigurationService :
 
     override fun save(entityType: EntityTypeDefinition) {
         entityTypeDAO.save(entityType)
-        FrontRepository.entityTypes.put(entityType.name, toEntityType(entityType))
+        addNewEntityType(entityType)
     }
 
     override fun getIntentIdByQualifiedName(name: String): Id<IntentDefinition>? {
@@ -138,6 +139,33 @@ object ApplicationConfigurationService :
                 intent.qualifiedName,
                 intent.entities.mapNotNull { FrontRepository.toEntity(it.entityTypeName, it.role) },
                 intent.entitiesRegexp)
+    }
+
+    override fun switchSentencesIntent(
+            sentences: List<ClassifiedSentence>,
+            targetApplication: ApplicationDefinition,
+            targetIntentId: Id<IntentDefinition>): Int {
+
+        val s = sentences.filter { it.classification.intentId != targetIntentId }
+
+        //1 collect entities
+        val entities = s
+                .flatMap {
+                    it.classification.entities.mapNotNull { it.toEntity(FrontRepository::toEntity) }
+                }
+                .distinct()
+
+        //2 create entities where there are not present in the new intent
+        val intent = getIntentById(targetIntentId)!!
+        entities.filterNot { intent.hasEntity(it) }.apply {
+            if (isNotEmpty()) {
+                save(intent.copy(entities = intent.entities + map { EntityDefinition(it) }))
+            }
+        }
+
+        sentenceDAO.switchSentencesIntent(s, targetIntentId)
+
+        return sentences.size
     }
 
     override fun updateEntityDefinition(namespace: String, applicationName: String, entity: EntityDefinition) {

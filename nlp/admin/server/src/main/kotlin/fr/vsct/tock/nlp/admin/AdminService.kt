@@ -29,6 +29,8 @@ import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.admin.model.SentencesReport
 import fr.vsct.tock.nlp.admin.model.TestBuildStat
+import fr.vsct.tock.nlp.admin.model.UpdateSentencesQuery
+import fr.vsct.tock.nlp.admin.model.UpdateSentencesReport
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
@@ -60,6 +62,17 @@ object AdminService {
         val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
         val result = front.search(query.toSentencesQuery(application!!._id))
         return SentencesReport(query.start, result)
+    }
+
+    fun updateSentences(query: UpdateSentencesQuery): UpdateSentencesReport {
+        val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
+        return if (query.newIntentId != null && application.intents.contains(query.newIntentId)) {
+            val result = front.search(query.searchQuery.toSentencesQuery(application._id))
+            val nbUpdates = front.switchSentencesIntent(result.sentences, application, query.newIntentId)
+            return UpdateSentencesReport(nbUpdates)
+        } else {
+            UpdateSentencesReport()
+        }
     }
 
     fun getApplicationWithIntents(applicationId: Id<ApplicationDefinition>): ApplicationWithIntents? {

@@ -140,7 +140,7 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             val filter =
                     listOfNotNull(
                             "'applicationId':${applicationId.json}",
-                            if(language ==null) null else "'language':${language!!.json}",
+                            if (language == null) null else "'language':${language!!.json}",
                             if (search.isNullOrBlank()) null else if (query.onlyExactMatch) "'text':${search!!.json}" else "'fullText':/${search!!.trim()}/i",
                             if (intentId == null) null else "'classification.intentId':${intentId!!.json}",
                             if (filterStatus.isEmpty()) null else filterStatus,
@@ -161,6 +161,13 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     override fun switchSentencesIntent(applicationId: Id<ApplicationDefinition>, oldIntentId: Id<IntentDefinition>, newIntentId: Id<IntentDefinition>) {
         col.updateMany("{'applicationId':${applicationId.json}, 'classification.intentId':${oldIntentId.json}}", "{$set: {'classification.intentId':${newIntentId.json},'classification.entities':[],'status':'${inbox}'}}")
+    }
+
+    override fun switchSentencesIntent(sentences: List<ClassifiedSentence>, newIntentId: Id<IntentDefinition>) {
+        //TODO updateMany
+        sentences.forEach {
+            save(it.copy(classification = it.classification.copy(newIntentId)))
+        }
     }
 
     override fun removeEntityFromSentences(applicationId: Id<ApplicationDefinition>, intentId: Id<IntentDefinition>, entityType: String, role: String) {

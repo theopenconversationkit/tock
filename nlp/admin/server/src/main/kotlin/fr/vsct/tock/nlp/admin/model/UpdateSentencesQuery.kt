@@ -14,21 +14,16 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.front.shared.config
+package fr.vsct.tock.nlp.admin.model
 
-import fr.vsct.tock.nlp.core.Entity
-import fr.vsct.tock.shared.name
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import org.litote.kmongo.Id
 
 /**
  *
  */
-data class EntityDefinition(val entityTypeName: String,
-                            val role: String = entityTypeName.name(),
-                            /**
-                             * To evaluate time.
-                             */
-                            val atStartOfDay: Boolean? = null) {
-
-    constructor(entity: Entity) : this(entity.entityType.name, entity.role)
-
+data class UpdateSentencesQuery(
+        val newIntentId: Id<IntentDefinition>?,
+        val searchQuery: SearchQuery
+) : ApplicationScopedQuery() {
 }
