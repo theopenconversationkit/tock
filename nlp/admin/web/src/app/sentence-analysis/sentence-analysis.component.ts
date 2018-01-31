@@ -50,9 +50,9 @@ export class SentenceAnalysisComponent implements OnInit {
   }
 
   onIntentChange(value) {
-    //cleanup entities
-    this.sentence.classification.entities = [];
     if (value === "newIntent") {
+      //cleanup entities
+      this.sentence.classification.entities = [];
       let dialogRef = this.dialog.open(CreateIntentDialogComponent);
       dialogRef.afterClosed().subscribe(result => {
         if (result !== "cancel") {
@@ -68,8 +68,18 @@ export class SentenceAnalysisComponent implements OnInit {
         }
       });
     } else {
-      this.sentence.classification.intentId = value;
-      this.sentence = this.sentence.clone();
+      const oldSentence = this.sentence;
+      const newSentence = oldSentence.clone();
+
+      const classification = newSentence.classification;
+      classification.intentId = value;
+      const intent = this.state.findIntentById(value);
+      classification.entities =
+        oldSentence
+          .classification
+          .entities
+          .filter(e => intent.containsEntity(e.type, e.role));
+      this.sentence = newSentence;
     }
   }
 
