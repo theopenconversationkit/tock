@@ -331,7 +331,9 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     }
 
     private fun addSnapshot(dialog: Dialog) {
-        val snapshot = Snapshot(dialog.state.entityValues.values.mapNotNull { it.value })
+        val snapshot = Snapshot(
+                dialog.state.currentIntent?.name,
+                dialog.state.entityValues.values.mapNotNull { it.value })
         val existingSnapshot = snapshotCol.findOneById(dialog.id)
         if (existingSnapshot == null) {
             snapshotCol.insertOne(SnapshotCol(dialog.id, listOf(snapshot)))
