@@ -82,11 +82,23 @@ object ApplicationConfigurationService :
             application: ApplicationDefinition,
             intent: IntentDefinition,
             entityType: String,
-            role: String): Boolean {
+            role: String): Boolean = removeEntityFromIntent(application, intent, entityType, role, true)
+
+    private fun removeEntityFromIntent(
+            application: ApplicationDefinition,
+            intent: IntentDefinition,
+            entityType: String,
+            role: String,
+            deleteEntityType: Boolean): Boolean {
         sentenceDAO.removeEntityFromSentences(application._id, intent._id, entityType, role)
-        intentDAO.save(intent.copy(entities = intent.entities - intent.findEntity(entityType, role)!!))
+        val loadedIntent = getIntentById(intent._id)
+        if (loadedIntent != null) {
+            intentDAO.save(loadedIntent.copy(entities = loadedIntent.entities - listOfNotNull(loadedIntent.findEntity(entityType, role))))
+        }
         //delete entity if same namespace and if not used by any intent
-        return if (application.namespace == entityType.namespace()
+        return if (
+                deleteEntityType
+                && application.namespace == entityType.namespace()
                 && intentDAO.getIntentsUsingEntity(entityType).isEmpty()) {
             entityTypeDAO.deleteEntityTypeByName(entityType)
             true
@@ -118,6 +130,21 @@ object ApplicationConfigurationService :
 
     override fun getSupportedNlpEngineTypes(): Set<NlpEngineType> {
         return FrontRepository.core.supportedNlpEngineTypes()
+    }
+
+    override fun deleteEntityTypeByName(name: String): Boolean {
+        getIntentsUsingEntity(name).forEach { intent ->
+            intent.applications.forEach {
+                val app = getApplicationById(it)
+                if (app != null) {
+                    intent.entities.filter { it.entityTypeName == name }.forEach {
+                        removeEntityFromIntent(app, intent, name, it.role, false)
+                    }
+                }
+            }
+        }
+        FrontRepository.entityTypes.remove(name)
+        return entityTypeDAO.deleteEntityTypeByName(name)
     }
 
     override fun initData() {

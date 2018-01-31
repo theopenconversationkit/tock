@@ -22,8 +22,8 @@ import com.mongodb.client.model.UpdateOptions
 import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
-import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.deleteOne
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
@@ -52,7 +52,7 @@ object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
         return col.find().toList()
     }
 
-    override fun deleteEntityTypeByName(name: String) {
-        col.deleteOne("{'name':${name.json}}")
+    override fun deleteEntityTypeByName(name: String): Boolean {
+        return col.deleteOne("{'name':${name.json}}").deletedCount == 1L
     }
 }

@@ -103,7 +103,8 @@ export class StateService implements AuthListener {
   removeEntityTypeByName(name: string) {
     const entityToRemove = this.findEntityTypeByName(name);
     const entities = this.entityTypes.getValue().slice(0);
-    this.entityTypes.next(entities.splice(entities.indexOf(entityToRemove), 1));
+    entities.splice(entities.indexOf(entityToRemove), 1);
+    this.entityTypes.next(entities);
   }
 
   removeSubEntityByRole(entityType:EntityType, role:string) {

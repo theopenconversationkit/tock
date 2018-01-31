@@ -86,6 +86,10 @@ export class NlpService implements OnDestroy {
     return this.rest.post("/entity-type", entityType);
   }
 
+  removeEntityType(entityType: EntityType): Observable<boolean> {
+    return this.rest.delete(`/entity-type/${entityType.name}`);
+  }
+
   updateSentence(sentence: Sentence): Observable<Sentence> {
     return this.rest.post("/sentence", sentence)
   }

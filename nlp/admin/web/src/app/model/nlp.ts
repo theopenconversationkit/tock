@@ -90,6 +90,10 @@ export class EntityType {
     return entityNameFromQualifiedName(this.name);
   }
 
+  namespace(): string {
+    return namespaceFromQualifiedName(this.name);
+  }
+
   entityColor(): string {
     return entityColor(this.name);
   }
@@ -911,6 +915,10 @@ export function qualifiedNameWithoutRole(user: User, type: string): string {
 
 export function entityNameFromQualifiedName(qualifiedName: string): string {
   return qualifiedName ? qualifiedName.split(":")[1] : "error";
+}
+
+export function namespaceFromQualifiedName(qualifiedName: string): string {
+  return qualifiedName ? qualifiedName.split(":")[0] : "error";
 }
 
 export function getRoles(intents: Intent[], entityType?: string): string[] {

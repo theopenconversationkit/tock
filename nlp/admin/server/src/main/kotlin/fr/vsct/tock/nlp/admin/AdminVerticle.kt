@@ -338,6 +338,16 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
+        blockingJsonDelete("/entity-type/:name")
+        {
+            val entityType = it.pathParam("name")
+            if (it.organization == entityType.namespace()) {
+                front.deleteEntityTypeByName(entityType)
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonPost("/test/intent-errors")
         { context, query: TestErrorQuery ->
             if (context.organization == front.getApplicationById(query.applicationId)?.namespace) {

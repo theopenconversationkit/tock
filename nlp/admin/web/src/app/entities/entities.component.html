@@ -22,3 +22,20 @@
     </md-list>
   </md-card-content>
 </md-card>
+<p></p>
+<md-card class="entities">
+  <md-card-content>
+    <md-card-title>All Entity Types</md-card-title>
+    <md-list>
+      <md-chip-list>
+        <md-chip *ngFor="let e of state.entityTypes | async"
+                 color="primary"
+                 [removable]="e.namespace() === state.currentApplication.namespace"
+                 (remove)="deleteEntityType(e)">
+          {{e.name}}
+          <md-icon *ngIf="e.namespace() === state.currentApplication.namespace" mdChipRemove>cancel</md-icon>
+        </md-chip>
+      </md-chip-list>
+    </md-list>
+  </md-card-content>
+</md-card>

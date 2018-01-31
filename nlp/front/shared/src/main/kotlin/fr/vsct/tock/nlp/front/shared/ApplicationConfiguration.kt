@@ -75,13 +75,18 @@ interface ApplicationConfiguration {
     fun switchSentencesIntent(
             sentences: List<ClassifiedSentence>,
             targetApplication: ApplicationDefinition,
-            targetIntentId: Id<IntentDefinition>) : Int
+            targetIntentId: Id<IntentDefinition>): Int
 
     fun save(entityType: EntityTypeDefinition)
 
     fun getEntityTypes(): List<EntityTypeDefinition>
 
     fun getEntityTypeByName(name: String): EntityTypeDefinition?
+
+    /**
+     * Delete the [EntityTypeDefinition] and cleanup all sentences from this entity type.
+     */
+    fun deleteEntityTypeByName(name: String): Boolean
 
     /**
      * Update matching entity definition of all intents of the specified application.

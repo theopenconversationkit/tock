@@ -29,5 +29,5 @@ interface EntityTypeDefinitionDAO {
 
     fun getEntityTypes(): List<EntityTypeDefinition>
 
-    fun deleteEntityTypeByName(name: String)
+    fun deleteEntityTypeByName(name: String) : Boolean
 }

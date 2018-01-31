@@ -17,9 +17,10 @@
 import {Component, OnInit} from "@angular/core";
 import {StateService} from "../core/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
-import {MdDialog, MdSnackBar, MdSnackBarConfig} from "@angular/material";
+import {MdDialog, MdDialogConfig, MdSnackBar, MdSnackBarConfig} from "@angular/material";
 import {ApplicationService} from "../core/applications.service";
-import {EntityDefinition} from "../model/nlp";
+import {EntityDefinition, EntityType} from "../model/nlp";
+import {ConfirmDialogComponent} from "../shared/confirm-dialog/confirm-dialog.component";
 
 @Component({
   selector: 'tock-entities',
@@ -43,6 +44,27 @@ export class EntitiesComponent implements OnInit {
       this.state.createUpdateEntityDefinitionQuery(entity)
     ).map(_ => this.applicationService.reloadCurrentApplication())
       .subscribe(_ => this.snackBar.open(`Entity updated`, "Update", {duration: 1000} as MdSnackBarConfig));
+  }
+
+  deleteEntityType(entityType:EntityType) {
+    let dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      data: {
+        title: `Remove the entity type ${entityType.name}`,
+        subtitle: "Are you sure? This can completely cleanup your model!",
+        action: "Remove"
+      }
+    } as MdDialogConfig);
+    dialogRef.afterClosed().subscribe(result => {
+      if (result === "remove") {
+        this.nlp.removeEntityType(entityType).subscribe(
+          _ => {
+            this.state.resetConfiguration();
+            this.snackBar.open(`Entity Type ${entityType.name} removed`, "Remove Entity Type", {duration: 1000} as MdSnackBarConfig);
+          },
+          _ => this.snackBar.open(`Delete Entity Type ${entityType.name} failed`, "Error", {duration: 5000} as MdSnackBarConfig)
+        );
+      }
+    });
   }
 
 }
