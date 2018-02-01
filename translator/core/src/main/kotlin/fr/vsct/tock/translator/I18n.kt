@@ -50,9 +50,9 @@ fun TemporalAccessor?.formatWith(formatterProvider: DateTimeFormatterProvider, l
 
 
 /**
- * Transform this String in a [RawString] - ie a not-to-translate String.
+ * Transform this char sequence in a [RawString] - ie a not-to-translate String.
  */
-val String.raw: RawString get() = RawString(this)
+val CharSequence.raw: RawString get() = RawString(this)
 
 /**
  * Is this char sequence containing SSML?
