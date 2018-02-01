@@ -16,6 +16,9 @@
 
 package fr.vsct.tock.bot.connector.messenger
 
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.nhaarman.mockito_kotlin.anyOrNull
 import com.nhaarman.mockito_kotlin.mock
 import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.bot.connector.messenger.model.send.Attachment
@@ -26,6 +29,9 @@ import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.video
 import fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.user.UserPreferences
+import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.sharedTestModule
+import fr.vsct.tock.shared.tockInternalInjector
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -33,14 +39,27 @@ import kotlin.test.assertEquals
 /**
  *
  */
-class ExtensionsTest {
+class MessengerBuildersTest {
 
     val bus: BotBus = mock()
 
     @Before
     fun before() {
+        tockInternalInjector = KodeinInjector().apply {
+            inject(Kodein {
+                import(sharedTestModule)
+            })
+        }
+
+
         whenever(bus.applicationId).thenReturn("appId")
         whenever(bus.userPreferences).thenReturn(UserPreferences())
+        whenever(bus.translate(anyOrNull<String>())).thenAnswer { it.arguments[0] ?: "" }
+    }
+
+    @Test(expected = IllegalStateException::class)
+    fun `listTemplate throws exception WHEN at least one element does not contain an image url AND list style is not compact`() {
+        listTemplate(bus.listElement("title"), bus.listElement("title2"))
     }
 
     @Test

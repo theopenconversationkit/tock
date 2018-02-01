@@ -37,7 +37,7 @@ import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.nlp.api.client.NlpClient
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.sharedModule
+import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.translator.I18nDAO
 import testModules
 import testTranslatorModule
@@ -116,7 +116,7 @@ open class TestContext {
      * Default mocked Tock Ioc.
      */
     open fun importModule(): Kodein.Builder.() -> Unit = {
-        import(sharedModule, true)
+        import(sharedTestModule, true)
         import(testTranslatorModule, true)
         import(
                 Kodein.Module {
