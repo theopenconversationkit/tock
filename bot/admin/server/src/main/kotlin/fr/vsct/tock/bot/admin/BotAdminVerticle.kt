@@ -23,6 +23,7 @@ import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotIntentSearchRequest
 import fr.vsct.tock.bot.admin.model.CreateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.DialogsSearchQuery
+import fr.vsct.tock.bot.admin.model.TestPlanUpdate
 import fr.vsct.tock.bot.admin.model.UpdateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.test.TestPlan
@@ -124,9 +125,9 @@ open class BotAdminVerticle : AdminVerticle() {
             TestPlanService.getPlanExecutions(context.loadTestPlan())
         }
 
-        blockingJsonPost("/test/plan") { context, plan: TestPlan ->
+        blockingJsonPost("/test/plan") { context, plan: TestPlanUpdate ->
             if (context.organization == plan.namespace) {
-                TestPlanService.saveTestPlan(plan)
+                TestPlanService.saveTestPlan(plan.toTestPlan())
             } else {
                 unauthorized()
             }

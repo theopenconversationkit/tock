@@ -83,7 +83,6 @@ export class TestPlanComponent implements OnInit {
         this.state.currentApplication.name,
         this.state.currentLocale,
         this.testBotConfigurationId,
-        null,
         conf.ownerConnectorType
       )).subscribe(_ => {
       this.resetCreateTestPlan();

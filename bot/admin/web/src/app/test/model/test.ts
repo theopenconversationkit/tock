@@ -68,8 +68,8 @@ export class TestPlan {
               public nlpModel: string,
               public locale: string,
               public botApplicationConfigurationId: string,
-              public _id?: string,
-              public targetConnectorType?: ConnectorType) {
+              public targetConnectorType: ConnectorType,
+              public _id?: string) {
   }
 
   fillDialogExecutionReport(report: DialogExecutionReport) {
