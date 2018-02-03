@@ -36,6 +36,7 @@ import org.litote.kmongo.MongoOperator.avg
 import org.litote.kmongo.MongoOperator.cond
 import org.litote.kmongo.MongoOperator.dayOfYear
 import org.litote.kmongo.MongoOperator.group
+import org.litote.kmongo.MongoOperator.lt
 import org.litote.kmongo.MongoOperator.match
 import org.litote.kmongo.MongoOperator.project
 import org.litote.kmongo.MongoOperator.sort
@@ -96,8 +97,7 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
             val intentProbability: Double,
             val entitiesProbability: Double) {
 
-        fun toStat(): ParseRequestLogStat
-                = ParseRequestLogStat(
+        fun toStat(): ParseRequestLogStat = ParseRequestLogStat(
                 LocalDate.ofYearDay(_id.year, _id.dayOfYear),
                 error,
                 count,
@@ -129,6 +129,7 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                     listOfNotNull(
                             "'applicationId':${applicationId.json}",
                             "'query.context.language':${language.json}",
+                            if (firstUpdateDate == null) null else "date:{$lt: ${firstUpdateDate!!.json}}",
                             if (search.isNullOrBlank()) null else if (query.onlyExactMatch) "'text':${search!!.json}" else "'text':/${search!!.trim()}/i"
                     ).joinToString(",", "{", "}")
             val count = col.count(filter)

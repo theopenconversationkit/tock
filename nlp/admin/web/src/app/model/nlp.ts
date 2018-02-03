@@ -549,13 +549,14 @@ export class SearchQuery extends PaginatedQuery {
               public language: string,
               public start: number,
               public size: number,
+              public firstUpdateDate?: Date,
               public search?: string,
               public intentId?: string,
               public status?: SentenceStatus[],
               public entityType?: string,
               public entityRole?: string,
               public modifiedAfter?: Date) {
-    super(namespace, applicationName, language, start, size)
+    super(namespace, applicationName, language, start, size, firstUpdateDate)
   }
 }
 
@@ -593,8 +594,9 @@ export class LogsQuery extends PaginatedQuery {
               public language: string,
               public start: number,
               public size: number,
+              public firstUpdateDate?: Date,
               public search?: string) {
-    super(namespace, applicationName, language, start, size)
+    super(namespace, applicationName, language, start, size, firstUpdateDate)
   }
 }
 

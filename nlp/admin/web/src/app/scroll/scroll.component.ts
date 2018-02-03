@@ -69,8 +69,20 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
     }
   }
 
+  protected lastUpdate(t: T): Date {
+    return null;
+  }
+
   protected paginatedQuery(): PaginatedQuery {
-    return this.state.createPaginatedQuery(this.cursor, this.pageSize);
+    let lastUpdate = null;
+    let cursor = this.cursor;
+    if (cursor !== 0 && this.data && this.data.length !== 0) {
+      lastUpdate = this.lastUpdate(this.data[this.data.length - 1]);
+      if(lastUpdate !== null) {
+        cursor = 0;
+      }
+    }
+    return this.state.createPaginatedQuery(cursor, this.pageSize, lastUpdate);
   }
 
   private loadResults(result: PaginatedResult<T>, init: boolean) {

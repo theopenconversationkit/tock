@@ -65,7 +65,7 @@ export class StateService implements AuthListener {
   }
 
   changeApplication(application: Application) {
-    if(application) {
+    if (application) {
       this.currentApplication = application;
       this.currentApplicationEmitter.emit(application);
       this.currentIntents.next(application.intents);
@@ -107,7 +107,7 @@ export class StateService implements AuthListener {
     this.entityTypes.next(entities);
   }
 
-  removeSubEntityByRole(entityType:EntityType, role:string) {
+  removeSubEntityByRole(entityType: EntityType, role: string) {
     entityType.subEntities.splice(entityType.subEntities.findIndex(e => e.role === role), 1);
   }
 
@@ -169,13 +169,14 @@ export class StateService implements AuthListener {
     )
   }
 
-  createPaginatedQuery(start: number, size: number): PaginatedQuery {
+  createPaginatedQuery(start: number, size: number, lastUpdate?: Date): PaginatedQuery {
     return new PaginatedQuery(
       this.currentApplication.namespace,
       this.currentApplication.name,
       this.currentLocale,
       start,
-      start + size
+      start + size,
+      lastUpdate
     );
   }
 

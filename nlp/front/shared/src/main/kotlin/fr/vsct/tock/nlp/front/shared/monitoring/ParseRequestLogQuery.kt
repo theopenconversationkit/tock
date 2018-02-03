@@ -18,6 +18,7 @@ package fr.vsct.tock.nlp.front.shared.monitoring
 
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import org.litote.kmongo.Id
+import java.time.Instant
 import java.util.Locale
 
 /**
@@ -28,5 +29,6 @@ data class ParseRequestLogQuery(val applicationId: Id<ApplicationDefinition>,
                                 val start: Long = 0,
                                 val size: Int = 1,
                                 val search: String? = null,
-                                val onlyExactMatch: Boolean = false) {
+                                val onlyExactMatch: Boolean = false,
+                                val firstUpdateDate: Instant? = null) {
 }

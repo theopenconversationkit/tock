@@ -16,8 +16,16 @@
 
 package fr.vsct.tock.nlp.admin.model
 
+import java.time.Instant
+
 /**
  *
  */
-open class PaginatedQuery(val start: Long = 0, val size: Int = 10) : ApplicationScopedQuery() {
+open class PaginatedQuery(
+        val start: Long = 0,
+        val size: Int = 10,
+        /**
+         * If firstUpdateDate is not null, the results start with the elements updated before [firstUpdateDate].
+         */
+        val firstUpdateDate: Instant? = null) : ApplicationScopedQuery() {
 }

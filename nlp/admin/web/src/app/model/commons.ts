@@ -56,7 +56,8 @@ export class PaginatedQuery extends ApplicationScopedQuery {
               public applicationName: string,
               public language: string,
               public start: number,
-              public size: number) {
+              public size: number,
+              public firstUpdateDate?: Date) {
     super(namespace, applicationName, language)
   }
 }

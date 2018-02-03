@@ -37,13 +37,15 @@ data class SearchQuery(
     fun toSentencesQuery(applicationId: Id<ApplicationDefinition>): SentencesQuery {
         return SentencesQuery(
                 applicationId,
-                language, start,
+                language,
+                start,
                 size,
                 search,
                 intentId,
                 status,
                 entityType = entityType,
                 entityRole = entityRole,
-                modifiedAfter = modifiedAfter)
+                modifiedAfter = modifiedAfter,
+                firstUpdateDate = firstUpdateDate)
     }
 }

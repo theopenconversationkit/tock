@@ -31,6 +31,7 @@ data class LogsQuery(val search: String?) : PaginatedQuery() {
                     language,
                     start,
                     size,
-                    search
+                    search,
+                    firstUpdateDate = firstUpdateDate
             )
 }

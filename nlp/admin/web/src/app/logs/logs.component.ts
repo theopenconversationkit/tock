@@ -43,6 +43,11 @@ export class LogsComponent extends ScrollComponent<Log> {
     super(state);
   }
 
+
+  protected lastUpdate(t: Log): Date {
+    return t.date;
+  }
+
   search(query: PaginatedQuery): Observable<PaginatedResult<Log>> {
     return this.nlp.searchLogs(new LogsQuery(
       query.namespace,
@@ -50,6 +55,7 @@ export class LogsComponent extends ScrollComponent<Log> {
       query.language,
       query.start,
       query.size,
+      query.firstUpdateDate,
       this.text));
   }
 

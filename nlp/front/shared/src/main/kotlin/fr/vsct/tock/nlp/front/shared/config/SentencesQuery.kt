@@ -17,11 +17,12 @@
 package fr.vsct.tock.nlp.front.shared.config
 
 import org.litote.kmongo.Id
+import java.time.Instant
 import java.time.ZonedDateTime
 import java.util.Locale
 
 /**
- *
+ * The query to search sentences based on multi-criteria.
  */
 data class SentencesQuery(val applicationId: Id<ApplicationDefinition>,
                           val language: Locale? = null,
@@ -34,5 +35,6 @@ data class SentencesQuery(val applicationId: Id<ApplicationDefinition>,
                           val onlyExactMatch: Boolean = false,
                           val entityType: String? = null,
                           val entityRole: String? = null,
-                          val modifiedAfter: ZonedDateTime? = null) {
+                          val modifiedAfter: ZonedDateTime? = null,
+                          val firstUpdateDate: Instant? = null) {
 }

@@ -42,6 +42,11 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> {
     super(state);
   }
 
+
+  protected lastUpdate(t: Sentence): Date {
+    return t.updateDate;
+  }
+
   toSearchQuery(query: PaginatedQuery): SearchQuery {
     return new SearchQuery(
       query.namespace,
@@ -49,6 +54,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> {
       query.language,
       query.start,
       query.size,
+      query.firstUpdateDate,
       this.filter.search,
       this.filter.intentId,
       this.filter.status,
