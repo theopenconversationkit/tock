@@ -22,7 +22,8 @@ import com.fasterxml.jackson.databind.annotation.JsonTypeIdResolver
 /**
  * It is recommended (but not mandatory) that values evaluated by EntityEvaluators
  * implement this interface.
- * Do not forget to call also [ValueResolverRepository#registerType] for each new value type.
+ * Do not forget to call also [ValueResolverRepository.registerType] for each new value type
+ * if you don't want to store class name of the value.
  */
 @JsonTypeInfo(use = JsonTypeInfo.Id.NAME)
 @JsonTypeIdResolver(ValueTypeIdResolver::class)

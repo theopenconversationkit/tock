@@ -68,7 +68,7 @@ fun JsonParser.fieldNameWithValueReady(): String? {
 
 /**
  */
-fun JsonParser.checkEndToken() {
+internal fun JsonParser.checkEndToken() {
     if (currentToken != JsonToken.END_OBJECT) {
         nextToken()
         checkEndToken()

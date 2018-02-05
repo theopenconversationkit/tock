@@ -52,7 +52,7 @@ data class AnyValueWrapper(val klass: String, val value: Any?) {
                 fieldName = jp.fieldNameWithValueReady()
                 if (fieldName != null) {
                     if (classValue == null) {
-                        jp.readValueAsTree<TreeNode>()
+                        logger.debug { jp.readValueAsTree<TreeNode>() }
                         jp.checkEndToken()
                         return null
                     } else {

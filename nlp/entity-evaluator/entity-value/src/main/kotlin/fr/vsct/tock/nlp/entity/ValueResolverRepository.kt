@@ -19,12 +19,14 @@ package fr.vsct.tock.nlp.entity
 import fr.vsct.tock.nlp.entity.date.DateEntityValue
 import fr.vsct.tock.nlp.entity.date.DateIntervalEntityValue
 import fr.vsct.tock.nlp.entity.temperature.TemperatureValue
+import java.util.ResourceBundle
 import java.util.concurrent.ConcurrentHashMap
+import java.util.logging.Level
 import java.util.logging.Logger
 import kotlin.reflect.KClass
 
 /**
- *
+ * Repository used to register custom [Value] serializer/deserializer.
  */
 object ValueResolverRepository {
 
@@ -66,20 +68,25 @@ object ValueResolverRepository {
                 }
     }
 
-    fun getType(id: String): KClass<out Value> {
-        return idClassMap[id] ?:
-                try {
-                    @Suppress("UNCHECKED_CAST")
-                    Class.forName(id) as KClass<out Value>
-                } catch(e: ClassNotFoundException) {
-                    Logger.getLogger(Logger.GLOBAL_LOGGER_NAME)
-                            .severe("Please call ValueResolverRepository#registerType during app initialization for value of type $id")
-                    UnknownValue::class
-                }
+    internal fun getType(id: String): KClass<out Value> {
+        return idClassMap[id] ?: try {
+            @Suppress("UNCHECKED_CAST")
+            (Class.forName(id) as Class<out Value>).kotlin
+        } catch (e: ClassNotFoundException) {
+            val className = ValueResolverRepository::class.qualifiedName
+            Logger.getLogger(className).logrb(
+                    Level.FINE,
+                    className,
+                    className,
+                    null as ResourceBundle?,
+                    "${e.message}: Please call ValueResolverRepository#registerType during app initialization for value of type $id",
+                    e)
+
+            UnknownValue::class
+        }
     }
 
-    fun <T : Value> getId(kClass: KClass<T>): String {
-        return classIdMap[kClass]
-                ?: kClass.qualifiedName!!
+    internal fun <T : Value> getId(kClass: KClass<T>): String {
+        return classIdMap[kClass] ?: kClass.qualifiedName!!
     }
 }

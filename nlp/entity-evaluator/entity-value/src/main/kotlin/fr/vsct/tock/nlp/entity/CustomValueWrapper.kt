@@ -18,10 +18,12 @@ package fr.vsct.tock.nlp.entity
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
+import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import fr.vsct.tock.nlp.entity.CustomValueWrapper.CustomValueDeserializer
+import java.util.logging.Logger
 import kotlin.reflect.KClass
 
 /**
@@ -29,21 +31,35 @@ import kotlin.reflect.KClass
  * Usually, it is better to extend [Value] directly.
  */
 @JsonDeserialize(using = CustomValueDeserializer::class)
-data class CustomValueWrapper(val klass: Class<*>, val value: Any?) : Value {
+data class CustomValueWrapper(val klass: String, val value: Any?) : Value {
 
     internal class CustomValueDeserializer : JsonDeserializer<CustomValueWrapper>() {
 
         override fun deserialize(jp: JsonParser, context: DeserializationContext): CustomValueWrapper? {
             var fieldName = jp.fieldNameWithValueReady()
             if (fieldName != null) {
-                val classValue = jp.readValueAs(Class::class.java)!!
+                val classValue: Class<*>? =
+                        try {
+                            Class.forName(jp.text)
+                        } catch (e: Exception) {
+                            val className = CustomValueWrapper::class.qualifiedName
+                            Logger.getLogger(className).throwing(className, className, e)
+                            null
+                        }
                 fieldName = jp.fieldNameWithValueReady()
                 if (fieldName != null) {
-                    val value = jp.readValueAs(classValue)!!
-                    jp.checkEndToken()
-                    return CustomValueWrapper(classValue, value)
+                    if (classValue == null) {
+                        jp.readValueAsTree<TreeNode>()
+                        jp.checkEndToken()
+                        return null
+                    } else {
+                        val value = jp.readValueAs(classValue)
+                        jp.checkEndToken()
+                        return CustomValueWrapper(classValue.name, value)
+                    }
                 } else {
-                    return CustomValueWrapper(classValue, null)
+                    jp.checkEndToken()
+                    return if (classValue == null) null else CustomValueWrapper(classValue.name, null)
                 }
             }
             return null
@@ -71,8 +87,8 @@ data class CustomValueWrapper(val klass: Class<*>, val value: Any?) : Value {
 
     }
 
-    constructor(klass: KClass<*>, value: Any?) : this(klass.java, value)
+    constructor(klass: KClass<*>, value: Any?) : this(klass.java.name, value)
 
-    constructor(value: Any) : this(value::class.java, value)
+    constructor(value: Any) : this(value::class, value)
 
 }

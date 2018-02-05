@@ -23,7 +23,7 @@ import com.fasterxml.jackson.databind.jsontype.impl.TypeIdResolverBase
 import kotlin.reflect.KClass
 
 /**
- *
+ * The [TypeIdResolver] for any [Value] type.
  */
 class ValueTypeIdResolver : TypeIdResolverBase() {
 
