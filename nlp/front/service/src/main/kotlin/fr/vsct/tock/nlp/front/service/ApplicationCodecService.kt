@@ -302,7 +302,7 @@ object ApplicationCodecService : ApplicationCodec {
         val sentences = config
                 .search(
                         (query ?: SentencesQuery(applicationId, intentId = filteredIntentId))
-                                .copy(start = 0, size = Integer.MAX_VALUE)
+                                .copy(start = 0, size = Integer.MAX_VALUE, firstUpdateDate = null)
                 )
                 .sentences
 
