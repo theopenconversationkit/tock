@@ -20,6 +20,7 @@ import fr.vsct.tock.nlp.api.client.model.NlpIntentEntitiesQuery
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
+import fr.vsct.tock.nlp.api.client.model.dump.SentencesDump
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationResult
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
@@ -54,6 +55,7 @@ interface NlpClient {
 
     /**
      * Import a NLP dump (configuration and sentences of the NLP model).
+     *
      * @return true if NLP model is modified, false either
      */
     fun importNlpDump(stream: InputStream): Response<Boolean>
@@ -65,6 +67,21 @@ interface NlpClient {
      * @return true if NLP model is modified, false either
      */
     fun importNlpPlainDump(dump: ApplicationDump): Response<Boolean>
+
+    /**
+     * Import a NLP sentences dump (only validated sentences) - format is simpler than [ApplicationDump].
+     *
+     * @return true if NLP model is modified, false either
+     */
+    fun importNlpSentencesDump(stream: InputStream): Response<Boolean>
+
+    /**
+     * Import a NLP sentences dump (only validated sentences) - format is simpler than [ApplicationDump].
+     *
+     * @param dump the dump to import
+     * @return true if NLP model is modified, false either
+     */
+    fun importNlpPlainSentencesDump(dump: SentencesDump): Response<Boolean>
 
     /**
      * Check the server is up.

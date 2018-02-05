@@ -14,22 +14,26 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.front.shared.codec
+package fr.vsct.tock.nlp.api.client.model.dump
 
-import fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity
 import java.util.Locale
 
 /**
  * A classified sentences dump.
  */
 data class SentencesDump(val applicationName: String,
+                         /**
+                          * If restricted to a language.
+                          */
                          val language: Locale? = null,
                          val sentences: List<SentenceDump>)
-
 
 data class SentenceDump(val text: String,
                         val intent: String,
                         val entities: List<SentenceEntityDump> = emptyList(),
+                        /**
+                         * If null and if [SentencesDump.language] is also null, an error will be thrown.
+                         */
                         val language: Locale? = null)
 
 data class SentenceEntityDump(
@@ -37,24 +41,4 @@ data class SentenceEntityDump(
         val role: String,
         val subEntities: List<SentenceEntityDump> = emptyList(),
         val start: Int,
-        val end: Int) {
-
-    constructor(entity: ClassifiedEntity) :
-            this(
-                    entity.type,
-                    entity.role,
-                    entity.subEntities.map { SentenceEntityDump(it) },
-                    entity.start,
-                    entity.end
-            )
-
-    fun toClassifiedEntity(): ClassifiedEntity {
-        return ClassifiedEntity(
-                entity,
-                role,
-                start,
-                end,
-                subEntities.map { it.toClassifiedEntity() }
-        )
-    }
-}
+        val end: Int)

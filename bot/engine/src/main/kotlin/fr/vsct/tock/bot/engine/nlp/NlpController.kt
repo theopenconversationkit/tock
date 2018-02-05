@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
+import fr.vsct.tock.nlp.api.client.model.dump.SentencesDump
 import java.io.InputStream
 
 /**
@@ -40,13 +41,33 @@ interface NlpController {
 
     /**
      * Import a NLP dump (configuration and sentences of NLP model).
+     *
      * @return true if NLP model is modified, false either
      */
     fun importNlpDump(stream: InputStream): Boolean
 
     /**
      * Import a NLP dump (configuration and sentences of NLP model).
+     *
+     * @param dump the dump to import
      * @return true if NLP model is modified, false either
      */
     fun importNlpPlainDump(dump: ApplicationDump): Boolean
+
+    /**
+     * Import a NLP sentences dump (only validated sentences) - format is simpler than [ApplicationDump].
+     *
+     * @param dump the dump to import
+     * @return true if NLP model is modified, false either
+     */
+    fun importNlpPlainSentencesDump(dump: SentencesDump): Boolean
+
+    /**
+     * Import a NLP sentences dump (only validated sentences) - format is simpler than [ApplicationDump].
+     *
+     * @return true if NLP model is modified, false either
+     */
+    fun importNlpSentencesDump(stream: InputStream): Boolean
+
+
 }

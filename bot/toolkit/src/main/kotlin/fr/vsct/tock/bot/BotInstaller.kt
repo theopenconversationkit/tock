@@ -79,12 +79,21 @@ private fun install(routerHandlers: List<(Router) -> Unit>, installRestConnector
 }
 
 /**
- * Import a dump of a nlp model.
+ * Import a dump of a full nlp model.
  * @path the dump path in the classpath
  */
 fun importNlpDump(path: String) {
     val nlp: NlpController by injector.instance()
     nlp.importNlpDump(resourceAsStream(path))
+}
+
+/**
+ * Import a dump of a list of qualified sentences to a nlp model.
+ * @path the dump path in the classpath
+ */
+fun importNlpSentencesDump(path: String) {
+    val nlp: NlpController by injector.instance()
+    nlp.importNlpSentencesDump(resourceAsStream(path))
 }
 
 /**

@@ -26,6 +26,7 @@ import fr.vsct.tock.nlp.api.client.model.NlpIntentEntitiesQuery
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
+import fr.vsct.tock.nlp.api.client.model.dump.SentencesDump
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationResult
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
@@ -92,7 +93,7 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
         return nlpService.mergeValues(query).execute()
     }
 
-    override fun importNlpDump(stream: InputStream): Response<Boolean> {
+    private fun createMultipart(stream: InputStream): MultipartBody.Part {
         val dump = ByteArrayOutputStream().apply {
             var nRead: Int = 0
             val data = ByteArray(2048)
@@ -103,12 +104,23 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
             }
             flush()
         }
-        val part = MultipartBody.Part.createFormData("dump", "dump", RequestBody.create(MultipartBody.FORM, dump.toByteArray()))
-        return nlpService.importNlpDump(part).execute()
+        return MultipartBody.Part.createFormData("dump", "dump", RequestBody.create(MultipartBody.FORM, dump.toByteArray()))
+    }
+
+    override fun importNlpDump(stream: InputStream): Response<Boolean> {
+        return nlpService.importNlpDump(createMultipart(stream)).execute()
     }
 
     override fun importNlpPlainDump(dump: ApplicationDump): Response<Boolean> {
         return nlpService.importNlpPlainDump(dump).execute()
+    }
+
+    override fun importNlpSentencesDump(stream: InputStream): Response<Boolean> {
+        return nlpService.importNlpSentencesDump(createMultipart(stream)).execute()
+    }
+
+    override fun importNlpPlainSentencesDump(dump: SentencesDump): Response<Boolean> {
+        return nlpService.importNlpPlainSentencesDump(dump).execute()
     }
 
     override fun healthcheck(): Boolean {

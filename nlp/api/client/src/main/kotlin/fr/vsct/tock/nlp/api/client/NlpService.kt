@@ -20,6 +20,7 @@ import fr.vsct.tock.nlp.api.client.model.NlpIntentEntitiesQuery
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
+import fr.vsct.tock.nlp.api.client.model.dump.SentencesDump
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationResult
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
@@ -55,6 +56,13 @@ internal interface NlpService {
 
     @POST("dump/import/plain")
     fun importNlpPlainDump(@Body dump: ApplicationDump): Call<Boolean>
+
+    @Multipart
+    @POST("dump/import/sentences")
+    fun importNlpSentencesDump(@Part dump: MultipartBody.Part): Call<Boolean>
+
+    @POST("dump/import/sentences/plain")
+    fun importNlpPlainSentencesDump(@Body dump: SentencesDump): Call<Boolean>
 
     @GET("healthcheck")
     fun healthcheck(): Call<Void>

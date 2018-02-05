@@ -20,12 +20,14 @@ import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.service.UnknownApplicationException
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
+import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 import fr.vsct.tock.nlp.front.shared.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseIntentEntitiesQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.ext.web.RoutingContext
@@ -79,6 +81,14 @@ class NlpVerticle : WebVerticle() {
 
         blockingJsonPost("/dump/import/plain") { _, dump: ApplicationDump ->
             front.import(dump.application.namespace, dump).modified
+        }
+
+        blockingUploadJsonPost("/dump/import/sentences") { _, dump: SentencesDump ->
+            front.importSentences(dump.applicationName.namespace(), dump).modified
+        }
+
+        blockingJsonPost("/dump/import/sentences/plain") { _, dump: SentencesDump ->
+            front.importSentences(dump.applicationName.namespace(), dump).modified
         }
 
     }

@@ -39,6 +39,7 @@ import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.QueryContext
 import fr.vsct.tock.nlp.api.client.model.QueryState
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
+import fr.vsct.tock.nlp.api.client.model.dump.SentencesDump
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityToEvaluate
 import fr.vsct.tock.nlp.api.client.model.merge.ValueToMerge
@@ -337,7 +338,16 @@ internal class Nlp : NlpController {
         SentenceParser(nlpClient, sentence, userTimeline, dialog, connector as TockConnectorController, botDefinition).parse()
     }
 
-    override fun importNlpDump(stream: InputStream): Boolean = nlpClient.importNlpDump(stream).body() ?: false
+    override fun importNlpDump(stream: InputStream): Boolean =
+            nlpClient.importNlpDump(stream).body() ?: false
 
-    override fun importNlpPlainDump(dump: ApplicationDump): Boolean = nlpClient.importNlpPlainDump(dump).body() ?: false
+    override fun importNlpPlainDump(dump: ApplicationDump): Boolean =
+            nlpClient.importNlpPlainDump(dump).body() ?: false
+
+    override fun importNlpPlainSentencesDump(dump: SentencesDump): Boolean =
+            nlpClient.importNlpPlainSentencesDump(dump).body() ?: false
+
+    override fun importNlpSentencesDump(stream: InputStream): Boolean =
+            nlpClient.importNlpSentencesDump(stream).body() ?: false
+
 }
