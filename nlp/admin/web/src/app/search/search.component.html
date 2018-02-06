@@ -23,14 +23,14 @@
         </md-input-container>
         <md-icon color="primary" md-tooltip="Search support regexp (PCRE format)">info</md-icon>
         <br>
-        <md-select placeholder="Intent" [(ngModel)]="filter.intentId" (change)="search()">
+        <md-select placeholder="Intent" [(ngModel)]="filter.intentId" (change)="changeIntent()">
           <md-option value="-1">All</md-option>
           <md-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
             {{intent.name}}
           </md-option>
           <md-option value="unknown">Unknown</md-option>
         </md-select>
-        <md-select *ngIf="entityTypes" placeholder="Entity Type" [(ngModel)]="filter.entityType" (change)="search()">
+        <md-select *ngIf="entityTypes" placeholder="Entity Type" [(ngModel)]="filter.entityType" (change)="changeEntityType()">
           <md-option value="">All</md-option>
           <md-option *ngFor="let e of entityTypes" [value]="e.name">
             {{e.qualifiedName(state.user)}}

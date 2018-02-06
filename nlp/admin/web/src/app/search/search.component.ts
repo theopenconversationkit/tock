@@ -72,6 +72,16 @@ export class SearchComponent implements OnInit {
       );
   }
 
+  changeIntent() {
+    this.filter.entityType = "";
+    this.changeEntityType();
+  }
+
+  changeEntityType() {
+    this.filter.entityRole = "";
+    this.search();
+  }
+
   search() {
     setTimeout(_ => {
       if (this.status) {
