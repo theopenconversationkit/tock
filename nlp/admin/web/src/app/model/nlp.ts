@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {ApplicationScopedQuery, JsonUtils, PaginatedQuery} from "./commons";
+import {ApplicationScopedQuery, JsonUtils, PaginatedQuery, SearchMark} from "./commons";
 import {User} from "./auth";
 import {Intent} from "./application";
 import {isNullOrUndefined} from "util";
@@ -549,14 +549,14 @@ export class SearchQuery extends PaginatedQuery {
               public language: string,
               public start: number,
               public size: number,
-              public firstUpdateDate?: Date,
+              public searchMark?: SearchMark,
               public search?: string,
               public intentId?: string,
               public status?: SentenceStatus[],
               public entityType?: string,
               public entityRole?: string,
               public modifiedAfter?: Date) {
-    super(namespace, applicationName, language, start, size, firstUpdateDate)
+    super(namespace, applicationName, language, start, size, searchMark)
   }
 }
 
@@ -594,9 +594,9 @@ export class LogsQuery extends PaginatedQuery {
               public language: string,
               public start: number,
               public size: number,
-              public firstUpdateDate?: Date,
+              public searchMark?: SearchMark,
               public search?: string) {
-    super(namespace, applicationName, language, start, size, firstUpdateDate)
+    super(namespace, applicationName, language, start, size, searchMark)
   }
 }
 

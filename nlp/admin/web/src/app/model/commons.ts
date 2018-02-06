@@ -57,8 +57,15 @@ export class PaginatedQuery extends ApplicationScopedQuery {
               public language: string,
               public start: number,
               public size: number,
-              public firstUpdateDate?: Date) {
+              public searchMark?: SearchMark) {
     super(namespace, applicationName, language)
+  }
+}
+
+export class SearchMark {
+  constructor(public text: String,
+              public date: Date) {
+
   }
 }
 

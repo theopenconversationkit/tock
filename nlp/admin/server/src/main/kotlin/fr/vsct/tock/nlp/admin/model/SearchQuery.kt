@@ -46,6 +46,6 @@ data class SearchQuery(
                 entityType = entityType,
                 entityRole = entityRole,
                 modifiedAfter = modifiedAfter,
-                firstUpdateDate = firstUpdateDate)
+                searchMark = searchMark)
     }
 }

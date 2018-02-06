@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.nlp.admin.model
 
-import java.time.Instant
+import fr.vsct.tock.nlp.front.shared.config.SearchMark
 
 /**
  *
@@ -25,7 +25,7 @@ open class PaginatedQuery(
         val start: Long = 0,
         val size: Int = 10,
         /**
-         * If firstUpdateDate is not null, the results start with the elements updated before [firstUpdateDate].
+         * If searchMark is not null, the results start with the elements after the [searchMark].
          */
-        val firstUpdateDate: Instant? = null) : ApplicationScopedQuery() {
+        val searchMark: SearchMark? = null) : ApplicationScopedQuery() {
 }

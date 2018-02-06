@@ -21,6 +21,7 @@ import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.Sorts
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.nlp.front.shared.config.SearchMark
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLog
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQueryResult
@@ -36,7 +37,7 @@ import org.litote.kmongo.MongoOperator.avg
 import org.litote.kmongo.MongoOperator.cond
 import org.litote.kmongo.MongoOperator.dayOfYear
 import org.litote.kmongo.MongoOperator.group
-import org.litote.kmongo.MongoOperator.lt
+import org.litote.kmongo.MongoOperator.lte
 import org.litote.kmongo.MongoOperator.match
 import org.litote.kmongo.MongoOperator.project
 import org.litote.kmongo.MongoOperator.sort
@@ -125,17 +126,19 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
 
     override fun search(query: ParseRequestLogQuery): ParseRequestLogQueryResult {
         with(query) {
-            val filter =
-                    listOfNotNull(
+            val baseFilter =
+                    listOf(
                             "'applicationId':${applicationId.json}",
                             "'query.context.language':${language.json}",
-                            if (firstUpdateDate == null) null else "date:{$lt: ${firstUpdateDate!!.json}}",
                             if (search.isNullOrBlank()) null else if (query.onlyExactMatch) "'text':${search!!.json}" else "'text':/${search!!.trim()}/i"
-                    ).joinToString(",", "{", "}")
-            val count = col.count(filter)
+                    )
+            val searchFilter = baseFilter + listOf(if (searchMark == null) null else "date:{$lte: ${searchMark!!.date.json}}")
+            val count = col.count(baseFilter.toBsonFilter())
             if (count > start) {
-                val list = col.find(filter)
-                        .skip(start.toInt()).limit(size).sort(Sorts.descending("_id")).toList()
+                val list = col.find(searchFilter.toBsonFilter())
+                        .sort(Sorts.descending("date"))
+                        .filterFromMark(start, size, searchMark) { SearchMark(it.query.queries[0], it.date) }
+
                 return ParseRequestLogQueryResult(count, list.map { it.toRequest() })
             } else {
                 return ParseRequestLogQueryResult(0, emptyList())

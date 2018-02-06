@@ -14,8 +14,16 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.front.storage.mongo
+package fr.vsct.tock.nlp.front.shared.config
 
-//wrapper to workaround the 1024 chars limit for String indexes
-internal fun textKey(text: String): String
-        = if (text.length > 512) text.substring(0, Math.min(512, text.length)) else text
+import java.time.Instant
+
+/**
+ * A basic mark used to display results after the mark.
+ */
+data class SearchMark(
+        val text: String,
+        /**
+         * The results start with the elements updated before [date].
+         */
+        val date: Instant)

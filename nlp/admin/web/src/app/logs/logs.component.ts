@@ -19,7 +19,7 @@ import {Log, LogsQuery, PaginatedResult} from "../model/nlp";
 import {ScrollComponent} from "../scroll/scroll.component";
 import {StateService} from "../core/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
-import {PaginatedQuery} from "../model/commons";
+import {PaginatedQuery, SearchMark} from "../model/commons";
 import {Observable} from "rxjs/Observable";
 import {MD_DIALOG_DATA, MdDialog, MdDialogRef} from "@angular/material";
 import {ApplicationConfig} from "../core/application.config";
@@ -44,8 +44,11 @@ export class LogsComponent extends ScrollComponent<Log> {
   }
 
 
-  protected lastUpdate(t: Log): Date {
-    return t.date;
+  protected searchMark(t: Log): SearchMark {
+    return new SearchMark(
+      t.textRequest(),
+      t.date
+    );
   }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<Log>> {
@@ -55,7 +58,7 @@ export class LogsComponent extends ScrollComponent<Log> {
       query.language,
       query.start,
       query.size,
-      query.firstUpdateDate,
+      query.searchMark,
       this.text));
   }
 

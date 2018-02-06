@@ -27,13 +27,14 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.inbox
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import fr.vsct.tock.nlp.front.shared.config.SearchMark
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
 import org.litote.kmongo.Id
 import org.litote.kmongo.MongoOperator.`in`
 import org.litote.kmongo.MongoOperator.elemMatch
 import org.litote.kmongo.MongoOperator.gt
-import org.litote.kmongo.MongoOperator.lt
+import org.litote.kmongo.MongoOperator.lte
 import org.litote.kmongo.MongoOperator.ne
 import org.litote.kmongo.MongoOperator.pull
 import org.litote.kmongo.MongoOperator.set
@@ -96,6 +97,7 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         c.ensureIndex("{'text':1,'language':1,'applicationId':1}", IndexOptions().unique(true))
         c.ensureIndex("{'language':1,'applicationId':1,'status':1}")
         c.ensureIndex("{'status':1}")
+        c.ensureIndex("{'updateDate':1}")
         c.ensureIndex("{'language':1, 'status':1, 'classification.intentId':1}")
         c
     }
@@ -138,8 +140,8 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     if (status.isNotEmpty() || notStatus == null) null else "$ne:${notStatus!!.json}"
             ).joinToString(",", "status:{", "}")
 
-            val filter =
-                    listOfNotNull(
+            val filterBase =
+                    listOf(
                             "'applicationId':${applicationId.json}",
                             if (language == null) null else "'language':${language!!.json}",
                             if (search.isNullOrBlank()) null else if (query.onlyExactMatch) "'text':${search!!.json}" else "'fullText':/${search!!.trim()}/i",
@@ -147,13 +149,17 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                             if (filterStatus.isEmpty()) null else filterStatus,
                             if (entityType == null) null else "'classification.entities.type':${entityType!!.json}",
                             if (entityRole == null) null else "'classification.entities.role':${entityRole!!.json}",
-                            if (modifiedAfter == null) null else "updateDate:{$gt: ${modifiedAfter!!.json}}",
-                            if (firstUpdateDate == null) null else "updateDate:{$lt: ${firstUpdateDate!!.json}}"
-                    ).joinToString(",", "{", "}")
-            val count = col.count(filter)
+                            if (modifiedAfter == null) null else "updateDate:{$gt: ${modifiedAfter!!.json}}"
+                    )
+            val searchFilter = filterBase + listOf(if (searchMark == null) null else "updateDate:{$lte: ${searchMark!!.date.json}}")
+
+            val count = col.count(filterBase.toBsonFilter())
             if (count > start) {
-                val list = col.find(filter)
-                        .skip(start.toInt()).limit(size).sort(Sorts.descending("_id")).toList()
+                val list = col
+                        .find(searchFilter.toBsonFilter())
+                        .sort(Sorts.descending("updateDate"))
+                        .filterFromMark(start, size, searchMark) { SearchMark(it.text, it.updateDate) }
+
                 return SentencesQueryResult(count, list.map { it.toSentence() })
             } else {
                 return SentencesQueryResult(0, emptyList())

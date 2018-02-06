@@ -17,7 +17,7 @@
 import {PaginatedResult} from "../model/nlp";
 import {StateService} from "../core/state.service";
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
-import {PaginatedQuery} from "../model/commons";
+import {PaginatedQuery, SearchMark} from "../model/commons";
 import {Observable} from "rxjs/Observable";
 
 @Component({
@@ -69,20 +69,16 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
     }
   }
 
-  protected lastUpdate(t: T): Date {
+  protected searchMark(t: T): SearchMark {
     return null;
   }
 
   protected paginatedQuery(): PaginatedQuery {
-    let lastUpdate = null;
-    let cursor = this.cursor;
-    if (cursor !== 0 && this.data && this.data.length !== 0) {
-      lastUpdate = this.lastUpdate(this.data[this.data.length - 1]);
-      if(lastUpdate !== null) {
-        cursor = 0;
-      }
+    let searchMark = null;
+    if (this.cursor !== 0 && this.data && this.data.length !== 0) {
+      searchMark = this.searchMark(this.data[this.data.length - 1]);
     }
-    return this.state.createPaginatedQuery(cursor, this.pageSize, lastUpdate);
+    return this.state.createPaginatedQuery(this.cursor, this.pageSize, searchMark);
   }
 
   private loadResults(result: PaginatedResult<T>, init: boolean) {

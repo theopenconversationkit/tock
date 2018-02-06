@@ -20,7 +20,7 @@ import {PaginatedResult, SearchQuery, Sentence, SentenceStatus} from "../model/n
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {StateService} from "../core/state.service";
 import {ScrollComponent} from "../scroll/scroll.component";
-import {PaginatedQuery} from "../model/commons";
+import {PaginatedQuery, SearchMark} from "../model/commons";
 import {Observable} from "rxjs/Observable";
 import {MdSnackBar} from "@angular/material";
 
@@ -43,8 +43,11 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> {
   }
 
 
-  protected lastUpdate(t: Sentence): Date {
-    return t.updateDate;
+  protected searchMark(t: Sentence): SearchMark {
+    return new SearchMark(
+      t.text,
+      t.updateDate
+    );
   }
 
   toSearchQuery(query: PaginatedQuery): SearchQuery {
@@ -54,7 +57,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> {
       query.language,
       query.start,
       query.size,
-      query.firstUpdateDate,
+      query.searchMark,
       this.filter.search,
       this.filter.intentId,
       this.filter.status,
