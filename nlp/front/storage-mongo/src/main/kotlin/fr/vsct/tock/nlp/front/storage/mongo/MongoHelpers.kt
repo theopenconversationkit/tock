@@ -31,20 +31,21 @@ internal fun <T> FindIterable<T>.filterFromMark(
     return if (mark == null) {
         skip(start.toInt()).limit(size).toList()
     } else {
-        val cursor = batchSize(size + 1).iterator()
-        val result = mutableListOf<T>()
-        var markSeen = false
-        while (result.size < size && cursor.hasNext()) {
-            val next = cursor.next()
-            if (markSeen) {
-                result.add(next)
-            } else {
-                markSeen = markExtractor.invoke(next).run {
-                    text == mark.text || date < mark.date
+        batchSize(size + 1).iterator().use { cursor ->
+            val result = mutableListOf<T>()
+            var markSeen = false
+            while (result.size < size && cursor.hasNext()) {
+                val next = cursor.next()
+                if (markSeen) {
+                    result.add(next)
+                } else {
+                    markSeen = markExtractor.invoke(next).run {
+                        text == mark.text || date < mark.date
+                    }
                 }
             }
+            return result
         }
-        return result
     }
 }
 
