@@ -14,17 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.user
-
-import java.time.Instant
+package fr.vsct.tock.bot.connector.messenger.model.webhook
 
 /**
- * A flag with a validity limit.
+ *
  */
-data class TimeBoxedFlag(val value: String,
-                         val expirationDate: Instant? = Instant.now()) {
-
-    fun isValid(): Boolean {
-        return expirationDate?.isAfter(Instant.now()) ?: true
-    }
+data class PriorMessage(val source: String, val identifier: String) {
 }

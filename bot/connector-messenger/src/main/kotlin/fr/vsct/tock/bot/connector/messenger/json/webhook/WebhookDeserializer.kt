@@ -20,7 +20,16 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.Sender
-import fr.vsct.tock.bot.connector.messenger.model.webhook.*
+import fr.vsct.tock.bot.connector.messenger.model.webhook.Message
+import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageEcho
+import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageEchoWebhook
+import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageWebhook
+import fr.vsct.tock.bot.connector.messenger.model.webhook.Optin
+import fr.vsct.tock.bot.connector.messenger.model.webhook.OptinWebhook
+import fr.vsct.tock.bot.connector.messenger.model.webhook.PostbackWebhook
+import fr.vsct.tock.bot.connector.messenger.model.webhook.PriorMessage
+import fr.vsct.tock.bot.connector.messenger.model.webhook.UserActionPayload
+import fr.vsct.tock.bot.connector.messenger.model.webhook.Webhook
 import fr.vsct.tock.shared.jackson.JacksonDeserializer
 import fr.vsct.tock.shared.jackson.read
 import fr.vsct.tock.shared.jackson.readValue
@@ -37,24 +46,28 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
 
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Webhook? {
         data class WebhookFields(
-                var sender: Sender? = null,
-                var recipient: Recipient? = null,
-                var timestamp: Long? = null,
-                var message: Message? = null,
-                var optin: Optin? = null,
-                var postback: UserActionPayload? = null
+            var sender: Sender? = null,
+            var recipient: Recipient? = null,
+            var timestamp: Long? = null,
+            var message: Message? = null,
+            var optin: Optin? = null,
+            var postback: UserActionPayload? = null,
+            var priorMessage: PriorMessage? = null
         )
 
-        val (sender, recipient, timestamp, message, optin, postback)
+        val (sender, recipient, timestamp,
+                message, optin, postback,
+                priorMessage)
                 = jp.read<WebhookFields> { fields, name ->
             with(fields) {
                 when (name) {
-                    Webhook::sender.name -> sender = jp.readValue<Sender>()
+                    Webhook::sender.name -> sender = jp.readValue()
                     Webhook::recipient.name -> recipient = jp.readValue()
                     Webhook::timestamp.name -> timestamp = jp.longValue
                     MessageWebhook::message.name -> message = jp.readValue()
                     OptinWebhook::optin.name -> optin = jp.readValue()
                     PostbackWebhook::postback.name -> postback = jp.readValue()
+                    "prior_message" -> priorMessage = jp.readValue()
                     else -> unknownValue
                 }
             }
@@ -77,15 +90,15 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
         return if (message != null) {
             when (message) {
                 is MessageEcho -> MessageEchoWebhook(sender, recipient, timestamp, message)
-                else -> MessageWebhook(sender, recipient, timestamp, message)
+                else -> MessageWebhook(sender, recipient, timestamp, message, priorMessage)
             }
 
         } else if (optin != null) {
             OptinWebhook(sender, recipient, timestamp, optin)
         } else if (postback != null) {
-            PostbackWebhook(sender, recipient, timestamp, postback)
+            PostbackWebhook(sender, recipient, timestamp, postback, priorMessage)
         } else {
-            logger.warn { "unknown webhook" }
+            logger.error { "unknown webhook" }
             null
         }
     }

@@ -79,7 +79,8 @@ import java.util.concurrent.TimeUnit.DAYS
 internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogReportDAO {
 
     //wrapper to workaround the 1024 chars limit for String indexes
-    private fun textKey(text: String): String = if (text.length > 512) text.substring(0, Math.min(512, text.length)) else text
+    private fun textKey(text: String): String =
+        if (text.length > 512) text.substring(0, Math.min(512, text.length)) else text
 
     private val logger = KotlinLogging.logger {}
 
@@ -98,13 +99,25 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         userTimelineCol.ensureIndex("{lastUpdateDate:1}")
         dialogCol.ensureIndex("{'playerIds.id':1}")
         dialogCol.ensureIndex("{'playerIds.clientId':1}")
-        dialogCol.ensureIndex("{lastUpdateDate:1}", IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS))
+        dialogCol.ensureIndex(
+            "{lastUpdateDate:1}",
+            IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
+        )
         dialogTextCol.ensureIndex("{text:1}")
         dialogTextCol.ensureIndex("{text:1, dialogId:1}", IndexOptions().unique(true))
-        dialogTextCol.ensureIndex("{date:1}", IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS))
-        connectorMessageCol.ensureIndex("{date:1}", IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS))
+        dialogTextCol.ensureIndex(
+            "{date:1}",
+            IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
+        )
+        connectorMessageCol.ensureIndex(
+            "{date:1}",
+            IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
+        )
         connectorMessageCol.ensureIndex("{'_id.dialogId':1}")
-        snapshotCol.ensureIndex("{lastUpdateDate:1}", IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS))
+        snapshotCol.ensureIndex(
+            "{lastUpdateDate:1}",
+            IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
+        )
     }
 
     override fun save(userTimeline: UserTimeline) {
@@ -125,9 +138,10 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         executor.executeBlocking {
             if (userTimeline.playerId.clientId != null) {
                 clientIdCol.updateOneById(
-                        userTimeline.playerId.clientId!!,
-                        "{ $addToSet: {userIds: { $each : [ ${userTimeline.playerId.id.json} ] } } }",
-                        UpdateOptions().upsert(true))
+                    userTimeline.playerId.clientId!!,
+                    "{ $addToSet: {userIds: { $each : [ ${userTimeline.playerId.id.json} ] } } }",
+                    UpdateOptions().upsert(true)
+                )
             }
             for (dialog in userTimeline.dialogs) {
                 addSnapshot(dialog)
@@ -148,39 +162,56 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             val dialog = userTimeline.currentDialog()
             if (dialog != null) {
                 dialog.allActions().lastOrNull { it.playerId.type == PlayerType.user }
-                        ?.let { action ->
-                            if (action is SendSentence && action.stringText != null) {
-                                val text = textKey(action.stringText!!)
-                                dialogTextCol.replaceOne(
-                                        "{text:${text.json}, dialogId:${dialog.id.json}}",
-                                        DialogTextCol(text, dialog.id),
-                                        UpdateOptions().upsert(true))
-                            }
+                    ?.let { action ->
+                        if (action is SendSentence && action.stringText != null) {
+                            val text = textKey(action.stringText!!)
+                            dialogTextCol.replaceOne(
+                                "{text:${text.json}, dialogId:${dialog.id.json}}",
+                                DialogTextCol(text, dialog.id),
+                                UpdateOptions().upsert(true)
+                            )
                         }
+                    }
             }
         }
         logger.debug { "end saving timeline $userTimeline" }
     }
 
     private fun saveConnectorMessage(actionId: Id<Action>, dialogId: Id<Dialog>, messages: List<ConnectorMessage>) {
-        connectorMessageCol.save(ConnectorMessageCol(ConnectorMessageColId(actionId, dialogId), messages.map { AnyValueWrapper(it) }))
+        connectorMessageCol.save(
+            ConnectorMessageCol(
+                ConnectorMessageColId(actionId, dialogId),
+                messages.map { AnyValueWrapper(it) })
+        )
     }
 
     internal fun loadConnectorMessage(actionId: Id<Action>, dialogId: Id<Dialog>): List<ConnectorMessage> {
         return connectorMessageCol.findOneById(ConnectorMessageColId(actionId, dialogId))
-                ?.messages
-                ?.mapNotNull { it?.value as? ConnectorMessage }
+            ?.messages
+            ?.mapNotNull { it?.value as? ConnectorMessage }
                 ?: emptyList()
     }
 
-    override fun loadWithLastValidDialog(userId: PlayerId, storyDefinitionProvider: (String) -> StoryDefinition): UserTimeline {
+    override fun loadWithLastValidDialog(
+        userId: PlayerId,
+        priorUserId: PlayerId?,
+        storyDefinitionProvider: (String) -> StoryDefinition
+    ): UserTimeline {
         val timeline = loadWithoutDialogs(userId)
 
-        //TODO not only the last one
-        val dialog = loadLastValidDialog(userId, storyDefinitionProvider)
-        if (dialog != null) {
-            timeline.dialogs.add(dialog)
+        loadLastValidDialog(userId, storyDefinitionProvider)?.apply { timeline.dialogs.add(this) }
+
+        if (priorUserId != null) {
+            loadLastValidDialog(priorUserId, storyDefinitionProvider)
+                ?.apply {
+                    timeline.dialogs.add(
+                        copy(
+                            playerIds + userId
+                        )
+                    )
+                }
         }
+
         logger.trace { "timeline for user $userId : $timeline" }
         return timeline
     }
@@ -207,7 +238,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
     private fun loadLastValidDialogCol(userId: PlayerId): DialogCol? {
         return dialogCol.aggregate<DialogCol>(
-                """[{${match}:{'playerIds.id':${userId.id.json}, lastUpdateDate : {${gt} : ${Instant.now().minusSeconds(60 * 60 * 24).json}}}},
+            """[{${match}:{'playerIds.id':${userId.id.json}, lastUpdateDate : {${gt} : ${Instant.now().minusSeconds(60 * 60 * 24).json}}}},
                                {${sort}:{lastUpdateDate:-1}},
                                {${limit}:1}
                               ]"""
@@ -226,34 +257,34 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     override fun search(query: UserReportQuery): UserReportQueryResult {
         with(query) {
             val applicationsIds =
-                    botConfiguration
-                            .getConfigurationsByNamespaceAndNlpModel(query.namespace, query.nlpModel)
-                            .map { it.applicationId }
-                            .distinct()
+                botConfiguration
+                    .getConfigurationsByNamespaceAndNlpModel(query.namespace, query.nlpModel)
+                    .map { it.applicationId }
+                    .distinct()
             val filter =
-                    listOfNotNull(
-                            "'applicationIds':{\$in:${applicationsIds.filter { it.isNotEmpty() }.json}}",
-                            if (name.isNullOrBlank()) null else "'userPreferences.lastName':/${name!!.trim()}/i",
-                            if (from == null) null else "'lastUpdateDate':{$gt:${from!!.json}}",
-                            if (to == null) null else "'lastUpdateDate':{$lt:${to!!.json}}",
-                            if (flags.isEmpty()) null
-                            else flags.flatMap {
-                                "userState.flags.${it.key}".let { key ->
-                                    listOfNotNull(
-                                            if (it.value == null) null else "{'$key.value':${it.value!!.json}}",
-                                            "{$or:[{'$key.expirationDate':{$gt:${now().json}}},{'$key.expirationDate':{$type:10}}]}"
-                                    )
-                                }
-                            }.joinToString(",", "$and:[", "]")
+                listOfNotNull(
+                    "'applicationIds':{\$in:${applicationsIds.filter { it.isNotEmpty() }.json}}",
+                    if (name.isNullOrBlank()) null else "'userPreferences.lastName':/${name!!.trim()}/i",
+                    if (from == null) null else "'lastUpdateDate':{$gt:${from!!.json}}",
+                    if (to == null) null else "'lastUpdateDate':{$lt:${to!!.json}}",
+                    if (flags.isEmpty()) null
+                    else flags.flatMap {
+                        "userState.flags.${it.key}".let { key ->
+                            listOfNotNull(
+                                if (it.value == null) null else "{'$key.value':${it.value!!.json}}",
+                                "{$or:[{'$key.expirationDate':{$gt:${now().json}}},{'$key.expirationDate':{$type:10}}]}"
+                            )
+                        }
+                    }.joinToString(",", "$and:[", "]")
 
-                    ).joinToString(",", "{$and:[", "]}") {
-                        "{$it}"
-                    }
+                ).joinToString(",", "{$and:[", "]}") {
+                    "{$it}"
+                }
             logger.debug("user search query: $filter")
             val count = userTimelineCol.count(filter)
             if (count > start) {
                 val list = userTimelineCol.find(filter)
-                        .skip(start.toInt()).limit(size).sort(Sorts.descending("lastUpdateDate")).toList()
+                    .skip(start.toInt()).limit(size).sort(Sorts.descending("lastUpdateDate")).toList()
                 return UserReportQueryResult(count, start, start + size, list.map { it.toUserReport() })
             } else {
                 return UserReportQueryResult(0, 0, 0, emptyList())
@@ -264,15 +295,16 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     override fun search(query: DialogReportQuery): DialogReportQueryResult {
         with(query) {
             val applicationsIds =
-                    botConfiguration
-                            .getConfigurationsByNamespaceAndNlpModel(query.namespace, query.nlpModel)
-                            .map { it.applicationId }
-                            .distinct()
+                botConfiguration
+                    .getConfigurationsByNamespaceAndNlpModel(query.namespace, query.nlpModel)
+                    .map { it.applicationId }
+                    .distinct()
             val dialogIds = if (query.text.isNullOrBlank()) {
                 emptySet()
             } else {
                 if (query.exactMatch) {
-                    dialogTextCol.find("{text:${textKey(query.text!!.trim()).json}}").toList().map { it.dialogId }.toSet()
+                    dialogTextCol.find("{text:${textKey(query.text!!.trim()).json}}").toList().map { it.dialogId }
+                        .toSet()
                 } else {
                     dialogTextCol.find("{text:/${textKey(query.text!!.trim())}/i}").toList().map { it.dialogId }.toSet()
                 }
@@ -281,22 +313,22 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 return DialogReportQueryResult(0, 0, 0, emptyList())
             }
             val filter =
-                    listOfNotNull(
-                            "'applicationIds':{\$in:${applicationsIds.filter { it.isNotEmpty() }.json}}",
-                            if (query.playerId == null) null else "'playerIds.id':${query.playerId!!.id.json}",
-                            if (query.dialogId == null) null else "'_id':${query.dialogId!!.json}",
-                            if (dialogIds.isEmpty()) null else "'_id':{\$in:${dialogIds.json}}",
-                            if (from == null) null else "'lastUpdateDate':{$gt:${from!!.json}}",
-                            if (to == null) null else "'lastUpdateDate':{$lt:${to!!.json}}",
-                            if (query.intentName.isNullOrBlank()) null else "'stories.currentIntent.name':${query.intentName!!.json}"
-                    ).joinToString(",", "{$and:[", "]}") {
-                        "{$it}"
-                    }
+                listOfNotNull(
+                    "'applicationIds':{\$in:${applicationsIds.filter { it.isNotEmpty() }.json}}",
+                    if (query.playerId == null) null else "'playerIds.id':${query.playerId!!.id.json}",
+                    if (query.dialogId == null) null else "'_id':${query.dialogId!!.json}",
+                    if (dialogIds.isEmpty()) null else "'_id':{\$in:${dialogIds.json}}",
+                    if (from == null) null else "'lastUpdateDate':{$gt:${from!!.json}}",
+                    if (to == null) null else "'lastUpdateDate':{$lt:${to!!.json}}",
+                    if (query.intentName.isNullOrBlank()) null else "'stories.currentIntent.name':${query.intentName!!.json}"
+                ).joinToString(",", "{$and:[", "]}") {
+                    "{$it}"
+                }
             logger.debug("dialog search query: $filter")
             val count = dialogCol.count(filter)
             if (count > start) {
                 val list = dialogCol.find(filter)
-                        .skip(start.toInt()).limit(size).sort(Sorts.descending("lastUpdateDate")).toList()
+                    .skip(start.toInt()).limit(size).sort(Sorts.descending("lastUpdateDate")).toList()
                 return DialogReportQueryResult(count, start, start + size, list.map { it.toDialogReport() })
             } else {
                 return DialogReportQueryResult(0, 0, 0, emptyList())
@@ -309,36 +341,45 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     }
 
     override fun getClientDialogs(
-            clientId: String,
-            storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog> {
+        clientId: String,
+        storyDefinitionProvider: (String) -> StoryDefinition
+    ): List<Dialog> {
         val ids = clientIdCol.findOneById(clientId)?.userIds ?: emptySet()
         return if (ids.isEmpty()) {
             emptyList()
         } else {
             dialogCol
-                    .find("{'playerIds.id': { \$in : ${ids.json} } }")
-                    .sortedByDescending { it.lastUpdateDate }
-                    .map { it.toDialog(storyDefinitionProvider) }
-                    .toList()
+                .find("{'playerIds.id': { \$in : ${ids.json} } }")
+                .sortedByDescending { it.lastUpdateDate }
+                .map { it.toDialog(storyDefinitionProvider) }
+                .toList()
         }
     }
 
-    override fun getDialogsUpdatedFrom(from: Instant, storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog> {
+    override fun getDialogsUpdatedFrom(
+        from: Instant,
+        storyDefinitionProvider: (String) -> StoryDefinition
+    ): List<Dialog> {
         return dialogCol
-                .find("{'lastUpdateDate':{$gt:${from.json}}}")
-                .map { it.toDialog(storyDefinitionProvider) }
-                .toList()
+            .find("{'lastUpdateDate':{$gt:${from.json}}}")
+            .map { it.toDialog(storyDefinitionProvider) }
+            .toList()
     }
 
     private fun addSnapshot(dialog: Dialog) {
         val snapshot = Snapshot(
-                dialog.state.currentIntent?.name,
-                dialog.state.entityValues.values.mapNotNull { it.value })
+            dialog.state.currentIntent?.name,
+            dialog.state.entityValues.values.mapNotNull { it.value })
         val existingSnapshot = snapshotCol.findOneById(dialog.id)
         if (existingSnapshot == null) {
             snapshotCol.insertOne(SnapshotCol(dialog.id, listOf(snapshot)))
         } else {
-            snapshotCol.save(existingSnapshot.copy(snapshots = existingSnapshot.snapshots + snapshot, lastUpdateDate = now()))
+            snapshotCol.save(
+                existingSnapshot.copy(
+                    snapshots = existingSnapshot.snapshots + snapshot,
+                    lastUpdateDate = now()
+                )
+            )
         }
     }
 

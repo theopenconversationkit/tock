@@ -16,14 +16,19 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.webhook
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.Sender
 
 /**
  *
  */
-data class PostbackWebhook(override val sender: Sender,
-                           override val recipient: Recipient,
-                           override val timestamp: Long,
-                           val postback: UserActionPayload) : Webhook() {
+data class PostbackWebhook(
+    override val sender: Sender,
+    override val recipient: Recipient,
+    override val timestamp: Long,
+    val postback: UserActionPayload,
+    @get:JsonProperty("prior_message")
+    override val priorMessage: PriorMessage? = null
+) : Webhook() {
 }

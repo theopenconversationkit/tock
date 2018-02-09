@@ -22,6 +22,7 @@ import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
+import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
@@ -65,12 +66,13 @@ import javax.crypto.spec.SecretKeySpec
  * Contains built-in checks to ensure that two [MessageRequest] for the same recipient are sent sequentially.
  */
 class MessengerConnector internal constructor(
-        applicationId: String,
-        val path: String,
-        val pageId: String,
-        val token: String,
-        val verifyToken: String?,
-        val client: MessengerClient) : ConnectorBase(MessengerConnectorProvider.connectorType) {
+    applicationId: String,
+    val path: String,
+    val pageId: String,
+    val token: String,
+    val verifyToken: String?,
+    val client: MessengerClient
+) : ConnectorBase(MessengerConnectorProvider.connectorType) {
 
     private data class ActionWithTimestamp(val action: Action, val timestamp: Long)
 
@@ -96,7 +98,8 @@ class MessengerConnector internal constructor(
     }
 
     private val executor: Executor by injector.instance()
-    private val messagesByRecipientMap: Cache<String, ConcurrentLinkedQueue<ActionWithTimestamp>> = CacheBuilder.newBuilder()
+    private val messagesByRecipientMap: Cache<String, ConcurrentLinkedQueue<ActionWithTimestamp>> =
+        CacheBuilder.newBuilder()
             .expireAfterAccess(1, TimeUnit.MINUTES)
             .build()
 
@@ -135,22 +138,35 @@ class MessengerConnector internal constructor(
                                 try {
                                     request.entry.forEach { entry ->
                                         try {
-                                            if (entry.messaging?.isNotEmpty() ?: false) {
+                                            if (entry.messaging?.isNotEmpty() == true) {
 
                                                 val applicationId = pageApplicationMap.getValue(entry.id)
-                                                entry.messaging!!.forEach { m ->
+                                                entry.messaging.forEach { m ->
                                                     if (m != null) {
                                                         try {
                                                             val event = WebhookActionConverter.toEvent(m, applicationId)
                                                             if (event != null) {
-                                                                controller.handle(event)
+                                                                controller.handle(
+                                                                    event,
+                                                                    ConnectorData(
+                                                                        MessengerConnectorCallback(event.applicationId),
+                                                                        m.priorMessage?.identifier?.let { PlayerId(it) }
+                                                                    )
+                                                                )
                                                             } else {
-                                                                logger.logError("unable to convert $m to event", requestTimerData)
+                                                                logger.logError(
+                                                                    "unable to convert $m to event",
+                                                                    requestTimerData
+                                                                )
                                                             }
                                                         } catch (e: Throwable) {
                                                             try {
                                                                 logger.logError(e, requestTimerData)
-                                                                controller.errorMessage(m.playerId(bot), applicationId, m.recipientId(bot)).let {
+                                                                controller.errorMessage(
+                                                                    m.playerId(bot),
+                                                                    applicationId,
+                                                                    m.recipientId(bot)
+                                                                ).let {
                                                                     sendEvent(it)
                                                                     endTypingAnswer(it)
                                                                 }
@@ -205,10 +221,11 @@ class MessengerConnector internal constructor(
      * @param transformActionRequest method to transform the [ActionRequest] before sending - default is identity
      */
     fun sendEvent(
-            event: Event,
-            transformMessageRequest: (MessageRequest) -> MessageRequest = { it },
-            postMessage: (String) -> Unit = {},
-            transformActionRequest: (ActionRequest) -> ActionRequest = { it }): SendResponse? {
+        event: Event,
+        transformMessageRequest: (MessageRequest) -> MessageRequest = { it },
+        postMessage: (String) -> Unit = {},
+        transformActionRequest: (ActionRequest) -> ActionRequest = { it }
+    ): SendResponse? {
         return try {
             if (event is Action) {
                 var message = SendActionConverter.toMessageRequest(event)
@@ -222,7 +239,11 @@ class MessengerConnector internal constructor(
                         if (m is AttachmentMessage) {
                             val payload = m.attachment.payload
                             if (payload is UrlPayload && payload.url != null) {
-                                AttachmentCacheService.setAttachmentId(event.applicationId, payload.url, response.attachmentId)
+                                AttachmentCacheService.setAttachmentId(
+                                    event.applicationId,
+                                    payload.url,
+                                    response.attachmentId
+                                )
                             }
                         }
                     }
@@ -234,9 +255,18 @@ class MessengerConnector internal constructor(
                 }
             } else {
                 when (event) {
-                    is TypingOnEvent -> client.sendAction(getToken(event), transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_on)))
-                    is TypingOffEvent -> client.sendAction(getToken(event), transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_off)))
-                    is MarkSeenEvent -> client.sendAction(getToken(event), transformActionRequest(ActionRequest(Recipient(event.recipientId.id), mark_seen)))
+                    is TypingOnEvent -> client.sendAction(
+                        getToken(event),
+                        transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_on))
+                    )
+                    is TypingOffEvent -> client.sendAction(
+                        getToken(event),
+                        transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_off))
+                    )
+                    is MarkSeenEvent -> client.sendAction(
+                        getToken(event),
+                        transformActionRequest(ActionRequest(Recipient(event.recipientId.id), mark_seen))
+                    )
                     else -> {
                         logger.warn { "unsupported event $event" }
                         null
@@ -250,24 +280,23 @@ class MessengerConnector internal constructor(
     }
 
     /**
-     * Send the first action after an optin request, using the recipient.user_ref property.
+     * Send action after an optin request, using the recipient.user_ref property.
      * See https://developers.facebook.com/docs/messenger-platform/plugin-reference/checkbox-plugin#implementation for more details.
      *
      * @param action the action to send
-     * @return the real user id, null if error
+     * @exception IllegalStateException if the message is not delivered
      */
-    fun sendEventAfterOptIn(event: Event): String? {
-        val response = sendEvent(
-                event,
-                transformMessageRequest = { request ->
-                    //need to use the user_ref here
-                    request.copy(recipient = Recipient(null, request.recipient.id))
-                },
-                transformActionRequest = { request ->
-                    //need to use the user_ref here
-                    request.copy(recipient = Recipient(null, request.recipient.id))
-                })
-        return response?.recipientId
+    fun sendOptInEvent(event: Event) {
+        sendEvent(
+            event,
+            transformMessageRequest = { request ->
+                //need to use the user_ref here
+                request.copy(recipient = Recipient(null, request.recipient.id))
+            },
+            transformActionRequest = { request ->
+                //need to use the user_ref here
+                request.copy(recipient = Recipient(null, request.recipient.id))
+            }) ?: error("message $event not delivered")
     }
 
     /**
@@ -280,17 +309,17 @@ class MessengerConnector internal constructor(
             val id = event.recipientId.id.intern()
             val action = ActionWithTimestamp(event, System.currentTimeMillis() + delayInMs)
             val queue = messagesByRecipientMap
-                    .get(id, { ConcurrentLinkedQueue() })
-                    .apply {
-                        synchronized(id) {
-                            peek().also { existingAction ->
-                                offer(action)
-                                if (existingAction != null) {
-                                    return
-                                }
+                .get(id, { ConcurrentLinkedQueue() })
+                .apply {
+                    synchronized(id) {
+                        peek().also { existingAction ->
+                            offer(action)
+                            if (existingAction != null) {
+                                return
                             }
                         }
                     }
+                }
 
             executor.executeBlocking(delay) {
                 sendActionFromConnector(event, queue)
@@ -322,17 +351,17 @@ class MessengerConnector internal constructor(
 
     private fun sendActionFromConnector(action: Action) {
         sendEvent(
-                action,
-                postMessage =
-                { token ->
-                    val recipient = Recipient(action.recipientId.id)
-                    if (action.metadata.lastAnswer) {
-                        client.sendAction(token, ActionRequest(recipient, typing_off))
-                        client.sendAction(token, ActionRequest(recipient, mark_seen))
-                    } else {
-                        client.sendAction(token, ActionRequest(recipient, typing_on))
-                    }
+            action,
+            postMessage =
+            { token ->
+                val recipient = Recipient(action.recipientId.id)
+                if (action.metadata.lastAnswer) {
+                    client.sendAction(token, ActionRequest(recipient, typing_off))
+                    client.sendAction(token, ActionRequest(recipient, mark_seen))
+                } else {
+                    client.sendAction(token, ActionRequest(recipient, typing_on))
                 }
+            }
         )
     }
 
@@ -342,23 +371,24 @@ class MessengerConnector internal constructor(
 
     override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
         try {
-            val userProfile = client.getUserProfile(applicationTokenMap.getValue(callback.applicationId), Recipient(userId.id))
+            val userProfile =
+                client.getUserProfile(applicationTokenMap.getValue(callback.applicationId), Recipient(userId.id))
             logger.debug { "User profile : $userProfile for $userId" }
             return UserPreferences(
-                    userProfile.firstName,
-                    userProfile.lastName,
-                    null,
-                    ZoneOffset.ofHours(userProfile.timezone),
-                    userProfile.locale?.let {
-                        try {
-                            LocaleUtils.toLocale(it)
-                        } catch (e: Exception) {
-                            logger.error(e)
-                            null
-                        }
-                    } ?: defaultLocale,
-                    userProfile.profilePic,
-                    userProfile.gender)
+                userProfile.firstName,
+                userProfile.lastName,
+                null,
+                ZoneOffset.ofHours(userProfile.timezone),
+                userProfile.locale?.let {
+                    try {
+                        LocaleUtils.toLocale(it)
+                    } catch (e: Exception) {
+                        logger.error(e)
+                        null
+                    }
+                } ?: defaultLocale,
+                userProfile.profilePic,
+                userProfile.gender)
         } catch (e: Exception) {
             logger.error(e)
         }

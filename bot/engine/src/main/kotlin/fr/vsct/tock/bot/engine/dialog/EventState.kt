@@ -36,7 +36,7 @@ data class EventState(
          */
         var targetConnectorType: ConnectorType? = null,
         /**
-         * The user interface - if different of [ConnectorType].
+         * The user interface - if different of default interface of [ConnectorType].
          */
         var userInterface: UserInterfaceType? = null,
         /**

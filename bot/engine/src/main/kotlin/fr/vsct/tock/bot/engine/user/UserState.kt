@@ -25,8 +25,17 @@ import java.time.Instant.now
  * The user state.
  */
 data class UserState(
-        val creationDate: Instant = now(),
-        val flags: MutableMap<String, TimeBoxedFlag> = mutableMapOf()) {
+    /** The user creation date. **/
+    val creationDate: Instant = now(),
+    /**
+     * The flag for this user - useful to store basic information about this user.
+     */
+    val flags: MutableMap<String, TimeBoxedFlag> = mutableMapOf(),
+    /**
+     * Is it a temporary user? (pre opt-in case).
+     */
+    var temporaryUser: Boolean = false
+) {
 
     companion object {
         private const val PROFILE_LOADED_FLAG = "tock_profile_loaded"
@@ -53,9 +62,9 @@ data class UserState(
         set(value) {
             if (value)
                 setFlag(
-                        BOT_DISABLED_FLAG,
-                        longProperty("tock_bot_disabled_duration_in_minutes", 60 * 24 * 5),
-                        value.toString()
+                    BOT_DISABLED_FLAG,
+                    longProperty("tock_bot_disabled_duration_in_minutes", 60 * 24 * 5),
+                    value.toString()
                 )
             else removeFlag(BOT_DISABLED_FLAG)
         }
@@ -69,8 +78,7 @@ data class UserState(
         }
     }
 
-    fun hasFlag(flag: String): Boolean
-            = getFlag(flag) != null
+    fun hasFlag(flag: String): Boolean = getFlag(flag) != null
 
     fun setFlag(flag: String, timeoutInMinutes: Long, value: String) {
         setFlag(flag, Duration.ofMinutes(timeoutInMinutes), value)

@@ -14,17 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.user
+package fr.vsct.tock.bot.connector.messenger
 
-import java.time.Instant
+import fr.vsct.tock.bot.connector.ConnectorCallbackBase
 
 /**
- * A flag with a validity limit.
+ *
  */
-data class TimeBoxedFlag(val value: String,
-                         val expirationDate: Instant? = Instant.now()) {
-
-    fun isValid(): Boolean {
-        return expirationDate?.isAfter(Instant.now()) ?: true
-    }
+internal class MessengerConnectorCallback(
+    applicationId: String
+) : ConnectorCallbackBase(applicationId, messengerConnectorType) {
 }

@@ -35,7 +35,10 @@ interface UserTimelineDAO {
     /**
      * Load with last dialog. If no timeline exists, creates a new one.
      */
-    fun loadWithLastValidDialog(userId: PlayerId, storyDefinitionProvider: (String) -> StoryDefinition): UserTimeline
+    fun loadWithLastValidDialog(
+        userId: PlayerId,
+        priorUserId: PlayerId? = null,
+        storyDefinitionProvider: (String) -> StoryDefinition): UserTimeline
 
     /**
      * Load without the dialogs. If no timeline, create a new one.

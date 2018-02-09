@@ -34,17 +34,17 @@ abstract class Webhook : MessengerConnectorMessage() {
     abstract val sender: Sender?
     abstract val recipient: Recipient
     abstract val timestamp: Long
+    open val priorMessage: PriorMessage? get() = null
 
     override fun toSentenceElement(): SentenceElement? {
         return null
     }
 
-    fun playerId(playerType: PlayerType): PlayerId
-            = PlayerId(sender?.id ?: error("null sender field in webhook"), playerType)
+    fun playerId(playerType: PlayerType): PlayerId =
+        PlayerId(sender?.id ?: error("null sender field in webhook"), playerType)
 
-    fun recipientId(playerType: PlayerType): PlayerId
-            = PlayerId(
-            recipient.id ?: recipient.userRef ?: error("id or userRef must not be null"),
-            playerType
+    fun recipientId(playerType: PlayerType): PlayerId = PlayerId(
+        recipient.id ?: recipient.userRef ?: error("id or userRef must not be null"),
+        playerType
     )
 }

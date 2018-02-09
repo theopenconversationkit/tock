@@ -47,23 +47,24 @@ internal object WebhookActionConverter {
                 with(message.message) {
                     if (quickReply != null) {
                         SendChoice.decodeChoiceId(quickReply!!.payload)
-                                .let { (intentName, parameters) ->
-                                    if (parameters.containsKey(SendChoice.NLP)) {
-                                        SendSentence(
-                                                message.playerId(PlayerType.user),
-                                                applicationId,
-                                                message.recipientId(PlayerType.bot),
-                                                parameters[SendChoice.NLP]
-                                        )
-                                    } else {
-                                        SendChoice(
-                                                message.playerId(PlayerType.user),
-                                                applicationId,
-                                                message.recipientId(PlayerType.bot),
-                                                intentName,
-                                                parameters)
-                                    }
+                            .let { (intentName, parameters) ->
+                                if (parameters.containsKey(SendChoice.NLP)) {
+                                    SendSentence(
+                                        message.playerId(PlayerType.user),
+                                        applicationId,
+                                        message.recipientId(PlayerType.bot),
+                                        parameters[SendChoice.NLP]
+                                    )
+                                } else {
+                                    SendChoice(
+                                        message.playerId(PlayerType.user),
+                                        applicationId,
+                                        message.recipientId(PlayerType.bot),
+                                        intentName,
+                                        parameters
+                                    )
                                 }
+                            }
                     } else {
                         val a = attachments
                         if (a.isNotEmpty()) {
@@ -81,20 +82,21 @@ internal object WebhookActionConverter {
                 }
             is PostbackWebhook ->
                 SendChoice.decodeChoiceId(message.postback.payload)
-                        .let { (intentName, parameters) ->
-                            SendChoice(
-                                    message.playerId(PlayerType.user),
-                                    applicationId,
-                                    message.recipientId(PlayerType.bot),
-                                    intentName,
-                                    parameters)
-                        }
+                    .let { (intentName, parameters) ->
+                        SendChoice(
+                            message.playerId(PlayerType.user),
+                            applicationId,
+                            message.recipientId(PlayerType.bot),
+                            intentName,
+                            parameters
+                        )
+                    }
             is OptinWebhook ->
                 SubscribingEvent(
-                        message.sender?.id ?: message.optin.userRef ?: error("optin webhook must have sender or optin.userRef defined"),
-                        message.optin.ref,
-                        // the recipient id is the page id, ie the tock application id
-                        message.recipient.id!!
+                    message.sender?.id ?: message.optin.userRef,
+                    message.optin.ref,
+                    // the recipient id is the page id, ie the tock application id
+                    message.recipient.id!!
                 )
             else -> {
                 logger.error { "unknown message $message" }
@@ -105,35 +107,35 @@ internal object WebhookActionConverter {
 
     private fun readSentence(message: MessageWebhook, applicationId: String): SendSentence {
         return SendSentence(
-                message.playerId(PlayerType.user),
-                applicationId,
-                message.recipientId(PlayerType.bot),
-                message.message.text ?: "",
-                mutableListOf(message),
-                message.getMessageId().toId()
+            message.playerId(PlayerType.user),
+            applicationId,
+            message.recipientId(PlayerType.bot),
+            message.message.text ?: "",
+            mutableListOf(message),
+            message.getMessageId().toId()
         )
     }
 
     private fun readLocation(message: MessageWebhook, attachment: Attachment, applicationId: String): SendLocation {
         logger.debug { "read location attachment : $attachment" }
         return SendLocation(
-                message.playerId(PlayerType.user),
-                applicationId,
-                message.recipientId(PlayerType.bot),
-                (attachment.payload as LocationPayload).coordinates.toUserLocation(),
-                message.getMessageId().toId()
+            message.playerId(PlayerType.user),
+            applicationId,
+            message.recipientId(PlayerType.bot),
+            (attachment.payload as LocationPayload).coordinates.toUserLocation(),
+            message.getMessageId().toId()
         )
     }
 
     private fun readImage(message: MessageWebhook, attachment: Attachment, applicationId: String): SendAttachment {
         logger.debug { "read image attachment : $attachment" }
         return SendAttachment(
-                message.playerId(PlayerType.user),
-                applicationId,
-                message.recipientId(PlayerType.bot),
-                (attachment.payload as UrlPayload).url,
-                SendAttachment.AttachmentType.image,
-                message.getMessageId().toId()
+            message.playerId(PlayerType.user),
+            applicationId,
+            message.recipientId(PlayerType.bot),
+            (attachment.payload as UrlPayload).url,
+            SendAttachment.AttachmentType.image,
+            message.getMessageId().toId()
         )
     }
 }

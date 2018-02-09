@@ -41,10 +41,11 @@ import java.time.Duration
  *
  */
 internal class TockConnectorController constructor(
-        val bot: Bot,
-        override val connector: Connector,
-        private val verticle: BotVerticle,
-        override val botDefinition: BotDefinition = bot.botDefinition) : ConnectorController {
+    val bot: Bot,
+    override val connector: Connector,
+    private val verticle: BotVerticle,
+    override val botDefinition: BotDefinition = bot.botDefinition
+) : ConnectorController {
 
     companion object {
 
@@ -52,9 +53,11 @@ internal class TockConnectorController constructor(
         private val maxLockedAttempts = intProperty("tock_bot_max_locked_attempts", 10)
         private val lockedAttemptsWaitInMs = longProperty("tock_bot_locked_attempts_wait_in_ms", 500L)
 
-        internal fun register(connector: Connector,
-                              bot: Bot,
-                              verticle: BotVerticle) {
+        internal fun register(
+            connector: Connector,
+            bot: Bot,
+            verticle: BotVerticle
+        ) {
             logger.info { "Register connector $connector for bot $bot" }
             connector.register(TockConnectorController(bot, connector, verticle))
         }
@@ -92,7 +95,12 @@ internal class TockConnectorController constructor(
             if (userLock.lock(id)) {
                 try {
                     callback.userLocked(action)
-                    val userTimeline = userTimelineDAO.loadWithLastValidDialog(action.playerId, { bot.botDefinition.findStoryDefinition(it) })
+                    val userTimeline =
+                        userTimelineDAO.loadWithLastValidDialog(
+                            action.playerId,
+                            data.priorUserId,
+                            { bot.botDefinition.findStoryDefinition(it) }
+                        )
                     bot.handle(action, userTimeline, this, data)
                     userTimelineDAO.save(userTimeline)
                 } catch (t: Throwable) {

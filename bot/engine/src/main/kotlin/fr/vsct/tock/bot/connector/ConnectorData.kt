@@ -16,12 +16,19 @@
 
 package fr.vsct.tock.bot.connector
 
+import fr.vsct.tock.bot.engine.user.PlayerId
+
 /**
  * The connector data that connector sends to the [ConnectorController]
  */
 open class ConnectorData(
-        /**
-         * The callback (used mostly in synchronous [Connector]).
-         */
-        val callback: ConnectorCallback
+    /**
+     * The callback (used mostly in synchronous [Connector]).
+     */
+    val callback: ConnectorCallback,
+    /**
+     * The previous user id - used when the user had a "temporary" identifier
+     * and the definitive identifier is now known.
+     */
+    val priorUserId: PlayerId? = null
 )
