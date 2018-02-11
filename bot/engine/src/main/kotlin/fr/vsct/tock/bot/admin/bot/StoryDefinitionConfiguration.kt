@@ -18,22 +18,33 @@ package fr.vsct.tock.bot.admin.bot
 
 import fr.vsct.tock.bot.admin.answer.AnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
+import fr.vsct.tock.bot.admin.answer.ScriptAnswerConfiguration
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.StoryDefinition
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
 /**
- *
+ * A [StoryDefinition] defined at runtime.
  */
 data class StoryDefinitionConfiguration(
-        val storyId: String,
-        val botId: String,
-        val intent: Intent,
-        val currentType: AnswerConfigurationType,
-        val answers: List<AnswerConfiguration>,
-        val _id: Id<StoryDefinitionConfiguration> = newId()) {
+    val storyId: String,
+    val botId: String,
+    val intent: Intent,
+    val currentType: AnswerConfigurationType,
+    val answers: List<AnswerConfiguration>,
+    val version:Int = 0,
+    val _id: Id<StoryDefinitionConfiguration> = newId()
+) {
 
-    fun findCurrentAnswer(): AnswerConfiguration {
-        return answers.first { it.answerType == currentType }
-    }
+    internal fun findCurrentAnswer(): AnswerConfiguration? =
+        findAnswer(currentType)
+
+    internal fun findAnswer(type: AnswerConfigurationType): AnswerConfiguration? =
+        answers.firstOrNull { it.answerType == type }
+
+    internal fun storyDefinition(): StoryDefinition? =
+        (findCurrentAnswer() as? ScriptAnswerConfiguration)
+            ?.findBestVersion(BotVersion.getCurrentBotVersion(botId))
+            ?.storyDefinition
 }

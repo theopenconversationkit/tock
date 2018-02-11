@@ -14,13 +14,21 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.answer
+package fr.vsct.tock.bot.admin.model
+
+import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
+import fr.vsct.tock.bot.admin.answer.ScriptAnswerConfiguration
 
 /**
- * An [AnswerConfiguration] with only [SimpleAnswer] (ie labels) answers.
+ *
  */
-data class SimpleAnswerConfiguration(val answers: List<SimpleAnswer>)
-    : AnswerConfiguration(AnswerConfigurationType.simple) {
+data class BotScriptAnswerConfiguration(val scriptVersions: List<BotScriptAnswerVersionedConfiguration>) :
+    BotAnswerConfiguration(AnswerConfigurationType.script) {
 
+    constructor(conf: ScriptAnswerConfiguration) : this(conf.scriptVersions.map {
+        BotScriptAnswerVersionedConfiguration(
+            it
+        )
+    })
 
 }

@@ -16,3 +16,12 @@
   font-size: xx-large;
 }
 
+.text-area-container {
+  min-width:800px;
+}
+
+.text-area {
+  padding:5px 5px 5px 5px;
+  border: inset;
+}
+

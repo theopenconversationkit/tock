@@ -16,10 +16,16 @@
 
 package fr.vsct.tock.bot.admin.model
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
 
 /**
  *
  */
+@JsonTypeInfo(
+    use = JsonTypeInfo.Id.NAME,
+    include = JsonTypeInfo.As.EXISTING_PROPERTY,
+    property = "answerType"
+)
 abstract class BotAnswerConfiguration(val answerType: AnswerConfigurationType) {
 }

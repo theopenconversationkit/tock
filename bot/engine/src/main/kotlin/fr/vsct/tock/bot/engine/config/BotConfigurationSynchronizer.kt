@@ -25,6 +25,7 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.longProperty
 import mu.KotlinLogging
 import java.time.Duration
+import java.time.Instant
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -39,7 +40,11 @@ internal object BotConfigurationSynchronizer {
     private val storyDAO: StoryDefinitionConfigurationDAO by injector.instance()
     private val botsToMonitor: MutableList<Bot> = CopyOnWriteArrayList()
 
+    @Volatile
+    private var lastUpdate: Instant? = null
+
     init {
+        logger.info { "start bot configuration synchronizer" }
         executor.setPeriodic(Duration.ofMillis(refreshDelay)) {
             logger.trace { "refresh bots configuration" }
             botsToMonitor.forEach {
@@ -55,10 +60,15 @@ internal object BotConfigurationSynchronizer {
 
     private fun refresh(bot: Bot) {
         try {
-            bot.botDefinition.updateStories(
+            val botId = bot.botDefinition.botId
+            val last = storyDAO.getLastUpdateTimestamp(botId)
+            if (last != null && (lastUpdate == null || last > lastUpdate)) {
+                logger.info { "refresh configured stories for bot $botId" }
+                bot.botDefinition.updateStories(
                     storyDAO.getStoryDefinitions(bot.botDefinition.botId)
-                            .map { ConfiguredStoryDefinition(it) }
-            )
+                        .map { ConfiguredStoryDefinition(it) }
+                )
+            }
         } catch (e: Exception) {
             //log & ignore
             logger.error(e)

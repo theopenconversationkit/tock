@@ -17,13 +17,21 @@
 package fr.vsct.tock.bot.jackson
 
 import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.databind.BeanDescription
+import com.fasterxml.jackson.databind.DeserializationConfig
+import com.fasterxml.jackson.databind.SerializationConfig
+import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier
+import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition
 import com.fasterxml.jackson.databind.jsontype.NamedType
 import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.databind.ser.BeanPropertyWriter
+import com.fasterxml.jackson.databind.ser.BeanSerializerModifier
 import fr.vsct.tock.bot.admin.answer.AnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
 import fr.vsct.tock.bot.admin.answer.BuiltInAnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.MessageAnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.ScriptAnswerConfiguration
+import fr.vsct.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration
 import fr.vsct.tock.bot.admin.answer.SimpleAnswerConfiguration
 import fr.vsct.tock.bot.engine.event.EventType
 import fr.vsct.tock.bot.engine.message.Attachment
@@ -40,15 +48,17 @@ import fr.vsct.tock.shared.mongoJacksonModules
 object BotEngineJacksonConfiguration {
 
     @JsonTypeInfo(
-            use = JsonTypeInfo.Id.NAME,
-            include = JsonTypeInfo.As.EXISTING_PROPERTY,
-            property = "eventType")
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "eventType"
+    )
     private interface MixinMessage
 
     @JsonTypeInfo(
-            use = JsonTypeInfo.Id.NAME,
-            include = JsonTypeInfo.As.EXISTING_PROPERTY,
-            property = "answerType")
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "answerType"
+    )
     private interface MixinAnswerConfiguration
 
     @Volatile
@@ -68,8 +78,49 @@ object BotEngineJacksonConfiguration {
                 setMixInAnnotation(AnswerConfiguration::class.java, MixinAnswerConfiguration::class.java)
                 registerSubtypes(NamedType(SimpleAnswerConfiguration::class.java, AnswerConfigurationType.simple.name))
                 registerSubtypes(NamedType(ScriptAnswerConfiguration::class.java, AnswerConfigurationType.script.name))
-                registerSubtypes(NamedType(MessageAnswerConfiguration::class.java, AnswerConfigurationType.message.name))
-                registerSubtypes(NamedType(BuiltInAnswerConfiguration::class.java, AnswerConfigurationType.builtin.name))
+                registerSubtypes(
+                    NamedType(
+                        MessageAnswerConfiguration::class.java,
+                        AnswerConfigurationType.message.name
+                    )
+                )
+                registerSubtypes(
+                    NamedType(
+                        BuiltInAnswerConfiguration::class.java,
+                        AnswerConfigurationType.builtin.name
+                    )
+                )
+
+                setSerializerModifier(object : BeanSerializerModifier() {
+                    override fun changeProperties(
+                        config: SerializationConfig,
+                        beanDesc: BeanDescription,
+                        beanProperties: MutableList<BeanPropertyWriter>
+                    ): MutableList<BeanPropertyWriter> {
+                        return if (beanDesc.beanClass == ScriptAnswerVersionedConfiguration::class.java) {
+                            beanProperties.filter { it.name != ScriptAnswerVersionedConfiguration::storyDefinition.name }
+                                .toMutableList()
+                        } else {
+                            super.changeProperties(config, beanDesc, beanProperties)
+                        }
+                    }
+                })
+
+                setDeserializerModifier(object : BeanDeserializerModifier() {
+
+                    override fun updateProperties(
+                        config: DeserializationConfig,
+                        beanDesc: BeanDescription,
+                        propDefs: MutableList<BeanPropertyDefinition>
+                    ): MutableList<BeanPropertyDefinition> {
+                        return if (beanDesc.beanClass == ScriptAnswerVersionedConfiguration::class.java) {
+                            propDefs.filter { it.name != ScriptAnswerVersionedConfiguration::storyDefinition.name }
+                                .toMutableList()
+                        } else {
+                            super.updateProperties(config, beanDesc, propDefs)
+                        }
+                    }
+                })
 
                 mapper.registerModule(this)
             }

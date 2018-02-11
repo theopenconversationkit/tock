@@ -16,12 +16,21 @@
 
 package fr.vsct.tock.bot.admin.bot
 
+import java.time.Instant
+
 /**
- *
+ * Manage [StoryDefinitionConfiguration] persistence.
  */
 interface StoryDefinitionConfigurationDAO {
 
     fun getStoryDefinitionById(id: String): StoryDefinitionConfiguration?
+
+    /**
+     * Returns the timestamp of the last configured answers update for this bot.
+     *
+     * @return null if there is no configuration at all
+     */
+    fun getLastUpdateTimestamp(botId: String): Instant?
 
     fun getStoryDefinitions(botId: String): List<StoryDefinitionConfiguration>
 

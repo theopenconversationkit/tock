@@ -21,7 +21,7 @@ import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {NormalizeUtil} from "tock-nlp-admin/src/app/model/commons";
 import {ParseQuery, Sentence} from "tock-nlp-admin/src/app/model/nlp";
 import {BotService} from "../bot-service";
-import {CreateBotIntentRequest} from "../model/bot-intent";
+import {AnswerConfigurationType, CreateBotIntentRequest} from "../model/bot-intent";
 import {ActivatedRoute} from "@angular/router";
 
 @Component({
@@ -35,12 +35,16 @@ export class CreateBotIntentComponent implements OnInit {
 
   text: string;
   reply: string;
+  script: string;
   intent: string;
+  supportedConfigTypes = [AnswerConfigurationType.simple, AnswerConfigurationType.script];
+  configType: AnswerConfigurationType = AnswerConfigurationType.simple;
 
   botConfigurationId: string;
 
   @ViewChild('newSentence') newSentence: ElementRef;
-  @ViewChild('newReply') newReply: ElementRef;
+
+  //@ViewChild('newReply') newReply: ElementRef;
 
   constructor(private nlp: NlpService,
               private state: StateService,
@@ -58,6 +62,17 @@ export class CreateBotIntentComponent implements OnInit {
     });
   }
 
+  getTypeLabel(type: AnswerConfigurationType): string {
+    switch (type) {
+      case AnswerConfigurationType.simple :
+        return "Simple";
+      case AnswerConfigurationType.script :
+        return "Script";
+      default :
+        return "Unknown";
+    }
+  }
+
   onSentence(value: string) {
     const app = this.state.currentApplication;
     const language = this.state.currentLocale;
@@ -68,7 +83,7 @@ export class CreateBotIntentComponent implements OnInit {
       this.nlp.parse(new ParseQuery(app.namespace, app.name, language, v, true)).subscribe(sentence => {
         this.sentence = sentence;
         this.initIntentName(v);
-        setTimeout(_ => this.newReply.nativeElement.focus(), 100);
+        //setTimeout(_ => this.newReply.nativeElement.focus(), 100);
       });
     }
   }
@@ -85,6 +100,19 @@ export class CreateBotIntentComponent implements OnInit {
       candidate = candidateBase + (count++);
     }
     this.intent = candidate;
+    this.script = "import fr.vsct.tock.bot.definition.story\n" +
+      "\n" +
+      "val greetings = story(\"" + this.intent + "\") { \n" +
+      "           end(\"Hello World! :)\")\n" +
+      "}"
+  }
+
+  isSimpleAnswer(): boolean {
+    return this.configType === AnswerConfigurationType.simple;
+  }
+
+  isScriptAnswer(): boolean {
+    return this.configType === AnswerConfigurationType.script;
   }
 
   onReply() {
@@ -98,7 +126,8 @@ export class CreateBotIntentComponent implements OnInit {
         this.intent,
         this.state.currentLocale,
         [this.text.trim()],
-        this.reply
+        this.configType,
+        this.isScriptAnswer() ? this.script : this.reply
       )
     ).subscribe(intent => {
       this.state.currentApplication.intents.push(intent);

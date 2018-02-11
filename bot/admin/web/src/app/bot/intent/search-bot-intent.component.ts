@@ -63,6 +63,7 @@ export class SearchBotIntentComponent implements OnInit {
     this.bot.updateBotIntent(
       new UpdateBotIntentRequest(
         intent.storyDefinition._id,
+        this.state.currentLocale,
         intent.storyDefinition.textAnswer
       ))
       .subscribe(_ => {

@@ -28,10 +28,28 @@
       <button *ngIf="!sentence" md-button (click)="onSentence(newSentence.value)">New Sentence</button>
       <br>
       <span *ngIf="sentence">
+       <md-radio-group id="types" [(ngModel)]="configType">
+        <md-radio-button *ngFor="let type of supportedConfigTypes" [value]="type">
+          {{getTypeLabel(type)}}
+        </md-radio-button>
+        </md-radio-group>
+      <br><br>
+
+      <div *ngIf="isSimpleAnswer()">
       <md-form-field class="sentence-input" #newReplyContainer>
         <input mdInput [(ngModel)]="reply" placeholder="And add a reply" #newReply (keyup.enter)="onReply()">
       </md-form-field>
       <button (click)="onReply()" md-raised-button color="primary">Reply</button>
+      </div>
+
+      <div *ngIf="isScriptAnswer()">
+      <md-input-container class="input text-area-container">
+      <textarea mdInput [(ngModel)]="script" cols="200" rows="20" class="text-area"></textarea>
+      </md-input-container>
+      <br>
+      <button (click)="onReply()" md-raised-button color="primary">Register the script</button>
+      </div>
+
       <br>
       <md-form-field class="sentence-intent" #intentContainer>
         <input mdInput [(ngModel)]="intent" placeholder="Set the intent name" #newIntent (keyup.enter)="onReply()">

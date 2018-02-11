@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.connector.rest
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import fr.vsct.tock.bot.connector.Connector
+import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorType
@@ -37,47 +37,47 @@ import java.util.Locale
 /**
  *
  */
-class RestConnector(val applicationId: String, val path: String) : Connector {
+class RestConnector(val applicationId: String, val path: String) : ConnectorBase(ConnectorType.rest) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
         private val disabled = booleanProperty("tock_rest_connector_disabled", false)
     }
 
-    override val connectorType: ConnectorType = ConnectorType.rest
-
     override fun register(controller: ConnectorController) {
         if (!disabled) {
+            logger.info { "deploy rest connector to $path" }
             controller.registerServices(path, { router ->
                 router.post("$path/:locale").blockingHandler(
-                        { context ->
-                            try {
-                                val message: MessageRequest = mapper.readValue(context.bodyAsString)
-                                val action = message.message.toAction(
-                                        PlayerId(message.userId, PlayerType.user),
+                    { context ->
+                        try {
+                            val message: MessageRequest = mapper.readValue(context.bodyAsString)
+                            val action = message.message.toAction(
+                                PlayerId(message.userId, PlayerType.user),
+                                applicationId,
+                                PlayerId(message.recipientId, PlayerType.bot)
+                            )
+                            val locale = Locale.forLanguageTag(context.pathParam("locale"))
+                            action.state.targetConnectorType = message.targetConnectorType
+                            controller.handle(
+                                action,
+                                ConnectorData(
+                                    RestConnectorCallback(
                                         applicationId,
-                                        PlayerId(message.recipientId, PlayerType.bot)
+                                        message.targetConnectorType,
+                                        context,
+                                        if (message.test) controller.botDefinition.testBehaviour else null,
+                                        locale
+                                    )
                                 )
-                                val locale = Locale.forLanguageTag(context.pathParam("locale"))
-                                action.state.targetConnectorType = message.targetConnectorType
-                                controller.handle(
-                                        action,
-                                        ConnectorData(
-                                                RestConnectorCallback(
-                                                        applicationId,
-                                                        message.targetConnectorType,
-                                                        context,
-                                                        if (message.test) controller.botDefinition.testBehaviour else null,
-                                                        locale
-                                                )
-                                        )
-                                )
-                            } catch (t: Throwable) {
-                                logger.error(t)
-                                context.fail(t)
-                            }
-                        },
-                        false)
+                            )
+                        } catch (t: Throwable) {
+                            logger.error(t)
+                            context.fail(t)
+                        }
+                    },
+                    false
+                )
             })
         }
     }

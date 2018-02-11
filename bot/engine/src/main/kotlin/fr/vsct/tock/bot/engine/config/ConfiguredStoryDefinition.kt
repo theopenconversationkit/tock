@@ -28,14 +28,24 @@ import fr.vsct.tock.translator.UserInterfaceType
 /**
  *
  */
-internal class ConfiguredStoryDefinition(configuration: StoryDefinitionConfiguration)
-    : StoryDefinition {
+internal class ConfiguredStoryDefinition(val configuration: StoryDefinitionConfiguration) : StoryDefinition {
 
     val answerType: AnswerConfigurationType = configuration.currentType
+
     override val id: String = configuration._id.toString()
-    override val starterIntents: Set<Intent> = setOf(configuration.intent)
-    override val intents: Set<Intent> = starterIntents
+
+    override val starterIntents: Set<Intent> =
+        setOf(configuration.intent) + (configuration.storyDefinition()?.starterIntents ?: emptySet())
+
+    override val intents: Set<Intent> =
+        starterIntents + (configuration.storyDefinition()?.intents ?: emptySet())
+
     override val storyHandler: StoryHandler = ConfiguredStoryHandler(configuration)
-    override val steps: Set<StoryStep<out StoryHandlerDefinition>> = emptySet()
-    override val unsupportedUserInterfaces: Set<UserInterfaceType> = emptySet()
+
+    override val steps: Set<StoryStep<out StoryHandlerDefinition>> =
+        configuration.storyDefinition()?.steps ?: emptySet()
+
+    override val unsupportedUserInterfaces: Set<UserInterfaceType> =
+        configuration.storyDefinition()?.unsupportedUserInterfaces ?: emptySet()
+
 }

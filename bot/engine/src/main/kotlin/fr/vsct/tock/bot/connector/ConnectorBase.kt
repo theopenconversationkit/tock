@@ -24,6 +24,6 @@ abstract class ConnectorBase(override val connectorType: ConnectorType) : Connec
     /**
      * Returns [connectorType.toString] method.
      */
-    override fun toString(): String = connectorType.toString()
+    override fun toString(): String = "Connector($connectorType)"
 
 }

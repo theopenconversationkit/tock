@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.admin.model
 
+import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import org.litote.kmongo.Id
 import java.util.Locale
@@ -28,5 +29,6 @@ data class CreateBotIntentRequest(
         val intent: String,
         val language: Locale,
         val firstSentences: List<String>,
+        val type: AnswerConfigurationType,
         val reply: String) {
 }

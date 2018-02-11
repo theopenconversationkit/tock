@@ -14,13 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.answer
+package fr.vsct.tock.bot.admin.kotlin.compiler
 
 /**
- * An [AnswerConfiguration] with only [SimpleAnswer] (ie labels) answers.
+ *
  */
-data class SimpleAnswerConfiguration(val answers: List<SimpleAnswer>)
-    : AnswerConfiguration(AnswerConfigurationType.simple) {
-
-
+class KotlinCompilationException(val errors: List<CompileError>) : RuntimeException() {
 }

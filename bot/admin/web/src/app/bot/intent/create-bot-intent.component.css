@@ -34,3 +34,12 @@
   font-size: small;
   width:60%;
 }
+
+.text-area-container {
+  min-width:800px;
+}
+
+.text-area {
+  padding:5px 5px 5px 5px;
+  border: inset;
+}

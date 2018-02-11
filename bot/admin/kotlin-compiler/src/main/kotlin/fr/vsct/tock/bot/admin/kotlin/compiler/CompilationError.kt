@@ -14,13 +14,19 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.answer
+package fr.vsct.tock.bot.admin.kotlin.compiler
 
 /**
- * An [AnswerConfiguration] with only [SimpleAnswer] (ie labels) answers.
+ *
  */
-data class SimpleAnswerConfiguration(val answers: List<SimpleAnswer>)
-    : AnswerConfiguration(AnswerConfigurationType.simple) {
+data class CompileError(
+        val interval: TextInterval,
+        val message: String,
+        val severity: Severity,
+        val className: String? = null)
 
+data class TextInterval(val start: TextPosition, val end: TextPosition)
 
-}
+data class TextPosition(val line: Int, val ch: Int)
+
+enum class Severity { INFO, ERROR, WARNING }

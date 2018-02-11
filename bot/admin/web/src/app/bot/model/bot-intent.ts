@@ -24,6 +24,7 @@ export class CreateBotIntentRequest {
               public intent: string,
               public language: string,
               public firstSentences: string[],
+              public type: AnswerConfigurationType,
               public reply: string) {
   }
 
@@ -32,6 +33,7 @@ export class CreateBotIntentRequest {
 export class UpdateBotIntentRequest {
 
   constructor(public storyDefinitionId: string,
+              public language:string,
               public reply: string) {
   }
 
@@ -86,11 +88,31 @@ export class StoryDefinitionConfiguration {
   }
 
   initTextAnswer() {
-    this.textAnswer = this.simpleAnswer().answers[0].label.defaultLocalizedLabel().label;
+    if (this.isSimpleAnswer()) {
+      this.textAnswer = this.simpleAnswer().answers[0].label.defaultLocalizedLabel().label;
+    } else if (this.isScriptAnswer()) {
+      this.textAnswer = this.scriptAnswer().scriptVersions[0].script;
+    }
+  }
+
+  isSimpleAnswer(): boolean {
+    return this.currentType === AnswerConfigurationType.simple;
+  }
+
+  isScriptAnswer(): boolean {
+    return this.currentType === AnswerConfigurationType.script;
   }
 
   simpleAnswer(): SimpleAnswerConfiguration {
-    return this.answers[0] as SimpleAnswerConfiguration;
+    return this.findAnswer(AnswerConfigurationType.simple) as SimpleAnswerConfiguration;
+  }
+
+  scriptAnswer(): ScriptAnswerConfiguration {
+    return this.findAnswer(AnswerConfigurationType.script) as ScriptAnswerConfiguration;
+  }
+
+  private findAnswer(type: AnswerConfigurationType): AnswerConfiguration {
+    return this.answers.find(c => c.answerType === type)
   }
 
   static fromJSON(json: any): StoryDefinitionConfiguration {
@@ -128,6 +150,14 @@ export abstract class AnswerConfiguration {
   constructor(public answerType: AnswerConfigurationType) {
   }
 
+  isSimpleAnswer(): boolean {
+    return this.answerType === AnswerConfigurationType.simple;
+  }
+
+  isScriptAnswer(): boolean {
+    return this.answerType === AnswerConfigurationType.script;
+  }
+
   static fromJSON(json: any): AnswerConfiguration {
     const value = Object.create(AnswerConfiguration.prototype);
 
@@ -139,6 +169,8 @@ export abstract class AnswerConfiguration {
     switch (answerType) {
       case AnswerConfigurationType.simple :
         return SimpleAnswerConfiguration.fromJSON(json);
+      case AnswerConfigurationType.script :
+        return ScriptAnswerConfiguration.fromJSON(json);
       default:
         throw "unknown type : " + json.type
     }
@@ -149,7 +181,7 @@ export abstract class AnswerConfiguration {
   }
 }
 
-export abstract class SimpleAnswerConfiguration extends AnswerConfiguration {
+export class SimpleAnswerConfiguration extends AnswerConfiguration {
 
   constructor(public answers: SimpleAnswer[]) {
     super(AnswerConfigurationType.simple)
@@ -158,7 +190,8 @@ export abstract class SimpleAnswerConfiguration extends AnswerConfiguration {
   static fromJSON(json: any): SimpleAnswerConfiguration {
     const value = Object.create(SimpleAnswerConfiguration.prototype);
     const result = Object.assign(value, json, {
-      answers: SimpleAnswer.fromJSONArray(json.answers)
+      answers: SimpleAnswer.fromJSONArray(json.answers),
+      answerType: AnswerConfigurationType.simple
     });
     return result;
   }
@@ -180,5 +213,37 @@ export class SimpleAnswer {
 
   static fromJSONArray(json?: Array<any>): SimpleAnswer[] {
     return json ? json.map(SimpleAnswer.fromJSON) : [];
+  }
+}
+
+export class ScriptAnswerConfiguration extends AnswerConfiguration {
+
+  constructor(public scriptVersions: ScriptAnswerVersionedConfiguration[]) {
+    super(AnswerConfigurationType.script)
+  }
+
+  static fromJSON(json: any): ScriptAnswerConfiguration {
+    const value = Object.create(ScriptAnswerConfiguration.prototype);
+    const result = Object.assign(value, json, {
+      scriptVersions: ScriptAnswerVersionedConfiguration.fromJSONArray(json.scriptVersions),
+      answerType: AnswerConfigurationType.script
+    });
+    return result;
+  }
+}
+
+export class ScriptAnswerVersionedConfiguration {
+
+  constructor(public script: string) {
+  }
+
+  static fromJSON(json: any): ScriptAnswerVersionedConfiguration {
+    const value = Object.create(ScriptAnswerVersionedConfiguration.prototype);
+    const result = Object.assign(value, json, {});
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): ScriptAnswerVersionedConfiguration[] {
+    return json ? json.map(ScriptAnswerVersionedConfiguration.fromJSON) : [];
   }
 }

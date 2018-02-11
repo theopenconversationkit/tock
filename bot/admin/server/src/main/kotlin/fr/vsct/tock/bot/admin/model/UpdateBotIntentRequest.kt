@@ -16,10 +16,14 @@
 
 package fr.vsct.tock.bot.admin.model
 
+import java.util.Locale
+
 /**
  *
  */
 class UpdateBotIntentRequest(
-        val storyDefinitionId: String,
-        val reply: String) {
+    val storyDefinitionId: String,
+    val language: Locale,
+    val reply: String
+) {
 }

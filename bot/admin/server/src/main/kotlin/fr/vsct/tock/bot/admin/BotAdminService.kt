@@ -17,15 +17,20 @@
 package fr.vsct.tock.bot.admin
 
 import com.github.salomonbrys.kodein.instance
-import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
+import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType.script
+import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType.simple
+import fr.vsct.tock.bot.admin.answer.ScriptAnswerConfiguration
+import fr.vsct.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration
 import fr.vsct.tock.bot.admin.answer.SimpleAnswer
 import fr.vsct.tock.bot.admin.answer.SimpleAnswerConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import fr.vsct.tock.bot.admin.bot.BotVersion
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReportQueryResult
+import fr.vsct.tock.bot.admin.kotlin.compiler.TockKotlinCompiler
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotDialogResponse
 import fr.vsct.tock.bot.admin.model.BotIntent
@@ -52,6 +57,7 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
+import fr.vsct.tock.shared.Dice
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.property
@@ -61,6 +67,7 @@ import fr.vsct.tock.translator.Translator
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import java.time.Instant
+import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
 
 /**
@@ -85,7 +92,10 @@ object BotAdminService {
         }
     }
 
-    fun getBotConfiguration(botApplicationConfigurationId: Id<BotApplicationConfiguration>, namespace: String): BotApplicationConfiguration {
+    fun getBotConfiguration(
+        botApplicationConfigurationId: Id<BotApplicationConfiguration>,
+        namespace: String
+    ): BotApplicationConfiguration {
         val conf = applicationConfigurationDAO.getConfigurationById(botApplicationConfigurationId)
         if (conf?.namespace != namespace) {
             throw UnauthorizedException()
@@ -115,26 +125,30 @@ object BotAdminService {
 
     fun getBotConfigurationsByNamespaceAndBotId(namespace: String, botId: String): List<BotApplicationConfiguration> {
         return applicationConfigurationDAO
-                .getConfigurations()
-                .filter { it.namespace == namespace && it.botId == botId }
+            .getConfigurations()
+            .filter { it.namespace == namespace && it.botId == botId }
     }
 
     fun getBotConfigurationsByNamespaceAndBotConfigurationId(
-            namespace: String,
-            botConfigurationId: Id<BotApplicationConfiguration>): List<BotApplicationConfiguration> {
+        namespace: String,
+        botConfigurationId: Id<BotApplicationConfiguration>
+    ): List<BotApplicationConfiguration> {
         return applicationConfigurationDAO
-                .getConfigurations()
-                .filter { it.namespace == namespace && it._id == botConfigurationId }
+            .getConfigurations()
+            .filter { it.namespace == namespace && it._id == botConfigurationId }
     }
 
-    fun getBotConfigurationsByNamespaceAndNlpModel(namespace: String, applicationName: String): List<BotApplicationConfiguration> {
+    fun getBotConfigurationsByNamespaceAndNlpModel(
+        namespace: String,
+        applicationName: String
+    ): List<BotApplicationConfiguration> {
         val app = applicationDAO.getApplicationByNamespaceAndName(namespace, applicationName)
         return applicationConfigurationDAO
-                .getConfigurations()
-                .filter {
-                    it.namespace == app?.namespace
-                            && it.nlpModel == app.name
-                }
+            .getConfigurations()
+            .filter {
+                it.namespace == app?.namespace
+                        && it.nlpModel == app.name
+            }
     }
 
     fun saveApplicationConfiguration(conf: BotApplicationConfiguration) {
@@ -142,33 +156,35 @@ object BotAdminService {
     }
 
     fun loadBotIntents(request: BotIntentSearchRequest): List<BotIntent> {
-        val botConf = getBotConfigurationsByNamespaceAndNlpModel(request.namespace, request.applicationName).firstOrNull()
+        val botConf =
+            getBotConfigurationsByNamespaceAndNlpModel(request.namespace, request.applicationName).firstOrNull()
         return if (botConf == null) {
             emptyList()
         } else {
             storyDefinitionDAO
-                    .getStoryDefinitions(botConf.botId)
-                    .mapNotNull {
-                        val nlpApplication = front.getApplicationByNamespaceAndName(request.namespace, botConf.nlpModel)
-                        val intent = front.getIntentByNamespaceAndName(request.namespace, it.intent.name)
-                        if (intent != null) {
-                            val query = SentencesQuery(
-                                    nlpApplication!!._id,
-                                    request.language,
-                                    size = 3,
-                                    intentId = intent._id)
-                            val sentences =
-                                    front.search(query)
-                                            .sentences
-                                            .map {
-                                                SentenceReport(it)
-                                            }
-                            BotIntent(BotStoryDefinitionConfiguration(it), sentences)
-                        } else {
-                            logger.warn { "unknown intent: ${request.namespace} ${it.intent.name} - skipped" }
-                            null
-                        }
+                .getStoryDefinitions(botConf.botId)
+                .mapNotNull {
+                    val nlpApplication = front.getApplicationByNamespaceAndName(request.namespace, botConf.nlpModel)
+                    val intent = front.getIntentByNamespaceAndName(request.namespace, it.intent.name)
+                    if (intent != null) {
+                        val query = SentencesQuery(
+                            nlpApplication!!._id,
+                            request.language,
+                            size = 3,
+                            intentId = intent._id
+                        )
+                        val sentences =
+                            front.search(query)
+                                .sentences
+                                .map {
+                                    SentenceReport(it)
+                                }
+                        BotIntent(BotStoryDefinitionConfiguration(it), sentences)
+                    } else {
+                        logger.warn { "unknown intent: ${request.namespace} ${it.intent.name} - skipped" }
+                        null
                     }
+                }
         }
     }
 
@@ -189,60 +205,53 @@ object BotAdminService {
     }
 
     fun createBotIntent(
-            namespace: String,
-            request: CreateBotIntentRequest): IntentDefinition? {
+        namespace: String,
+        request: CreateBotIntentRequest
+    ): IntentDefinition? {
 
-        val botConf = getBotConfigurationsByNamespaceAndBotConfigurationId(namespace, request.botConfigurationId).firstOrNull()
+        val botConf =
+            getBotConfigurationsByNamespaceAndBotConfigurationId(namespace, request.botConfigurationId).firstOrNull()
         return if (botConf != null) {
             val nlpApplication = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)
             val intentDefinition = AdminService.createOrUpdateIntent(
+                namespace,
+                IntentDefinition(
+                    request.intent,
                     namespace,
-                    IntentDefinition(
-                            request.intent,
-                            namespace,
-                            setOf(nlpApplication!!._id),
-                            emptySet()
-                    )
+                    setOf(nlpApplication!!._id),
+                    emptySet()
+                )
             )
             if (intentDefinition != null) {
-                val labelKey = I18nLabelKey(
-                        Translator.getKeyFromDefaultLabel(request.reply),
-                        namespace,
-                        "simple",
-                        request.reply
-                )
-                //save the label
-                Translator.saveIfNotExists(labelKey, request.language)
                 //create the story
                 storyDefinitionDAO.save(
-                        StoryDefinitionConfiguration(
-                                request.intent,
-                                botConf.botId,
-                                Intent(request.intent),
-                                AnswerConfigurationType.simple,
-                                listOf(
-                                        SimpleAnswerConfiguration(
-                                                listOf(
-                                                        SimpleAnswer(
-                                                                labelKey,
-                                                                0)
-                                                )
-                                        ))
+                    StoryDefinitionConfiguration(
+                        request.intent,
+                        botConf.botId,
+                        Intent(request.intent),
+                        request.type,
+                        listOf(
+                            when (request.type) {
+                                simple -> createSimpleAnswer(namespace, request.language, request.reply)
+                                script -> createScriptAnswer(botConf.botId, request.reply)
+                                else -> error("unsupported type $request")
+                            }
                         )
+                    )
                 )
                 request.firstSentences.forEach {
                     front.save(
-                            ClassifiedSentence(
-                                    it,
-                                    request.language,
-                                    nlpApplication._id,
-                                    Instant.now(),
-                                    Instant.now(),
-                                    ClassifiedSentenceStatus.validated,
-                                    Classification(intentDefinition._id, emptyList()),
-                                    1.0,
-                                    1.0
-                            )
+                        ClassifiedSentence(
+                            it,
+                            request.language,
+                            nlpApplication._id,
+                            Instant.now(),
+                            Instant.now(),
+                            ClassifiedSentenceStatus.validated,
+                            Classification(intentDefinition._id, emptyList()),
+                            1.0,
+                            1.0
+                        )
                     )
                 }
             }
@@ -252,26 +261,69 @@ object BotAdminService {
         }
     }
 
+    private fun createSimpleAnswer(
+        namespace: String,
+        language: Locale?,
+        reply: String
+    ): SimpleAnswerConfiguration {
+        val labelKey = I18nLabelKey(
+            Translator.getKeyFromDefaultLabel(reply),
+            namespace,
+            "simple",
+            reply
+        )
+        //save the label
+        if(language != null) {
+            Translator.saveIfNotExists(labelKey, language)
+        }
+
+        return SimpleAnswerConfiguration(
+            listOf(
+                SimpleAnswer(
+                    labelKey,
+                    0
+                )
+            )
+        )
+    }
+
+    private fun createScriptAnswer(
+        botId: String,
+        script: String
+    ): ScriptAnswerConfiguration {
+        val fileName = "T${Dice.newId()}.kt"
+        val result = TockKotlinCompiler.compile(script, fileName)
+        return ScriptAnswerConfiguration(
+            listOf(
+                ScriptAnswerVersionedConfiguration(
+                    script,
+                    result.files.map { it.key.substring(0, it.key.length - ".class".length) to it.value },
+                    BotVersion.getCurrentBotVersion(botId),
+                    result.mainClass
+                )
+            )
+        )
+    }
+
     fun updateBotIntent(
-            namespace: String,
-            request: UpdateBotIntentRequest): IntentDefinition? {
+        namespace: String,
+        request: UpdateBotIntentRequest
+    ): IntentDefinition? {
 
         val storyDefinition = storyDefinitionDAO.getStoryDefinitionById(request.storyDefinitionId)
         val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, storyDefinition!!.botId).firstOrNull()
         return if (botConf != null) {
             storyDefinitionDAO.save(
-                    storyDefinition.copy(answers = listOf(
-                            SimpleAnswerConfiguration(
-                                    listOf(SimpleAnswer(
-                                            I18nLabelKey(
-                                                    Translator.getKeyFromDefaultLabel(request.reply),
-                                                    namespace,
-                                                    "simple",
-                                                    request.reply
-                                            ),
-                                            0
-                                    ))
-                            ))))
+                storyDefinition.copy(
+                    answers = listOf(
+                        when (storyDefinition.currentType) {
+                            simple -> createSimpleAnswer(namespace, null, request.reply)
+                            script -> createScriptAnswer(botConf.botId, request.reply)
+                            else -> error("unsupported type $request")
+                        }
+                    )
+                )
+            )
             front.getIntentByNamespaceAndName(namespace, storyDefinition.intent.name)
         } else {
             null
@@ -283,13 +335,15 @@ object BotAdminService {
         return try {
             val restClient = getRestClient(conf)
             val response = restClient.talk(
-                    conf.applicationId,
-                    request.language,
-                    ClientMessageRequest(
-                            "test_${conf._id}_${request.language}",
-                            "test_bot_${conf._id}_${request.language}",
-                            request.message.toClientMessage(),
-                            conf.targetConnectorType.toClientConnectorType()))
+                conf.applicationId,
+                request.language,
+                ClientMessageRequest(
+                    "test_${conf._id}_${request.language}",
+                    "test_bot_${conf._id}_${request.language}",
+                    request.message.toClientMessage(),
+                    conf.targetConnectorType.toClientConnectorType()
+                )
+            )
 
             if (response.isSuccessful) {
                 BotDialogResponse(response.body()?.messages ?: emptyList())

@@ -26,10 +26,19 @@
         {{s.text}}
       </li>
     </ul>
-    <h2>The reply is:</h2>
+    <h2>The configured answer is:</h2>
+    <div *ngIf="intent.storyDefinition.isSimpleAnswer()">
     <md-list dense>
-        <tock-i18n-label [i]="intent.storyDefinition.answers[0].answers[0].label" [deleteAllowed]="false"></tock-i18n-label>
+        <tock-i18n-label [i]="intent.storyDefinition.simpleAnswer().answers[0].label"
+                         [deleteAllowed]="false"></tock-i18n-label>
     </md-list>
+    </div>
+    <div *ngIf="intent.storyDefinition.isScriptAnswer()">
+    <md-input-container class="input text-area-container text-area">
+      <textarea mdInput [(ngModel)]="intent.storyDefinition.textAnswer" cols="200" rows="20"></textarea>
+      </md-input-container>
+    </div>
+
     <div class="intent-mention">(intent : {{intent.storyDefinition.intent.name}})</div>
   </md-card-content>
   <md-card-actions>

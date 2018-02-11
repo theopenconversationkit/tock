@@ -19,7 +19,7 @@ package fr.vsct.tock.bot.admin.answer
 import fr.vsct.tock.translator.I18nLabelKey
 
 /**
- *
+ * Answers that contains only i18n labels.
  */
-data class SimpleAnswer(val key:I18nLabelKey, val delay:Long) {
+data class SimpleAnswer(val key: I18nLabelKey, val delay: Long) {
 }

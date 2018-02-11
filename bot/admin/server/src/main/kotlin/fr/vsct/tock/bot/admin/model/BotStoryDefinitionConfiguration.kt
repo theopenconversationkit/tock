@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.admin.model
 
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
+import fr.vsct.tock.bot.admin.answer.ScriptAnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.SimpleAnswerConfiguration
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.definition.Intent
@@ -27,19 +28,26 @@ import org.litote.kmongo.newId
  *
  */
 data class BotStoryDefinitionConfiguration(
-        val storyId: String,
-        val botId: String,
-        val intent: Intent,
-        val currentType: AnswerConfigurationType,
-        val answers: List<BotSimpleAnswerConfiguration>,
-        val _id: Id<StoryDefinitionConfiguration> = newId()) {
+    val storyId: String,
+    val botId: String,
+    val intent: Intent,
+    val currentType: AnswerConfigurationType,
+    val answers: List<BotAnswerConfiguration>,
+    val _id: Id<StoryDefinitionConfiguration> = newId()
+) {
 
     constructor(story: StoryDefinitionConfiguration) : this(
-            story.storyId,
-            story.botId,
-            story.intent,
-            story.currentType,
-            story.answers.map { BotSimpleAnswerConfiguration(it as SimpleAnswerConfiguration) },
-            story._id
+        story.storyId,
+        story.botId,
+        story.intent,
+        story.currentType,
+        story.answers.map {
+            when (it) {
+                is SimpleAnswerConfiguration -> BotSimpleAnswerConfiguration(it)
+                is ScriptAnswerConfiguration -> BotScriptAnswerConfiguration(it)
+                else -> error("unsupported conf $it")
+            }
+        },
+        story._id
     )
 }

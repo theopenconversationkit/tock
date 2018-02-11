@@ -17,10 +17,9 @@
 package fr.vsct.tock.bot.admin.answer
 
 /**
- *
+ * The types of [AnswerConfiguration] available.
  */
 enum class AnswerConfigurationType {
-
     simple,
     message,
     script,
