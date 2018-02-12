@@ -65,20 +65,26 @@ Départs suivants;departuresarrivals;fr;voiceAssistant;departuresarrivals_dépar
     @Test
     fun importCsv_shouldKeepOldI18nLabels_ifNewLabelsAreNotValidated() {
         whenever(i18nDAO.getLabelById(id.toId())).thenReturn(
-                I18nLabel(
-                        id.toId(),
-                        defaultNamespace,
-                        "departuresarrivals",
-                        listOf(I18nLocalizedLabel(
-                                FRENCH,
-                                textChat,
-                                "ok"
+            I18nLabel(
+                id.toId(),
+                defaultNamespace,
+                "departuresarrivals",
+                LinkedHashSet(
+                    listOf(
+                        I18nLocalizedLabel(
+                            FRENCH,
+                            textChat,
+                            "ok"
                         ),
-                                I18nLocalizedLabel(
-                                        FRENCH,
-                                        voiceAssistant,
-                                        "notok"
-                                ))))
+                        I18nLocalizedLabel(
+                            FRENCH,
+                            voiceAssistant,
+                            "notok"
+                        )
+                    )
+                )
+            )
+        )
 
         I18nCsvCodec.importCsv("app", export)
 

@@ -44,7 +44,13 @@ class TranslatorTest : AbstractTest() {
 
     @Test
     fun formatMessage_shouldHandleWell_SpecialCharInChoiceFormat() {
-        val result = Translator.formatMessage("Hey'{0,choice,0#|1# and %%<b>when</b>%%} ?", defaultLocale, textChat, null, listOf(true))
+        val result = Translator.formatMessage(
+            "Hey'{0,choice,0#|1# and %%<b>when</b>%%} ?",
+            defaultLocale,
+            textChat,
+            null,
+            listOf(true)
+        )
         assertEquals("Hey' and <b>when</b> ?", result)
     }
 
@@ -61,30 +67,38 @@ class TranslatorTest : AbstractTest() {
         val target = "bbb"
         val id = "a"
         whenever(i18nDAO.getLabelById(id.toId())).thenReturn(
-                I18nLabel(
-                        id.toId(),
-                        defaultNamespace,
-                        category,
-                        listOf(I18nLocalizedLabel(
-                                defaultLocale,
-                                textChat,
-                                target
-                        ))))
-
-        val key = I18nLabelKey(
-                id,
+            I18nLabel(
+                id.toId(),
                 defaultNamespace,
                 category,
-                toTranslate)
+                LinkedHashSet(
+                    listOf(
+                        I18nLocalizedLabel(
+                            defaultLocale,
+                            textChat,
+                            target
+                        )
+                    )
+                )
+            )
+        )
+
+        val key = I18nLabelKey(
+            id,
+            defaultNamespace,
+            category,
+            toTranslate
+        )
 
         val translated = Translator.translate(key, defaultLocale, textChat)
         assertEquals(target, translated.toString())
 
         val key2 = I18nLabelKey(
-                Translator.getKeyFromDefaultLabel(translated),
-                defaultNamespace,
-                category,
-                translated)
+            Translator.getKeyFromDefaultLabel(translated),
+            defaultNamespace,
+            category,
+            translated
+        )
 
         val translated2 = Translator.translate(key2, defaultLocale, textChat)
 
@@ -98,22 +112,29 @@ class TranslatorTest : AbstractTest() {
         val target = "bbb"
         val id = "not_yet_cached_id"
         whenever(i18nDAO.getLabelById(id.toId())).thenReturn(
-                I18nLabel(
-                        id.toId(),
-                        defaultNamespace,
-                        category,
-                        listOf(I18nLocalizedLabel(
-                                defaultLocale,
-                                textChat,
-                                target
-                        ))))
+            I18nLabel(
+                id.toId(),
+                defaultNamespace,
+                category,
+                LinkedHashSet(
+                    listOf(
+                        I18nLocalizedLabel(
+                            defaultLocale,
+                            textChat,
+                            target
+                        )
+                    )
+                )
+            )
+        )
 
 
         val key = I18nLabelKey(
-                id,
-                defaultNamespace,
-                category,
-                toTranslate)
+            id,
+            defaultNamespace,
+            category,
+            toTranslate
+        )
 
 
         assertEquals(target, Translator.translate(key, defaultLocale, textChat).toString())
@@ -130,10 +151,11 @@ class TranslatorTest : AbstractTest() {
         val id = "not_existing_id"
 
         val key = I18nLabelKey(
-                id,
-                defaultNamespace,
-                category,
-                toTranslate)
+            id,
+            defaultNamespace,
+            category,
+            toTranslate
+        )
 
 
         assertEquals(toTranslate, Translator.translate(key, defaultLocale, textChat).toString())

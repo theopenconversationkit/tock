@@ -17,8 +17,10 @@
 package fr.vsct.tock.bot.mongo
 
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
+import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.I18nLabel
+import fr.vsct.tock.translator.I18nLocalizedLabel
 import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.findOneById
@@ -33,8 +35,17 @@ internal object I18nMongoDAO : I18nDAO {
 
     private val col = database.getCollection<I18nLabel>()
 
+    private fun sortLabels(list: List<I18nLabel>): List<I18nLabel> =
+        list.sortedWith(compareBy({ it.category }, { it.findLabel(defaultLocale, null)?.label ?: "" }))
+
+    private fun sortLocalizedLabels(list: LinkedHashSet<I18nLocalizedLabel>): LinkedHashSet<I18nLocalizedLabel> =
+        LinkedHashSet(list.sortedWith(compareBy({ it.locale.language }, { it.interfaceType }, { it.connectorId })))
+
+    private fun sortLocalizedLabels(label: I18nLabel): I18nLabel =
+        label.copy(i18n = sortLocalizedLabels(label.i18n))
+
     override fun getLabels(): List<I18nLabel> {
-        return col.find().toList()
+        return sortLabels(col.find().toList())
     }
 
     override fun getLabelById(id: Id<I18nLabel>): I18nLabel? {
@@ -42,7 +53,7 @@ internal object I18nMongoDAO : I18nDAO {
     }
 
     override fun save(i18n: I18nLabel) {
-        col.save(i18n)
+        col.save(sortLocalizedLabels(i18n))
     }
 
     override fun save(i18n: List<I18nLabel>) {

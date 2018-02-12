@@ -17,7 +17,6 @@
 package fr.vsct.tock.bot.admin
 
 import com.github.salomonbrys.kodein.instance
-import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.property
@@ -47,69 +46,89 @@ object I18nCsvCodec {
     fun exportCsv(namespace: String): String {
         val sb = StringBuilder()
         val printer = CSVPrinter(sb, csvFormat())
-        printer.printRecord("Label", "Category", "Language", "Interface", "Id", "Validated", "Connector", "Alternatives")
+        printer.printRecord(
+            "Label",
+            "Category",
+            "Language",
+            "Interface",
+            "Id",
+            "Validated",
+            "Connector",
+            "Alternatives"
+        )
         i18nDAO.getLabels()
-                .filter { it.namespace == namespace }
-                .sortedWith(compareBy({ it.category }, { it.findLabel(defaultLocale, null)?.label ?: "" }))
-                .forEach { l ->
-                    l.i18n.sortedWith(compareBy({ it.locale.language }, { it.interfaceType }))
-                            .forEach { i ->
-                                printer.printRecord(*(listOf(i.label, l.category, i.locale.language, i.interfaceType, l._id, i.validated, i.connectorId
-                                        ?: "") + i.alternatives).toTypedArray())
-                            }
+            .filter { it.namespace == namespace }
+            .forEach { l ->
+                l.i18n.forEach { i ->
+                    printer.printRecord(
+                        *(listOf(
+                            i.label,
+                            l.category,
+                            i.locale.language,
+                            i.interfaceType,
+                            l._id,
+                            i.validated,
+                            i.connectorId
+                                    ?: ""
+                        ) + i.alternatives).toTypedArray()
+                    )
                 }
+            }
         return sb.toString()
     }
 
     fun importCsv(namespace: String, content: String): Boolean {
         return try {
             csvFormat()
-                    .parse(StringReader(content))
-                    .records
-                    .mapIndexedNotNull { i, it ->
-                        if (i == 0) {
-                            null
-                        } else {
-                            I18nLabel(
-                                    it[4].toId(),
-                                    namespace,
-                                    it[1],
-                                    listOf(
-                                            I18nLocalizedLabel(
-                                                    Locale(it[2]),
-                                                    UserInterfaceType.valueOf(it[3]),
-                                                    it[0],
-                                                    it[5].toBoolean(),
-                                                    it[6].run { if (isBlank()) null else this },
-                                                    if (it.size() < 7) emptyList() else (7 until it.size()).mapNotNull { index -> if (it[index].isNullOrBlank()) null else it[index] }
-                                            )
-                                    )
+                .parse(StringReader(content))
+                .records
+                .mapIndexedNotNull { i, it ->
+                    if (i == 0) {
+                        null
+                    } else {
+                        I18nLabel(
+                            it[4].toId(),
+                            namespace,
+                            it[1],
+                            LinkedHashSet(
+                                listOf(
+                                    I18nLocalizedLabel(
+                                        Locale(it[2]),
+                                        UserInterfaceType.valueOf(it[3]),
+                                        it[0],
+                                        it[5].toBoolean(),
+                                        it[6].run { if (isBlank()) null else this },
+                                        if (it.size() < 7) emptyList() else (7 until it.size()).mapNotNull { index -> if (it[index].isNullOrBlank()) null else it[index] }
+                                    ))
+                            )
+                        )
+                    }
+                }
+                .filter { it.i18n.any { it.validated } }
+                .groupBy { it._id }
+                .map { (key, value) ->
+                    value
+                        .first()
+                        .run {
+                            val localized = value.flatMap { it.i18n }
+                            copy(
+                                i18n = LinkedHashSet(localized +
+                                        (i18nDAO.getLabelById(key)
+                                            ?.i18n
+                                            ?.filter { old ->
+                                                localized.none {
+                                                    old.locale == it.locale && old.interfaceType == it.interfaceType && old.connectorId == it.connectorId
+                                                }
+                                            }
+                                                ?: emptyList())
+                                )
                             )
                         }
-                    }
-                    .filter { it.i18n.any { it.validated } }
-                    .groupBy { it._id }
-                    .map { (key, value) ->
-                        value
-                                .first()
-                                .run {
-                                    val localized = value.flatMap { it.i18n }
-                                    copy(i18n = localized +
-                                            (i18nDAO.getLabelById(key)
-                                                    ?.i18n
-                                                    ?.filter { old ->
-                                                        localized.none {
-                                                            old.locale == it.locale && old.interfaceType == it.interfaceType && old.connectorId == it.connectorId
-                                                        }
-                                                    }
-                                                    ?: emptyList())
-                                    )
-                                }
-                    }
-                    .forEach {
-                        logger.info { "Save $it" }
-                        i18nDAO.save(it)
-                    }
+                }
+                .forEach {
+                    logger.info { "Save $it" }
+                    i18nDAO.save(it)
+                }
             true
         } catch (t: Throwable) {
             logger.error(t)

@@ -30,16 +30,19 @@ class I18nLabelTest : AbstractTest() {
     @Test
     fun findLabel_shouldFindALanguageOnlyLocalizedLabel_whenUsingALanguageAndCountryLocale() {
         val label = I18nLabel(
-                "id".toId(),
-                defaultNamespace,
-                " category",
+            "id".toId(),
+            defaultNamespace,
+            " category",
+            LinkedHashSet(
                 listOf(
-                        I18nLocalizedLabel(
-                                Locale.FRENCH,
-                                UserInterfaceType.textChat,
-                                "label",
-                                true)
+                    I18nLocalizedLabel(
+                        Locale.FRENCH,
+                        UserInterfaceType.textChat,
+                        "label",
+                        true
+                    )
                 )
+            )
         )
         assertNotNull(label.findLabel(Locale.FRANCE, null))
         assertNotNull(label.findLabel(Locale.FRANCE, UserInterfaceType.textChat, null))
