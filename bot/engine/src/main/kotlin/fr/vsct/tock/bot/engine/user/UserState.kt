@@ -30,11 +30,7 @@ data class UserState(
     /**
      * The flag for this user - useful to store basic information about this user.
      */
-    val flags: MutableMap<String, TimeBoxedFlag> = mutableMapOf(),
-    /**
-     * Is it a temporary user? (pre opt-in case).
-     */
-    var temporaryUser: Boolean = false
+    val flags: MutableMap<String, TimeBoxedFlag> = mutableMapOf()
 ) {
 
     companion object {

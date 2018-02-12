@@ -43,6 +43,7 @@ import fr.vsct.tock.bot.engine.event.TypingOnEvent
 import fr.vsct.tock.bot.engine.monitoring.logError
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType.bot
+import fr.vsct.tock.bot.engine.user.PlayerType.temporary
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultLocale
@@ -150,7 +151,12 @@ class MessengerConnector internal constructor(
                                                                     event,
                                                                     ConnectorData(
                                                                         MessengerConnectorCallback(event.applicationId),
-                                                                        m.priorMessage?.identifier?.let { PlayerId(it) }
+                                                                        m.priorMessage?.identifier?.let {
+                                                                            PlayerId(
+                                                                                it,
+                                                                                temporary
+                                                                            )
+                                                                        }
                                                                     )
                                                                 )
                                                             } else {

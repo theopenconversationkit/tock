@@ -22,10 +22,28 @@ import fr.vsct.tock.bot.engine.dialog.Story
 /**
  * The user timeline - all dialogs and data of the user.
  */
-class UserTimeline(val playerId: PlayerId,
-                   val userPreferences: UserPreferences = UserPreferences(),
-                   val userState: UserState = UserState(),
-                   val dialogs: MutableList<Dialog> = mutableListOf()) {
+class UserTimeline(
+    /**
+     * The user id.
+     */
+    val playerId: PlayerId,
+    /**
+     * User data, first name, email, etc.
+     */
+    val userPreferences: UserPreferences = UserPreferences(),
+    /**
+     * The user state, with simple flags.
+     */
+    val userState: UserState = UserState(),
+    /**
+     * The dialogs of the timeline.
+     */
+    val dialogs: MutableList<Dialog> = mutableListOf(),
+    /**
+     * Temporary ids (of type [PlayerType.temporary] linked to this user timeline.
+     */
+    val temporaryIds: MutableSet<String> = mutableSetOf()
+) {
 
     /**
      * Returns the current dialog.

@@ -17,9 +17,20 @@
 package fr.vsct.tock.bot.engine.user
 
 /**
- *
+ * Define user type.
  */
 enum class PlayerType {
 
-    user, bot
+    /**
+     * human user.
+     */
+    user,
+    /**
+     * bot.
+     */
+    bot,
+    /**
+     * Is it a temporary user? (pre opt-in case).
+     */
+    temporary
 }

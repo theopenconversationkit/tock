@@ -51,6 +51,7 @@ internal data class UserTimelineCol(
     val playerId: PlayerId,
     val userPreferences: UserPreferencesWrapper,
     val userState: UserStateWrapper,
+    val temporaryIds: MutableSet<String> = mutableSetOf(),
     val applicationIds: MutableSet<String> = mutableSetOf(),
     var lastActionText: String? = null,
     val lastUpdateDate: Instant = Instant.now(),
@@ -61,7 +62,8 @@ internal data class UserTimelineCol(
         newTimeline.playerId.id.toId(),
         newTimeline.playerId,
         UserPreferencesWrapper(newTimeline.userPreferences),
-        UserStateWrapper(newTimeline.userState)
+        UserStateWrapper(newTimeline.userState),
+        newTimeline.temporaryIds
     ) {
         //register last action
         newTimeline.dialogs.lastOrNull()?.currentStory()?.actions?.lastOrNull { it.playerId.type == PlayerType.user }
@@ -88,7 +90,8 @@ internal data class UserTimelineCol(
         return UserTimeline(
             playerId,
             userPreferences.toUserPreferences(),
-            userState.toUserState()
+            userState.toUserState(),
+            temporaryIds = temporaryIds
         )
     }
 
@@ -150,8 +153,7 @@ internal data class UserTimelineCol(
         val creationDate: Instant = Instant.now(),
         val lastUpdateDate: Instant = creationDate,
         @JsonDeserialize(using = FlagsDeserializer::class)
-        val flags: Map<String, TimeBoxedFlagWrapper>,
-        var temporaryUser: Boolean = false
+        val flags: Map<String, TimeBoxedFlagWrapper>
     ) {
         constructor(state: UserState) :
                 this(
@@ -162,15 +164,13 @@ internal data class UserTimelineCol(
                             it.value,
                             MongoBotConfiguration.hasToEncryptFlag(it.key)
                         )
-                    },
-                    state.temporaryUser
+                    }
                 )
 
         fun toUserState(): UserState {
             return UserState(
                 creationDate,
-                flags.mapValues { it.value.toTimeBoxedFlag() }.toMutableMap(),
-                temporaryUser
+                flags.mapValues { it.value.toTimeBoxedFlag() }.toMutableMap()
             )
         }
     }
