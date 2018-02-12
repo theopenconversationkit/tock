@@ -202,6 +202,15 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         loadLastValidDialog(userId, storyDefinitionProvider)?.apply { timeline.dialogs.add(this) }
 
         if (priorUserId != null) {
+            //load state
+            userTimelineCol.findOneById(priorUserId)
+                ?.apply {
+                    toUserTimeline().userState.flags.forEach {
+                        timeline.userState.flags.putIfAbsent(it.key, it.value)
+                    }
+                }
+
+            //load dialog
             loadLastValidDialog(priorUserId, storyDefinitionProvider)
                 ?.apply {
                     timeline.dialogs.add(
