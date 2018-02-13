@@ -398,9 +398,9 @@ abstract class WebVerticle : AbstractVerticle() {
 
     fun <T> RoutingContext.pathId(name: String): Id<T> = pathParam(name).toId()
 
-    fun RoutingContext.queryParam(name: String): String? = request().getParam(name)
+    fun RoutingContext.firstQueryParam(name: String): String? = request().getParam(name)
 
-    fun <T> RoutingContext.queryId(name: String): Id<T>? = queryParam(name)?.toId()
+    fun <T> RoutingContext.queryId(name: String): Id<T>? = firstQueryParam(name)?.toId()
 
     val RoutingContext.organization: String
         get() = (this.user() as TockUser).namespace

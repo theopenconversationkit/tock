@@ -39,14 +39,15 @@
         <kotlin-logging>1.5.3</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>3.6.1</kmongo>
+        <kmongo>3.6.2</kmongo>
         <fongo>2.1.0</fongo>
-        <jackson>2.9.3</jackson>
-        <klaxon>2.0.11</klaxon>
-        <vertx>3.4.2</vertx>
+        <jackson>2.9.4</jackson>
+        <jackson-module>2.9.4.1</jackson-module>
+        <klaxon>2.1.6</klaxon>
+        <vertx>3.5.1</vertx>
         <retrofit>2.3.0</retrofit>
         <okhttp>3.9.1</okhttp>
-        <guava>23.6-jre</guava>
+        <guava>24.0-jre</guava>
         <google-auth>1.23.0</google-auth>
         <jasypt>1.9.2</jasypt>
         <commons-csv>1.5</commons-csv>
@@ -205,7 +206,7 @@
             <dependency>
                 <groupId>com.fasterxml.jackson.module</groupId>
                 <artifactId>jackson-module-kotlin</artifactId>
-                <version>${jackson}</version>
+                <version>${jackson-module}</version>
             </dependency>
             <dependency>
                 <groupId>com.fasterxml.jackson.core</groupId>

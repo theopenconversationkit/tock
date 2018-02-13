@@ -30,10 +30,10 @@ import com.fasterxml.jackson.datatype.jsr310.ser.DurationSerializer
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientURI
 import com.mongodb.client.MongoDatabase
+import de.undercouch.bson4jackson.types.Decimal128
 import fr.vsct.tock.shared.jackson.addDeserializer
 import fr.vsct.tock.shared.jackson.addSerializer
 import mu.KotlinLogging
-import org.litote.bson4jackson.types.Decimal128
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.id.IdGenerator
 import org.litote.kmongo.id.ObjectIdToStringGenerator

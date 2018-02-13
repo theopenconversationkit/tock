@@ -18,8 +18,6 @@ package fr.vsct.tock.bot.admin.test.xray
 
 import com.beust.klaxon.JsonObject
 import com.beust.klaxon.Parser
-import com.beust.klaxon.array
-import com.beust.klaxon.obj
 import fr.vsct.tock.bot.admin.test.xray.model.JiraAttachment
 import fr.vsct.tock.bot.admin.test.xray.model.JiraIssue
 import fr.vsct.tock.bot.admin.test.xray.model.JiraIssueLink
