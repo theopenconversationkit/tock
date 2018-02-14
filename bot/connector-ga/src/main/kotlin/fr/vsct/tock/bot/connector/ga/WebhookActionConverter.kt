@@ -87,23 +87,19 @@ internal object WebhookActionConverter {
                 GAIntent.noInput -> NoInputEvent(playerId, botId, applicationId).setEventState()
                 else -> {
                     val rawInput = input.rawInputs.firstOrNull()
-                    if (rawInput != null) {
-                        var text = rawInput.query
-                        if (rawInput.inputType == VOICE) {
-                            text = SttService.transform(text, message.user.findLocale())
-                        }
-
-                        SendSentence(
-                                playerId,
-                                applicationId,
-                                botId,
-                                text,
-                                mutableListOf(GARequestConnectorMessage(message)),
-                                state = message.getEventState()
-                        )
-                    } else {
-                        error("no raw input in $message")
+                    var text = rawInput?.query
+                    if (rawInput?.inputType == VOICE && text != null) {
+                        text = SttService.transform(text, message.user.findLocale())
                     }
+
+                    SendSentence(
+                            playerId,
+                            applicationId,
+                            botId,
+                            text,
+                            mutableListOf(GARequestConnectorMessage(message)),
+                            state = message.getEventState()
+                    )
                 }
             }
         }
