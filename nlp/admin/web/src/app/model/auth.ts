@@ -38,7 +38,7 @@ export class AuthenticateResponse {
   static fromJSON(json: any): AuthenticateResponse {
     const value = Object.create(AuthenticateResponse.prototype);
     const result = Object.assign(value, json, {
-      roles: json.roles.map(r => SentenceStatus[r])
+      roles: json.roles.map(r => UserRole[r])
     });
 
     return result;

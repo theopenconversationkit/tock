@@ -65,7 +65,7 @@ export class StateService implements AuthListener {
   }
 
   hasRole(role: UserRole): boolean {
-    return this.user.roles.indexOf(role) !== -1;
+    return this.user && this.user.roles.indexOf(role) !== -1;
   }
 
   resetConfiguration() {

@@ -170,12 +170,12 @@ abstract class WebVerticle : AbstractVerticle() {
             val authInfo = JsonObject().put("username", request.email).put("password", request.password)
             authProvider.authenticate(authInfo, {
                 if (it.succeeded()) {
+                    val user = it.result()
+                    context.setUser(user)
                     context.isAuthorized(nlpUser) { nlpUserResult ->
                         context.isAuthorized(botUser) { botUserResult ->
                             context.isAuthorized(admin) { adminResult ->
                                 context.isAuthorized(technicalAdmin) { technicalAdminResult ->
-                                    val user = it.result()
-                                    context.setUser(user)
                                     context.endJson(
                                         AuthenticateResponse(
                                             true,
@@ -306,7 +306,8 @@ abstract class WebVerticle : AbstractVerticle() {
     private fun RoutingContext.isAuthorized(
         role: TockUserRole,
         resultHandler: (AsyncResult<Boolean>) -> Unit
-    ) = user().isAuthorized(role.name, resultHandler)
+    ) = user()?.isAuthorized(role.name, resultHandler)
+            ?: resultHandler.invoke(Future.failedFuture("No user set"))
 
     protected inline fun <reified I : Any, O> blockingWithBodyJson(
         method: HttpMethod,
