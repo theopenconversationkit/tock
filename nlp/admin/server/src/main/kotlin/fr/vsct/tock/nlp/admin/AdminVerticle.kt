@@ -48,6 +48,8 @@ import fr.vsct.tock.shared.security.TockUserRole.admin
 import fr.vsct.tock.shared.security.TockUserRole.technicalAdmin
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.WebVerticle
+import io.netty.handler.codec.http.HttpHeaderNames
+import io.vertx.core.http.HttpMethod.GET
 import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.StaticHandler
@@ -480,24 +482,22 @@ open class AdminVerticle : WebVerticle() {
                     }
                 }
             }
-            router.route("/*").handler(StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(webRoot))
-            router.route().failureHandler { context ->
-                val code = if (context.statusCode() > 0) context.statusCode() else 500
-                if (code == 404) {
+            router.route(GET, "/*")
+                .handler(StaticHandler.create().setAllowRootFileSystemAccess(true).setWebRoot(webRoot))
+                .handler { context ->
                     context.vertx().fileSystem().readFile("$webRoot/index.html") {
                         if (it.succeeded()) {
+                            logger.debug { "redirecting to $webRoot/index.html" }
                             context.response().end(it.result())
                         } else {
                             logger.warn { "Can't find $webRoot/index.html" }
-                            context.response().statusCode = code
-                            context.response().end()
+                            context.response().statusCode = 404
+                            context.response()
+                                .putHeader(HttpHeaderNames.CONTENT_TYPE, "text/html; charset=utf-8")
+                                .end("<html><body><h1>Resource not found</h1></body></html>")
                         }
                     }
-                } else {
-                    context.response().statusCode = code
-                    context.response().end()
                 }
-            }
         }
     }
 
