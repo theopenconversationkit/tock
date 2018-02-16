@@ -20,6 +20,7 @@ import java.util.Collections
 import java.util.Enumeration
 
 const val TOCK_NAMESPACE: String = "tock"
+const val BUILTIN_ENTITY_EVALUATOR_NAMESPACE: String = "duckling"
 const val DEFAULT_APP_NAMESPACE = "app"
 @Volatile
 var tockAppDefaultNamespace: String = property("tock_default_namespace", DEFAULT_APP_NAMESPACE)

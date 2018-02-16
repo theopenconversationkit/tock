@@ -39,6 +39,8 @@ import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.test.TestErrorQuery
+import fr.vsct.tock.shared.BUILTIN_ENTITY_EVALUATOR_NAMESPACE
+import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.namespace
@@ -65,6 +67,9 @@ open class AdminVerticle : WebVerticle() {
     override val rootPath: String = "/rest/admin"
 
     override fun authProvider(): AuthProvider? = defaultAuthProvider()
+
+    //TODO remove this flag when the new platform is set
+    private val OLD_ENTITY_TYPE_BEHAVIOUR = booleanProperty("tock_nlp_admin_old_entity_type_behaviour", false)
 
     fun configureServices() {
         val front = FrontClient
@@ -110,7 +115,8 @@ open class AdminVerticle : WebVerticle() {
                     id,
                     null,
                     query.toSentencesQuery(id),
-                    DumpType.full)
+                    DumpType.full
+                )
             } else {
                 unauthorized()
             }
@@ -132,7 +138,8 @@ open class AdminVerticle : WebVerticle() {
                     id,
                     null,
                     query.toSentencesQuery(id),
-                    DumpType.obfuscated)
+                    DumpType.obfuscated
+                )
             } else {
                 unauthorized()
             }
@@ -321,8 +328,15 @@ open class AdminVerticle : WebVerticle() {
                 }
         }
 
-        blockingJsonGet("/entity-types")
-        { front.getEntityTypes() }
+        blockingJsonGet("/entity-types") { context ->
+            if (OLD_ENTITY_TYPE_BEHAVIOUR) {
+                front.getEntityTypes()
+            } else {
+                front.getEntityTypes().filter {
+                    it.name.namespace() == context.organization || it.name.namespace() == BUILTIN_ENTITY_EVALUATOR_NAMESPACE
+                }
+            }
+        }
 
         blockingJsonPost("/entity")
         { context, query: UpdateEntityDefinitionQuery ->
