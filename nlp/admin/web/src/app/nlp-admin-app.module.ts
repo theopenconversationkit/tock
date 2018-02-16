@@ -35,7 +35,8 @@ const routes: Routes = [
   {
     path: 'quality',
     loadChildren: 'app/quality/quality.module#QualityModule'
-  }
+  },
+  { path: '**', redirectTo: '/nlp/inbox' }
 ];
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
