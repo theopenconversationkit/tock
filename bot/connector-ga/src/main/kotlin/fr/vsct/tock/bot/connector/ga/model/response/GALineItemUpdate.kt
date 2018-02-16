@@ -6,5 +6,5 @@ package fr.vsct.tock.bot.connector.ga.model.response
 data class GALineItemUpdate(
         val orderState: GAOrderState,
         val price: GAPrice,
-        val reason: String
+        val reason: String? = null
 )

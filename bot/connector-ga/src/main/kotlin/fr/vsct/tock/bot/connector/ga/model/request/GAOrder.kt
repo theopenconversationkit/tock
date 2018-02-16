@@ -9,7 +9,7 @@ data class GAOrder(
         val finalOrder: GAProposedOrder,
         val googleOrderId: String,
         val orderDate: String,
-        val paymentInfo: GAPaymentInfo,
-        val actionOrderId: String,
+        val paymentInfo: GAPaymentInfo?,
+        val actionOrderId: String?,
         val customerInfo: GACustomerInfo
 )

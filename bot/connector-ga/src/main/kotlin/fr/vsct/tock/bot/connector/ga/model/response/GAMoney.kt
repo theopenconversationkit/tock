@@ -5,6 +5,6 @@ package fr.vsct.tock.bot.connector.ga.model.response
  */
 data class GAMoney(
         val currencyCode: String,
-        val units: String,
+        val units: String?,
         val nanos: Long
 )

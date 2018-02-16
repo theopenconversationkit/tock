@@ -27,15 +27,13 @@ data class GAOrderUpdate(
         val receipt: GAReceipt,
         val updateTime: String,
         val totalPrice: GAPrice,
-        //TODO
-        val lineItemUpdates: GALineItemUpdate,
-        //TODO
-        val infoExtension: String,
-        val userNotification: GAUserNotification,
-        val rejectionInfo: GARejectionInfo,
-        val cancellationInfo: GACancellationInfo,
-        val inTransitInfo: GAInTransitInfo,
-        val fulfillmentInfo: GAFulfillmentInfo,
-        val returnInfo: GAReturnInfo
+        val lineItemUpdates: Map<String, GALineItemUpdate>,
+        val userNotification: GAUserNotification? = null,
+        val infoExtension: String? = null,
+        val rejectionInfo: GARejectionInfo? = null,
+        val cancellationInfo: GACancellationInfo? = null,
+        val inTransitInfo: GAInTransitInfo? = null,
+        val fulfillmentInfo: GAFulfillmentInfo? = null,
+        val returnInfo: GAReturnInfo? = null
 )
 

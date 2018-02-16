@@ -26,7 +26,8 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
         property = "@type")
 @JsonSubTypes(
         JsonSubTypes.Type(value = GATransactionRequirementsCheckResult::class, name = "type.googleapis.com/google.actions.v2.TransactionRequirementsCheckResult"),
-        JsonSubTypes.Type(value = GATransactionDecisionValue::class, name = "type.googleapis.com/google.actions.v2.TransactionDecisionValue")
+        JsonSubTypes.Type(value = GATransactionDecisionValue::class, name = "type.googleapis.com/google.actions.v2.TransactionDecisionValue"),
+        JsonSubTypes.Type(value = GAHoldValue::class, name = "type.googleapis.com/google.actions.v2.HoldValue")
 )
 abstract class GAArgumentValue(@get:JsonProperty("@type") val type: GAArgumentValueType) {
 }
