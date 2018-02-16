@@ -32,6 +32,8 @@ import fr.vsct.tock.nlp.admin.AdminVerticle
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.security.TockUserRole.admin
+import fr.vsct.tock.shared.security.TockUserRole.botUser
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.Translator
@@ -51,7 +53,7 @@ open class BotAdminVerticle : AdminVerticle() {
     override fun configure() {
         configureServices()
 
-        blockingJsonPost("/users/search") { context, query: UserSearchQuery ->
+        blockingJsonPost("/users/search", botUser) { context, query: UserSearchQuery ->
             if (context.organization == query.namespace) {
                 BotAdminService.searchUsers(query)
             } else {
@@ -59,7 +61,7 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/dialogs/search") { context, query: DialogsSearchQuery ->
+        blockingJsonPost("/dialogs/search", botUser) { context, query: DialogsSearchQuery ->
             if (context.organization == query.namespace) {
                 BotAdminService.search(query)
             } else {
@@ -67,11 +69,11 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet("/configuration/bots/:botId") { context ->
+        blockingJsonGet("/configuration/bots/:botId", botUser) { context ->
             BotAdminService.getBotConfigurationsByNamespaceAndBotId(context.organization, context.pathParam("botId"))
         }
 
-        blockingJsonPost("/configuration/bots") { context, query: ApplicationScopedQuery ->
+        blockingJsonPost("/configuration/bots", admin) { context, query: ApplicationScopedQuery ->
             if (context.organization == query.namespace) {
                 BotAdminService.getBotConfigurationsByNamespaceAndNlpModel(query.namespace, query.applicationName)
             } else {
@@ -79,7 +81,7 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/configuration/bot") { context, bot: BotConfiguration ->
+        blockingJsonPost("/configuration/bot", admin) { context, bot: BotConfiguration ->
             if (context.organization == bot.namespace) {
                 if (bot._id != null) {
                     val conf = BotAdminService.getBotConfigurationById(bot._id)
@@ -87,7 +89,11 @@ open class BotAdminVerticle : AdminVerticle() {
                         unauthorized()
                     }
                 } else {
-                    if (BotAdminService.getBotConfigurationByApplicationIdAndBotId(bot.applicationId, bot.botId) != null) {
+                    if (BotAdminService.getBotConfigurationByApplicationIdAndBotId(
+                            bot.applicationId,
+                            bot.botId
+                        ) != null
+                    ) {
                         unauthorized()
                     }
                 }
@@ -97,19 +103,19 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonDelete("/configuration/bot/:confId") { context ->
+        blockingJsonDelete("/configuration/bot/:confId", admin) { context ->
             BotAdminService.getBotConfigurationById(context.pathId("confId"))
-                    ?.let {
-                        if (context.organization == it.namespace) {
-                            BotAdminService.deleteApplicationConfiguration(it)
-                            true
-                        } else {
-                            null
-                        }
-                    } ?: unauthorized()
+                ?.let {
+                    if (context.organization == it.namespace) {
+                        BotAdminService.deleteApplicationConfiguration(it)
+                        true
+                    } else {
+                        null
+                    }
+                } ?: unauthorized()
         }
 
-        blockingJsonPost("/test/talk") { context, query: BotDialogRequest ->
+        blockingJsonPost("/test/talk", botUser) { context, query: BotDialogRequest ->
             if (context.organization == query.namespace) {
                 BotAdminService.talk(query)
             } else {
@@ -117,15 +123,15 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonGet("/test/plans") { context ->
+        blockingJsonGet("/test/plans", botUser) { context ->
             TestPlanService.getTestPlansByNamespace(context.organization)
         }
 
-        blockingJsonGet("/test/plan/:planId/executions") { context ->
+        blockingJsonGet("/test/plan/:planId/executions", botUser) { context ->
             TestPlanService.getPlanExecutions(context.loadTestPlan())
         }
 
-        blockingJsonPost("/test/plan") { context, plan: TestPlanUpdate ->
+        blockingJsonPost("/test/plan", botUser) { context, plan: TestPlanUpdate ->
             if (context.organization == plan.namespace) {
                 TestPlanService.saveTestPlan(plan.toTestPlan())
             } else {
@@ -133,45 +139,51 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingDelete("/test/plan/:planId") { context ->
+        blockingDelete("/test/plan/:planId", botUser) { context ->
             TestPlanService.removeTestPlan(context.loadTestPlan())
         }
 
-        blockingJsonPost("/test/plan/:planId/dialog/:dialogId") { context, _: ApplicationScopedQuery ->
+        blockingJsonPost("/test/plan/:planId/dialog/:dialogId", botUser) { context, _: ApplicationScopedQuery ->
             TestPlanService.addDialogToTestPlan(context.loadTestPlan(), context.pathId("dialogId"))
         }
 
-        blockingJsonPost("/test/plan/:planId/dialog/delete/:dialogId") { context, _: ApplicationScopedQuery ->
+        blockingJsonPost("/test/plan/:planId/dialog/delete/:dialogId", botUser) { context, _: ApplicationScopedQuery ->
             TestPlanService.removeDialogFromTestPlan(
-                    context.loadTestPlan(),
-                    context.pathId("dialogId"))
+                context.loadTestPlan(),
+                context.pathId("dialogId")
+            )
         }
 
-        blockingJsonPost("/test/plan/execute") { context, testPlan: TestPlan ->
+        blockingJsonPost("/test/plan/execute", botUser) { context, testPlan: TestPlan ->
             BotAdminService.getBotConfiguration(testPlan.botApplicationConfigurationId, context.organization)
-                    .let {
-                        TestPlanService.saveAndRunTestPlan(
-                                BotAdminService.getRestClient(it),
-                                testPlan
-                        )
-                    }
+                .let {
+                    TestPlanService.saveAndRunTestPlan(
+                        BotAdminService.getRestClient(it),
+                        testPlan
+                    )
+                }
         }
 
-        blockingJsonPost("/test/plan/:planId/run") { context, _: ApplicationScopedQuery ->
+        blockingJsonPost("/test/plan/:planId/run", botUser) { context, _: ApplicationScopedQuery ->
             context.loadTestPlan().run {
                 TestPlanService.runTestPlan(
-                        BotAdminService.getRestClient(BotAdminService.getBotConfiguration(botApplicationConfigurationId, namespace)),
-                        this
+                    BotAdminService.getRestClient(
+                        BotAdminService.getBotConfiguration(
+                            botApplicationConfigurationId,
+                            namespace
+                        )
+                    ),
+                    this
                 )
             }
         }
 
-        blockingJsonGet("/application/:applicationId/plans") { context ->
+        blockingJsonGet("/application/:applicationId/plans", botUser) { context ->
             val applicationId = context.pathParam("applicationId")
             TestPlanService.getTestPlansByApplication(applicationId).filter { it.namespace == context.organization }
         }
 
-        blockingJsonPost("/application/plans") { context, query: ApplicationScopedQuery ->
+        blockingJsonPost("/application/plans", botUser) { context, query: ApplicationScopedQuery ->
             if (context.organization == query.namespace) {
                 TestPlanService.getTestPlansByNamespaceAndNlpModel(query.namespace, query.applicationName)
             } else {
@@ -179,15 +191,15 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/bot/intent/new") { context, query: CreateBotIntentRequest ->
+        blockingJsonPost("/bot/intent/new", botUser) { context, query: CreateBotIntentRequest ->
             BotAdminService.createBotIntent(context.organization, query) ?: unauthorized()
         }
 
-        blockingJsonPost("/bot/intent") { context, query: UpdateBotIntentRequest ->
+        blockingJsonPost("/bot/intent", botUser) { context, query: UpdateBotIntentRequest ->
             BotAdminService.updateBotIntent(context.organization, query) ?: unauthorized()
         }
 
-        blockingJsonPost("/bot/intents/search") { context, request: BotIntentSearchRequest ->
+        blockingJsonPost("/bot/intents/search", botUser) { context, request: BotIntentSearchRequest ->
             if (context.organization == request.namespace) {
                 BotAdminService.loadBotIntents(request)
             } else {
@@ -195,23 +207,23 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonDelete("/bot/intent/:intentId") { context ->
+        blockingJsonDelete("/bot/intent/:intentId", botUser) { context ->
             BotAdminService.deleteBotIntent(context.organization, context.pathParam("intentId"))
         }
 
-        blockingJsonGet("/i18n") { context ->
+        blockingJsonGet("/i18n", botUser) { context ->
             i18n.getLabels().filter { it.namespace == context.organization }
         }
 
-        blockingJsonPost("/i18n/complete") { context, labels: List<I18nLabel> ->
+        blockingJsonPost("/i18n/complete", botUser) { context, labels: List<I18nLabel> ->
             Translator.completeAllLabels(labels.filter { it.namespace == context.organization })
         }
 
-        blockingJsonPost("/i18n/saveAll") { context, labels: List<I18nLabel> ->
+        blockingJsonPost("/i18n/saveAll", botUser) { context, labels: List<I18nLabel> ->
             i18n.save(labels.filter { it.namespace == context.organization })
         }
 
-        blockingJsonPost("/i18n/save") { context, label: I18nLabel ->
+        blockingJsonPost("/i18n/save", botUser) { context, label: I18nLabel ->
             if (label.namespace == context.organization) {
                 i18n.save(label)
             } else {
@@ -219,23 +231,23 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingDelete("/i18n/:id") { context ->
+        blockingDelete("/i18n/:id", botUser) { context ->
             i18n.deleteByNamespaceAndId(context.organization, context.pathId("id"))
         }
 
-        blockingJsonGet("/i18n/export/csv") { context ->
+        blockingJsonGet("/i18n/export/csv", botUser) { context ->
             I18nCsvCodec.exportCsv(context.organization)
         }
 
-        blockingUploadPost("/i18n/import/csv") { context, content ->
+        blockingUploadPost("/i18n/import/csv", botUser) { context, content ->
             I18nCsvCodec.importCsv(context.organization, content)
         }
 
-        blockingJsonGet("/i18n/export/json") { context ->
+        blockingJsonGet("/i18n/export/json", botUser) { context ->
             mapper.writeValueAsString(i18n.getLabels().filter { it.namespace == context.organization })
         }
 
-        blockingUploadPost("/i18n/import/json") { context, content ->
+        blockingUploadPost("/i18n/import/json", botUser) { context, content ->
             val labels: List<I18nLabel> = mapper.readValue(content)
             i18n.save(labels.filter { it.namespace == context.organization })
         }

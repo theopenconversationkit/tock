@@ -37,7 +37,7 @@
           <button (click)="addState(i)" md-icon-button mdTooltip="Add state" color="primary">
             <md-icon>add_box</md-icon>
           </button>
-          <button (click)="downloadSentencesDump(i)" md-icon-button mdTooltip="Download a sentences dump">
+          <button *ngIf="state.hasRole(UserRole.admin)" (click)="downloadSentencesDump(i)" md-icon-button mdTooltip="Download a sentences dump">
             <md-icon>cloud_download</md-icon>
           </button>
           <button md-icon-button (click)="deleteIntent(i)" mdTooltip="Delete the intent {{i.name}}">

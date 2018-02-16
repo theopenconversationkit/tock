@@ -19,6 +19,7 @@ import {AuthService} from "./core/auth/auth.service";
 import {StateService} from "./core/state.service";
 import {RestService} from "./core/rest/rest.service";
 import {MdSnackBar} from "@angular/material";
+import {UserRole} from "./model/auth";
 
 @Component({
   selector: 'tock-nlp-admin-root',
@@ -28,6 +29,7 @@ import {MdSnackBar} from "@angular/material";
 export class NlpAdminAppComponent implements OnInit, OnDestroy {
 
   private errorUnsuscriber: any;
+  UserRole = UserRole;
 
   constructor(public auth: AuthService,
               public state: StateService,

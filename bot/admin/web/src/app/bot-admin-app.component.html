@@ -22,22 +22,22 @@
     <p></p>
     <md-list>
       <md-list-item>
-        <a routerLink="/configuration/nlp">Configuration</a>
+        <a *ngIf="state.hasRole(UserRole.admin)" routerLink="/configuration/nlp">Configuration</a>
       </md-list-item>
       <md-list-item>
-        <a routerLink="/nlp/inbox">NLP</a>
+        <a *ngIf="state.hasRole(UserRole.nlpUser)" routerLink="/nlp/inbox">NLP</a>
       </md-list-item>
       <md-list-item>
-        <a routerLink="/quality/log-stats">NLP QA</a>
+        <a *ngIf="state.hasRole(UserRole.nlpUser)" routerLink="/quality/log-stats">NLP QA</a>
       </md-list-item>
       <md-list-item>
-        <a routerLink="/build/intent-create">Build</a>
+        <a *ngIf="state.hasRole(UserRole.botUser)" routerLink="/build/intent-create">Build</a>
       </md-list-item>
       <md-list-item>
-        <a routerLink="/test/test">Test</a>
+        <a *ngIf="state.hasRole(UserRole.botUser)" routerLink="/test/test">Test</a>
       </md-list-item>
       <md-list-item>
-        <a routerLink="/monitoring/users">Monitoring</a>
+        <a *ngIf="state.hasRole(UserRole.botUser)" routerLink="/monitoring/users">Monitoring</a>
       </md-list-item>
     </md-list>
   </md-sidenav>

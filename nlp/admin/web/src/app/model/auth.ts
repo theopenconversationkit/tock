@@ -14,9 +14,12 @@
  * limitations under the License.
  */
 
+import {SentenceStatus} from "./nlp";
+
 export class User {
   constructor(public email: string,
-    public organization: string) {
+              public organization: string,
+              public roles: UserRole[]) {
   }
 }
 
@@ -27,18 +30,41 @@ export class AuthenticateRequest {
 
 export class AuthenticateResponse {
   constructor(public authenticated: boolean,
-    public email?: string,
-    public organization?: string) {
+              public email?: string,
+              public organization?: string,
+              public roles?: UserRole[]) {
   }
 
   static fromJSON(json: any): AuthenticateResponse {
     const value = Object.create(AuthenticateResponse.prototype);
-    const result = Object.assign(value, json, {});
+    const result = Object.assign(value, json, {
+      roles: json.roles.map(r => SentenceStatus[r])
+    });
 
     return result;
   }
 
   toUser(): User {
-    return new User(this.email, this.organization);
+    return new User(this.email, this.organization, this.roles);
   }
 }
+
+export enum UserRole {
+  /**
+   * A nlp user is allowed to qualify and search sentences, but not to update applications or builds.
+   */
+  nlpUser,
+  /**
+   * A bot user is allowed to modify answer & i18n, and to consult dialogs and conversations.
+   */
+  botUser,
+  /**
+   * An admin is allowed to update applications and builds, and to export/intent sentences dump.
+   */
+  admin,
+  /**
+   * A technical admin has access to all encrypted sentence, and to export/intent application dumps.
+   */
+  technicalAdmin
+}
+

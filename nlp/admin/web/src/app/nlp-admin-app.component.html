@@ -21,13 +21,13 @@
     </button>
     <p></p>
     <md-list>
-      <md-list-item>
+      <md-list-item *ngIf="state.hasRole(UserRole.admin)">
         <a routerLink="/applications">Applications</a>
       </md-list-item>
-      <md-list-item>
+      <md-list-item *ngIf="state.hasRole(UserRole.nlpUser)">
         <a routerLink="/nlp/inbox">NLP</a>
       </md-list-item>
-      <md-list-item>
+      <md-list-item *ngIf="state.hasRole(UserRole.nlpUser)">
         <a routerLink="/quality/log-stats">NLP QA</a>
       </md-list-item>
     </md-list>

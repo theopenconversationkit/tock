@@ -21,7 +21,7 @@
 
       <p>
         <md-radio-group [(ngModel)]="type">
-          <md-radio-button value="application">
+          <md-radio-button *ngIf="state.hasRole(UserRole.technicalAdmin)" value="application">
             Application Dump
           </md-radio-button>
           <md-radio-button value="sentences">
@@ -30,7 +30,7 @@
         </md-radio-group>
       </p>
       <ul>
-        <li>The "Application Dump" format is an internal format, useful to copy application data across environments.
+        <li *ngIf="state.hasRole(UserRole.technicalAdmin)">The "Application Dump" format is an internal format, useful to copy application data across environments.
         </li>
         <li>The "Sentences Dump" format is an agnostic format, used to share data with other systems.</li>
       </ul>

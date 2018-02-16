@@ -34,7 +34,7 @@
           <span class="action-spacing"></span>
           <button routerLink="edit/{{app._id}}" md-mini-fab mdTooltip="Edit"><md-icon>edit</md-icon></button>
           <span class="action-spacing"></span>
-          <button (click)="downloadDump(app)" md-icon-button mdTooltip="Download an application dump"><md-icon>file_download</md-icon></button>
+          <button *ngIf="state.hasRole(UserRole.technicalAdmin)" (click)="downloadDump(app)" md-icon-button mdTooltip="Download an application dump"><md-icon>file_download</md-icon></button>
           <button (click)="downloadSentencesDump(app)" md-icon-button mdTooltip="Download a sentences dump"><md-icon>cloud_download</md-icon></button>
 
         </md-list-item>

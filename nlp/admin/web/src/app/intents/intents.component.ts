@@ -24,6 +24,7 @@ import {ConfirmDialogComponent} from "../shared/confirm-dialog/confirm-dialog.co
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {ApplicationService} from "../core/applications.service";
 import {AddStateDialogComponent} from "./add-state/add-state-dialog.component";
+import {UserRole} from "../model/auth";
 
 @Component({
   selector: 'tock-intents',
@@ -31,6 +32,8 @@ import {AddStateDialogComponent} from "./add-state/add-state-dialog.component";
   styleUrls: ['./intents.component.css']
 })
 export class IntentsComponent implements OnInit {
+
+  UserRole = UserRole;
 
   constructor(public state: StateService,
               private nlp: NlpService,
@@ -121,7 +124,10 @@ export class IntentsComponent implements OnInit {
   }
 
   downloadSentencesDump(intent: Intent) {
-    this.applicationService.getSentencesDumpForIntent(this.state.currentApplication, intent)
+    this.applicationService.getSentencesDumpForIntent(
+      this.state.currentApplication,
+      intent,
+      this.state.hasRole(UserRole.technicalAdmin))
       .subscribe(blob => {
         saveAs(blob, intent.name + "_sentences.json");
         this.snackBar.open(`Dump provided`, "Dump", {duration: 1000} as MdSnackBarConfig);

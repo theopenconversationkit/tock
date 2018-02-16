@@ -19,4 +19,4 @@ package fr.vsct.tock.nlp.front.shared.codec
 /**
  * Only full supported for now.
  */
-enum class DumpType { full }
+enum class DumpType { full, obfuscated }

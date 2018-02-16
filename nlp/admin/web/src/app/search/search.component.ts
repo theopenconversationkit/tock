@@ -21,6 +21,7 @@ import {StateService} from "../core/state.service";
 import {ActivatedRoute} from "@angular/router";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {MdSnackBar} from "@angular/material";
+import {UserRole} from "../model/auth";
 
 @Component({
   selector: 'tock-search',
@@ -29,6 +30,7 @@ import {MdSnackBar} from "@angular/material";
 })
 export class SearchComponent implements OnInit {
 
+  UserRole = UserRole;
   filter: SentenceFilter = new SentenceFilter();
   status: SentenceStatus;
   entityTypes: EntityType[];

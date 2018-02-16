@@ -23,18 +23,33 @@ import mu.KotlinLogging
  */
 enum class TockUserRole {
 
-    user, admin, technicalAdmin;
+    /**
+     * A nlp user is allowed to qualify and search sentences, but not to update applications or builds.
+     */
+    nlpUser,
+    /**
+     * A bot user is allowed to modify answer & i18n, and to consult dialogs and conversations.
+      */
+    botUser,
+    /**
+     * An admin is allowed to update applications and builds, and to export/intent sentences dump.
+     */
+    admin,
+    /**
+     * A technical admin has access to all encrypted sentence, and to export/intent application dumps.
+     */
+    technicalAdmin;
 
     companion object {
         private val logger = KotlinLogging.logger {}
 
         fun toRole(role: String): TockUserRole? =
-                try {
-                    valueOf(role)
-                } catch (e: Exception) {
-                    logger.error { "unknown role : $role" }
-                    null
-                }
+            try {
+                valueOf(role)
+            } catch (e: Exception) {
+                logger.error { "unknown role : $role" }
+                null
+            }
     }
 
 }

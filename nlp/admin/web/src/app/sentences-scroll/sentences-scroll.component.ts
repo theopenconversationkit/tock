@@ -23,6 +23,7 @@ import {ScrollComponent} from "../scroll/scroll.component";
 import {PaginatedQuery, SearchMark} from "../model/commons";
 import {Observable} from "rxjs/Observable";
 import {MdSnackBar} from "@angular/material";
+import {UserRole} from "../model/auth";
 
 @Component({
   selector: 'tock-sentences-scroll',
@@ -30,6 +31,8 @@ import {MdSnackBar} from "@angular/material";
   styleUrls: ['./sentences-scroll.component.css']
 })
 export class SentencesScrollComponent extends ScrollComponent<Sentence> {
+
+  UserRole = UserRole;
 
   @Input() filter: SentenceFilter;
   @Input() displayArchiveButton: boolean = true;
@@ -76,7 +79,10 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> {
 
   downloadSentencesDump() {
     setTimeout(_ => {
-      this.nlp.getSentencesDump(this.state.currentApplication, this.toSearchQuery(this.paginatedQuery()))
+      this.nlp.getSentencesDump(
+        this.state.currentApplication,
+        this.toSearchQuery(this.paginatedQuery()),
+        this.state.hasRole(UserRole.technicalAdmin))
         .subscribe(blob => {
           saveAs(blob, this.state.currentApplication.name + "_sentences.json");
           this.snackBar.open(`Dump provided`, "Dump", {duration: 1000});

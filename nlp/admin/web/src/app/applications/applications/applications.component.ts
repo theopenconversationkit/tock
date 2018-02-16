@@ -20,6 +20,7 @@ import {Application} from "../../model/application";
 import {MdSnackBar} from "@angular/material";
 import {StateService} from "../../core/state.service";
 import {ApplicationService} from "../../core/applications.service";
+import {UserRole} from "../../model/auth";
 
 @Component({
   selector: 'tock-applications',
@@ -28,6 +29,7 @@ import {ApplicationService} from "../../core/applications.service";
 })
 export class ApplicationsComponent implements OnInit {
 
+  UserRole = UserRole;
   uploadDump: boolean = false;
 
   constructor(private snackBar: MdSnackBar,
@@ -52,7 +54,7 @@ export class ApplicationsComponent implements OnInit {
   }
 
   downloadSentencesDump(app: Application) {
-    this.applicationService.getSentencesDump(app)
+    this.applicationService.getSentencesDump(app, this.state.hasRole(UserRole.technicalAdmin))
       .subscribe(blob => {
         saveAs(blob, app.name + "_sentences.json");
         this.snackBar.open(`Dump provided`, "Dump", {duration: 1000});

@@ -26,7 +26,9 @@ import {
   SearchQuery,
   Sentence,
   SentencesResult,
-  UpdateEntityDefinitionQuery, UpdateSentencesQuery, UpdateSentencesReport
+  UpdateEntityDefinitionQuery,
+  UpdateSentencesQuery,
+  UpdateSentencesReport
 } from "../model/nlp";
 import {Observable} from "rxjs";
 import {Application, Intent} from "../model/application";
@@ -106,8 +108,8 @@ export class NlpService implements OnDestroy {
     return this.rest.post("/logs/search", query, LogsResult.fromJSON)
   }
 
-  getSentencesDump(application: Application, query: SearchQuery): Observable<Blob> {
-    return this.rest.post(`/sentences/dump/${application._id}`, query, (r => new Blob([JSON.stringify(r)], {type: 'application/json'}) ));
+  getSentencesDump(application: Application, query: SearchQuery, full: boolean): Observable<Blob> {
+    return this.rest.post(`/sentences/dump/${full ? 'full/' : ''}${application._id}`, query, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
 }

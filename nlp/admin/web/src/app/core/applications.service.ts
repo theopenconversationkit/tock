@@ -126,12 +126,12 @@ export class ApplicationService implements OnDestroy {
     return this.rest.get(`/application/dump/${application._id}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
-  getSentencesDump(application: Application): Observable<Blob> {
-    return this.rest.get(`/sentences/dump/${application._id}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
+  getSentencesDump(application: Application, full:boolean): Observable<Blob> {
+    return this.rest.get(`/sentences/dump/${full ? 'full/' : ''}${application._id}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
-  getSentencesDumpForIntent(application: Application, intent: Intent): Observable<Blob> {
-    return this.rest.get(`/sentences/dump/${application._id}/${intent.qualifiedName()}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
+  getSentencesDumpForIntent(application: Application, intent: Intent, full:boolean): Observable<Blob> {
+    return this.rest.get(`/sentences/dump/${full ? 'full/' : ''}${application._id}/${intent.qualifiedName()}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
   prepareApplicationDumpUploader(uploader: FileUploader, configuration: ApplicationImportConfiguration) {
@@ -144,12 +144,12 @@ export class ApplicationService implements OnDestroy {
     this.rest.setFileUploaderOptions(uploader, url);
   }
 
-  prepareSentencesDumpUploader(uploader: FileUploader, name?: string) {
+  prepareSentencesDumpUploader(uploader: FileUploader, full:boolean, name?: string) {
     let url: string;
     if (name) {
-      url = `/dump/sentences/${name}`;
+      url = `/dump/sentences/${full ? 'full/' : ''}${name}`;
     } else {
-      url = `/dump/sentences`;
+      url = `/dump/sentences${full ? 'full/' : ''}`;
     }
     this.rest.setFileUploaderOptions(uploader, url);
   }

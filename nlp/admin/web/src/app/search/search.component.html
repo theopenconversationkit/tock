@@ -55,7 +55,7 @@
         <md-datepicker #after (selectedChanged)="search()"></md-datepicker>
         <button md-button (click)="search()">GO</button>
         </md-card-content>
-       <md-card-footer>
+       <md-card-footer *ngIf="state.hasRole(UserRole.admin)">
          <md-expansion-panel>
            <md-expansion-panel-header>
              <mat-panel-title>

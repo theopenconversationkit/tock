@@ -18,7 +18,7 @@ import {EventEmitter, Injectable} from "@angular/core";
 import {Application, Intent} from "../model/application";
 import {AuthService} from "./auth/auth.service";
 import {AuthListener} from "./auth/auth.listener";
-import {AuthenticateResponse, User} from "../model/auth";
+import {AuthenticateResponse, User, UserRole} from "../model/auth";
 import {SettingsService} from "./settings.service";
 import {ApplicationScopedQuery, Entry, PaginatedQuery, SearchMark} from "../model/commons";
 import {environment} from "../../environments/environment";
@@ -52,8 +52,20 @@ export class StateService implements AuthListener {
     this.auth.addListener(this);
     //hack for dev env
     if (environment.autologin) {
-      this.auth.login(environment.default_password, new AuthenticateResponse(true, environment.default_user, environment.default_namespace));
+      this.auth.login(
+        environment.default_password,
+        new AuthenticateResponse(
+          true,
+          environment.default_user,
+          environment.default_namespace,
+          [UserRole.nlpUser, UserRole.botUser, UserRole.admin, UserRole.technicalAdmin]
+        )
+      );
     }
+  }
+
+  hasRole(role: UserRole): boolean {
+    return this.user.roles.indexOf(role) !== -1;
   }
 
   resetConfiguration() {

@@ -19,6 +19,7 @@ import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 import {ApplicationImportConfiguration, ImportReport} from "../../model/application";
 import {StateService} from "../../core/state.service";
 import {ApplicationService} from "../../core/applications.service";
+import {UserRole} from "../../model/auth";
 
 @Component({
   selector: 'tock-application-upload',
@@ -27,16 +28,17 @@ import {ApplicationService} from "../../core/applications.service";
 })
 export class ApplicationUploadComponent implements OnInit {
 
+  UserRole = UserRole;
   public uploader: FileUploader;
   public configuration: ApplicationImportConfiguration;
   public report: ImportReport;
 
-  public type:string = "application";
+  public type: string = "application";
 
-  @Input() applicationName:string = null;
+  @Input() applicationName: string = null;
   @Output() closed = new EventEmitter();
 
-  constructor(private applicationService: ApplicationService, private state: StateService) {
+  constructor(private applicationService: ApplicationService, public state: StateService) {
   }
 
   ngOnInit(): void {
@@ -63,10 +65,13 @@ export class ApplicationUploadComponent implements OnInit {
   }
 
   upload() {
-    if(this.type === "application") {
+    if (this.type === "application") {
       this.applicationService.prepareApplicationDumpUploader(this.uploader, this.configuration);
     } else {
-      this.applicationService.prepareSentencesDumpUploader(this.uploader, this.configuration.newApplicationName);
+      this.applicationService.prepareSentencesDumpUploader(
+        this.uploader,
+        this.state.hasRole(UserRole.technicalAdmin),
+        this.configuration.newApplicationName);
     }
     this.uploader.uploadAll();
   }

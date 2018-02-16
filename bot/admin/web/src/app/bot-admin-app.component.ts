@@ -19,6 +19,7 @@ import {AuthService} from "tock-nlp-admin/src/app/core/auth/auth.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
 import {MdSnackBar} from "@angular/material";
+import {UserRole} from "tock-nlp-admin/src/app/model/auth";
 
 
 @Component({
@@ -28,6 +29,7 @@ import {MdSnackBar} from "@angular/material";
 })
 export class BotAdminAppComponent implements OnInit, OnDestroy {
 
+  UserRole = UserRole;
   private errorUnsuscriber: any;
 
   constructor(public auth: AuthService,

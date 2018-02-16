@@ -28,7 +28,8 @@
     <button md-button (click)="refresh()" class="button">
       <md-icon>refresh</md-icon>
     </button>
-    <button md-button
+    <button *ngIf="state.hasRole(UserRole.admin)"
+            md-button
             (click)="downloadSentencesDump()"
             mdTooltip="Download a sentences dump of the current selection"
             class="button">
