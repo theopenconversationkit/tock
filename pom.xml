@@ -40,8 +40,8 @@
         <kodein>4.1.0</kodein>
         <kmongo>3.6.2</kmongo>
         <fongo>2.1.0</fongo>
-        <jackson>2.9.4</jackson>
-        <jackson-module>2.9.4.1</jackson-module>
+        <jackson>2.9.3</jackson>
+        <jackson-module>2.9.3</jackson-module>
         <klaxon>2.1.6</klaxon>
         <vertx>3.5.1</vertx>
         <retrofit>2.3.0</retrofit>
