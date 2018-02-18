@@ -81,8 +81,15 @@ export class Application {
       })
       .sort((a, b) => {
         const c = a.entityTypeName.localeCompare(b.entityTypeName);
-        if (c === 0) {
-          return a.role.localeCompare(b.role);
+        if (c === 0 && a.role !== b.role) {
+          const entityName = a.simpleEntityName();
+          if (a.role === entityName) {
+            return -1;
+          } else if (b.role === entityName) {
+            return 1;
+          } else {
+            return a.role.localeCompare(b.role);
+          }
         } else {
           return c;
         }

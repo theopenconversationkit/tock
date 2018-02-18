@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.admin.model
 
+import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import org.litote.kmongo.Id
 
@@ -23,7 +24,9 @@ import org.litote.kmongo.Id
  *
  */
 data class UpdateSentencesQuery(
-        val newIntentId: Id<IntentDefinition>?,
-        val searchQuery: SearchQuery
+    val newIntentId: Id<IntentDefinition>?,
+    val oldEntity: EntityDefinition?,
+    val newEntity: EntityDefinition?,
+    val searchQuery: SearchQuery
 ) : ApplicationScopedQuery() {
 }

@@ -16,7 +16,7 @@
 
 import {Component, OnInit, ViewChild} from "@angular/core";
 import {SentenceFilter, SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.component";
-import {EntityType, getRoles, SentenceStatus, UpdateSentencesQuery} from "../model/nlp";
+import {EntityDefinition, EntityType, getRoles, SentenceStatus, UpdateSentencesQuery} from "../model/nlp";
 import {StateService} from "../core/state.service";
 import {ActivatedRoute} from "@angular/router";
 import {NlpService} from "../nlp-tabs/nlp.service";
@@ -49,6 +49,7 @@ export class SearchComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.filter.search = params["text"];
       this.fillEntitiesFilter();
+
     });
   }
 
@@ -100,7 +101,18 @@ export class SearchComponent implements OnInit {
         this.filter.search = this.filter.search.trim()
       }
       this.scroll.refresh();
-    });
+    }, 1);
+  }
+
+  updateSentencesIntent() {
+    this.update.oldEntity = null;
+    this.update.newEntity = null;
+    this.updateSentences();
+  }
+
+  updateSentencesEntity() {
+    this.update.newIntentId = null;
+    this.updateSentences();
   }
 
   updateSentences() {
@@ -110,7 +122,9 @@ export class SearchComponent implements OnInit {
         this.state.currentApplication.name,
         this.state.currentLocale,
         this.scroll.toSearchQuery(this.state.createPaginatedQuery(0, 10000)),
-        this.update.newIntentId
+        this.update.newIntentId,
+        this.update.oldEntity,
+        this.update.newEntity
       )
     ).subscribe(r => {
       const n = r.nbUpdates;
@@ -128,7 +142,9 @@ export class SearchComponent implements OnInit {
 
 export class SentencesUpdate {
 
-  constructor(public newIntentId?: string) {
+  constructor(public newIntentId?: string,
+              public oldEntity?: EntityDefinition,
+              public newEntity?: EntityDefinition) {
   }
 
 }

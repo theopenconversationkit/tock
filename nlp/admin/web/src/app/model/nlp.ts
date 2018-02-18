@@ -32,7 +32,11 @@ export class EntityDefinition {
               public role: string,
               public atStartOfDay?: Boolean) {
     this.qualifiedRole = qualifiedRole(entityTypeName, role);
-    this.entityColor = entityColor(this.qualifiedRole)
+    this.entityColor = entityColor(this.qualifiedRole);
+  }
+
+  simpleEntityName(): string {
+    return entityNameFromQualifiedName(this.entityTypeName);
   }
 
   qualifiedName(user: User): string {
@@ -828,7 +832,9 @@ export class UpdateSentencesQuery extends ApplicationScopedQuery {
               public applicationName: string,
               public language: string,
               public searchQuery: SearchQuery,
-              public newIntentId?: string) {
+              public newIntentId?: string,
+              public oldEntity?: EntityDefinition,
+              public newEntity?: EntityDefinition) {
     super(namespace, applicationName, language)
   }
 }

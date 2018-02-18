@@ -22,12 +22,14 @@ import fr.vsct.tock.shared.name
 /**
  *
  */
-data class EntityDefinition(val entityTypeName: String,
-                            val role: String = entityTypeName.name(),
-                            /**
-                             * To evaluate time.
-                             */
-                            val atStartOfDay: Boolean? = null) {
+data class EntityDefinition(
+    val entityTypeName: String,
+    val role: String = entityTypeName.name(),
+    /**
+     * To evaluate time.
+     */
+    val atStartOfDay: Boolean? = null
+) {
 
     constructor(entity: Entity) : this(entity.entityType.name, entity.role)
 

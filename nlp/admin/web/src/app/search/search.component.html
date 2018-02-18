@@ -65,16 +65,33 @@
                Manage Intent and Entities
              </mat-panel-description>
            </md-expansion-panel-header>
-           Update selected sentences with:
-
-           <md-select placeholder="New Intent" [(ngModel)]="update.newIntentId">
+           <div>
+             Update selected sentences with:
+           <md-select placeholder="Select Intent" [(ngModel)]="update.newIntentId">
              <md-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
                {{intent.name}}
              </md-option>
              <md-option value="unknown">Unknown</md-option>
            </md-select>
 
-           <button md-button (click)="updateSentences()">UPDATE</button>
+           <button md-button (click)="updateSentencesIntent()">UPDATE INTENT</button>
+           </div>
+           <div>
+             Update entity for selected sentences:
+             <md-select placeholder="Select Old Entity" [(ngModel)]="update.oldEntity">
+               <md-option *ngFor="let e of state.entities | async" [value]="e">
+                 {{e.qualifiedRole}}
+               </md-option>
+             </md-select>
+
+             <md-select placeholder="Select New Entity" [(ngModel)]="update.newEntity">
+               <md-option *ngFor="let e of state.entities | async" [value]="e">
+                 {{e.qualifiedRole}}
+               </md-option>
+             </md-select>
+
+             <button md-button (click)="updateSentencesEntity()">UPDATE ENTITY</button>
+           </div>
          </md-expansion-panel>
        </md-card-footer>
     </md-card>

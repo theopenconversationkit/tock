@@ -19,6 +19,7 @@ package fr.vsct.tock.nlp.front.service.storage
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
+import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
@@ -26,11 +27,15 @@ import org.litote.kmongo.Id
 import java.util.Locale
 
 /**
- *
+ * Manage sentences of the NLP model.
  */
 interface ClassifiedSentenceDAO {
 
-    fun getSentences(intents: Set<Id<IntentDefinition>>?, language: Locale?, status: ClassifiedSentenceStatus?): List<ClassifiedSentence>
+    fun getSentences(
+        intents: Set<Id<IntentDefinition>>?,
+        language: Locale?,
+        status: ClassifiedSentenceStatus?
+    ): List<ClassifiedSentence>
 
     fun deleteSentencesByStatus(status: ClassifiedSentenceStatus)
 
@@ -40,13 +45,28 @@ interface ClassifiedSentenceDAO {
 
     fun search(query: SentencesQuery): SentencesQueryResult
 
-    fun switchSentencesIntent(applicationId: Id<ApplicationDefinition>, oldIntentId: Id<IntentDefinition>, newIntentId: Id<IntentDefinition>)
+    fun switchSentencesIntent(
+        applicationId: Id<ApplicationDefinition>,
+        oldIntentId: Id<IntentDefinition>,
+        newIntentId: Id<IntentDefinition>
+    )
 
     fun switchSentencesIntent(sentences: List<ClassifiedSentence>, newIntentId: Id<IntentDefinition>)
 
+    fun switchSentencesEntity(
+        sentences: List<ClassifiedSentence>,
+        oldEntity: EntityDefinition,
+        newEntity: EntityDefinition
+    )
+
     fun switchSentencesStatus(sentences: List<ClassifiedSentence>, newStatus: ClassifiedSentenceStatus)
 
-    fun removeEntityFromSentences(applicationId: Id<ApplicationDefinition>, intentId: Id<IntentDefinition>, entityType: String, role: String)
+    fun removeEntityFromSentences(
+        applicationId: Id<ApplicationDefinition>,
+        intentId: Id<IntentDefinition>,
+        entityType: String,
+        role: String
+    )
 
     fun removeSubEntityFromSentences(applicationId: Id<ApplicationDefinition>, entityType: String, role: String)
 }

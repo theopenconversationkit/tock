@@ -35,6 +35,7 @@ import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.namespaceAndName
+import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 
@@ -47,11 +48,13 @@ val sentenceDAO: ClassifiedSentenceDAO by injector.instance()
  *
  */
 object ApplicationConfigurationService :
-        ApplicationDefinitionDAO by applicationDAO,
-        EntityTypeDefinitionDAO by entityTypeDAO,
-        IntentDefinitionDAO by intentDAO,
-        ClassifiedSentenceDAO by sentenceDAO,
-        ApplicationConfiguration {
+    ApplicationDefinitionDAO by applicationDAO,
+    EntityTypeDefinitionDAO by entityTypeDAO,
+    IntentDefinitionDAO by intentDAO,
+    ClassifiedSentenceDAO by sentenceDAO,
+    ApplicationConfiguration {
+
+    private val logger = KotlinLogging.logger {}
 
     override fun deleteApplicationById(id: Id<ApplicationDefinition>) {
         sentenceDAO.deleteSentencesByApplicationId(id)
@@ -63,8 +66,9 @@ object ApplicationConfigurationService :
     }
 
     override fun removeIntentFromApplication(
-            application: ApplicationDefinition,
-            intentId: Id<IntentDefinition>): Boolean {
+        application: ApplicationDefinition,
+        intentId: Id<IntentDefinition>
+    ): Boolean {
         val intent = intentDAO.getIntentById(intentId)!!
         sentenceDAO.switchSentencesIntent(application._id, intentId, Intent.UNKNOWN_INTENT.toId())
         applicationDAO.save(application.copy(intents = application.intents - intentId))
@@ -79,27 +83,39 @@ object ApplicationConfigurationService :
     }
 
     override fun removeEntityFromIntent(
-            application: ApplicationDefinition,
-            intent: IntentDefinition,
-            entityType: String,
-            role: String): Boolean = removeEntityFromIntent(application, intent, entityType, role, true)
+        application: ApplicationDefinition,
+        intent: IntentDefinition,
+        entityType: String,
+        role: String
+    ): Boolean = removeEntityFromIntent(application, intent, entityType, role, true)
 
     private fun removeEntityFromIntent(
-            application: ApplicationDefinition,
-            intent: IntentDefinition,
-            entityType: String,
-            role: String,
-            deleteEntityType: Boolean): Boolean {
+        application: ApplicationDefinition,
+        intent: IntentDefinition,
+        entityType: String,
+        role: String,
+        deleteEntityType: Boolean
+    ): Boolean {
         sentenceDAO.removeEntityFromSentences(application._id, intent._id, entityType, role)
         val loadedIntent = getIntentById(intent._id)
         if (loadedIntent != null) {
-            intentDAO.save(loadedIntent.copy(entities = loadedIntent.entities - listOfNotNull(loadedIntent.findEntity(entityType, role))))
+            intentDAO.save(
+                loadedIntent.copy(
+                    entities = loadedIntent.entities - listOfNotNull(
+                        loadedIntent.findEntity(
+                            entityType,
+                            role
+                        )
+                    )
+                )
+            )
         }
         //delete entity if same namespace and if not used by any intent
         return if (
-                deleteEntityType
-                && application.namespace == entityType.namespace()
-                && intentDAO.getIntentsUsingEntity(entityType).isEmpty()) {
+            deleteEntityType
+            && application.namespace == entityType.namespace()
+            && intentDAO.getIntentsUsingEntity(entityType).isEmpty()
+        ) {
             entityTypeDAO.deleteEntityTypeByName(entityType)
             true
         } else {
@@ -108,9 +124,10 @@ object ApplicationConfigurationService :
     }
 
     override fun removeSubEntityFromEntity(
-            application: ApplicationDefinition,
-            entityType: EntityTypeDefinition,
-            role: String): Boolean {
+        application: ApplicationDefinition,
+        entityType: EntityTypeDefinition,
+        role: String
+    ): Boolean {
         sentenceDAO.removeSubEntityFromSentences(application._id, entityType.name, role)
         config.save(entityType.copy(subEntities = entityType.subEntities.filterNot { it.role == role }))
         //TODO
@@ -163,34 +180,71 @@ object ApplicationConfigurationService :
 
     fun toIntent(intent: IntentDefinition): Intent {
         return Intent(
-                intent.qualifiedName,
-                intent.entities.mapNotNull { FrontRepository.toEntity(it.entityTypeName, it.role) },
-                intent.entitiesRegexp)
+            intent.qualifiedName,
+            intent.entities.mapNotNull { FrontRepository.toEntity(it.entityTypeName, it.role) },
+            intent.entitiesRegexp
+        )
     }
 
     override fun switchSentencesIntent(
-            sentences: List<ClassifiedSentence>,
-            targetApplication: ApplicationDefinition,
-            targetIntentId: Id<IntentDefinition>): Int {
+        sentences: List<ClassifiedSentence>,
+        targetApplication: ApplicationDefinition,
+        targetIntentId: Id<IntentDefinition>
+    ): Int {
 
-        val s = sentences.filter { it.classification.intentId != targetIntentId }
+        var s = sentences.filter { it.classification.intentId != targetIntentId }
 
         //1 collect entities
         val entities = s
-                .flatMap {
-                    it.classification.entities.mapNotNull { it.toEntity(FrontRepository::toEntity) }
-                }
-                .distinct()
+            .flatMap {
+                it.classification.entities.mapNotNull { it.toEntity(FrontRepository::toEntity) }
+            }
+            .distinct()
 
-        //2 create entities where there are not present in the new intent
-        val intent = getIntentById(targetIntentId)!!
-        entities.filterNot { intent.hasEntity(it) }.apply {
-            if (isNotEmpty()) {
-                save(intent.copy(entities = intent.entities + map { EntityDefinition(it) }))
+        //2 create entities where there are not present in the new intent (except if it's the unknown intent)
+        if (targetIntentId.toString() != UNKNOWN_INTENT) {
+            val intent = getIntentById(targetIntentId)!!
+            entities.filterNot { intent.hasEntity(it) }.apply {
+                if (isNotEmpty()) {
+                    save(intent.copy(entities = intent.entities + map { EntityDefinition(it) }))
+                }
             }
         }
 
+        //3 switch intents
         sentenceDAO.switchSentencesIntent(s, targetIntentId)
+
+        return sentences.size
+    }
+
+    override fun switchSentencesEntity(
+        sentences: List<ClassifiedSentence>,
+        targetApplication: ApplicationDefinition,
+        oldEntity: EntityDefinition,
+        newEntity: EntityDefinition
+    ): Int {
+        //0 check new entity is known
+        val entity = newEntity.toEntity()
+        if (entity == null) {
+            logger.warn { "unknown entity $newEntity" }
+            return 0
+        }
+
+        //1 create entities where there are not present in the intents
+        val intents = sentences.map { it.classification.intentId }.distinct().filter { it.toString() != UNKNOWN_INTENT }
+        intents.forEach {
+            val intent = getIntentById(it)
+            if (intent != null) {
+                if (!intent.hasEntity(entity)) {
+                    save(intent.copy(entities = intent.entities + newEntity))
+                }
+            } else {
+                logger.warn { "unknown intent $it" }
+            }
+        }
+
+        //switch entity
+        sentenceDAO.switchSentencesEntity(sentences, oldEntity, newEntity)
 
         return sentences.size
     }
@@ -200,12 +254,13 @@ object ApplicationConfigurationService :
         val intents = getIntentsByApplicationId(app._id)
         intents.forEach {
             it.findEntity(entity.entityTypeName, entity.role)
-                    ?.apply {
-                        save(
-                                it.copy(
-                                        entities = it.entities - this + entity
-                                ))
-                    }
+                ?.apply {
+                    save(
+                        it.copy(
+                            entities = it.entities - this + entity
+                        )
+                    )
+                }
         }
     }
 }

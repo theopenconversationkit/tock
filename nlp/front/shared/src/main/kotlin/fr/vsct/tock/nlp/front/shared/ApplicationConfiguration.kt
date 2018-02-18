@@ -49,15 +49,20 @@ interface ApplicationConfiguration {
      * @return true if intent is also deleted, false either
      */
     fun removeIntentFromApplication(
-            application: ApplicationDefinition,
-            intentId: Id<IntentDefinition>): Boolean
+        application: ApplicationDefinition,
+        intentId: Id<IntentDefinition>
+    ): Boolean
 
     /**
      * Get the sentences with the specified criteria.
      *
      * @throws error if all parameters are null
      */
-    fun getSentences(intents: Set<Id<IntentDefinition>>? = null, language: Locale? = null, status: ClassifiedSentenceStatus? = null): List<ClassifiedSentence>
+    fun getSentences(
+        intents: Set<Id<IntentDefinition>>? = null,
+        language: Locale? = null,
+        status: ClassifiedSentenceStatus? = null
+    ): List<ClassifiedSentence>
 
     fun deleteSentencesByStatus(status: ClassifiedSentenceStatus)
 
@@ -73,9 +78,22 @@ interface ApplicationConfiguration {
      * @return the number of sentences updated
      */
     fun switchSentencesIntent(
-            sentences: List<ClassifiedSentence>,
-            targetApplication: ApplicationDefinition,
-            targetIntentId: Id<IntentDefinition>): Int
+        sentences: List<ClassifiedSentence>,
+        targetApplication: ApplicationDefinition,
+        targetIntentId: Id<IntentDefinition>
+    ): Int
+
+    /**
+     * Switch old entity to new entity.
+     *
+     * @return the number of sentences updated
+     */
+    fun switchSentencesEntity(
+        sentences: List<ClassifiedSentence>,
+        targetApplication: ApplicationDefinition,
+        oldEntity: EntityDefinition,
+        newEntity: EntityDefinition
+    ): Int
 
     fun save(entityType: EntityTypeDefinition)
 
@@ -110,10 +128,11 @@ interface ApplicationConfiguration {
      * @return true if the entity type is also deleted, false either.
      */
     fun removeEntityFromIntent(
-            application: ApplicationDefinition,
-            intent: IntentDefinition,
-            entityType: String,
-            role: String): Boolean
+        application: ApplicationDefinition,
+        intent: IntentDefinition,
+        entityType: String,
+        role: String
+    ): Boolean
 
     /**
      * Remove a sub entity from an entity.
@@ -121,9 +140,10 @@ interface ApplicationConfiguration {
      * @return true if the entity type is also deleted, false either.
      */
     fun removeSubEntityFromEntity(
-            application: ApplicationDefinition,
-            entityType: EntityTypeDefinition,
-            role: String): Boolean
+        application: ApplicationDefinition,
+        entityType: EntityTypeDefinition,
+        role: String
+    ): Boolean
 
     /**
      * Returns supported NLP engines.
