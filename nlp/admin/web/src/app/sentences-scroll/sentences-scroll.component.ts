@@ -39,6 +39,8 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> {
   @Input() displayProbabilities: boolean = false;
   @Input() displayStatus: boolean = false;
 
+  tableView:boolean = false;
+
   constructor(state: StateService,
               private nlp: NlpService,
               private snackBar: MdSnackBar) {
@@ -87,7 +89,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> {
           saveAs(blob, this.state.currentApplication.name + "_sentences.json");
           this.snackBar.open(`Dump provided`, "Dump", {duration: 1000});
         })
-    });
+    }, 1);
   }
 }
 

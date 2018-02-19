@@ -40,7 +40,7 @@
       </div>
 
       <div class="applications-applications__complex-actions">
-        <button (click)="downloadDump(app)" md-button>Download an application dump</button>
+        <button *ngIf="state.hasRole(UserRole.technicalAdmin)" (click)="downloadDump(app)" md-button>Download an application dump</button>
         <button (click)="downloadSentencesDump(app)" md-button>Download a sentences dump</button>
       </div>
 
