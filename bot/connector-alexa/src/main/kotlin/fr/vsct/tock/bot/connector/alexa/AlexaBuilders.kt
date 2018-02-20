@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.connector.alexa
 
+import com.amazon.speech.ui.Image
+import com.amazon.speech.ui.StandardCard
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.BotBus
@@ -38,5 +40,29 @@ fun BotBus.withAlexa(messageProvider: () -> ConnectorMessage): BotBus {
     return withMessage(alexaConnectorType, messageProvider)
 }
 
-fun BotBus.alexaEndConversation(): ConnectorMessage = AlexaMessage(true)
+/**
+ * End the conversation with the skill.
+ */
+fun alexaEndConversation(): ConnectorMessage = AlexaMessage(true)
+
+/**
+ * Add the specified card.
+ */
+fun BotBus.alexaStandardCard(
+    title: CharSequence,
+    text: CharSequence,
+    smallImageUrl: String,
+    largeImageUrl: String = smallImageUrl
+): ConnectorMessage =
+    AlexaMessage(
+        false,
+        StandardCard().apply {
+            setTitle(translate(title).toString())
+            setText(translate(text).toString())
+            image = Image().apply {
+                setSmallImageUrl(smallImageUrl)
+                setLargeImageUrl(largeImageUrl)
+            }
+        }
+    )
 

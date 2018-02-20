@@ -16,13 +16,23 @@
 
 package fr.vsct.tock.bot.connector.alexa
 
+import com.amazon.speech.ui.Card
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 
 /**
- *
+ * An alexa message.
  */
-data class AlexaMessage(val end:Boolean) : ConnectorMessage {
+data class AlexaMessage(
+    /**
+     * Does Alexa has to quit the skill?
+     */
+    val end: Boolean,
+    /**
+     * Is there a card to send?
+     */
+    val card: Card? = null
+) : ConnectorMessage {
 
     override val connectorType: ConnectorType = alexaConnectorType
 

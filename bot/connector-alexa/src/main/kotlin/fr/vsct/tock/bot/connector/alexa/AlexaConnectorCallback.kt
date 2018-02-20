@@ -45,11 +45,11 @@ import java.util.concurrent.CopyOnWriteArrayList
  *
  */
 internal data class AlexaConnectorCallback(
-        override val applicationId: String,
-        val controller: ConnectorController,
-        val alexaTockMapper: AlexaTockMapper,
-        val context: RoutingContext,
-        val actions: MutableList<ActionWithDelay> = CopyOnWriteArrayList()
+    override val applicationId: String,
+    val controller: ConnectorController,
+    val alexaTockMapper: AlexaTockMapper,
+    val context: RoutingContext,
+    val actions: MutableList<ActionWithDelay> = CopyOnWriteArrayList()
 ) : ConnectorCallbackBase(applicationId, alexaConnectorType), SpeechletV2 {
 
     @Volatile
@@ -73,19 +73,26 @@ internal data class AlexaConnectorCallback(
 
     fun buildResponse(): SpeechletResponse {
         val answer = actions.mapNotNull { it.action as? SendSentence }
-                .mapNotNull { it.stringText }
-                .joinToString(" . ")
+            .mapNotNull { it.stringText }
+            .joinToString(" . ")
         val end = actions.map { it.action }.filterIsInstance<SendSentence>().any {
             (it.message(alexaConnectorType) as? AlexaMessage?)?.end ?: false
         }
+        val card =
+            actions.map { it.action }
+                .filterIsInstance<SendSentence>()
+                .mapNotNull { it.message(alexaConnectorType) as? AlexaMessage? }
+                .firstOrNull { it.card != null }
+                ?.card
         val speech = if (answer.isSSML()) SsmlOutputSpeech().apply { ssml = answer }
         else PlainTextOutputSpeech().apply { text = answer }
         return if (end) {
-            SpeechletResponse.newTellResponse(speech)
+            SpeechletResponse.newTellResponse(speech, card)
         } else {
             SpeechletResponse.newAskResponse(
-                    speech,
-                    Reprompt().apply { outputSpeech = speech }
+                speech,
+                Reprompt().apply { outputSpeech = speech },
+                card
             )
         }
     }
@@ -122,8 +129,8 @@ internal data class AlexaConnectorCallback(
     }
 
     fun sendTechnicalError(
-            throwable: Throwable,
-            request: IntentRequest? = null
+        throwable: Throwable,
+        request: IntentRequest? = null
     ) {
         try {
             //TODO
@@ -136,7 +143,11 @@ internal data class AlexaConnectorCallback(
     }
 
     private fun logRequest(method: String, req: SpeechletRequestEnvelope<*>) {
-        logger.debug { "$method : \n${mapper.writeValueAsString(req.context)}\n${mapper.writeValueAsString(req.session)}\n${mapper.writeValueAsString(req.request)}" }
+        logger.debug {
+            "$method : \n${mapper.writeValueAsString(req.context)}\n${mapper.writeValueAsString(req.session)}\n${mapper.writeValueAsString(
+                req.request
+            )}"
+        }
     }
 
     override fun onSessionStarted(requestEnvelope: SpeechletRequestEnvelope<SessionStartedRequest>) {
@@ -152,7 +163,11 @@ internal data class AlexaConnectorCallback(
 
         val timerData = BotRepository.requestTimer.start("alexa_webhook")
         try {
-            val event = alexaTockMapper.toEvent(requestEnvelope.session.user.userId, requestEnvelope.request, controller.botDefinition)
+            val event = alexaTockMapper.toEvent(
+                requestEnvelope.session.user.userId,
+                requestEnvelope.request,
+                controller.botDefinition
+            )
             controller.handle(event, ConnectorData(this))
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
@@ -167,19 +182,21 @@ internal data class AlexaConnectorCallback(
     override fun onLaunch(requestEnvelope: SpeechletRequestEnvelope<LaunchRequest>): SpeechletResponse {
         logRequest("onLaunch", requestEnvelope)
         val helloStory = controller.botDefinition.run { helloStory ?: stories.first() }.mainIntent().name
-        return onIntent(SpeechletRequestEnvelope
+        return onIntent(
+            SpeechletRequestEnvelope
                 .builder<IntentRequest>()
                 .withContext(requestEnvelope.context)
                 .withSession(requestEnvelope.session)
                 .withVersion(requestEnvelope.version)
                 .withRequest(
-                        IntentRequest.builder()
-                                .withRequestId(requestEnvelope.request.requestId)
-                                .withTimestamp(requestEnvelope.request.timestamp)
-                                .withLocale(requestEnvelope.request.locale)
-                                .withIntent(Intent.builder().withName(helloStory).build())
-                                .withDialogState(IntentRequest.DialogState.STARTED)
-                                .build())
+                    IntentRequest.builder()
+                        .withRequestId(requestEnvelope.request.requestId)
+                        .withTimestamp(requestEnvelope.request.timestamp)
+                        .withLocale(requestEnvelope.request.locale)
+                        .withIntent(Intent.builder().withName(helloStory).build())
+                        .withDialogState(IntentRequest.DialogState.STARTED)
+                        .build()
+                )
                 .build()
         )
     }
