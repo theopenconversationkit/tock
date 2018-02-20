@@ -26,7 +26,7 @@ data class GAOrderUpdate(
         val orderManagementActions: List<GAAction>,
         val receipt: GAReceipt,
         val updateTime: String,
-        val totalPrice: GAPrice,
+        val totalPrice: GAPrice? = null,
         val lineItemUpdates: Map<String, GALineItemUpdate>,
         val userNotification: GAUserNotification? = null,
         val infoExtension: String? = null,
