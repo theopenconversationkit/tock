@@ -34,74 +34,82 @@ import java.util.Locale
 /**
  *
  */
-data class SentenceReport(val text: String,
-                          val language: Locale,
-                          val applicationId: Id<ApplicationDefinition>,
-                          val creationDate: Instant,
-                          val updateDate: Instant,
-                          val status: ClassifiedSentenceStatus,
-                          val classification: ClassificationReport,
-                          var key: String? = null) {
+data class SentenceReport(
+    val text: String,
+    val language: Locale,
+    val applicationId: Id<ApplicationDefinition>,
+    val creationDate: Instant,
+    val updateDate: Instant,
+    val status: ClassifiedSentenceStatus,
+    val classification: ClassificationReport,
+    var key: String? = null
+) {
 
-    constructor(query: ParseResult, language: Locale, applicationId: Id<ApplicationDefinition>, intentId: Id<IntentDefinition>?)
+    constructor(
+        query: ParseResult,
+        language: Locale,
+        applicationId: Id<ApplicationDefinition>,
+        intentId: Id<IntentDefinition>?
+    )
             : this(
-            obfuscate(query.retainedQuery)!!,
-            language,
-            applicationId,
-            now(),
-            now(),
-            ClassifiedSentenceStatus.inbox,
-            ClassificationReport(query, intentId)) {
+        obfuscate(query.retainedQuery)!!,
+        language,
+        applicationId,
+        now(),
+        now(),
+        ClassifiedSentenceStatus.inbox,
+        ClassificationReport(query, intentId)
+    ) {
         if (text != query.retainedQuery) {
             key = encrypt(query.retainedQuery)
         }
     }
 
-    constructor(sentence: ClassifiedSentence) : this(
-            obfuscate(sentence.text)!!,
-            sentence.language,
-            sentence.applicationId,
-            sentence.creationDate,
-            sentence.updateDate,
-            sentence.status,
-            ClassificationReport(sentence)
+    constructor(sentence: ClassifiedSentence, encryptSentences: Boolean = true) : this(
+        if (encryptSentences) obfuscate(sentence.text)!! else sentence.text,
+        sentence.language,
+        sentence.applicationId,
+        sentence.creationDate,
+        sentence.updateDate,
+        sentence.status,
+        ClassificationReport(sentence)
     ) {
         if (text != sentence.text) {
             key = encrypt(sentence.text)
         }
     }
 
-    constructor(error: IntentTestError) : this(
-            obfuscate(error.text)!!,
-            error.language,
-            error.applicationId,
-            error.firstDetectionDate,
-            error.firstDetectionDate,
-            ClassifiedSentenceStatus.model,
-            ClassificationReport(error)
+    constructor(error: IntentTestError, encryptSentences: Boolean) : this(
+        if (encryptSentences) obfuscate(error.text)!! else error.text,
+        error.language,
+        error.applicationId,
+        error.firstDetectionDate,
+        error.firstDetectionDate,
+        ClassifiedSentenceStatus.model,
+        ClassificationReport(error)
     )
 
-    constructor(error: EntityTestError) : this(
-            obfuscate(error.text)!!,
-            error.language,
-            error.applicationId,
-            error.firstDetectionDate,
-            error.firstDetectionDate,
-            ClassifiedSentenceStatus.model,
-            ClassificationReport(error)
+    constructor(error: EntityTestError, encryptSentences: Boolean) : this(
+        if (encryptSentences) obfuscate(error.text)!! else error.text,
+        error.language,
+        error.applicationId,
+        error.firstDetectionDate,
+        error.firstDetectionDate,
+        ClassifiedSentenceStatus.model,
+        ClassificationReport(error)
     )
 
     fun toClassifiedSentence(): ClassifiedSentence {
         return ClassifiedSentence(
-                if (key == null) text else decrypt(key!!),
-                language,
-                applicationId,
-                creationDate,
-                updateDate,
-                status,
-                classification.toClassification(),
-                1.0,
-                1.0
+            if (key == null) text else decrypt(key!!),
+            language,
+            applicationId,
+            creationDate,
+            updateDate,
+            status,
+            classification.toClassification(),
+            1.0,
+            1.0
         )
     }
 }

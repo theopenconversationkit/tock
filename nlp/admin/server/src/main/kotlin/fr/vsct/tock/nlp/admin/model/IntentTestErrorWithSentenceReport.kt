@@ -23,21 +23,22 @@ import java.time.Instant
  *
  */
 class IntentTestErrorWithSentenceReport(
-        val sentence: SentenceReport,
-        val currentIntent: String,
-        val wrongIntent: String,
-        val averageErrorProbability: Double,
-        val count: Int = 1,
-        val total: Int = 1,
-        val firstDetectionDate: Instant = Instant.now()) {
+    val sentence: SentenceReport,
+    val currentIntent: String,
+    val wrongIntent: String,
+    val averageErrorProbability: Double,
+    val count: Int = 1,
+    val total: Int = 1,
+    val firstDetectionDate: Instant = Instant.now()
+) {
 
-    constructor(error: IntentTestError) : this(
-            SentenceReport(error),
-            error.currentIntent,
-            error.wrongIntent,
-            error.averageErrorProbability,
-            error.count,
-            error.total,
-            error.firstDetectionDate
+    constructor(error: IntentTestError, encryptSentences: Boolean) : this(
+        SentenceReport(error, encryptSentences),
+        error.currentIntent,
+        error.wrongIntent,
+        error.averageErrorProbability,
+        error.count,
+        error.total,
+        error.firstDetectionDate
     )
 }

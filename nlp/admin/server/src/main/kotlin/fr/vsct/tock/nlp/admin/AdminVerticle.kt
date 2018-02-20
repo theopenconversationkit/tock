@@ -19,7 +19,9 @@ package fr.vsct.tock.nlp.admin
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 import fr.vsct.tock.nlp.admin.model.ApplicationWithIntents
 import fr.vsct.tock.nlp.admin.model.CreateEntityQuery
+import fr.vsct.tock.nlp.admin.model.EntityTestErrorQueryResultReport
 import fr.vsct.tock.nlp.admin.model.EntityTestErrorWithSentenceReport
+import fr.vsct.tock.nlp.admin.model.IntentTestErrorQueryResultReport
 import fr.vsct.tock.nlp.admin.model.IntentTestErrorWithSentenceReport
 import fr.vsct.tock.nlp.admin.model.LogStatsQuery
 import fr.vsct.tock.nlp.admin.model.LogsQuery
@@ -27,6 +29,7 @@ import fr.vsct.tock.nlp.admin.model.PaginatedQuery
 import fr.vsct.tock.nlp.admin.model.ParseQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
+import fr.vsct.tock.nlp.admin.model.SentencesReport
 import fr.vsct.tock.nlp.admin.model.UpdateEntityDefinitionQuery
 import fr.vsct.tock.nlp.admin.model.UpdateSentencesQuery
 import fr.vsct.tock.nlp.front.client.FrontClient
@@ -49,6 +52,7 @@ import fr.vsct.tock.shared.security.TockUserRole.technicalAdmin
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.netty.handler.codec.http.HttpHeaderNames
+import io.vertx.core.Handler
 import io.vertx.core.http.HttpMethod.GET
 import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.web.RoutingContext
@@ -282,10 +286,14 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/sentences/search")
-        { context, s: SearchQuery ->
+        jsonPost("/sentences/search")
+        { context, s: SearchQuery, handler: Handler<SentencesReport> ->
             if (context.organization == s.namespace) {
-                service.searchSentences(s)
+                context.isAuthorized(technicalAdmin) { plain ->
+                    context.executeBlocking {
+                        handler.handle(service.searchSentences(s, !(plain.result() ?: false)))
+                    }
+                }
             } else {
                 unauthorized()
             }
@@ -396,10 +404,14 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/test/intent-errors")
-        { context, query: TestErrorQuery ->
+        jsonPost("/test/intent-errors")
+        { context, query: TestErrorQuery, handler: Handler<IntentTestErrorQueryResultReport> ->
             if (context.organization == front.getApplicationById(query.applicationId)?.namespace) {
-                AdminService.searchTestIntentErrors(query)
+                context.isAuthorized(technicalAdmin) { plain ->
+                    context.executeBlocking {
+                        handler.handle(AdminService.searchTestIntentErrors(query, !(plain.result() ?: false)))
+                    }
+                }
             } else {
                 unauthorized()
             }
@@ -418,10 +430,14 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/test/entity-errors")
-        { context, query: TestErrorQuery ->
+        jsonPost("/test/entity-errors")
+        { context, query: TestErrorQuery, handler: Handler<EntityTestErrorQueryResultReport> ->
             if (context.organization == front.getApplicationById(query.applicationId)?.namespace) {
-                AdminService.searchTestEntityErrors(query)
+                context.isAuthorized(technicalAdmin) { plain ->
+                    context.executeBlocking {
+                        handler.handle(service.searchTestEntityErrors(query, !(plain.result() ?: false)))
+                    }
+                }
             } else {
                 unauthorized()
             }

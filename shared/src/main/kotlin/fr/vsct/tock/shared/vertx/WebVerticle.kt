@@ -36,6 +36,7 @@ import fr.vsct.tock.shared.security.TockUserRole.technicalAdmin
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future
+import io.vertx.core.Handler
 import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpMethod.DELETE
 import io.vertx.core.http.HttpMethod.GET
@@ -142,6 +143,9 @@ abstract class WebVerticle : AbstractVerticle() {
             })
     }
 
+    override fun stop(stopFuture: Future<Void>?) {
+        server.close { e -> logger.info { "$verticleName stopped result : ${e.succeeded()}" } }
+    }
 
     protected fun addAuth(
         authProvider: AuthProvider = defaultAuthProvider(),
@@ -250,51 +254,22 @@ abstract class WebVerticle : AbstractVerticle() {
     protected fun verticleProperty(propertyName: String, defaultValue: String): String =
         property(verticleProperty(propertyName), defaultValue)
 
-    protected fun blocking(
+    protected fun register(
         method: HttpMethod,
         path: String,
         role: TockUserRole? = defaultRole(),
         handler: (RoutingContext) -> Unit
     ) {
-        fun sendBlocking(context: RoutingContext) {
-            vertx.executeBlocking<Unit>({
-                try {
-                    handler.invoke(context)
-                    it.succeeded()
-                } catch (t: Throwable) {
-                    it.fail(t)
-                }
-            },
-                false,
-                {
-                    if (it.failed()) {
-                        it.cause().apply {
-                            if (this is RestException) {
-                                context.response().statusMessage = message
-                                context.fail(code)
-                            } else if (this != null) {
-                                logger.error(this)
-                                context.fail(this)
-                            } else {
-                                logger.error { "unknown error" }
-                                context.fail(500)
-                            }
-                        }
-
-                    }
-                }
-            )
-        }
 
         router.route(method, "$rootPath$path")
             .handler { context ->
                 val user = context.user()
                 if (user == null || role == null) {
-                    sendBlocking(context)
+                    handler.invoke(context)
                 } else {
                     context.isAuthorized(role) {
                         if (it.succeeded()) {
-                            sendBlocking(context)
+                            handler.invoke(context)
                         } else {
                             context.fail(401)
                         }
@@ -303,7 +278,16 @@ abstract class WebVerticle : AbstractVerticle() {
             }
     }
 
-    private fun RoutingContext.isAuthorized(
+    protected fun blocking(
+        method: HttpMethod,
+        path: String,
+        role: TockUserRole? = defaultRole(),
+        handler: (RoutingContext) -> Unit
+    ) {
+        register(method, path, role, { it.executeBlocking(handler) })
+    }
+
+    protected fun RoutingContext.isAuthorized(
         role: TockUserRole,
         resultHandler: (AsyncResult<Boolean>) -> Unit
     ) = user()?.isAuthorized(role.name, resultHandler)
@@ -402,11 +386,32 @@ abstract class WebVerticle : AbstractVerticle() {
         blockingWithoutBodyJson(DELETE, path, role, { BooleanResponse(handler.invoke(it)) })
     }
 
-    override fun stop(stopFuture: Future<Void>?) {
-        server.close { e -> logger.info { "$verticleName stopped result : ${e.succeeded()}" } }
+    //non blocking methods
+
+    protected inline fun <reified I : Any, O> withBodyJson(
+        method: HttpMethod,
+        path: String,
+        role: TockUserRole?,
+        crossinline handler: (RoutingContext, I, Handler<O>) -> Unit
+    ) {
+        register(method, path, role, { context ->
+            val input = context.readJson<I>()
+
+            handler.invoke(context, input, Handler { event -> context.endJson(event) })
+        })
     }
 
-    open protected fun addDevCorsHandler() {
+    protected inline fun <reified I : Any, O> jsonPost(
+        path: String,
+        role: TockUserRole? = defaultRole(),
+        crossinline handler: (RoutingContext, I, Handler<O>) -> Unit
+    ) {
+        withBodyJson(POST, path, role, handler)
+    }
+
+    //extension & utility methods
+
+    protected open fun addDevCorsHandler() {
         if (booleanProperty("tock_web_use_default_cors_handler", devEnvironment)) {
             router.route().handler(
                 corsHandler(
@@ -439,8 +444,6 @@ abstract class WebVerticle : AbstractVerticle() {
             .setMergeFormAttributes(false)
     }
 
-// extension methods ->
-
     inline fun <reified T : Any> RoutingContext.readJson(): T {
         return mapper.readValue<T>(this.bodyAsString)
     }
@@ -451,6 +454,38 @@ abstract class WebVerticle : AbstractVerticle() {
 
     fun readString(upload: FileUpload): String {
         return String(Files.readAllBytes(Paths.get(upload.uploadedFileName())), StandardCharsets.UTF_8)
+    }
+
+    /**
+     * Execute blocking code using [Vertx.executeBlocking].
+     */
+    protected fun RoutingContext.executeBlocking(handler: (RoutingContext) -> Unit) {
+        vertx.executeBlocking<Unit>({
+            try {
+                handler.invoke(this)
+                it.succeeded()
+            } catch (t: Throwable) {
+                it.fail(t)
+            }
+        },
+            false,
+            {
+                if (it.failed()) {
+                    it.cause().apply {
+                        if (this is RestException) {
+                            response().statusMessage = message
+                            fail(code)
+                        } else if (this != null) {
+                            logger.error(this)
+                            fail(this)
+                        } else {
+                            logger.error { "unknown error" }
+                            fail(500)
+                        }
+                    }
+                }
+            }
+        )
     }
 
     fun RoutingContext.success() {

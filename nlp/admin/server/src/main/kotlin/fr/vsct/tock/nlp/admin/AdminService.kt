@@ -58,10 +58,10 @@ object AdminService {
         return SentenceReport(result, query.language, application._id, intentId)
     }
 
-    fun searchSentences(query: SearchQuery): SentencesReport {
+    fun searchSentences(query: SearchQuery, encryptSentences: Boolean): SentencesReport {
         val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
         val result = front.search(query.toSentencesQuery(application!!._id))
-        return SentencesReport(query.start, result)
+        return SentencesReport(query.start, result, encryptSentences)
     }
 
     fun updateSentences(query: UpdateSentencesQuery): UpdateSentencesReport {
@@ -114,19 +114,19 @@ object AdminService {
             { front.getIntentIdByQualifiedName(it.withNamespace(query.namespace)) })
     }
 
-    fun searchTestIntentErrors(query: TestErrorQuery): IntentTestErrorQueryResultReport {
+    fun searchTestIntentErrors(query: TestErrorQuery, encryptSentences: Boolean): IntentTestErrorQueryResultReport {
         return front.searchTestIntentErrors(query)
             .run {
                 IntentTestErrorQueryResultReport(
                     total,
                     data.map {
-                        IntentTestErrorWithSentenceReport(it)
+                        IntentTestErrorWithSentenceReport(it, encryptSentences)
                     }
                 )
             }
     }
 
-    fun searchTestEntityErrors(query: TestErrorQuery): EntityTestErrorQueryResultReport {
+    fun searchTestEntityErrors(query: TestErrorQuery, encryptSentences: Boolean): EntityTestErrorQueryResultReport {
         return front.searchTestEntityErrors(query)
             .run {
                 EntityTestErrorQueryResultReport(
@@ -145,7 +145,8 @@ object AdminService {
                         } else {
                             EntityTestErrorWithSentenceReport(
                                 SentenceReport(s.sentences.first()),
-                                it
+                                it,
+                                encryptSentences
                             )
                         }
                     }

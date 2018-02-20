@@ -23,19 +23,20 @@ import java.time.Instant
  *
  */
 data class EntityTestErrorWithSentenceReport(
-        val originalSentence: SentenceReport,
-        val sentence: SentenceReport,
-        val averageErrorProbability: Double,
-        val count: Int = 1,
-        val total: Int = 1,
-        val firstDetectionDate: Instant = Instant.now()) {
+    val originalSentence: SentenceReport,
+    val sentence: SentenceReport,
+    val averageErrorProbability: Double,
+    val count: Int = 1,
+    val total: Int = 1,
+    val firstDetectionDate: Instant = Instant.now()
+) {
 
-    constructor(originalSentence: SentenceReport, error: EntityTestError) : this(
-            originalSentence,
-            SentenceReport(error),
-            error.averageErrorProbability,
-            error.count,
-            error.total,
-            error.firstDetectionDate
+    constructor(originalSentence: SentenceReport, error: EntityTestError, encryptSentences: Boolean) : this(
+        originalSentence,
+        SentenceReport(error, encryptSentences),
+        error.averageErrorProbability,
+        error.count,
+        error.total,
+        error.firstDetectionDate
     )
 }
