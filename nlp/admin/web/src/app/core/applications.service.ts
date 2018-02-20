@@ -147,9 +147,9 @@ export class ApplicationService implements OnDestroy {
   prepareSentencesDumpUploader(uploader: FileUploader, full:boolean, name?: string) {
     let url: string;
     if (name) {
-      url = `/dump/sentences/${full ? 'full/' : ''}${name}`;
+      url = `/dump/sentences/${name}`;
     } else {
-      url = `/dump/sentences${full ? 'full/' : ''}`;
+      url = `/dump/sentences/`;
     }
     this.rest.setFileUploaderOptions(uploader, url);
   }

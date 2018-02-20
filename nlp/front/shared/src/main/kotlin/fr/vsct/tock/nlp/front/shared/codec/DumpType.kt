@@ -19,4 +19,11 @@ package fr.vsct.tock.nlp.front.shared.codec
 /**
  * Only full supported for now.
  */
-enum class DumpType { full, obfuscated }
+enum class DumpType {
+    full, obfuscated;
+
+    companion object {
+        fun parseDumpType(s:String) : DumpType
+            = values().firstOrNull { it.name == s } ?: obfuscated
+    }
+}

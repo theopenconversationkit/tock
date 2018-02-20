@@ -101,56 +101,58 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonGet("/sentences/dump/:applicationId", admin) {
+        blockingJsonGet("/sentences/dump/:dumpType/:applicationId", admin) {
             val id: Id<ApplicationDefinition> = it.pathId("applicationId")
             if (it.organization == front.getApplicationById(id)?.namespace) {
-                front.exportSentences(id, null, null, DumpType.full)
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonPost("/sentences/dump/:applicationId", admin) { context, query: SearchQuery ->
-            val id: Id<ApplicationDefinition> = context.pathId("applicationId")
-            if (context.organization == front.getApplicationById(id)?.namespace) {
                 front.exportSentences(
                     id,
                     null,
-                    query.toSentencesQuery(id),
-                    DumpType.full
+                    null,
+                    DumpType.parseDumpType(it.pathParam("dumpType"))
                 )
             } else {
                 unauthorized()
             }
         }
 
-        blockingJsonGet("/sentences/dump/:applicationId/:intent", admin) {
-            val id: Id<ApplicationDefinition> = it.pathId("applicationId")
-            if (it.organization == front.getApplicationById(id)?.namespace) {
-                front.exportSentences(id, it.pathParam("intent"), null, DumpType.obfuscated)
-            } else {
-                unauthorized()
-            }
-        }
-
-        blockingJsonPost("/sentences/dump/full/:applicationId", technicalAdmin) { context, query: SearchQuery ->
+        blockingJsonPost("/sentences/dump/:dumpType/:applicationId", admin) { context, query: SearchQuery ->
             val id: Id<ApplicationDefinition> = context.pathId("applicationId")
             if (context.organization == front.getApplicationById(id)?.namespace) {
                 front.exportSentences(
                     id,
                     null,
                     query.toSentencesQuery(id),
-                    DumpType.obfuscated
+                    DumpType.parseDumpType(
+                        context.pathParam("dumpType")
+                    )
                 )
             } else {
                 unauthorized()
             }
         }
 
-        blockingJsonGet("/sentences/dump/full/:applicationId/:intent", technicalAdmin) {
+        blockingJsonGet("/sentences/dump/:dumpType/:applicationId/:intent", admin) {
             val id: Id<ApplicationDefinition> = it.pathId("applicationId")
             if (it.organization == front.getApplicationById(id)?.namespace) {
-                front.exportSentences(id, it.pathParam("intent"), null, DumpType.full)
+                front.exportSentences(
+                    id, it.pathParam("intent"),
+                    null,
+                    DumpType.parseDumpType(it.pathParam("dumpType"))
+                )
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/sentences/dump/:dumpType/:applicationId", technicalAdmin) { context, query: SearchQuery ->
+            val id: Id<ApplicationDefinition> = context.pathId("applicationId")
+            if (context.organization == front.getApplicationById(id)?.namespace) {
+                front.exportSentences(
+                    id,
+                    null,
+                    query.toSentencesQuery(id),
+                    DumpType.parseDumpType(context.pathParam("dumpType"))
+                )
             } else {
                 unauthorized()
             }
