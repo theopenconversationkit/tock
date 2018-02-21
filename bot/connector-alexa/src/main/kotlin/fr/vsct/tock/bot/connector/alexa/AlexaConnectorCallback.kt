@@ -71,7 +71,7 @@ internal data class AlexaConnectorCallback(
         }
     }
 
-    fun buildResponse(): SpeechletResponse {
+    private fun buildResponse(): SpeechletResponse {
         val answer = actions.mapNotNull { it.action as? SendSentence }
             .mapNotNull { it.stringText }
             .joinToString(" . ")
@@ -87,13 +87,24 @@ internal data class AlexaConnectorCallback(
         val speech = if (answer.isSSML()) SsmlOutputSpeech().apply { ssml = answer }
         else PlainTextOutputSpeech().apply { text = answer }
         return if (end) {
-            SpeechletResponse.newTellResponse(speech, card)
+            if (card != null) {
+                SpeechletResponse.newTellResponse(speech, card)
+            } else {
+                SpeechletResponse.newTellResponse(speech)
+            }
         } else {
-            SpeechletResponse.newAskResponse(
-                speech,
-                Reprompt().apply { outputSpeech = speech },
-                card
-            )
+            if (card != null) {
+                SpeechletResponse.newAskResponse(
+                    speech,
+                    Reprompt().apply { outputSpeech = speech },
+                    card
+                )
+            } else {
+                SpeechletResponse.newAskResponse(
+                    speech,
+                    Reprompt().apply { outputSpeech = speech }
+                )
+            }
         }
     }
 
@@ -128,13 +139,12 @@ internal data class AlexaConnectorCallback(
         sendTechnicalError(throwable)
     }
 
-    fun sendTechnicalError(
+    private fun sendTechnicalError(
         throwable: Throwable,
         request: IntentRequest? = null
     ) {
         try {
-            //TODO
-            logger.error(throwable)
+            logger.error("request: $request", throwable)
             context.fail(throwable)
         } catch (t: Throwable) {
             logger.error(t)
@@ -158,7 +168,7 @@ internal data class AlexaConnectorCallback(
         logRequest("onSessionEnded", requestEnvelope)
     }
 
-    override fun onIntent(requestEnvelope: SpeechletRequestEnvelope<IntentRequest>): SpeechletResponse {
+    override fun onIntent(requestEnvelope: SpeechletRequestEnvelope<IntentRequest>): SpeechletResponse? {
         logRequest("onIntent", requestEnvelope)
 
         val timerData = BotRepository.requestTimer.start("alexa_webhook")
@@ -176,10 +186,10 @@ internal data class AlexaConnectorCallback(
             BotRepository.requestTimer.end(timerData)
         }
 
-        return alexaResponse!! //TODO
+        return alexaResponse
     }
 
-    override fun onLaunch(requestEnvelope: SpeechletRequestEnvelope<LaunchRequest>): SpeechletResponse {
+    override fun onLaunch(requestEnvelope: SpeechletRequestEnvelope<LaunchRequest>): SpeechletResponse? {
         logRequest("onLaunch", requestEnvelope)
         val helloStory = controller.botDefinition.run { helloStory ?: stories.first() }.mainIntent().name
         return onIntent(
