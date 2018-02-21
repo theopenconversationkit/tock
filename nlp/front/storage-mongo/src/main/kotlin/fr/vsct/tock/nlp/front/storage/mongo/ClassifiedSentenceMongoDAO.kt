@@ -29,7 +29,6 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.inbox
 import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
-import fr.vsct.tock.nlp.front.shared.config.SearchMark
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
 import org.litote.kmongo.Id
@@ -162,19 +161,19 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     if (filterStatus.isEmpty()) null else filterStatus,
                     if (entityType == null) null else "'classification.entities.type':${entityType!!.json}",
                     if (entityRole == null) null else "'classification.entities.role':${entityRole!!.json}",
-                    if (modifiedAfter == null) null else "updateDate:{$gt: ${modifiedAfter!!.json}}"
-                )
-            val searchFilter =
-                filterBase + listOf(if (searchMark == null) null else "updateDate:{$lte: ${searchMark!!.date.json}}")
+                    if (modifiedAfter == null) null else "updateDate:{$gt: ${modifiedAfter!!.json}}",
+                    if (searchMark == null) null else "updateDate:{$lte: ${searchMark!!.date.json}}"
+                ).toBsonFilter()
 
-            val count = col.count(filterBase.toBsonFilter())
+            val count = col.count(filterBase)
             if (count > start) {
                 val list = col
-                    .find(searchFilter.toBsonFilter())
+                    .find(filterBase)
                     .sort(Sorts.descending("updateDate"))
-                    .filterFromMark(start, size, searchMark) { SearchMark(it.text, it.updateDate) }
+                    .skip(start.toInt())
+                    .limit(size)
 
-                return SentencesQueryResult(count, list.map { it.toSentence() })
+                return SentencesQueryResult(count, list.map { it.toSentence() }.toList())
             } else {
                 return SentencesQueryResult(0, emptyList())
             }

@@ -35,6 +35,7 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
   loading: boolean = false;
   data: Array<T> = [];
   add:boolean = true;
+  mark:SearchMark;
 
   private currentApplicationUnsuscriber: any;
   private currentLocaleUnsuscriber: any;
@@ -57,6 +58,7 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
     this.loading = false;
     this.cursor = 0;
     this.total = -1;
+    this.mark = null;
   }
 
   refresh() {
@@ -79,12 +81,7 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
   }
 
   protected paginatedQuery(): PaginatedQuery {
-    let searchMark = null;
-    //TODO
-    /*if (this.cursor !== 0 && this.data && this.data.length !== 0) {
-      searchMark = this.searchMark(this.data[this.data.length - 1]);
-    }*/
-    return this.state.createPaginatedQuery(this.cursor, this.pageSize, searchMark);
+    return this.state.createPaginatedQuery(this.cursor, this.pageSize, this.mark);
   }
 
   protected loadResults(result: PaginatedResult<T>, init: boolean) : boolean {
@@ -100,6 +97,9 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
     this.cursor = result.end;
     this.total = result.total;
     this.loading = false;
+    if (!this.mark && this.data && this.data.length !== 0) {
+      this.mark = this.searchMark(this.data[0]);
+    }
     return true;
   }
 

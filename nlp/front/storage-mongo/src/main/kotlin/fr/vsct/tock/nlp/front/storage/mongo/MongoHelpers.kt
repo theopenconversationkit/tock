@@ -16,37 +16,8 @@
 
 package fr.vsct.tock.nlp.front.storage.mongo
 
-import com.mongodb.client.FindIterable
-import fr.vsct.tock.nlp.front.shared.config.SearchMark
-
 //wrapper to workaround the 1024 chars limit for String indexes
-internal fun textKey(text: String): String = if (text.length > 512) text.substring(0, Math.min(512, text.length)) else text
-
-internal fun <T> FindIterable<T>.filterFromMark(
-        start: Long,
-        size: Int,
-        mark: SearchMark?,
-        markExtractor: (T) -> SearchMark): List<T> {
-
-    return if (mark == null) {
-        skip(start.toInt()).limit(size).toList()
-    } else {
-        batchSize(size + 1).iterator().use { cursor ->
-            val result = mutableListOf<T>()
-            var markSeen = false
-            while (result.size < size && cursor.hasNext()) {
-                val next = cursor.next()
-                if (markSeen) {
-                    result.add(next)
-                } else {
-                    markSeen = markExtractor.invoke(next).run {
-                        text == mark.text || date < mark.date
-                    }
-                }
-            }
-            return result
-        }
-    }
-}
+internal fun textKey(text: String): String =
+    if (text.length > 512) text.substring(0, Math.min(512, text.length)) else text
 
 internal fun List<String?>.toBsonFilter(): String = filterNotNull().joinToString(",", "{", "}")
