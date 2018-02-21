@@ -34,6 +34,7 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
   total: number = -1;
   loading: boolean = false;
   data: Array<T> = [];
+  add:boolean = true;
 
   private currentApplicationUnsuscriber: any;
   private currentLocaleUnsuscriber: any;
@@ -52,10 +53,14 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
     this.currentLocaleUnsuscriber.unsubscribe();
   }
 
-  refresh() {
+  reset() {
     this.loading = false;
     this.cursor = 0;
     this.total = -1;
+  }
+
+  refresh() {
+    this.reset();
     this.data = [];
     this.load();
   }
@@ -75,21 +80,27 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
 
   protected paginatedQuery(): PaginatedQuery {
     let searchMark = null;
-    if (this.cursor !== 0 && this.data && this.data.length !== 0) {
+    //TODO
+    /*if (this.cursor !== 0 && this.data && this.data.length !== 0) {
       searchMark = this.searchMark(this.data[this.data.length - 1]);
-    }
+    }*/
     return this.state.createPaginatedQuery(this.cursor, this.pageSize, searchMark);
   }
 
-  private loadResults(result: PaginatedResult<T>, init: boolean) {
+  protected loadResults(result: PaginatedResult<T>, init: boolean) : boolean {
     //skip parallel initialization
     if (init && this.data.length !== 0) {
-      return;
+      return false;
     }
-    Array.prototype.push.apply(this.data, result.rows);
+    if(this.add) {
+      Array.prototype.push.apply(this.data, result.rows);
+    } else {
+      this.data = result.rows;
+    }
     this.cursor = result.end;
     this.total = result.total;
     this.loading = false;
+    return true;
   }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<T>> {

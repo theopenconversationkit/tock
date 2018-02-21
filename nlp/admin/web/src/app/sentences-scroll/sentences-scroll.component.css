@@ -14,10 +14,33 @@
  * limitations under the License.
  */
 
+.paginator {
+  height: 64px;
+}
+
 .header {
   display: inline-flex;
+  float: left;
+  background-color: white;
+  padding-left: 8px;
+  height: 64px;
+}
+
+.title {
+  margin: auto;
+  vertical-align: bottom;
 }
 
 .button {
   float: right;
+  margin: auto;
+}
+
+.status {
+  border-radius: 25px;
+  padding: 8px;
+}
+
+.md-column-select {
+  overflow: initial;
 }

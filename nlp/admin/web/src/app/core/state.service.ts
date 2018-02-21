@@ -187,7 +187,7 @@ export class StateService implements AuthListener {
       this.currentApplication.name,
       this.currentLocale,
       start,
-      start + size,
+      size,
       searchMark
     );
   }

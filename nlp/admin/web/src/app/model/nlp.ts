@@ -18,6 +18,7 @@ import {ApplicationScopedQuery, JsonUtils, PaginatedQuery, SearchMark} from "./c
 import {User} from "./auth";
 import {Intent} from "./application";
 import {isNullOrUndefined} from "util";
+import {StateService} from "../core/state.service";
 
 export class EntityDefinition {
 
@@ -219,6 +220,7 @@ export abstract class EntityContainer {
 export class Sentence extends EntityContainer {
 
   private withSubEntities: EntityWithSubEntities[];
+  private intentLabel:string;
 
   constructor(public text: string,
               public language: string,
@@ -229,6 +231,14 @@ export class Sentence extends EntityContainer {
               public updateDate: Date,
               public key?: string) {
     super()
+  }
+
+  getIntentLabel(state:StateService) : string {
+    if(!this.intentLabel) {
+      const intent = state.findIntentById(this.classification.intentId);
+      this.intentLabel = intent ? intent.name : nameFromQualifiedName(Intent.unknown);
+    }
+    return this.intentLabel;
   }
 
   getText(): string {
@@ -927,6 +937,10 @@ export function entityNameFromQualifiedName(qualifiedName: string): string {
 
 export function namespaceFromQualifiedName(qualifiedName: string): string {
   return qualifiedName ? qualifiedName.split(":")[0] : "error";
+}
+
+export function nameFromQualifiedName(qualifiedName: string): string {
+  return qualifiedName ? qualifiedName.split(":")[1] : "error";
 }
 
 export function getRoles(intents: Intent[], entityType?: string): string[] {

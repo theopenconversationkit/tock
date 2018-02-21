@@ -15,29 +15,49 @@
   -->
 
 <ng-content></ng-content>
-<div *ngIf="total !== -1">
+
+<div class="paginator">
   <div class="header" *ngIf="total === 0">
-    <h1>{{title}} is empty!</h1>
+    <h4 class="title">{{title}} is empty!</h4>
     <button md-button (click)="refresh()" class="button">
       <md-icon>refresh</md-icon>
     </button>
   </div>
 
   <div class="header" *ngIf="total !== 0">
-    <h1><span *ngIf="total > 10">Estimated</span> {{title}} size : {{total}}</h1>
-    <button md-button (click)="refresh()" class="button">
+    <h4 class="title"></h4>
+    <button md-icon-button (click)="refresh()" class="button" md-tooltip="Refresh">
       <md-icon>refresh</md-icon>
     </button>
     <button *ngIf="state.hasRole(UserRole.admin)"
-            md-button
+            md-icon-button
             (click)="downloadSentencesDump()"
             mdTooltip="Download a sentences dump of the current selection"
             class="button">
       <md-icon>cloud_download</md-icon>
     </button>
+    <button *ngIf="tableView" md-icon-button (click)="switchToScrollView()" class="button"
+            mdTooltip="Switch to scroll view">
+      <md-icon>grid_off</md-icon>
+    </button>
+    <button *ngIf="!tableView" md-icon-button (click)="switchToTableView()" class="button"
+            mdTooltip="Switch to table view">
+      <md-icon>grid_on</md-icon>
+    </button>
   </div>
-  <p></p>
+
+  <md-paginator #paginator
+                [length]="total"
+                [pageIndex]="pageIndex"
+                [pageSize]="pageSize"
+                [pageSizeOptions]="[10, 25, 50, 100]">
+  </md-paginator>
+</div>
+<p></p>
+
+<div *ngIf="total !== -1">
   <div
+    *ngIf="!tableView"
     infinite-scroll
     [infiniteScrollDistance]="2"
     [infiniteScrollThrottle]="300"
@@ -50,4 +70,47 @@
                               [displayStatus]="displayStatus"></tock-sentence-analysis>
     </div>
   </div>
+
+  <div *ngIf="tableView">
+
+    <md-table #table [dataSource]="dataSource">
+
+      <ng-container mdColumnDef="select">
+        <md-header-cell *mdHeaderCellDef>
+          <md-checkbox (change)="$event ? masterToggle() : null"
+                        [checked]="selection.hasValue() && isAllSelected()"
+                        [indeterminate]="selection.hasValue() && !isAllSelected()">
+          </md-checkbox>
+        </md-header-cell>
+        <md-cell *mdCellDef="let row">
+          <md-checkbox (click)="$event.stopPropagation()"
+                        (change)="$event ? selection.toggle(row) : null"
+                        [checked]="selection.isSelected(row)">
+          </md-checkbox>
+        </md-cell>
+      </ng-container>
+
+      <ng-container mdColumnDef="text">
+        <md-header-cell *mdHeaderCellDef> Text</md-header-cell>
+        <md-cell *mdCellDef="let row"> <tock-highlight [sentence]="row" [readOnly]="true"></tock-highlight></md-cell>
+      </ng-container>
+
+      <ng-container mdColumnDef="currentIntent">
+        <md-header-cell *mdHeaderCellDef> Intent</md-header-cell>
+        <md-cell *mdCellDef="let row"><span style="color:green">{{row.getIntentLabel(state)}}</span></md-cell>
+      </ng-container>
+
+      <ng-container mdColumnDef="status" *ngIf="displayStatus">
+        <md-header-cell *mdHeaderCellDef> Intent</md-header-cell>
+        <md-cell *mdCellDef="let row"><span class="status" [style.background]="row.statusColor()">{{row.statusDisplayed()}}</span></md-cell>
+      </ng-container>
+
+      <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
+      <md-row *mdRowDef="let row; columns: displayedColumns;"></md-row>
+    </md-table>
+
+  </div>
+
 </div>
+
+

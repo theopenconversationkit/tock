@@ -121,7 +121,7 @@ export class SearchComponent implements OnInit {
         this.state.currentApplication.namespace,
         this.state.currentApplication.name,
         this.state.currentLocale,
-        this.scroll.toSearchQuery(this.state.createPaginatedQuery(0, 10000)),
+        this.scroll.toSearchQuery(this.state.createPaginatedQuery(0, 100000)),
         this.update.newIntentId,
         this.update.oldEntity,
         this.update.newEntity

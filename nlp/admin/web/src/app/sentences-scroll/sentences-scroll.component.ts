@@ -15,22 +15,24 @@
  */
 
 import {saveAs} from "file-saver";
-import {Component, Input} from "@angular/core";
+import {AfterViewInit, Component, Input, ViewChild} from "@angular/core";
 import {PaginatedResult, SearchQuery, Sentence, SentenceStatus} from "../model/nlp";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {StateService} from "../core/state.service";
 import {ScrollComponent} from "../scroll/scroll.component";
 import {PaginatedQuery, SearchMark} from "../model/commons";
 import {Observable} from "rxjs/Observable";
-import {MdSnackBar} from "@angular/material";
+import {MdPaginator, MdSnackBar} from "@angular/material";
 import {UserRole} from "../model/auth";
+import {DataSource, SelectionModel} from "@angular/cdk/collections";
+import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
 @Component({
   selector: 'tock-sentences-scroll',
   templateUrl: './sentences-scroll.component.html',
   styleUrls: ['./sentences-scroll.component.css']
 })
-export class SentencesScrollComponent extends ScrollComponent<Sentence> {
+export class SentencesScrollComponent extends ScrollComponent<Sentence> implements AfterViewInit {
 
   UserRole = UserRole;
 
@@ -39,7 +41,13 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> {
   @Input() displayProbabilities: boolean = false;
   @Input() displayStatus: boolean = false;
 
-  tableView:boolean = false;
+  pageIndex: number = 0;
+
+  tableView: boolean = false;
+  displayedColumns = [];
+  @ViewChild(MdPaginator) paginator: MdPaginator;
+  dataSource: SentencesDataSource | null;
+  selection: SelectionModel<Sentence> = new SelectionModel<Sentence>(true, []);
 
   constructor(state: StateService,
               private nlp: NlpService,
@@ -53,6 +61,36 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> {
       t.text,
       t.updateDate
     );
+  }
+
+  ngOnInit(): void {
+    if (this.displayStatus) {
+      this.displayedColumns = ['select', 'text', 'currentIntent', 'status'];
+    } else {
+      this.displayedColumns = ['select', 'text', 'currentIntent'];
+    }
+    this.dataSource = new SentencesDataSource();
+    super.ngOnInit();
+  }
+
+  ngAfterViewInit(): void {
+    this.paginator.page.subscribe(e => {
+      this.add = false;
+      if (this.pageSize === e.pageSize) {
+        this.cursor = e.pageIndex * e.pageSize;
+      } else {
+        this.cursor = 0;
+        this.pageSize = e.pageSize;
+      }
+
+      this.load();
+    })
+  }
+
+
+  reset(): void {
+    super.reset();
+    this.pageIndex = 0;
   }
 
   toSearchQuery(query: PaginatedQuery): SearchQuery {
@@ -91,6 +129,43 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> {
         })
     }, 1);
   }
+
+  switchToScrollView() {
+    this.reset();
+    this.tableView = false;
+    this.refresh();
+  }
+
+  switchToTableView() {
+    this.reset();
+    this.tableView = true;
+    this.refresh();
+  }
+
+  protected loadResults(result: PaginatedResult<Sentence>, init: boolean): boolean {
+    if (super.loadResults(result, init)) {
+      this.dataSource.setNewValues(result.rows);
+      this.pageIndex = result.start / this.pageSize;
+      this.add = true;
+      return true;
+    } else {
+      return false;
+    }
+  }
+
+  /** Whether the number of selected elements matches the total number of rows. */
+  isAllSelected() {
+    const numSelected = this.selection.selected.length;
+    const numRows = this.dataSource.getData().length;
+    return numSelected == numRows;
+  }
+
+  /** Selects all rows if they are not all selected; otherwise clear selection. */
+  masterToggle() {
+    this.isAllSelected() ?
+      this.selection.clear() :
+      this.dataSource.getData().forEach(row => this.selection.select(row));
+  }
 }
 
 export class SentenceFilter {
@@ -104,5 +179,25 @@ export class SentenceFilter {
 
   clone(): SentenceFilter {
     return new SentenceFilter(this.search, this.intentId, this.status, this.entityType, this.entityRole, this.modifiedAfter);
+  }
+}
+
+export class SentencesDataSource extends DataSource<Sentence> {
+
+  private subject = new BehaviorSubject([]);
+
+  setNewValues(values: Sentence[]) {
+    this.subject.next(values);
+  }
+
+  getData(): Sentence[] {
+    return this.subject.getValue();
+  }
+
+  connect(): Observable<Sentence[]> {
+    return this.subject;
+  }
+
+  disconnect() {
   }
 }
