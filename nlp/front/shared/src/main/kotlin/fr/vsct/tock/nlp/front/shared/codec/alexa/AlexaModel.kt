@@ -22,44 +22,57 @@ import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 data class AlexaFilter(val intents: List<AlexaIntentFilter> = emptyList()) {
 
     fun findSlot(intent: IntentDefinition, entity: EntityDefinition): AlexaSlotFilter? =
-            intents.firstOrNull { it.intent == intent.name }?.slots?.firstOrNull { it.name == entity.role }
+        intents.firstOrNull { it.intent == intent.name }?.slots?.firstOrNull { it.name == entity.role }
+}
+
+interface AlexaModelTransformer {
+    fun transform(schema: AlexaIntentsSchema): AlexaIntentsSchema
 }
 
 data class AlexaIntentFilter(
-        val intent: String,
-        val slots: List<AlexaSlotFilter> = emptyList())
+    val intent: String,
+    val slots: List<AlexaSlotFilter> = emptyList()
+)
 
 data class AlexaSlotFilter(
-        val name: String,
-        val type: String,
-        val targetName: String = name.replace("-", "_"),
-        val targetType: String = type.replace("-", "_"))
+    val name: String,
+    val type: String,
+    val targetName: String = name.replace("-", "_"),
+    val targetType: String = type.replace("-", "_")
+)
 
 data class AlexaIntentsSchema(
-        val languageModel: AlexaLanguageModel)
+    val languageModel: AlexaLanguageModel
+)
 
 data class AlexaLanguageModel(
-        val invocationName: String = "",
-        val types: List<AlexaType> = emptyList(),
-        val intents: List<AlexaIntent> = emptyList())
+    val invocationName: String = "",
+    val types: List<AlexaType> = emptyList(),
+    val intents: List<AlexaIntent> = emptyList()
+)
 
 data class AlexaType(
-        val name: String,
-        val values: List<AlexaTypeDefinition> = emptyList())
+    val name: String,
+    val values: List<AlexaTypeDefinition> = emptyList()
+)
 
 data class AlexaTypeDefinition(
-        val id: String?,
-        val name: AlexaTypeDefinitionName)
+    val id: String?,
+    val name: AlexaTypeDefinitionName
+)
 
 data class AlexaTypeDefinitionName(
-        val value: String,
-        val synonyms: List<String>)
+    val value: String,
+    val synonyms: List<String>
+)
 
 data class AlexaIntent(
-        val name: String,
-        val samples: List<String> = emptyList(),
-        val slots: List<AlexaSlot> = emptyList())
+    val name: String,
+    val samples: List<String> = emptyList(),
+    val slots: List<AlexaSlot> = emptyList()
+)
 
 data class AlexaSlot(
-        val name: String,
-        val type: String)
+    val name: String,
+    val type: String
+)

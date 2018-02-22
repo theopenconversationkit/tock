@@ -26,8 +26,12 @@ import java.util.Locale
 interface AlexaCodec {
 
     fun exportIntentsSchema(
-            invocationName:String,
-            applicationId: Id<ApplicationDefinition>,
-            localeToExport: Locale,
-            filter: AlexaFilter? = null): AlexaIntentsSchema
+        invocationName: String,
+        applicationId: Id<ApplicationDefinition>,
+        localeToExport: Locale,
+        filter: AlexaFilter? = null,
+        transformer: AlexaModelTransformer = object : AlexaModelTransformer {
+            override fun transform(schema: AlexaIntentsSchema) = schema
+        }
+    ): AlexaIntentsSchema
 }
