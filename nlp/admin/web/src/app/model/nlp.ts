@@ -220,7 +220,7 @@ export abstract class EntityContainer {
 export class Sentence extends EntityContainer {
 
   private withSubEntities: EntityWithSubEntities[];
-  private intentLabel:string;
+  private intentLabel: string;
 
   constructor(public text: string,
               public language: string,
@@ -233,8 +233,8 @@ export class Sentence extends EntityContainer {
     super()
   }
 
-  getIntentLabel(state:StateService) : string {
-    if(!this.intentLabel) {
+  getIntentLabel(state: StateService): string {
+    if (!this.intentLabel) {
       const intent = state.findIntentById(this.classification.intentId);
       this.intentLabel = intent ? intent.name : nameFromQualifiedName(Intent.unknown);
     }
@@ -841,7 +841,8 @@ export class UpdateSentencesQuery extends ApplicationScopedQuery {
   constructor(public namespace: string,
               public applicationName: string,
               public language: string,
-              public searchQuery: SearchQuery,
+              public selectedSentences: Sentence[],
+              public searchQuery?: SearchQuery,
               public newIntentId?: string,
               public oldEntity?: EntityDefinition,
               public newEntity?: EntityDefinition) {

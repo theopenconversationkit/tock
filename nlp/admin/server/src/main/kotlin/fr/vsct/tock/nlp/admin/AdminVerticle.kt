@@ -301,7 +301,9 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonPost("/sentences/update", admin)
         { context, s: UpdateSentencesQuery ->
-            if (context.organization == s.namespace && context.organization == s.searchQuery.namespace) {
+            if (context.organization == s.namespace
+                && (s.searchQuery == null || context.organization == s.searchQuery.namespace)
+            ) {
                 service.updateSentences(s)
             } else {
                 unauthorized()

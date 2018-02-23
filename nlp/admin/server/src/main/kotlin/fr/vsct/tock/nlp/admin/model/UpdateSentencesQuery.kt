@@ -27,6 +27,6 @@ data class UpdateSentencesQuery(
     val newIntentId: Id<IntentDefinition>?,
     val oldEntity: EntityDefinition?,
     val newEntity: EntityDefinition?,
-    val searchQuery: SearchQuery
-) : ApplicationScopedQuery() {
-}
+    val searchQuery: SearchQuery?,
+    val selectedSentences: List<SentenceReport> = emptyList()
+) : ApplicationScopedQuery()

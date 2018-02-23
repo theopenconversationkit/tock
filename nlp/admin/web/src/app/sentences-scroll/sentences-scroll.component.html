@@ -84,7 +84,7 @@
         </md-header-cell>
         <md-cell *mdCellDef="let row">
           <md-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? selection.toggle(row) : null"
+                        (change)="$event ? toggle(row) : null"
                         [checked]="selection.isSelected(row)">
           </md-checkbox>
         </md-cell>

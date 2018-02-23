@@ -15,7 +15,7 @@
  */
 
 import {saveAs} from "file-saver";
-import {AfterViewInit, Component, Input, ViewChild} from "@angular/core";
+import {AfterViewInit, Component, EventEmitter, Input, Output, ViewChild} from "@angular/core";
 import {PaginatedResult, SearchQuery, Sentence, SentenceStatus} from "../model/nlp";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {StateService} from "../core/state.service";
@@ -40,6 +40,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   @Input() displayArchiveButton: boolean = true;
   @Input() displayProbabilities: boolean = false;
   @Input() displayStatus: boolean = false;
+  @Output() selectedSentences: EventEmitter<Sentence[]> = new EventEmitter<Sentence[]>();
 
   pageIndex: number = 0;
 
@@ -70,6 +71,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
       this.displayedColumns = ['select', 'text', 'currentIntent'];
     }
     this.dataSource = new SentencesDataSource();
+
     super.ngOnInit();
   }
 
@@ -82,15 +84,15 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
         this.cursor = 0;
         this.pageSize = e.pageSize;
       }
-
       this.load();
     })
   }
 
-
   reset(): void {
     super.reset();
     this.pageIndex = 0;
+    this.selection.clear();
+    this.fireSelectionChange();
   }
 
   toSearchQuery(query: PaginatedQuery): SearchQuery {
@@ -153,6 +155,15 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
     }
   }
 
+  private fireSelectionChange() {
+    this.selectedSentences.emit(this.tableView ? this.selection.selected : null);
+  }
+
+  toggle(sentence: Sentence) {
+    this.selection.toggle(sentence);
+    this.fireSelectionChange();
+  }
+
   /** Whether the number of selected elements matches the total number of rows. */
   isAllSelected() {
     const numSelected = this.selection.selected.length;
@@ -165,6 +176,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
     this.isAllSelected() ?
       this.selection.clear() :
       this.dataSource.getData().forEach(row => this.selection.select(row));
+    this.fireSelectionChange();
   }
 }
 

@@ -66,13 +66,16 @@ object AdminService {
 
     fun updateSentences(query: UpdateSentencesQuery): UpdateSentencesReport {
         val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
+        val sentences = if (query.searchQuery == null) {
+            query.selectedSentences.filter { it.applicationId == application._id }.map { it.toClassifiedSentence() }
+        } else {
+            front.search(query.searchQuery.toSentencesQuery(application._id)).sentences
+        }
         return if (query.newIntentId != null && application.intents.contains(query.newIntentId)) {
-            val result = front.search(query.searchQuery.toSentencesQuery(application._id))
-            val nbUpdates = front.switchSentencesIntent(result.sentences, application, query.newIntentId)
+            val nbUpdates = front.switchSentencesIntent(sentences, application, query.newIntentId)
             UpdateSentencesReport(nbUpdates)
         } else if (query.oldEntity != null && query.newEntity != null) {
-            val result = front.search(query.searchQuery.toSentencesQuery(application._id))
-            val nbUpdates = front.switchSentencesEntity(result.sentences, application, query.oldEntity, query.newEntity)
+            val nbUpdates = front.switchSentencesEntity(sentences, application, query.oldEntity, query.newEntity)
             UpdateSentencesReport(nbUpdates)
         } else {
             UpdateSentencesReport()

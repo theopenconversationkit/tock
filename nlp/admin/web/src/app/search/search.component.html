@@ -15,7 +15,7 @@
   -->
 
 <div class="search">
-  <tock-sentences-scroll [filter]="filter" title="" [displayStatus]="true">
+  <tock-sentences-scroll [filter]="filter" title="" [displayStatus]="true" (selectedSentences)="selectedSentences = $event">
     <md-card>
       <md-card-content>
         <md-input-container class="search-input">
@@ -62,11 +62,11 @@
                Advanced Options
              </mat-panel-title>
              <mat-panel-description>
-               Manage Intent and Entities
+               Manage Intents and Entities
              </mat-panel-description>
            </md-expansion-panel-header>
            <div>
-             Update selected sentences with:
+             Change intent for selected sentences:
            <md-select placeholder="Select Intent" [(ngModel)]="update.newIntentId">
              <md-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
                {{intent.name}}
@@ -74,10 +74,10 @@
              <md-option value="unknown">Unknown</md-option>
            </md-select>
 
-           <button md-button (click)="updateSentencesIntent()">UPDATE INTENT</button>
+           <button color="primary" md-button (click)="updateSentencesIntent()">Change Intent</button>
            </div>
            <div>
-             Update entity for selected sentences:
+             Change entity for selected sentences:
              <md-select placeholder="Select Old Entity" [(ngModel)]="update.oldEntity">
                <md-option *ngFor="let e of state.entities | async" [value]="e">
                  {{e.qualifiedRole}}
@@ -90,7 +90,7 @@
                </md-option>
              </md-select>
 
-             <button md-button (click)="updateSentencesEntity()">UPDATE ENTITY</button>
+             <button color="primary" md-button (click)="updateSentencesEntity()">Change entity</button>
            </div>
          </md-expansion-panel>
        </md-card-footer>
