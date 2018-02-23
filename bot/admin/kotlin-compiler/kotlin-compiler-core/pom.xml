@@ -20,38 +20,30 @@
 
     <parent>
         <groupId>fr.vsct.tock</groupId>
-        <artifactId>tock-bot-admin</artifactId>
+        <artifactId>tock-bot-admin-kotlin-compiler</artifactId>
         <version>0.8.3-SNAPSHOT</version>
     </parent>
 
-    <artifactId>tock-bot-admin-server</artifactId>
-    <name>Tock Bot Admin Server</name>
-    <description>Web app server for Tock Bot Admin</description>
+    <artifactId>tock-bot-admin-kotlin-compiler-core</artifactId>
+    <name>Tock Kotlin Compiler Core</name>
+    <description>Core Kotlin Tock compiler</description>
 
     <dependencies>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-nlp-admin-server</artifactId>
+            <artifactId>tock-bot-admin-kotlin-compiler-shared</artifactId>
         </dependency>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
-            <artifactId>bot-toolkit</artifactId>
+            <artifactId>tock-shared</artifactId>
         </dependency>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-connector-rest-client</artifactId>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-reflect</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.apache.commons</groupId>
-            <artifactId>commons-csv</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-admin-test-core</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-admin-kotlin-compiler-client</artifactId>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-compiler</artifactId>
         </dependency>
 
         <dependency>

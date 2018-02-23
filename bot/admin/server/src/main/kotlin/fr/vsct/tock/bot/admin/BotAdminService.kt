@@ -30,7 +30,8 @@ import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReportQueryResult
-import fr.vsct.tock.bot.admin.kotlin.compiler.TockKotlinCompiler
+import fr.vsct.tock.bot.admin.kotlin.compiler.KotlinFile
+import fr.vsct.tock.bot.admin.kotlin.compiler.client.KotlinCompilerClient
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotDialogResponse
 import fr.vsct.tock.bot.admin.model.BotIntent
@@ -273,7 +274,7 @@ object BotAdminService {
             reply
         )
         //save the label
-        if(language != null) {
+        if (language != null) {
             Translator.saveIfNotExists(labelKey, language)
         }
 
@@ -292,17 +293,23 @@ object BotAdminService {
         script: String
     ): ScriptAnswerConfiguration {
         val fileName = "T${Dice.newId()}.kt"
-        val result = TockKotlinCompiler.compile(script, fileName)
-        return ScriptAnswerConfiguration(
-            listOf(
-                ScriptAnswerVersionedConfiguration(
-                    script,
-                    result.files.map { it.key.substring(0, it.key.length - ".class".length) to it.value },
-                    BotVersion.getCurrentBotVersion(botId),
-                    result.mainClass
+        val result = KotlinCompilerClient.compile(KotlinFile(script, fileName))
+        if (result?.compilationResult == null) {
+            error("compilation failed")
+        } else {
+            //TODO compilation error handling
+            val c = result.compilationResult!!
+            return ScriptAnswerConfiguration(
+                listOf(
+                    ScriptAnswerVersionedConfiguration(
+                        script,
+                        c.files.map { it.key.substring(0, it.key.length - ".class".length) to it.value },
+                        BotVersion.getCurrentBotVersion(botId),
+                        c.mainClass
+                    )
                 )
             )
-        )
+        }
     }
 
     fun updateBotIntent(

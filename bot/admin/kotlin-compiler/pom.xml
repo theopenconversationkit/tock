@@ -25,39 +25,16 @@
     </parent>
 
     <artifactId>tock-bot-admin-kotlin-compiler</artifactId>
+    <packaging>pom</packaging>
     <name>Tock Bot Admin Kotlin Compiler</name>
-    <description>Web app server for Tock Bot Admin</description>
+    <description>Tock kotlin compiler</description>
 
-    <dependencies>
-        <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-shared</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-reflect</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-compiler</artifactId>
-        </dependency>
-
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-test-junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.nhaarman</groupId>
-            <artifactId>mockito-kotlin</artifactId>
-            <scope>test</scope>
-        </dependency>
-    </dependencies>
+    <modules>
+        <module>kotlin-compiler-shared</module>
+        <module>kotlin-compiler-core</module>
+        <module>kotlin-compiler-server</module>
+        <module>kotlin-compiler-client</module>
+    </modules>
 
     <build>
         <plugins>
