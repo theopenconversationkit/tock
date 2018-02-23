@@ -17,6 +17,13 @@
 <md-card>
   <md-card-content>
     <table border="1" class="table">
+      <thead>
+      <th>Intent</th>
+      <th>Entities</th>
+      <th>Shared Intents</th>
+      <th>Mandatory States</th>
+      <th>Actions</th>
+      </thead>
       <tr *ngFor="let i of state.currentIntents | async">
         <td>
           {{i.name}}
@@ -30,14 +37,38 @@
           </button>
           </span>
         </td>
-        <td>
-          <md-chip-list *ngIf="i.mandatoryStates.length !== 0" mdTooltip="Mandatory states - click to delete">
-            <md-chip *ngFor="let s of i.mandatoryStates" color="accent" selected="true" (click)="removeState(i, s)">{{s}}</md-chip>
-          </md-chip-list>
-          <button (click)="addState(i)" md-icon-button mdTooltip="Add state" color="primary">
+        <td class="shared">
+          <md-select class="intent"
+                     placeholder="Add shared intent"
+                     (change)="addSharedIntent(i, $event.value)">
+            <md-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
+              {{intent.name}}
+            </md-option>
+          </md-select>
+          <div *ngIf="i.sharedIntents.length !== 0" class="shared_list">
+            <md-chip-list mdTooltip="Shared intent - click to remove">
+              <md-chip *ngFor="let intentId of i.sharedIntents" color="accent" selected="true"
+                       (click)="removeSharedIntent(i, intentId)">
+                {{state.findIntentById(intentId).name}}
+              </md-chip>
+            </md-chip-list>
+          </div>
+        </td>
+        <td class="states">
+          <button md-button (click)="addState(i)">
             <md-icon>add_box</md-icon>
+            Add state
           </button>
-          <button *ngIf="state.hasRole(UserRole.admin)" (click)="downloadSentencesDump(i)" md-icon-button mdTooltip="Download a sentences dump">
+          <md-chip-list *ngIf="i.mandatoryStates.length !== 0" mdTooltip="Mandatory states - click to delete">
+            <br>
+            <md-chip *ngFor="let s of i.mandatoryStates" color="accent" selected="true" (click)="removeState(i, s)">
+              {{s}}
+            </md-chip>
+          </md-chip-list>
+        </td>
+        <td class="actions">
+          <button *ngIf="state.hasRole(UserRole.admin)" (click)="downloadSentencesDump(i)" md-icon-button
+                  mdTooltip="Download a sentences dump">
             <md-icon>cloud_download</md-icon>
           </button>
           <button md-icon-button (click)="deleteIntent(i)" mdTooltip="Delete the intent {{i.name}}">

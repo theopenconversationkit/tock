@@ -15,9 +15,8 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {Sentence, SentenceStatus} from "../model/nlp";
+import {Intent, Sentence, SentenceStatus} from "../model/nlp";
 import {StateService} from "../core/state.service";
-import {Intent} from "../model/nlp";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {CreateIntentDialogComponent} from "./create-intent-dialog/create-intent-dialog.component";
 import {MdDialog, MdSnackBar} from "@angular/material";
@@ -139,7 +138,6 @@ export class SentenceAnalysisComponent implements OnInit {
           this.snackBar.open(`Language change to ${this.state.localeName(this.sentence.language)}`, "Language change", {duration: 1000})
         });
     }
-
   }
 
   private createIntent(name): boolean {
@@ -154,6 +152,7 @@ export class SentenceAnalysisComponent implements OnInit {
             this.state.user.organization,
             [],
             [this.state.currentApplication._id],
+            [],
             [])
         )
         .subscribe(intent => {

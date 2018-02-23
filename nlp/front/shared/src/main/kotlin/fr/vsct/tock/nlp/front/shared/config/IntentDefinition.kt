@@ -26,19 +26,46 @@ import java.util.Locale
 /**
  * Definition of an intent.
  */
-data class IntentDefinition(val name: String,
-                            val namespace: String,
-                            val applications: Set<Id<ApplicationDefinition>>,
-                            val entities: Set<EntityDefinition>,
-                            val entitiesRegexp: Map<Locale, List<EntitiesRegexp>> = emptyMap(),
-                            /**
-                             * This intent is returned as a classification result
-                             * only if at least one of the mandatory states is requested.
-                             * There is no restriction for intents with empty mandatory states set.
-                             */
-                            val mandatoryStates: Set<String> = emptySet(),
-                            val _id: Id<IntentDefinition> = newId()) {
+data class IntentDefinition(
+    /**
+     * The name of the intent.
+     */
+    val name: String,
+    /**
+     * The namespace of the intent.
+     */
+    val namespace: String,
+    /**
+     * The applications using this intent.
+     */
+    val applications: Set<Id<ApplicationDefinition>>,
+    /**
+     * The [EntityDefinition] of this intent.
+     */
+    val entities: Set<EntityDefinition>,
+    val entitiesRegexp: Map<Locale, List<EntitiesRegexp>> = emptyMap(),
+    /**
+     * This intent is returned as a classification result
+     * only if at least one of the mandatory states is requested.
+     * There is no restriction for intents with empty mandatory states set.
+     */
+    val mandatoryStates: Set<String> = emptySet(),
+    /**
+     * The qualified sentences of each "shared intent" that contains only entities supported by the current intent
+     * are used to build the entity model of this intent.
+     *
+     * This is great
+     */
+    val sharedIntents: Set<Id<IntentDefinition>> = emptySet(),
+    /**
+     * The unique [Id] of the intent.
+     */
+    val _id: Id<IntentDefinition> = newId()
+) {
 
+    /**
+     * Qualified name (ie "namespace:name") of the intent.
+     */
     @Transient
     val qualifiedName: String = name.withNamespace(namespace)
 
@@ -54,10 +81,13 @@ data class IntentDefinition(val name: String,
         return findEntity(entity) != null
     }
 
+    fun hasEntity(entity: ClassifiedEntity): Boolean {
+        return findEntity(entity.type, entity.role) != null
+    }
+
     fun supportStates(states: Set<String>): Boolean {
         return mandatoryStates.isEmpty()
                 || states.any { mandatoryStates.contains(it) }
     }
-
 
 }

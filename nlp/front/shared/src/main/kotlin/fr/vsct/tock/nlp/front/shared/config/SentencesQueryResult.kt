@@ -17,7 +17,7 @@
 package fr.vsct.tock.nlp.front.shared.config
 
 /**
- *
+ * Result of a [SentencesQuery].
  */
 data class SentencesQueryResult(val total: Long, val sentences: List<ClassifiedSentence>) {
 }

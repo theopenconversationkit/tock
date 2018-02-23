@@ -17,8 +17,7 @@
 import {saveAs} from "file-saver";
 import {Component, OnInit} from "@angular/core";
 import {StateService} from "../core/state.service";
-import {Intent} from "../model/nlp";
-import {EntityDefinition} from "../model/nlp";
+import {EntityDefinition, Intent} from "../model/nlp";
 import {MdDialog, MdDialogConfig, MdSnackBar, MdSnackBarConfig} from "@angular/material";
 import {ConfirmDialogComponent} from "../shared/confirm-dialog/confirm-dialog.component";
 import {NlpService} from "../nlp-tabs/nlp.service";
@@ -121,6 +120,33 @@ export class IntentsComponent implements OnInit {
           });
       }
     });
+  }
+
+  removeSharedIntent(intent: Intent, intentId: string) {
+    intent.sharedIntents.splice(intent.sharedIntents.indexOf(intentId), 1);
+    this.nlp.saveIntent(intent).subscribe(
+      result => {
+        this.snackBar.open(`Shared Intent removed from Intent ${intent.name}`, "Remove Intent", {duration: 1000} as MdSnackBarConfig);
+      },
+      _ => {
+        this.snackBar.open(`Remove Shared Intent failed`, "Error", {duration: 5000} as MdSnackBarConfig)
+      }
+    );
+  }
+
+  addSharedIntent(intent: Intent, intentId: string) {
+    if (intent.sharedIntents.indexOf(intentId) === -1) {
+      intent.sharedIntents.push(intentId);
+      this.nlp.saveIntent(intent).subscribe(
+        result => {
+          this.snackBar.open(`Shared intent added for Intent ${intent.name}`, "Add Shared Intent", {duration: 1000} as MdSnackBarConfig);
+        },
+        _ => {
+          intent.mandatoryStates.splice(intent.mandatoryStates.length - 1, 1);
+          this.snackBar.open(`Add Shared Intent failed`, "Error", {duration: 5000} as MdSnackBarConfig)
+        }
+      );
+    }
   }
 
   downloadSentencesDump(intent: Intent) {

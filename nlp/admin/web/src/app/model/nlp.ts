@@ -223,8 +223,9 @@ export class Intent {
   constructor(public name: string,
               public namespace: string,
               public entities: EntityDefinition[],
-              public applications: String[],
-              public mandatoryStates: String[],
+              public applications: string[],
+              public mandatoryStates: string[],
+              public sharedIntents: string[],
               public _id?: string) {
     EntityDefinition.sortEntities(entities);
   }

@@ -23,3 +23,23 @@
   position: relative;
   top: 7px;
 }
+
+.intent {
+  width:200px;
+}
+
+.shared {
+  vertical-align: top;
+}
+
+.shared_list {
+  padding-top: 10px;
+}
+
+.states {
+  vertical-align: top;
+}
+
+.actions {
+  white-space: nowrap;
+}
