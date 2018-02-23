@@ -38,7 +38,7 @@ import {StateService} from "../../core/state.service";
 import {MdDialog, MdDialogConfig, MdSnackBar, MdSnackBarConfig} from "@angular/material";
 import {CreateEntityDialogComponent} from "../create-entity-dialog/create-entity-dialog.component";
 import {User} from "../../model/auth";
-import {Intent} from "../../model/application";
+import {Intent} from "../../model/nlp";
 import {isNullOrUndefined} from "util";
 import {ApplicationConfig} from "../../core/application.config";
 import {Router} from "@angular/router";

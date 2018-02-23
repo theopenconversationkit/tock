@@ -16,7 +16,7 @@
 
 import {Component, OnInit} from "@angular/core";
 import {SentenceFilter} from "../sentences-scroll/sentences-scroll.component";
-import {Intent} from "../model/application";
+import {Intent} from "../model/nlp";
 import {SentenceStatus} from "../model/nlp";
 
 @Component({

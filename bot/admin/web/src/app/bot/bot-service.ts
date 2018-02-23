@@ -18,7 +18,7 @@ import {Injectable} from "@angular/core";
 import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {BotIntent, BotIntentSearchQuery, CreateBotIntentRequest, UpdateBotIntentRequest} from "./model/bot-intent";
-import {Intent} from "tock-nlp-admin/src/app/model/application";
+import {Intent} from "tock-nlp-admin/src/app/model/nlp";
 import {Observable} from "rxjs/Observable";
 import {I18nLabel} from "./model/i18n";
 import {FileUploader} from "ng2-file-upload";

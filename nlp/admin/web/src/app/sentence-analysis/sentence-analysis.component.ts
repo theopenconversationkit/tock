@@ -17,7 +17,7 @@
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {Sentence, SentenceStatus} from "../model/nlp";
 import {StateService} from "../core/state.service";
-import {Intent} from "../model/application";
+import {Intent} from "../model/nlp";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {CreateIntentDialogComponent} from "./create-intent-dialog/create-intent-dialog.component";
 import {MdDialog, MdSnackBar} from "@angular/material";

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {EntityDefinition, NlpEngineType} from "./nlp";
+import {EntityDefinition, Intent, NlpEngineType} from "./nlp";
 import {flatMap} from "./commons";
 
 export class Application {
@@ -108,61 +108,6 @@ export class Application {
 
   static fromJSONArray(json?: Array<any>): Application[] {
     return json ? json.map(Application.fromJSON) : [];
-  }
-}
-
-export class Intent {
-
-  public static unknown = "tock:unknown";
-
-  constructor(public name: string,
-              public namespace: string,
-              public entities: EntityDefinition[],
-              public applications: String[],
-              public mandatoryStates: String[],
-              public _id?: string) {
-    EntityDefinition.sortEntities(entities);
-  }
-
-  qualifiedName(): string {
-    return `${this.namespace}:${this.name}`;
-  }
-
-  isUnknownIntent(): boolean {
-    return this.qualifiedName() === Intent.unknown;
-  }
-
-  containsEntity(name: string, role: string): boolean {
-    return this.entities.some(e => e.entityTypeName === name && e.role === role)
-  }
-
-  containsEntityRole(role: string): boolean {
-    return this.entities.some(e => e.role === role)
-  }
-
-  removeEntity(entity: EntityDefinition) {
-    this.entities = this.entities.filter(e => e.entityTypeName !== entity.entityTypeName || e.role !== entity.role)
-  }
-
-  addEntity(entity: EntityDefinition) {
-    if (!this.entities.some(e => e.entityTypeName === entity.entityTypeName && e.role === entity.role)) {
-      this.entities.push(entity);
-      EntityDefinition.sortEntities(this.entities);
-    }
-  }
-
-  static fromJSON(json: any): Intent {
-    const value = Object.create(Intent.prototype);
-    const result = Object.assign(value, json, {
-      entities: EntityDefinition.sortEntities(EntityDefinition.fromJSONArray(json.entities)),
-    });
-
-
-    return result;
-  }
-
-  static fromJSONArray(json?: Array<any>): Intent[] {
-    return json ? json.map(Intent.fromJSON) : [];
   }
 }
 

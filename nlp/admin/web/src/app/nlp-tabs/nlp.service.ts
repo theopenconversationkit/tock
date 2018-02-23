@@ -19,7 +19,7 @@ import {RestService} from "../core/rest/rest.service";
 import {StateService} from "../core/state.service";
 import {
   EntityDefinition,
-  EntityType,
+  EntityType, Intent,
   LogsQuery,
   LogsResult,
   ParseQuery,
@@ -31,7 +31,7 @@ import {
   UpdateSentencesReport
 } from "../model/nlp";
 import {Observable} from "rxjs";
-import {Application, Intent} from "../model/application";
+import {Application} from "../model/application";
 
 @Injectable()
 export class NlpService implements OnDestroy {

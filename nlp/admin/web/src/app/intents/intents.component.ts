@@ -17,7 +17,7 @@
 import {saveAs} from "file-saver";
 import {Component, OnInit} from "@angular/core";
 import {StateService} from "../core/state.service";
-import {Intent} from "../model/application";
+import {Intent} from "../model/nlp";
 import {EntityDefinition} from "../model/nlp";
 import {MdDialog, MdDialogConfig, MdSnackBar, MdSnackBarConfig} from "@angular/material";
 import {ConfirmDialogComponent} from "../shared/confirm-dialog/confirm-dialog.component";

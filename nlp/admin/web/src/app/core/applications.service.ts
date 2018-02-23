@@ -16,11 +16,11 @@
 
 import {Injectable, OnDestroy} from "@angular/core";
 import {Observable} from "rxjs";
-import {Application, ApplicationImportConfiguration, Intent, ModelBuildQueryResult} from "../model/application";
+import {Application, ApplicationImportConfiguration, ModelBuildQueryResult} from "../model/application";
 import {RestService} from "./rest/rest.service";
 import {StateService} from "./state.service";
 import {ApplicationScopedQuery, Entry, PaginatedQuery} from "../model/commons";
-import {NlpEngineType} from "../model/nlp";
+import {Intent, NlpEngineType} from "../model/nlp";
 import {FileUploader} from "ng2-file-upload";
 
 @Injectable()

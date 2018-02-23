@@ -15,14 +15,14 @@
  */
 
 import {EventEmitter, Injectable} from "@angular/core";
-import {Application, Intent} from "../model/application";
+import {Application} from "../model/application";
 import {AuthService} from "./auth/auth.service";
 import {AuthListener} from "./auth/auth.listener";
 import {AuthenticateResponse, User, UserRole} from "../model/auth";
 import {SettingsService} from "./settings.service";
 import {ApplicationScopedQuery, Entry, PaginatedQuery, SearchMark} from "../model/commons";
 import {environment} from "../../environments/environment";
-import {EntityDefinition, EntityType, NlpEngineType, UpdateEntityDefinitionQuery} from "../model/nlp";
+import {EntityDefinition, EntityType, Intent, NlpEngineType, UpdateEntityDefinitionQuery} from "../model/nlp";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {Observable} from "rxjs/Observable";
 
