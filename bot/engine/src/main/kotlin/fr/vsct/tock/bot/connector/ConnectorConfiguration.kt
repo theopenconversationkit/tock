@@ -19,29 +19,36 @@ package fr.vsct.tock.bot.connector
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.shared.mapNotNullValues
 
+/**
+ * Configuration parameters used by a [ConnectorProvided] to create a new [Connector] instance.
+ */
 data class ConnectorConfiguration(
-        val applicationId: String,
-        val path: String,
-        val type: ConnectorType,
-        val ownerConnectorType: ConnectorType? = null,
-        val parameters: Map<String, String> = emptyMap()) {
+    val applicationId: String,
+    val path: String,
+    val type: ConnectorType,
+    val ownerConnectorType: ConnectorType? = null,
+    val parameters: Map<String, String> = emptyMap()
+) {
 
-    constructor(applicationId: String,
-                path: String,
-                type: ConnectorType,
-                applicationName: String,
-                baseUrl: String?,
-                ownerConnectorType: ConnectorType? = null,
-                parameters: Map<String, String> = emptyMap())
+    constructor(
+        applicationId: String,
+        path: String,
+        type: ConnectorType,
+        applicationName: String,
+        baseUrl: String?,
+        ownerConnectorType: ConnectorType? = null,
+        parameters: Map<String, String> = emptyMap()
+    )
             : this(
-            applicationId,
-            path,
-            type,
-            ownerConnectorType,
-            parameters + mapNotNullValues(
-                    APPLICATION_NAME to applicationName,
-                    BASE_URL to baseUrl
-            ))
+        applicationId,
+        path,
+        type,
+        ownerConnectorType,
+        parameters + mapNotNullValues(
+            APPLICATION_NAME to applicationName,
+            BASE_URL to baseUrl
+        )
+    )
 
     companion object {
         private const val APPLICATION_NAME: String = "_name"
@@ -52,6 +59,6 @@ data class ConnectorConfiguration(
 
     fun getBaseUrl(): String = parameters.getOrDefault(BASE_URL, BotApplicationConfiguration.defaultBaseUrl)
 
-    internal fun parametersWithoutDefaultKeys(): Map<String, String>
-            = parameters.filterKeys { it != APPLICATION_NAME && it != BASE_URL }
+    internal fun parametersWithoutDefaultKeys(): Map<String, String> =
+        parameters.filterKeys { it != APPLICATION_NAME && it != BASE_URL }
 }

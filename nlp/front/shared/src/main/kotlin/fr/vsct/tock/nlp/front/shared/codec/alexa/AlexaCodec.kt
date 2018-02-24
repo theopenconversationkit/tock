@@ -21,15 +21,33 @@ import org.litote.kmongo.Id
 import java.util.Locale
 
 /**
- *
+ * Tock model to Alexa model Codec.
  */
 interface AlexaCodec {
 
+    /**
+     * Export a Tock model to an Alexa model (Skill Builder format).
+     */
     fun exportIntentsSchema(
+        /**
+         * The invocation name.
+         */
         invocationName: String,
+        /**
+         * The Tock application id.
+         */
         applicationId: Id<ApplicationDefinition>,
+        /**
+         * The locale.
+         */
         localeToExport: Locale,
+        /**
+         * A model filter if you don't want/need to export the whole model.
+         */
         filter: AlexaFilter? = null,
+        /**
+         * A model transformer to adapt the alexa model.
+         */
         transformer: AlexaModelTransformer = object : AlexaModelTransformer {
             override fun transform(schema: AlexaIntentsSchema) = schema
         }

@@ -14,21 +14,18 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector
+package fr.vsct.tock.bot.connector.alexa
+
+import fr.vsct.tock.bot.connector.ConnectorHandler
+import fr.vsct.tock.bot.definition.ConnectorStoryHandler
+import kotlin.reflect.KClass
 
 /**
- * To provide a new [Connector] from a [ConnectorConfiguration].
+ * To specify [ConnectorStoryHandler] for Alexa connector.
+ * [KClass] passed as [value] of this annotation must have a primary constructor
+ * with a single not optional [StoryHandlerDefinitionBase] argument.
  */
-interface ConnectorProvider {
-
-    /**
-     * The connector type provided
-     */
-    val connectorType: ConnectorType
-
-    /**
-     * Provides a new [Connector] instance from the specified [ConnectorConfiguration].
-     */
-    fun connector(connectorConfiguration: ConnectorConfiguration): Connector
-
-}
+@ConnectorHandler(connectorTypeId = ALEXA_CONNECTOR_TYPE_ID)
+@Target(AnnotationTarget.CLASS)
+@MustBeDocumented
+annotation class AlexaHandler(val value: KClass<out ConnectorStoryHandler<*>>)

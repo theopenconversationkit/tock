@@ -24,7 +24,7 @@ import kotlin.reflect.KClass
 import kotlin.reflect.full.primaryConstructor
 
 /**
- *
+ * [ConnectorProvider] for [AlexaConnector].
  */
 object AlexaConnectorProvider : ConnectorProvider {
 

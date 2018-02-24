@@ -17,7 +17,6 @@
 package fr.vsct.tock.bot.connector
 
 /**
- *
+ * Thrown when an occurs in a [Connector].
  */
-class ConnectorException(message: String) : Exception(message) {
-}
+class ConnectorException(message: String) : Exception(message) 

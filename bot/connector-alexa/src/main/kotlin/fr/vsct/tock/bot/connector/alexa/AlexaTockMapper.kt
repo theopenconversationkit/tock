@@ -29,10 +29,13 @@ import fr.vsct.tock.nlp.api.client.model.NlpResult
 import java.util.Locale
 
 /**
- *
+ * An Alexa model to Tock model mapper. Provided via [addAlexaConnector.alexaTockMapper] parameter.
  */
 open class AlexaTockMapper(val applicationId: String) {
 
+    /**
+     * Returns a Tock intent from an Alexa intent.
+     */
     open fun alexaIntentToTockIntent(request: IntentRequest, botDefinition: BotDefinition): String {
         val intentName = request.intent.name
         return if (intentName.endsWith("_intent")) {
@@ -42,16 +45,23 @@ open class AlexaTockMapper(val applicationId: String) {
         }
     }
 
+    /**
+     * Returns a Tock entity from an Alexa slot.
+     */
     open fun alexaEntityToTockEntity(
-            request: IntentRequest,
-            intent: String,
-            slot: String,
-            botDefinition: BotDefinition): Entity? {
+        request: IntentRequest,
+        intent: String,
+        slot: String,
+        botDefinition: BotDefinition
+    ): Entity? {
         val entityName = slot.substring(0, slot.length - "_slot".length)
         val namespace = botDefinition.namespace
         return Entity(EntityType("$namespace:$entityName"), entityName)
     }
 
+    /**
+     * Returns an [Event] from an Alexa [IntentRequest].
+     */
     open fun toEvent(userId: String, request: IntentRequest, botDefinition: BotDefinition): Event {
         val playerId = PlayerId(userId, PlayerType.user)
         val botId = PlayerId(applicationId, PlayerType.bot)
@@ -60,35 +70,35 @@ open class AlexaTockMapper(val applicationId: String) {
         var index = 0
 
         val slots = request.intent?.slots?.values
-                ?.filter { it.value != null && alexaEntityToTockEntity(request, intent, it.name, botDefinition) != null }
+            ?.filter { it.value != null && alexaEntityToTockEntity(request, intent, it.name, botDefinition) != null }
                 ?: emptyList()
         val entityValues =
-                slots.map {
-                    val entity = alexaEntityToTockEntity(request, intent, it.name, botDefinition)!!
-                    val value = EntityValue(
-                            index,
-                            index + it.value!!.length,
-                            entity
-                    )
-                    index += it.value.length + 1
-                    value
-                }
+            slots.map {
+                val entity = alexaEntityToTockEntity(request, intent, it.name, botDefinition)!!
+                val value = EntityValue(
+                    index,
+                    index + it.value!!.length,
+                    entity
+                )
+                index += it.value.length + 1
+                value
+            }
 
         return SendSentence(
-                playerId,
-                applicationId,
-                botId,
-                null,
-                precomputedNlp =
-                NlpResult(
-                        intent,
-                        namespace,
-                        Locale(request.locale.language),
-                        entityValues,
-                        1.0,
-                        1.0,
-                        slots.joinToString(" ") { it.value!! }
-                )
+            playerId,
+            applicationId,
+            botId,
+            null,
+            precomputedNlp =
+            NlpResult(
+                intent,
+                namespace,
+                Locale(request.locale.language),
+                entityValues,
+                1.0,
+                1.0,
+                slots.joinToString(" ") { it.value!! }
+            )
         )
     }
 

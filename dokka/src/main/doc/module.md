@@ -32,7 +32,11 @@ User monitoring via the admin interface
 
 # Package fr.vsct.tock.bot.connector
 
-Contains classes used to define a new [Connector]	
+Contains classes used to define a new [Connector]
+
+# Package fr.vsct.tock.bot.connector.alexa	
+
+Alexa connector implementation. See [AlexaConnector]
 
 # Package fr.vsct.tock.bot.connector.ga
 

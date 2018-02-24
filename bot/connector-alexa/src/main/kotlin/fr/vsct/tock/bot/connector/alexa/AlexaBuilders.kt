@@ -22,9 +22,6 @@ import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.translator.UserInterfaceType
-import mu.KotlinLogging
-
-private val logger = KotlinLogging.logger {}
 
 internal const val ALEXA_CONNECTOR_TYPE_ID = "alexa"
 

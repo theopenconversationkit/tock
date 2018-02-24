@@ -19,6 +19,9 @@ package fr.vsct.tock.nlp.front.shared.codec.alexa
 import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 
+/**
+ * Specify the intents you want to keep when exporting to Alexa model.
+ */
 data class AlexaFilter(val intents: List<AlexaIntentFilter> = emptyList()) {
 
     fun findSlot(intent: IntentDefinition, entity: EntityDefinition): AlexaSlotFilter? =

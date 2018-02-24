@@ -28,7 +28,7 @@ import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 
 /**
- *
+ * [Connector] for Amazon Alexa.
  */
 class AlexaConnector internal constructor(
         val applicationId: String,

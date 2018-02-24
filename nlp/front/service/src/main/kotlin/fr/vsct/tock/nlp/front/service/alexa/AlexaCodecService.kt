@@ -40,7 +40,7 @@ import org.litote.kmongo.Id
 import java.util.Locale
 
 /**
- *
+ * [AlexaCodec] implementation - mainly used for batch export.
  */
 object AlexaCodecService : AlexaCodec {
 
@@ -142,7 +142,7 @@ object AlexaCodecService : AlexaCodec {
 
         val startByLetter = "^[a-z\\{].*".toRegex()
         val nonChar = "[^a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿ\\{\\}'_]".toRegex()
-        val spaceRegex =" +".toRegex()
+        val spaceRegex = " +".toRegex()
         return sentences
             .filter { it.classification.intentId == intent._id }
             .filter { filter == null || it.classification.entities.all { filteredRoles!!.contains(it.role) } }
@@ -185,7 +185,7 @@ object AlexaCodecService : AlexaCodec {
         sentences: List<ClassifiedSentence>
     ): List<AlexaTypeDefinition> {
         val nonChar = "[^a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿ']".toRegex()
-        val spaceRegex =" +".toRegex()
+        val spaceRegex = " +".toRegex()
 
         return sentences
             .filter { it.classification.intentId == intent._id }
