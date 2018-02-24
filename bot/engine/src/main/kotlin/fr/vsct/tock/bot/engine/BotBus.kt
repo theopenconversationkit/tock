@@ -166,6 +166,7 @@ interface BotBus : I18nKeyProvider {
      * Returns the value of the specified choice parameter, null if the user action is not a [SendChoice]
      * or if this parameter is not set.
      */
+    @Deprecated("use choice method instead", ReplaceWith("choice(key)"))
     fun paramChoice(paramName: String): String? {
         return (action as? SendChoice)?.parameters?.get(paramName)
     }
@@ -174,6 +175,7 @@ interface BotBus : I18nKeyProvider {
      * Returns the value of the specified choice parameter, null if the user action is not a [SendChoice]
      * or if this parameter is not set.
      */
+    @Deprecated("use choice method instead", ReplaceWith("choice(key)"))
     fun paramChoice(key: ParameterKey): String?
             = paramChoice(key.keyName)
 
