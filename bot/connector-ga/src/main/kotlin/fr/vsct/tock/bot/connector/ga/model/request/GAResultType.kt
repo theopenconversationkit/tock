@@ -1,4 +1,4 @@
-package fr.vsct.tock.bot.connector.ga.request
+package fr.vsct.tock.bot.connector.ga.model.request
 
 /**
  * @see https://developers.google.com/actions/reference/rest/Shared.Types/ResultType
