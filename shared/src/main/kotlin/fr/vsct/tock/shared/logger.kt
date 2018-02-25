@@ -19,6 +19,6 @@ package fr.vsct.tock.shared
 import mu.KLogger
 
 /**
- *
+ * Log a [Throwable].
  */
 fun KLogger.error(throwable: Throwable) = error(throwable.message ?: "", throwable)

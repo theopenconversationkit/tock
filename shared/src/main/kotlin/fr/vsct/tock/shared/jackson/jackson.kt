@@ -33,23 +33,29 @@ import org.litote.kmongo.id.jackson.IdJacksonModule
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
+/**
+ * The Tock jackson mapper.
+ */
 val mapper: ObjectMapper by lazy {
     jacksonObjectMapper()
-            .findAndRegisterModules()
-            //force java time module
-            .registerModule(JavaTimeModule())
-            .registerModule(IdJacksonModule())
-            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-            .setSerializationInclusion(JsonInclude.Include.NON_NULL)
-            .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
-            .configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true)
-            .configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
+        .findAndRegisterModules()
+        //force java time module
+        .registerModule(JavaTimeModule())
+        .registerModule(IdJacksonModule())
+        .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+        .setSerializationInclusion(JsonInclude.Include.NON_NULL)
+        .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
+        .configure(JsonParser.Feature.ALLOW_UNQUOTED_CONTROL_CHARS, true)
+        .configure(MapperFeature.PROPAGATE_TRANSIENT_MARKER, true)
 }
 
+/**
+ * Read value from a [JsonParser].
+ */
 inline fun <reified T : Any> JsonParser.readValue() = this.readValueAs(T::class.java)
 
 /**
- * Returns the current field name, with the value ready to read.
+ * Return the current field name, with the value ready to read.
  *
  * @return the field name, null if [JsonToken.END_OBJECT]
  */
@@ -66,8 +72,6 @@ fun JsonParser.fieldNameWithValueReady(): String? {
     return fieldName
 }
 
-/**
- */
 internal fun JsonParser.checkEndToken() {
     if (currentToken != JsonToken.END_OBJECT) {
         nextToken()
@@ -75,6 +79,9 @@ internal fun JsonParser.checkEndToken() {
     }
 }
 
+/**
+ * Read fields from a [JsonParser].
+ */
 inline fun <reified FIELDS : Any> JsonParser.read(readValue: (FIELDS, String) -> Unit): FIELDS {
     return FIELDS::class.createInstance().let { fields ->
         while (true) {
@@ -86,10 +93,20 @@ inline fun <reified FIELDS : Any> JsonParser.read(readValue: (FIELDS, String) ->
     }
 }
 
+/**
+ * Read a list of values from a [JsonParser].
+ */
 inline fun <reified T : Any> JsonParser.readListValues(): List<T> {
     return readValueAs<List<T>>(object : TypeReference<List<T>>() {}) ?: emptyList()
 }
 
-fun <T : Any> SimpleModule.addDeserializer(type: KClass<T>, deser: JsonDeserializer<out T>) = addDeserializer(type.java, deser)
+/**
+ * Add a deserializer in the [SimpleModule].
+ */
+fun <T : Any> SimpleModule.addDeserializer(type: KClass<T>, deser: JsonDeserializer<out T>) =
+    addDeserializer(type.java, deser)
 
+/**
+ * Add a serializer in the [SimpleModule].
+ */
 fun <T : Any> SimpleModule.addSerializer(type: KClass<T>, ser: JsonSerializer<in T>) = addSerializer(type.java, ser)

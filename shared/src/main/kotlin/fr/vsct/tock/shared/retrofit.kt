@@ -41,36 +41,44 @@ import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.MILLISECONDS
 
 
+/**
+ * Create a new Retrofit service.
+ */
 inline fun <reified T : Any> Retrofit.create(): T = create(T::class.java)
 
+/**
+ * Init a [Retrofit.Builder] with specified timeout, logger and interceptors.
+ */
 fun retrofitBuilderWithTimeoutAndLogger(
-        ms: Long,
-        logger: KLogger = KotlinLogging.logger {},
-        level: Level = Level.BODY,
-        interceptors: List<Interceptor> = emptyList(),
-        /**
-         * Gzip the request for servers that support it.
-         */
-        requestGZipEncoding: Boolean = false
-): Retrofit.Builder
-        = OkHttpClient.Builder()
-        .readTimeout(ms, MILLISECONDS)
-        .connectTimeout(ms, MILLISECONDS)
-        .writeTimeout(ms, MILLISECONDS)
-        .apply {
-            interceptors.forEach { addInterceptor(it) }
-        }
-        .apply {
-            takeIf { requestGZipEncoding }
-                    ?.addInterceptor(GzipRequestInterceptor())
-        }
-        .addInterceptor(LoggingInterceptor(logger, level))
+    ms: Long,
+    logger: KLogger = KotlinLogging.logger {},
+    level: Level = Level.BODY,
+    interceptors: List<Interceptor> = emptyList(),
+    /**
+     * Gzip the request for servers that support it.
+     */
+    requestGZipEncoding: Boolean = false
+): Retrofit.Builder = OkHttpClient.Builder()
+    .readTimeout(ms, MILLISECONDS)
+    .connectTimeout(ms, MILLISECONDS)
+    .writeTimeout(ms, MILLISECONDS)
+    .apply {
+        interceptors.forEach { addInterceptor(it) }
+    }
+    .apply {
+        takeIf { requestGZipEncoding }
+            ?.addInterceptor(GzipRequestInterceptor())
+    }
+    .addInterceptor(LoggingInterceptor(logger, level))
 
-        .build()
-        .let {
-            Retrofit.Builder().client(it)
-        }
+    .build()
+    .let {
+        Retrofit.Builder().client(it)
+    }
 
+/**
+ * Create a basic auth interceptor.
+ */
 fun basicAuthInterceptor(login: String, password: String): Interceptor {
     val credential = Credentials.basic(login, password)
     return object : Interceptor {
@@ -78,7 +86,7 @@ fun basicAuthInterceptor(login: String, password: String): Interceptor {
             val original = chain.request()
 
             val requestBuilder = original.newBuilder()
-                    .header("Authorization", credential)
+                .header("Authorization", credential)
 
             val request = requestBuilder.build()
             return chain.proceed(request)
@@ -86,6 +94,9 @@ fun basicAuthInterceptor(login: String, password: String): Interceptor {
     }
 }
 
+/**
+ * Add jackson converter factory.
+ */
 fun Retrofit.Builder.addJacksonConverter(objectMapper: ObjectMapper = mapper): Retrofit.Builder = run {
     addConverterFactory(JacksonConverterFactory.create(objectMapper))
 }
@@ -98,15 +109,16 @@ private class GzipRequestInterceptor : Interceptor {
         val originalRequest = chain.request()
         val body = originalRequest.body()
         if (body == null
-                || originalRequest.header("Content-Encoding") != null
-                || body.contentLength() < 512) {
+            || originalRequest.header("Content-Encoding") != null
+            || body.contentLength() < 512
+        ) {
             return chain.proceed(originalRequest)
         }
 
         val compressedRequest = originalRequest.newBuilder()
-                .header("Content-Encoding", "gzip")
-                .method(originalRequest.method(), gzip(body))
-                .build()
+            .header("Content-Encoding", "gzip")
+            .method(originalRequest.method(), gzip(body))
+            .build()
         return chain.proceed(compressedRequest)
     }
 
@@ -131,6 +143,9 @@ private class GzipRequestInterceptor : Interceptor {
 
 //copied from okhttp3.logging.HttpLogginginterceptor
 
+/**
+ * Http requests/response log level.
+ */
 enum class Level {
     /** No logs.  */
     NONE,
@@ -229,7 +244,11 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
             while (i < count) {
                 val name = headers.name(i)
                 // Skip headers from the request body as they are explicitly logged above.
-                if (!"Content-Type".equals(name, ignoreCase = true) && !"Content-Length".equals(name, ignoreCase = true)) {
+                if (!"Content-Type".equals(name, ignoreCase = true) && !"Content-Length".equals(
+                        name,
+                        ignoreCase = true
+                    )
+                ) {
                     logger.info(name + ": " + headers.value(i))
                 }
                 i++
@@ -252,11 +271,15 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
                 logger.info("")
                 if (isPlaintext(buffer)) {
                     logger.info(buffer.readString(charset))
-                    logger.info("--> END " + request.method()
-                            + " (" + requestBody.contentLength() + "-byte body)")
+                    logger.info(
+                        "--> END " + request.method()
+                                + " (" + requestBody.contentLength() + "-byte body)"
+                    )
                 } else {
-                    logger.info("--> END " + request.method() + " (binary "
-                            + requestBody.contentLength() + "-byte body omitted)")
+                    logger.info(
+                        "--> END " + request.method() + " (binary "
+                                + requestBody.contentLength() + "-byte body omitted)"
+                    )
                 }
             }
         }
@@ -275,12 +298,14 @@ private class LoggingInterceptor(val logger: KLogger, val level: Level) : Interc
         val responseBody = response.body()!!
         val contentLength = responseBody.contentLength()
         val bodySize = if (contentLength != -1L) contentLength.toString() + "-byte" else "unknown-length"
-        logger.info("<-- " + response.code() + ' ' + response.message() + ' '
-                + response.request().url() + " (" + tookMs + "ms" + (if (!logHeaders)
-            ", "
-                    + bodySize + " body"
-        else
-            "") + ')')
+        logger.info(
+            "<-- " + response.code() + ' ' + response.message() + ' '
+                    + response.request().url() + " (" + tookMs + "ms" + (if (!logHeaders)
+                ", "
+                        + bodySize + " body"
+            else
+                "") + ')'
+        )
 
         if (logHeaders) {
             val headers = response.headers()

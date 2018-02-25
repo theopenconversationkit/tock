@@ -22,18 +22,30 @@ import java.util.UUID
 import java.util.concurrent.ThreadLocalRandom
 
 /**
- *
+ * Manage random things.
  */
 object Dice {
 
     private fun random(): Random = ThreadLocalRandom.current()
 
+    /**
+     * Choose randomly an item in a list.
+     */
     fun <T> choose(list: List<T>): T = list[index(list)]
 
+    /**
+     * Return a random index in a [Collection].
+     */
     fun index(col: Collection<*>): Int = newInt(col.size)
 
+    /**
+     * Return a random int between 0 and max (excluded).
+     */
     fun newInt(max: Int): Int = random().nextInt(max)
 
+    /**
+     * Return a new random [Id].
+     */
     fun newId(): String = try {
         ObjectId().toHexString()
     } catch (e: NoClassDefFoundError) {

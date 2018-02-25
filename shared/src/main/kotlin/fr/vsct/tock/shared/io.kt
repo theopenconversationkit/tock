@@ -18,6 +18,12 @@ package fr.vsct.tock.shared
 import java.io.InputStream
 import java.net.URL
 
+/**
+ * Get a resource url from the classpath.
+ */
 fun resource(path: String): URL = Loader::class.java.getResource(path)
 
+/**
+ * Get a resource [InputStream] from the classpath.
+ */
 fun resourceAsStream(path: String): InputStream = Loader::class.java.getResourceAsStream(path)

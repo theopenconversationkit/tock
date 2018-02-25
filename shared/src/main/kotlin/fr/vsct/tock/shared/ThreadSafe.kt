@@ -17,7 +17,7 @@
 package fr.vsct.tock.shared
 
 /**
- *
+ * A class annotated with [ThreadSafe] is supposed to be thread safe (surprisingly).
  */
 @Target(AnnotationTarget.CLASS)
 @Retention(AnnotationRetention.SOURCE)

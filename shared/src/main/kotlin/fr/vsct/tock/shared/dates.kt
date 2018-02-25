@@ -18,5 +18,13 @@ package fr.vsct.tock.shared
 
 import java.time.ZoneId
 
-var internalDefaultZoneId = ZoneId.of(property("tock_default_zone", "UTC"))
+/**
+ * The internal [defaultZoneId] for Tock - var only for tests.
+ * property "tock_default_zone" with default value UTC is used.
+ */
+var internalDefaultZoneId: ZoneId = ZoneId.of(property("tock_default_zone", "UTC"))
+
+/**
+ * The default [ZoneId] used by Tock.
+ */
 val defaultZoneId: ZoneId get() = internalDefaultZoneId

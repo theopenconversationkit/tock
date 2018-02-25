@@ -17,7 +17,7 @@
 package fr.vsct.tock.shared.vertx
 
 /**
- *
+ * Http 401 exception.
  */
 class UnauthorizedException() : RestException("Not authorized", 401) {
 }

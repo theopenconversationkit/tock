@@ -17,7 +17,7 @@
 package fr.vsct.tock.shared.vertx
 
 /**
- *
+ * Http 404 exception.
  */
 class NotFoundException : RestException("not found", 404) {
 }

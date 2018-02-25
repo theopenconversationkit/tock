@@ -17,7 +17,7 @@
 package fr.vsct.tock.shared.security
 
 /**
- *
+ * Modes of string obfuscation.
  */
 enum class StringObfuscatorMode {
 

@@ -22,14 +22,16 @@ import io.vertx.core.Handler
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.auth.AbstractUser
 import io.vertx.ext.auth.AuthProvider
+import io.vertx.ext.auth.User
 
 /**
  * Tock implementation of vertx [User].
  */
 data class TockUser(
-        val user: String,
-        val namespace: String,
-        val roles: Set<String>) : AbstractUser() {
+    val user: String,
+    val namespace: String,
+    val roles: Set<String>
+) : AbstractUser() {
 
     override fun doIsPermitted(permissionOrRole: String, handler: Handler<AsyncResult<Boolean>>) {
         handler.handle(Future.succeededFuture(roles.contains(permissionOrRole)))

@@ -48,17 +48,23 @@ private val logger = KotlinLogging.logger {}
 
 internal val collectionBuilder: (KClass<*>) -> String = {
     it.simpleName!!
-            .replace("storage", "", true)
-            .toCharArray()
-            .fold("", { s, t ->
-                if (s.isEmpty()) t.toLowerCase().toString()
-                else if (t.isUpperCase()) "${s}_${t.toLowerCase()}"
-                else "$s$t"
-            })
+        .replace("storage", "", true)
+        .toCharArray()
+        .fold("", { s, t ->
+            if (s.isEmpty()) t.toLowerCase().toString()
+            else if (t.isUpperCase()) "${s}_${t.toLowerCase()}"
+            else "$s$t"
+        })
 }
 
+/**
+ * The jackson modules for KMongoi serialization/deserialization.
+ */
 val mongoJacksonModules = mutableListOf<Module>()
 
+/**
+ * The [MongoClient] of Tock.
+ */
 val mongoClient: MongoClient by lazy {
     CollectionNameFormatter.defaultCollectionNameBuilder = collectionBuilder
     IdGenerator.defaultGenerator = ObjectIdToStringGenerator
@@ -96,12 +102,16 @@ val mongoClient: MongoClient by lazy {
         KMongoConfiguration.registerBsonModule(it)
     }
     KMongo.createClient(
-            MongoClientURI(
-                    property("tock_mongo_url", "mongodb://localhost:27017")
-            )
+        MongoClientURI(
+            property("tock_mongo_url", "mongodb://localhost:27017")
+        )
     )
 }
 
+/**
+ * Return the database specified in the [databaseNameProperty].
+ * if the env or system property is not found, use the [databaseNameProperty] as database name (remove "_mongo_db" string is present).
+ */
 fun getDatabase(databaseNameProperty: String): MongoDatabase {
     val databaseName = property(databaseNameProperty, databaseNameProperty).replace("_mongo_db", "")
     logger.info("get database $databaseName")

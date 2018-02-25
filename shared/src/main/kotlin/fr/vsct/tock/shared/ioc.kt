@@ -25,17 +25,17 @@ import fr.vsct.tock.shared.cache.mongo.MongoCache
 import fr.vsct.tock.shared.vertx.vertxExecutor
 
 /**
- * internal injector - reset only for tests.
+ * Internal injector - reset only for tests.
  */
 var tockInternalInjector = KodeinInjector()
 
 /**
- * main Tock injector.
+ * Main Tock injector.
  */
 val injector: KodeinInjector get() = tockInternalInjector
 
 /**
- * extension function. Pattern:
+ * Extension function for Ioc. Pattern:
  * <code>val core: NlpCore get() = injector.provide()</code>
  */
 inline fun <reified T : Any> KodeinInjector.provide(tag: Any? = null): T = injector.provider<T>(tag).value.invoke()

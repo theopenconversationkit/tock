@@ -20,9 +20,10 @@ import com.fasterxml.jackson.databind.JsonDeserializer
 import mu.KotlinLogging
 
 /**
- *
+ * Convenient base class for jackson [JsonDeserializer].
  */
 abstract class JacksonDeserializer<T> : JsonDeserializer<T>() {
 
-    protected val unknownValue: (String) -> Unit = { KotlinLogging.logger {}.warn { "Unsupported field : $it for ${javaClass}" } }
+    protected val unknownValue: (String) -> Unit =
+        { KotlinLogging.logger {}.warn { "Unsupported field : $it for ${javaClass}" } }
 }

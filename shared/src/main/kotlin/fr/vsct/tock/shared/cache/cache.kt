@@ -55,6 +55,7 @@ private fun <T : Any> inMemoryKey(id: Id<T>, type: String): Any = id to type
  * If no value exists, [valueProvider] provides the value to cache.
  * If [valueProvider] throws exception or returns null, no value is cached and null is returned.
  */
+@Deprecated("built-in cache is deprecated")
 fun <T : Any> getOrCache(id: Id<T>, type: String, valueProvider: () -> T?): T? {
     return inMemoryCache.get(inMemoryKey(id, type)) {
         cache.get(id, type)
@@ -75,6 +76,7 @@ fun <T : Any> getOrCache(id: Id<T>, type: String, valueProvider: () -> T?): T? {
  * Returns the value for specified id and type.
  * If no value exists, null is returned.
  */
+@Deprecated("built-in cache is deprecated")
 fun <T : Any> getFromCache(id: Id<T>, type: String): T? {
     return try {
         inMemoryCache.get(inMemoryKey(id, type)) {
@@ -89,6 +91,7 @@ fun <T : Any> getFromCache(id: Id<T>, type: String): T? {
 /**
  * Adds in cache the specified value.
  */
+@Deprecated("built-in cache is deprecated")
 fun <T : Any> putInCache(id: Id<T>, type: String, value: T) {
     try {
         inMemoryCache.put(inMemoryKey(id, type), value)
@@ -101,6 +104,7 @@ fun <T : Any> putInCache(id: Id<T>, type: String, value: T) {
 /**
  * Remove the value for specified id and type from cache.
  */
+@Deprecated("built-in cache is deprecated")
 fun <T : Any> removeFromCache(id: Id<T>, type: String) {
     inMemoryCache.invalidate(inMemoryKey(id, type))
     cache.remove(id, type)
@@ -109,6 +113,7 @@ fun <T : Any> removeFromCache(id: Id<T>, type: String) {
 /**
  * Returns all cached value for specified type.
  */
+@Deprecated("built-in cache is deprecated")
 fun <T> getCachedValuesForType(type: String): Map<Id<T>, Any>
         = cache.getAll(type)
 

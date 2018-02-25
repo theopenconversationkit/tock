@@ -26,31 +26,43 @@ private val logger = KotlinLogging.logger {}
 
 private val textEncryptor: BasicTextEncryptor by lazy {
     BasicTextEncryptor()
-            .apply {
-                property("tock_encrypt_pass", "").apply {
-                    if (isBlank()) {
-                        if (devEnvironment) {
-                            setPassword("dev")
-                        } else {
-                            error("no tock_encrypt_pass set")
-                        }
+        .apply {
+            property("tock_encrypt_pass", "").apply {
+                if (isBlank()) {
+                    if (devEnvironment) {
+                        setPassword("dev")
                     } else {
-                        setPassword(this)
+                        error("no tock_encrypt_pass set")
                     }
+                } else {
+                    setPassword(this)
                 }
             }
+        }
 }
 
+/**
+ * Is encryption enabled?
+ */
 val encryptionEnabled: Boolean = propertyExists("tock_encrypt_pass")
 
+/**
+ * Encrypt a string and return the result.
+ */
 fun encrypt(s: String): String {
     return textEncryptor.encrypt(s)
 }
 
+/**
+ * Decrypt a string and return the result.
+ */
 fun decrypt(s: String): String {
     return textEncryptor.decrypt(s)
 }
 
+/**
+ * Init encryption utilities.
+ */
 fun initEncryptor() {
     if (encryptionEnabled) {
         //warmup encryptor

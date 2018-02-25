@@ -58,12 +58,12 @@
                     <jdkVersion>8</jdkVersion>
                     <reportNotDocumented>false</reportNotDocumented>
                     <sourceLinks>
-                        <!--link>
+                        <link>
                             <dir>${project.basedir}/../shared/src/main/kotlin</dir>
                             <url>https://github.com/voyages-sncf-technologies/tock/blob/master/shared/src/main/kotlin
                             </url>
                             <urlSuffix>#L</urlSuffix>
-                        </link-->
+                        </link>
                         <link>
                             <dir>${project.basedir}/../bot/toolkit/src/main/kotlin</dir>
                             <url>
@@ -116,7 +116,7 @@
                     <outputDir>target/dokka</outputDir>
                     <outputFormat>html</outputFormat>
                     <sourceDirectories>
-                        <!--dir>${project.basedir}/../shared/src/main/kotlin</dir-->
+                        <dir>${project.basedir}/../shared/src/main/kotlin</dir>
                         <dir>${project.basedir}/../bot/toolkit/src/main/kotlin</dir>
                         <dir>${project.basedir}/../bot/engine/src/main/kotlin</dir>
                         <dir>${project.basedir}/../bot/connector-ga/src/main/kotlin</dir>

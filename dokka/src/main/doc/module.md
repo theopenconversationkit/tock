@@ -129,3 +129,34 @@ Utility methods for unit tests
 # Package fr.vsct.tock.bot.test.junit
 
 JUnit utilities
+
+# Package fr.vsct.tock.shared
+
+Shared utility classes and extensions
+
+# Package fr.vsct.tock.shared.cache
+
+Cache utilities - deprecated package - will be removed in 1.0
+
+# Package fr.vsct.tock.shared.jackson
+
+Jackson configuration and extension methods
+
+# Package fr.vsct.tock.shared.security
+
+User definition and encryption methods
+
+# Package fr.vsct.tock.shared.vertx
+
+Vertx related package
+	
+
+
+	
+
+
+	
+
+
+	
+

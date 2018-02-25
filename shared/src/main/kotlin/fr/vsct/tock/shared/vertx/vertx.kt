@@ -29,6 +29,9 @@ import java.util.concurrent.Callable
 
 private val logger = KotlinLogging.logger {}
 
+/**
+ * default vert.x options in Tock.
+ */
 var defaultVertxOptions = VertxOptions().apply {
     maxWorkerExecuteTime = 1000 * 60L * 1000 * 1000000
     if (devEnvironment) {
@@ -36,29 +39,35 @@ var defaultVertxOptions = VertxOptions().apply {
     }
 }
 
+/**
+ * The Tock [Vertx] entry point instance.
+ */
 val vertx: Vertx by lazy { Vertx.vertx(defaultVertxOptions) }
 
+/**
+ * Execute a blocking task (with ordered false).
+ */
 fun <T> Vertx.blocking(blockingHandler: (Future<T>) -> Unit, resultHandler: (AsyncResult<T>) -> Unit) {
     this.executeBlocking(
-            { future: Future<T> ->
-                try {
-                    blockingHandler.invoke(future)
-                } catch(throwable: Throwable) {
-                    logger.error(throwable) { throwable.message }
-                    future.fail(throwable)
-                }
-            },
-            false,
-            {
-                try {
-                    resultHandler.invoke(it)
-                } catch(e: Throwable) {
-                    logger.error(e) { e.message }
-                }
-            })
+        { future: Future<T> ->
+            try {
+                blockingHandler.invoke(future)
+            } catch (throwable: Throwable) {
+                logger.error(throwable) { throwable.message }
+                future.fail(throwable)
+            }
+        },
+        false,
+        {
+            try {
+                resultHandler.invoke(it)
+            } catch (e: Throwable) {
+                logger.error(e) { e.message }
+            }
+        })
 }
 
-fun vertxExecutor(): Executor {
+internal fun vertxExecutor(): Executor {
     return object : Executor {
 
         override fun executeBlocking(delay: Duration, runnable: () -> Unit) {
@@ -102,7 +111,7 @@ fun vertxExecutor(): Executor {
         private fun invoke(runnable: () -> Unit) {
             try {
                 runnable.invoke()
-            } catch(throwable: Throwable) {
+            } catch (throwable: Throwable) {
                 logger.error(throwable)
             }
         }
