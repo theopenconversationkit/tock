@@ -220,24 +220,34 @@ open class BotBusMock(val context: BotBusMockContext,
         val a = action
         if (a is SendChoice) {
             context.dialog.state.currentIntent = context.botDefinition.findIntent(a.intentName)
+        }
+        if (a.state.intent != null) {
+            context.dialog.state.currentIntent = context.botDefinition.findIntent(a.state.intent!!)
+        }
+
+        a.state.entityValues.forEach {
+            dialog.state.changeValue(it)
+        }
+
+        if (context.dialog.state.currentIntent != null
+                && !context.story.definition.supportIntent(context.dialog.state.currentIntent!!)) {
+            val storyDefinition = context.botDefinition.findStoryDefinition(context.dialog.state.currentIntent!!)
+            context.story = Story(storyDefinition, storyDefinition.mainIntent())
+            context.dialog.stories.add(context.story)
+        } else if (context.dialog.stories.isEmpty()) {
+            context.dialog.stories.add(context.story)
+        }
+
+        if (a is SendChoice) {
             context.story.apply {
                 if (a.step() != null) {
                     currentStep = a.step()
                 }
             }
         }
-        if (a.state.intent != null) {
-            context.dialog.state.currentIntent = context.botDefinition.findIntent(a.state.intent!!)
-        }
-        a.state.entityValues.forEach {
-            dialog.state.changeValue(it)
-        }
 
-        if (dialog.stories.isEmpty()) {
-            dialog.stories.add(story)
-        }
         if (a != context.firstAction) {
-            story.actions.add(a)
+            context.story.actions.add(a)
         }
         if (a.state.userInterface != null) {
             context.userInterfaceType = a.state.userInterface!!
