@@ -51,6 +51,7 @@ export class CreateEntityDialogComponent implements OnInit {
     this.entityType = entityType;
     this.type = qualifiedNameWithoutRole(this.state.user, entityType.name);
     this.role = entityNameFromQualifiedName(entityType.name);
+    this.roleInitialized = true;
   }
 
   onTypeKeyUp(event) {
@@ -88,7 +89,6 @@ export class CreateEntityDialogComponent implements OnInit {
     if (!role || role.length === 0) {
       role = entityNameFromQualifiedName(name);
     }
-
     if (this.entityProvider.hasEntityRole(role)) {
       this.error = "Entity role already exists";
     } else {

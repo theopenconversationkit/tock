@@ -195,7 +195,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
         }
       } as MdDialogConfig);
     dialogRef.afterClosed().subscribe(result => {
-      if (result !== "cancel") {
+      if (result && result !== "cancel") {
         let name = result.name;
         let role = result.role;
         const existingEntityType = this.state.findEntityTypeByName(name);
