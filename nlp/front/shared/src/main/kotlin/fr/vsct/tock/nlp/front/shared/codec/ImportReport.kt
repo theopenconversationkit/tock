@@ -25,9 +25,9 @@ import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
  *
  */
 data class ImportReport(
-        val applicationsImported: MutableList<String> = mutableListOf(),
-        val entitiesImported: MutableList<String> = mutableListOf(),
-        val intentsImported: MutableList<String> = mutableListOf(),
+        val applicationsImported: MutableSet<String> = mutableSetOf(),
+        val entitiesImported: MutableSet<String> = mutableSetOf(),
+        val intentsImported: MutableSet<String> = mutableSetOf(),
         var sentencesImported: Long = 0L,
         var success: Boolean = true,
         val errorMessages: MutableList<String> = mutableListOf()) {

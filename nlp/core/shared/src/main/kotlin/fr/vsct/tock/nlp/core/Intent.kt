@@ -22,16 +22,18 @@ import java.util.Locale
 /**
  *
  */
-data class Intent(val name: String,
-                  val entities: List<Entity>,
-                  val entitiesRegexp: Map<Locale, List<EntitiesRegexp>> = emptyMap()) {
+data class Intent(
+    val name: String,
+    val entities: List<Entity>,
+    val entitiesRegexp: Map<Locale, List<EntitiesRegexp>> = emptyMap()
+) {
 
     companion object {
         const val UNKNOWN_INTENT: String = "$TOCK_NAMESPACE:unknown"
     }
 
-    fun hasEntity(entityType: EntityType, role: String)
-     = entities.any { it.entityType == entityType && it.role == role }
+    fun hasEntity(entityType: EntityType, role: String) =
+        entities.any { it.entityType == entityType && it.role == role }
 
     fun getEntity(role: String): Entity = entities.firstOrNull { it.role == role } ?: error("Unknown entity $role")
 

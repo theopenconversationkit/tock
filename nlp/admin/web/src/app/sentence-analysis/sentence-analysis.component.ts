@@ -15,7 +15,7 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {Intent, Sentence, SentenceStatus} from "../model/nlp";
+import {Intent, nameFromQualifiedName, Sentence, SentenceStatus} from "../model/nlp";
 import {StateService} from "../core/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {CreateIntentDialogComponent} from "./create-intent-dialog/create-intent-dialog.component";
@@ -141,7 +141,7 @@ export class SentenceAnalysisComponent implements OnInit {
   }
 
   private createIntent(name): boolean {
-    if (this.state.intentExists(name)) {
+    if (this.state.intentExists(name) || name === nameFromQualifiedName(Intent.unknown)) {
       this.snackBar.open(`Intent ${name} already exists`, "Error", {duration: 5000});
       return false
     } else {
