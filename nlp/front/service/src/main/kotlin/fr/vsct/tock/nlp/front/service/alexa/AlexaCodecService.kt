@@ -184,7 +184,7 @@ object AlexaCodecService : AlexaCodec {
         entity: EntityDefinition,
         sentences: List<ClassifiedSentence>
     ): List<AlexaTypeDefinition> {
-        val nonChar = "[^a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿ']".toRegex()
+        val nonChar = "[^0-9a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿ']".toRegex()
         val spaceRegex = " +".toRegex()
 
         return sentences

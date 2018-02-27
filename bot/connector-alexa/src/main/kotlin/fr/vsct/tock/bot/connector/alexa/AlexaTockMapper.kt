@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector.alexa
 
+import com.amazon.speech.slu.Slot
 import com.amazon.speech.speechlet.IntentRequest
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -34,7 +35,7 @@ import java.util.Locale
 open class AlexaTockMapper(val applicationId: String) {
 
     /**
-     * Returns a Tock intent from an Alexa intent.
+     * Return a Tock intent from an Alexa intent.
      */
     open fun alexaIntentToTockIntent(request: IntentRequest, botDefinition: BotDefinition): String {
         val intentName = request.intent.name
@@ -46,7 +47,7 @@ open class AlexaTockMapper(val applicationId: String) {
     }
 
     /**
-     * Returns a Tock entity from an Alexa slot.
+     * Return a Tock entity from an Alexa slot.
      */
     open fun alexaEntityToTockEntity(
         request: IntentRequest,
@@ -60,7 +61,30 @@ open class AlexaTockMapper(val applicationId: String) {
     }
 
     /**
-     * Returns an [Event] from an Alexa [IntentRequest].
+     * Return a Tock [EntityValue] from an Alexa slot.
+     */
+    open fun alexaEntityToTockEntityValue(
+        request: IntentRequest,
+        intent: String,
+        slot: Slot,
+        botDefinition: BotDefinition,
+        index: Int
+    ): EntityValue {
+        val entity = alexaEntityToTockEntity(request, intent, slot.name, botDefinition)!!
+        return EntityValue(
+            index,
+            index + slot.value!!.length,
+            entity
+        )
+    }
+
+    /**
+     * Get slots from the intent request.
+     */
+    open fun getSlots(request: IntentRequest): Map<String, Slot>? = request.intent?.slots
+
+    /**
+     * Return an [Event] from an Alexa [IntentRequest].
      */
     open fun toEvent(userId: String, request: IntentRequest, botDefinition: BotDefinition): Event {
         val playerId = PlayerId(userId, PlayerType.user)
@@ -69,17 +93,12 @@ open class AlexaTockMapper(val applicationId: String) {
         val intent = alexaIntentToTockIntent(request, botDefinition)
         var index = 0
 
-        val slots = request.intent?.slots?.values
+        val slots = getSlots(request)?.values
             ?.filter { it.value != null && alexaEntityToTockEntity(request, intent, it.name, botDefinition) != null }
                 ?: emptyList()
         val entityValues =
             slots.map {
-                val entity = alexaEntityToTockEntity(request, intent, it.name, botDefinition)!!
-                val value = EntityValue(
-                    index,
-                    index + it.value!!.length,
-                    entity
-                )
+                val value = alexaEntityToTockEntityValue(request, intent, it, botDefinition, index)
                 index += it.value.length + 1
                 value
             }
