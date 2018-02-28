@@ -2,6 +2,25 @@ $dokka.format:html
 $dokka.linkExtension:html
 $dokka.location:fr.vsct.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.String, fr.vsct.tock.bot.engine.monitoring.RequestTimerData)fr.vsct.tock.bot.engine.monitoring/mu.-k-logger/log-error.html
 $dokka.location:fr.vsct.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.Throwable, fr.vsct.tock.bot.engine.monitoring.RequestTimerData)fr.vsct.tock.bot.engine.monitoring/mu.-k-logger/log-error.html
+$dokka.location:fr.vsct.tock.shared$addJacksonConverter(retrofit2.Retrofit.Builder, com.fasterxml.jackson.databind.ObjectMapper)fr.vsct.tock.shared/retrofit2.-retrofit.-builder/add-jackson-converter.html
+$dokka.location:fr.vsct.tock.shared$create(retrofit2.Retrofit)fr.vsct.tock.shared/retrofit2.-retrofit/create.html
+$dokka.location:fr.vsct.tock.shared$error(mu.KLogger, kotlin.Throwable)fr.vsct.tock.shared/mu.-k-logger/error.html
+$dokka.location:fr.vsct.tock.shared$mapNotNullValues(kotlin.collections.Iterable((fr.vsct.tock.shared.mapNotNullValues.T)), kotlin.Function1((fr.vsct.tock.shared.mapNotNullValues.T, kotlin.Pair((fr.vsct.tock.shared.mapNotNullValues.K, fr.vsct.tock.shared.mapNotNullValues.V)))))fr.vsct.tock.shared/kotlin.collections.-iterable/map-not-null-values.html
+$dokka.location:fr.vsct.tock.shared$name(kotlin.String)fr.vsct.tock.shared/kotlin.-string/name.html
+$dokka.location:fr.vsct.tock.shared$namespace(kotlin.String)fr.vsct.tock.shared/kotlin.-string/namespace.html
+$dokka.location:fr.vsct.tock.shared$namespaceAndName(kotlin.String)fr.vsct.tock.shared/kotlin.-string/namespace-and-name.html
+$dokka.location:fr.vsct.tock.shared$provide(com.github.salomonbrys.kodein.KodeinInjector, kotlin.Any)fr.vsct.tock.shared/com.github.salomonbrys.kodein.-kodein-injector/provide.html
+$dokka.location:fr.vsct.tock.shared$toList(kotlin.collections.Iterator((fr.vsct.tock.shared.toList.T)))fr.vsct.tock.shared/kotlin.collections.-iterator/to-list.html
+$dokka.location:fr.vsct.tock.shared$toSet(java.util.Enumeration((fr.vsct.tock.shared.toSet.T)))fr.vsct.tock.shared/java.util.-enumeration/to-set.html
+$dokka.location:fr.vsct.tock.shared$withNamespace(kotlin.String, kotlin.String)fr.vsct.tock.shared/kotlin.-string/with-namespace.html
+$dokka.location:fr.vsct.tock.shared$withoutNamespace(kotlin.String, kotlin.String)fr.vsct.tock.shared/kotlin.-string/without-namespace.html
+$dokka.location:fr.vsct.tock.shared.jackson$addDeserializer(com.fasterxml.jackson.databind.module.SimpleModule, kotlin.reflect.KClass((fr.vsct.tock.shared.jackson.addDeserializer.T)), com.fasterxml.jackson.databind.JsonDeserializer((fr.vsct.tock.shared.jackson.addDeserializer.T)))fr.vsct.tock.shared.jackson/com.fasterxml.jackson.databind.module.-simple-module/add-deserializer.html
+$dokka.location:fr.vsct.tock.shared.jackson$addSerializer(com.fasterxml.jackson.databind.module.SimpleModule, kotlin.reflect.KClass((fr.vsct.tock.shared.jackson.addSerializer.T)), com.fasterxml.jackson.databind.JsonSerializer((fr.vsct.tock.shared.jackson.addSerializer.T)))fr.vsct.tock.shared.jackson/com.fasterxml.jackson.databind.module.-simple-module/add-serializer.html
+$dokka.location:fr.vsct.tock.shared.jackson$fieldNameWithValueReady(com.fasterxml.jackson.core.JsonParser)fr.vsct.tock.shared.jackson/com.fasterxml.jackson.core.-json-parser/field-name-with-value-ready.html
+$dokka.location:fr.vsct.tock.shared.jackson$read(com.fasterxml.jackson.core.JsonParser, kotlin.Function2((fr.vsct.tock.shared.jackson.read.FIELDS, kotlin.String, kotlin.Unit)))fr.vsct.tock.shared.jackson/com.fasterxml.jackson.core.-json-parser/read.html
+$dokka.location:fr.vsct.tock.shared.jackson$readListValues(com.fasterxml.jackson.core.JsonParser)fr.vsct.tock.shared.jackson/com.fasterxml.jackson.core.-json-parser/read-list-values.html
+$dokka.location:fr.vsct.tock.shared.jackson$readValue(com.fasterxml.jackson.core.JsonParser)fr.vsct.tock.shared.jackson/com.fasterxml.jackson.core.-json-parser/read-value.html
+$dokka.location:fr.vsct.tock.shared.vertx$blocking(io.vertx.core.Vertx, kotlin.Function1((io.vertx.core.Future((fr.vsct.tock.shared.vertx.blocking.T)), kotlin.Unit)), kotlin.Function1((io.vertx.core.AsyncResult((fr.vsct.tock.shared.vertx.blocking.T)), kotlin.Unit)))fr.vsct.tock.shared.vertx/io.vertx.core.-vertx/blocking.html
 fr.vsct.tock.bot
 fr.vsct.tock.bot.admin.answer
 fr.vsct.tock.bot.admin.bot
@@ -10,6 +29,7 @@ fr.vsct.tock.bot.admin.message
 fr.vsct.tock.bot.admin.test
 fr.vsct.tock.bot.admin.user
 fr.vsct.tock.bot.connector
+fr.vsct.tock.bot.connector.alexa
 fr.vsct.tock.bot.connector.ga
 fr.vsct.tock.bot.connector.ga.model
 fr.vsct.tock.bot.connector.ga.model.request
@@ -33,3 +53,8 @@ fr.vsct.tock.bot.engine.stt
 fr.vsct.tock.bot.engine.user
 fr.vsct.tock.bot.test
 fr.vsct.tock.bot.test.junit
+fr.vsct.tock.shared
+fr.vsct.tock.shared.cache
+fr.vsct.tock.shared.jackson
+fr.vsct.tock.shared.security
+fr.vsct.tock.shared.vertx

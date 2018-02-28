@@ -9,6 +9,7 @@
 <br/>
 <h1>ConnectorProvider</h1>
 <code><span class="keyword">interface </span><span class="identifier">ConnectorProvider</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/connector/ConnectorProvider.kt#L22">(source)</a>
+<p>To provide a new <a href="../-connector/index.html">Connector</a> from a <a href="../-connector-configuration/index.html">ConnectorConfiguration</a>.</p>
 <h3>Properties</h3>
 <table>
 <tbody>
@@ -17,7 +18,9 @@
 <p><a href="connector-type.html">connectorType</a></p>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">connectorType</span><span class="symbol">: </span><a href="../-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">connectorType</span><span class="symbol">: </span><a href="../-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code>
+<p>The connector type provided</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -29,13 +32,24 @@
 <p><a href="connector.html">connector</a></p>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">connector</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.ConnectorProvider$connector(fr.vsct.tock.bot.connector.ConnectorConfiguration)/connectorConfiguration">connectorConfiguration</span><span class="symbol">:</span>&nbsp;<a href="../-connector-configuration/index.html"><span class="identifier">ConnectorConfiguration</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-connector/index.html"><span class="identifier">Connector</span></a></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">connector</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.ConnectorProvider$connector(fr.vsct.tock.bot.connector.ConnectorConfiguration)/connectorConfiguration">connectorConfiguration</span><span class="symbol">:</span>&nbsp;<a href="../-connector-configuration/index.html"><span class="identifier">ConnectorConfiguration</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-connector/index.html"><span class="identifier">Connector</span></a></code>
+<p>Provides a new <a href="../-connector/index.html">Connector</a> instance from the specified <a href="../-connector-configuration/index.html">ConnectorConfiguration</a>.</p>
+</td>
 </tr>
 </tbody>
 </table>
 <h3>Inheritors</h3>
 <table>
 <tbody>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector.alexa/-alexa-connector-provider/index.html">AlexaConnectorProvider</a></p>
+</td>
+<td>
+<code><span class="keyword">object </span><span class="identifier">AlexaConnectorProvider</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">ConnectorProvider</span></code>
+<p>ConnectorProvider for <a href="../../fr.vsct.tock.bot.connector.alexa/-alexa-connector/index.html">AlexaConnector</a>.</p>
+</td>
+</tr>
 <tr>
 <td>
 <p><a href="../../fr.vsct.tock.bot.connector.ga/-g-a-connector-provider/index.html">GAConnectorProvider</a></p>

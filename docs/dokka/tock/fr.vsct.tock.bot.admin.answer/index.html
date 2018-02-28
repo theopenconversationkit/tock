@@ -17,14 +17,18 @@
 <p><a href="-answer-configuration/index.html">AnswerConfiguration</a></p>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AnswerConfiguration</span></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">AnswerConfiguration</span></code>
+<p>Define an answer configured at runtime.</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="-answer-configuration-type/index.html">AnswerConfigurationType</a></p>
 </td>
 <td>
-<code><span class="keyword">enum</span> <span class="keyword">class </span><span class="identifier">AnswerConfigurationType</span></code></td>
+<code><span class="keyword">enum</span> <span class="keyword">class </span><span class="identifier">AnswerConfigurationType</span></code>
+<p>The types of <a href="-answer-configuration/index.html">AnswerConfiguration</a> available.</p>
+</td>
 </tr>
 <tr>
 <td>
@@ -45,21 +49,36 @@
 <p><a href="-script-answer-configuration/index.html">ScriptAnswerConfiguration</a></p>
 </td>
 <td>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">ScriptAnswerConfiguration</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-answer-configuration/index.html"><span class="identifier">AnswerConfiguration</span></a></code></td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">ScriptAnswerConfiguration</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-answer-configuration/index.html"><span class="identifier">AnswerConfiguration</span></a></code>
+<p>An <a href="-answer-configuration/index.html">AnswerConfiguration</a> defined by a Kotlin script.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-script-answer-versioned-configuration/index.html">ScriptAnswerVersionedConfiguration</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">ScriptAnswerVersionedConfiguration</span></code>
+<p>A version of <a href="-script-answer-configuration/index.html">ScriptAnswerConfiguration</a></p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="-simple-answer/index.html">SimpleAnswer</a></p>
 </td>
 <td>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">SimpleAnswer</span></code></td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">SimpleAnswer</span></code>
+<p>Answers that contains only i18n labels.</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="-simple-answer-configuration/index.html">SimpleAnswerConfiguration</a></p>
 </td>
 <td>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">SimpleAnswerConfiguration</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-answer-configuration/index.html"><span class="identifier">AnswerConfiguration</span></a></code></td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">SimpleAnswerConfiguration</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-answer-configuration/index.html"><span class="identifier">AnswerConfiguration</span></a></code>
+<p>An <a href="-answer-configuration/index.html">AnswerConfiguration</a> with only <a href="-simple-answer/index.html">SimpleAnswer</a> (ie labels) answers.</p>
+</td>
 </tr>
 </tbody>
 </table>

@@ -50,14 +50,61 @@
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.alexa/-alexa-connector/index.html">fr.vsct.tock.bot.connector.alexa.AlexaConnector</a></td>
+<td>
+<p><a href="#">Connector</a> for Amazon Alexa.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.alexa/-alexa-connector-provider/index.html">fr.vsct.tock.bot.connector.alexa.AlexaConnectorProvider</a></td>
+<td>
+<p><a href="../fr.vsct.tock.bot.connector/-connector-provider/index.html">ConnectorProvider</a> for <a href="../fr.vsct.tock.bot.connector.alexa/-alexa-connector/index.html">AlexaConnector</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.alexa/-alexa-handler/index.html">fr.vsct.tock.bot.connector.alexa.AlexaHandler</a></td>
+<td>
+<p>To specify <a href="../fr.vsct.tock.bot.definition/-connector-story-handler/index.html">ConnectorStoryHandler</a> for Alexa connector.
+<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a> passed as <a href="../fr.vsct.tock.bot.connector.alexa/-alexa-handler/value.html">value</a> of this annotation must have a primary constructor
+with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.alexa/-alexa-message/index.html">fr.vsct.tock.bot.connector.alexa.AlexaMessage</a></td>
+<td>
+<p>An alexa message.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.alexa/-alexa-tock-mapper/index.html">fr.vsct.tock.bot.connector.alexa.AlexaTockMapper</a></td>
+<td>
+<p>An Alexa model to Tock model mapper. Provided via <a href="#">addAlexaConnector.alexaTockMapper</a> parameter.</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.admin.answer/-answer-configuration/index.html">fr.vsct.tock.bot.admin.answer.AnswerConfiguration</a></td>
 <td>
+<p>Define an answer configured at runtime.</p>
 </td>
 </tr>
 <tr>
 <td>
 <a href="../fr.vsct.tock.bot.admin.answer/-answer-configuration-type/index.html">fr.vsct.tock.bot.admin.answer.AnswerConfigurationType</a></td>
 <td>
+<p>The types of <a href="../fr.vsct.tock.bot.admin.answer/-answer-configuration/index.html">AnswerConfiguration</a> available.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared.jackson/-any-value-wrapper/index.html">fr.vsct.tock.shared.jackson.AnyValueWrapper</a></td>
+<td>
+<p>A jackson wrapper to store class name with dynamic type value.
+Use with care, as it stores the class name in json.</p>
 </td>
 </tr>
 <tr>
@@ -65,6 +112,13 @@
 <a href="../fr.vsct.tock.bot.engine.dialog/-archived-entity-value/index.html">fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue</a></td>
 <td>
 <p>An archived (old) entity value.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.admin.bot/-artifact-version/index.html">fr.vsct.tock.bot.admin.bot.ArtifactVersion</a></td>
+<td>
+<p>An artifact version number.</p>
 </td>
 </tr>
 <tr>
@@ -115,6 +169,13 @@
 <td>
 <a href="../fr.vsct.tock.bot.connector.messenger.model.webhook/-attachment-type/index.html">fr.vsct.tock.bot.connector.messenger.model.webhook.AttachmentType</a></td>
 <td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared.vertx/-bad-request-exception/index.html">fr.vsct.tock.shared.vertx.BadRequestException</a></td>
+<td>
+<p>Http 400 exception.</p>
 </td>
 </tr>
 <tr>
@@ -202,6 +263,19 @@ Custom provider should usually not directly extend this class, but instead exten
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.admin.bot/-bot-version/index.html">fr.vsct.tock.bot.admin.bot.BotVersion</a></td>
+<td>
+<p>A bot version number.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared/retrofit2.-retrofit.-builder/index.html">retrofit2.Retrofit.Builder</a> (extensions in package fr.vsct.tock.shared)</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.admin.answer/-built-in-answer-configuration/index.html">fr.vsct.tock.bot.admin.answer.BuiltInAnswerConfiguration</a></td>
 <td>
 </td>
@@ -285,6 +359,7 @@ see <a href="https://developers.facebook.com/docs/messenger-platform/webhook-ref
 <td>
 <a href="../fr.vsct.tock.bot.connector/-connector-configuration/index.html">fr.vsct.tock.bot.connector.ConnectorConfiguration</a></td>
 <td>
+<p>Configuration parameters used by a <a href="#">ConnectorProvided</a> to create a new <a href="../fr.vsct.tock.bot.connector/-connector/index.html">Connector</a> instance.</p>
 </td>
 </tr>
 <tr>
@@ -318,6 +393,7 @@ see <a href="https://developers.facebook.com/docs/messenger-platform/webhook-ref
 <td>
 <a href="../fr.vsct.tock.bot.connector/-connector-exception/index.html">fr.vsct.tock.bot.connector.ConnectorException</a></td>
 <td>
+<p>Thrown when an occurs in a <a href="../fr.vsct.tock.bot.connector/-connector/index.html">Connector</a>.</p>
 </td>
 </tr>
 <tr>
@@ -340,6 +416,7 @@ Used only by connector implementation.</p>
 <td>
 <a href="../fr.vsct.tock.bot.connector/-connector-provider/index.html">fr.vsct.tock.bot.connector.ConnectorProvider</a></td>
 <td>
+<p>To provide a new <a href="../fr.vsct.tock.bot.connector/-connector/index.html">Connector</a> from a <a href="../fr.vsct.tock.bot.connector/-connector-configuration/index.html">ConnectorConfiguration</a>.</p>
 </td>
 </tr>
 <tr>
@@ -418,6 +495,13 @@ The dialog has a (current) <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/st
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.shared/-dice/index.html">fr.vsct.tock.shared.Dice</a></td>
+<td>
+<p>Manage random things.</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.messenger.model.send/-element/index.html">fr.vsct.tock.bot.connector.messenger.model.send.Element</a></td>
 <td>
 </td>
@@ -439,6 +523,12 @@ The dialog has a (current) <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/st
 <tr>
 <td>
 <a href="../fr.vsct.tock.bot.connector.messenger.model.webhook/-entry/index.html">fr.vsct.tock.bot.connector.messenger.model.webhook.Entry</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared/java.util.-enumeration/index.html">java.util.Enumeration</a> (extensions in package fr.vsct.tock.shared)</td>
 <td>
 </td>
 </tr>
@@ -479,7 +569,32 @@ The dialog has a (current) <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/st
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.shared/-executor/index.html">fr.vsct.tock.shared.Executor</a></td>
+<td>
+<p>Manage async tasks.</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.messenger.model.webhook/-facebook-location/index.html">fr.vsct.tock.bot.connector.messenger.model.webhook.FacebookLocation</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-action/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAAction</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-action-provided-payment-options/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAActionProvidedPaymentOptions</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-action-type/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAActionType</a></td>
 <td>
 </td>
 </tr>
@@ -499,7 +614,12 @@ The dialog has a (current) <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/st
 <td>
 <a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-argument-value/index.html">fr.vsct.tock.bot.connector.ga.model.request.GAArgumentValue</a></td>
 <td>
-<p>//TODO</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-argument-value-type/index.html">fr.vsct.tock.bot.connector.ga.model.request.GAArgumentValueType</a></td>
+<td>
 </td>
 </tr>
 <tr>
@@ -516,7 +636,19 @@ The dialog has a (current) <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/st
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-cancellation-info/index.html">fr.vsct.tock.bot.connector.ga.model.response.GACancellationInfo</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-capability/index.html">fr.vsct.tock.bot.connector.ga.model.request.GACapability</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-card-network/index.html">fr.vsct.tock.bot.connector.ga.model.response.GACardNetwork</a></td>
 <td>
 </td>
 </tr>
@@ -529,6 +661,12 @@ The dialog has a (current) <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/st
 <tr>
 <td>
 <a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-carousel-select/index.html">fr.vsct.tock.bot.connector.ga.model.response.GACarouselSelect</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-cart/index.html">fr.vsct.tock.bot.connector.ga.model.response.GACart</a></td>
 <td>
 </td>
 </tr>
@@ -559,6 +697,24 @@ The dialog has a (current) <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/st
 <tr>
 <td>
 <a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-custom-push-message/index.html">fr.vsct.tock.bot.connector.ga.model.response.GACustomPushMessage</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-customer-info/index.html">fr.vsct.tock.bot.connector.ga.model.request.GACustomerInfo</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-customer-info-options/index.html">fr.vsct.tock.bot.connector.ga.model.response.GACustomerInfoOptions</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-customer-info-property/index.html">fr.vsct.tock.bot.connector.ga.model.response.GACustomerInfoProperty</a></td>
 <td>
 </td>
 </tr>
@@ -600,6 +756,24 @@ The dialog has a (current) <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/st
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-fulfillment-info/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAFulfillmentInfo</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-google-provided-payment-instrument/index.html">fr.vsct.tock.bot.connector.ga.model.request.GAGoogleProvidedPaymentInstrument</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-google-provided-payment-options/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAGoogleProvidedPaymentOptions</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.ga/-g-a-handler/index.html">fr.vsct.tock.bot.connector.ga.GAHandler</a></td>
 <td>
 <p>To specify <a href="../fr.vsct.tock.bot.definition/-connector-story-handler/index.html">ConnectorStoryHandler</a> for Google Assistant connector.
@@ -609,7 +783,25 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-hold-status/index.html">fr.vsct.tock.bot.connector.ga.model.request.GAHoldStatus</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-hold-value/index.html">fr.vsct.tock.bot.connector.ga.model.request.GAHoldValue</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-image/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAImage</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-in-transit-info/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAInTransitInfo</a></td>
 <td>
 </td>
 </tr>
@@ -663,6 +855,24 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-line-item/index.html">fr.vsct.tock.bot.connector.ga.model.response.GALineItem</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-line-item-type/index.html">fr.vsct.tock.bot.connector.ga.model.response.GALineItemType</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-line-item-update/index.html">fr.vsct.tock.bot.connector.ga.model.response.GALineItemUpdate</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-link-out-suggestion/index.html">fr.vsct.tock.bot.connector.ga.model.response.GALinkOutSuggestion</a></td>
 <td>
 </td>
@@ -687,6 +897,18 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-merchant/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAMerchant</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-money/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAMoney</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-open-url-action/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAOpenUrlAction</a></td>
 <td>
 </td>
@@ -705,7 +927,55 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-order/index.html">fr.vsct.tock.bot.connector.ga.model.request.GAOrder</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-order-options/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAOrderOptions</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-order-state/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAOrderState</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-order-update/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAOrderUpdate</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-payment-info/index.html">fr.vsct.tock.bot.connector.ga.model.request.GAPaymentInfo</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-payment-method-tokenization-parameters/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAPaymentMethodTokenizationParameters</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-payment-method-tokenization-type/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAPaymentMethodTokenizationType</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-payment-options/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAPaymentOptions</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-payment-type/index.html">fr.vsct.tock.bot.connector.ga.model.request.GAPaymentType</a></td>
 <td>
 </td>
 </tr>
@@ -729,7 +999,43 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-price/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAPrice</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-price-type/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAPriceType</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-proposed-order/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAProposedOrder</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-raw-input/index.html">fr.vsct.tock.bot.connector.ga.model.request.GARawInput</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-reason-type/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAReasonType</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-receipt/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAReceipt</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-rejection-info/index.html">fr.vsct.tock.bot.connector.ga.model.response.GARejectionInfo</a></td>
 <td>
 </td>
 </tr>
@@ -765,6 +1071,18 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-result-type/index.html">fr.vsct.tock.bot.connector.ga.model.request.GAResultType</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-return-info/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAReturnInfo</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-rich-response/index.html">fr.vsct.tock.bot.connector.ga.model.response.GARichResponse</a></td>
 <td>
 </td>
@@ -784,6 +1102,12 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 <tr>
 <td>
 <a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-simple-select/index.html">fr.vsct.tock.bot.connector.ga.model.response.GASimpleSelect</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-state/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAState</a></td>
 <td>
 </td>
 </tr>
@@ -814,6 +1138,12 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-sub-line/index.html">fr.vsct.tock.bot.connector.ga.model.response.GASubLine</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-suggestion/index.html">fr.vsct.tock.bot.connector.ga.model.response.GASuggestion</a></td>
 <td>
 </td>
@@ -832,13 +1162,61 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-transaction-decision-check-result/index.html">fr.vsct.tock.bot.connector.ga.model.request.GATransactionDecisionCheckResult</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-transaction-decision-value/index.html">fr.vsct.tock.bot.connector.ga.model.request.GATransactionDecisionValue</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-transaction-decision-value-spec/index.html">fr.vsct.tock.bot.connector.ga.model.response.GATransactionDecisionValueSpec</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-transaction-requirements-check-result/index.html">fr.vsct.tock.bot.connector.ga.model.request.GATransactionRequirementsCheckResult</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-transaction-requirements-check-spec/index.html">fr.vsct.tock.bot.connector.ga.model.response.GATransactionRequirementsCheckSpec</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-transaction-user-decision/index.html">fr.vsct.tock.bot.connector.ga.model.request.GATransactionUserDecision</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-user/index.html">fr.vsct.tock.bot.connector.ga.model.request.GAUser</a></td>
 <td>
 </td>
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-g-a-user-notification/index.html">fr.vsct.tock.bot.connector.ga.model.response.GAUserNotification</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.ga.model.request/-g-a-user-profile/index.html">fr.vsct.tock.bot.connector.ga.model.request.GAUserProfile</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.ga.model.response/-ga-payment-type/index.html">fr.vsct.tock.bot.connector.ga.model.response.GaPaymentType</a></td>
 <td>
 </td>
 </tr>
@@ -896,8 +1274,52 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.shared/kotlin.collections.-iterable/index.html">kotlin.collections.Iterable</a> (extensions in package fr.vsct.tock.shared)</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared/kotlin.collections.-iterator/index.html">kotlin.collections.Iterator</a> (extensions in package fr.vsct.tock.shared)</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared.jackson/-jackson-deserializer/index.html">fr.vsct.tock.shared.jackson.JacksonDeserializer</a></td>
+<td>
+<p>Convenient base class for jackson <a href="#">JsonDeserializer</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared.jackson/com.fasterxml.jackson.core.-json-parser/index.html">com.fasterxml.jackson.core.JsonParser</a> (extensions in package fr.vsct.tock.shared.jackson)</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.engine.monitoring/mu.-k-logger/index.html">mu.KLogger</a> (extensions in package fr.vsct.tock.bot.engine.monitoring)</td>
 <td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared/mu.-k-logger/index.html">mu.KLogger</a> (extensions in package fr.vsct.tock.shared)</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared/com.github.salomonbrys.kodein.-kodein-injector/index.html">com.github.salomonbrys.kodein.KodeinInjector</a> (extensions in package fr.vsct.tock.shared)</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared/-level/index.html">fr.vsct.tock.shared.Level</a></td>
+<td>
+<p>Http requests/response log level.</p>
 </td>
 </tr>
 <tr>
@@ -911,6 +1333,13 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 <a href="../fr.vsct.tock.bot.connector.messenger.model.send/-list-payload/index.html">fr.vsct.tock.bot.connector.messenger.model.send.ListPayload</a></td>
 <td>
 <p>See <a href="https//developers.facebook.com/docs/messenger-platform/send-api-reference/list-template">https//developers.facebook.com/docs/messenger-platform/send-api-reference/list-template</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared/-loader/index.html">fr.vsct.tock.shared.Loader</a></td>
+<td>
+<p>Helper methods to deal with <a href="#">ServiceLoader</a>.</p>
 </td>
 </tr>
 <tr>
@@ -1101,9 +1530,23 @@ Need to be registered using <a href="../fr.vsct.tock.bot.engine/-bot-repository/
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.shared.vertx/-not-found-exception/index.html">fr.vsct.tock.shared.vertx.NotFoundException</a></td>
+<td>
+<p>Http 404 exception.</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.messenger.model.send/-notification-type/index.html">fr.vsct.tock.bot.connector.messenger.model.send.NotificationType</a></td>
 <td>
 <p>cf <a href="https//developers.facebook.com/docs/messenger-platform/send-api-reference#request">https//developers.facebook.com/docs/messenger-platform/send-api-reference#request</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared.security/-obfuscator-service/index.html">fr.vsct.tock.shared.security.ObfuscatorService</a></td>
+<td>
+<p>To load obfuscators via service loaders.</p>
 </td>
 </tr>
 <tr>
@@ -1168,6 +1611,7 @@ Need to be registered using <a href="../fr.vsct.tock.bot.engine/-bot-repository/
 <td>
 <a href="../fr.vsct.tock.bot.engine.user/-player-type/index.html">fr.vsct.tock.bot.engine.user.PlayerType</a></td>
 <td>
+<p>Define user type.</p>
 </td>
 </tr>
 <tr>
@@ -1180,6 +1624,19 @@ Need to be registered using <a href="../fr.vsct.tock.bot.engine/-bot-repository/
 <td>
 <a href="../fr.vsct.tock.bot.connector.messenger.model.webhook/-postback-webhook/index.html">fr.vsct.tock.bot.connector.messenger.model.webhook.PostbackWebhook</a></td>
 <td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.webhook/-prior-message/index.html">fr.vsct.tock.bot.connector.messenger.model.webhook.PriorMessage</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared.security/-property-based-auth-provider/index.html">fr.vsct.tock.shared.security.PropertyBasedAuthProvider</a></td>
+<td>
+<p>Simple <a href="#">AuthProvider</a> used in dev mode.</p>
 </td>
 </tr>
 <tr>
@@ -1217,8 +1674,29 @@ Need to be registered using <a href="../fr.vsct.tock.bot.engine/-bot-repository/
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.shared.vertx/-rest-exception/index.html">fr.vsct.tock.shared.vertx.RestException</a></td>
+<td>
+<p>Base class for rest exceptions.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared/retrofit2.-retrofit/index.html">retrofit2.Retrofit</a> (extensions in package fr.vsct.tock.shared)</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.admin.answer/-script-answer-configuration/index.html">fr.vsct.tock.bot.admin.answer.ScriptAnswerConfiguration</a></td>
 <td>
+<p>An <a href="../fr.vsct.tock.bot.admin.answer/-answer-configuration/index.html">AnswerConfiguration</a> defined by a Kotlin script.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.admin.answer/-script-answer-versioned-configuration/index.html">fr.vsct.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration</a></td>
+<td>
+<p>A version of <a href="../fr.vsct.tock.bot.admin.answer/-script-answer-configuration/index.html">ScriptAnswerConfiguration</a></p>
 </td>
 </tr>
 <tr>
@@ -1326,18 +1804,33 @@ This a usually "generic" view of <a href="../fr.vsct.tock.bot.connector/-connect
 <td>
 <a href="../fr.vsct.tock.bot.admin.answer/-simple-answer/index.html">fr.vsct.tock.bot.admin.answer.SimpleAnswer</a></td>
 <td>
+<p>Answers that contains only i18n labels.</p>
 </td>
 </tr>
 <tr>
 <td>
 <a href="../fr.vsct.tock.bot.admin.answer/-simple-answer-configuration/index.html">fr.vsct.tock.bot.admin.answer.SimpleAnswerConfiguration</a></td>
 <td>
+<p>An <a href="../fr.vsct.tock.bot.admin.answer/-answer-configuration/index.html">AnswerConfiguration</a> with only <a href="../fr.vsct.tock.bot.admin.answer/-simple-answer/index.html">SimpleAnswer</a> (ie labels) answers.</p>
 </td>
 </tr>
 <tr>
 <td>
 <a href="../fr.vsct.tock.bot.definition/-simple-handler.html">fr.vsct.tock.bot.definition.SimpleHandler</a></td>
 <td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared.jackson/com.fasterxml.jackson.databind.module.-simple-module/index.html">com.fasterxml.jackson.databind.module.SimpleModule</a> (extensions in package fr.vsct.tock.shared.jackson)</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared.security/-simple-obfuscator/index.html">fr.vsct.tock.shared.security.SimpleObfuscator</a></td>
+<td>
+<p>Simple implementation for <a href="../fr.vsct.tock.shared.security/-string-obfuscator/index.html">StringObfuscator</a>.</p>
 </td>
 </tr>
 <tr>
@@ -1454,12 +1947,14 @@ When theses intents are detected, The story is started.</p>
 <td>
 <a href="../fr.vsct.tock.bot.admin.bot/-story-definition-configuration/index.html">fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration</a></td>
 <td>
+<p>A <a href="../fr.vsct.tock.bot.definition/-story-definition/index.html">StoryDefinition</a> defined at runtime.</p>
 </td>
 </tr>
 <tr>
 <td>
 <a href="../fr.vsct.tock.bot.admin.bot/-story-definition-configuration-d-a-o/index.html">fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO</a></td>
 <td>
+<p>Manage <a href="../fr.vsct.tock.bot.admin.bot/-story-definition-configuration/index.html">StoryDefinitionConfiguration</a> persistence.</p>
 </td>
 </tr>
 <tr>
@@ -1516,6 +2011,33 @@ Need to be registered using <a href="../fr.vsct.tock.bot.engine/-bot-repository/
 <td>
 <p>A step (the implementation is usually an enum) is a part of a <a href="../fr.vsct.tock.bot.definition/-story-definition/index.html">StoryDefinition</a>.
 Used to manage workflow in a <a href="../fr.vsct.tock.bot.definition/-story-handler/index.html">StoryHandler</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared/kotlin.-string/index.html">kotlin.String</a> (extensions in package fr.vsct.tock.shared)</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared.security/-string-obfuscator/index.html">fr.vsct.tock.shared.security.StringObfuscator</a></td>
+<td>
+<p>Replaces a string by an other String.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared.security/-string-obfuscator-mode/index.html">fr.vsct.tock.shared.security.StringObfuscatorMode</a></td>
+<td>
+<p>Modes of string obfuscation.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared.security/-string-obfuscator-service/index.html">fr.vsct.tock.shared.security.StringObfuscatorService</a></td>
+<td>
+<p>To manage obfuscations.</p>
 </td>
 </tr>
 <tr>
@@ -1609,8 +2131,16 @@ Used to manage workflow in a <a href="../fr.vsct.tock.bot.definition/-story-hand
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.shared/-thread-safe/index.html">fr.vsct.tock.shared.ThreadSafe</a></td>
+<td>
+<p>A class annotated with <a href="../fr.vsct.tock.shared/-thread-safe/index.html">ThreadSafe</a> is supposed to be thread safe (surprisingly).</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.engine.user/-time-boxed-flag/index.html">fr.vsct.tock.bot.engine.user.TimeBoxedFlag</a></td>
 <td>
+<p>A flag with a validity limit.</p>
 </td>
 </tr>
 <tr>
@@ -1618,6 +2148,20 @@ Used to manage workflow in a <a href="../fr.vsct.tock.bot.definition/-story-hand
 <a href="../fr.vsct.tock.bot.test.junit/-tock-j-unit4-rule/index.html">fr.vsct.tock.bot.test.junit.TockJUnit4Rule</a></td>
 <td>
 <p>A JUnit4 Rule to initialize the context for each call.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared.security/-tock-user/index.html">fr.vsct.tock.shared.security.TockUser</a></td>
+<td>
+<p>Tock implementation of vertx <a href="#">User</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared.security/-tock-user-role/index.html">fr.vsct.tock.shared.security.TockUserRole</a></td>
+<td>
+<p>The user roles for <a href="../fr.vsct.tock.shared.security/-tock-user/index.html">TockUser</a>.</p>
 </td>
 </tr>
 <tr>
@@ -1632,6 +2176,13 @@ Used to manage workflow in a <a href="../fr.vsct.tock.bot.definition/-story-hand
 <a href="../fr.vsct.tock.bot.engine.event/-typing-on-event/index.html">fr.vsct.tock.bot.engine.event.TypingOnEvent</a></td>
 <td>
 <p>The "start of typing" event.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared.vertx/-unauthorized-exception/index.html">fr.vsct.tock.shared.vertx.UnauthorizedException</a></td>
+<td>
+<p>Http 401 exception.</p>
 </td>
 </tr>
 <tr>
@@ -1733,6 +2284,19 @@ Used to manage workflow in a <a href="../fr.vsct.tock.bot.definition/-story-hand
 <a href="../fr.vsct.tock.bot.engine.user/-user-timeline-d-a-o/index.html">fr.vsct.tock.bot.engine.user.UserTimelineDAO</a></td>
 <td>
 <p>To access <a href="../fr.vsct.tock.bot.engine.user/-user-timeline/index.html">UserTimeline</a>s.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared.vertx/io.vertx.core.-vertx/index.html">io.vertx.core.Vertx</a> (extensions in package fr.vsct.tock.shared.vertx)</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared.vertx/-web-verticle/index.html">fr.vsct.tock.shared.vertx.WebVerticle</a></td>
+<td>
+<p>Base class for web Tock <a href="#">io.vertx.core.Verticle</a>s. Provides utility methods.</p>
 </td>
 </tr>
 <tr>

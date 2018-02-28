@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine.nlp</a>&nbsp;/&nbsp;<a href=".">NlpController</a><br/>
 <br/>
 <h1>NlpController</h1>
-<code><span class="keyword">interface </span><span class="identifier">NlpController</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/nlp/NlpController.kt#L30">(source)</a>
+<code><span class="keyword">interface </span><span class="identifier">NlpController</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/nlp/NlpController.kt#L31">(source)</a>
 <p>Send NLP requests.</p>
 <h3>Functions</h3>
 <table>
@@ -29,6 +29,24 @@
 <td>
 <code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">importNlpPlainDump</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpController$importNlpPlainDump(fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump)/dump">dump</span><span class="symbol">:</span>&nbsp;<span class="identifier">ApplicationDump</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
 <p>Import a NLP dump (configuration and sentences of NLP model).</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="import-nlp-plain-sentences-dump.html">importNlpPlainSentencesDump</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">importNlpPlainSentencesDump</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpController$importNlpPlainSentencesDump()/dump">dump</span><span class="symbol">:</span>&nbsp;<span class="identifier">&lt;ERROR CLASS&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Import a NLP sentences dump (only validated sentences) - format is simpler than <a href="#">ApplicationDump</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="import-nlp-sentences-dump.html">importNlpSentencesDump</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">importNlpSentencesDump</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpController$importNlpSentencesDump(java.io.InputStream)/stream">stream</span><span class="symbol">:</span>&nbsp;<span class="identifier">InputStream</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Import a NLP sentences dump (only validated sentences) - format is simpler than <a href="#">ApplicationDump</a>.</p>
 </td>
 </tr>
 <tr>

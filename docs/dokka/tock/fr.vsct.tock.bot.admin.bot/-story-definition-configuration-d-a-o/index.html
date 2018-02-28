@@ -8,7 +8,8 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.admin.bot</a>&nbsp;/&nbsp;<a href=".">StoryDefinitionConfigurationDAO</a><br/>
 <br/>
 <h1>StoryDefinitionConfigurationDAO</h1>
-<code><span class="keyword">interface </span><span class="identifier">StoryDefinitionConfigurationDAO</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/admin/bot/StoryDefinitionConfigurationDAO.kt#L22">(source)</a>
+<code><span class="keyword">interface </span><span class="identifier">StoryDefinitionConfigurationDAO</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/admin/bot/StoryDefinitionConfigurationDAO.kt#L24">(source)</a>
+<p>Manage <a href="../-story-definition-configuration/index.html">StoryDefinitionConfiguration</a> persistence.</p>
 <h3>Functions</h3>
 <table>
 <tbody>
@@ -18,6 +19,15 @@
 </td>
 <td>
 <code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">delete</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO$delete(fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration)/story">story</span><span class="symbol">:</span>&nbsp;<a href="../-story-definition-configuration/index.html"><span class="identifier">StoryDefinitionConfiguration</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-last-update-timestamp.html">getLastUpdateTimestamp</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getLastUpdateTimestamp</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO$getLastUpdateTimestamp(kotlin.String)/botId">botId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Instant</span><span class="symbol">?</span></code>
+<p>Returns the timestamp of the last configured answers update for this bot.</p>
+</td>
 </tr>
 <tr>
 <td>
