@@ -55,18 +55,39 @@ class KotlinCompilerTest {
 
     @Test
     fun `simple compilation with erroneous file reports error`() {
-        val erroneousSourceCode = mapOf(
-            "ClassToBeCompiled.kt"
-                    to
-                    """
-                fun main(args: Array<String>) {
-                    println("Hello)
-                }"""
-        )
-
-        val errors = KotlinCompiler.getErrors(erroneousSourceCode)
-        assertEquals(1, errors.size)
-        assertEquals(
+        val expectedError = try {
+            Runtime::class.java.getMethod("version").invoke(null)
+            listOf(
+                CompileError(
+                    TextInterval(
+                        TextPosition(2, 20),
+                        TextPosition(2, 27)
+                    ),
+                    "Unresolved reference: println",
+                    Severity.ERROR,
+                    "ERROR"
+                ),
+                CompileError(
+                    TextInterval(
+                        TextPosition(2, 34),
+                        TextPosition(2, 35)
+                    ),
+                    "Expecting '\"'",
+                    Severity.ERROR,
+                    "red_wavy_line"
+                ),
+                CompileError(
+                    TextInterval(
+                        TextPosition(line = 2, ch = 34),
+                        TextPosition(line = 2, ch = 35)
+                    ),
+                    "Expecting ')'",
+                    Severity.ERROR,
+                    "red_wavy_line"
+                )
+            )
+        } catch (e: Throwable) {
+            //java 8
             listOf(
                 CompileError(
                     TextInterval(
@@ -86,8 +107,23 @@ class KotlinCompilerTest {
                     Severity.ERROR,
                     "red_wavy_line"
                 )
-            ),
-            errors["ClassToBeCompiled.kt"]
+            )
+        }
+
+
+        val erroneousSourceCode = mapOf(
+            "ClassToBeCompiled.kt"
+                    to
+                    """
+                fun main(args: Array<String>) {
+                    println("Hello)
+                }"""
+        )
+
+        val errors = KotlinCompiler.getErrors(erroneousSourceCode)
+        assertEquals(1, errors.size)
+        assertEquals(
+            expectedError, errors["ClassToBeCompiled.kt"]
         )
     }
 

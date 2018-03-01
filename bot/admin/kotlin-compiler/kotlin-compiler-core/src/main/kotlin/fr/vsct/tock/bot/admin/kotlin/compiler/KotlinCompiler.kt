@@ -29,6 +29,7 @@ import com.intellij.psi.impl.PsiFileFactoryImpl
 import com.intellij.testFramework.LightVirtualFile
 import fr.vsct.tock.bot.admin.kotlin.compiler.EnvironmentManager.environment
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.listProperty
 import mu.KotlinLogging
 import org.jetbrains.kotlin.analyzer.AnalysisResult
 import org.jetbrains.kotlin.cli.jvm.compiler.CliLightClassGenerationSupport
@@ -69,6 +70,8 @@ internal object KotlinCompiler {
 
     private val logger = KotlinLogging.logger {}
 
+    private val classPath = listProperty("tock_kotlin_compiler_classpath", listOf("/maven/", "target/test-classes/"))
+
     fun init() {
         try {
             logger.info { "Init KotlinCompiler" }
@@ -83,6 +86,7 @@ internal object KotlinCompiler {
 
     private fun loadPathFromClassLoader(classLoader: ClassLoader, paths: MutableList<Path>) {
         logger.debug { "load paths from $classLoader" }
+        //java 8
         paths.addAll(
             (classLoader as? URLClassLoader)
                 ?.urLs
@@ -90,9 +94,10 @@ internal object KotlinCompiler {
                     logger.debug { "load url $it" }
                     Paths.get(it.toURI())
                 }
-                    ?: emptyList()
+                    ?:
+                    //java 9
+                    classPath.map { Paths.get(it) }.apply { logger.info { "class path used : $classPath" } }
         )
-        //classLoader.parent?.apply { loadPathFromClassLoader(this, paths) }
     }
 
 
