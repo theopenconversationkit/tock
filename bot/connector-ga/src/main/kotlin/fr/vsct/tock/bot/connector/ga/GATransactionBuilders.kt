@@ -255,7 +255,7 @@ fun BotBus.lineItem(
                 id,
                 translate(name).toString(),
                 type,
-                1,
+                quantity,
                 translate(description).toString(),
                 image,
                 price,
