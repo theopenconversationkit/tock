@@ -78,8 +78,7 @@ fun BotBus.withGoogleVoiceAssistant(messageProvider: () -> ConnectorMessage): Bo
 /**
  * Final Google Assistant message (end of conversation).
  */
-fun BotBus.gaFinalMessage(richResponse: GARichResponse): GAResponseConnectorMessage
-        = GAResponseConnectorMessage(finalResponse = GAFinalResponse(richResponse))
+fun BotBus.gaFinalMessage(richResponse: GARichResponse): GAResponseConnectorMessage = GAResponseConnectorMessage(finalResponse = GAFinalResponse(richResponse))
 
 /**
  * Final Google Assistant message (end of conversation).
@@ -111,21 +110,18 @@ fun BotBus.gaMessage(inputPrompt: GAInputPrompt,
 /**
  * Google Assistant Message with suggestions.
  */
-fun BotBus.gaMessage(text: CharSequence, vararg suggestions: String): GAResponseConnectorMessage
-        = if (suggestions.isEmpty()) gaMessage(inputPrompt(text)) else gaMessage(richResponse(text, *suggestions))
+fun BotBus.gaMessage(text: CharSequence, vararg suggestions: String): GAResponseConnectorMessage = if (suggestions.isEmpty()) gaMessage(inputPrompt(text)) else gaMessage(richResponse(text, *suggestions))
 
 /**
  * Google Assistant Message with [GABasicCard].
  */
-fun BotBus.gaMessage(text: CharSequence, basicCard: GABasicCard): GAResponseConnectorMessage
-        = gaMessage(richResponse(listOf(GAItem(simpleResponse(text)), GAItem(basicCard = basicCard))))
+fun BotBus.gaMessage(text: CharSequence, basicCard: GABasicCard): GAResponseConnectorMessage = gaMessage(richResponse(listOf(GAItem(simpleResponse(text)), GAItem(basicCard = basicCard))))
 
 
 /**
  * Google Assistant Message with [GARichResponse].
  */
-fun BotBus.gaMessage(richResponse: GARichResponse): GAResponseConnectorMessage
-        = gaMessage(inputPrompt(richResponse))
+fun BotBus.gaMessage(richResponse: GARichResponse): GAResponseConnectorMessage = gaMessage(inputPrompt(richResponse))
 
 /**
  * Google Assistant Message with one [GAExpectedIntent].
@@ -175,20 +171,22 @@ fun BotBus.linkOutSuggestion(destinationName: CharSequence, url: String): GALink
 /**
  * Provides a [GAItem] with all available parameters.
  */
-fun BotBus.item(simpleResponse: GASimpleResponse? = null, basicCard: GABasicCard? = null, structuredResponse: GAStructuredResponse? = null): GAItem
-        = GAItem(simpleResponse, basicCard, structuredResponse)
+fun BotBus.item(simpleResponse: GASimpleResponse? = null, basicCard: GABasicCard? = null, structuredResponse: GAStructuredResponse? = null): GAItem = GAItem(simpleResponse, basicCard, structuredResponse)
 
 /**
  * Provides a [GAItem] with a [GABasicCard].
  */
-fun BotBus.item(basicCard: GABasicCard): GAItem
-        = item(null, basicCard, null)
+fun BotBus.item(basicCard: GABasicCard): GAItem = item(null, basicCard, null)
+
+/**
+ * Provides a [GAItem] with a [GAStructuredResponse].
+ */
+fun BotBus.item(structuredResponse: GAStructuredResponse): GAItem = item(null, null, structuredResponse)
 
 /**
  * Provides a [GAItem] with a [GASimpleResponse].
  */
-fun BotBus.item(simpleResponse: GASimpleResponse): GAItem
-        = item(simpleResponse, null, null)
+fun BotBus.item(simpleResponse: GASimpleResponse): GAItem = item(simpleResponse, null, null)
 
 
 /**
@@ -204,20 +202,17 @@ fun BotBus.gaImage(url: String, accessibilityText: CharSequence, height: Int? = 
  */
 fun BotBus.optionValueSpec(simpleSelect: GASimpleSelect? = null,
                            listSelect: GAListSelect? = null,
-                           carouselSelect: GACarouselSelect? = null): GAOptionValueSpec
-        = GAOptionValueSpec(simpleSelect, listSelect, carouselSelect)
+                           carouselSelect: GACarouselSelect? = null): GAOptionValueSpec = GAOptionValueSpec(simpleSelect, listSelect, carouselSelect)
 
 /**
  * Provides a [GAInputPrompt] with all available parameters.
  */
-fun BotBus.inputPrompt(richResponse: GARichResponse, noInputPrompts: List<GASimpleResponse> = emptyList()): GAInputPrompt
-        = GAInputPrompt(richResponse, noInputPrompts)
+fun BotBus.inputPrompt(richResponse: GARichResponse, noInputPrompts: List<GASimpleResponse> = emptyList()): GAInputPrompt = GAInputPrompt(richResponse, noInputPrompts)
 
 /**
  * Provides a [GAInputPrompt] with a simple [GARichResponse] builder.
  */
-fun BotBus.inputPrompt(text: CharSequence, linkOutSuggestion: GALinkOutSuggestion? = null, noInputPrompts: List<GASimpleResponse> = emptyList()): GAInputPrompt
-        = inputPrompt(richResponse(text, linkOutSuggestion), noInputPrompts)
+fun BotBus.inputPrompt(text: CharSequence, linkOutSuggestion: GALinkOutSuggestion? = null, noInputPrompts: List<GASimpleResponse> = emptyList()): GAInputPrompt = inputPrompt(richResponse(text, linkOutSuggestion), noInputPrompts)
 
 /**
  * Provides a [GAButton].
@@ -226,11 +221,9 @@ fun BotBus.gaButton(title: CharSequence, url: String): GAButton {
     return GAButton(translate(title).toString(), GAOpenUrlAction(url))
 }
 
-internal fun BotBus.translateAndSetBlankAsNull(s: CharSequence?): String?
-        = translate(s).run { setBlankAsNull() }
+internal fun BotBus.translateAndSetBlankAsNull(s: CharSequence?): String? = translate(s).run { setBlankAsNull() }
 
-internal fun CharSequence?.setBlankAsNull(): String?
-        = if (isNullOrBlank()) null else toString()
+internal fun CharSequence?.setBlankAsNull(): String? = if (isNullOrBlank()) null else toString()
 
 /**
  * Provides a [GAOptionInfo] with all available parameters.
@@ -260,8 +253,7 @@ fun BotBus.optionInfo(
 fun expectedTextIntent(): GAExpectedIntent = GAExpectedIntent(GAIntent.text)
 
 
-internal fun String.endWithPunctuation(): Boolean
-        = endsWith(".") || endsWith("!") || endsWith("?") || endsWith(",") || endsWith(";") || endsWith(":")
+internal fun String.endWithPunctuation(): Boolean = endsWith(".") || endsWith("!") || endsWith("?") || endsWith(",") || endsWith(";") || endsWith(":")
 
 internal fun concat(s1: String?, s2: String?): String {
     val s = s1?.trim() ?: ""
