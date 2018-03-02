@@ -31,6 +31,7 @@ import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
+import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.MongoOperator.`in`
 import org.litote.kmongo.MongoOperator.elemMatch
@@ -54,6 +55,8 @@ import java.util.Locale
  *
  */
 object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
+
+    private val logger = KotlinLogging.logger {}
 
     private data class ClassifiedSentenceCol(
         val text: String,
@@ -161,11 +164,15 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     if (filterStatus.isEmpty()) null else filterStatus,
                     if (entityType == null) null else "'classification.entities.type':${entityType!!.json}",
                     if (entityRole == null) null else "'classification.entities.role':${entityRole!!.json}",
-                    if (modifiedAfter == null) null else "updateDate:{$gt: ${modifiedAfter!!.json}}",
-                    if (searchMark == null) null else "updateDate:{$lte: ${searchMark!!.date.json}}"
+                    if (modifiedAfter == null)
+                        if (searchMark == null) null else "updateDate:{$lte: ${searchMark!!.date.json}}"
+                    else if (searchMark == null) "updateDate:{$gt: ${modifiedAfter!!.json}}"
+                    else "updateDate:{$lte: ${searchMark!!.date.json}, $gt: ${modifiedAfter!!.json}}"
                 ).toBsonFilter()
 
+            logger.debug { filterBase }
             val count = col.count(filterBase)
+            logger.debug { "count : $count" }
             if (count > start) {
                 val list = col
                     .find(filterBase)
