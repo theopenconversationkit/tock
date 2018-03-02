@@ -7,7 +7,7 @@ package fr.vsct.tock.bot.connector.ga.model.request
 data class GATransactionDecisionValue(
         val checkResult: GATransactionDecisionCheckResult,
         val userDecision: GATransactionUserDecision,
-        val order: GAOrder,
+        val order: GAOrder?,
         val deliveryAddress: GALocation?
 ): GAArgumentValue(GAArgumentValueType.transactionDecisionValue
 )
