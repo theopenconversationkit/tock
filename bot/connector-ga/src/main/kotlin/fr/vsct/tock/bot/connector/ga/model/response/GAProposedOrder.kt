@@ -6,9 +6,9 @@ package fr.vsct.tock.bot.connector.ga.model.response
 data class GAProposedOrder(
         val id: String,
         val cart: GACart,
-        val otherItems: List<GALineItem> ? = null,
+        val otherItems: List<GALineItem>? = null,
         val image: GAImage,
-        val termsOfServiceUrl: String,
+        val termsOfServiceUrl: String? = null,
         val totalPrice: GAPrice
 )
 
