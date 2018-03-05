@@ -18,8 +18,13 @@ package fr.vsct.tock.bot.test
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.alexa.AlexaMessage
+import fr.vsct.tock.bot.connector.alexa.alexaConnectorType
+import fr.vsct.tock.bot.connector.ga.GAResponseConnectorMessage
 import fr.vsct.tock.bot.connector.ga.gaConnectorType
 import fr.vsct.tock.bot.connector.messenger.messengerConnectorType
+import fr.vsct.tock.bot.connector.messenger.model.MessengerConnectorMessage
+import fr.vsct.tock.bot.connector.slack.model.SlackConnectorMessage
 import fr.vsct.tock.bot.connector.slack.slackConnectorType
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -29,14 +34,15 @@ import kotlin.test.assertEquals
  * The actions sent by the mocked bus.
  */
 data class BotBusMockLog(
-        /**
-         * The action sent.
-         */
-        val action: Action,
-        /**
-         * The delay before the action is sent.
-         */
-        val delay: Long) {
+    /**
+     * The action sent.
+     */
+    val action: Action,
+    /**
+     * The delay before the action is sent.
+     */
+    val delay: Long
+) {
 
     /**
      * The message of the specified [ConnectorType] if it exists.
@@ -46,17 +52,22 @@ data class BotBusMockLog(
     /**
      * The Messenger message if any.
      */
-    fun messenger(): ConnectorMessage? = message(messengerConnectorType)
+    fun messenger(): MessengerConnectorMessage? = message(messengerConnectorType) as? MessengerConnectorMessage
 
     /**
      * The Google Assistant message if any.
      */
-    fun ga(): ConnectorMessage? = message(gaConnectorType)
+    fun ga(): GAResponseConnectorMessage? = message(gaConnectorType) as? GAResponseConnectorMessage
 
     /**
      * The Slack message if any.
      */
-    fun slack(): ConnectorMessage? = message(slackConnectorType)
+    fun slack(): SlackConnectorMessage? = message(slackConnectorType) as? SlackConnectorMessage
+
+    /**
+     * The Alexa message if any.
+     */
+    fun alexa(): AlexaMessage? = message(alexaConnectorType) as? AlexaMessage
 
     /**
      * The text message if any.
@@ -76,7 +87,8 @@ data class BotBusMockLog(
     /**
      * Assert that log contains specified [ConnectorMessage].
      */
-    fun assertMessage(message: ConnectorMessage, errorMessage: String? = null) = assertEquals(message, message(message.connectorType), errorMessage)
+    fun assertMessage(message: ConnectorMessage, errorMessage: String? = null) =
+        assertEquals(message, message(message.connectorType), errorMessage)
 
     /**
      * Assert that log contains specified message.
