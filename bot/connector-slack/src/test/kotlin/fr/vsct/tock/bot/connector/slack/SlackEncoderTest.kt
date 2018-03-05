@@ -27,7 +27,7 @@ import org.junit.Test
 import kotlin.test.assertEquals
 
 
-class UtilsTest {
+class SlackEncoderTest {
 
     private val context: RoutingContext = mock()
     private val urlEncodedString = "arg1=val1&arg2=val2&arg3=val3"

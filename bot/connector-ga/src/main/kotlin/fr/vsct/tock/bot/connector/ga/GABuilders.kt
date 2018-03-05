@@ -44,6 +44,7 @@ import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.I18nTranslator
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.translator.UserInterfaceType.textAndVoiceAssistant
 import fr.vsct.tock.translator.UserInterfaceType.textChat
@@ -61,14 +62,14 @@ val gaConnectorType = ConnectorType(GA_CONNECTOR_TYPE_ID, textAndVoiceAssistant)
 /**
  * Add a [ConnectorMessage] for Google Assistant.
  */
-fun BotBus.withGoogleAssistant(messageProvider: () -> ConnectorMessage): BotBus {
+fun BotBus.withGoogleAssistant(messageProvider: () -> GAResponseConnectorMessage): BotBus {
     return withMessage(gaConnectorType, messageProvider)
 }
 
 /**
  * Add a [ConnectorMessage] for Google Assistant - voice only.
  */
-fun BotBus.withGoogleVoiceAssistant(messageProvider: () -> ConnectorMessage): BotBus {
+fun BotBus.withGoogleVoiceAssistant(messageProvider: () -> GAResponseConnectorMessage): BotBus {
     if (userInterfaceType != textChat) {
         withMessage(gaConnectorType, messageProvider)
     }
@@ -78,89 +79,99 @@ fun BotBus.withGoogleVoiceAssistant(messageProvider: () -> ConnectorMessage): Bo
 /**
  * Final Google Assistant message (end of conversation).
  */
-fun BotBus.gaFinalMessage(richResponse: GARichResponse): GAResponseConnectorMessage = GAResponseConnectorMessage(finalResponse = GAFinalResponse(richResponse))
+fun I18nTranslator.gaFinalMessage(richResponse: GARichResponse): GAResponseConnectorMessage =
+    GAResponseConnectorMessage(finalResponse = GAFinalResponse(richResponse))
 
 /**
  * Final Google Assistant message (end of conversation).
  */
-fun BotBus.gaFinalMessage(text: CharSequence? = null): GAResponseConnectorMessage =
-        gaFinalMessage(
-                if (text == null)
-                //empty rich response
-                    richResponse(emptyList())
-                else richResponse(text)
-        )
+fun I18nTranslator.gaFinalMessage(text: CharSequence? = null): GAResponseConnectorMessage =
+    gaFinalMessage(
+        if (text == null)
+        //empty rich response
+            richResponse(emptyList())
+        else richResponse(text)
+    )
 
 
 /**
  * Google Assistant Message with all available parameters.
  */
-fun BotBus.gaMessage(inputPrompt: GAInputPrompt,
-                     possibleIntents: List<GAExpectedIntent> = listOf(
-                             expectedTextIntent()
-                     ),
-                     speechBiasingHints: List<String> = emptyList()): GAResponseConnectorMessage =
-        GAResponseConnectorMessage(
-                GAExpectedInput(
-                        inputPrompt,
-                        if (possibleIntents.isEmpty()) listOf(expectedTextIntent()) else possibleIntents,
-                        speechBiasingHints)
+fun I18nTranslator.gaMessage(
+    inputPrompt: GAInputPrompt,
+    possibleIntents: List<GAExpectedIntent> = listOf(
+        expectedTextIntent()
+    ),
+    speechBiasingHints: List<String> = emptyList()
+): GAResponseConnectorMessage =
+    GAResponseConnectorMessage(
+        GAExpectedInput(
+            inputPrompt,
+            if (possibleIntents.isEmpty()) listOf(expectedTextIntent()) else possibleIntents,
+            speechBiasingHints
         )
+    )
 
 /**
  * Google Assistant Message with suggestions.
  */
-fun BotBus.gaMessage(text: CharSequence, vararg suggestions: String): GAResponseConnectorMessage = if (suggestions.isEmpty()) gaMessage(inputPrompt(text)) else gaMessage(richResponse(text, *suggestions))
+fun I18nTranslator.gaMessage(text: CharSequence, vararg suggestions: String): GAResponseConnectorMessage =
+    if (suggestions.isEmpty()) gaMessage(inputPrompt(text)) else gaMessage(richResponse(text, *suggestions))
 
 /**
  * Google Assistant Message with [GABasicCard].
  */
-fun BotBus.gaMessage(text: CharSequence, basicCard: GABasicCard): GAResponseConnectorMessage = gaMessage(richResponse(listOf(GAItem(simpleResponse(text)), GAItem(basicCard = basicCard))))
+fun I18nTranslator.gaMessage(text: CharSequence, basicCard: GABasicCard): GAResponseConnectorMessage =
+    gaMessage(richResponse(listOf(GAItem(simpleResponse(text)), GAItem(basicCard = basicCard))))
 
 
 /**
  * Google Assistant Message with [GARichResponse].
  */
-fun BotBus.gaMessage(richResponse: GARichResponse): GAResponseConnectorMessage = gaMessage(inputPrompt(richResponse))
+fun I18nTranslator.gaMessage(richResponse: GARichResponse): GAResponseConnectorMessage =
+    gaMessage(inputPrompt(richResponse))
 
 /**
  * Google Assistant Message with one [GAExpectedIntent].
  */
-fun BotBus.gaMessage(possibleIntent: GAExpectedIntent): GAResponseConnectorMessage =
-        gaMessage(listOf(possibleIntent))
+fun I18nTranslator.gaMessage(possibleIntent: GAExpectedIntent): GAResponseConnectorMessage =
+    gaMessage(listOf(possibleIntent))
 
 /**
  * Google Assistant Message with multiple [GAExpectedIntent].
  */
-fun BotBus.gaMessage(possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
-        gaMessage(inputPrompt(GARichResponse(emptyList())), possibleIntents)
+fun I18nTranslator.gaMessage(possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
+    gaMessage(inputPrompt(GARichResponse(emptyList())), possibleIntents)
 
 /**
  * Google Assistant Message with text and multiple [GAExpectedIntent].
  */
-fun BotBus.gaMessage(text: String, possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
-        gaMessage(
-                inputPrompt(richResponse(text)),
-                possibleIntents
-        )
+fun I18nTranslator.gaMessage(text: String, possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
+    gaMessage(
+        inputPrompt(richResponse(text)),
+        possibleIntents
+    )
 
 /**
  * Google Assistant Message asking for [GAPermission].
  */
-fun BotBus.permissionIntent(optionalContext: CharSequence?, vararg permissions: GAPermission): GAExpectedIntent {
+fun I18nTranslator.permissionIntent(
+    optionalContext: CharSequence?,
+    vararg permissions: GAPermission
+): GAExpectedIntent {
     return GAExpectedIntent(
-            GAIntent.permission,
-            GAPermissionValueSpec(
-                    translate(optionalContext).toString(),
-                    permissions.toSet()
-            )
+        GAIntent.permission,
+        GAPermissionValueSpec(
+            translate(optionalContext).toString(),
+            permissions.toSet()
+        )
     )
 }
 
 /**
  * Provides a [GALinkOutSuggestion].
  */
-fun BotBus.linkOutSuggestion(destinationName: CharSequence, url: String): GALinkOutSuggestion {
+fun I18nTranslator.linkOutSuggestion(destinationName: CharSequence, url: String): GALinkOutSuggestion {
     val d = translate(destinationName)
     if (d.length > 20) {
         logger.warn { "title $d has more than 20 chars" }
@@ -171,28 +182,37 @@ fun BotBus.linkOutSuggestion(destinationName: CharSequence, url: String): GALink
 /**
  * Provides a [GAItem] with all available parameters.
  */
-fun BotBus.item(simpleResponse: GASimpleResponse? = null, basicCard: GABasicCard? = null, structuredResponse: GAStructuredResponse? = null): GAItem = GAItem(simpleResponse, basicCard, structuredResponse)
+fun I18nTranslator.item(
+    simpleResponse: GASimpleResponse? = null,
+    basicCard: GABasicCard? = null,
+    structuredResponse: GAStructuredResponse? = null
+): GAItem = GAItem(simpleResponse, basicCard, structuredResponse)
 
 /**
  * Provides a [GAItem] with a [GABasicCard].
  */
-fun BotBus.item(basicCard: GABasicCard): GAItem = item(null, basicCard, null)
+fun I18nTranslator.item(basicCard: GABasicCard): GAItem = item(null, basicCard, null)
 
 /**
  * Provides a [GAItem] with a [GAStructuredResponse].
  */
-fun BotBus.item(structuredResponse: GAStructuredResponse): GAItem = item(null, null, structuredResponse)
+fun I18nTranslator.item(structuredResponse: GAStructuredResponse): GAItem = item(null, null, structuredResponse)
 
 /**
  * Provides a [GAItem] with a [GASimpleResponse].
  */
-fun BotBus.item(simpleResponse: GASimpleResponse): GAItem = item(simpleResponse, null, null)
+fun I18nTranslator.item(simpleResponse: GASimpleResponse): GAItem = item(simpleResponse, null, null)
 
 
 /**
  * Provides a [GAImage] with all available parameters.
  */
-fun BotBus.gaImage(url: String, accessibilityText: CharSequence, height: Int? = null, width: Int? = null): GAImage {
+fun I18nTranslator.gaImage(
+    url: String,
+    accessibilityText: CharSequence,
+    height: Int? = null,
+    width: Int? = null
+): GAImage {
     val a = translate(accessibilityText)
     return GAImage(url, a.toString(), height, width)
 }
@@ -200,50 +220,56 @@ fun BotBus.gaImage(url: String, accessibilityText: CharSequence, height: Int? = 
 /**
  * Provides a [GAOptionValueSpec] with all available parameters.
  */
-fun BotBus.optionValueSpec(simpleSelect: GASimpleSelect? = null,
-                           listSelect: GAListSelect? = null,
-                           carouselSelect: GACarouselSelect? = null): GAOptionValueSpec = GAOptionValueSpec(simpleSelect, listSelect, carouselSelect)
+fun I18nTranslator.optionValueSpec(
+    simpleSelect: GASimpleSelect? = null,
+    listSelect: GAListSelect? = null,
+    carouselSelect: GACarouselSelect? = null
+): GAOptionValueSpec = GAOptionValueSpec(simpleSelect, listSelect, carouselSelect)
 
 /**
  * Provides a [GAInputPrompt] with all available parameters.
  */
-fun BotBus.inputPrompt(richResponse: GARichResponse, noInputPrompts: List<GASimpleResponse> = emptyList()): GAInputPrompt = GAInputPrompt(richResponse, noInputPrompts)
+fun I18nTranslator.inputPrompt(
+    richResponse: GARichResponse,
+    noInputPrompts: List<GASimpleResponse> = emptyList()
+): GAInputPrompt = GAInputPrompt(richResponse, noInputPrompts)
 
 /**
  * Provides a [GAInputPrompt] with a simple [GARichResponse] builder.
  */
-fun BotBus.inputPrompt(text: CharSequence, linkOutSuggestion: GALinkOutSuggestion? = null, noInputPrompts: List<GASimpleResponse> = emptyList()): GAInputPrompt = inputPrompt(richResponse(text, linkOutSuggestion), noInputPrompts)
+fun I18nTranslator.inputPrompt(
+    text: CharSequence,
+    linkOutSuggestion: GALinkOutSuggestion? = null,
+    noInputPrompts: List<GASimpleResponse> = emptyList()
+): GAInputPrompt = inputPrompt(richResponse(text, linkOutSuggestion), noInputPrompts)
 
 /**
  * Provides a [GAButton].
  */
-fun BotBus.gaButton(title: CharSequence, url: String): GAButton {
+fun I18nTranslator.gaButton(title: CharSequence, url: String): GAButton {
     return GAButton(translate(title).toString(), GAOpenUrlAction(url))
 }
-
-internal fun BotBus.translateAndSetBlankAsNull(s: CharSequence?): String? = translate(s).run { setBlankAsNull() }
-
-internal fun CharSequence?.setBlankAsNull(): String? = if (isNullOrBlank()) null else toString()
 
 /**
  * Provides a [GAOptionInfo] with all available parameters.
  */
 fun BotBus.optionInfo(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>? = null,
-        vararg parameters: Pair<String, String>
+    title: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    vararg parameters: Pair<String, String>
 ): GAOptionInfo {
     val t = translate(title)
     //add the title to the parameters as we need to double check the title in WebhookActionConverter
     val map = parameters.toMap() + (SendChoice.TITLE_PARAMETER to t.toString())
     return GAOptionInfo(
-            SendChoice.encodeChoiceId(
-                    this,
-                    targetIntent,
-                    step,
-                    map),
-            listOf(t.toString())
+        SendChoice.encodeChoiceId(
+            this,
+            targetIntent,
+            step,
+            map
+        ),
+        listOf(t.toString())
     )
 }
 
@@ -253,7 +279,8 @@ fun BotBus.optionInfo(
 fun expectedTextIntent(): GAExpectedIntent = GAExpectedIntent(GAIntent.text)
 
 
-internal fun String.endWithPunctuation(): Boolean = endsWith(".") || endsWith("!") || endsWith("?") || endsWith(",") || endsWith(";") || endsWith(":")
+internal fun String.endWithPunctuation(): Boolean =
+    endsWith(".") || endsWith("!") || endsWith("?") || endsWith(",") || endsWith(";") || endsWith(":")
 
 internal fun concat(s1: String?, s2: String?): String {
     val s = s1?.trim() ?: ""
@@ -261,9 +288,9 @@ internal fun concat(s1: String?, s2: String?): String {
 }
 
 internal fun String.removeEmojis(): String =
-        EmojiUtils.removeAllEmojis(
-                EmojiUtils.emojify(this.replace("://", "_____"))
-                        .replace("\uD83D\uDC68", ":3")
-                        .replace("\uD83D\uDE2E", ":0")
-                        .replace("_____", "://")
-        )
+    EmojiUtils.removeAllEmojis(
+        EmojiUtils.emojify(this.replace("://", "_____"))
+            .replace("\uD83D\uDC68", ":3")
+            .replace("\uD83D\uDE2E", ":0")
+            .replace("_____", "://")
+    )

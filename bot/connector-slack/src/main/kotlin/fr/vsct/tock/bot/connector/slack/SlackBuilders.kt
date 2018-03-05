@@ -16,37 +16,43 @@
 
 package fr.vsct.tock.bot.connector.slack
 
-import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.slack.model.AttachmentField
+import fr.vsct.tock.bot.connector.slack.model.SlackConnectorMessage
 import fr.vsct.tock.bot.connector.slack.model.SlackEmoji
 import fr.vsct.tock.bot.connector.slack.model.SlackMessageAttachment
 import fr.vsct.tock.bot.connector.slack.model.SlackMessageOut
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.I18nTranslator
 
 internal const val SLACK_CONNECTOR_TYPE_ID = "slack"
 
 val slackConnectorType = ConnectorType(SLACK_CONNECTOR_TYPE_ID)
 
-
-fun BotBus.withSlack(messageProvider: () -> ConnectorMessage): BotBus {
+fun BotBus.withSlack(messageProvider: () -> SlackConnectorMessage): BotBus {
     return withMessage(slackConnectorType, messageProvider)
 }
 
-fun BotBus.textMessage(message: String): SlackMessageOut {
-    return SlackMessageOut(message)
+fun I18nTranslator.textMessage(message: CharSequence): SlackMessageOut {
+    return SlackMessageOut(translate(message).toString())
 }
 
-fun BotBus.multiLineMessage(lines: List<String>, channel: String? = null): SlackMessageOut
-        = SlackMessageOut(lines.joinToString("\n"), channel)
+fun I18nTranslator.multiLineMessage(lines: List<CharSequence>, channel: String? = null): SlackMessageOut =
+    SlackMessageOut(lines.joinToString("\n") { translate(it).toString() }, channel)
 
-fun BotBus.attachmentMessage(vararg fields: AttachmentField, fallback: String, color: String = "good", text: String? = null, pretext: String? = null): SlackMessageAttachment
-        = SlackMessageAttachment(fields.toList(), fallback, color, text, pretext)
+fun I18nTranslator.attachmentMessage(
+    vararg fields: AttachmentField,
+    fallback: String,
+    color: String = "good",
+    text: CharSequence? = null,
+    pretext: String? = null
+): SlackMessageAttachment =
+    SlackMessageAttachment(fields.toList(), fallback, color, translateAndReturnBlankAsNull(text), pretext)
 
 
-fun BotBus.attachmentField(title: String, value: String, short: Boolean = true): AttachmentField
-        = AttachmentField(title, value, short)
+fun I18nTranslator.attachmentField(title: String, value: String, short: Boolean = true): AttachmentField =
+    AttachmentField(translate(title).toString(), value, short)
 
-fun BotBus.emojiMessage(emoji: SlackEmoji): SlackMessageOut = SlackMessageOut(emoji.format)
+fun emojiMessage(emoji: SlackEmoji): SlackMessageOut = SlackMessageOut(emoji.format)
 
-fun BotBus.emoji(emoji: SlackEmoji): String = emoji.format
+fun emoji(emoji: SlackEmoji): String = emoji.format

@@ -38,21 +38,22 @@ object ConnectorConfigurationRepository {
             conf.split("|").map {
                 val params = it.split(";")
                 ConnectorConfiguration(
-                        params[0].trim(),
-                        params[1].trim(),
-                        BotRepository.connectorProviders.find { it.connectorType.id === params[2].trim() }?.connectorType
-                                ?: error("connector type not found : ${params[2]} - please register connector first"),
-                        null,
-                        params.subList(3, params.size).map {
-                            val s = it.split("=")
-                            s[0].trim() to s[1].trim()
-                        }.toMap())
+                    params[0].trim(),
+                    params[1].trim(),
+                    BotRepository.connectorProviders.find { it.connectorType.id === params[2].trim() }?.connectorType
+                            ?: error("connector type not found : ${params[2]} - please register connector first"),
+                    null,
+                    params.subList(3, params.size).map {
+                        val s = it.split("=")
+                        s[0].trim() to s[1].trim()
+                    }.toMap()
+                )
             }
         }
     }
 
     /**
-     * Add a new configuration.
+     * Adds a new configuration.
      */
     fun addConfiguration(conf: ConnectorConfiguration) {
         configurations += conf

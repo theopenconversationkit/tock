@@ -16,8 +16,10 @@
 
 package fr.vsct.tock.bot.definition
 
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.Intent.Companion.keyword
 import fr.vsct.tock.bot.definition.Intent.Companion.unknown
+import fr.vsct.tock.bot.engine.I18nTranslator
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -28,9 +30,11 @@ import fr.vsct.tock.shared.withoutNamespace
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
 import fr.vsct.tock.translator.Translator
+import fr.vsct.tock.translator.UserInterfaceType
+import java.util.Locale
 
 /**
- * The main interface of the bot.
+ * The main interface used to define the behaviour of the bot.
  *
  * New bots should usually not directly extend this class, but instead extend [BotDefinitionBase].
  */
@@ -38,15 +42,25 @@ interface BotDefinition : I18nKeyProvider {
 
     companion object {
 
+        /**
+         * Finds an intent from an intent name and a list of [StoryDefinition].
+         * Is no valid intent found, returns [unknown].
+         */
         fun findIntent(stories: List<StoryDefinition>, intent: String): Intent {
             return stories.flatMap { it.intents }.find { it.name == intent }
                     ?: if (intent == keyword.name) keyword else unknown
         }
 
-        fun findStoryDefinition(stories: List<StoryDefinition>,
-                                intent: String?,
-                                unknownStory: StoryDefinition,
-                                keywordStory: StoryDefinition): StoryDefinition {
+        /**
+         * Finds a [StoryDefinition] from a list of [StoryDefinition] and an intent name.
+         * Is no valid [StoryDefinition] found, returns the [unknownStory].
+         */
+        fun findStoryDefinition(
+            stories: List<StoryDefinition>,
+            intent: String?,
+            unknownStory: StoryDefinition,
+            keywordStory: StoryDefinition
+        ): StoryDefinition {
             return if (intent == null) {
                 unknownStory
             } else {
@@ -86,14 +100,23 @@ interface BotDefinition : I18nKeyProvider {
         return findIntent(intent)
     }
 
+    /**
+     * Finds an [Intent] from an intent name.
+     */
     fun findIntent(intent: String): Intent {
         return findIntent(stories, intent)
     }
 
+    /**
+     * Finds a [StoryDefinition] from an [Intent].
+     */
     fun findStoryDefinition(intent: IntentAware?): StoryDefinition {
         return findStoryDefinition(intent?.wrappedIntent()?.name)
     }
 
+    /**
+     * Finds a [StoryDefinition] from an intent name.
+     */
     fun findStoryDefinition(intent: String?): StoryDefinition {
         return findStoryDefinition(stories, intent, unknownStory, keywordStory)
     }
@@ -143,10 +166,10 @@ interface BotDefinition : I18nKeyProvider {
      */
     fun errorAction(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {
         return SendSentence(
-                playerId,
-                applicationId,
-                recipientId,
-                "Technical error :( sorry!"
+            playerId,
+            applicationId,
+            recipientId,
+            "Technical error :( sorry!"
         )
     }
 
@@ -159,7 +182,8 @@ interface BotDefinition : I18nKeyProvider {
     /**
      * Is this intent disable the bot?
      */
-    fun isBotDisabledIntent(intent: Intent?): Boolean = intent != null && botDisabledStory?.isStarterIntent(intent) ?: false
+    fun isBotDisabledIntent(intent: Intent?): Boolean =
+        intent != null && botDisabledStory?.isStarterIntent(intent) ?: false
 
     /**
      * To manage reactivation.
@@ -169,7 +193,8 @@ interface BotDefinition : I18nKeyProvider {
     /**
      * Is this intent is reactivating the bot?
      */
-    fun isBotEnabledIntent(intent: Intent?): Boolean = intent != null && botEnabledStory?.isStarterIntent(intent) ?: false
+    fun isBotEnabledIntent(intent: Intent?): Boolean =
+        intent != null && botEnabledStory?.isStarterIntent(intent) ?: false
 
     /**
      * Returns a [TestBehaviour]. Used in Integration Tests.
@@ -178,14 +203,42 @@ interface BotDefinition : I18nKeyProvider {
 
     override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey {
         val prefix = javaClass.kotlin.simpleName?.replace("Definition", "") ?: ""
-        return i18nKey("${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}", namespace, prefix, defaultLabel, args)
+        return i18nKey(
+            "${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}",
+            namespace,
+            prefix,
+            defaultLabel,
+            args
+        )
     }
 
     /**
      * Returns the entity with the specified name and optional role.
      */
     fun entity(name: String, role: String? = null): Entity =
-            Entity(
-                    EntityType(name.withNamespace(namespace)),
-                    role ?: name.withoutNamespace(namespace))
+        Entity(
+            EntityType(name.withNamespace(namespace)),
+            role ?: name.withoutNamespace(namespace)
+        )
+
+    /**
+     * Returns an [I18nTranslator] for the specified [userLocale] and [connectorType].
+     */
+    fun i18nTranslator(
+        userLocale: Locale,
+        connectorType: ConnectorType,
+        userInterfaceType: UserInterfaceType = connectorType.userInterfaceType
+    ): I18nTranslator =
+        object : I18nTranslator {
+            override val userLocale: Locale
+                get() = userLocale
+            override val userInterfaceType: UserInterfaceType
+                get() = userInterfaceType
+            override val targetConnectorType: ConnectorType
+                get() = connectorType
+
+            override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey {
+                return this.i18nKeyFromLabel(defaultLabel, args)
+            }
+        }
 }

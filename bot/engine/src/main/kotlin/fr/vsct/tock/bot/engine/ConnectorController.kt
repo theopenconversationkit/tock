@@ -41,14 +41,14 @@ interface ConnectorController {
     val connector: Connector
 
     /**
-     * Handle an event sent by the connector. the primary goal of this controller.
+     * Handles an event sent by the connector. the primary goal of this controller.
      *
      * @param event the event to handle
      * @param data the optional additional data from the connector
      */
     fun handle(
-            event: Event,
-            data: ConnectorData = ConnectorData(ConnectorCallbackBase(event.applicationId, connector.connectorType))
+        event: Event,
+        data: ConnectorData = ConnectorData(ConnectorCallbackBase(event.applicationId, connector.connectorType))
     )
 
     /**

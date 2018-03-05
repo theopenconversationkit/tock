@@ -84,35 +84,35 @@ object BotRepository {
     }
 
     /**
-     * Register a new [ConnectorProvider].
+     * Registers a new [ConnectorProvider].
      */
     fun registerConnectorProvider(connectorProvider: ConnectorProvider) {
         connectorProviders.add(connectorProvider)
     }
 
     /**
-     * Register a new [BotProvider].
+     * Registers a new [BotProvider].
      */
     fun registerBotProvider(bot: BotProvider) {
         botProviders.add(bot)
     }
 
     /**
-     * Register a new [StoryHandlerListener].
+     * Registers a new [StoryHandlerListener].
      */
     fun registerStoryHandlerListener(listener: StoryHandlerListener) {
         storyHandlerListeners.add(listener)
     }
 
     /**
-     * Register an new [NlpListener].
+     * Registers an new [NlpListener].
      */
     fun registerNlpListener(listener: NlpListener) {
         nlpListeners.add(listener)
     }
 
     /**
-     * Install the bot(s).
+     * Installs the bot(s).
      *
      * @param routerHandlers the additional router handlers
      * @param adminRestConnectorInstaller the (optional) linked [fr.vsct.tock.bot.connector.rest.RestConnector] installer.

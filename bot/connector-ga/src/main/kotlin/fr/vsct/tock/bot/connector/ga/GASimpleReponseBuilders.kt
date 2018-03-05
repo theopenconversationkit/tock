@@ -17,14 +17,14 @@
 package fr.vsct.tock.bot.connector.ga
 
 import fr.vsct.tock.bot.connector.ga.model.response.GASimpleResponse
-import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.I18nTranslator
 import fr.vsct.tock.translator.TextAndVoiceTranslatedString
 import fr.vsct.tock.translator.isSSML
 
 /**
  * Provides a [GASimpleResponse] with specified [CharSequence].
  */
-fun BotBus.simpleResponse(text: CharSequence): GASimpleResponse {
+fun I18nTranslator.simpleResponse(text: CharSequence): GASimpleResponse {
     val t = translate(text)
     return if (t is TextAndVoiceTranslatedString) {
         simpleTextAndVoiceResponse(t)
@@ -38,13 +38,14 @@ fun BotBus.simpleResponse(text: CharSequence): GASimpleResponse {
 /**
  * Provides a [GASimpleResponse] with specified textToSpeech, ssml and displayText.
  */
-fun BotBus.flexibleSimpleResponse(
-        textToSpeech: CharSequence? = null,
-        ssml: CharSequence? = null,
-        displayText: CharSequence? = null): GASimpleResponse {
-    val t = translateAndSetBlankAsNull(textToSpeech)
-    val s = translateAndSetBlankAsNull(ssml)
-    val d = translateAndSetBlankAsNull(displayText)
+fun I18nTranslator.flexibleSimpleResponse(
+    textToSpeech: CharSequence? = null,
+    ssml: CharSequence? = null,
+    displayText: CharSequence? = null
+): GASimpleResponse {
+    val t = translateAndReturnBlankAsNull(textToSpeech)
+    val s = translateAndReturnBlankAsNull(ssml)
+    val d = translateAndReturnBlankAsNull(displayText)
 
     return simpleResponse(t, s, d)
 }
@@ -52,7 +53,8 @@ fun BotBus.flexibleSimpleResponse(
 
 private fun simpleResponse(textToSpeech: String?, ssml: String?, displayText: String?): GASimpleResponse {
     val ssmlWithoutEmoji = ssml?.removeEmojis()
-    val textToSpeechWithoutEmoji = if (ssmlWithoutEmoji.isNullOrBlank()) textToSpeech?.removeEmojis().run { if (isNullOrBlank()) " - " else this } else null
+    val textToSpeechWithoutEmoji =
+        if (ssmlWithoutEmoji.isNullOrBlank()) textToSpeech?.removeEmojis().run { if (isNullOrBlank()) " - " else this } else null
     return GASimpleResponse(textToSpeechWithoutEmoji, ssmlWithoutEmoji, displayText)
 }
 
@@ -75,12 +77,16 @@ internal fun simpleResponseWithoutTranslate(text: CharSequence): GASimpleRespons
 }
 
 internal fun flexibleSimpleResponseWithoutTranslate(
-        textToSpeech: CharSequence? = null,
-        ssml: CharSequence? = null,
-        displayText: CharSequence? = null): GASimpleResponse {
+    textToSpeech: CharSequence? = null,
+    ssml: CharSequence? = null,
+    displayText: CharSequence? = null
+): GASimpleResponse {
     val t = textToSpeech.setBlankAsNull()
     val s = ssml.setBlankAsNull()
     val d = displayText.setBlankAsNull()
 
     return simpleResponse(t, s, d)
 }
+
+
+private fun CharSequence?.setBlankAsNull(): String? = if (isNullOrBlank()) null else toString()

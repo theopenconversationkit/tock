@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.definition.Parameters
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.I18nTranslator
 import fr.vsct.tock.translator.raw
 import mu.KotlinLogging
 
@@ -35,7 +36,7 @@ private val logger = KotlinLogging.logger {}
 /**
  * Provides a message with a [GACarouselSelect].
  */
-fun BotBus.gaMessageForCarousel(items: List<GACarouselItem>, suggestions: List<CharSequence> = emptyList()): GAResponseConnectorMessage {
+fun I18nTranslator.gaMessageForCarousel(items: List<GACarouselItem>, suggestions: List<CharSequence> = emptyList()): GAResponseConnectorMessage {
     if (items.size < 2) {
         error("must have at least 2 - current size = ${items.size}")
     } else {
@@ -58,7 +59,7 @@ fun BotBus.gaMessageForCarousel(items: List<GACarouselItem>, suggestions: List<C
  *  @param oneItemDescription if not null and if there is only one item, use this as description. If null and the image is null, [GACarouselItem.description] is used as description
  *  @param oneItemSuggestions the additional suggestion if there is only one item
  */
-fun BotBus.gaFlexibleMessageForCarousel(items: List<GACarouselItem>,
+fun I18nTranslator.gaFlexibleMessageForCarousel(items: List<GACarouselItem>,
                                         suggestions: List<CharSequence> = emptyList(),
                                         oneItemTitle: CharSequence? = null,
                                         oneItemSubtitle: CharSequence? = null,
@@ -86,7 +87,7 @@ fun BotBus.gaFlexibleMessageForCarousel(items: List<GACarouselItem>,
  *  @param oneItemSuggestions the additional suggestion if there is only one item
  *  @param oneItemBasicCardProvider provides the basic card if only one item
  */
-fun BotBus.gaFlexibleMessageForCarousel(items: List<GACarouselItem>,
+fun I18nTranslator.gaFlexibleMessageForCarousel(items: List<GACarouselItem>,
                                         suggestions: List<CharSequence> = emptyList(),
                                         oneItemSuggestions: List<CharSequence> = emptyList(),
                                         oneItemBasicCardProvider: (GACarouselItem) -> GABasicCard = {
@@ -112,7 +113,7 @@ fun BotBus.gaFlexibleMessageForCarousel(items: List<GACarouselItem>,
 /**
  * Provides a [GAExpectedIntent] with a [GACarouselSelect].
  */
-fun BotBus.expectedIntentForCarousel(items: List<GACarouselItem>): GAExpectedIntent {
+fun I18nTranslator.expectedIntentForCarousel(items: List<GACarouselItem>): GAExpectedIntent {
     return GAExpectedIntent(
             GAIntent.option,
             optionValueSpec(

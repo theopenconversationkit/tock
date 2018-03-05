@@ -22,6 +22,9 @@ import fr.vsct.tock.bot.engine.nlp.NlpController
 import fr.vsct.tock.nlp.api.client.NlpClient
 import fr.vsct.tock.nlp.api.client.TockNlpClient
 
+/**
+ * The bot ioc module.
+ */
 val botModule = Kodein.Module {
     bind<NlpClient>() with singleton { TockNlpClient() }
     bind<NlpController>() with singleton { Nlp() }

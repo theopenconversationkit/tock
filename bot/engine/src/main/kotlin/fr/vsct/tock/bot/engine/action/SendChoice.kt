@@ -37,36 +37,41 @@ import java.time.Instant
 /**
  * A user choice (click on a button or direct action).
  */
-class SendChoice(playerId: PlayerId,
-                 applicationId: String,
-                 recipientId: PlayerId,
-                 val intentName: String,
-                 val parameters: Map<String, String> = emptyMap(),
-                 id: Id<Action> = newId(),
-                 date: Instant = Instant.now(),
-                 state: EventState = EventState(),
-                 metadata: ActionMetadata = ActionMetadata())
-    : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
+class SendChoice(
+    playerId: PlayerId,
+    applicationId: String,
+    recipientId: PlayerId,
+    val intentName: String,
+    val parameters: Map<String, String> = emptyMap(),
+    id: Id<Action> = newId(),
+    date: Instant = Instant.now(),
+    state: EventState = EventState(),
+    metadata: ActionMetadata = ActionMetadata()
+) : Action(playerId, recipientId, applicationId, id, date, state, metadata) {
 
-    constructor(playerId: PlayerId,
-                applicationId: String,
-                recipientId: PlayerId,
-                intentName: String,
-                step: StoryStep<out StoryHandlerDefinition>,
-                parameters: Map<String, String> = emptyMap(),
-                id: Id<Action> = newId(),
-                date: Instant = Instant.now(),
-                state: EventState = EventState(),
-                metadata: ActionMetadata = ActionMetadata()) :
-            this(playerId,
-                    applicationId,
-                    recipientId,
-                    intentName,
-                    parameters + (STEP_PARAMETER to step.name),
-                    id,
-                    date,
-                    state,
-                    metadata)
+    constructor(
+        playerId: PlayerId,
+        applicationId: String,
+        recipientId: PlayerId,
+        intentName: String,
+        step: StoryStep<out StoryHandlerDefinition>,
+        parameters: Map<String, String> = emptyMap(),
+        id: Id<Action> = newId(),
+        date: Instant = Instant.now(),
+        state: EventState = EventState(),
+        metadata: ActionMetadata = ActionMetadata()
+    ) :
+            this(
+                playerId,
+                applicationId,
+                recipientId,
+                intentName,
+                parameters + (STEP_PARAMETER to step.name),
+                id,
+                date,
+                state,
+                metadata
+            )
 
     companion object {
 
@@ -79,40 +84,69 @@ class SendChoice(playerId: PlayerId,
         const val NLP = "_nlp"
 
         /**
-         * Encode a choice id.
+         * Encodes a choice id.
          */
         fun encodeNlpChoiceId(nlp: String): String {
             return "?$NLP=${encode(nlp, UTF_8.name())}"
         }
 
         /**
-         * Encode a choice id.
+         * Encodes a choice id.
          */
         fun encodeChoiceId(
-                bus: BotBus,
-                intent: IntentAware,
-                step: StoryStep<out StoryHandlerDefinition>? = null,
-                parameters: Map<String, String> = emptyMap()): String {
+            /**
+             * The bus.
+             */
+            bus: BotBus,
+            /**
+             * The target intent.
+             */
+            intent: IntentAware,
+            /**
+             * The target step.
+             */
+            step: StoryStep<out StoryHandlerDefinition>? = null,
+            /**
+             * The custom parameters.
+             */
+            parameters: Map<String, String> = emptyMap()
+        ): String {
             return encodeChoiceId(intent, step, parameters, bus.step, bus.dialog.state.currentIntent)
         }
 
         /**
-         * Encode a choice id.
+         * Encodes a choice id.
          */
         fun encodeChoiceId(
-                intent: IntentAware,
-                step: StoryStep<out StoryHandlerDefinition>? = null,
-                parameters: Map<String, String> = emptyMap(),
-                busStep: StoryStep<out StoryHandlerDefinition>? = null,
-                currentIntent: Intent? = null): String {
+            /**
+             * The target intent.
+             */
+            intent: IntentAware,
+            /**
+             * The target step.
+             */
+            step: StoryStep<out StoryHandlerDefinition>? = null,
+            /**
+             * The custom parameters.
+             */
+            parameters: Map<String, String> = emptyMap(),
+            /**
+             * The current step of the bus.
+             */
+            busStep: StoryStep<out StoryHandlerDefinition>? = null,
+            /**
+             * The current intent of the bus.
+             */
+            currentIntent: Intent? = null
+        ): String {
             val currentStep = if (step == null) busStep else step
             return StringBuilder().apply {
                 append(intent.wrappedIntent().name)
                 val params = parameters +
                         listOfNotNull(
-                                if (currentStep != null) STEP_PARAMETER to currentStep.name else null,
-                                if (currentIntent != null && currentIntent != intent)
-                                    PREVIOUS_INTENT_PARAMETER to currentIntent.name else null
+                            if (currentStep != null) STEP_PARAMETER to currentStep.name else null,
+                            if (currentIntent != null && currentIntent != intent)
+                                PREVIOUS_INTENT_PARAMETER to currentIntent.name else null
                         )
 
                 if (params.isNotEmpty()) {
@@ -124,7 +158,7 @@ class SendChoice(playerId: PlayerId,
         }
 
         /**
-         * Decode an id - returns the [intentName] and the [parameters] map.
+         * Decodes an id - returns the [intentName] and the [parameters] map.
          */
         fun decodeChoiceId(id: String): Pair<String, Map<String, String>> {
             val questionMarkIndex = id.indexOf("?")
@@ -132,11 +166,11 @@ class SendChoice(playerId: PlayerId,
                 id to emptyMap()
             } else {
                 id.substring(0, questionMarkIndex) to id.substring(questionMarkIndex + 1)
-                        .split("&")
-                        .map {
-                            it.split("=")
-                                    .let { decode(it[0], UTF_8.name()) to decode(it[1], UTF_8.name()) }
-                        }.toMap()
+                    .split("&")
+                    .map {
+                        it.split("=")
+                            .let { decode(it[0], UTF_8.name()) to decode(it[1], UTF_8.name()) }
+                    }.toMap()
             }
         }
 
@@ -148,15 +182,15 @@ class SendChoice(playerId: PlayerId,
 
     override fun obfuscate(mode: StringObfuscatorMode, playerId: PlayerId): Event {
         return SendChoice(
-                playerId,
-                applicationId,
-                recipientId,
-                intentName,
-                parameters,
-                toActionId(),
-                date,
-                state,
-                metadata
+            playerId,
+            applicationId,
+            recipientId,
+            intentName,
+            parameters,
+            toActionId(),
+            date,
+            state,
+            metadata
         )
     }
 

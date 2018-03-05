@@ -40,13 +40,14 @@ import kotlin.test.assertEquals
  */
 class RoutingContextHolderTest {
 
-    val bus: BotBus = mock()
-    val context: RoutingContext = mock()
-    val controller:ConnectorController = mock()
+    private val bus: BotBus = mock()
+    private val context: RoutingContext = mock()
+    private val controller: ConnectorController = mock()
 
     @Before
     fun init() {
         whenever(bus.translate(any(), any())).thenAnswer { invocation -> invocation.arguments[0] }
+        whenever(bus.translateAndReturnBlankAsNull(any())).thenAnswer { invocation -> invocation.arguments[0] }
         whenever(context.response()).thenReturn(mock())
     }
 
@@ -55,22 +56,42 @@ class RoutingContextHolderTest {
         with(bus) {
             val r0 = gaMessage("ok")
             val r1 = gaMessage(richResponse(basicCard("title1", null, "formattedText1")))
-            val r2 = gaMessage(richResponse(basicCard("title2", "subtitle2", "formattedText2", gaImage("url2", "acc2"), gaButton("button2", "butonUrl2"))))
+            val r2 = gaMessage(
+                richResponse(
+                    basicCard(
+                        "title2",
+                        "subtitle2",
+                        "formattedText2",
+                        gaImage("url2", "acc2"),
+                        gaButton("button2", "butonUrl2")
+                    )
+                )
+            )
 
             val p1 = PlayerId("id1", PlayerType.user)
 
             val holder = GAConnectorCallback(
-                    "",
-                    controller,
-                    context,
-                    GARequest(
-                            GAUser("userId"),
-                            GADevice(),
-                            GASurface(emptyList()),
-                            GAConversation(),
-                            emptyList()
-                    ),
-                    listOf(r0, r1, r2).map { ActionWithDelay(SendSentence(p1, "appId", p1, null, mutableListOf(it))) }.toMutableList()
+                "",
+                controller,
+                context,
+                GARequest(
+                    GAUser("userId"),
+                    GADevice(),
+                    GASurface(emptyList()),
+                    GAConversation(),
+                    emptyList()
+                ),
+                listOf(r0, r1, r2).map {
+                    ActionWithDelay(
+                        SendSentence(
+                            p1,
+                            "appId",
+                            p1,
+                            null,
+                            mutableListOf(it)
+                        )
+                    )
+                }.toMutableList()
             )
 
             val result = holder.buildResponse()

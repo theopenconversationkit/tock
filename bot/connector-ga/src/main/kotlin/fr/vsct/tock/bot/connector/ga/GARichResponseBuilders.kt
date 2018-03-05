@@ -21,7 +21,7 @@ import fr.vsct.tock.bot.connector.ga.model.response.GAItem
 import fr.vsct.tock.bot.connector.ga.model.response.GALinkOutSuggestion
 import fr.vsct.tock.bot.connector.ga.model.response.GARichResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GASuggestion
-import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.I18nTranslator
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
@@ -29,106 +29,138 @@ private val logger = KotlinLogging.logger {}
 /**
  * Provides a [GARichResponse] with all available parameters.
  */
-fun BotBus.richResponse(items: List<GAItem>, linkOutSuggestion: GALinkOutSuggestion? = null, suggestions: List<GASuggestion>): GARichResponse
-        = GARichResponse(items, suggestions, linkOutSuggestion)
+fun richResponse(
+    items: List<GAItem>,
+    linkOutSuggestion: GALinkOutSuggestion? = null,
+    suggestions: List<GASuggestion>
+): GARichResponse = GARichResponse(items, suggestions, linkOutSuggestion)
 
 /**
  * Provides a [GARichResponse] with suggestions as [String].
  */
-fun BotBus.richResponse(items: List<GAItem>, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: CharSequence): GARichResponse
-        = richResponse(items, linkOutSuggestion, mapSuggestions(suggestions))
+fun I18nTranslator.richResponse(
+    items: List<GAItem>,
+    linkOutSuggestion: GALinkOutSuggestion? = null,
+    vararg suggestions: CharSequence
+): GARichResponse = richResponse(items, linkOutSuggestion, mapSuggestions(suggestions))
 
 /**
  * Provides a [GARichResponse] without linkOutSuggestion.
  */
-fun BotBus.richResponse(items: List<GAItem>, vararg suggestions: CharSequence): GARichResponse
-        = richResponse(items, null, mapSuggestions(suggestions))
+fun I18nTranslator.richResponse(items: List<GAItem>, vararg suggestions: CharSequence): GARichResponse =
+    richResponse(items, null, mapSuggestions(suggestions))
 
 /**
  * Provides a [GARichResponse] without linkOutSuggestion.
  */
-fun BotBus.richResponse(items: List<GAItem>, suggestions: List<CharSequence>): GARichResponse
-        = richResponse(items, null, mapSuggestions(suggestions))
+fun I18nTranslator.richResponse(items: List<GAItem>, suggestions: List<CharSequence>): GARichResponse =
+    richResponse(items, null, mapSuggestions(suggestions))
 
 /**
  * Provides a [GARichResponse] with only one [GAItem].
  */
-fun BotBus.richResponse(item: GAItem, linkOutSuggestion: GALinkOutSuggestion? = null, suggestions: List<CharSequence>): GARichResponse
-        = richResponse(listOf(item), linkOutSuggestion, mapSuggestions(suggestions))
+fun I18nTranslator.richResponse(
+    item: GAItem,
+    linkOutSuggestion: GALinkOutSuggestion? = null,
+    suggestions: List<CharSequence>
+): GARichResponse = richResponse(listOf(item), linkOutSuggestion, mapSuggestions(suggestions))
 
 /**
  * Provides a [GARichResponse] with only one [GAItem].
  */
-fun BotBus.richResponse(item: GAItem, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: CharSequence): GARichResponse
-        = richResponse(item, linkOutSuggestion, suggestions.toList())
+fun I18nTranslator.richResponse(
+    item: GAItem,
+    linkOutSuggestion: GALinkOutSuggestion? = null,
+    vararg suggestions: CharSequence
+): GARichResponse = richResponse(item, linkOutSuggestion, suggestions.toList())
 
 
 /**
  * Provides a [GARichResponse] with text item.
  */
-fun BotBus.richResponse(text: CharSequence, linkOutSuggestion: GALinkOutSuggestion? = null, suggestions: List<CharSequence>): GARichResponse
-        = richResponse(item(simpleResponse(text)), linkOutSuggestion, suggestions)
+fun I18nTranslator.richResponse(
+    text: CharSequence,
+    linkOutSuggestion: GALinkOutSuggestion? = null,
+    suggestions: List<CharSequence>
+): GARichResponse = richResponse(item(simpleResponse(text)), linkOutSuggestion, suggestions)
 
 /**
  * Provides a [GARichResponse] with text item.
  */
-fun BotBus.richResponse(text: CharSequence, linkOutSuggestion: GALinkOutSuggestion? = null, vararg suggestions: CharSequence): GARichResponse
-        = richResponse(text, linkOutSuggestion, suggestions.toList())
+fun I18nTranslator.richResponse(
+    text: CharSequence,
+    linkOutSuggestion: GALinkOutSuggestion? = null,
+    vararg suggestions: CharSequence
+): GARichResponse = richResponse(text, linkOutSuggestion, suggestions.toList())
 
 /**
  * Provides a [GARichResponse] with text item.
  */
-fun BotBus.richResponse(text: CharSequence, vararg suggestions: CharSequence): GARichResponse
-        = richResponse(text, null, suggestions.toList())
+fun I18nTranslator.richResponse(text: CharSequence, vararg suggestions: CharSequence): GARichResponse =
+    richResponse(text, null, suggestions.toList())
 
 
 /**
  * Provides a [GARichResponse] with a text and a [GABasicCard].
  */
-fun BotBus.richResponse(text: CharSequence, basicCard: GABasicCard, linkOutSuggestion: GALinkOutSuggestion? = null, suggestions: List<CharSequence>): GARichResponse
-        = richResponse(listOf(item(simpleResponse(text)), item(basicCard)), linkOutSuggestion, mapSuggestions(suggestions))
+fun I18nTranslator.richResponse(
+    text: CharSequence,
+    basicCard: GABasicCard,
+    linkOutSuggestion: GALinkOutSuggestion? = null,
+    suggestions: List<CharSequence>
+): GARichResponse =
+    richResponse(listOf(item(simpleResponse(text)), item(basicCard)), linkOutSuggestion, mapSuggestions(suggestions))
 
 /**
  * Provides a [GARichResponse] with a text and a [GABasicCard].
  */
-fun BotBus.richResponse(text: CharSequence, basicCard: GABasicCard, suggestions: List<CharSequence>): GARichResponse
-        = richResponse(text, basicCard, null, suggestions)
+fun I18nTranslator.richResponse(
+    text: CharSequence,
+    basicCard: GABasicCard,
+    suggestions: List<CharSequence>
+): GARichResponse = richResponse(text, basicCard, null, suggestions)
 
 /**
  * Provides a [GARichResponse] with a text and a [GABasicCard].
  */
-fun BotBus.richResponse(text: CharSequence, basicCard: GABasicCard, vararg suggestions: CharSequence): GARichResponse
-        = richResponse(text, basicCard, suggestions.toList())
+fun I18nTranslator.richResponse(
+    text: CharSequence,
+    basicCard: GABasicCard,
+    vararg suggestions: CharSequence
+): GARichResponse = richResponse(text, basicCard, suggestions.toList())
 
 
 /**
  * Provides a [GARichResponse] with a [GABasicCard].
  */
-fun BotBus.richResponse(basicCard: GABasicCard, linkOutSuggestion: GALinkOutSuggestion? = null, suggestions: List<CharSequence>): GARichResponse
-        = richResponse(item(basicCard), linkOutSuggestion, suggestions)
+fun I18nTranslator.richResponse(
+    basicCard: GABasicCard,
+    linkOutSuggestion: GALinkOutSuggestion? = null,
+    suggestions: List<CharSequence>
+): GARichResponse = richResponse(item(basicCard), linkOutSuggestion, suggestions)
 
 /**
  * Provides a [GARichResponse] with a [GABasicCard].
  */
-fun BotBus.richResponse(basicCard: GABasicCard, suggestions: List<CharSequence>): GARichResponse
-        = richResponse(basicCard, null, suggestions)
+fun I18nTranslator.richResponse(basicCard: GABasicCard, suggestions: List<CharSequence>): GARichResponse =
+    richResponse(basicCard, null, suggestions)
 
 /**
  * Provides a [GARichResponse] with a [GABasicCard].
  */
-fun BotBus.richResponse(basicCard: GABasicCard, vararg suggestions: CharSequence): GARichResponse
-        = richResponse(basicCard, suggestions.toList())
+fun I18nTranslator.richResponse(basicCard: GABasicCard, vararg suggestions: CharSequence): GARichResponse =
+    richResponse(basicCard, suggestions.toList())
 
+private fun I18nTranslator.mapSuggestions(suggestions: Array<out CharSequence>): List<GASuggestion> =
+    suggestions.map { suggestion(it) }
 
-private fun BotBus.mapSuggestions(suggestions: Array<out CharSequence>): List<GASuggestion> = suggestions.map { suggestion(it) }
-
-private fun BotBus.mapSuggestions(suggestions: List<CharSequence>): List<GASuggestion> = suggestions.map { suggestion(it) }
-
+private fun I18nTranslator.mapSuggestions(suggestions: List<CharSequence>): List<GASuggestion> =
+    suggestions.map { suggestion(it) }
 
 /**
  * Provides a [GASuggestion].
  */
-fun BotBus.suggestion(text: CharSequence): GASuggestion {
+fun I18nTranslator.suggestion(text: CharSequence): GASuggestion {
     val t = translate(text)
     if (t.length > 25) {
         logger.warn { "title $t has more than 25 chars" }

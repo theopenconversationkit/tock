@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.definition.Parameters
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.I18nTranslator
 import fr.vsct.tock.translator.raw
 import mu.KotlinLogging
 
@@ -35,20 +36,27 @@ private val logger = KotlinLogging.logger {}
 /**
  * Provides a message with a [GAListSelect].
  */
-fun BotBus.gaMessage(gaRichResponse: GARichResponse, listItems: List<GAListItem>, title: CharSequence? = null): GAResponseConnectorMessage =
-        gaMessage(
-                inputPrompt(gaRichResponse),
-                listOf(
-                        expectedTextIntent(),
-                        expectedIntentForList(listItems, title)
-                )
+fun I18nTranslator.gaMessage(
+    gaRichResponse: GARichResponse,
+    listItems: List<GAListItem>,
+    title: CharSequence? = null
+): GAResponseConnectorMessage =
+    gaMessage(
+        inputPrompt(gaRichResponse),
+        listOf(
+            expectedTextIntent(),
+            expectedIntentForList(listItems, title)
         )
+    )
 
 /**
  * Provides a message with a [GAListSelect] and a list of [GASuggestion].
  */
-fun BotBus.gaMessageForList(items: List<GAListItem>, title: CharSequence? = null, suggestions: List<CharSequence> = emptyList()): GAResponseConnectorMessage
-        = gaMessage(richResponse(emptyList(), suggestions), items, title)
+fun I18nTranslator.gaMessageForList(
+    items: List<GAListItem>,
+    title: CharSequence? = null,
+    suggestions: List<CharSequence> = emptyList()
+): GAResponseConnectorMessage = gaMessage(richResponse(emptyList(), suggestions), items, title)
 
 /**
  *  Add a basic card if only one element in the items list in order to avoid the limitation of 2 items.
@@ -61,26 +69,27 @@ fun BotBus.gaMessageForList(items: List<GAListItem>, title: CharSequence? = null
  *  @param oneItemDescription if not null and if there is only one item, use this as description. If null and the image is null, [GAListItem.description] is used as description
  *  @param oneItemSuggestions the additional suggestion if there is only one item
  */
-fun BotBus.gaFlexibleMessageForList(items: List<GAListItem>,
-                                    title: CharSequence? = null,
-                                    suggestions: List<CharSequence> = emptyList(),
-                                    oneItemTitle: CharSequence? = null,
-                                    oneItemSubtitle: CharSequence? = null,
-                                    oneItemDescription: CharSequence? = null,
-                                    oneItemSuggestions: List<CharSequence> = emptyList()
+fun I18nTranslator.gaFlexibleMessageForList(
+    items: List<GAListItem>,
+    title: CharSequence? = null,
+    suggestions: List<CharSequence> = emptyList(),
+    oneItemTitle: CharSequence? = null,
+    oneItemSubtitle: CharSequence? = null,
+    oneItemDescription: CharSequence? = null,
+    oneItemSuggestions: List<CharSequence> = emptyList()
 ): GAResponseConnectorMessage {
     return if (items.size == 1) {
         val one = items.first()
         gaMessage(
-                richResponse(
-                        basicCard(
-                                oneItemTitle ?: one.title.raw,
-                                if (one.image != null) oneItemSubtitle ?: title else title,
-                                if (one.image != null) oneItemDescription else oneItemDescription ?: one.description?.raw,
-                                one.image
-                        ),
-                        suggestions + oneItemSuggestions
-                )
+            richResponse(
+                basicCard(
+                    oneItemTitle ?: one.title.raw,
+                    if (one.image != null) oneItemSubtitle ?: title else title,
+                    if (one.image != null) oneItemDescription else oneItemDescription ?: one.description?.raw,
+                    one.image
+                ),
+                suggestions + oneItemSuggestions
+            )
         )
     } else {
         gaMessageForList(items, title, suggestions)
@@ -90,23 +99,23 @@ fun BotBus.gaFlexibleMessageForList(items: List<GAListItem>,
 /**
  * Provides a [GAExpectedIntent] with a [GAListSelect].
  */
-fun BotBus.expectedIntentForList(items: List<GAListItem>, title: CharSequence? = null): GAExpectedIntent {
+fun I18nTranslator.expectedIntentForList(items: List<GAListItem>, title: CharSequence? = null): GAExpectedIntent {
     if (items.size < 2) {
         error("must have at least 2 - current size = ${items.size}")
     } else {
-        val t = translateAndSetBlankAsNull(title)
+        val t = translateAndReturnBlankAsNull(title)
 
         return GAExpectedIntent(
-                GAIntent.option,
-                optionValueSpec(
-                        listSelect = GAListSelect(
-                                t,
-                                if (items.size > 30) {
-                                    logger.warn { "too many items $items - keep only first 30" }
-                                    items.subList(0, 30)
-                                } else {
-                                    items
-                                })))
+            GAIntent.option,
+            optionValueSpec(
+                listSelect = GAListSelect(
+                    t,
+                    if (items.size > 30) {
+                        logger.warn { "too many items $items - keep only first 30" }
+                        items.subList(0, 30)
+                    } else {
+                        items
+                    })))
     }
 }
 
@@ -114,75 +123,78 @@ fun BotBus.expectedIntentForList(items: List<GAListItem>, title: CharSequence? =
  * Provides a [GAListItem] with [String] parameters without description.
  */
 fun BotBus.listItem(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        vararg parameters: Pair<String, String>)
-        : GAListItem
-        = listItem(title, targetIntent, null, null, *parameters)
+    title: CharSequence,
+    targetIntent: IntentAware,
+    vararg parameters: Pair<String, String>
+)
+        : GAListItem = listItem(title, targetIntent, null, null, *parameters)
 
 /**
  * Provides a [GAListItem] with [String] parameters without description.
  */
 fun BotBus.listItem(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        parameters: Parameters)
-        : GAListItem
-        = listItem(title, targetIntent, null, null, parameters)
+    title: CharSequence,
+    targetIntent: IntentAware,
+    parameters: Parameters
+)
+        : GAListItem = listItem(title, targetIntent, null, null, parameters)
 
 
 /**
  * Provides a [GAListItem] with [StoryStep] and [Parameters] parameters without description.
  */
 fun BotBus.listItem(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>?,
-        parameters: Parameters)
-        : GAListItem
-        = listItem(title, targetIntent, step, null, parameters)
+    title: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>?,
+    parameters: Parameters
+)
+        : GAListItem = listItem(title, targetIntent, step, null, parameters)
 
 /**
  * Provides a [GAListItem] with [StoryStep] and [Parameters] parameters without description.
  */
 fun BotBus.listItem(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>?,
-        vararg parameters: Pair<String, String>)
-        : GAListItem
-        = listItem(title, targetIntent, step, null, *parameters)
-/**
- * Provides a [GAListItem] with [StoryStep] and [Parameters] parameters.
- */
-fun BotBus.listItem(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>?,
-        description: CharSequence? = null,
-        parameters: Parameters)
-        : GAListItem
-        = listItem(title, targetIntent, step, description, *parameters.toArray())
+    title: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>?,
+    vararg parameters: Pair<String, String>
+)
+        : GAListItem = listItem(title, targetIntent, step, null, *parameters)
 
 /**
  * Provides a [GAListItem] with [StoryStep] and [Parameters] parameters.
  */
 fun BotBus.listItem(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>?,
-        description: CharSequence? = null,
-        vararg parameters: Pair<String, String>)
+    title: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>?,
+    description: CharSequence? = null,
+    parameters: Parameters
+)
+        : GAListItem = listItem(title, targetIntent, step, description, *parameters.toArray())
+
+/**
+ * Provides a [GAListItem] with [StoryStep] and [Parameters] parameters.
+ */
+fun BotBus.listItem(
+    title: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>?,
+    description: CharSequence? = null,
+    vararg parameters: Pair<String, String>
+)
         : GAListItem {
     val t = translate(title)
-    val d = translateAndSetBlankAsNull(description)
+    val d = translateAndReturnBlankAsNull(description)
     return GAListItem(
-            optionInfo(
-                    t,
-                    targetIntent,
-                    step,
-                    *parameters
-            ),
-            t.toString(),
-            d)
+        optionInfo(
+            t,
+            targetIntent,
+            step,
+            *parameters
+        ),
+        t.toString(),
+        d
+    )
 }

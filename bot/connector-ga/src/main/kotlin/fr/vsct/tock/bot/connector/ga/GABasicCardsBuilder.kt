@@ -19,21 +19,22 @@ package fr.vsct.tock.bot.connector.ga
 import fr.vsct.tock.bot.connector.ga.model.response.GABasicCard
 import fr.vsct.tock.bot.connector.ga.model.response.GAButton
 import fr.vsct.tock.bot.connector.ga.model.response.GAImage
-import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.I18nTranslator
 
 /**
  * Provides a [GABasicCard] with all available parameters.
  */
-fun BotBus.basicCard(
-        title: CharSequence?,
-        subtitle: CharSequence?,
-        formattedText: CharSequence?,
-        image: GAImage?,
-        buttons: List<GAButton>): GABasicCard {
+fun I18nTranslator.basicCard(
+    title: CharSequence?,
+    subtitle: CharSequence?,
+    formattedText: CharSequence?,
+    image: GAImage?,
+    buttons: List<GAButton>
+): GABasicCard {
 
-    val t = translateAndSetBlankAsNull(title)
-    val s = translateAndSetBlankAsNull(subtitle)
-    val f = translateAndSetBlankAsNull(formattedText)
+    val t = translateAndReturnBlankAsNull(title)
+    val s = translateAndReturnBlankAsNull(subtitle)
+    val f = translateAndReturnBlankAsNull(formattedText)
 
     return GABasicCard(t ?: "", s ?: "", f, image, buttons)
 }
@@ -41,46 +42,48 @@ fun BotBus.basicCard(
 /**
  * Provides a [GABasicCard] with only one [GAButton] (only one is supported for now anyway).
  */
-fun BotBus.basicCard(
-        title: CharSequence? = null,
-        subtitle: CharSequence? = null,
-        formattedText: CharSequence? = null,
-        image: GAImage? = null,
-        button: GAButton? = null): GABasicCard
-        = basicCard(title, subtitle, formattedText, image, listOfNotNull(button))
+fun I18nTranslator.basicCard(
+    title: CharSequence? = null,
+    subtitle: CharSequence? = null,
+    formattedText: CharSequence? = null,
+    image: GAImage? = null,
+    button: GAButton? = null
+): GABasicCard = basicCard(title, subtitle, formattedText, image, listOfNotNull(button))
 
 /**
  * Provides a [GABasicCard] without formattedText.
  */
-fun BotBus.basicCard(title: CharSequence, subtitle: CharSequence, image: GAImage, button: GAButton): GABasicCard
-        = basicCard(title, subtitle, null, image, button)
+fun I18nTranslator.basicCard(
+    title: CharSequence,
+    subtitle: CharSequence,
+    image: GAImage,
+    button: GAButton
+): GABasicCard = basicCard(title, subtitle, null, image, button)
 
 /**
  * Provides a [GABasicCard] with title and button.
  */
-fun BotBus.basicCard(title: CharSequence, button: GAButton): GABasicCard
-        = basicCard(title, null, button = button)
+fun I18nTranslator.basicCard(title: CharSequence, button: GAButton): GABasicCard =
+    basicCard(title, null, button = button)
 
 /**
  * Provides a [GABasicCard] with title and subtitle.
  */
-fun BotBus.basicCard(title: CharSequence, subtitle: CharSequence): GABasicCard
-        = basicCard(title, subtitle, null)
+fun I18nTranslator.basicCard(title: CharSequence, subtitle: CharSequence): GABasicCard =
+    basicCard(title, subtitle, null)
 
 /**
  * Provides a [GABasicCard] with title and image.
  */
-fun BotBus.basicCard(title: CharSequence, image: GAImage): GABasicCard
-        = basicCard(title, null, null, image)
+fun I18nTranslator.basicCard(title: CharSequence, image: GAImage): GABasicCard = basicCard(title, null, null, image)
 
 /**
  * Provides a [GABasicCard] with title, subtitle and image.
  */
-fun BotBus.basicCard(title: CharSequence, subtitle: CharSequence, image: GAImage): GABasicCard
-        = basicCard(title, subtitle, null, image)
+fun I18nTranslator.basicCard(title: CharSequence, subtitle: CharSequence, image: GAImage): GABasicCard =
+    basicCard(title, subtitle, null, image)
 
 /**
  * Provides a [GABasicCard] with an image.
  */
-fun BotBus.basicCard(image: GAImage): GABasicCard
-        = basicCard(null, null, null, image)
+fun I18nTranslator.basicCard(image: GAImage): GABasicCard = basicCard(null, null, null, image)

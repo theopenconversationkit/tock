@@ -25,15 +25,17 @@ import fr.vsct.tock.bot.definition.Parameters
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.I18nTranslator
 
 /**
  * Provides a [GAExpectedIntent] with a [GASimpleSelect].
  */
-fun BotBus.expectedIntentForSimpleSelect(items: List<GASelectItem>): GAExpectedIntent {
+fun I18nTranslator.expectedIntentForSimpleSelect(items: List<GASelectItem>): GAExpectedIntent {
     return GAExpectedIntent(
-            GAIntent.option,
-            optionValueSpec(simpleSelect = GASimpleSelect(items)
-            )
+        GAIntent.option,
+        optionValueSpec(
+            simpleSelect = GASimpleSelect(items)
+        )
     )
 }
 
@@ -41,52 +43,53 @@ fun BotBus.expectedIntentForSimpleSelect(items: List<GASelectItem>): GAExpectedI
  * Provides a [GASelectItem] with [String] parameters.
  */
 fun BotBus.selectItem(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        vararg parameters: Pair<String, String>)
-        : GASelectItem
-        = selectItem(title, targetIntent, null, null, *parameters)
+    title: CharSequence,
+    targetIntent: IntentAware,
+    vararg parameters: Pair<String, String>
+)
+        : GASelectItem = selectItem(title, targetIntent, null, null, *parameters)
 
 /**
  * Provides a [GASelectItem] with option title and [String] parameters.
  */
 fun BotBus.selectItem(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        optionTitle: CharSequence? = null,
-        vararg parameters: Pair<String, String>)
-        : GASelectItem
-        = selectItem(title, targetIntent, null, optionTitle, *parameters)
+    title: CharSequence,
+    targetIntent: IntentAware,
+    optionTitle: CharSequence? = null,
+    vararg parameters: Pair<String, String>
+)
+        : GASelectItem = selectItem(title, targetIntent, null, optionTitle, *parameters)
 
 /**
  * Provides a [GASelectItem] with option title, [StoryStep] and [Parameters] parameters.
  */
 fun BotBus.selectItem(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>,
-        optionTitle: CharSequence? = null,
-        parameters: Parameters)
-        : GASelectItem
-        = selectItem(title, targetIntent, step, optionTitle, *parameters.toArray())
+    title: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>,
+    optionTitle: CharSequence? = null,
+    parameters: Parameters
+)
+        : GASelectItem = selectItem(title, targetIntent, step, optionTitle, *parameters.toArray())
 
 /**
  * Provides a [GASelectItem] with option title, [StoryStep] and [String] parameters.
  */
 fun BotBus.selectItem(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>? = null,
-        optionTitle: CharSequence? = null,
-        vararg parameters: Pair<String, String>)
+    title: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    optionTitle: CharSequence? = null,
+    vararg parameters: Pair<String, String>
+)
         : GASelectItem {
     return GASelectItem(
-            optionInfo(
-                    title,
-                    targetIntent,
-                    step,
-                    *parameters
-            ),
-            optionTitle?.let { translate(it).toString() }
+        optionInfo(
+            title,
+            targetIntent,
+            step,
+            *parameters
+        ),
+        optionTitle?.let { translate(it).toString() }
     )
 }

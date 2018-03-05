@@ -28,8 +28,8 @@ import mu.KotlinLogging
  * Provides also a convenient implementation of [I18nKeyProvider] to support i18n.
  */
 abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
-        private val mainIntentName: String? = null)
-    : StoryHandler, I18nKeyProvider, IntentAware {
+    private val mainIntentName: String? = null
+) : StoryHandler, I18nKeyProvider, IntentAware {
 
     private val logger = KotlinLogging.logger {}
 
@@ -62,8 +62,8 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     /**
      * Has [BotBus.end] been already called?
      */
-    private fun isEndCalled(bus:BotBus) : Boolean =
-        bus.dialog.allActions().lastOrNull()?.run { this !== bus.action && metadata.lastAnswer} ?: false
+    private fun isEndCalled(bus: BotBus): Boolean =
+        bus.dialog.allActions().lastOrNull()?.run { this !== bus.action && metadata.lastAnswer } ?: false
 
     final override fun handle(bus: BotBus) {
         //if not supported user interface, use unknown
@@ -89,18 +89,18 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
      * Find the story definition of this handler.
      */
     open fun findStoryDefinition(bus: BotBus): StoryDefinition? = bus
-            .botDefinition
-            .stories
-            .find { it.storyHandler == this }
+        .botDefinition
+        .stories
+        .find { it.storyHandler == this }
 
     /**
      * Handle the action and switch the context to the underlying story definition.
      */
     fun handleAndSwitchStory(bus: BotBus) {
         findStoryDefinition(bus)
-                ?.apply {
-                    bus.switchStory(this)
-                }
+            ?.apply {
+                bus.switchStory(this)
+            }
 
         handle(bus)
     }
@@ -123,11 +123,12 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey {
         val prefix = i18nKeyPrefix()
         return i18nKey(
-                "${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}",
-                i18nNamespace,
-                prefix,
-                defaultLabel,
-                args)
+            "${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}",
+            i18nNamespace,
+            prefix,
+            defaultLabel,
+            args
+        )
     }
 
     /**
@@ -136,11 +137,12 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelKey {
         val prefix = i18nKeyPrefix()
         return i18nKey(
-                key,
-                i18nNamespace,
-                prefix,
-                defaultLabel,
-                args.toList())
+            key,
+            i18nNamespace,
+            prefix,
+            defaultLabel,
+            args.toList()
+        )
     }
 
     private fun findMainIntentName(): String {

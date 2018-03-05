@@ -39,12 +39,12 @@ import java.util.Locale
  *
  */
 internal class TockBotBus(
-        private val connector: TockConnectorController,
-        override val userTimeline: UserTimeline,
-        override val dialog: Dialog,
-        override val action: Action,
-        override val connectorData: ConnectorData,
-        override var i18nProvider: I18nKeyProvider
+    private val connector: TockConnectorController,
+    override val userTimeline: UserTimeline,
+    override val dialog: Dialog,
+    override val action: Action,
+    override val connectorData: ConnectorData,
+    override var i18nProvider: I18nKeyProvider
 ) : BotBus {
 
     private val bot = connector.bot
@@ -62,7 +62,8 @@ internal class TockBotBus(
     override val userId = action.playerId
     override val userPreferences: UserPreferences = userTimeline.userPreferences
     override val userLocale: Locale = userPreferences.locale
-    override val userInterfaceType: UserInterfaceType = action.state.userInterface ?: connector.connectorType.userInterfaceType
+    override val userInterfaceType: UserInterfaceType =
+        action.state.userInterface ?: connector.connectorType.userInterfaceType
     override val targetConnectorType: ConnectorType = action.state.targetConnectorType ?: connector.connectorType
 
     private val context: BusContext = BusContext()
@@ -84,7 +85,7 @@ internal class TockBotBus(
     }
 
     /**
-     * Update the non persistent current context value.
+     * Updates the non persistent current context value.
      */
     override fun setBusContextValue(key: String, value: Any?) {
         if (value == null) {

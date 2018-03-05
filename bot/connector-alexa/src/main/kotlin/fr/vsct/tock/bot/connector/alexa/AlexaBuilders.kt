@@ -21,6 +21,7 @@ import com.amazon.speech.ui.StandardCard
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.I18nTranslator
 import fr.vsct.tock.translator.UserInterfaceType
 
 internal const val ALEXA_CONNECTOR_TYPE_ID = "alexa"
@@ -33,7 +34,7 @@ val alexaConnectorType = ConnectorType(ALEXA_CONNECTOR_TYPE_ID, UserInterfaceTyp
 /**
  * Add a [ConnectorMessage] for Alexa.
  */
-fun BotBus.withAlexa(messageProvider: () -> ConnectorMessage): BotBus {
+fun BotBus.withAlexa(messageProvider: () -> AlexaMessage): BotBus {
     return withMessage(alexaConnectorType, messageProvider)
 }
 
@@ -45,7 +46,7 @@ fun alexaEndConversation(): ConnectorMessage = AlexaMessage(true)
 /**
  * Add the specified card.
  */
-fun BotBus.alexaStandardCard(
+fun I18nTranslator.alexaStandardCard(
     title: CharSequence,
     text: CharSequence,
     smallImageUrl: String,

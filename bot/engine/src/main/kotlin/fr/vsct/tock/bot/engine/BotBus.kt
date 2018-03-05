@@ -45,9 +45,6 @@ import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelKey
-import fr.vsct.tock.translator.RawString
-import fr.vsct.tock.translator.TranslatedString
-import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.UserInterfaceType
 import java.util.Locale
 
@@ -56,11 +53,11 @@ import java.util.Locale
  *
  * The bus is used by bot implementations to reply to the user request.
  */
-interface BotBus : I18nKeyProvider {
+interface BotBus : I18nTranslator {
 
     companion object {
         /**
-         * Helper method to returns the current bus,
+         * Helper method to return the current bus,
          * linked to the thread currently used by the handler.
          * (warning: advanced usage only).
          */
@@ -114,15 +111,15 @@ interface BotBus : I18nKeyProvider {
     /**
      * The current user [Locale].
      */
-    val userLocale: Locale
+    override val userLocale: Locale
     /**
      * The current user interface type.
      */
-    val userInterfaceType: UserInterfaceType
+    override val userInterfaceType: UserInterfaceType
     /**
-     * The [ConnectorType] used by the response.
+     * The [ConnectorType] used for the response.
      */
-    val targetConnectorType: ConnectorType
+    override val targetConnectorType: ConnectorType
 
     /**
      * The entities in the dialog state.
@@ -153,12 +150,12 @@ interface BotBus : I18nKeyProvider {
         }
 
     /**
-     * To test if the current intent is owned by the [IntentAware].
+     * To know if the current intent is owned by the [IntentAware].
      */
     fun isIntent(intentOwner: IntentAware): Boolean = intentOwner.wrap(intent?.wrappedIntent())
 
     /**
-     * Get the NLP call stats if an NLP call has occurred, null either.
+     * Returns the NLP call stats if an NLP call has occurred, null either.
      */
     fun nlpStats(): NlpCallStats? = if (action is SendSentence) (action as SendSentence).nlpStats else null
 
@@ -224,7 +221,7 @@ interface BotBus : I18nKeyProvider {
     fun entityContextValue(role: String): ContextValue? = entities[role]?.value
 
     /**
-     * Update the current entity value in the dialog.
+     * Updates the current entity value in the dialog.
      * @param role entity role
      * @param newValue the new entity value
      */
@@ -233,7 +230,7 @@ interface BotBus : I18nKeyProvider {
     }
 
     /**
-     * Update the current entity value in the dialog.
+     * Updates the current entity value in the dialog.
      * @param entity the entity definition
      * @param newValue the new entity value
      */
@@ -242,14 +239,14 @@ interface BotBus : I18nKeyProvider {
     }
 
     /**
-     * Update the current entity value in the dialog.
+     * Updates the current entity value in the dialog.
      * @param entity the entity definition
      * @param newValue the new entity context value
      */
     fun changeEntityValue(entity: Entity, newValue: ContextValue) = changeEntityValue(entity.role, newValue)
 
     /**
-     * Update the current entity text value in the dialog.
+     * Updates the current entity text value in the dialog.
      * @param entity the entity definition
      * @param textContent the new entity text content
      */
@@ -260,26 +257,27 @@ interface BotBus : I18nKeyProvider {
         )
 
     /**
-     * Remove entity value for the specified role.
+     * Removes entity value for the specified role.
      */
     fun removeEntityValue(role: String) {
         dialog.state.resetValue(role)
     }
 
     /**
-     * Remove entity value for the specified role.
+     * Removes entity value for the specified role.
      */
     fun removeEntityValue(entity: Entity) = removeEntityValue(entity.role)
 
     /**
-     * Remove all current entity values.
+     * Removes all current entity values.
      */
     fun removeAllEntityValues() {
         dialog.state.resetAllEntityValues()
     }
 
     /**
-     * Reset all entity values, context values, [fr.vsct.tock.bot.engine.dialog.DialogState.userLocation] and [fr.vsct.tock.bot.engine.dialog.DialogState.nextActionState]
+     * Resets all entity values, context values, [fr.vsct.tock.bot.engine.dialog.DialogState.userLocation]
+     * and [fr.vsct.tock.bot.engine.dialog.DialogState.nextActionState]
      * but keep entity values history.
      * @see [fr.vsct.tock.bot.engine.dialog.DialogState.resetState]
      */
@@ -301,14 +299,14 @@ interface BotBus : I18nKeyProvider {
     fun <T : Any> contextValue(key: ParameterKey): T? = contextValue(key.keyName)
 
     /**
-     * Update persistent context value.
+     * Updates persistent context value.
      */
     fun changeContextValue(name: String, value: Any?) {
         if (value == null) dialog.state.context.remove(name) else dialog.state.context[name] = value
     }
 
     /**
-     * Update persistent context value.
+     * Updates persistent context value.
      */
     fun changeContextValue(key: ParameterKey, value: Any?) = changeContextValue(key.keyName, value)
 
@@ -325,13 +323,13 @@ interface BotBus : I18nKeyProvider {
     fun getBusContextValue(key: ParameterKey): Any? = getBusContextValue(key.keyName)
 
     /**
-     * Update the non persistent current context value.
+     * Updates the non persistent current context value.
      * Bus context values are useful to store a temporary (ie request scoped) state.
      */
     fun setBusContextValue(key: String, value: Any?)
 
     /**
-     * Update the non persistent current context value.
+     * Updates the non persistent current context value.
      * Bus context values are useful to store a temporary (ie request scoped) state.
      */
     fun setBusContextValue(key: ParameterKey, value: Any?) = setBusContextValue(key.keyName, value)
@@ -344,40 +342,40 @@ interface BotBus : I18nKeyProvider {
     }
 
     /**
-     * Send i18nText as last bot answer.
+     * Sends i18nText as last bot answer.
      */
     fun end(i18nText: CharSequence, delay: Long = 0, vararg i18nArgs: Any?): BotBus {
         return endRawText(translate(i18nText, *i18nArgs), delay)
     }
 
     /**
-     * Send i18nText as last bot answer.
+     * Sends i18nText as last bot answer.
      */
     fun end(i18nText: CharSequence, vararg i18nArgs: Any?): BotBus {
         return endRawText(translate(i18nText, *i18nArgs))
     }
 
     /**
-     * Send text that should not be translated as last bot answer.
+     * Sends text that should not be translated as last bot answer.
      */
     fun endRawText(plainText: CharSequence?, delay: Long = 0): BotBus {
         return end(SendSentence(botId, applicationId, userId, plainText), delay)
     }
 
     /**
-     * Send [Message] as last bot answer.
+     * Sends [Message] as last bot answer.
      */
     fun end(message: Message, delay: Long = 0): BotBus {
         return end(message.toAction(this), delay)
     }
 
     /**
-     * Send [Action] as last bot answer.
+     * Sends [Action] as last bot answer.
      */
     fun end(action: Action, delay: Long = 0): BotBus
 
     /**
-     * Send [MessagesList] as last bot answer.
+     * Sends [MessagesList] as last bot answer.
      */
     fun end(messages: MessagesList, initialDelay: Long = 0): BotBus {
         messages.messages.forEachIndexed { i, m ->
@@ -392,21 +390,21 @@ interface BotBus : I18nKeyProvider {
     }
 
     /**
-     * Send i18nText.
+     * Sends i18nText.
      */
     fun send(i18nText: CharSequence, delay: Long = 0, vararg i18nArgs: Any?): BotBus {
         return sendRawText(translate(i18nText, *i18nArgs), delay)
     }
 
     /**
-     * Send i18nText.
+     * Sends i18nText.
      */
     fun send(i18nText: CharSequence, vararg i18nArgs: Any?): BotBus {
         return sendRawText(translate(i18nText, *i18nArgs))
     }
 
     /**
-     * Send previously registered [ConnectorMessage].
+     * Sends previously registered [ConnectorMessage].
      */
     fun send(delay: Long = 0): BotBus {
         return sendRawText(null, delay)
@@ -418,71 +416,44 @@ interface BotBus : I18nKeyProvider {
     fun sendRawText(plainText: CharSequence?, delay: Long = 0): BotBus
 
     /**
-     * Send [Message].
+     * Sends [Message].
      */
     fun send(message: Message, delay: Long = 0): BotBus {
         return send(message.toAction(this), delay)
     }
 
     /**
-     * Send [Action].
+     * Sends [Action].
      */
     fun send(action: Action, delay: Long = 0): BotBus
 
     /**
-     * Add the specified [ActionPriority] to the bus context.
+     * Adds the specified [ActionPriority] to the bus context.
      */
     fun withPriority(priority: ActionPriority): BotBus
 
     /**
-     * Add the specified [ActionNotificationType] to the bus context.
+     * Adds the specified [ActionNotificationType] to the bus context.
      */
     fun withNotificationType(notificationType: ActionNotificationType): BotBus
 
     /**
-     * Add the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.
+     * Adds the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.
      */
     fun withMessage(message: ConnectorMessage): BotBus = withMessage(message.connectorType, { message })
 
     /**
-     * Add the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.
+     * Adds the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.
      */
     fun withMessage(connectorType: ConnectorType, messageProvider: () -> ConnectorMessage): BotBus
 
     /**
-     * Translate and format if needed the text with the optionals args.
-     */
-    fun translate(text: CharSequence?, vararg args: Any?): CharSequence {
-        return if (text.isNullOrBlank()) {
-            ""
-        } else if (text is I18nLabelKey) {
-            translate(text)
-        } else if (text is TranslatedString || text is RawString) {
-            text
-        } else {
-            return translate(i18nProvider.i18nKeyFromLabel(text!!, args.toList()))
-        }
-    }
-
-    /**
-     * Translate the specified key.
-     */
-    fun translate(key: I18nLabelKey?): CharSequence =
-        if (key == null) ""
-        else Translator.translate(
-            key,
-            userTimeline.userPreferences.locale,
-            userInterfaceType,
-            targetConnectorType.id
-        )
-
-    /**
-     * Reload the user profile.
+     * Reloads the user profile.
      */
     fun reloadProfile()
 
     /**
-     * Switch the context to the underlying story definition (start a new [Story]).
+     * Switches the context to the underlying story definition (start a new [Story]).
      */
     fun switchStory(storyDefinition: StoryDefinition) {
         val starterIntent = storyDefinition.mainIntent()
