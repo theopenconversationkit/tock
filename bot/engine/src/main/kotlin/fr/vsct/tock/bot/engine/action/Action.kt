@@ -18,10 +18,13 @@
 
 package fr.vsct.tock.bot.engine.action
 
+import com.fasterxml.jackson.module.kotlin.readValue
+import fr.vsct.tock.bot.definition.ParameterKey
 import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.security.StringObfuscatorMode
 import org.litote.kmongo.Id
 import java.time.Instant
@@ -29,13 +32,15 @@ import java.time.Instant
 /**
  * A user (or bot) action.
  */
-abstract class Action(val playerId: PlayerId,
-                      val recipientId: PlayerId,
-                      applicationId: String,
-                      id: Id<Action>,
-                      date: Instant,
-                      state: EventState,
-                      val metadata: ActionMetadata = ActionMetadata()) : Event(applicationId, id, date, state) {
+abstract class Action(
+    val playerId: PlayerId,
+    val recipientId: PlayerId,
+    applicationId: String,
+    id: Id<Action>,
+    date: Instant,
+    state: EventState,
+    val metadata: ActionMetadata = ActionMetadata()
+) : Event(applicationId, id, date, state) {
 
     abstract fun toMessage(): Message
 
@@ -47,4 +52,28 @@ abstract class Action(val playerId: PlayerId,
 
     @Suppress("UNCHECKED_CAST")
     fun toActionId(): Id<Action> = id as Id<Action>
+
+    /**
+     * Returns the value of the specified choice parameter,
+     * null if the user action is not a [SendChoice]
+     * or if this parameter is not set.
+     */
+    fun choice(key: ParameterKey): String? =
+        (this as? SendChoice)
+            ?.parameters
+            ?.get(key.keyName)
+
+    /**
+     * Returns true if the specified choice as the "true" value, false either.
+     */
+    fun booleanChoice(key: ParameterKey): Boolean =
+        choice(key).equals("true", true)
+
+    /**
+     * Returns the value of the specified choice parameter,
+     * null if the user action is not a [SendChoice]
+     * or if this parameter is not set.
+     */
+    inline fun <reified T : Any> jsonChoice(key: ParameterKey): T? =
+        choice(key)?.let { mapper.readValue(it) }
 }

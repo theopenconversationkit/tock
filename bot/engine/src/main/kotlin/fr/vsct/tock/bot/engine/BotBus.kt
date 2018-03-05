@@ -166,31 +166,12 @@ interface BotBus : I18nKeyProvider {
      * Returns the value of the specified choice parameter, null if the user action is not a [SendChoice]
      * or if this parameter is not set.
      */
-    @Deprecated("use choice method instead", ReplaceWith("choice(key)"))
-    fun paramChoice(paramName: String): String? {
-        return (action as? SendChoice)?.parameters?.get(paramName)
-    }
-
-    /**
-     * Returns the value of the specified choice parameter, null if the user action is not a [SendChoice]
-     * or if this parameter is not set.
-     */
-    @Deprecated("use choice method instead", ReplaceWith("choice(key)"))
-    fun paramChoice(key: ParameterKey): String?
-            = paramChoice(key.keyName)
-
-    /**
-     * Returns the value of the specified choice parameter, null if the user action is not a [SendChoice]
-     * or if this parameter is not set.
-     */
-    fun choice(key: ParameterKey): String?
-            = paramChoice(key.keyName)
+    fun choice(key: ParameterKey): String? = action.choice(key)
 
     /**
      * Returns true if the specified choice as the "true" value, false either.
      */
-    fun booleanChoice(key: ParameterKey): Boolean
-            = choice(key).equals("true", true)
+    fun booleanChoice(key: ParameterKey): Boolean = action.booleanChoice(key)
 
     /**
      * Returns true if the current action has the specified entity role.
@@ -202,15 +183,15 @@ interface BotBus : I18nKeyProvider {
     /**
      * Returns true if the current action has the specified entity role.
      */
-    fun hasActionEntity(entity: Entity): Boolean
-            = hasActionEntity(entity.role)
+    fun hasActionEntity(entity: Entity): Boolean = hasActionEntity(entity.role)
 
     /**
      * Returns the current value for the specified entity role.
      */
     fun <T : Value> entityValue(
-            role: String,
-            valueTransformer: (ContextValue) -> T? = @Suppress("UNCHECKED_CAST") { it.value as? T? }): T? {
+        role: String,
+        valueTransformer: (ContextValue) -> T? = @Suppress("UNCHECKED_CAST") { it.value as? T? }
+    ): T? {
         return entities[role]?.value?.let { valueTransformer.invoke(it) }
     }
 
@@ -218,33 +199,29 @@ interface BotBus : I18nKeyProvider {
      * Returns the current value for the specified entity.
      */
     fun <T : Value> entityValue(
-            entity: Entity,
-            valueTransformer: (ContextValue) -> T? = @Suppress("UNCHECKED_CAST") { it.value as? T? }): T?
-            = entityValue(entity.role, valueTransformer)
+        entity: Entity,
+        valueTransformer: (ContextValue) -> T? = @Suppress("UNCHECKED_CAST") { it.value as? T? }
+    ): T? = entityValue(entity.role, valueTransformer)
 
     /**
      * Returns the current text content for the specified entity.
      */
-    fun entityText(entity: Entity): String?
-            = entityContextValue(entity)?.content
+    fun entityText(entity: Entity): String? = entityContextValue(entity)?.content
 
     /**
      * Returns the current text content for the specified entity.
      */
-    fun entityText(role: String): String?
-            = entityContextValue(role)?.content
+    fun entityText(role: String): String? = entityContextValue(role)?.content
 
     /**
      * Returns the current entity ContextValue.
      */
-    fun entityContextValue(entity: Entity): ContextValue?
-            = entityContextValue(entity.role)
+    fun entityContextValue(entity: Entity): ContextValue? = entityContextValue(entity.role)
 
     /**
      * Returns the current entity ContextValue.
      */
-    fun entityContextValue(role: String): ContextValue?
-            = entities[role]?.value
+    fun entityContextValue(role: String): ContextValue? = entities[role]?.value
 
     /**
      * Update the current entity value in the dialog.
@@ -269,8 +246,7 @@ interface BotBus : I18nKeyProvider {
      * @param entity the entity definition
      * @param newValue the new entity context value
      */
-    fun changeEntityValue(entity: Entity, newValue: ContextValue)
-            = changeEntityValue(entity.role, newValue)
+    fun changeEntityValue(entity: Entity, newValue: ContextValue) = changeEntityValue(entity.role, newValue)
 
     /**
      * Update the current entity text value in the dialog.
@@ -278,9 +254,10 @@ interface BotBus : I18nKeyProvider {
      * @param textContent the new entity text content
      */
     fun changeEntityValue(entity: Entity, textContent: String) =
-            changeEntityValue(
-                    entity.role,
-                    ContextValue(entity, null, textContent))
+        changeEntityValue(
+            entity.role,
+            ContextValue(entity, null, textContent)
+        )
 
     /**
      * Remove entity value for the specified role.
@@ -292,8 +269,7 @@ interface BotBus : I18nKeyProvider {
     /**
      * Remove entity value for the specified role.
      */
-    fun removeEntityValue(entity: Entity)
-            = removeEntityValue(entity.role)
+    fun removeEntityValue(entity: Entity) = removeEntityValue(entity.role)
 
     /**
      * Remove all current entity values.
@@ -322,8 +298,7 @@ interface BotBus : I18nKeyProvider {
     /**
      * Returns the persistent current context value.
      */
-    fun <T : Any> contextValue(key: ParameterKey): T?
-            = contextValue(key.keyName)
+    fun <T : Any> contextValue(key: ParameterKey): T? = contextValue(key.keyName)
 
     /**
      * Update persistent context value.
@@ -335,8 +310,7 @@ interface BotBus : I18nKeyProvider {
     /**
      * Update persistent context value.
      */
-    fun changeContextValue(key: ParameterKey, value: Any?)
-            = changeContextValue(key.keyName, value)
+    fun changeContextValue(key: ParameterKey, value: Any?) = changeContextValue(key.keyName, value)
 
     /**
      * Returns the non persistent current context value.
@@ -468,8 +442,7 @@ interface BotBus : I18nKeyProvider {
     /**
      * Add the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.
      */
-    fun withMessage(message: ConnectorMessage): BotBus
-            = withMessage(message.connectorType, { message })
+    fun withMessage(message: ConnectorMessage): BotBus = withMessage(message.connectorType, { message })
 
     /**
      * Add the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.
@@ -495,13 +468,13 @@ interface BotBus : I18nKeyProvider {
      * Translate the specified key.
      */
     fun translate(key: I18nLabelKey?): CharSequence =
-            if (key == null) ""
-            else Translator.translate(
-                    key,
-                    userTimeline.userPreferences.locale,
-                    userInterfaceType,
-                    targetConnectorType.id
-            )
+        if (key == null) ""
+        else Translator.translate(
+            key,
+            userTimeline.userPreferences.locale,
+            userInterfaceType,
+            targetConnectorType.id
+        )
 
     /**
      * Reload the user profile.
@@ -518,6 +491,6 @@ interface BotBus : I18nKeyProvider {
     }
 
     //i18n provider implementation
-    override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey
-            = i18nProvider.i18nKeyFromLabel(defaultLabel, args)
+    override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey =
+        i18nProvider.i18nKeyFromLabel(defaultLabel, args)
 }

@@ -16,13 +16,33 @@
 
 package fr.vsct.tock.bot.definition
 
+import fr.vsct.tock.shared.jackson.mapper
+
 /**
  * A parameter key - the implementation is usually an enum.
  */
 interface ParameterKey {
+
+    /**
+     * Overridden by enum implementation.
+     */
     val name: String
 
+    /**
+     * The key of the parameter.
+     */
     val keyName: String get() = name
 
-    operator fun get(value: Any): Parameters = Parameters(keyName to value.toString())
+    /**
+     * Create a [Parameters] with this as key and the [value].toString() value.
+     */
+    operator fun get(value: Any): Parameters =
+        Parameters(keyName to value.toString())
+
+    /**
+     * Create a [Parameters] with this as key and the [value] json serialized string.
+     */
+    operator fun invoke(value: Any): Parameters =
+        Parameters(keyName to mapper.writeValueAsString(value))
+
 }
