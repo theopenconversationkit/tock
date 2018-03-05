@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.test
 
 import currentTestContext
+import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.messenger.messengerConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
@@ -43,61 +44,66 @@ import fr.vsct.tock.translator.UserInterfaceType
 /**
  * The context of the test.
  */
-data class BotBusMockContext(var userTimeline: UserTimeline,
-                             var dialog: Dialog,
-                             var story: Story,
-                             var firstAction: Action,
-                             var botDefinition: BotDefinition,
-                             var i18nProvider: I18nKeyProvider,
-                             var userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
-                             var connectorType: ConnectorType = messengerConnectorType,
-                             val testContext: TestContext = currentTestContext,
-                             val snapshots: MutableList<Snapshot> = mutableListOf()) {
+data class BotBusMockContext(
+    var userTimeline: UserTimeline,
+    var dialog: Dialog,
+    var story: Story,
+    var firstAction: Action,
+    var botDefinition: BotDefinition,
+    var i18nProvider: I18nKeyProvider,
+    var userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
+    var connectorType: ConnectorType = messengerConnectorType,
+    val testContext: TestContext = currentTestContext,
+    val snapshots: MutableList<Snapshot> = mutableListOf()
+) {
 
-    constructor(applicationId: String,
-                userId: PlayerId,
-                botId: PlayerId,
-                botDefinition: BotDefinition,
-                storyDefinition: StoryDefinition,
-                action: Action = SendSentence(userId, applicationId, botId, ""),
-                userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
-                userPreferences: UserPreferences = UserPreferences(),
-                connectorType: ConnectorType = messengerConnectorType,
-                testContext: TestContext = currentTestContext)
+    constructor(
+        applicationId: String,
+        userId: PlayerId,
+        botId: PlayerId,
+        botDefinition: BotDefinition,
+        storyDefinition: StoryDefinition,
+        action: Action = SendSentence(userId, applicationId, botId, ""),
+        userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
+        userPreferences: UserPreferences = UserPreferences(),
+        connectorType: ConnectorType = messengerConnectorType,
+        testContext: TestContext = currentTestContext
+    )
             : this(
-            UserTimeline(userId, userPreferences),
-            Dialog(setOf(userId, botId)),
-            Story(storyDefinition, storyDefinition.mainIntent()),
-            action,
-            botDefinition,
-            storyDefinition.storyHandler as I18nKeyProvider,
-            userInterfaceType,
-            connectorType,
-            testContext
+        UserTimeline(userId, userPreferences),
+        Dialog(setOf(userId, botId)),
+        Story(storyDefinition, storyDefinition.mainIntent()),
+        action,
+        botDefinition,
+        storyDefinition.storyHandler as I18nKeyProvider,
+        userInterfaceType,
+        connectorType,
+        testContext
     )
 
     constructor(
-            botDefinition: BotDefinition,
-            storyDefinition: StoryDefinition,
-            applicationId: String = botDefinition.botId,
-            userId: PlayerId = PlayerId("user"),
-            botId: PlayerId = PlayerId("bot", PlayerType.bot),
-            action: Action = SendSentence(userId, applicationId, botId, ""),
-            userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
-            userPreferences: UserPreferences = UserPreferences(),
-            connectorType: ConnectorType = messengerConnectorType,
-            testContext: TestContext = currentTestContext)
+        botDefinition: BotDefinition,
+        storyDefinition: StoryDefinition,
+        applicationId: String = botDefinition.botId,
+        userId: PlayerId = PlayerId("user"),
+        botId: PlayerId = PlayerId("bot", PlayerType.bot),
+        action: Action = SendSentence(userId, applicationId, botId, ""),
+        userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
+        userPreferences: UserPreferences = UserPreferences(),
+        connectorType: ConnectorType = messengerConnectorType,
+        testContext: TestContext = currentTestContext
+    )
             : this(
-            applicationId,
-            userId,
-            botId,
-            botDefinition,
-            storyDefinition,
-            action,
-            userInterfaceType,
-            userPreferences,
-            connectorType,
-            testContext
+        applicationId,
+        userId,
+        botId,
+        botDefinition,
+        storyDefinition,
+        action,
+        userInterfaceType,
+        userPreferences,
+        connectorType,
+        testContext
     )
 
     val applicationId get() = firstAction.applicationId
@@ -144,66 +150,119 @@ data class BotBusMockContext(var userTimeline: UserTimeline,
      * Create a new sentence for this context.
      */
     fun sentence(
-            text: String,
-            vararg entityValues: ContextValue): SendSentence =
-            sentence(text, entityValues.toList())
+        text: String,
+        vararg entityValues: ContextValue
+    ): SendSentence =
+        sentence(text, entityValues.toList())
 
     /**
      * Create a new sentence for this context.
      */
     fun sentence(
-            text: String,
-            entityValues: List<ContextValue> = emptyList()): SendSentence =
-            sentence(text, null as IntentAware?, entityValues.toList())
+        text: String,
+        entityValues: List<ContextValue> = emptyList()
+    ): SendSentence =
+        sentence(text, null as IntentAware?, entityValues.toList())
 
 
     /**
      * Create a new sentence for this context.
      */
     fun sentence(
-            text: String,
-            intent: IntentAware? = null,
-            vararg entityValues: ContextValue
+        text: String,
+        intent: IntentAware? = null,
+        vararg entityValues: ContextValue
     ) = sentence(text, intent, entityValues.toList())
 
     /**
      * Create a new sentence for this context.
      */
     fun sentence(
-            text: String,
-            intent: IntentAware? = null,
-            entityValues: List<ContextValue> = emptyList()
+        text: String,
+        intent: IntentAware? = null,
+        entityValues: List<ContextValue> = emptyList()
     ): SendSentence =
-            SendSentence(userId, applicationId, botId, text).apply {
-                state.intent = intent?.wrappedIntent()?.name
-                state.entityValues.addAll(entityValues)
-            }
+        SendSentence(userId, applicationId, botId, text).apply {
+            state.intent = intent?.wrappedIntent()?.name
+            state.entityValues.addAll(entityValues)
+        }
+
+    /**
+     * Create a new sentence for this context.
+     */
+    fun sentence(
+        message: ConnectorMessage,
+        vararg entityValues: ContextValue
+    ): SendSentence =
+        sentence(message, entityValues.toList())
+
+    /**
+     * Create a new sentence for this context.
+     */
+    fun sentence(
+        message: ConnectorMessage,
+        entityValues: List<ContextValue> = emptyList()
+    ): SendSentence =
+        sentence(message, null as IntentAware?, entityValues.toList())
+
+
+    /**
+     * Create a new sentence for this context.
+     */
+    fun sentence(
+        message: ConnectorMessage,
+        intent: IntentAware? = null,
+        vararg entityValues: ContextValue
+    ) = sentence(message, intent, entityValues.toList())
+
+    /**
+     * Create a new sentence for this context.
+     */
+    fun sentence(
+        message: ConnectorMessage,
+        intent: IntentAware? = null,
+        entityValues: List<ContextValue> = emptyList()
+    ): SendSentence =
+        SendSentence(userId, applicationId, botId, null, mutableListOf(message)).apply {
+            state.intent = intent?.wrappedIntent()?.name
+            state.entityValues.addAll(entityValues)
+            state.targetConnectorType = message.connectorType
+            state.userInterface = message.connectorType.userInterfaceType
+        }
 
     /**
      * Create a choice for this context.
      */
-    fun choice(intentName: String,
-               vararg parameters: Pair<String, String>): SendChoice = SendChoice(userId, applicationId, botId, intentName, parameters.toMap())
+    fun choice(
+        intentName: String,
+        vararg parameters: Pair<String, String>
+    ): SendChoice = SendChoice(userId, applicationId, botId, intentName, parameters.toMap())
 
     /**
      * Create a choice for this context.
      */
-    fun choice(intentName: String,
-               step: StoryStep<out StoryHandlerDefinition>,
-               vararg parameters: Pair<String, String>): SendChoice = SendChoice(userId, applicationId, botId, intentName, step, parameters.toMap())
+    fun choice(
+        intentName: String,
+        step: StoryStep<out StoryHandlerDefinition>,
+        vararg parameters: Pair<String, String>
+    ): SendChoice = SendChoice(userId, applicationId, botId, intentName, step, parameters.toMap())
 
     /**
      * Create a choice for this context.
      */
-    fun choice(intent: IntentAware,
-               step: StoryStep<out StoryHandlerDefinition>,
-               parameters: Parameters): SendChoice = SendChoice(userId, applicationId, botId, intent.wrappedIntent().name, step, parameters.toMap())
+    fun choice(
+        intent: IntentAware,
+        step: StoryStep<out StoryHandlerDefinition>,
+        parameters: Parameters
+    ): SendChoice = SendChoice(userId, applicationId, botId, intent.wrappedIntent().name, step, parameters.toMap())
 
     /**
      * Create a choice for this context.
      */
-    fun choice(intent: IntentAware,
-               parameters: Parameters): SendChoice = SendChoice(userId, applicationId, botId, intent.wrappedIntent().name, parameters.toMap())
+    fun choice(
+        intent: IntentAware,
+        parameters: Parameters
+    ): SendChoice = SendChoice(userId, applicationId, botId, intent.wrappedIntent().name, parameters.toMap())
 
     /**
      * Create a choice for this context.
