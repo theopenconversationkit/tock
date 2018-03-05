@@ -17,7 +17,17 @@
 package fr.vsct.tock.bot.connector.messenger
 
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
-import fr.vsct.tock.bot.connector.messenger.model.send.*
+import fr.vsct.tock.bot.connector.messenger.model.send.Attachment
+import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
+import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType
+import fr.vsct.tock.bot.connector.messenger.model.send.Message
+import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
+import fr.vsct.tock.bot.connector.messenger.model.send.MessageTag
+import fr.vsct.tock.bot.connector.messenger.model.send.MessagingType.MESSAGE_TAG
+import fr.vsct.tock.bot.connector.messenger.model.send.MessagingType.RESPONSE
+import fr.vsct.tock.bot.connector.messenger.model.send.NotificationType
+import fr.vsct.tock.bot.connector.messenger.model.send.TextMessage
+import fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -33,28 +43,30 @@ internal object SendActionConverter {
     fun toMessageRequest(action: Action): MessageRequest? {
         return when (action) {
             is SendSentence ->
-                if (action.hasMessage(MessengerConnectorProvider.connectorType) ) {
+                if (action.hasMessage(MessengerConnectorProvider.connectorType)) {
                     action.message(MessengerConnectorProvider.connectorType) as Message
                 } else {
                     TextMessage(action.stringText ?: "")
                 }
 
             is SendAttachment -> AttachmentMessage(
-                    Attachment(
-                            AttachmentType.fromTockAttachmentType(action.type),
-                            UrlPayload.getUrlPayload(action)
-                    )
+                Attachment(
+                    AttachmentType.fromTockAttachmentType(action.type),
+                    UrlPayload.getUrlPayload(action)
+                )
             )
             else -> {
                 logger.warn { "action not supported : $action " }
                 null
             }
         }?.let {
+            val messageTag = MessageTag.toMessageTag(action)
             MessageRequest(
-                    Recipient(action.recipientId.id),
-                    it,
-                    NotificationType.toNotificationType(action),
-                    MessageTag.toMessageTag(action)
+                Recipient(action.recipientId.id),
+                it,
+                if (messageTag == null) RESPONSE else MESSAGE_TAG,
+                NotificationType.toNotificationType(action),
+                messageTag
             )
         }
     }

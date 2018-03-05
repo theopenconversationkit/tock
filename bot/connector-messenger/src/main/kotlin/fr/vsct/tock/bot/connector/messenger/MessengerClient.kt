@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.connector.messenger.model.send.SendResponseErrorContaine
 import fr.vsct.tock.bot.engine.BotRepository.requestTimer
 import fr.vsct.tock.bot.engine.monitoring.logError
 import fr.vsct.tock.shared.addJacksonConverter
+import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.intProperty
@@ -51,13 +52,13 @@ internal class MessengerClient(val secretKey: String) {
 
     interface GraphApi {
 
-        @POST("/v2.10/me/messages")
+        @POST("/v2.12/me/messages")
         fun sendMessage(@Query("access_token") accessToken: String, @Body messageRequest: MessageRequest): Call<SendResponse>
 
-        @POST("/v2.10/me/messages")
+        @POST("/v2.12/me/messages")
         fun sendAction(@Query("access_token") accessToken: String, @Body actionRequest: ActionRequest): Call<SendResponse>
 
-        @GET("/v2.10/{userId}/")
+        @GET("/v2.12/{userId}/")
         fun getUserProfile(@Path("userId") userId: String, @Query("access_token") accessToken: String, @Query("fields") fields: String): Call<UserProfile>
     }
 
@@ -75,19 +76,21 @@ internal class MessengerClient(val secretKey: String) {
 
     init {
         graphApi = retrofitBuilderWithTimeoutAndLogger(
-                longProperty("tock_messenger_request_timeout_ms", 30000),
-                logger,
-                requestGZipEncoding = true)
-                .baseUrl("https://graph.facebook.com")
-                .addJacksonConverter()
-                .build()
-                .create()
+            longProperty("tock_messenger_request_timeout_ms", 30000),
+            logger,
+            requestGZipEncoding = booleanProperty("tock_messenger_request_gzip", true)
+        )
+            .baseUrl("https://graph.facebook.com")
+            .addJacksonConverter()
+            .build()
+            .create()
         statusApi = retrofitBuilderWithTimeoutAndLogger(
-                longProperty("tock_messenger_request_timeout_ms", 5000),
-                logger)
-                .baseUrl("https://www.facebook.com")
-                .build()
-                .create()
+            longProperty("tock_messenger_request_timeout_ms", 5000),
+            logger
+        )
+            .baseUrl("https://www.facebook.com")
+            .build()
+            .create()
     }
 
     fun healthcheck(): Boolean {
@@ -121,7 +124,7 @@ internal class MessengerClient(val secretKey: String) {
         val requestTimerData = requestTimer.start("messenger_user_profile")
         return try {
             graphApi.getUserProfile(recipient.id!!, token, "first_name,last_name,profile_pic,locale,timezone,gender")
-                    .execute().body() ?: defaultUserProfile()
+                .execute().body() ?: defaultUserProfile()
         } catch (e: Exception) {
             logger.logError(e, requestTimerData)
             defaultUserProfile()

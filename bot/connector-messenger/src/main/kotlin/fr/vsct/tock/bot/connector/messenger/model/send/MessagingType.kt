@@ -16,19 +16,10 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
-import com.fasterxml.jackson.annotation.JsonProperty
-import fr.vsct.tock.bot.connector.messenger.model.Recipient
-import fr.vsct.tock.bot.connector.messenger.model.send.MessagingType.RESPONSE
-import fr.vsct.tock.bot.connector.messenger.model.send.NotificationType.NO_PUSH
-
-data class MessageRequest(
-    val recipient: Recipient,
-    val message: Message,
-    @JsonProperty("messaging_type")
-    val messagingType: MessagingType = RESPONSE,
-    @JsonProperty("notification_type")
-    val notificationType: NotificationType = NO_PUSH,
-    @JsonProperty("tag")
-    val tag: MessageTag? = null
-) {
+/**
+ * Messaging type.
+ * See [https://developers.facebook.com/docs/messenger-platform/send-messages#messaging_types](facebook documentation).
+ */
+enum class MessagingType {
+    RESPONSE, UPDATE, MESSAGE_TAG
 }
