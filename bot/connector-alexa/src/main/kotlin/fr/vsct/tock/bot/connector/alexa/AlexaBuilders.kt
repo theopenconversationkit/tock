@@ -41,7 +41,7 @@ fun BotBus.withAlexa(messageProvider: () -> AlexaMessage): BotBus {
 /**
  * End the conversation with the skill.
  */
-fun alexaEndConversation(): ConnectorMessage = AlexaMessage(true)
+fun alexaEndConversation(): AlexaMessage = AlexaMessage(true)
 
 /**
  * Add the specified card.
@@ -51,7 +51,7 @@ fun I18nTranslator.alexaStandardCard(
     text: CharSequence,
     smallImageUrl: String,
     largeImageUrl: String = smallImageUrl
-): ConnectorMessage =
+): AlexaMessage =
     AlexaMessage(
         false,
         StandardCard().apply {
