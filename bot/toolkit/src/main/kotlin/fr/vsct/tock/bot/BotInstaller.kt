@@ -25,6 +25,8 @@ import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.BotProviderBase
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.nlp.NlpController
+import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
+import fr.vsct.tock.nlp.api.client.model.dump.IntentDefinition
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.resource
@@ -76,6 +78,19 @@ private fun install(routerHandlers: List<(Router) -> Unit>, installRestConnector
             null
         }
     }
+}
+
+/**
+ * Export list of IntentDefinition
+ *
+ * @namespace Application Namespace
+ * @name Application Name
+ *
+ * @return List of IntentDefinition
+ */
+fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>? {
+    val nlp: NlpController by injector.instance()
+    return nlp.getIntentsByNamespaceAndName(namespace, name)
 }
 
 /**
