@@ -21,7 +21,6 @@ import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.service.UnknownApplicationException
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
-import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseIntentEntitiesQuery
@@ -106,14 +105,11 @@ class NlpVerticle : WebVerticle() {
                 if (namespace == null || name == null) {
                     badRequest("One of the parameters name or namespace is invalid")
                 } else {
-                    val applicationDefinition: ApplicationDefinition? =
-                        front.getApplicationByNamespaceAndName(namespace, name)
-                    when {
-                        applicationDefinition != null -> front.getIntentsByApplicationId(applicationDefinition._id)
-                        else -> mutableListOf()
-                    }
+                    front.getApplicationByNamespaceAndName(namespace, name)
+                        ?.run {
+                            front.getIntentsByApplicationId(_id)
+                        } ?: emptyList()
                 }
-
             }
         }
 
