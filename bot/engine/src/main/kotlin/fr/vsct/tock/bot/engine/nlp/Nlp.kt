@@ -39,6 +39,7 @@ import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.QueryContext
 import fr.vsct.tock.nlp.api.client.model.QueryState
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
+import fr.vsct.tock.nlp.api.client.model.dump.IntentDefinition
 import fr.vsct.tock.nlp.api.client.model.dump.SentencesDump
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityToEvaluate
@@ -337,6 +338,9 @@ internal class Nlp : NlpController {
                                botDefinition: BotDefinition) {
         SentenceParser(nlpClient, sentence, userTimeline, dialog, connector as TockConnectorController, botDefinition).parse()
     }
+
+    override fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>? =
+            nlpClient.getIntentsByNamespaceAndName(namespace, name).body() ?: null
 
     override fun importNlpDump(stream: InputStream): Boolean =
             nlpClient.importNlpDump(stream).body() ?: false

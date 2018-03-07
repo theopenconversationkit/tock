@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
+import fr.vsct.tock.nlp.api.client.model.dump.IntentDefinition
 import fr.vsct.tock.nlp.api.client.model.dump.SentencesDump
 import java.io.InputStream
 
@@ -38,6 +39,16 @@ interface NlpController {
                       dialog: Dialog,
                       connector: ConnectorController,
                       botDefinition: BotDefinition)
+
+    /**
+     * Export list of IntentDefinition
+     *
+     * @namespace Application Namespace
+     * @name Application Name
+     *
+     * @return List of IntentDefinition
+     */
+    fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>?
 
     /**
      * Import a NLP dump (configuration and sentences of NLP model).

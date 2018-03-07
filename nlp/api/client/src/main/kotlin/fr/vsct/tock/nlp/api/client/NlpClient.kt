@@ -20,6 +20,7 @@ import fr.vsct.tock.nlp.api.client.model.NlpIntentEntitiesQuery
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
+import fr.vsct.tock.nlp.api.client.model.dump.IntentDefinition
 import fr.vsct.tock.nlp.api.client.model.dump.SentencesDump
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationResult
@@ -52,6 +53,16 @@ interface NlpClient {
      * Merge values and returns the result if found.
      */
     fun mergeValues(query: ValuesMergeQuery): Response<ValuesMergeResult>
+
+    /**
+     * Export list of IntentDefinition
+     *
+     * @namespace Application Namespace
+     * @name Application Name
+     *
+     * @return List of IntentDefinition
+     */
+    fun getIntentsByNamespaceAndName(namespace: String, name: String): Response<List<IntentDefinition>>
 
     /**
      * Import a NLP dump (configuration and sentences of the NLP model).
