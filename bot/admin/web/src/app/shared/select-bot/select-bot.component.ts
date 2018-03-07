@@ -54,7 +54,10 @@ export class SelectBotComponent implements OnInit {
               this.configurationId = conf[0]._id;
             }
             this.changeConf(conf.find(c => c._id === this.configurationId), conf);
+          } else {
+            this.configurations = [];
           }
+
         });
       });
   }
