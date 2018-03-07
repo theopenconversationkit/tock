@@ -30,10 +30,10 @@
     <description>Tock kotlin compiler</description>
 
     <modules>
-        <module>kotlin-compiler-shared</module>
-        <module>kotlin-compiler-core</module>
-        <module>kotlin-compiler-server</module>
-        <module>kotlin-compiler-client</module>
+        <module>shared</module>
+        <module>core</module>
+        <module>server</module>
+        <module>client</module>
     </modules>
 
     <build>
