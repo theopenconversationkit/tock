@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<div *ngIf="configurations && configurations.length === 0">
+<div *ngIf="!configurations || configurations.length === 0">
   <h3>No bot configuration detected.</h3>
 </div>
 <div *ngIf="configurations && configurations.length !== 0">
