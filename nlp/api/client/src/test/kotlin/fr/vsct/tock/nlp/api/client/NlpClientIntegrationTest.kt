@@ -23,6 +23,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
 import org.junit.Test
 import java.util.UUID
+import kotlin.test.assertEquals
 import kotlin.test.assertTrue
 
 
@@ -32,6 +33,9 @@ import kotlin.test.assertTrue
 class NlpClientIntegrationTest {
 
     val dumpStream = NlpClient::class.java.getResourceAsStream("/dump.json")
+    val applicationNamespace = "vsc"
+    val applicationName = "test"
+    val unknownApplicationName = "unknown"
 
     @Test
     fun testImportNlpDump() {
@@ -53,5 +57,15 @@ class NlpClientIntegrationTest {
                     )
                 }
         assertTrue(TockNlpClient("http://localhost:8880").importNlpPlainDump(dump).body()!!)
+    }
+
+    @Test
+    fun testGetIntentsByNamespaceAndName() {
+        assertEquals(2, TockNlpClient("http://localhost:8880").getIntentsByNamespaceAndName(applicationNamespace, applicationName).body()!!.size)
+    }
+
+    @Test
+    fun testGetIntentsByNamespaceAndNameWithUnknownApplicationName() {
+        assertEquals(0, TockNlpClient("http://localhost:8880").getIntentsByNamespaceAndName(applicationNamespace, unknownApplicationName).body()!!.size)
     }
 }
