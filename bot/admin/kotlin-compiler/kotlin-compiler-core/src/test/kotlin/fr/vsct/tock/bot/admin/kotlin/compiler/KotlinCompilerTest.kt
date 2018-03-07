@@ -31,15 +31,15 @@ class KotlinCompilerTest {
         @BeforeClass
         @JvmStatic
         fun beforeClass() {
-            KotlinCompiler.init()
+            KotlinCompiler.init(listOf("target/test-classes/"))
         }
 
         var mark = false
     }
 
     class CompilationResultClassLoader(
-        val className: String,
-        val bytes: ByteArray
+            val className: String,
+            val bytes: ByteArray
     ) : ClassLoader(CompilationResultClassLoader::class.java.classLoader) {
 
         @Override
@@ -58,63 +58,63 @@ class KotlinCompilerTest {
         val expectedError = try {
             Runtime::class.java.getMethod("version").invoke(null)
             listOf(
-                CompileError(
-                    TextInterval(
-                        TextPosition(2, 20),
-                        TextPosition(2, 27)
+                    CompileError(
+                            TextInterval(
+                                    TextPosition(2, 20),
+                                    TextPosition(2, 27)
+                            ),
+                            "Unresolved reference: println",
+                            Severity.ERROR,
+                            "ERROR"
                     ),
-                    "Unresolved reference: println",
-                    Severity.ERROR,
-                    "ERROR"
-                ),
-                CompileError(
-                    TextInterval(
-                        TextPosition(2, 34),
-                        TextPosition(2, 35)
+                    CompileError(
+                            TextInterval(
+                                    TextPosition(2, 34),
+                                    TextPosition(2, 35)
+                            ),
+                            "Expecting '\"'",
+                            Severity.ERROR,
+                            "red_wavy_line"
                     ),
-                    "Expecting '\"'",
-                    Severity.ERROR,
-                    "red_wavy_line"
-                ),
-                CompileError(
-                    TextInterval(
-                        TextPosition(line = 2, ch = 34),
-                        TextPosition(line = 2, ch = 35)
-                    ),
-                    "Expecting ')'",
-                    Severity.ERROR,
-                    "red_wavy_line"
-                )
+                    CompileError(
+                            TextInterval(
+                                    TextPosition(line = 2, ch = 34),
+                                    TextPosition(line = 2, ch = 35)
+                            ),
+                            "Expecting ')'",
+                            Severity.ERROR,
+                            "red_wavy_line"
+                    )
             )
         } catch (e: Throwable) {
             //java 8
             listOf(
-                CompileError(
-                    TextInterval(
-                        TextPosition(2, 34),
-                        TextPosition(2, 35)
+                    CompileError(
+                            TextInterval(
+                                    TextPosition(2, 34),
+                                    TextPosition(2, 35)
+                            ),
+                            "Expecting '\"'",
+                            Severity.ERROR,
+                            "red_wavy_line"
                     ),
-                    "Expecting '\"'",
-                    Severity.ERROR,
-                    "red_wavy_line"
-                ),
-                CompileError(
-                    TextInterval(
-                        TextPosition(2, 34),
-                        TextPosition(2, 35)
-                    ),
-                    "Expecting ')'",
-                    Severity.ERROR,
-                    "red_wavy_line"
-                )
+                    CompileError(
+                            TextInterval(
+                                    TextPosition(2, 34),
+                                    TextPosition(2, 35)
+                            ),
+                            "Expecting ')'",
+                            Severity.ERROR,
+                            "red_wavy_line"
+                    )
             )
         }
 
 
         val erroneousSourceCode = mapOf(
-            "ClassToBeCompiled.kt"
-                    to
-                    """
+                "ClassToBeCompiled.kt"
+                        to
+                        """
                 fun main(args: Array<String>) {
                     println("Hello)
                 }"""
@@ -123,16 +123,16 @@ class KotlinCompilerTest {
         val errors = KotlinCompiler.getErrors(erroneousSourceCode)
         assertEquals(1, errors.size)
         assertEquals(
-            expectedError, errors["ClassToBeCompiled.kt"]
+                expectedError, errors["ClassToBeCompiled.kt"]
         )
     }
 
     @Test
     fun `simple compilation and execution succeed`() {
         val sourceCode = mapOf(
-            "ClassToBeCompiled.kt"
-                    to
-                    """
+                "ClassToBeCompiled.kt"
+                        to
+                        """
                 fun main(args: Array<String>) {
                     fr.vsct.tock.bot.admin.kotlin.compiler.KotlinCompilerTest.mark = true
                 }"""
@@ -141,9 +141,31 @@ class KotlinCompilerTest {
         assertEquals(emptyList(), KotlinCompiler.getErrors(sourceCode)["ClassToBeCompiled.kt"])
         val result = KotlinCompiler.compileCorrectFiles(sourceCode, "ClassToBeCompiled.kt", true)
         val compiledClassLoader =
-            CompilationResultClassLoader("ClassToBeCompiledKt", result.files["ClassToBeCompiledKt.class"]!!)
+                CompilationResultClassLoader("ClassToBeCompiledKt", result.files["ClassToBeCompiledKt.class"]!!)
         val c = compiledClassLoader.loadClass("ClassToBeCompiledKt")
         c.declaredMethods[0].invoke(null, arrayOf<String>())
         assertTrue(mark)
+    }
+
+    @Test
+    fun `simple compilation with external classes and java 9 succeed`() {
+        try {
+            //does not fail with java >= 9
+            Runtime::class.java.getMethod("version").invoke(null)
+        } catch (e: Exception) {
+            //java 8 return
+            return
+        }
+        val sourceCode = mapOf(
+                "ClassToBeCompiled.kt"
+                        to
+                        """
+                fun main(args: Array<String>) {
+                    fr.vsct.tock.duckling.client.DucklingEntityEvaluatorProvider()
+                }"""
+        )
+        assertEquals(emptyList(), KotlinCompiler.getErrors(sourceCode)["ClassToBeCompiled.kt"])
+        KotlinCompiler.compileCorrectFiles(sourceCode, "ClassToBeCompiled.kt", true)
+
     }
 }
