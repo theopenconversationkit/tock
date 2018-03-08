@@ -120,6 +120,9 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
     this.data.splice(this.data.indexOf(r), 1);
     this.total -= 1;
     this.cursor -= 1;
+    if(this.total !== 0 && this.data.length === 0) {
+       this.load();
+    }
   }
 
 }
