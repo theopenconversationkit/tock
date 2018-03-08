@@ -619,7 +619,7 @@ fun I18nTranslator.urlButton(title: CharSequence, url: String): UrlButton {
  * Used to generate a text only event,
  * usually sent later by [MessengerConnector.send] or [MessengerConnector.sendOptInEvent].
  */
-fun standaloneMessengerSentence(
+fun standaloneMessengerAnswer(
     playerId: PlayerId,
     applicationId: String,
     recipientId: PlayerId,
@@ -646,7 +646,7 @@ fun standaloneMessengerSentence(
  * Used to generate a [MessengerConnectorMessage] event,
  * usually sent later by [MessengerConnector.send] or [MessengerConnector.sendOptInEvent].
  */
-fun standaloneMessenger(
+fun standaloneMessengerAnswer(
     playerId: PlayerId,
     applicationId: String,
     recipientId: PlayerId,
