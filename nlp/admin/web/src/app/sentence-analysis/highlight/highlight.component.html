@@ -23,7 +23,7 @@
                                      [style.background]="t.color()"
                                      [id]="prefix + t.index">{{t.text}}</span></div>
     <div *ngIf="tokens && readOnly"
-         class="tokens"><span *ngFor="let t of tokens"
+         class="tokens-readonly"><span *ngFor="let t of tokens"
                               [style.font-size]="fontSize"
                               [style.background]="t.color()"
                               [id]="t.index"

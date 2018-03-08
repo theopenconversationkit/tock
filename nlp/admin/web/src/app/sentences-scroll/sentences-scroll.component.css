@@ -44,3 +44,13 @@
 .md-column-select {
   overflow: initial;
 }
+
+.mat-column-select {
+  max-width: 48px;
+}
+.mat-column-currentIntent {
+  max-width: 256px;
+}
+.mat-column-status {
+  max-width: 128px;
+}
