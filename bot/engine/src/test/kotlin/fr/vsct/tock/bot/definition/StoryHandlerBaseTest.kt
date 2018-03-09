@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.definition
 
+
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.BotDefinitionTest
 import fr.vsct.tock.bot.engine.BotEngineTest
@@ -59,6 +60,15 @@ class StoryHandlerBaseTest : BotEngineTest() {
         userAction.state.userInterface = UserInterfaceType.textChat
         StoryHandlerVoiceNotSupported.handle(bus)
         assertNotEquals(bus, StoryHandlerUnknown.registeredBus)
+    }
+
+    @Test
+    fun `i18nKeyFromLabel() does not throw exception WHEN mainIntentName is null and StoryHandlerBase implementation has no class name`() {
+        val handler = object : SimpleStoryHandlerBase() {
+            override fun action(bus: BotBus) {
+            }
+        }
+        assertEquals("test", handler.i18nKeyFromLabel("test").toString())
     }
 
 

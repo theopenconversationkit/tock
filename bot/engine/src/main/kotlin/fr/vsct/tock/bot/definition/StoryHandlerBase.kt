@@ -118,7 +118,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     /**
      * Default i18n prefix.
      */
-    protected fun i18nKeyPrefix(): String = findMainIntentName()
+    protected fun i18nKeyPrefix(): String = findMainIntentName() ?: i18nNamespace
 
     override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey {
         val prefix = i18nKeyPrefix()
@@ -145,13 +145,11 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
         )
     }
 
-    private fun findMainIntentName(): String {
-        return mainIntentName
-                ?: this::class.simpleName?.toLowerCase()?.replace("storyhandler", "")
-                ?: error("unknown main intent name")
+    private fun findMainIntentName(): String? {
+        return mainIntentName ?: this::class.simpleName?.toLowerCase()?.replace("storyhandler", "")
     }
 
     override fun wrappedIntent(): Intent {
-        return Intent(findMainIntentName())
+        return findMainIntentName()?.let { Intent(it) } ?: error("unknown main intent name")
     }
 }
