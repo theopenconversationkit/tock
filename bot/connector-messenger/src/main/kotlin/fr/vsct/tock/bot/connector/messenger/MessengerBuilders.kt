@@ -397,7 +397,7 @@ fun I18nTranslator.standaloneQuickReply(
     /**
      * The custom parameters.
      */
-    parameters: Parameters,
+    parameters: Parameters = Parameters(),
     /**
      * The target step.
      */
@@ -514,7 +514,7 @@ fun I18nTranslator.standalonePostbackButton(
     /**
      * The custom parameters.
      */
-    parameters: Parameters,
+    parameters: Parameters = Parameters(),
     /**
      * The target step.
      */
