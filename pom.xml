@@ -42,7 +42,7 @@
         <fongo>2.2.0-RC1</fongo>
         <jackson>2.9.3</jackson>
         <jackson-module>2.9.3</jackson-module>
-        <klaxon>2.1.13</klaxon>
+        <klaxon>2.1.12</klaxon>
         <vertx>3.5.1</vertx>
         <retrofit>2.4.0</retrofit>
         <okhttp>3.10.0</okhttp>
@@ -210,6 +210,12 @@
                 <groupId>org.litote.kmongo</groupId>
                 <artifactId>kmongo-id-jackson</artifactId>
                 <version>${kmongo}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.litote.kmongo</groupId>
+                <artifactId>kmongo-fongo</artifactId>
+                <version>${kmongo}</version>
+                <scope>test</scope>
             </dependency>
 
             <dependency>

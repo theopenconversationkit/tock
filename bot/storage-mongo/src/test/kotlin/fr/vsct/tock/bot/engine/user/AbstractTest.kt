@@ -16,6 +16,20 @@
 
 package fr.vsct.tock.bot.engine.user
 
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
+import com.mongodb.client.MongoDatabase
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import fr.vsct.tock.bot.mongo.BotApplicationConfigurationMongoDAO
+import fr.vsct.tock.bot.mongo.MONGO_DATABASE
+import fr.vsct.tock.bot.mongo.UserTimelineCol
+import fr.vsct.tock.shared.sharedTestModule
+import fr.vsct.tock.shared.tockInternalInjector
+import org.junit.Before
+import org.litote.kmongo.KFongoRule.Companion.rule
+
 /**
  *
  */
@@ -28,4 +42,17 @@ abstract class AbstractTest {
             System.setProperty("tock_encrypt_pass", "dev")
         }
     }
+
+    @Before
+    fun before() {
+        tockInternalInjector = KodeinInjector()
+        tockInternalInjector.inject(Kodein {
+            import(sharedTestModule)
+            val rule = rule<UserTimelineCol>()
+            bind<MongoDatabase>(MONGO_DATABASE) with provider { rule.database }
+            bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
+        }
+        )
+    }
+
 }
