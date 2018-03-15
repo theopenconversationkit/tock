@@ -21,6 +21,7 @@ import fr.vsct.tock.bot.connector.ConnectorException
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.UserProfile
 import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
+import fr.vsct.tock.bot.connector.messenger.model.send.CustomEventRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.SendResponse
 import fr.vsct.tock.bot.connector.messenger.model.send.SendResponseErrorContainer
@@ -60,6 +61,9 @@ internal class MessengerClient(val secretKey: String) {
 
         @GET("/v2.12/{userId}/")
         fun getUserProfile(@Path("userId") userId: String, @Query("access_token") accessToken: String, @Query("fields") fields: String): Call<UserProfile>
+
+        @POST("/{appId}/activities")
+        fun sendCustomEvent(@Path("appId") appId: String, @Body customEventRequest: CustomEventRequest): Call<SendResponse>
     }
 
     interface StatusApi {
@@ -114,6 +118,10 @@ internal class MessengerClient(val secretKey: String) {
             logger.error(e)
             null
         }
+    }
+
+    fun sendCustomEvent(applicationId: String, customEventRequest: CustomEventRequest): SendResponse {
+        return send(customEventRequest, { graphApi.sendCustomEvent(applicationId, customEventRequest).execute() })
     }
 
     private fun defaultUserProfile(): UserProfile {

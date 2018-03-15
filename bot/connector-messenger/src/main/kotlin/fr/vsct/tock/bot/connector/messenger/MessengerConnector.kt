@@ -26,6 +26,7 @@ import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
+import fr.vsct.tock.bot.connector.messenger.model.send.CustomEventRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.SendResponse
 import fr.vsct.tock.bot.connector.messenger.model.send.SenderAction.mark_seen
@@ -303,6 +304,20 @@ class MessengerConnector internal constructor(
                 //need to use the user_ref here
                 request.copy(recipient = Recipient(null, request.recipient.id))
             }) ?: error("message $event not delivered")
+    }
+
+    /**
+     * Send a custom event to messenger
+     *
+     * @param applicationId the Facebook App ID
+     * @param customEventRequest an object containing a list of custom events
+     */
+    fun sendCustomEvent(applicationId: String, customEventRequest: CustomEventRequest) {
+        try {
+            client.sendCustomEvent(applicationId, customEventRequest)
+        } catch (e: Throwable) {
+            logger.error(e)
+        }
     }
 
     /**
