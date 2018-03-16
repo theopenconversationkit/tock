@@ -29,14 +29,18 @@ import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import mu.KotlinLogging
 import org.litote.kmongo.id.jackson.IdJacksonModule
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
+
+private val logger = KotlinLogging.logger {}
 
 /**
  * The Tock jackson mapper.
  */
 val mapper: ObjectMapper by lazy {
+    logger.info { "init jackson mapper" }
     jacksonObjectMapper()
         .findAndRegisterModules()
         //force java time module

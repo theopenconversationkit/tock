@@ -20,6 +20,8 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import fr.vsct.tock.bot.connector.messenger.model.send.Button
 import fr.vsct.tock.bot.connector.messenger.model.send.ButtonType
+import fr.vsct.tock.bot.connector.messenger.model.send.LoginButton
+import fr.vsct.tock.bot.connector.messenger.model.send.LogoutButton
 import fr.vsct.tock.bot.connector.messenger.model.send.PostbackButton
 import fr.vsct.tock.bot.connector.messenger.model.send.UrlButton
 import fr.vsct.tock.shared.jackson.JacksonDeserializer
@@ -38,10 +40,11 @@ internal class ButtonDeserializer : JacksonDeserializer<Button>() {
 
     override fun deserialize(jp: JsonParser, ctxt: DeserializationContext): Button? {
         data class ButtonFields(
-                var type: ButtonType? = null,
-                var url: String? = null,
-                var title: String? = null,
-                var payload: String? = null)
+            var type: ButtonType? = null,
+            var url: String? = null,
+            var title: String? = null,
+            var payload: String? = null
+        )
 
         val (type, url, title, payload) = jp.read<ButtonFields> { fields, name ->
             with(fields) {
@@ -59,6 +62,8 @@ internal class ButtonDeserializer : JacksonDeserializer<Button>() {
             when (type) {
                 ButtonType.postback -> PostbackButton(payload ?: "", title ?: "")
                 ButtonType.web_url -> UrlButton(url ?: "", title ?: "")
+                ButtonType.account_link -> LoginButton(url ?: "")
+                ButtonType.account_unlink -> LogoutButton()
             }
         } else {
             logger.warn { "invalid button" }

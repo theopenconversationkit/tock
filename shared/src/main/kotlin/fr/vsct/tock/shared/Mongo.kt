@@ -58,7 +58,7 @@ internal val collectionBuilder: (KClass<*>) -> String = {
 }
 
 /**
- * The jackson modules for KMongoi serialization/deserialization.
+ * The additional jackson modules for KMongo serialization/deserialization.
  */
 val mongoJacksonModules = mutableListOf<Module>()
 
@@ -66,6 +66,7 @@ val mongoJacksonModules = mutableListOf<Module>()
  * The [MongoClient] of Tock.
  */
 val mongoClient: MongoClient by lazy {
+    logger.info { "init mongo jackson mapper with additional modules $mongoJacksonModules" }
     CollectionNameFormatter.defaultCollectionNameBuilder = collectionBuilder
     IdGenerator.defaultGenerator = ObjectIdToStringGenerator
 

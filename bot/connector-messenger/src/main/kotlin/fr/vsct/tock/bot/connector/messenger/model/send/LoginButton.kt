@@ -16,10 +16,20 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
+import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.message.Choice
+
 /**
  *
  */
-enum class ButtonType {
+data class LoginButton (val url: String) : Button(ButtonType.account_link) {
 
-    web_url, postback, account_link, account_unlink
+    override fun toChoice(): Choice {
+        return Choice(
+            SendChoice.LOGIN_INTENT,
+            mapOf(
+                SendChoice.URL_PARAMETER to url,
+                SendChoice.TITLE_PARAMETER to "Login"
+            ))
+    }
 }

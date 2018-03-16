@@ -14,12 +14,11 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.send
+package fr.vsct.tock.bot.connector.messenger.model.webhook
 
 /**
  *
  */
-enum class ButtonType {
-
-    web_url, postback, account_link, account_unlink
+enum class AccountLinkingStatus {
+    linked, unlinked
 }

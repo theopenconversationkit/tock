@@ -14,12 +14,21 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.send
+package fr.vsct.tock.bot.connector.messenger.model.webhook
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import fr.vsct.tock.bot.connector.messenger.model.Recipient
+import fr.vsct.tock.bot.connector.messenger.model.Sender
 
 /**
  *
  */
-enum class ButtonType {
+class AccountLinkingWebhook(
+    override val sender: Sender,
+    override val recipient: Recipient,
+    override val timestamp: Long,
+    @JsonProperty("account_linking")
+    val accountLinking: AccountLinking
+) : Webhook() {
 
-    web_url, postback, account_link, account_unlink
 }

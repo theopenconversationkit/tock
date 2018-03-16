@@ -20,6 +20,8 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.Sender
+import fr.vsct.tock.bot.connector.messenger.model.webhook.AccountLinking
+import fr.vsct.tock.bot.connector.messenger.model.webhook.AccountLinkingWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Message
 import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageEcho
 import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageEchoWebhook
@@ -52,12 +54,13 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
             var message: Message? = null,
             var optin: Optin? = null,
             var postback: UserActionPayload? = null,
-            var priorMessage: PriorMessage? = null
+            var priorMessage: PriorMessage? = null,
+            var accountLinking: AccountLinking? = null
         )
 
         val (sender, recipient, timestamp,
                 message, optin, postback,
-                priorMessage)
+                priorMessage, accountLinking)
                 = jp.read<WebhookFields> { fields, name ->
             with(fields) {
                 when (name) {
@@ -68,6 +71,7 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
                     OptinWebhook::optin.name -> optin = jp.readValue()
                     PostbackWebhook::postback.name -> postback = jp.readValue()
                     "prior_message" -> priorMessage = jp.readValue()
+                    "account_linking" -> accountLinking = jp.readValue()
                     else -> unknownValue
                 }
             }
@@ -95,7 +99,9 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
 
         } else if (optin != null) {
             OptinWebhook(sender, recipient, timestamp, optin)
-        } else if (postback != null) {
+        } else if (accountLinking != null) {
+            AccountLinkingWebhook(sender, recipient, timestamp, accountLinking)
+        }else if (postback != null) {
             PostbackWebhook(sender, recipient, timestamp, postback, priorMessage)
         } else {
             logger.error { "unknown webhook" }

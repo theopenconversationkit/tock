@@ -79,6 +79,8 @@ class SendChoice(
         const val URL_PARAMETER = "_url"
         const val IMAGE_PARAMETER = "_image"
         const val EXIT_INTENT = "_exit"
+        const val LOGIN_INTENT = "_login"
+        const val LOGOUT_INTENT = "_logout"
         const val STEP_PARAMETER = "_step"
         const val PREVIOUS_INTENT_PARAMETER = "_previous_intent"
         const val NLP = "_nlp"

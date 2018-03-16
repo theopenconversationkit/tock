@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.connector.messenger
 
+import fr.vsct.tock.bot.connector.messenger.model.webhook.AccountLinkingStatus
+import fr.vsct.tock.bot.connector.messenger.model.webhook.AccountLinkingWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Attachment
 import fr.vsct.tock.bot.connector.messenger.model.webhook.AttachmentType
 import fr.vsct.tock.bot.connector.messenger.model.webhook.LocationPayload
@@ -29,6 +31,8 @@ import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.bot.engine.event.LoginEvent
+import fr.vsct.tock.bot.engine.event.LogoutEvent
 import fr.vsct.tock.bot.engine.event.SubscribingEvent
 import fr.vsct.tock.bot.engine.user.PlayerType
 import mu.KotlinLogging
@@ -98,6 +102,16 @@ internal object WebhookActionConverter {
                     // the recipient id is the page id, ie the tock application id
                     message.recipient.id!!
                 )
+            is AccountLinkingWebhook -> {
+                when (message.accountLinking.status) {
+                    AccountLinkingStatus.linked -> LoginEvent(
+                        message.sender.id,
+                        message.accountLinking.authorizationCode!!,
+                        message.recipient.id!!
+                    )
+                    AccountLinkingStatus.unlinked -> LogoutEvent(message.sender.id, message.recipient.id!!)
+                }
+            }
             else -> {
                 logger.error { "unknown message $message" }
                 null

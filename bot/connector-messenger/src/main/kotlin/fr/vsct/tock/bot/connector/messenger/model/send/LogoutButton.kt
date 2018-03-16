@@ -16,10 +16,20 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
+import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.message.Choice
+
 /**
  *
  */
-enum class ButtonType {
+class LogoutButton : Button(ButtonType.account_unlink) {
 
-    web_url, postback, account_link, account_unlink
+    override fun toChoice(): Choice {
+        return Choice(
+            SendChoice.LOGOUT_INTENT,
+            mapOf(
+                SendChoice.TITLE_PARAMETER to "Logout"
+            )
+        )
+    }
 }

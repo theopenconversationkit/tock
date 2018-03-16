@@ -14,12 +14,16 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.send
+package fr.vsct.tock.bot.connector.messenger.model.webhook
+
+import com.fasterxml.jackson.annotation.JsonProperty
 
 /**
  *
  */
-enum class ButtonType {
-
-    web_url, postback, account_link, account_unlink
+data class AccountLinking(
+    val status:AccountLinkingStatus,
+    @JsonProperty("authorization_code")
+    val authorizationCode:String? = null
+) {
 }

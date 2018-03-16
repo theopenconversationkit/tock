@@ -29,6 +29,8 @@ import fr.vsct.tock.bot.connector.messenger.model.send.GenericPayload
 import fr.vsct.tock.bot.connector.messenger.model.send.ListElementStyle
 import fr.vsct.tock.bot.connector.messenger.model.send.ListPayload
 import fr.vsct.tock.bot.connector.messenger.model.send.LocationQuickReply
+import fr.vsct.tock.bot.connector.messenger.model.send.LoginButton
+import fr.vsct.tock.bot.connector.messenger.model.send.LogoutButton
 import fr.vsct.tock.bot.connector.messenger.model.send.PostbackButton
 import fr.vsct.tock.bot.connector.messenger.model.send.QuickReply
 import fr.vsct.tock.bot.connector.messenger.model.send.TextMessage
@@ -361,6 +363,16 @@ fun I18nTranslator.listElement(
         if (button == null) null else listOf(button)
     )
 }
+
+/**
+ * Provides a [Log In Button](https://developers.facebook.com/docs/messenger-platform/reference/buttons/login).
+ */
+fun loginButton(url: String): LoginButton = LoginButton(url)
+
+/**
+ * Provides a [Log Out Button](https://developers.facebook.com/docs/messenger-platform/reference/buttons/logout).
+ */
+fun logoutButton(): LogoutButton = LogoutButton()
 
 /**
  * Create a [location quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies#location).

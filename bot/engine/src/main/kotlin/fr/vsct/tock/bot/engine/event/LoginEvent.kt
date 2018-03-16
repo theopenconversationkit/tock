@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.send
+package fr.vsct.tock.bot.engine.event
 
 /**
- *
+ * A login event, in order to provide account linking.
  */
-enum class ButtonType {
-
-    web_url, postback, account_link, account_unlink
-}
+class LoginEvent(val userId: String, val userToken: String, applicationId: String) : Event(applicationId)

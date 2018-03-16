@@ -14,12 +14,9 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.send
+package fr.vsct.tock.bot.engine.event
 
 /**
- *
+ * An event used to cancel a [LoginEvent].
  */
-enum class ButtonType {
-
-    web_url, postback, account_link, account_unlink
-}
+class LogoutEvent(val userId: String, applicationId: String) : Event(applicationId)
