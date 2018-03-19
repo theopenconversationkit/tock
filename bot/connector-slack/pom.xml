@@ -21,7 +21,7 @@
     <parent>
         <artifactId>tock-bot</artifactId>
         <groupId>fr.vsct.tock</groupId>
-        <version>0.9.2-SNAPSHOT</version>
+        <version>0.9.2</version>
     </parent>
 
     <artifactId>tock-bot-connector-slack</artifactId>
