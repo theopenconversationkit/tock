@@ -16,7 +16,10 @@
 
 package fr.vsct.tock.bot.connector.alexa
 
-import com.amazon.speech.speechlet.lambda.LambdaSpeechletRequestHandler
+import com.amazon.speech.speechlet.SpeechletRequestHandler
+import com.amazon.speech.speechlet.verifier.ApplicationIdSpeechletRequestEnvelopeVerifier
+import com.amazon.speech.speechlet.verifier.SpeechletRequestVerifierWrapper
+import com.amazon.speech.speechlet.verifier.TimestampSpeechletRequestVerifier
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.engine.BotRepository
@@ -26,22 +29,29 @@ import fr.vsct.tock.bot.engine.event.Event
 import io.vertx.core.buffer.Buffer
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
+import java.util.concurrent.TimeUnit
 
 /**
  * [Connector] for Amazon Alexa.
  */
 class AlexaConnector internal constructor(
-        val applicationId: String,
-        val path: String,
-        val alexaTockMapper:AlexaTockMapper,
-        supportedAlexaApplicationIds: Set<String>)
-    : ConnectorBase(AlexaConnectorProvider.connectorType) {
+    val applicationId: String,
+    val path: String,
+    val alexaTockMapper: AlexaTockMapper,
+    supportedAlexaApplicationIds: Set<String>,
+    timestampInMs: Long
+) : ConnectorBase(AlexaConnectorProvider.connectorType) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    private val requestHandler = LambdaSpeechletRequestHandler(supportedAlexaApplicationIds)
+    private val requestHandler = SpeechletRequestHandler(
+        listOf(
+            ApplicationIdSpeechletRequestEnvelopeVerifier(supportedAlexaApplicationIds),
+            SpeechletRequestVerifierWrapper(TimestampSpeechletRequestVerifier(timestampInMs, TimeUnit.MILLISECONDS))
+        )
+    )
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path, { router ->
@@ -70,17 +80,19 @@ class AlexaConnector internal constructor(
     }
 
     //internal for tests
-    internal fun handleRequest(controller: ConnectorController,
-                               context: RoutingContext) {
+    internal fun handleRequest(
+        controller: ConnectorController,
+        context: RoutingContext
+    ) {
         val timerData = BotRepository.requestTimer.start("alexa_webhook")
         try {
             context.response().end(
-                    Buffer.buffer(
-                            requestHandler.handleSpeechletCall(
-                                    AlexaConnectorCallback(applicationId, controller, alexaTockMapper, context),
-                                    context.body.bytes
-                            )
+                Buffer.buffer(
+                    requestHandler.handleSpeechletCall(
+                        AlexaConnectorCallback(applicationId, controller, alexaTockMapper, context),
+                        context.body.bytes
                     )
+                )
             )
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)

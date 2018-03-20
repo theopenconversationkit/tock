@@ -199,7 +199,8 @@ internal data class AlexaConnectorCallback(
                 .withSession(requestEnvelope.session)
                 .withVersion(requestEnvelope.version)
                 .withRequest(
-                    IntentRequest.builder()
+                    IntentRequest
+                        .builder()
                         .withRequestId(requestEnvelope.request.requestId)
                         .withTimestamp(requestEnvelope.request.timestamp)
                         .withLocale(requestEnvelope.request.locale)
