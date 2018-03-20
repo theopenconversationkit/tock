@@ -16,9 +16,6 @@
 
 package fr.vsct.tock.bot.connector.ga
 
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.bot.connector.ga.GAConnectorCallback.ActionWithDelay
 import fr.vsct.tock.bot.connector.ga.model.request.GAConversation
 import fr.vsct.tock.bot.connector.ga.model.request.GADevice
@@ -27,9 +24,13 @@ import fr.vsct.tock.bot.connector.ga.model.request.GASurface
 import fr.vsct.tock.bot.connector.ga.model.request.GAUser
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.ConnectorController
+import fr.vsct.tock.bot.engine.I18nTranslator
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.spyk
 import io.vertx.ext.web.RoutingContext
 import org.junit.Before
 import org.junit.Test
@@ -40,15 +41,15 @@ import kotlin.test.assertEquals
  */
 class RoutingContextHolderTest {
 
-    private val bus: BotBus = mock()
-    private val context: RoutingContext = mock()
-    private val controller: ConnectorController = mock()
+    private val bus: BotBus = mockk(relaxed = true)
+    private val context: RoutingContext = mockk(relaxed = true)
+    private val controller: ConnectorController = mockk(relaxed = true)
 
     @Before
     fun init() {
-        whenever(bus.translate(any(), any())).thenAnswer { invocation -> invocation.arguments[0] }
-        whenever(bus.translateAndReturnBlankAsNull(any())).thenAnswer { invocation -> invocation.arguments[0] }
-        whenever(context.response()).thenReturn(mock())
+        every { bus.translate(any<CharSequence>()) } answers { firstArg() }
+        every { bus.translateAndReturnBlankAsNull(any()) } answers { firstArg() }
+        every { context.response() } returns mockk(relaxed = true)
     }
 
     @Test
@@ -106,4 +107,5 @@ class RoutingContextHolderTest {
             assertEquals(gaButton("button2", "butonUrl2"), basicCard.buttons.first())
         }
     }
+
 }

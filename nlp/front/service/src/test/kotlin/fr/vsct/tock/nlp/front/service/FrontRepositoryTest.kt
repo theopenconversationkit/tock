@@ -16,8 +16,8 @@
 
 package fr.vsct.tock.nlp.front.service
 
-import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
+import io.mockk.every
 import org.junit.After
 import org.junit.Before
 import org.junit.Test
@@ -35,7 +35,7 @@ class FrontRepositoryTest : AbstractTest() {
 
     @Before
     fun before() {
-        whenever(context.config.getEntityTypes()).thenReturn(entityTypes)
+        every { context.config.getEntityTypes() } returns entityTypes
     }
 
     @After

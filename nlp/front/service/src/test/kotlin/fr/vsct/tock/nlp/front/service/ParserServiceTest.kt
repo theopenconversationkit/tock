@@ -16,17 +16,15 @@
 
 package fr.vsct.tock.nlp.front.service
 
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.never
 import fr.vsct.tock.nlp.front.service.ParserService.formatQuery
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import fr.vsct.tock.shared.defaultLocale
+import io.mockk.verify
 import org.junit.Test
 import org.litote.kmongo.toId
-import org.mockito.Mockito.verify
 import java.util.Locale
 import kotlin.test.assertEquals
 
@@ -74,19 +72,19 @@ class ParserServiceTest : AbstractTest() {
     @Test
     fun saveSentence_shouldSaveTheSentence_ifTheAlreadyExistingSentenceHasInboxStatusAndNotSameContent() {
         ParserService.saveSentence(defaultClassifiedSentence, validatedSentence)
-        verify(context.config).save(any<ClassifiedSentence>())
+        verify { context.config.save(any<ClassifiedSentence>()) }
     }
 
     @Test
     fun saveSentence_shouldNotSaveTheSentence_ifTheAlreadyExistingSentenceHasValidatedStatus() {
         ParserService.saveSentence(defaultClassifiedSentence, validatedSentence.copy(status = validated))
-        verify(context.config, never()).save(any<ClassifiedSentence>())
+        verify(exactly = 0) { context.config.save(any<ClassifiedSentence>()) }
     }
 
     @Test
     fun saveSentence_shouldNotSaveTheSentence_ifTheAlreadyExistingSentenceHasModelStatus() {
         ParserService.saveSentence(defaultClassifiedSentence, validatedSentence.copy(status = model))
-        verify(context.config, never()).save(any<ClassifiedSentence>())
+        verify(exactly = 0) { context.config.save(any<ClassifiedSentence>()) }
     }
 
 }

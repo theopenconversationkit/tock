@@ -20,7 +20,6 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import com.nhaarman.mockito_kotlin.mock
 import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
 import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
@@ -37,6 +36,7 @@ import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.tockInternalInjector
+import io.mockk.mockk
 import org.junit.After
 import org.junit.Before
 import org.litote.kmongo.newId
@@ -50,10 +50,10 @@ abstract class AbstractTest {
 
     class TestContext {
 
-        val core: NlpCore = mock()
-        val config: ApplicationConfiguration = mock()
-        val executor: Executor = mock()
-        val logDAO: ParseRequestLogDAO = mock()
+        val core: NlpCore = mockk(relaxed = true)
+        val config: ApplicationConfiguration = mockk(relaxed = true)
+        val executor: Executor = mockk(relaxed = true)
+        val logDAO: ParseRequestLogDAO = mockk(relaxed = true)
 
         val frontTestModule = Kodein.Module {
             bind<ApplicationConfiguration>() with provider { config }

@@ -20,14 +20,10 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.mock
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
-import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.TestStoryDefinition.test
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.dialog.Dialog
@@ -38,7 +34,6 @@ import fr.vsct.tock.bot.engine.nlp.NlpController
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserLock
-import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.nlp.api.client.NlpClient
@@ -52,31 +47,28 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.tockInternalInjector
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.TranslatorEngine
+import io.mockk.mockk
 import org.junit.After
 import org.junit.Before
-import retrofit2.Response
 
 /**
  *
  */
 abstract class BotEngineTest {
 
-    val userLock: UserLock = mock()
-    val userTimelineDAO: UserTimelineDAO = mock()
+    val userLock: UserLock = mockk(relaxed = true)
+    val userTimelineDAO: UserTimelineDAO = mockk(relaxed = true)
     val userId = PlayerId("id")
     val botId = PlayerId("bot", PlayerType.bot)
     val botDefinition = BotDefinitionTest()
     val dialog = Dialog(setOf(userId, botId))
     val story = Story(botDefinition.stories.first(), test.mainIntent())
-    val connectorCallback: ConnectorCallback = mock()
+    val connectorCallback: ConnectorCallback = mockk(relaxed = true)
     val connectorData = ConnectorData(connectorCallback)
 
-    val botConfDAO: BotApplicationConfigurationDAO = mock()
-    val i18nDAO: I18nDAO = mock()
-    val translator: TranslatorEngine = mock {
-        on { translate(any(), any(), any()) } doReturn ("ok")
-    }
-
+    val botConfDAO: BotApplicationConfigurationDAO = mockk(relaxed = true)
+    val i18nDAO: I18nDAO = mockk(relaxed = true)
+    val translator: TranslatorEngine = mockk(relaxed = true)
 
     val entityA = Entity(EntityType("a"), "a")
     val entityAValue = EntityValue(0, 1, entityA, null, false)
@@ -94,18 +86,10 @@ abstract class BotEngineTest {
             "a b c",
             emptyMap())
 
-    val nlpClient: NlpClient = mock() {
-        on { parse(any()) } doReturn (Response.success(nlpResult))
-
-        on { parseIntentEntities(any()) } doReturn (Response.success(nlpResult))
-    }
-    internal val nlp: NlpController = mock()
-    val executor: Executor = mock()
-    val connector: Connector = mock {
-        on { loadProfile(any(), any()) } doReturn (UserPreferences())
-        on { connectorType } doReturn (ConnectorType("test"))
-    }
-
+    val nlpClient: NlpClient = mockk(relaxed = true)
+    internal val nlp: NlpController = mockk(relaxed = true)
+    val executor: Executor = mockk(relaxed = true)
+    val connector: Connector = mockk(relaxed = true)
     val userTimeline = UserTimeline(userId)
 
     var userAction = action(Sentence("ok computer"))

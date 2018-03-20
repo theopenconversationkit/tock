@@ -16,25 +16,23 @@
 
 package fr.vsct.tock.bot.connector.slack
 
-
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.bot.connector.slack.model.AttachmentField
 import fr.vsct.tock.bot.engine.BotBus
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
-import org.mockito.Mockito.mock
 import kotlin.test.assertEquals
 
 
 class SlackBuildersTest {
 
-    val bus: BotBus = mock(BotBus::class.java)
+    val bus: BotBus = mockk<BotBus>(relaxed = true)
 
     @Before
     fun init() {
-        whenever(bus.translate(any(), any())).thenAnswer { invocation -> invocation.arguments[0] }
-        whenever(bus.translateAndReturnBlankAsNull(any())).thenAnswer { invocation -> invocation.arguments[0] }
+        every { bus.translate(any<CharSequence>()) } answers { firstArg() }
+        every { bus.translateAndReturnBlankAsNull(any()) } answers { firstArg() }
     }
 
     @Test

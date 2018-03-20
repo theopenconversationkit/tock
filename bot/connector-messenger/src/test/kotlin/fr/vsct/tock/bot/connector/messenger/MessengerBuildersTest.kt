@@ -18,9 +18,6 @@ package fr.vsct.tock.bot.connector.messenger
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
-import com.nhaarman.mockito_kotlin.anyOrNull
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.bot.connector.messenger.model.send.Attachment
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.audio
@@ -29,9 +26,10 @@ import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.video
 import fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.user.UserPreferences
-import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.shared.tockInternalInjector
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Before
 import org.junit.Test
 import kotlin.test.assertEquals
@@ -41,7 +39,7 @@ import kotlin.test.assertEquals
  */
 class MessengerBuildersTest {
 
-    val bus: BotBus = mock()
+    val bus: BotBus = mockk(relaxed = true)
 
     @Before
     fun before() {
@@ -51,10 +49,9 @@ class MessengerBuildersTest {
             })
         }
 
-
-        whenever(bus.applicationId).thenReturn("appId")
-        whenever(bus.userPreferences).thenReturn(UserPreferences())
-        whenever(bus.translate(anyOrNull<String>())).thenAnswer { it.arguments[0] ?: "" }
+        every { bus.applicationId } returns "appId"
+        every { bus.userPreferences } returns UserPreferences()
+        every { bus.translate(allAny()) } answers { firstArg() ?: "" }
     }
 
     @Test(expected = IllegalStateException::class)

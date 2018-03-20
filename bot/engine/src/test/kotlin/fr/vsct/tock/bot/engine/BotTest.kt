@@ -16,11 +16,10 @@
 
 package fr.vsct.tock.bot.engine
 
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.verify
 import fr.vsct.tock.bot.engine.TestStoryDefinition.test
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.message.Choice
+import io.mockk.verify
 import org.junit.Test
 import kotlin.test.assertEquals
 
@@ -33,7 +32,7 @@ class BotTest : BotEngineTest() {
     fun handleSendSentence_whenNotWaitingRawInput_shouldSendNlpQuery() {
         bot.handle(userAction, userTimeline, connectorController, connectorData)
 
-        verify(nlp).parseSentence(any(), any(), any(), any(), any())
+        verify { nlp.parseSentence(any(), any(), any(), any(), any()) }
     }
 
     @Test

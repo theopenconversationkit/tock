@@ -20,10 +20,6 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import com.nhaarman.mockito_kotlin.argumentCaptor
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.shared.tockInternalInjector
 import fr.vsct.tock.translator.I18nDAO
@@ -31,6 +27,10 @@ import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.I18nLocalizedLabel
 import fr.vsct.tock.translator.UserInterfaceType.textChat
 import fr.vsct.tock.translator.UserInterfaceType.voiceAssistant
+import io.mockk.every
+import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import org.junit.Test
 import org.litote.kmongo.toId
 import java.util.Locale.FRENCH
@@ -43,7 +43,7 @@ import kotlin.test.assertEquals
 class I18nCsvCodecTest {
 
     companion object {
-        val i18nDAO: I18nDAO = mock()
+        val i18nDAO: I18nDAO = mockk(relaxed = true)
 
         init {
             tockInternalInjector = KodeinInjector()
@@ -64,7 +64,7 @@ Départs suivants;departuresarrivals;fr;voiceAssistant;departuresarrivals_dépar
 
     @Test
     fun importCsv_shouldKeepOldI18nLabels_ifNewLabelsAreNotValidated() {
-        whenever(i18nDAO.getLabelById(id.toId())).thenReturn(
+        every { i18nDAO.getLabelById(id.toId()) } answers {
             I18nLabel(
                 id.toId(),
                 defaultNamespace,
@@ -84,17 +84,19 @@ Départs suivants;departuresarrivals;fr;voiceAssistant;departuresarrivals_dépar
                     )
                 )
             )
-        )
+        }
 
         I18nCsvCodec.importCsv("app", export)
 
-        argumentCaptor<I18nLabel>().apply {
-            verify(i18nDAO).save(capture())
-
-            assertEquals(2, firstValue.i18n.size)
-            assertEquals("ok", firstValue.i18n.first { it.interfaceType == textChat }.label)
-            assertEquals("Départs suivants", firstValue.i18n.first { it.interfaceType == voiceAssistant }.label)
+        val slot = slot<I18nLabel>()
+        verify {
+            i18nDAO.save(capture(slot))
         }
+
+        assertEquals(2, slot.captured.i18n.size)
+        assertEquals("ok", slot.captured.i18n.first { it.interfaceType == textChat }.label)
+        assertEquals("Départs suivants", slot.captured.i18n.first { it.interfaceType == voiceAssistant }.label)
+
     }
 
 
