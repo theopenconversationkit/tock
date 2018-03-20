@@ -39,11 +39,6 @@
             <scope>compile</scope>
         </dependency>
         <dependency>
-            <groupId>com.nhaarman</groupId>
-            <artifactId>mockito-kotlin</artifactId>
-            <scope>compile</scope>
-        </dependency>
-        <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-shared</artifactId>
             <type>test-jar</type>
@@ -54,6 +49,11 @@
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
             <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk</artifactId>
+            <scope>compile</scope>
         </dependency>
     </dependencies>
 

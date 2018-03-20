@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.translator
 
-import com.github.salomonbrys.kodein.instance
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.UncheckedExecutionException
@@ -24,6 +23,7 @@ import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.longProperty
+import fr.vsct.tock.shared.provide
 import fr.vsct.tock.translator.UserInterfaceType.textAndVoiceAssistant
 import fr.vsct.tock.translator.UserInterfaceType.textChat
 import fr.vsct.tock.translator.UserInterfaceType.voiceAssistant
@@ -55,8 +55,8 @@ object Translator {
     private val keyLabelRegex = "[^\\p{L}_]+".toRegex()
     private val defaultInterface: UserInterfaceType = textChat
 
-    private val i18nDAO: I18nDAO by injector.instance()
-    private val translator: TranslatorEngine by injector.instance()
+    private val i18nDAO: I18nDAO get() = injector.provide()
+    private val translator: TranslatorEngine get() = injector.provide()
 
     private val cache: Cache<String, I18nLabel> = CacheBuilder.newBuilder()
         .expireAfterWrite(longProperty("tock_i18n_cache_write_timeout_in_seconds", 10), TimeUnit.SECONDS)

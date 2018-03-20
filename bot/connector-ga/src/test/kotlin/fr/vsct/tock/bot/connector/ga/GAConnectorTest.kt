@@ -17,16 +17,14 @@
 package fr.vsct.tock.bot.connector.ga
 
 import com.google.common.io.Resources
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.doAnswer
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.resource
+import io.mockk.every
+import io.mockk.mockk
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext
 import org.junit.Before
@@ -41,22 +39,28 @@ class GAConnectorTest {
 
     val connector = GAConnector("", "", emptySet())
     val userPreferences: UserPreferences = UserPreferences()
-    val controller: ConnectorController = mock {
-        on { connector }.thenReturn(connector)
-        on { handle(any(), any()) } doAnswer {
-            userPreferences.fillWith(connector.loadProfile((it.arguments[1] as ConnectorData).callback, PlayerId("a", PlayerType.user))!!)
-        }
-    }
-    val context: RoutingContext = mock()
-    val response: HttpServerResponse = mock()
+    val controller: ConnectorController = mockk(relaxed = true)
+    val context: RoutingContext = mockk(relaxed = true)
+    val response: HttpServerResponse = mockk(relaxed = true)
 
     @Before
     fun before() {
-        whenever(context.response()).thenReturn(response)
+        every { context.response() } returns response
     }
 
     @Test
     fun handleRequest_shouldHandleWell_NamePermissions() {
+
+        every { controller.connector } returns connector
+        every { controller.handle(any(), any()) } answers {
+            userPreferences.fillWith(
+                connector.loadProfile(
+                    (secondArg() as ConnectorData).callback,
+                    PlayerId("a", PlayerType.user)
+                )!!
+            )
+        }
+
         connector.handleRequest(controller, context, Resources.toString(resource("/request-with-permission.json"), Charsets.UTF_8))
 
         assertEquals("Pierre", userPreferences.firstName)

@@ -16,9 +16,6 @@
 
 package fr.vsct.tock.nlp.opennlp
 
-import com.nhaarman.mockito_kotlin.eq
-import com.nhaarman.mockito_kotlin.mock
-import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityType
@@ -28,6 +25,8 @@ import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.model.EntityCallContextForIntent
 import fr.vsct.tock.nlp.model.service.engine.EntityModelHolder
 import fr.vsct.tock.shared.defaultLocale
+import io.mockk.every
+import io.mockk.mockk
 import opennlp.tools.namefind.NameFinderME
 import opennlp.tools.util.Span
 import org.junit.Test
@@ -50,8 +49,8 @@ class OpenNlpEntityClassifierTest {
                 ZonedDateTime.now())
         val text = "a b"
         val tokens = arrayOf("a", "b")
-        val model: NameFinderME = mock()
-        whenever(model.find(eq(tokens))).thenReturn(arrayOf(Span(0, 1, "test", 0.8), Span(1, 2, "test", 0.6)))
+        val model: NameFinderME = mockk()
+        every { model.find(eq(tokens)) } answers  { arrayOf(Span(0, 1, "test", 0.8), Span(1, 2, "test", 0.6)) }
 
         val classifier = OpenNlpEntityClassifier(EntityModelHolder(model))
 
@@ -72,8 +71,8 @@ class OpenNlpEntityClassifierTest {
                 ZonedDateTime.now())
         val text = "a a b"
         val tokens = arrayOf("a", "a", "b")
-        val model: NameFinderME = mock()
-        whenever(model.find(eq(tokens))).thenReturn(arrayOf(Span(0, 2, "test", 0.8), Span(2, 3, "test", 0.6)))
+        val model: NameFinderME = mockk()
+        every { model.find(eq(tokens))} answers { arrayOf(Span(0, 2, "test", 0.8), Span(2, 3, "test", 0.6)) }
 
         val classifier = OpenNlpEntityClassifier(EntityModelHolder(model))
 
@@ -94,8 +93,8 @@ class OpenNlpEntityClassifierTest {
                 ZonedDateTime.now())
         val text = "a toto b"
         val tokens = arrayOf("a", "toto", "b")
-        val model: NameFinderME = mock()
-        whenever(model.find(eq(tokens))).thenReturn(arrayOf(Span(0, 1, "test", 0.8), Span(2, 3, "test", 0.6)))
+        val model: NameFinderME = mockk()
+        every { model.find(eq(tokens)) } answers { arrayOf(Span(0, 1, "test", 0.8), Span(2, 3, "test", 0.6)) }
 
         val classifier = OpenNlpEntityClassifier(EntityModelHolder(model))
 

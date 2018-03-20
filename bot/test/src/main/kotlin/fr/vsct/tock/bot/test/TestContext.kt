@@ -20,7 +20,6 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import com.nhaarman.mockito_kotlin.mock
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
@@ -39,6 +38,7 @@ import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.translator.I18nDAO
+import io.mockk.mockk
 import testModules
 import testTranslatorModule
 import java.util.Locale
@@ -48,7 +48,7 @@ import java.util.Locale
  */
 open class TestContext {
 
-    inline fun <reified T : Any> newMock() = mock<T>()
+    inline fun <reified T : Any> newMock() = mockk<T>()
 
     lateinit var botBusMockContext: BotBusMockContext
 

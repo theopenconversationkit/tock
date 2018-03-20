@@ -16,8 +16,6 @@
 
 package fr.vsct.tock.nlp.front.service
 
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
 import fr.vsct.tock.nlp.front.shared.codec.DumpType
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
@@ -26,6 +24,7 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
 import fr.vsct.tock.shared.defaultLocale
+import io.mockk.every
 import org.junit.Before
 import org.junit.Test
 import org.litote.kmongo.toId
@@ -40,7 +39,7 @@ class ApplicationCodecServiceTest : AbstractTest() {
 
     @Before
     fun before() {
-        whenever(context.config.getApplicationByNamespaceAndName(any(), any())).thenReturn(app)
+        every { context.config.getApplicationByNamespaceAndName(any(), any()) } returns app
     }
 
     @Test
@@ -69,9 +68,9 @@ class ApplicationCodecServiceTest : AbstractTest() {
                 )
         )
 
-        whenever(context.config.getApplicationById(appId)).thenReturn(app)
-        whenever(context.config.getIntentsByApplicationId(appId)).thenReturn(emptyList())
-        whenever(context.config.search(any())).thenReturn(SentencesQueryResult(1, sentences))
+        every { context.config.getApplicationById(appId) } returns app
+        every { context.config.getIntentsByApplicationId(appId) } returns emptyList()
+        every { context.config.search(any()) } returns SentencesQueryResult(1, sentences)
 
         val dump = ApplicationCodecService.exportSentences(appId, null, null, DumpType.full)
 

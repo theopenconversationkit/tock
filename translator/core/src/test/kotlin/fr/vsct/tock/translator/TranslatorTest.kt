@@ -16,13 +16,11 @@
 
 package fr.vsct.tock.translator
 
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.translator.UserInterfaceType.textChat
-import org.junit.After
-import org.junit.Before
+import io.mockk.every
+import io.mockk.verify
 import org.junit.Test
 import org.litote.kmongo.toId
 import kotlin.test.assertEquals
@@ -31,16 +29,6 @@ import kotlin.test.assertEquals
  *
  */
 class TranslatorTest : AbstractTest() {
-
-    @Before
-    fun before() {
-        Translator.enabled = true
-    }
-
-    @After
-    fun after() {
-        Translator.enabled = false
-    }
 
     @Test
     fun formatMessage_shouldHandleWell_SpecialCharInChoiceFormat() {
@@ -66,22 +54,21 @@ class TranslatorTest : AbstractTest() {
         val toTranslate = "aaa"
         val target = "bbb"
         val id = "a"
-        whenever(i18nDAO.getLabelById(id.toId())).thenReturn(
-            I18nLabel(
-                id.toId(),
-                defaultNamespace,
-                category,
-                LinkedHashSet(
-                    listOf(
-                        I18nLocalizedLabel(
-                            defaultLocale,
-                            textChat,
-                            target
+        every { i18nDAO.getLabelById(id.toId()) } returns
+                I18nLabel(
+                    id.toId(),
+                    defaultNamespace,
+                    category,
+                    LinkedHashSet(
+                        listOf(
+                            I18nLocalizedLabel(
+                                defaultLocale,
+                                textChat,
+                                target
+                            )
                         )
                     )
                 )
-            )
-        )
 
         val key = I18nLabelKey(
             id,
@@ -111,22 +98,21 @@ class TranslatorTest : AbstractTest() {
         val toTranslate = "aaa"
         val target = "bbb"
         val id = "not_yet_cached_id"
-        whenever(i18nDAO.getLabelById(id.toId())).thenReturn(
-            I18nLabel(
-                id.toId(),
-                defaultNamespace,
-                category,
-                LinkedHashSet(
-                    listOf(
-                        I18nLocalizedLabel(
-                            defaultLocale,
-                            textChat,
-                            target
+        every { i18nDAO.getLabelById(id.toId()) } returns
+                I18nLabel(
+                    id.toId(),
+                    defaultNamespace,
+                    category,
+                    LinkedHashSet(
+                        listOf(
+                            I18nLocalizedLabel(
+                                defaultLocale,
+                                textChat,
+                                target
+                            )
                         )
                     )
                 )
-            )
-        )
 
 
         val key = I18nLabelKey(
@@ -141,7 +127,7 @@ class TranslatorTest : AbstractTest() {
 
         assertEquals(target, Translator.translate(key, defaultLocale, textChat).toString())
 
-        verify(i18nDAO).getLabelById(id.toId())
+        verify { i18nDAO.getLabelById(id.toId()) }
     }
 
     @Test
@@ -157,9 +143,10 @@ class TranslatorTest : AbstractTest() {
             toTranslate
         )
 
+        every { i18nDAO.getLabelById(id.toId()) }.returns(null)
 
         assertEquals(toTranslate, Translator.translate(key, defaultLocale, textChat).toString())
 
-        verify(i18nDAO).getLabelById(id.toId())
+        verify { i18nDAO.getLabelById(id.toId()) }
     }
 }

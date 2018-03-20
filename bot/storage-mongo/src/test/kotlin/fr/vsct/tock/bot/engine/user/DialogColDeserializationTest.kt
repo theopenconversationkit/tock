@@ -17,7 +17,6 @@
 package fr.vsct.tock.bot.engine.user
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.nhaarman.mockito_kotlin.mock
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
@@ -31,6 +30,7 @@ import fr.vsct.tock.nlp.api.client.model.EntityType
 import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import fr.vsct.tock.shared.jackson.mapper
+import io.mockk.mockk
 import org.junit.Test
 import java.time.LocalDateTime
 import java.time.ZoneId
@@ -87,7 +87,7 @@ class DialogColDeserializationTest : AbstractTest() {
         val playerId = PlayerId("a", PlayerType.user)
         val s = mapper.writeValueAsString(DialogCol(dialog, UserTimelineCol(UserTimeline(playerId), null)))
         val newValue = mapper.readValue<DialogCol>(s)
-        assertEquals(dialog, newValue.toDialog { mock() })
+        assertEquals(dialog, newValue.toDialog { mockk() })
     }
 
 

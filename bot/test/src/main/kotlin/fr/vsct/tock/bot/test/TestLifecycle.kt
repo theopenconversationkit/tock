@@ -17,9 +17,8 @@
 package fr.vsct.tock.bot.test
 
 import com.github.salomonbrys.kodein.KodeinInjector
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.whenever
 import fr.vsct.tock.shared.tockInternalInjector
+import io.mockk.every
 
 /**
  *
@@ -42,7 +41,7 @@ open class TestLifecycle<out T: TestContext>(val testContext: T) {
 
     open fun configureTestIoc() {
         with(testContext) {
-            whenever(mockedUserTimelineDAO.getSnapshots(any())).thenReturn(botBusMockContext.snapshots)
+            every { mockedUserTimelineDAO.getSnapshots(any()) } returns botBusMockContext.snapshots
         }
     }
 }

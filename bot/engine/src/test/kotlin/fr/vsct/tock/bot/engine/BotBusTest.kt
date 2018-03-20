@@ -16,14 +16,15 @@
 
 package fr.vsct.tock.bot.engine
 
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.argForWhich
-import com.nhaarman.mockito_kotlin.verify
-import com.nhaarman.mockito_kotlin.whenever
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionPriority
+import fr.vsct.tock.bot.engine.action.ActionPriority.urgent
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.message.Choice
+import fr.vsct.tock.bot.engine.user.UserPreferences
+import io.mockk.every
+import io.mockk.verify
 import org.junit.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -41,7 +42,11 @@ class BotBusTest : BotEngineTest() {
     @Test
     fun withSignificance_hasToUpdateActionSignificance() {
         bus.withPriority(ActionPriority.urgent).end()
-        verify(connector).send(argForWhich { this is Action && metadata.priority == ActionPriority.urgent }, any(), any())
+
+        every { connector.loadProfile(any(), any()) } returns UserPreferences()
+        every { connector.connectorType } returns ConnectorType("test")
+
+        verify { connector.send(match { param -> param is Action && param.metadata.priority == urgent }, any(), any()) }
     }
 
     @Test
@@ -60,7 +65,7 @@ class BotBusTest : BotEngineTest() {
 
     @Test
     fun reloadProfile_shouldRemoveFirstNameAndLastNamePreferencesValues_whenConnectorLoadProfileReturnsNull() {
-        whenever(connector.loadProfile(any(), any())).thenReturn(null)
+        every { connector.loadProfile(any(), any()) } returns null
         bus.userPreferences.firstName = "firstName"
         bus.userPreferences.lastName = "lastName"
         bus.reloadProfile()

@@ -19,9 +19,6 @@ package fr.vsct.tock.duckling.client
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
-import com.nhaarman.mockito_kotlin.doReturn
-import com.nhaarman.mockito_kotlin.eq
-import com.nhaarman.mockito_kotlin.mock
 import fr.vsct.tock.duckling.client.DucklingDimensions.timeDucklingDimension
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.NlpEngineType
@@ -31,6 +28,8 @@ import fr.vsct.tock.nlp.entity.date.DateEntityValue
 import fr.vsct.tock.nlp.entity.date.DateIntervalEntityValue
 import fr.vsct.tock.nlp.model.EntityCallContextForEntity
 import fr.vsct.tock.shared.injector
+import io.mockk.every
+import io.mockk.mockk
 import org.junit.Test
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
@@ -99,42 +98,28 @@ internal class DatesMergeTest {
                         DateEntityGrain.day
                 )
 
-        val parser: Parser = mock {
-            on {
-                parse(
-                        eq(Locale.FRENCH.language),
-                        eq(timeDucklingDimension),
-                        eq((tomorrow.value as DateEntityValue).date),
-                        eq("2 jours Après")
-                )
-            } doReturn (listOf(
-                    ValueWithRange(0, 0, inThreeDays, timeDucklingDimension)))
-
-            on {
-                parse(
-                        eq(Locale.FRENCH.language),
-                        eq(timeDucklingDimension),
-                        eq(referenceTime),
-                        eq("en soirée demain")
-                )
-            } doReturn (listOf(
-                    ValueWithRange(0, 0, tomorrowInTheEvening, timeDucklingDimension)))
-
-
-            on {
-                parse(
-                        eq(Locale.FRENCH.language),
-                        eq(timeDucklingDimension),
-                        eq((tomorrow.value as DateEntityValue).date.truncatedTo(ChronoUnit.DAYS)),
-                        eq("en soirée")
-                )
-            } doReturn (listOf(
-                    ValueWithRange(0, 0, tomorrowInTheEvening, timeDucklingDimension)))
-
-        }
-
+        val parser: Parser = mockk(relaxed = true)
 
         init {
+
+            every { parser.parse(
+                eq(Locale.FRENCH.language),
+                eq(timeDucklingDimension),
+                eq((tomorrow.value as DateEntityValue).date),
+                eq("2 jours Après")) } answers { listOf(ValueWithRange(0, 0, inThreeDays, timeDucklingDimension)) }
+
+            every { parser.parse(
+                eq(Locale.FRENCH.language),
+                eq(timeDucklingDimension),
+                eq(referenceTime),
+                eq("en soirée demain")) } answers { listOf(ValueWithRange(0, 0, tomorrowInTheEvening, timeDucklingDimension)) }
+
+            every { parser.parse(
+                eq(Locale.FRENCH.language),
+                eq(timeDucklingDimension),
+                eq((tomorrow.value as DateEntityValue).date.truncatedTo(ChronoUnit.DAYS)),
+                eq("en soirée")) } answers { listOf(ValueWithRange(0, 0, tomorrowInTheEvening, timeDucklingDimension)) }
+
             injector.inject(Kodein {
                 bind<Parser>() with provider { parser }
             })

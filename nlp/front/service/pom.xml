@@ -41,6 +41,11 @@
             <groupId>com.kcthota</groupId>
             <artifactId>emoji4j</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk</artifactId>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>

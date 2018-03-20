@@ -16,10 +16,6 @@
 
 package fr.vsct.tock.bot.engine.nlp
 
-import com.nhaarman.mockito_kotlin.any
-import com.nhaarman.mockito_kotlin.argumentCaptor
-import com.nhaarman.mockito_kotlin.never
-import com.nhaarman.mockito_kotlin.verify
 import fr.vsct.tock.bot.engine.BotEngineTest
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -31,7 +27,11 @@ import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.entity.Value
+import io.mockk.every
+import io.mockk.slot
+import io.mockk.verify
 import org.junit.Test
+import retrofit2.Response
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -44,41 +44,55 @@ class NlpTest : BotEngineTest() {
     @Test
     fun parseSentence_shouldCallNlpClientParse_whenExpectedIntentIsNullInDialogState() {
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
-        verify(nlpClient).parse(any())
-        verify(nlpClient, never()).parseIntentEntities(any())
+        verify { nlpClient.parse(any()) }
+        verify(exactly = 0) { nlpClient.parseIntentEntities(any()) }
     }
 
     @Test
     fun parseSentence_shouldCallNlpClientParseIntentEntities_whenIntentsQualifiersIsNotNullInDialogState() {
         dialog.state.nextActionState = NextUserActionState(listOf(NlpIntentQualifier("test2")))
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
-        verify(nlpClient).parseIntentEntities(any())
-        verify(nlpClient, never()).parse(any())
+        verify { nlpClient.parseIntentEntities(any()) }
+        verify(exactly = 0) { nlpClient.parse(any()) }
     }
 
     @Test
     fun parseSentence_shouldNotRegisterQuery_whenBotIsDisabled() {
+
         userTimeline.userState.botDisabled = true
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
-        argumentCaptor<NlpQuery>().apply {
-            verify(nlpClient).parse(capture())
-            assertFalse(firstValue.context.test)
-            assertFalse(firstValue.context.registerQuery)
+
+        val slot = slot<NlpQuery>()
+        verify {
+            nlpClient.parse(capture(slot))
         }
+
+        assertFalse(slot.captured.context.test)
+        assertFalse(slot.captured.context.registerQuery)
+
     }
 
     @Test
     fun parseSentence_shouldRegisterQuery_whenBotIsNotDisabledAndItIsNotATestContext() {
+
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
-        argumentCaptor<NlpQuery>().apply {
-            verify(nlpClient).parse(capture())
-            assertFalse(firstValue.context.test)
-            assertTrue(firstValue.context.registerQuery)
+
+        val slot = slot<NlpQuery>()
+        verify {
+            nlpClient.parse(capture(slot))
         }
+
+        assertFalse(slot.captured.context.test)
+        assertTrue(slot.captured.context.registerQuery)
+
     }
 
     @Test
     fun parseSentence_shouldUseNlpListenersEntityEvaluation_WhenAvailable() {
+
+        every { nlpClient.parse(any()) } returns Response.success(nlpResult)
+        every { nlpClient.parseIntentEntities(any()) } returns Response.success(nlpResult)
+
         val customValue = ContextValue(entityB, object : Value {}, "b")
         val nlpListener = object : NlpListener {
             override fun evaluateEntities(userTimeline: UserTimeline, dialog: Dialog, nlpResult: NlpResult): List<ContextValue> {
