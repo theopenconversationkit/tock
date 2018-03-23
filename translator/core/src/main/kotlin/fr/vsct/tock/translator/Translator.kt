@@ -174,6 +174,8 @@ object Translator {
             }
         }
 
+        logger.debug { "find label $label for $key, $locale, $userInterfaceType and $connectorId" }
+
         return if (label is TextAndVoiceTranslatedString) {
             label.copy(
                 text = formatMessage(label.text.toString(), locale, textChat, connectorId, key.args),
