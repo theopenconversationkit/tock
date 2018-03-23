@@ -280,7 +280,16 @@ object ParserService : Parser {
 
             val referenceDate = context.referenceDate.withZoneSameInstant(context.referenceTimezone)
 
-            val callContext = CallContext(toApplication(application), language, application.nlpEngineType, EntityEvaluationContext(referenceDate))
+            val callContext = CallContext(
+                toApplication(application),
+                language,
+                application.nlpEngineType,
+                EntityEvaluationContext(
+                    referenceDate,
+                    referenceDateByEntityMap = getReferenceDateByEntityMap(
+                        config.getIntentsByApplicationId(application._id),
+                        referenceDate)
+            ))
 
             val result = core.evaluateEntities(
                     callContext,
@@ -301,7 +310,15 @@ object ParserService : Parser {
 
             val referenceDate = context.referenceDate.withZoneSameInstant(context.referenceTimezone)
 
-            val callContext = CallContext(toApplication(application), language, application.nlpEngineType, EntityEvaluationContext(referenceDate))
+            val callContext = CallContext(
+                toApplication(application),
+                language,
+                application.nlpEngineType,
+                EntityEvaluationContext(
+                    referenceDate,
+                    referenceDateByEntityMap = getReferenceDateByEntityMap(
+                        config.getIntentsByApplicationId(application._id),
+                        referenceDate)))
 
             val result = core.mergeValues(callContext, entity, values.map { it.toValueDescriptor() })
 
