@@ -20,6 +20,7 @@ import com.amazon.speech.slu.Slot
 import com.amazon.speech.speechlet.IntentRequest
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
@@ -35,7 +36,7 @@ import java.util.Locale
 open class AlexaTockMapper(val applicationId: String) {
 
     /**
-     * Return a Tock intent from an Alexa intent.
+     * Returns a Tock intent from an Alexa intent.
      */
     open fun alexaIntentToTockIntent(request: IntentRequest, botDefinition: BotDefinition): String {
         val intentName = request.intent.name
@@ -47,7 +48,7 @@ open class AlexaTockMapper(val applicationId: String) {
     }
 
     /**
-     * Return a Tock entity from an Alexa slot.
+     * Returns a Tock entity from an Alexa slot.
      */
     open fun alexaEntityToTockEntity(
         request: IntentRequest,
@@ -61,7 +62,7 @@ open class AlexaTockMapper(val applicationId: String) {
     }
 
     /**
-     * Return a Tock [EntityValue] from an Alexa slot.
+     * Returns a Tock [EntityValue] from an Alexa slot.
      */
     open fun alexaEntityToTockEntityValue(
         request: IntentRequest,
@@ -79,12 +80,12 @@ open class AlexaTockMapper(val applicationId: String) {
     }
 
     /**
-     * Get slots from the intent request.
+     * Gets slots from the intent request.
      */
     open fun getSlots(request: IntentRequest): Map<String, Slot>? = request.intent?.slots
 
     /**
-     * Return an [Event] from an Alexa [IntentRequest].
+     * Returns an [Event] from an Alexa [IntentRequest].
      */
     open fun toEvent(userId: String, request: IntentRequest, botDefinition: BotDefinition): Event {
         val playerId = PlayerId(userId, PlayerType.user)
@@ -103,21 +104,25 @@ open class AlexaTockMapper(val applicationId: String) {
                 value
             }
 
+        val precomputedNlp = NlpResult(
+            intent,
+            namespace,
+            Locale(request.locale.language),
+            entityValues,
+            1.0,
+            1.0,
+            slots.joinToString(" ") { it.value!! }
+        )
         return SendSentence(
             playerId,
             applicationId,
             botId,
             null,
-            precomputedNlp =
-            NlpResult(
-                intent,
-                namespace,
-                Locale(request.locale.language),
-                entityValues,
-                1.0,
-                1.0,
-                slots.joinToString(" ") { it.value!! }
-            )
+            state = EventState(
+                targetConnectorType = alexaConnectorType,
+                userInterface = alexaConnectorType.userInterfaceType
+            ),
+            precomputedNlp = precomputedNlp
         )
     }
 
