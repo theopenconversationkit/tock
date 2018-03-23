@@ -44,6 +44,13 @@ fun BotBus.withAlexa(messageProvider: () -> AlexaMessage): BotBus {
 fun alexaEndConversation(): AlexaMessage = AlexaMessage(true)
 
 /**
+ * Set a reprompt.
+ */
+fun I18nTranslator.alexaReprompt(reprompt: CharSequence): AlexaMessage =
+    AlexaMessage(false, reprompt = translate(reprompt).toString())
+
+
+/**
  * Add the specified card.
  */
 fun I18nTranslator.alexaStandardCard(

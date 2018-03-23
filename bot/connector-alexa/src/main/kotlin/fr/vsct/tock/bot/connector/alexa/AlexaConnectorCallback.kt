@@ -84,8 +84,20 @@ internal data class AlexaConnectorCallback(
                 .mapNotNull { it.message(alexaConnectorType) as? AlexaMessage? }
                 .firstOrNull { it.card != null }
                 ?.card
-        val speech = if (answer.isSSML()) SsmlOutputSpeech().apply { ssml = answer }
-        else PlainTextOutputSpeech().apply { text = answer }
+        val speech =
+            if (answer.isSSML()) SsmlOutputSpeech().apply { ssml = answer }
+            else PlainTextOutputSpeech().apply { text = answer }
+
+        val reprompt = actions.map { it.action }
+            .filterIsInstance<SendSentence>()
+            .mapNotNull { it.message(alexaConnectorType) as? AlexaMessage? }
+            .firstOrNull { it.reprompt != null }
+            ?.reprompt
+            ?.let {
+                if (it.isSSML()) SsmlOutputSpeech().apply { ssml = it }
+                else PlainTextOutputSpeech().apply { text = it }
+            }
+                ?: speech
         return if (end) {
             if (card != null) {
                 SpeechletResponse.newTellResponse(speech, card)
@@ -96,13 +108,13 @@ internal data class AlexaConnectorCallback(
             if (card != null) {
                 SpeechletResponse.newAskResponse(
                     speech,
-                    Reprompt().apply { outputSpeech = speech },
+                    Reprompt().apply { outputSpeech = reprompt },
                     card
                 )
             } else {
                 SpeechletResponse.newAskResponse(
                     speech,
-                    Reprompt().apply { outputSpeech = speech }
+                    Reprompt().apply { outputSpeech = reprompt }
                 )
             }
         }

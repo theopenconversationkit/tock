@@ -78,7 +78,8 @@ object AlexaCodecService : AlexaCodec {
     private fun exportAlexaTypes(
         intents: List<IntentDefinition>,
         sentences: List<ClassifiedSentence>,
-        filter: AlexaFilter?
+        filter: AlexaFilter?,
+        transformer: AlexaModelTransformer
     ): List<AlexaType> {
 
         return intents
@@ -90,7 +91,7 @@ object AlexaCodecService : AlexaCodec {
                 AlexaType(
                     filter?.findSlot(intent, entity)?.targetType
                             ?: entity.entityTypeName.name().replace("-", "_"),
-                    exportAlexaTypeDefinition(intent, entity, sentences)
+                    exportAlexaTypeDefinition(intent, entity, sentences, transformer)
                         .distinctBy { type -> type.name.value.toLowerCase().trim() }
                 )
             }
@@ -125,7 +126,7 @@ object AlexaCodecService : AlexaCodec {
             AlexaIntentsSchema(
                 AlexaLanguageModel(
                     invocationName,
-                    exportAlexaTypes(intents, sentences, filter),
+                    exportAlexaTypes(intents, sentences, filter, transformer),
                     exportAlexaIntents(intents, sentences, filter)
                 )
             )
@@ -142,12 +143,12 @@ object AlexaCodecService : AlexaCodec {
 
         val startByLetter = "^[a-z\\{].*".toRegex()
         val nonChar = "[^a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿ\\{\\}'_]".toRegex()
-        val spaceRegex = " +".toRegex()
+        val spaceRegex = "\\s{2,}".toRegex()
         return sentences
             .filter { it.classification.intentId == intent._id }
             .filter { filter == null || it.classification.entities.all { filteredRoles!!.contains(it.role) } }
             .map { sentence ->
-                var t = sentence.text
+                var t = sentence.text.toLowerCase()
                 sentence
                     .classification
                     .entities
@@ -158,7 +159,7 @@ object AlexaCodecService : AlexaCodec {
                 t
             }
             .map { it.toLowerCase() }
-            .filter { !it.contains("*") && !it.contains("google") }
+            .filter { !it.contains("*")}
             .map { sentence -> sentence.replace("'{", " {") }
             .map { sentence -> EmojiUtils.removeAllEmojis(sentence) }
             .map { sentence -> sentence.replace("☺", " ") }
@@ -182,31 +183,32 @@ object AlexaCodecService : AlexaCodec {
     private fun exportAlexaTypeDefinition(
         intent: IntentDefinition,
         entity: EntityDefinition,
-        sentences: List<ClassifiedSentence>
+        sentences: List<ClassifiedSentence>,
+        transformer: AlexaModelTransformer
     ): List<AlexaTypeDefinition> {
         val nonChar = "[^0-9a-záàâäãåçéèêëíìîïñóòôöõúùûüýÿ']".toRegex()
-        val spaceRegex = " +".toRegex()
+        val spaceRegex = "\\s{2,}".toRegex()
 
-        return sentences
-            .filter { it.classification.intentId == intent._id }
-            .flatMap { sentence ->
-                sentence
-                    .classification
-                    .entities
-                    .filter { it.type == entity.entityTypeName }
-                    .distinct()
-                    .map {
-                        sentence.text.substring(it.start, it.end).replace("\n", "")
-                    }
-                    .map { it.toLowerCase() }
-                    .map { it.replace(nonChar, " ") }
-                    .map { it.trim() }
-                    .map { it.replace(spaceRegex, " ") }
-            }
-            .distinct()
+        return transformer.filterCustomSlotSamples(
+            sentences
+                .filter { it.classification.intentId == intent._id }
+                .flatMap { sentence ->
+                    sentence
+                        .classification
+                        .entities
+                        .filter { it.type == entity.entityTypeName }
+                        .distinct()
+                        .map {
+                            sentence.text.substring(it.start, it.end).replace("\n", "")
+                        }
+                        .map { it.toLowerCase() }
+                        .map { it.replace(nonChar, " ") }
+                        .map { it.trim() }
+                        .map { it.replace(spaceRegex, " ") }
+                }
+        )
             .filter {
                 !it.contains("*")
-                        && !it.contains("google")
             }
             .map {
                 AlexaTypeDefinition(

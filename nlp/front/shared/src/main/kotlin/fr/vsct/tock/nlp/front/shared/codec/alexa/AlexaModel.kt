@@ -28,8 +28,21 @@ data class AlexaFilter(val intents: List<AlexaIntentFilter> = emptyList()) {
         intents.firstOrNull { it.intent == intent.name }?.slots?.firstOrNull { it.name == entity.role }
 }
 
+/**
+ * Manage final transformation of [AlexaModel].
+ */
 interface AlexaModelTransformer {
+
+    /**
+     * Last change to transform Alexa model.
+     */
     fun transform(schema: AlexaIntentsSchema): AlexaIntentsSchema
+
+    /**
+     * Filter samples.
+     */
+    fun filterCustomSlotSamples(samples:List<String>) = samples.distinct()
+
 }
 
 data class AlexaIntentFilter(

@@ -31,7 +31,11 @@ data class AlexaMessage(
     /**
      * Is there a card to send?
      */
-    val card: Card? = null
+    val card: Card? = null,
+    /**
+     * Is there a reprompt?
+     */
+    val reprompt: String? = null
 ) : ConnectorMessage {
 
     override val connectorType: ConnectorType = alexaConnectorType
