@@ -67,9 +67,4 @@ class GAConnectorTest {
         assertEquals("Totor", userPreferences.lastName)
     }
 
-    @Test
-    fun testHasPunctuation_shouldReturnTrue_whenStringEndWithDot() {
-        assertTrue("hkh.".endWithPunctuation())
-    }
-
 }

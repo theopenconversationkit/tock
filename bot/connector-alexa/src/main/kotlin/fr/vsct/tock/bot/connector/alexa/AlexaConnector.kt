@@ -26,9 +26,16 @@ import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.UserPreferences
+import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.shared.error
 import io.vertx.core.buffer.Buffer
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
+import org.apache.commons.lang3.LocaleUtils
+import java.lang.Exception
+import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
 
 /**

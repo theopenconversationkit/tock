@@ -46,34 +46,7 @@ var tockAppDefaultNamespace: String = property("tock_default_namespace", DEFAULT
  */
 val defaultNamespace: String get() = tockAppDefaultNamespace
 
-/**
- * Extract a namespace from a qualified name (ie namespace:name).
- */
-fun String.namespace(): String = namespaceAndName().first
 
-/**
- * Extract a name from a qualified name (ie namespace:name).
- */
-fun String.name(): String = namespaceAndName().second
-
-/**
- * Extract namespace and name from a qualified name (ie namespace:name).
- */
-fun String.namespaceAndName(): Pair<String, String> = this.split(":").let { it[0] to it[1] }
-
-/**
- * Add the specified namespace to a name if the name does not contains yet a namespace,
- * and return the result.
- */
-fun String.withNamespace(namespace: String): String = if (contains(":")) this else "$namespace:$this"
-
-/**
- * Remove the specified namespace from a qualified name if this qualified name contains the namespace,
- * and return the result.
- */
-fun String.withoutNamespace(namespace: String? = null): String =
-    if (contains(":")) namespace().let { if (namespace == null || it == namespace) name() else this }
-    else this
 
 /**
  * Return a map with only not null values.

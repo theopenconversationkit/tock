@@ -34,6 +34,7 @@ import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.shared.concat
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.translator.isSSML
@@ -74,7 +75,7 @@ internal data class AlexaConnectorCallback(
     private fun buildResponse(): SpeechletResponse {
         val answer = actions.mapNotNull { it.action as? SendSentence }
             .mapNotNull { it.stringText }
-            .joinToString(" . ")
+            .reduce(::concat)
         val end = actions.map { it.action }.filterIsInstance<SendSentence>().any {
             (it.message(alexaConnectorType) as? AlexaMessage?)?.end ?: false
         }
