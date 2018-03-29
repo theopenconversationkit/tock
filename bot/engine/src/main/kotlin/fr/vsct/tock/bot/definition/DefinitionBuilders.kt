@@ -28,66 +28,68 @@ import kotlin.reflect.full.primaryConstructor
  * Create a new bot.
  */
 fun bot(
-        /**
-         * The (unique) bot identifier.
-         */
-        botId: String,
-        /**
-         * List of stories supported by the bot.
-         */
-        stories: List<StoryDefinition>,
-        /**
-         * The namespace of the app.
-         */
-        namespace: String = "app",
-        /**
-         * The NLP model name used - default is [botId].
-         */
-        nlpModelName: String = botId,
-        /**
-         * The story used when the bot does not know the answer.
-         */
-        unknownStory: StoryDefinition = defaultUnknownStory,
-        /**
-         * The story used to handle first user request, where no intent is defined.
-         * If null, first item of [stories] is used.
-         */
-        hello: IntentAware? = null,
-        /**
-         * The story used to handle exit intent
-         */
-        goodbye: IntentAware? = null,
-        /**
-         * The story used when there is not input from the user after an significant amount of time.
-         */
-        noInput: IntentAware? = null,
-        /**
-         * The intent used to *disable* the bot.
-         */
-        botDisabled: IntentAware? = null,
-        /**
-         * The intent used to *enable* the bot.
-         */
-        botEnabled: IntentAware? = null,
-        /**
-         * The intent used to specify user location.
-         */
-        userLocation: IntentAware? = null,
-        /**
-         * The intent use to handle attachment sent by the user.
-         */
-        handleAttachment: IntentAware? = null,
-        /**
-         * The [EventListener] of the bot.
-         */
-        eventListener: EventListener = EventListenerBase(),
-        /**
-         * To handle keywords.
-         */
-        keywordStory: StoryDefinition = defaultKeywordStory)
+    /**
+     * The (unique) bot identifier.
+     */
+    botId: String,
+    /**
+     * List of stories supported by the bot.
+     */
+    stories: List<StoryDefinition>,
+    /**
+     * The namespace of the app.
+     */
+    namespace: String = "app",
+    /**
+     * The NLP model name used - default is [botId].
+     */
+    nlpModelName: String = botId,
+    /**
+     * The story used when the bot does not know the answer.
+     */
+    unknownStory: StoryDefinition = defaultUnknownStory,
+    /**
+     * The story used to handle first user request, where no intent is defined.
+     * If null, first item of [stories] is used.
+     */
+    hello: IntentAware? = null,
+    /**
+     * The story used to handle exit intent
+     */
+    goodbye: IntentAware? = null,
+    /**
+     * The story used when there is not input from the user after an significant amount of time.
+     */
+    noInput: IntentAware? = null,
+    /**
+     * The intent used to *disable* the bot.
+     */
+    botDisabled: IntentAware? = null,
+    /**
+     * The intent used to *enable* the bot.
+     */
+    botEnabled: IntentAware? = null,
+    /**
+     * The intent used to specify user location.
+     */
+    userLocation: IntentAware? = null,
+    /**
+     * The intent use to handle attachment sent by the user.
+     */
+    handleAttachment: IntentAware? = null,
+    /**
+     * The [EventListener] of the bot.
+     */
+    eventListener: EventListener = EventListenerBase(),
+    /**
+     * To handle keywords.
+     */
+    keywordStory: StoryDefinition = defaultKeywordStory
+)
         : BotDefinitionBase {
 
-    fun findStory(intent: IntentAware?): StoryDefinition? = findStoryDefinition(stories, intent?.wrappedIntent()?.name, unknownStory, keywordStory)
+    fun findStory(intent: IntentAware?): StoryDefinition? =
+        findStoryDefinition(stories, intent?.wrappedIntent()?.name, unknownStory, keywordStory)
             .let {
                 if (it == unknownStory || it == keywordStory) {
                     null
@@ -98,20 +100,20 @@ fun bot(
 
 
     return BotDefinitionBase(
-            botId,
-            namespace,
-            stories,
-            nlpModelName,
-            unknownStory,
-            findStory(hello),
-            findStory(goodbye),
-            findStory(noInput),
-            findStory(botDisabled),
-            findStory(botEnabled),
-            findStory(userLocation),
-            findStory(handleAttachment),
-            eventListener,
-            keywordStory
+        botId,
+        namespace,
+        stories,
+        nlpModelName,
+        unknownStory,
+        findStory(hello),
+        findStory(goodbye),
+        findStory(noInput),
+        findStory(botDisabled),
+        findStory(botEnabled),
+        findStory(userLocation),
+        findStory(handleAttachment),
+        eventListener,
+        keywordStory
     )
 }
 
@@ -119,258 +121,301 @@ fun bot(
  * Create a new story.
  */
 fun story(
-        /**
-         * A simple handler for the story. Defines also implicitly the [StoryDefinition.mainIntent].
-         */
-        handler: SimpleStoryHandlerBase,
-        /**
-         * The optionals other [StoryDefinition.starterIntents].
-         */
-        otherStarterIntents: Set<IntentAware> = emptySet(),
-        /**
-         * The others [StoryDefinition.intents] - ie the "secondary" intents.
-         */
-        secondaryIntents: Set<IntentAware> = emptySet(),
-        /**
-         * The [StoryStep] of the story if any.
-         */
-        steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
-        /**
-         * Is this story unsupported for a [UserInterfaceType]?
-         */
-        unsupportedUserInterface: UserInterfaceType? = null)
+    /**
+     * A simple handler for the story. Defines also implicitly the [StoryDefinition.mainIntent].
+     */
+    handler: SimpleStoryHandlerBase,
+    /**
+     * The optionals other [StoryDefinition.starterIntents].
+     */
+    otherStarterIntents: Set<IntentAware> = emptySet(),
+    /**
+     * The others [StoryDefinition.intents] - ie the "secondary" intents.
+     */
+    secondaryIntents: Set<IntentAware> = emptySet(),
+    /**
+     * The [StoryStep] of the story if any.
+     */
+    steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
+    /**
+     * Is this story unsupported for a [UserInterfaceType]?
+     */
+    unsupportedUserInterface: UserInterfaceType? = null
+)
         : StoryDefinitionBase =
-        StoryDefinitionBase(
-                handler.wrappedIntent().name,
-                handler,
-                otherStarterIntents,
-                secondaryIntents,
-                steps,
-                unsupportedUserInterface
-        )
+    StoryDefinitionBase(
+        handler.wrappedIntent().name,
+        handler,
+        otherStarterIntents,
+        secondaryIntents,
+        steps,
+        unsupportedUserInterface
+    )
 
 /**
  * Create a new story.
  */
 fun story(
-        /**
-         * The [StoryDefinition.mainIntent] name.
-         */
-        intentName: String,
-        /**
-         * The optionals other [StoryDefinition.starterIntents].
-         */
-        otherStarterIntents: Set<IntentAware> = emptySet(),
-        /**
-         * The others [StoryDefinition.intents] - ie the "secondary" intents.
-         */
-        secondaryIntents: Set<IntentAware> = emptySet(),
-        /**
-         * The [StoryStep] of the story if any.
-         */
-        steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
-        /**
-         * Is this story unsupported for a [UserInterfaceType]?
-         */
-        unsupportedUserInterface: UserInterfaceType? = null,
-        /**
-         * The handler for the story.
-         */
-        handler: (BotBus).() -> Unit)
+    /**
+     * The [StoryDefinition.mainIntent] name.
+     */
+    intentName: String,
+    /**
+     * The optionals other [StoryDefinition.starterIntents].
+     */
+    otherStarterIntents: Set<IntentAware> = emptySet(),
+    /**
+     * The others [StoryDefinition.intents] - ie the "secondary" intents.
+     */
+    secondaryIntents: Set<IntentAware> = emptySet(),
+    /**
+     * The [StoryStep] of the story if any.
+     */
+    steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
+    /**
+     * Is this story unsupported for a [UserInterfaceType]?
+     */
+    unsupportedUserInterface: UserInterfaceType? = null,
+    /**
+     * The handler for the story.
+     */
+    handler: (BotBus).() -> Unit
+)
         : StoryDefinitionBase =
-        StoryDefinitionBase(
-                intentName,
-                object : SimpleStoryHandlerBase(intentName) {
-                    override fun action(bus: BotBus) = handler.invoke(bus)
-                },
-                otherStarterIntents,
-                secondaryIntents,
-                steps,
-                unsupportedUserInterface
-        )
+    StoryDefinitionBase(
+        intentName,
+        object : SimpleStoryHandlerBase(intentName) {
+            override fun action(bus: BotBus) = handler.invoke(bus)
+        },
+        otherStarterIntents,
+        secondaryIntents,
+        steps,
+        unsupportedUserInterface
+    )
 
 /**
  * Create a new story.
  */
 inline fun <reified T : StoryHandlerDefinition> story(
-        /**
-         * The handler for the story. Defines also implicitly the [StoryDefinition.mainIntent].
-         */
-        handler: StoryHandlerBase<T>,
-        /**
-         * The optionals other [StoryDefinition.starterIntents].
-         */
-        otherStarterIntents: Set<IntentAware> = emptySet(),
-        /**
-         * The others [StoryDefinition.intents] - ie the "secondary" intents.
-         */
-        secondaryIntents: Set<IntentAware> = emptySet(),
-        /**
-         * The [StoryStep] of the story if any.
-         */
-        steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
-        /**
-         * Is this story unsupported for a [UserInterfaceType]?
-         */
-        unsupportedUserInterface: UserInterfaceType? = null)
+    /**
+     * The handler for the story. Defines also implicitly the [StoryDefinition.mainIntent].
+     */
+    handler: StoryHandlerBase<T>,
+    /**
+     * The optionals other [StoryDefinition.starterIntents].
+     */
+    otherStarterIntents: Set<IntentAware> = emptySet(),
+    /**
+     * The others [StoryDefinition.intents] - ie the "secondary" intents.
+     */
+    secondaryIntents: Set<IntentAware> = emptySet(),
+    /**
+     * The [StoryStep] of the story if any.
+     */
+    steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
+    /**
+     * Is this story unsupported for a [UserInterfaceType]?
+     */
+    unsupportedUserInterface: UserInterfaceType? = null
+)
         : StoryDefinitionBase =
-        StoryDefinitionBase(
-                handler.wrappedIntent().name,
-                handler,
-                otherStarterIntents,
-                secondaryIntents,
-                steps,
-                unsupportedUserInterface
-        )
+    StoryDefinitionBase(
+        handler.wrappedIntent().name,
+        handler,
+        otherStarterIntents,
+        secondaryIntents,
+        steps,
+        unsupportedUserInterface
+    )
 
 /**
  * Create a new story.
  */
 inline fun <reified T : StoryHandlerDefinition> storyDef(
-        /**
-         * The [StoryDefinition.mainIntent] name.
-         */
-        intentName: String,
-        /**
-         * The optionals other [StoryDefinition.starterIntents].
-         */
-        otherStarterIntents: Set<IntentAware> = emptySet(),
-        /**
-         * The others [StoryDefinition.intents] - ie the "secondary" intents.
-         */
-        secondaryIntents: Set<IntentAware> = emptySet(),
-        /**
-         * The [StoryStep] of the story if any.
-         */
-        steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
-        /**
-         * Is this story unsupported for a [UserInterfaceType]?
-         */
-        unsupportedUserInterface: UserInterfaceType? = null,
-        /**
-         * The [HandlerDef] instantiator. Define [StoryHandlerBase.newHandlerDefinition].
-         */
-        crossinline handlerDefInstantiator: (BotBus) -> T = { T::class.primaryConstructor!!.call(it) },
-        /**
-         * Check preconditions. if [BotBus.end] is called in this function,
-         * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
-         */
-        noinline preconditionsChecker: BotBus.() -> Unit
+    /**
+     * The [StoryDefinition.mainIntent] name.
+     */
+    intentName: String,
+    /**
+     * The optionals other [StoryDefinition.starterIntents].
+     */
+    otherStarterIntents: Set<IntentAware> = emptySet(),
+    /**
+     * The others [StoryDefinition.intents] - ie the "secondary" intents.
+     */
+    secondaryIntents: Set<IntentAware> = emptySet(),
+    /**
+     * The [StoryStep] of the story if any.
+     */
+    steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
+    /**
+     * Is this story unsupported for a [UserInterfaceType]?
+     */
+    unsupportedUserInterface: UserInterfaceType? = null,
+    /**
+     * The [HandlerDef] instantiator. Define [StoryHandlerBase.newHandlerDefinition].
+     */
+    crossinline handlerDefInstantiator: (BotBus) -> T = { T::class.primaryConstructor!!.call(it) },
+    /**
+     * Check preconditions. if [BotBus.end] is called in this function,
+     * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
+     */
+    noinline preconditionsChecker: BotBus.() -> Unit
 )
         : StoryDefinitionBase =
-        StoryDefinitionBase(intentName,
-                object : StoryHandlerBase<T>(intentName) {
+    StoryDefinitionBase(
+        intentName,
+        object : StoryHandlerBase<T>(intentName) {
 
-                    override fun newHandlerDefinition(bus: BotBus): T = handlerDefInstantiator.invoke(bus)
+            override fun newHandlerDefinition(bus: BotBus): T = handlerDefInstantiator.invoke(bus)
 
-                    override fun checkPreconditions(): BotBus.() -> Unit = preconditionsChecker
+            override fun checkPreconditions(): BotBus.() -> Unit = preconditionsChecker
 
-                },
-                otherStarterIntents,
-                secondaryIntents,
-                steps,
-                unsupportedUserInterface
-        )
+        },
+        otherStarterIntents,
+        secondaryIntents,
+        steps,
+        unsupportedUserInterface
+    )
 
 /**
  * Create a new story from a [StoryHandler].
  */
 fun story(
-        /**
-         * The [StoryDefinition.mainIntent].
-         */
-        intent: IntentAware,
-        /**
-         * The handler of the story.
-         */
-        storyHandler: StoryHandler,
-        /**
-         * The optionals other [StoryDefinition.starterIntents].
-         */
-        otherStarterIntents: Set<IntentAware> = emptySet(),
-        /**
-         * The others [StoryDefinition.intents] - ie the "secondary" intents.
-         */
-        secondaryIntents: Set<IntentAware> = emptySet(),
-        /**
-         * The [StoryStep] of the story if any.
-         */
-        steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
-        /**
-         * Is this story unsupported for a [UserInterfaceType]?
-         */
-        unsupportedUserInterface: UserInterfaceType? = null):
+    /**
+     * The [StoryDefinition.mainIntent].
+     */
+    intent: IntentAware,
+    /**
+     * The handler of the story.
+     */
+    storyHandler: StoryHandler,
+    /**
+     * The optionals other [StoryDefinition.starterIntents].
+     */
+    otherStarterIntents: Set<IntentAware> = emptySet(),
+    /**
+     * The others [StoryDefinition.intents] - ie the "secondary" intents.
+     */
+    secondaryIntents: Set<IntentAware> = emptySet(),
+    /**
+     * The [StoryStep] of the story if any.
+     */
+    steps: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
+    /**
+     * Is this story unsupported for a [UserInterfaceType]?
+     */
+    unsupportedUserInterface: UserInterfaceType? = null
+):
         StoryDefinitionBase =
-        StoryDefinitionBase(
-                intent.wrappedIntent().name,
-                storyHandler,
-                otherStarterIntents,
-                secondaryIntents,
-                steps,
-                unsupportedUserInterface)
+    StoryDefinitionBase(
+        intent.wrappedIntent().name,
+        storyHandler,
+        otherStarterIntents,
+        secondaryIntents,
+        steps,
+        unsupportedUserInterface
+    )
 
 /**
  * Create a new story from a [StoryHandlerBase].
  */
 inline fun <reified T> storyWithSteps(
-        /**
-         * The handler for the story. Defines also implicitly the [StoryDefinition.mainIntent].
-         */
-        handler: StoryHandlerBase<*>,
-        /**
-         * The optionals other [StoryDefinition.starterIntents].
-         */
-        otherStarterIntents: Set<IntentAware> = emptySet(),
-        /**
-         * The others [StoryDefinition.intents] - ie the "secondary" intents.
-         */
-        secondaryIntents: Set<IntentAware> = emptySet(),
-        /**
-         * Is this story unsupported for a [UserInterfaceType]?
-         */
-        unsupportedUserInterface: UserInterfaceType? = null)
+    /**
+     * The handler for the story. Defines also implicitly the [StoryDefinition.mainIntent].
+     */
+    handler: StoryHandlerBase<*>,
+    /**
+     * The optionals other [StoryDefinition.starterIntents].
+     */
+    otherStarterIntents: Set<IntentAware> = emptySet(),
+    /**
+     * The others [StoryDefinition.intents] - ie the "secondary" intents.
+     */
+    secondaryIntents: Set<IntentAware> = emptySet(),
+    /**
+     * Is this story unsupported for a [UserInterfaceType]?
+     */
+    unsupportedUserInterface: UserInterfaceType? = null
+)
         : StoryDefinitionBase
         where T : Enum<T>, T : StoryStep<out StoryHandlerDefinition> =
-        story(
-                handler,
-                handler,
-                otherStarterIntents,
-                secondaryIntents,
-                enumValues<T>().toList(),
-                unsupportedUserInterface
-        )
+    story(
+        handler,
+        handler,
+        otherStarterIntents,
+        secondaryIntents,
+        enumValues<T>().toList(),
+        unsupportedUserInterface
+    )
 
 /**
  * Create a new story from a [StoryHandler].
  */
 inline fun <reified T> storyWithSteps(
-        /**
-         * The [StoryDefinition.mainIntent].
-         */
-        intent: IntentAware,
-        /**
-         * The handler of the story.
-         */
-        storyHandler: StoryHandler,
-        /**
-         * The optionals other [StoryDefinition.starterIntents].
-         */
-        otherStarterIntents: Set<IntentAware> = emptySet(),
-        /**
-         * The others [StoryDefinition.intents] - ie the "secondary" intents.
-         */
-        secondaryIntents: Set<IntentAware> = emptySet(),
-        /**
-         * Is this story unsupported for a [UserInterfaceType]?
-         */
-        unsupportedUserInterface: UserInterfaceType? = null)
+    /**
+     * The [StoryDefinition.mainIntent].
+     */
+    intent: IntentAware,
+    /**
+     * The handler of the story.
+     */
+    storyHandler: StoryHandler,
+    /**
+     * The optionals other [StoryDefinition.starterIntents].
+     */
+    otherStarterIntents: Set<IntentAware> = emptySet(),
+    /**
+     * The others [StoryDefinition.intents] - ie the "secondary" intents.
+     */
+    secondaryIntents: Set<IntentAware> = emptySet(),
+    /**
+     * Is this story unsupported for a [UserInterfaceType]?
+     */
+    unsupportedUserInterface: UserInterfaceType? = null
+)
         : StoryDefinitionBase where T : Enum<T>, T : StoryStep<out StoryHandlerDefinition> =
-        story(
-                intent,
-                storyHandler,
-                otherStarterIntents,
-                secondaryIntents,
-                enumValues<T>().toList(),
-                unsupportedUserInterface
-        )
+    story(
+        intent,
+        storyHandler,
+        otherStarterIntents,
+        secondaryIntents,
+        enumValues<T>().toList(),
+        unsupportedUserInterface
+    )
+
+/**
+ * Create a new story.
+ */
+inline fun <reified T> storyWithSteps(
+    /**
+     * The [StoryDefinition.mainIntent] name.
+     */
+    intentName: String,
+    /**
+     * The optionals other [StoryDefinition.starterIntents].
+     */
+    otherStarterIntents: Set<IntentAware> = emptySet(),
+    /**
+     * The others [StoryDefinition.intents] - ie the "secondary" intents.
+     */
+    secondaryIntents: Set<IntentAware> = emptySet(),
+    /**
+     * Is this story unsupported for a [UserInterfaceType]?
+     */
+    unsupportedUserInterface: UserInterfaceType? = null,
+    /**
+     * The handler for the story.
+     */
+    noinline handler: (BotBus).() -> Unit
+)
+        : StoryDefinitionBase where T : Enum<T>, T : StoryStep<out StoryHandlerDefinition> =
+    story(
+        intentName,
+        otherStarterIntents,
+        secondaryIntents,
+        enumValues<T>().toList(),
+        unsupportedUserInterface,
+        handler
+    )
 

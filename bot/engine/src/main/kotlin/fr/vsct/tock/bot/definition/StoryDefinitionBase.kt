@@ -23,21 +23,30 @@ import fr.vsct.tock.translator.UserInterfaceType
  *
  */
 class StoryDefinitionBase(
-        val name: String,
-        override val storyHandler: StoryHandler = {} as SimpleStoryHandlerBase,
-        otherStarterIntents: Set<IntentAware> = emptySet(),
-        secondaryIntents: Set<IntentAware> = emptySet(),
-        stepsList: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
-        unsupportedUserInterface: UserInterfaceType? = null
+    val name: String,
+    override val storyHandler: StoryHandler = {} as SimpleStoryHandlerBase,
+    otherStarterIntents: Set<IntentAware> = emptySet(),
+    secondaryIntents: Set<IntentAware> = emptySet(),
+    stepsList: List<StoryStep<out StoryHandlerDefinition>> = emptyList(),
+    unsupportedUserInterface: UserInterfaceType? = null
 ) : StoryDefinition {
 
-    override val steps: Set<StoryStep<out StoryHandlerDefinition>> = stepsList.toSet()
+    override val steps: Set<StoryStep<out StoryHandlerDefinition>> =
+        stepsList.apply {
+            forEach {
+                if (it.intent == null) {
+                    stepToIntentRepository[it] = this@StoryDefinitionBase
+                }
+            }
+        }.toSet()
 
     override val unsupportedUserInterfaces: Set<UserInterfaceType> = listOfNotNull(unsupportedUserInterface).toSet()
 
     override val id: String get() = name
-    override val starterIntents: Set<Intent> = setOf(Intent(name)) + otherStarterIntents.map { it.wrappedIntent() }.toSet()
-    override val intents: Set<Intent> = setOf(Intent(name)) + (otherStarterIntents + secondaryIntents).map { it.wrappedIntent() }.toSet()
+    override val starterIntents: Set<Intent> =
+        setOf(Intent(name)) + otherStarterIntents.map { it.wrappedIntent() }.toSet()
+    override val intents: Set<Intent> =
+        setOf(Intent(name)) + (otherStarterIntents + secondaryIntents).map { it.wrappedIntent() }.toSet()
 
     fun handle(bus: BotBus) = storyHandler.handle(bus)
 }

@@ -16,6 +16,10 @@
 
 package fr.vsct.tock.bot.definition
 
+import java.util.concurrent.ConcurrentHashMap
+
+internal val stepToIntentRepository = ConcurrentHashMap<StoryStep<out StoryHandlerDefinition>, IntentAware>()
+
 /**
  * A step (the implementation is usually an enum) is a part of a [StoryDefinition].
  * Used to manage workflow in a [StoryHandler].
@@ -38,7 +42,7 @@ interface StoryStep<T : StoryHandlerDefinition> {
      * If not null and if the current intent is equals to [intent],
      * this step will be automatically selected to be the current step.
      */
-    val intent: IntentAware? get() = null
+    val intent: IntentAware? get() = stepToIntentRepository[this]
 
     /**
      * Same behaviour than [intent] in the rare case when the step handle more than one intent.
