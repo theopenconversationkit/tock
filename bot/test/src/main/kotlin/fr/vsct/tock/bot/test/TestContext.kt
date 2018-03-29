@@ -38,18 +38,30 @@ import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.translator.I18nDAO
-import io.mockk.mockk
+import io.mockk.classMockk
 import testModules
 import testTranslatorModule
 import java.util.Locale
+import kotlin.reflect.KClass
 
 /**
- *
+ * A test context initialized for each test.
  */
 open class TestContext {
 
-    inline fun <reified T : Any> newMock() = mockk<T>()
+    /**
+     * Creates a new mock.
+     */
+    inline fun <reified T : Any> newMock() = newMock(T::class)
 
+    /**
+     * Creates a new mock.
+     */
+    open fun <T : Any> newMock(kClass: KClass<T>): T = classMockk(kClass, relaxed = true)
+
+    /**
+     * The context of the bus.
+     */
     lateinit var botBusMockContext: BotBusMockContext
 
     /**
@@ -119,20 +131,20 @@ open class TestContext {
         import(sharedTestModule, true)
         import(testTranslatorModule, true)
         import(
-                Kodein.Module {
-                    bind<I18nDAO>() with provider { mockedI18nDAO }
+            Kodein.Module {
+                bind<I18nDAO>() with provider { mockedI18nDAO }
 
-                    bind<NlpClient>() with provider { mockedNlpClient }
-                    bind<NlpController>() with provider { mockedNlpController }
+                bind<NlpClient>() with provider { mockedNlpClient }
+                bind<NlpController>() with provider { mockedNlpController }
 
-                    bind<BotApplicationConfigurationDAO>() with provider { mockedBotApplicationConfigurationDAO }
-                    bind<StoryDefinitionConfigurationDAO>() with provider { mockedStoryDefinitionConfigurationDAO }
-                    bind<UserTimelineDAO>() with provider { mockedUserTimelineDAO }
-                    bind<UserReportDAO>() with provider { mockedUserReportDAO }
-                    bind<DialogReportDAO>() with provider { mockedDialogReportDAO }
-                    bind<TestPlanDAO>() with provider { mockedTestPlanDAO }
-                    bind<UserLock>() with provider { mockedUserLock }
-                })
+                bind<BotApplicationConfigurationDAO>() with provider { mockedBotApplicationConfigurationDAO }
+                bind<StoryDefinitionConfigurationDAO>() with provider { mockedStoryDefinitionConfigurationDAO }
+                bind<UserTimelineDAO>() with provider { mockedUserTimelineDAO }
+                bind<UserReportDAO>() with provider { mockedUserReportDAO }
+                bind<DialogReportDAO>() with provider { mockedDialogReportDAO }
+                bind<TestPlanDAO>() with provider { mockedTestPlanDAO }
+                bind<UserLock>() with provider { mockedUserLock }
+            })
         testModules.forEach { import(it, true) }
     }
 
@@ -155,28 +167,28 @@ open class TestContext {
      * Default [StoryDefinition] if none is provided.
      */
     open fun defaultStoryDefinition(botDefinition: BotDefinition): StoryDefinition =
-            if (::botBusMockContext.isInitialized) botBusMockContext.story.definition
-            else botDefinition.helloStory ?: botDefinition.stories.first()
+        if (::botBusMockContext.isInitialized) botBusMockContext.story.definition
+        else botDefinition.helloStory ?: botDefinition.stories.first()
 
     /**
      * Default [ConnectorType] if none is provided.
      */
     open fun defaultConnectorType(): ConnectorType =
-            if (::botBusMockContext.isInitialized) botBusMockContext.connectorType
-            else messengerConnectorType
+        if (::botBusMockContext.isInitialized) botBusMockContext.connectorType
+        else messengerConnectorType
 
     /**
      * Default [Locale] if none is provided.
      */
     open fun defaultLocale(): Locale =
-            if (::botBusMockContext.isInitialized) botBusMockContext.userPreferences.locale
-            else defaultLocale
+        if (::botBusMockContext.isInitialized) botBusMockContext.userPreferences.locale
+        else defaultLocale
 
     /**
      * Default [PlayerId] if none is provided.
      */
     open fun defaultPlayerId(): PlayerId =
-            if (::botBusMockContext.isInitialized) botBusMockContext.firstAction.playerId
-            else PlayerId("user")
+        if (::botBusMockContext.isInitialized) botBusMockContext.firstAction.playerId
+        else PlayerId("user")
 
 }
