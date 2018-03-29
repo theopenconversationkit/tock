@@ -24,7 +24,7 @@ import fr.vsct.tock.bot.connector.ConnectorType
 /**
  *
  */
-object GAConnectorProvider : ConnectorProvider {
+internal object GAConnectorProvider : ConnectorProvider {
 
     private const val PROJECT_IDS = "_project_ids"
     private const val PROJECT_ID_SEPARATOR = ","
@@ -34,29 +34,35 @@ object GAConnectorProvider : ConnectorProvider {
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
             return GAConnector(
-                    applicationId,
-                    path,
-                    parameters[PROJECT_IDS]
-                            ?.split(PROJECT_ID_SEPARATOR)
-                            ?.filter { it.isNotBlank() }
-                            ?.toSet()
-                            ?: emptySet())
+                connectorId,
+                path,
+                parameters[PROJECT_IDS]
+                    ?.split(PROJECT_ID_SEPARATOR)
+                    ?.filter { it.isNotBlank() }
+                    ?.toSet()
+                        ?: emptySet())
         }
     }
 
     /**
-     * Create a new messenger connector configuration.
+     * Create a new google assistant connector configuration.
      */
     fun newConfiguration(
-            applicationId: String = "ga",
-            path: String = "/ga",
-            allowedProjectIds: Set<String> = emptySet()): ConnectorConfiguration {
+        connectorId: String = "ga",
+        path: String = "/ga",
+        applicationName: String,
+        allowedProjectIds: Set<String> = emptySet()
+    ): ConnectorConfiguration {
 
         return ConnectorConfiguration(
-                applicationId,
-                path,
-                connectorType,
-                parameters = mapOf(PROJECT_IDS to allowedProjectIds.joinToString(PROJECT_ID_SEPARATOR))
+            connectorId,
+            path,
+            connectorType,
+            applicationName,
+            null,
+            parameters = mapOf(
+                PROJECT_IDS to allowedProjectIds.joinToString(PROJECT_ID_SEPARATOR)
+            )
         )
     }
 }

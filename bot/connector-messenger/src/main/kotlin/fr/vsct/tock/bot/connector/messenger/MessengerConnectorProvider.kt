@@ -36,7 +36,7 @@ internal object MessengerConnectorProvider : ConnectorProvider {
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
             return MessengerConnector(
-                    applicationId,
+                    connectorId,
                     path,
                     parameters.getValue(PAGE_ID),
                     parameters.getValue(TOKEN),
@@ -49,18 +49,18 @@ internal object MessengerConnectorProvider : ConnectorProvider {
      * Create a new messenger connector configuration.
      */
     fun newConfiguration(
-            pageId: String,
-            pageToken: String,
-            applicationSecret: String,
-            webhookVerifyToken: String? = null,
-            applicationId: String = pageId,
-            path: String = "/messenger",
-            name: String = applicationId,
-            baseUrl: String? = null): ConnectorConfiguration {
+        pageId: String,
+        pageToken: String,
+        applicationSecret: String,
+        webhookVerifyToken: String? = null,
+        connectorId: String = pageId,
+        path: String = "/messenger",
+        name: String = connectorId,
+        baseUrl: String? = null): ConnectorConfiguration {
 
 
         return ConnectorConfiguration(
-                applicationId,
+                connectorId,
                 path,
                 connectorType,
                 name,

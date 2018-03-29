@@ -34,7 +34,7 @@ internal object SlackConnectorProvider : ConnectorProvider {
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
             return SlackConnector(
-                    applicationId,
+                    connectorId,
                     path,
                     "#bot",
                     parameters.getValue(OUT_TOKEN_1),

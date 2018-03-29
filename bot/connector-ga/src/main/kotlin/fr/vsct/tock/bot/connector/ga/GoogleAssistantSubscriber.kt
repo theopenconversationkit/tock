@@ -16,34 +16,65 @@
 
 package fr.vsct.tock.bot.connector.ga
 
+import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorConfigurationRepository
+import fr.vsct.tock.shared.Dice
 
 /**
- * Add a google assistant connector.
+ * Adds a google assistant connector.
  */
+fun BotDefinition.addGoogleAssistantConnector(
+    /**
+     * Which are the google actions project ids?
+     * If empty, no JWT is verified (so all project are allowed)
+     * see (https://developers.google.com/actions/reference/rest/verify-requests)
+     */
+    allowedProjectIds: Set<String> = emptySet(),
+    /**
+     * This connector id should be unique for an [applicationName] - take the first item of [allowedProjectIds] and a random id if empty.
+     */
+    connectorId: String = allowedProjectIds.firstOrNull() ?: Dice.newId(),
+    /**
+     * The relative connector path.
+     */
+    path: String = "/ga/$connectorId"
+) {
+    addGoogleAssistantConnector(connectorId, path, nlpModelName, allowedProjectIds)
+}
+
+/**
+ * Adds a google assistant connector.
+ */
+@Deprecated("use addGoogleAssistantConnector with botDefinition receiver")
 fun addGoogleAssistantConnector(
-        /**
-         * Application id have to be different for each google assistant app served by the bot.
-         */
-        applicationId: String = "app",
-        /**
-         * The relative connector path.
-         */
-        path: String = "/ga/$applicationId",
-        /**
-         * Which are the google actions project ids?
-         * If empty, no JWT is verified (so all project are allowed)
-         * see (https://developers.google.com/actions/reference/rest/verify-requests)
-         */
-        allowedProjectIds: Set<String> = emptySet()
+    /**
+     * This connector id should be unique for an [applicationName].
+     */
+    connectorId: String = "app",
+    /**
+     * The relative connector path.
+     */
+    path: String = "/ga/$connectorId",
+    /**
+     * Application name have to be different for each google assistant app served by the bot.
+     */
+    applicationName: String = connectorId,
+    /**
+     * Which are the google actions project ids?
+     * If empty, no JWT is verified (so all project are allowed)
+     * see (https://developers.google.com/actions/reference/rest/verify-requests)
+     */
+    allowedProjectIds: Set<String> = emptySet()
 ) {
 
     ConnectorConfigurationRepository.addConfiguration(
-            GAConnectorProvider.newConfiguration(
-                    applicationId,
-                    path,
-                    allowedProjectIds)
+        GAConnectorProvider.newConfiguration(
+            connectorId,
+            path,
+            applicationName,
+            allowedProjectIds
+        )
     )
     BotRepository.registerConnectorProvider(GAConnectorProvider)
 }

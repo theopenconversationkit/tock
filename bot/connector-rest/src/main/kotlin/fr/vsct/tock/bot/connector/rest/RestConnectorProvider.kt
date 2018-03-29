@@ -36,7 +36,7 @@ object RestConnectorProvider : ConnectorProvider {
 
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         return RestConnector(
-                connectorConfiguration.applicationId,
+                connectorConfiguration.connectorId,
                 connectorConfiguration.path
         )
     }

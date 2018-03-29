@@ -16,14 +16,40 @@
 
 package fr.vsct.tock.bot.connector.slack
 
+import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorConfigurationRepository
+import fr.vsct.tock.shared.Dice
 
-
-fun addSlackConnector(
-    applicationId: String,
+/**
+ * Adds a slack connector.
+ */
+fun BotDefinition.addSlackConnector(
     path: String,
-    name: String,
+    outToken1: String,
+    outToken2: String,
+    outToken3: String,
+    baseUrl: String? = null,
+    /**
+     * Should be unique for each connector.
+     */
+    connectorId: String = Dice.newId()
+) = addSlackConnector(connectorId, path, nlpModelName, outToken1, outToken2, outToken3, baseUrl)
+
+/**
+ * Adds a slack connector.
+ */
+@Deprecated("use addSlackConnector with botDefinition receiver")
+fun addSlackConnector(
+    /**
+     * Should be unique for each connector.
+     */
+    connectorId: String,
+    path: String,
+    /**
+     * The name of the bot.
+     */
+    applicationName: String,
     outToken1: String,
     outToken2: String,
     outToken3: String,
@@ -31,12 +57,12 @@ fun addSlackConnector(
 ) {
     ConnectorConfigurationRepository.addConfiguration(
         SlackConnectorProvider.newConfiguration(
-            applicationId,
+            connectorId,
             path,
             outToken1,
             outToken2,
             outToken3,
-            name,
+            applicationName,
             baseUrl
         )
     )

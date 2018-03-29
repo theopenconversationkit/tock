@@ -40,9 +40,9 @@ object AlexaConnectorProvider : ConnectorProvider {
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector =
         with(connectorConfiguration) {
             AlexaConnector(
-                applicationId,
+                connectorId,
                 path,
-                Class.forName(parameters[ALEXA_MAPPER]).kotlin.primaryConstructor!!.call(applicationId) as AlexaTockMapper,
+                Class.forName(parameters[ALEXA_MAPPER]).kotlin.primaryConstructor!!.call(connectorId) as AlexaTockMapper,
                 parameters[PROJECT_IDS]
                     ?.split(PROJECT_ID_SEPARATOR)
                     ?.filter { it.isNotBlank() }

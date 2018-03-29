@@ -16,56 +16,102 @@
 
 package fr.vsct.tock.bot.connector.messenger
 
+import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorConfigurationRepository
 
+
 /**
- * Add a messenger connector.
+ * Adds a messenger connector.
  */
+fun BotDefinition.addMessengerConnector(
+    /**
+     * The facebook page id.
+     */
+    pageId: String,
+    /**
+     * The messenger page token.
+     */
+    pageToken: String,
+    /**
+     * The messenger application secret key.
+     */
+    applicationSecret: String,
+    /**
+     * The webhook verify token.
+     */
+    webhookVerifyToken: String? = null,
+    /**
+     * The relative connector path.
+     */
+    path: String = "/messenger",
+    /**
+     * The base url for the connector path.
+     */
+    baseUrl: String? = null
+) {
+    addMessengerConnector(
+        pageId,
+        pageToken,
+        applicationSecret,
+        webhookVerifyToken,
+        pageId,
+        path,
+        nlpModelName,
+        baseUrl
+    )
+}
+
+/**
+ * Adds a messenger connector.
+ */
+@Deprecated("use addMessengerConnector with botDefinition receiver")
 fun addMessengerConnector(
-        /**
-         * The facebook page id.
-         */
-        pageId: String,
-        /**
-         * The messenger page token.
-         */
-        pageToken: String,
-        /**
-         * The messenger application secret key.
-         */
-        applicationSecret: String,
-        /**
-         * The webhook verify token.
-         */
-        webhookVerifyToken: String? = null,
-        /**
-         * Application id have to be different for each facebook page served by the bot.
-         */
-        applicationId: String = pageId,
-        /**
-         * The relative connector path.
-         */
-        path: String = "/messenger",
-        /**
-         * The name of the application.
-         */
-        name: String = applicationId,
-        /**
-         * The base url for the connector path.
-         */
-        baseUrl: String? = null
+    /**
+     * The facebook page id.
+     */
+    pageId: String,
+    /**
+     * The messenger page token.
+     */
+    pageToken: String,
+    /**
+     * The messenger application secret key.
+     */
+    applicationSecret: String,
+    /**
+     * The webhook verify token.
+     */
+    webhookVerifyToken: String? = null,
+    /**
+     * Application id have to be different for each facebook page served by the bot.
+     */
+    applicationId: String = pageId,
+    /**
+     * The relative connector path.
+     */
+    path: String = "/messenger",
+    /**
+     * The name of the application.
+     */
+    name: String = applicationId,
+    /**
+     * The base url for the connector path.
+     */
+    baseUrl: String? = null
 ) {
 
     ConnectorConfigurationRepository.addConfiguration(
-            MessengerConnectorProvider.newConfiguration(
-                    pageId,
-                    pageToken,
-                    applicationSecret,
-                    webhookVerifyToken,
-                    applicationId,
-                    path,
-                    name,
-                    baseUrl))
+        MessengerConnectorProvider.newConfiguration(
+            pageId,
+            pageToken,
+            applicationSecret,
+            webhookVerifyToken,
+            applicationId,
+            path,
+            name,
+            baseUrl
+        )
+    )
     BotRepository.registerConnectorProvider(MessengerConnectorProvider)
 }

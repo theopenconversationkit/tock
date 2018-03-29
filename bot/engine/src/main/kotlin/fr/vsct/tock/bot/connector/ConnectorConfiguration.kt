@@ -23,7 +23,7 @@ import fr.vsct.tock.shared.mapNotNullValues
  * Configuration parameters used by a [ConnectorProvided] to create a new [Connector] instance.
  */
 data class ConnectorConfiguration(
-    val applicationId: String,
+    val connectorId: String,
     val path: String,
     val type: ConnectorType,
     val ownerConnectorType: ConnectorType? = null,
@@ -31,7 +31,7 @@ data class ConnectorConfiguration(
 ) {
 
     constructor(
-        applicationId: String,
+        connectorId: String,
         path: String,
         type: ConnectorType,
         applicationName: String,
@@ -40,7 +40,7 @@ data class ConnectorConfiguration(
         parameters: Map<String, String> = emptyMap()
     )
             : this(
-        applicationId,
+        connectorId,
         path,
         type,
         ownerConnectorType,
@@ -55,7 +55,7 @@ data class ConnectorConfiguration(
         private const val BASE_URL: String = "_base_url"
     }
 
-    fun getName(): String = parameters.getOrDefault(APPLICATION_NAME, applicationId)
+    fun getName(): String = parameters.getOrDefault(APPLICATION_NAME, connectorId)
 
     fun getBaseUrl(): String = parameters.getOrDefault(BASE_URL, BotApplicationConfiguration.defaultBaseUrl)
 
