@@ -25,6 +25,7 @@ import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.StoryHandlerListener
 import fr.vsct.tock.bot.engine.config.BotConfigurationSynchronizer
@@ -35,11 +36,14 @@ import fr.vsct.tock.bot.engine.nlp.NlpListener
 import fr.vsct.tock.nlp.api.client.NlpClient
 import fr.vsct.tock.shared.DEFAULT_APP_NAMESPACE
 import fr.vsct.tock.shared.Executor
+import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.provide
 import fr.vsct.tock.shared.tockAppDefaultNamespace
 import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
+import mu.KotlinLogging
 
 /**
  * Advanced bot configuration.
@@ -47,6 +51,8 @@ import io.vertx.ext.web.RoutingContext
  * [fr.vsct.tock.bot.registerAndInstallBot] method is the preferred way to start a bot in most use cases.
  */
 object BotRepository {
+
+    private val logger = KotlinLogging.logger {}
 
     private val botConfigurationDAO: BotApplicationConfigurationDAO by injector.instance()
 
@@ -61,11 +67,12 @@ object BotRepository {
                 }
         }
     )
-    private val botProviders: MutableSet<BotProvider> = mutableSetOf()
+
+    internal val botProviders: MutableSet<BotProvider> = mutableSetOf()
     internal val storyHandlerListeners: MutableList<StoryHandlerListener> = mutableListOf()
     internal val nlpListeners: MutableList<NlpListener> = mutableListOf(BuiltInKeywordListener)
-    private val nlpClient: NlpClient by injector.instance()
-    private val executor: Executor by injector.instance()
+    private val nlpClient: NlpClient get() = injector.provide()
+    private val executor: Executor get() = injector.provide()
 
     /**
      * Request timer for connectors.
@@ -176,6 +183,7 @@ object BotRepository {
                 error("A least two configurations have the same connectorId: ${this}")
             }
 
+        val bots: MutableSet<BotDefinition> = mutableSetOf()
         connectorConfigurations.forEach { conf ->
             findConnectorProvider(conf.type)
                 .apply {
@@ -199,16 +207,32 @@ object BotRepository {
                                                 this
                                             )
                                         }
+
+                                    bots.add(bot.botDefinition)
                                 }
                             }
                         }
                 }
         }
 
+        //check that nlp applications exist
+        bots.distinctBy { it.namespace to it.nlpModelName }
+            .forEach { botDefinition ->
+                nlpClient.createApplication(
+                    botDefinition.namespace,
+                    botDefinition.nlpModelName,
+                    defaultLocale
+                )?.apply {
+                    logger.info { "nlp application initialized $namespace $name with locale $supportedLocales" }
+                }
+            }
+
+        //register services
         routerHandlers.forEachIndexed { index, handler ->
             verticle.registerServices("_handler_$index", handler)
         }
 
+        //deploy verticle
         vertx.deployVerticle(verticle)
     }
 

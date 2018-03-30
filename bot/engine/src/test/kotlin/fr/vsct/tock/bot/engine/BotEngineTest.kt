@@ -21,6 +21,7 @@ import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
@@ -69,6 +70,7 @@ abstract class BotEngineTest {
     val botConfDAO: BotApplicationConfigurationDAO = mockk(relaxed = true)
     val i18nDAO: I18nDAO = mockk(relaxed = true)
     val translator: TranslatorEngine = mockk(relaxed = true)
+    val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO = mockk(relaxed = true)
 
     val entityA = Entity(EntityType("a"), "a")
     val entityAValue = EntityValue(0, 1, entityA, null, false)
@@ -77,14 +79,16 @@ abstract class BotEngineTest {
     val entityC = Entity(EntityType("c"), "c")
     val entityCValue = EntityValue(4, 5, entityC, null, false)
 
-    val nlpResult = NlpResult(test.name,
-            "test",
-            defaultLocale,
-            listOf(entityAValue, entityBValue, entityCValue),
-            1.0,
-            1.0,
-            "a b c",
-            emptyMap())
+    val nlpResult = NlpResult(
+        test.name,
+        "test",
+        defaultLocale,
+        listOf(entityAValue, entityBValue, entityCValue),
+        1.0,
+        1.0,
+        "a b c",
+        emptyMap()
+    )
 
     val nlpClient: NlpClient = mockk(relaxed = true)
     internal val nlp: NlpController = mockk(relaxed = true)
@@ -104,6 +108,7 @@ abstract class BotEngineTest {
             bind<I18nDAO>() with provider { i18nDAO }
             bind<TranslatorEngine>() with provider { translator }
             bind<BotApplicationConfigurationDAO>() with provider { botConfDAO }
+            bind<StoryDefinitionConfigurationDAO>() with provider { storyDefinitionConfigurationDAO }
         }
     }
 
@@ -128,7 +133,13 @@ abstract class BotEngineTest {
         fillTimeline()
         Bot(botDefinition)
     }
-    internal val connectorController: TockConnectorController by lazy { TockConnectorController(bot, connector, BotVerticle()) }
+    internal val connectorController: TockConnectorController by lazy {
+        TockConnectorController(
+            bot,
+            connector,
+            BotVerticle()
+        )
+    }
 
     private var timelineFilled = false
 

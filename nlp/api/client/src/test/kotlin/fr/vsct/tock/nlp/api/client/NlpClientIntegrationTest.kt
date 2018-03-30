@@ -39,33 +39,46 @@ class NlpClientIntegrationTest {
 
     @Test
     fun testImportNlpDump() {
-        assertTrue(TockNlpClient("http://localhost:8880").importNlpDump(dumpStream).body()!!)
+        assertTrue(TockNlpClient("http://localhost:8880").importNlpDump(dumpStream))
     }
 
     @Test
     fun testImportNlpPlainDump() {
         val dump = jacksonObjectMapper()
-                .findAndRegisterModules()
-                .registerModule(JavaTimeModule())
-                .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
-                .readValue<ApplicationDump>(dumpStream)
-                .run {
-                    copy(
-                            application = application.copy(
-                                    _id = UUID.randomUUID().toString(),
-                                    name = UUID.randomUUID().toString())
+            .findAndRegisterModules()
+            .registerModule(JavaTimeModule())
+            .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
+            .readValue<ApplicationDump>(dumpStream)
+            .run {
+                copy(
+                    application = application.copy(
+                        _id = UUID.randomUUID().toString(),
+                        name = UUID.randomUUID().toString()
                     )
-                }
-        assertTrue(TockNlpClient("http://localhost:8880").importNlpPlainDump(dump).body()!!)
+                )
+            }
+        assertTrue(TockNlpClient("http://localhost:8880").importNlpPlainDump(dump))
     }
 
     @Test
     fun testGetIntentsByNamespaceAndName() {
-        assertEquals(2, TockNlpClient("http://localhost:8880").getIntentsByNamespaceAndName(applicationNamespace, applicationName).body()!!.size)
+        assertEquals(
+            2,
+            TockNlpClient("http://localhost:8880").getIntentsByNamespaceAndName(
+                applicationNamespace,
+                applicationName
+            )!!.size
+        )
     }
 
     @Test
     fun testGetIntentsByNamespaceAndNameWithUnknownApplicationName() {
-        assertEquals(0, TockNlpClient("http://localhost:8880").getIntentsByNamespaceAndName(applicationNamespace, unknownApplicationName).body()!!.size)
+        assertEquals(
+            0,
+            TockNlpClient("http://localhost:8880").getIntentsByNamespaceAndName(
+                applicationNamespace,
+                unknownApplicationName
+            )!!.size
+        )
     }
 }

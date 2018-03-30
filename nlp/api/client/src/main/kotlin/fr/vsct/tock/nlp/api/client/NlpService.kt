@@ -19,7 +19,9 @@ package fr.vsct.tock.nlp.api.client
 import fr.vsct.tock.nlp.api.client.model.NlpIntentEntitiesQuery
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
+import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDefinition
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
+import fr.vsct.tock.nlp.api.client.model.dump.CreateApplicationQuery
 import fr.vsct.tock.nlp.api.client.model.dump.IntentDefinition
 import fr.vsct.tock.nlp.api.client.model.dump.SentencesDump
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationQuery
@@ -27,6 +29,7 @@ import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationResult
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
 import okhttp3.MultipartBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -55,6 +58,9 @@ internal interface NlpService {
     @GET("intents")
     fun getIntentsByNamespaceAndName(@Query("namespace") namespace: String, @Query("name") name: String): Call<List<IntentDefinition>>
 
+    @POST("application/create")
+    fun createApplication(@Body query: CreateApplicationQuery): Call<ApplicationDefinition?>
+
     @Multipart
     @POST("dump/import")
     fun importNlpDump(@Part dump: MultipartBody.Part): Call<Boolean>
@@ -70,6 +76,6 @@ internal interface NlpService {
     fun importNlpPlainSentencesDump(@Body dump: SentencesDump): Call<Boolean>
 
     @GET("healthcheck")
-    fun healthcheck(): Call<Void>
+    fun healthcheck(): Call<ResponseBody>
 
 }

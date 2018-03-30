@@ -19,6 +19,7 @@ package fr.vsct.tock.nlp.api.client
 import fr.vsct.tock.nlp.api.client.model.NlpIntentEntitiesQuery
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
+import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDefinition
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
 import fr.vsct.tock.nlp.api.client.model.dump.IntentDefinition
 import fr.vsct.tock.nlp.api.client.model.dump.SentencesDump
@@ -26,8 +27,8 @@ import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationResult
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
-import retrofit2.Response
 import java.io.InputStream
+import java.util.Locale
 
 /**
  * Wraps calls to the NLP stack. [TockNlpClient] is the provided implementation.
@@ -37,22 +38,22 @@ interface NlpClient {
     /**
      * Analyse a sentence and returns the result.
      */
-    fun parse(query: NlpQuery): Response<NlpResult>
+    fun parse(query: NlpQuery): NlpResult?
 
     /**
      * Analyse a sentence and returns entities values, given a predefined intent.
      */
-    fun parseIntentEntities(query: NlpIntentEntitiesQuery): Response<NlpResult>
+    fun parseIntentEntities(query: NlpIntentEntitiesQuery): NlpResult?
 
     /**
      * Evaluate entities.
      */
-    fun evaluateEntities(query: EntityEvaluationQuery): Response<EntityEvaluationResult>
+    fun evaluateEntities(query: EntityEvaluationQuery): EntityEvaluationResult?
 
     /**
      * Merge values and returns the result if found.
      */
-    fun mergeValues(query: ValuesMergeQuery): Response<ValuesMergeResult>
+    fun mergeValues(query: ValuesMergeQuery): ValuesMergeResult?
 
     /**
      * Export list of IntentDefinition
@@ -62,14 +63,20 @@ interface NlpClient {
      *
      * @return List of IntentDefinition
      */
-    fun getIntentsByNamespaceAndName(namespace: String, name: String): Response<List<IntentDefinition>>
+    fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>?
+
+    /**
+     * Create an application if it does not exists.
+     * @return the new application, null if it already exists.
+     */
+    fun createApplication(namespace: String, name: String, locale: Locale): ApplicationDefinition?
 
     /**
      * Import a NLP dump (configuration and sentences of the NLP model).
      *
      * @return true if NLP model is modified, false either
      */
-    fun importNlpDump(stream: InputStream): Response<Boolean>
+    fun importNlpDump(stream: InputStream): Boolean
 
     /**
      * Import a NLP dump (configuration and sentences of the NLP model).
@@ -77,14 +84,14 @@ interface NlpClient {
      * @param dump the dump to import
      * @return true if NLP model is modified, false either
      */
-    fun importNlpPlainDump(dump: ApplicationDump): Response<Boolean>
+    fun importNlpPlainDump(dump: ApplicationDump): Boolean
 
     /**
      * Import a NLP sentences dump (only validated sentences) - format is simpler than [ApplicationDump].
      *
      * @return true if NLP model is modified, false either
      */
-    fun importNlpSentencesDump(stream: InputStream): Response<Boolean>
+    fun importNlpSentencesDump(stream: InputStream): Boolean
 
     /**
      * Import a NLP sentences dump (only validated sentences) - format is simpler than [ApplicationDump].
@@ -92,7 +99,7 @@ interface NlpClient {
      * @param dump the dump to import
      * @return true if NLP model is modified, false either
      */
-    fun importNlpPlainSentencesDump(dump: SentencesDump): Response<Boolean>
+    fun importNlpPlainSentencesDump(dump: SentencesDump): Boolean
 
     /**
      * Check the server is up.

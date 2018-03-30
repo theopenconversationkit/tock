@@ -66,12 +66,14 @@ internal class Nlp : NlpController {
 
     private val nlpClient: NlpClient by injector.instance()
 
-    private class SentenceParser(val nlpClient: NlpClient,
-                                 val sentence: SendSentence,
-                                 val userTimeline: UserTimeline,
-                                 val dialog: Dialog,
-                                 val connector: TockConnectorController,
-                                 val botDefinition: BotDefinition) {
+    private class SentenceParser(
+        val nlpClient: NlpClient,
+        val sentence: SendSentence,
+        val userTimeline: UserTimeline,
+        val dialog: Dialog,
+        val connector: TockConnectorController,
+        val botDefinition: BotDefinition
+    ) {
 
         fun parse() {
             logger.debug { "Parse sentence : $sentence" }
@@ -92,32 +94,32 @@ internal class Nlp : NlpController {
                     result?.let { nlpResult ->
                         listenNlpSuccessCall(query, nlpResult)
                         val intent = botDefinition.findIntentForBot(
-                                nlpResult.intent,
-                                IntentContext(userTimeline, dialog, sentence)
+                            nlpResult.intent,
+                            IntentContext(userTimeline, dialog, sentence)
                         )
 
                         val customEntityEvaluations = BotRepository.nlpListeners.flatMap {
                             it.evaluateEntities(userTimeline, dialog, nlpResult)
                         }
                         sentence.state.entityValues.addAll(
-                                customEntityEvaluations +
-                                        nlpResult.entities
-                                                .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
-                                                .map { ContextValue(nlpResult, it) }
+                            customEntityEvaluations +
+                                    nlpResult.entities
+                                        .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
+                                        .map { ContextValue(nlpResult, it) }
                         )
 
                         sentence.nlpStats = NlpCallStats(
-                                intent,
-                                nlpResult.intentProbability,
-                                nlpResult.entitiesProbability,
-                                nlpResult.otherIntentsProbabilities
-                                        .map {
-                                            NlpIntentStat(
-                                                    botDefinition.findIntent(it.key.name()),
-                                                    it.value
-                                            )
-                                        },
-                                dialog.state.nextActionState?.intentsQualifiers
+                            intent,
+                            nlpResult.intentProbability,
+                            nlpResult.entitiesProbability,
+                            nlpResult.otherIntentsProbabilities
+                                .map {
+                                    NlpIntentStat(
+                                        botDefinition.findIntent(it.key.name()),
+                                        it.value
+                                    )
+                                },
+                            dialog.state.nextActionState?.intentsQualifiers
                         )
                         dialog.apply {
                             state.currentIntent = intent
@@ -133,32 +135,31 @@ internal class Nlp : NlpController {
 
         private fun evaluateEntitiesForPrecomputedNlp(nlpQuery: NlpQuery, nlpResult: NlpResult): NlpResult {
             fun EntityValue.toEntityToEvaluate(): EntityToEvaluate = EntityToEvaluate(
-                    start,
-                    end,
-                    entity,
-                    subEntities.map { it.toEntityToEvaluate() }
+                start,
+                end,
+                entity,
+                subEntities.map { it.toEntityToEvaluate() }
             )
 
             return try {
                 if (nlpResult.entities.isEmpty()) {
                     nlpResult
                 } else {
-                    val response = nlpClient.evaluateEntities(
-                            EntityEvaluationQuery(
-                                    nlpQuery.namespace,
-                                    nlpQuery.applicationName,
-                                    nlpQuery.context,
-                                    nlpResult.entities.map { it.toEntityToEvaluate() },
-                                    nlpResult.retainedQuery
-                            )
+                    val result = nlpClient.evaluateEntities(
+                        EntityEvaluationQuery(
+                            nlpQuery.namespace,
+                            nlpQuery.applicationName,
+                            nlpQuery.context,
+                            nlpResult.entities.map { it.toEntityToEvaluate() },
+                            nlpResult.retainedQuery
+                        )
                     )
-                    val result = response.body()
-                    if (response.isSuccessful && result != null) {
+                    if (result != null) {
                         nlpResult.copy(
-                                entities = result.values
-                                        + nlpResult.entities.filter { e ->
-                                    result.values.none { it.start == e.start }
-                                })
+                            entities = result.values
+                                    + nlpResult.entities.filter { e ->
+                                result.values.none { it.start == e.start }
+                            })
                     } else {
                         nlpResult
                     }
@@ -206,28 +207,35 @@ internal class Nlp : NlpController {
         private fun toQueryContext(): QueryContext {
             val test = userTimeline.userPreferences.test
             return QueryContext(
-                    userTimeline.userPreferences.locale,
-                    sentence.playerId.id,
-                    dialog.id.toString(),
-                    connector.connectorType.toString(),
-                    referenceDate = dialog.state.nextActionState?.referenceDate ?: ZonedDateTime.now(defaultZoneId),
-                    referenceTimezone = dialog.state.nextActionState?.referenceTimezone ?: defaultZoneId,
-                    test = test,
-                    registerQuery = !test && !userTimeline.userState.botDisabled
+                userTimeline.userPreferences.locale,
+                sentence.playerId.id,
+                dialog.id.toString(),
+                connector.connectorType.toString(),
+                referenceDate = dialog.state.nextActionState?.referenceDate ?: ZonedDateTime.now(defaultZoneId),
+                referenceTimezone = dialog.state.nextActionState?.referenceTimezone ?: defaultZoneId,
+                test = test,
+                registerQuery = !test && !userTimeline.userState.botDisabled
             )
         }
 
         private fun toNlpQuery(): NlpQuery {
             return NlpQuery(
-                    listOf(sentence.stringText ?: ""),
-                    botDefinition.namespace,
-                    botDefinition.nlpModelName,
-                    toQueryContext(),
-                    QueryState(dialog.state.nextActionState?.states
-                            ?: listOfNotNull(dialog.currentStory()?.definition?.mainIntent()?.name).toSet()))
+                listOf(sentence.stringText ?: ""),
+                botDefinition.namespace,
+                botDefinition.nlpModelName,
+                toQueryContext(),
+                QueryState(
+                    dialog.state.nextActionState?.states
+                            ?: listOfNotNull(dialog.currentStory()?.definition?.mainIntent()?.name).toSet()
+                )
+            )
         }
 
-        private fun mergeEntityValues(action: Action, newValues: List<ContextValue>, oldValue: EntityStateValue? = null): EntityStateValue {
+        private fun mergeEntityValues(
+            action: Action,
+            newValues: List<ContextValue>,
+            oldValue: EntityStateValue? = null
+        ): EntityStateValue {
             val entity = newValues.first().entity
             val defaultNewValue = newValues.filter { it.value != null }.firstOrNull() ?: newValues.first()
             val eligibleToMergeValues = newValues.filter { it.mergeSupport && it.value != null }
@@ -240,7 +248,8 @@ internal class Nlp : NlpController {
                 }
             } else {
                 if (eligibleToMergeValues.isEmpty()
-                        || (eligibleToMergeValues.size == 1 && oldValue.value?.value == null)) {
+                    || (eligibleToMergeValues.size == 1 && oldValue.value?.value == null)
+                ) {
                     oldValue.changeValue(defaultNewValue, action)
                 } else {
                     val result = mergeValues(entity, eligibleToMergeValues, defaultNewValue, oldValue)
@@ -250,33 +259,35 @@ internal class Nlp : NlpController {
         }
 
         private fun mergeValues(
-                entity: Entity,
-                newValues: List<ContextValue>,
-                defaultNewValue: ContextValue,
-                initialValue: EntityStateValue? = null): ContextValue {
+            entity: Entity,
+            newValues: List<ContextValue>,
+            defaultNewValue: ContextValue,
+            initialValue: EntityStateValue? = null
+        ): ContextValue {
             val result = mergeValues(
-                    ValuesMergeQuery(
-                            botDefinition.namespace,
-                            botDefinition.nlpModelName,
-                            toQueryContext(),
-                            entity,
-                            newValues.map {
-                                ValueToMerge(
-                                        it.value!!,
-                                        it.content,
-                                        false,
-                                        it.start,
-                                        it.probability)
-                            } + listOfNotNull(
-                                    initialValue
-                                            ?.value
-                                            ?.let { value ->
-                                                value.value?.let {
-                                                    ValueToMerge(it, value.content, true)
-                                                }
-                                            }
-                            )
+                ValuesMergeQuery(
+                    botDefinition.namespace,
+                    botDefinition.nlpModelName,
+                    toQueryContext(),
+                    entity,
+                    newValues.map {
+                        ValueToMerge(
+                            it.value!!,
+                            it.content,
+                            false,
+                            it.start,
+                            it.probability
+                        )
+                    } + listOfNotNull(
+                        initialValue
+                            ?.value
+                            ?.let { value ->
+                                value.value?.let {
+                                    ValueToMerge(it, value.content, true)
+                                }
+                            }
                     )
+                )
             )
             return if (result == null || result.value == null) {
                 defaultNewValue
@@ -287,11 +298,11 @@ internal class Nlp : NlpController {
 
         private fun DialogState.mergeEntityValuesFromAction(action: Action) {
             entityValues.putAll(
-                    action.state.entityValues
-                            .groupBy { it.entity.role }
-                            .mapValues {
-                                mergeEntityValues(action, it.value, entityValues.get(it.key))
-                            }
+                action.state.entityValues
+                    .groupBy { it.entity.role }
+                    .mapValues {
+                        mergeEntityValues(action, it.value, entityValues.get(it.key))
+                    }
             )
         }
 
@@ -299,19 +310,17 @@ internal class Nlp : NlpController {
             logger.debug { "Sending sentence '${sentence.stringText}' to NLP" }
             val intentsQualifiers = dialog.state.nextActionState?.intentsQualifiers
             val useQualifiers = intentsQualifiers != null && intentsQualifiers.isNotEmpty()
-            val response = if (!useQualifiers) {
+            val result = if (!useQualifiers) {
                 nlpClient.parse(request)
             } else {
                 nlpClient.parseIntentEntities(
-                        NlpIntentEntitiesQuery(
-                                intentsQualifiers!!.map { it.copy(intent = it.intent.withNamespace(request.namespace)) }.toSet(),
-                                request)
+                    NlpIntentEntitiesQuery(
+                        intentsQualifiers!!.map { it.copy(intent = it.intent.withNamespace(request.namespace)) }.toSet(),
+                        request
+                    )
                 )
             }
-            val result = response.body()
-            if (result == null) {
-                logger.error { "nlp error : ${response.errorBody()?.string()}" }
-            } else if (useQualifiers) {
+            if (result != null && useQualifiers) {
                 //force intents qualifiers if unknown answer
                 if (intentsQualifiers!!.none { it.intent == result.intent }) {
                     return result.copy(intent = intentsQualifiers.first().intent)
@@ -320,38 +329,41 @@ internal class Nlp : NlpController {
             return result
         }
 
-        private fun mergeValues(request: ValuesMergeQuery): ValuesMergeResult? {
-            val response = nlpClient.mergeValues(request)
-            val result = response.body()
-            if (result == null) {
-                logger.error { "nlp error : ${response.errorBody()?.string()}" }
-            }
-            return result
-        }
+        private fun mergeValues(request: ValuesMergeQuery): ValuesMergeResult? =
+            nlpClient.mergeValues(request)
 
     }
 
-    override fun parseSentence(sentence: SendSentence,
-                               userTimeline: UserTimeline,
-                               dialog: Dialog,
-                               connector: ConnectorController,
-                               botDefinition: BotDefinition) {
-        SentenceParser(nlpClient, sentence, userTimeline, dialog, connector as TockConnectorController, botDefinition).parse()
+    override fun parseSentence(
+        sentence: SendSentence,
+        userTimeline: UserTimeline,
+        dialog: Dialog,
+        connector: ConnectorController,
+        botDefinition: BotDefinition
+    ) {
+        SentenceParser(
+            nlpClient,
+            sentence,
+            userTimeline,
+            dialog,
+            connector as TockConnectorController,
+            botDefinition
+        ).parse()
     }
 
     override fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>? =
-            nlpClient.getIntentsByNamespaceAndName(namespace, name).body() ?: null
+        nlpClient.getIntentsByNamespaceAndName(namespace, name) ?: emptyList()
 
     override fun importNlpDump(stream: InputStream): Boolean =
-            nlpClient.importNlpDump(stream).body() ?: false
+        nlpClient.importNlpDump(stream)
 
     override fun importNlpPlainDump(dump: ApplicationDump): Boolean =
-            nlpClient.importNlpPlainDump(dump).body() ?: false
+        nlpClient.importNlpPlainDump(dump)
 
     override fun importNlpPlainSentencesDump(dump: SentencesDump): Boolean =
-            nlpClient.importNlpPlainSentencesDump(dump).body() ?: false
+        nlpClient.importNlpPlainSentencesDump(dump)
 
     override fun importNlpSentencesDump(stream: InputStream): Boolean =
-            nlpClient.importNlpSentencesDump(stream).body() ?: false
+        nlpClient.importNlpSentencesDump(stream)
 
 }

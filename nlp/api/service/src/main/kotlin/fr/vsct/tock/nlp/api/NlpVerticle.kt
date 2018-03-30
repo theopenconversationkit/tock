@@ -20,7 +20,9 @@ import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.service.UnknownApplicationException
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
+import fr.vsct.tock.nlp.front.shared.codec.CreateApplicationQuery
 import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseIntentEntitiesQuery
@@ -109,6 +111,24 @@ class NlpVerticle : WebVerticle() {
                         ?.run {
                             front.getIntentsByApplicationId(_id)
                         } ?: emptyList()
+                }
+            }
+        }
+
+        blockingJsonPost("/application/create") { context, query: CreateApplicationQuery ->
+            if (protectPath && context.organization != query.namespace) {
+                unauthorized()
+            } else {
+                if (front.getApplicationByNamespaceAndName(query.namespace, query.name) == null) {
+                    front.save(
+                        ApplicationDefinition(
+                            query.name,
+                            query.namespace,
+                            supportedLocales = setOf(query.locale)
+                        )
+                    )
+                } else {
+                    null
                 }
             }
         }

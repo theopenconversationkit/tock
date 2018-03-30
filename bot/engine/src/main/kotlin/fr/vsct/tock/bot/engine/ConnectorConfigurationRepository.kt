@@ -58,4 +58,8 @@ object ConnectorConfigurationRepository {
     fun addConfiguration(conf: ConnectorConfiguration) {
         configurations += conf
     }
+
+    internal fun cleanup() {
+        configurations.clear()
+    }
 }

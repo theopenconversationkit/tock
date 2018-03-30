@@ -25,13 +25,16 @@ import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fr.vsct.tock.nlp.api.client.model.NlpIntentEntitiesQuery
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
+import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDefinition
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
+import fr.vsct.tock.nlp.api.client.model.dump.CreateApplicationQuery
 import fr.vsct.tock.nlp.api.client.model.dump.IntentDefinition
 import fr.vsct.tock.nlp.api.client.model.dump.SentencesDump
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationResult
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
+import mu.KotlinLogging
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
 import okhttp3.RequestBody
@@ -41,12 +44,17 @@ import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.ByteArrayOutputStream
 import java.io.InputStream
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 /**
  *  Wraps calls to the NLP stack.
  */
 class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "http://localhost:8888") : NlpClient {
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
     private val nlpService: NlpService
 
@@ -62,36 +70,47 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
 
         val timeout = longProperty("tock_nlp_client_request_timeout_ms", 20000)
         val retrofit = Retrofit.Builder()
-                .baseUrl("$baseUrl/rest/nlp/")
-                .addConverterFactory(JacksonConverterFactory.create(mapper))
-                .client(
-                        OkHttpClient.Builder()
-                                .readTimeout(timeout, TimeUnit.MILLISECONDS)
-                                .connectTimeout(timeout, TimeUnit.MILLISECONDS)
-                                .writeTimeout(timeout, TimeUnit.MILLISECONDS)
-                                .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
-                                .build()
-                )
-                .build()
+            .baseUrl("$baseUrl/rest/nlp/")
+            .addConverterFactory(JacksonConverterFactory.create(mapper))
+            .client(
+                OkHttpClient.Builder()
+                    .readTimeout(timeout, TimeUnit.MILLISECONDS)
+                    .connectTimeout(timeout, TimeUnit.MILLISECONDS)
+                    .writeTimeout(timeout, TimeUnit.MILLISECONDS)
+                    .addInterceptor(HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY))
+                    .build()
+            )
+            .build()
         nlpService = retrofit.create(NlpService::class.java)
     }
 
     private fun longProperty(name: String, defaultValue: Long): Long = System.getenv(name)?.toLong() ?: defaultValue
 
-    override fun parse(query: NlpQuery): Response<NlpResult> {
-        return nlpService.parse(query).execute()
+    private fun <T> Response<T>.parseAndReturns(): T? =
+        body()
+                ?: {
+                    logger.error { "nlp error : ${errorBody()?.string()}" }
+                    null
+                }.invoke()
+
+    override fun parse(query: NlpQuery): NlpResult? {
+        return nlpService.parse(query).execute().parseAndReturns()
     }
 
-    override fun parseIntentEntities(query: NlpIntentEntitiesQuery): Response<NlpResult> {
-        return nlpService.parseIntentEntities(query).execute()
+    override fun parseIntentEntities(query: NlpIntentEntitiesQuery): NlpResult? {
+        return nlpService.parseIntentEntities(query).execute().parseAndReturns()
     }
 
-    override fun evaluateEntities(query: EntityEvaluationQuery): Response<EntityEvaluationResult> {
-        return nlpService.evaluateEntities(query).execute()
+    override fun evaluateEntities(query: EntityEvaluationQuery): EntityEvaluationResult? {
+        return nlpService.evaluateEntities(query).execute().parseAndReturns()
     }
 
-    override fun mergeValues(query: ValuesMergeQuery): Response<ValuesMergeResult> {
-        return nlpService.mergeValues(query).execute()
+    override fun mergeValues(query: ValuesMergeQuery): ValuesMergeResult? {
+        return nlpService.mergeValues(query).execute().parseAndReturns()
+    }
+
+    override fun createApplication(namespace: String, name: String, locale: Locale): ApplicationDefinition? {
+        return nlpService.createApplication(CreateApplicationQuery(name, namespace, locale)).execute().body()
     }
 
     private fun createMultipart(stream: InputStream): MultipartBody.Part {
@@ -105,27 +124,31 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
             }
             flush()
         }
-        return MultipartBody.Part.createFormData("dump", "dump", RequestBody.create(MultipartBody.FORM, dump.toByteArray()))
+        return MultipartBody.Part.createFormData(
+            "dump",
+            "dump",
+            RequestBody.create(MultipartBody.FORM, dump.toByteArray())
+        )
     }
 
-    override fun getIntentsByNamespaceAndName(namespace: String, name: String): Response<List<IntentDefinition>> {
-        return nlpService.getIntentsByNamespaceAndName(namespace, name).execute()
+    override fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>? {
+        return nlpService.getIntentsByNamespaceAndName(namespace, name).execute().parseAndReturns()
     }
 
-    override fun importNlpDump(stream: InputStream): Response<Boolean> {
-        return nlpService.importNlpDump(createMultipart(stream)).execute()
+    override fun importNlpDump(stream: InputStream): Boolean {
+        return nlpService.importNlpDump(createMultipart(stream)).execute().body() ?: false
     }
 
-    override fun importNlpPlainDump(dump: ApplicationDump): Response<Boolean> {
-        return nlpService.importNlpPlainDump(dump).execute()
+    override fun importNlpPlainDump(dump: ApplicationDump): Boolean {
+        return nlpService.importNlpPlainDump(dump).execute().body() ?: false
     }
 
-    override fun importNlpSentencesDump(stream: InputStream): Response<Boolean> {
-        return nlpService.importNlpSentencesDump(createMultipart(stream)).execute()
+    override fun importNlpSentencesDump(stream: InputStream): Boolean {
+        return nlpService.importNlpSentencesDump(createMultipart(stream)).execute().body() ?: false
     }
 
-    override fun importNlpPlainSentencesDump(dump: SentencesDump): Response<Boolean> {
-        return nlpService.importNlpPlainSentencesDump(dump).execute()
+    override fun importNlpPlainSentencesDump(dump: SentencesDump): Boolean {
+        return nlpService.importNlpPlainSentencesDump(dump).execute().body() ?: false
     }
 
     override fun healthcheck(): Boolean {

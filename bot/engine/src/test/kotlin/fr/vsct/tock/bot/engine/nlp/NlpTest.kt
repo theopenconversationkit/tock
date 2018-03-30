@@ -31,7 +31,6 @@ import io.mockk.every
 import io.mockk.slot
 import io.mockk.verify
 import org.junit.Test
-import retrofit2.Response
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue
@@ -90,12 +89,16 @@ class NlpTest : BotEngineTest() {
     @Test
     fun parseSentence_shouldUseNlpListenersEntityEvaluation_WhenAvailable() {
 
-        every { nlpClient.parse(any()) } returns Response.success(nlpResult)
-        every { nlpClient.parseIntentEntities(any()) } returns Response.success(nlpResult)
+        every { nlpClient.parse(any()) } returns nlpResult
+        every { nlpClient.parseIntentEntities(any()) } returns nlpResult
 
         val customValue = ContextValue(entityB, object : Value {}, "b")
         val nlpListener = object : NlpListener {
-            override fun evaluateEntities(userTimeline: UserTimeline, dialog: Dialog, nlpResult: NlpResult): List<ContextValue> {
+            override fun evaluateEntities(
+                userTimeline: UserTimeline,
+                dialog: Dialog,
+                nlpResult: NlpResult
+            ): List<ContextValue> {
                 return listOf(customValue)
             }
         }
