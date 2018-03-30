@@ -16,22 +16,28 @@
 
 package fr.vsct.tock.bot.connector.slack.model
 
-import fr.vsct.tock.bot.engine.action.SendAttachment
-import fr.vsct.tock.bot.engine.message.Attachment
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import org.junit.Test
+import kotlin.test.assertEquals
 
+/**
+ *
+ */
+class SlackMessageInTest {
 
-data class SlackMessageAttachment(
-    val fields: List<AttachmentField>,
-    val fallback: String,
-    val color: String,
-    val text: String? = null,
-    val pretext: String? = null
-) : SlackConnectorMessage() {
-
-    override fun toSentenceElement(): SentenceElement =
-        SentenceElement(
-            attachments = fields.map { Attachment(it.value, SendAttachment.AttachmentType.file) },
-            texts = mapOf(::text.name to (text ?: ""))
+    @Test
+    fun `toSentenceElement provides SentenceElement with text`() {
+        val inMessage = SlackMessageIn(
+            "token",
+            "team_id",
+            "team_domain",
+            "channel_id",
+            "channel_name",
+            12,
+            "user_id",
+            "user_name",
+            "text",
+            "trigger_word"
         )
+        assertEquals("text", inMessage.toSentenceElement().texts["text"])
+    }
 }
