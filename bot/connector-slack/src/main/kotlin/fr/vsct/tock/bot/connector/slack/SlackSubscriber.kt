@@ -19,21 +19,20 @@ package fr.vsct.tock.bot.connector.slack
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorConfigurationRepository
-import fr.vsct.tock.shared.Dice
 
 /**
  * Adds a slack connector.
  */
 fun BotDefinition.addSlackConnector(
-    path: String,
     outToken1: String,
     outToken2: String,
     outToken3: String,
-    baseUrl: String? = null,
     /**
      * Should be unique for each connector.
      */
-    connectorId: String = Dice.newId()
+    connectorId: String = "slackApp",
+    path: String = "/slack/$connectorId",
+    baseUrl: String? = null
 ) = addSlackConnector(connectorId, path, nlpModelName, outToken1, outToken2, outToken3, baseUrl)
 
 /**

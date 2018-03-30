@@ -23,8 +23,6 @@ Then you can configure your connector for your bot:
 
 val bot = bot("bot_test")
 bot.addSlackConnector(
-    "my-bot-id",
-    "/path-to-my-slack-bot-http-endpoint",
     "slackToken1",
     "slackToken2",
     "slackToken3"

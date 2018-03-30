@@ -16,41 +16,40 @@
 
 package fr.vsct.tock.bot.connector.alexa
 
+import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorConfigurationRepository
 import kotlin.reflect.KClass
 
 /**
- *
+ * Adds a alexa connector.
  */
-/**
- * Add a alexa connector.
- */
-fun addAlexaConnector(
-        /**
-         * Application id have to be different for each alexa app served by the bot.
-         */
-        applicationId: String = "app",
-        /**
-         * The relative connector path.
-         */
-        path: String = "/alexa/$applicationId",
-        /**
-         * The mapper class used to transform alexa intent/slot in tock intent/entity
-         */
-        alexaTockMapper: KClass<out AlexaTockMapper> = AlexaTockMapper::class,
-        /**
-         * The supported alexa application ids..
-         */
-        supportedAlexaApplicationIds: Set<String> = setOf(applicationId)
+fun BotDefinition.addAlexaConnector(
+    /**
+     * The allowed alexa application ids. If empty, all applications are allowed.
+     */
+    supportedAlexaApplicationIds: Set<String> = emptySet(),
+    /**
+     * Application id have to be different for each alexa app served by the bot.
+     */
+    applicationId: String = "alexaApp",
+    /**
+     * The relative connector path.
+     */
+    path: String = "/alexa/$applicationId",
+    /**
+     * The mapper class used to transform alexa intent/slot in tock intent/entity
+     */
+    alexaTockMapper: KClass<out AlexaTockMapper> = AlexaTockMapper::class
 ) {
 
     ConnectorConfigurationRepository.addConfiguration(
-            AlexaConnectorProvider.newConfiguration(
-                    applicationId,
-                    path,
-                    alexaTockMapper,
-                    supportedAlexaApplicationIds)
+        AlexaConnectorProvider.newConfiguration(
+            applicationId,
+            path,
+            alexaTockMapper,
+            supportedAlexaApplicationIds
+        )
     )
     BotRepository.registerConnectorProvider(AlexaConnectorProvider)
 }

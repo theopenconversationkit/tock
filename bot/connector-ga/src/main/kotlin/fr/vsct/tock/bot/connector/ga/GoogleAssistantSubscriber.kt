@@ -19,7 +19,6 @@ package fr.vsct.tock.bot.connector.ga
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorConfigurationRepository
-import fr.vsct.tock.shared.Dice
 
 /**
  * Adds a google assistant connector.
@@ -34,7 +33,7 @@ fun BotDefinition.addGoogleAssistantConnector(
     /**
      * This connector id should be unique for an [applicationName] - take the first item of [allowedProjectIds] and a random id if empty.
      */
-    connectorId: String = allowedProjectIds.firstOrNull() ?: Dice.newId(),
+    connectorId: String = allowedProjectIds.firstOrNull() ?: "gaApp",
     /**
      * The relative connector path.
      */
