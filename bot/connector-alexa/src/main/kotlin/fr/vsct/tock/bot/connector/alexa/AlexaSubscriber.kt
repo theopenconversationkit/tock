@@ -30,13 +30,13 @@ fun BotDefinition.addAlexaConnector(
      */
     supportedAlexaApplicationIds: Set<String> = emptySet(),
     /**
-     * Application id have to be different for each alexa app served by the bot.
+     * Connector id has to be different for each alexa app served by the bot.
      */
-    applicationId: String = "alexaApp",
+    connectorId: String = supportedAlexaApplicationIds.firstOrNull() ?: "alexaApp",
     /**
      * The relative connector path.
      */
-    path: String = "/alexa/$applicationId",
+    path: String = "/alexa/$connectorId",
     /**
      * The mapper class used to transform alexa intent/slot in tock intent/entity
      */
@@ -45,8 +45,9 @@ fun BotDefinition.addAlexaConnector(
 
     ConnectorConfigurationRepository.addConfiguration(
         AlexaConnectorProvider.newConfiguration(
-            applicationId,
+            connectorId,
             path,
+            nlpModelName,
             alexaTockMapper,
             supportedAlexaApplicationIds
         )

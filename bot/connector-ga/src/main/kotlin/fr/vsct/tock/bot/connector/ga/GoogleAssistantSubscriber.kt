@@ -56,7 +56,7 @@ fun addGoogleAssistantConnector(
      */
     path: String = "/ga/$connectorId",
     /**
-     * Application name have to be different for each google assistant app served by the bot.
+     * Application name has to be different for each google assistant app served by the bot.
      */
     applicationName: String = connectorId,
     /**

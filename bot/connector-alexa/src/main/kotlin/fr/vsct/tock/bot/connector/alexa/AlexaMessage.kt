@@ -17,8 +17,13 @@
 package fr.vsct.tock.bot.connector.alexa
 
 import com.amazon.speech.ui.Card
+import com.amazon.speech.ui.StandardCard
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType
+import fr.vsct.tock.bot.engine.message.Attachment
+import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.shared.mapNotNullValues
 
 /**
  * An alexa message.
@@ -40,4 +45,23 @@ data class AlexaMessage(
 
     override val connectorType: ConnectorType = alexaConnectorType
 
+    override fun toSentenceElement(): SentenceElement {
+        return SentenceElement(
+            attachments = listOfNotNull(
+                card?.run {
+                    if (this is StandardCard) {
+                        Attachment(image.smallImageUrl, AttachmentType.image)
+                    } else {
+                        null
+                    }
+                }
+            ),
+            texts = mapNotNullValues(
+                ::reprompt.name to reprompt,
+                "title" to card?.title,
+                "text" to (card as? StandardCard)?.text
+            ),
+            metadata = mapOf(::end.name to end.toString())
+        )
+    }
 }

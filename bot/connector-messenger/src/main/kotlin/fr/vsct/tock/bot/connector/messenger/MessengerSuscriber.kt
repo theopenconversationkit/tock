@@ -84,7 +84,7 @@ fun addMessengerConnector(
      */
     webhookVerifyToken: String? = null,
     /**
-     * Application id have to be different for each facebook page served by the bot.
+     * Application id has to be different for each facebook page served by the bot.
      */
     applicationId: String = pageId,
     /**

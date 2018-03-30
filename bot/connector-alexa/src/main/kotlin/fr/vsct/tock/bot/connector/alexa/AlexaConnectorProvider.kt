@@ -26,7 +26,7 @@ import kotlin.reflect.full.primaryConstructor
 /**
  * [ConnectorProvider] for [AlexaConnector].
  */
-object AlexaConnectorProvider : ConnectorProvider {
+internal object AlexaConnectorProvider : ConnectorProvider {
 
     private const val PROJECT_IDS = "_project_ids"
     private const val PROJECT_TIMESTAMP = "_project_timestamp"
@@ -58,6 +58,7 @@ object AlexaConnectorProvider : ConnectorProvider {
     fun newConfiguration(
         applicationId: String,
         path: String,
+        applicationName: String,
         alexaTockMapper: KClass<out AlexaTockMapper>,
         allowedProjectIds: Set<String> = emptySet(),
         timestampMs: Long = DEFAULT_TIMESTAMP
@@ -67,6 +68,8 @@ object AlexaConnectorProvider : ConnectorProvider {
             applicationId,
             path,
             connectorType,
+            applicationName,
+            null,
             parameters =
             mapOf(
                 PROJECT_IDS to allowedProjectIds.joinToString(PROJECT_ID_SEPARATOR),
