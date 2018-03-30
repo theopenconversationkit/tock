@@ -22,6 +22,7 @@ import {CreateIntentDialogComponent} from "./create-intent-dialog/create-intent-
 import {MdDialog, MdSnackBar} from "@angular/material";
 import {ApplicationConfig} from "../core/application.config";
 import {Router} from "@angular/router";
+import {ConfirmDialogComponent} from "../shared/confirm-dialog/confirm-dialog.component";
 
 @Component({
   selector: 'tock-sentence-analysis',
@@ -140,28 +141,47 @@ export class SentenceAnalysisComponent implements OnInit {
     }
   }
 
-  private createIntent(name): boolean {
-    if (this.state.intentExists(name) || name === nameFromQualifiedName(Intent.unknown)) {
+  private createIntent(name: string): boolean {
+    if (StateService.intentExistsInApp(this.state.currentApplication, name) || name === nameFromQualifiedName(Intent.unknown)) {
       this.snackBar.open(`Intent ${name} already exists`, "Error", {duration: 5000});
       return false
     } else {
-      this.nlp
-        .saveIntent(
-          new Intent(
-            name,
-            this.state.user.organization,
-            [],
-            [this.state.currentApplication._id],
-            [],
-            [])
-        )
-        .subscribe(intent => {
-            this.state.currentApplication.intents.push(intent);
-            this.onIntentChange(intent._id);
-          },
-          _ => this.onIntentChange(Intent.unknown));
-      return true;
+      if (this.state.intentExistsInOtherApplication(name)) {
+        let dialogRef = this.dialog.open(ConfirmDialogComponent, {
+          data: {
+            title: "This intent is already used in an other application",
+            subtitle: "If you confirm the name, the intent will be shared between the two applications.",
+            action: "Confirm"
+          }
+        });
+        dialogRef.afterClosed().subscribe(result => {
+          if (result === "confirm") {
+            this.saveIntent(name);
+          }
+        });
+      } else {
+        this.saveIntent(name);
+        return true;
+      }
     }
+  }
+
+  private saveIntent(name: string) {
+    this.nlp
+      .saveIntent(
+        new Intent(
+          name,
+          this.state.user.organization,
+          [],
+          [this.state.currentApplication._id],
+          [],
+          [])
+      )
+      .subscribe(intent => {
+          this.state.currentApplication.intents.push(intent);
+          this.onIntentChange(intent._id);
+        },
+        _ => this.onIntentChange(Intent.unknown));
   }
 
 }

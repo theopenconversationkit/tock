@@ -26,7 +26,13 @@
       </thead>
       <tr *ngFor="let i of state.currentIntents | async">
         <td>
-          {{i.name}}
+          <span class="intent_name">{{i.name}}</span>
+          <div *ngIf="state.intentExistsInOtherApplication(i.name)"
+               md-tooltip="This intent is shared between at least one other application. All changes to the intent will also affect the other applications that use this intent."
+               mdTooltipPosition="right">
+            <span class="shared_application_label">Multi-application intent</span>
+            <md-icon>share</md-icon>
+          </div>
         </td>
         <td>
           <span *ngFor="let e of i.entities">

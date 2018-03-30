@@ -28,6 +28,14 @@
   width:200px;
 }
 
+.intent_name {
+  font-size: larger;
+}
+
+.shared_application_label {
+  font-size: smaller;
+}
+
 .shared {
   vertical-align: top;
 }

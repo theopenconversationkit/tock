@@ -48,6 +48,15 @@ export class StateService implements AuthListener {
   readonly currentLocaleEmitter: EventEmitter<string> = new EventEmitter();
   readonly resetConfigurationEmitter: EventEmitter<boolean> = new EventEmitter();
 
+  static intentExistsInApp(app: Application, intentName: string): boolean {
+    for (let j = 0; j < app.intents.length; j++) {
+      if (app.intents[j].name === intentName) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   constructor(private auth: AuthService, private settings: SettingsService) {
     this.auth.addListener(this);
     //hack for dev env
@@ -131,10 +140,11 @@ export class StateService implements AuthListener {
     this.applications = this.applications.sort((a, b) => a.name.localeCompare(b.name))
   }
 
-  intentExists(intentName: string): boolean {
+  intentExistsInOtherApplication(intentName: string): boolean {
     for (let i = 0; i < this.applications.length; i++) {
-      for (let j = 0; j < this.applications[i].intents.length; j++) {
-        if (this.applications[i].intents[j].name === intentName) {
+      const a = this.applications[i];
+      if (a._id !== this.currentApplication._id) {
+        if (StateService.intentExistsInApp(a, intentName)) {
           return true;
         }
       }

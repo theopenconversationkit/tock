@@ -53,8 +53,6 @@ data class IntentDefinition(
     /**
      * The qualified sentences of each "shared intent" that contains only entities supported by the current intent
      * are used to build the entity model of this intent.
-     *
-     * This is great
      */
     val sharedIntents: Set<Id<IntentDefinition>> = emptySet(),
     /**
