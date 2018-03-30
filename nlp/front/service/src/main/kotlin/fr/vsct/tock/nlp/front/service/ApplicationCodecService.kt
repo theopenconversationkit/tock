@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.nlp.front.service
 
-import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
 import fr.vsct.tock.nlp.front.service.FrontRepository.entityTypeExists
@@ -43,6 +42,7 @@ import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.namespace
+import fr.vsct.tock.shared.provide
 import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 import fr.vsct.tock.shared.withoutNamespace
 import mu.KotlinLogging
@@ -57,7 +57,7 @@ import java.time.Instant
 object ApplicationCodecService : ApplicationCodec {
 
     private val logger = KotlinLogging.logger {}
-    val config: ApplicationConfiguration  by injector.instance()
+    val config: ApplicationConfiguration get() = injector.provide()
 
     override fun export(applicationId: Id<ApplicationDefinition>, dumpType: DumpType): ApplicationDump {
         val app = config.getApplicationById(applicationId)!!
@@ -124,11 +124,15 @@ object ApplicationCodecService : ApplicationCodec {
                     i._id to intent._id
                 }.toMap()
 
-                //update application intent list
-                config.save(app.copy(
-                    intents = app.intents + intentsIdsMap.values.toSet(),
-                    intentStatesMap = app.intentStatesMap + dump.application.intentStatesMap.mapKeys { intentsIdsMap[it.key]!! }
-                ))
+                //update application intent list & locales
+                config.save(
+                    app.copy(
+                        intents = app.intents + intentsIdsMap.values.toSet(),
+                        intentStatesMap = app.intentStatesMap + dump.application.intentStatesMap.mapKeys { intentsIdsMap[it.key]!! },
+                        supportedLocales = app.supportedLocales + dump.application.supportedLocales
+                    )
+                )
+                report.localeAdded = !app.supportedLocales.containsAll(dump.application.supportedLocales)
 
                 //add unknown intent to intent map
                 intentsIdsMap += (Intent.UNKNOWN_INTENT.toId<IntentDefinition>() to Intent.UNKNOWN_INTENT.toId<IntentDefinition>())

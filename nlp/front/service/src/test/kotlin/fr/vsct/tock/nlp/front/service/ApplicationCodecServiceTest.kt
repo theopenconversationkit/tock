@@ -25,12 +25,15 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
 import fr.vsct.tock.shared.defaultLocale
 import io.mockk.every
+import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
 import org.litote.kmongo.toId
 import java.time.Instant.now
+import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
 /**
  *
@@ -43,7 +46,7 @@ class ApplicationCodecServiceTest : AbstractTest() {
     }
 
     @Test
-    fun import_existingApp_shouldNotCreateApp() {
+    fun `import existing app_does not create app`() {
         val dump = ApplicationDump(app)
 
         val report = ApplicationCodecService.import(namespace, dump)
@@ -51,21 +54,21 @@ class ApplicationCodecServiceTest : AbstractTest() {
     }
 
     @Test
-    fun exportSentence_shouldNotFail_whenSentenceIntentIsUnknown() {
+    fun `export sentence_fails WHEN sentence intent is unknown`() {
         val appId = "id".toId<ApplicationDefinition>()
         val app = ApplicationDefinition("test", "test", _id = appId)
         val sentences = listOf(
-                ClassifiedSentence(
-                        "text",
-                        defaultLocale,
-                        appId,
-                        now(),
-                        now(),
-                        ClassifiedSentenceStatus.model,
-                        Classification("unknwIntentId".toId(), emptyList()),
-                        null,
-                        null
-                )
+            ClassifiedSentence(
+                "text",
+                defaultLocale,
+                appId,
+                now(),
+                now(),
+                ClassifiedSentenceStatus.model,
+                Classification("unknwIntentId".toId(), emptyList()),
+                null,
+                null
+            )
         )
 
         every { context.config.getApplicationById(appId) } returns app
@@ -75,5 +78,15 @@ class ApplicationCodecServiceTest : AbstractTest() {
         val dump = ApplicationCodecService.exportSentences(appId, null, null, DumpType.full)
 
         assertEquals(0, dump.sentences.size)
+    }
+
+    @Test
+    fun `import existing app_with a new locale add the locale to the app`() {
+        val app = app.copy(supportedLocales = setOf(Locale.ITALIAN))
+        val dump = ApplicationDump(app)
+
+        val report = ApplicationCodecService.import(namespace, dump)
+        assertTrue(report.modified)
+        verify { context.config.save(app) }
     }
 }

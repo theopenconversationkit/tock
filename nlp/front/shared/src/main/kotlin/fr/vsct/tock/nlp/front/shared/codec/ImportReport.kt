@@ -29,6 +29,7 @@ data class ImportReport(
         val entitiesImported: MutableSet<String> = mutableSetOf(),
         val intentsImported: MutableSet<String> = mutableSetOf(),
         var sentencesImported: Long = 0L,
+        var localeAdded: Boolean  = false,
         var success: Boolean = true,
         val errorMessages: MutableList<String> = mutableListOf()) {
 
@@ -36,6 +37,7 @@ data class ImportReport(
             || entitiesImported.isNotEmpty()
             || intentsImported.isNotEmpty()
             || sentencesImported != 0L
+            || localeAdded
 
     fun add(app: ApplicationDefinition) = applicationsImported.add(app.qualifiedName)
 

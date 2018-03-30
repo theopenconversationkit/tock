@@ -21,6 +21,8 @@ import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import fr.vsct.tock.nlp.core.NlpCore
+import fr.vsct.tock.nlp.front.service.storage.ApplicationDefinitionDAO
+import fr.vsct.tock.nlp.front.service.storage.ModelBuildTriggerDAO
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
 import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
@@ -54,12 +56,16 @@ abstract class AbstractTest {
         val config: ApplicationConfiguration = mockk(relaxed = true)
         val executor: Executor = mockk(relaxed = true)
         val logDAO: ParseRequestLogDAO = mockk(relaxed = true)
+        val modelBuildTriggerDAO: ModelBuildTriggerDAO = mockk(relaxed = true)
+        val applicationDefinitionDAO: ApplicationDefinitionDAO = mockk(relaxed = true)
 
         val frontTestModule = Kodein.Module {
             bind<ApplicationConfiguration>() with provider { config }
             bind<NlpCore>() with provider { core }
             bind<Executor>() with provider { executor }
             bind<ParseRequestLogDAO>() with provider { logDAO }
+            bind<ModelBuildTriggerDAO>() with provider { modelBuildTriggerDAO }
+            bind<ApplicationDefinitionDAO>() with provider { applicationDefinitionDAO }
         }
 
         fun init() {
@@ -77,9 +83,20 @@ abstract class AbstractTest {
     val app = ApplicationDefinition(appName, namespace, _id = "id".toId())
 
     val defaultIntentName = "$namespace:intent"
-    val defaultIntentDefinition = IntentDefinition(defaultIntentName.name(), namespace, setOf(app._id), emptySet(), _id = newId())
+    val defaultIntentDefinition =
+        IntentDefinition(defaultIntentName.name(), namespace, setOf(app._id), emptySet(), _id = newId())
     val defaultClassification = Classification(defaultIntentDefinition._id, emptyList())
-    val defaultClassifiedSentence = ClassifiedSentence("a", defaultLocale, "id".toId(), Instant.now(), Instant.now(), ClassifiedSentenceStatus.inbox, defaultClassification, 1.0, 1.0)
+    val defaultClassifiedSentence = ClassifiedSentence(
+        "a",
+        defaultLocale,
+        "id".toId(),
+        Instant.now(),
+        Instant.now(),
+        ClassifiedSentenceStatus.inbox,
+        defaultClassification,
+        1.0,
+        1.0
+    )
 
     val parseQuery = ParseQuery(emptyList(), namespace, appName, QueryContext(defaultLocale, Dice.newId()))
 
