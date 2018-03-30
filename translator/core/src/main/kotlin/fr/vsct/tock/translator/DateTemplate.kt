@@ -50,4 +50,20 @@ class DateTemplate(
     override fun formatTo(formatter: Formatter, flags: Int, width: Int, precision: Int) {
         formatter.format(format(formatter.locale()))
     }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as DateTemplate
+
+        if (date != other.date) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        return date?.hashCode() ?: 0
+    }
+
 }
