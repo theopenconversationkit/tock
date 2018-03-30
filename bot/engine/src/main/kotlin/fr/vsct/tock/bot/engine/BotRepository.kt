@@ -37,6 +37,7 @@ import fr.vsct.tock.nlp.api.client.NlpClient
 import fr.vsct.tock.shared.DEFAULT_APP_NAMESPACE
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.provide
 import fr.vsct.tock.shared.tockAppDefaultNamespace
@@ -218,12 +219,16 @@ object BotRepository {
         //check that nlp applications exist
         bots.distinctBy { it.namespace to it.nlpModelName }
             .forEach { botDefinition ->
-                nlpClient.createApplication(
-                    botDefinition.namespace,
-                    botDefinition.nlpModelName,
-                    defaultLocale
-                )?.apply {
-                    logger.info { "nlp application initialized $namespace $name with locale $supportedLocales" }
+                try {
+                    nlpClient.createApplication(
+                        botDefinition.namespace,
+                        botDefinition.nlpModelName,
+                        defaultLocale
+                    )?.apply {
+                        logger.info { "nlp application initialized $namespace $name with locale $supportedLocales" }
+                    }
+                } catch (e: Exception) {
+                    logger.error(e)
                 }
             }
 
