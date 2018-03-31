@@ -140,6 +140,16 @@ export class StateService implements AuthListener {
     this.applications = this.applications.sort((a, b) => a.name.localeCompare(b.name))
   }
 
+  intentExists(intentName: string): boolean {
+    for (let i = 0; i < this.applications.length; i++) {
+      const a = this.applications[i];
+      if (StateService.intentExistsInApp(a, intentName)) {
+        return true;
+      }
+    }
+    return false;
+  }
+
   intentExistsInOtherApplication(intentName: string): boolean {
     for (let i = 0; i < this.applications.length; i++) {
       const a = this.applications[i];
