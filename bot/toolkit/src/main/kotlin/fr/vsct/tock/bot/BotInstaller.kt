@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.rest.addRestConnector
@@ -62,14 +63,14 @@ fun registerAndInstallBot(botProvider: BotProvider) {
 }
 
 /**
- * Install the bot(s) with the specified additional router handlers.
+ * Install the bot(s) with the specified additional router handlers and additional Tock Modules
  */
-fun installBots(vararg routerHandlers: (Router) -> Unit) {
-    install(routerHandlers.toList(), true)
+fun installBots(vararg routerHandlers: (Router) -> Unit, additionalModules:List<Kodein.Module> = emptyList()) {
+    install(routerHandlers.toList(), true, additionalModules)
 }
 
-private fun install(routerHandlers: List<(Router) -> Unit>, installRestConnectors: Boolean) {
-    BotIoc.setup()
+private fun install(routerHandlers: List<(Router) -> Unit>, installRestConnectors: Boolean, additionalModules:List<Kodein.Module> = emptyList()) {
+    BotIoc.setup(additionalModules)
 
     BotRepository.installBots(routerHandlers.toList()) { conf ->
         if (installRestConnectors && conf.connectorType != ConnectorType.rest) {

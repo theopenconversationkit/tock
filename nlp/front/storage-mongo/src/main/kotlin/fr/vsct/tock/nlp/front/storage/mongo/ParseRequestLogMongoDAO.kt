@@ -37,6 +37,7 @@ import org.litote.kmongo.MongoOperator.cond
 import org.litote.kmongo.MongoOperator.dayOfYear
 import org.litote.kmongo.MongoOperator.group
 import org.litote.kmongo.MongoOperator.lte
+import org.litote.kmongo.MongoOperator.gte
 import org.litote.kmongo.MongoOperator.match
 import org.litote.kmongo.MongoOperator.project
 import org.litote.kmongo.MongoOperator.sort
@@ -137,7 +138,10 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                     "'applicationId':${applicationId.json}",
                     "'query.context.language':${language.json}",
                     if (search.isNullOrBlank()) null else if (query.onlyExactMatch) "'text':${search!!.json}" else "'text':/${search!!.trim()}/i",
-                    if (searchMark == null) null else "date:{$lte: ${searchMark!!.date.json}}"
+                    if (searchMark == null) null else "date:{$lte: ${searchMark!!.date.json}}",
+                    if (sinceDate == null) null else "date:{$gte: ${sinceDate!!.json}}",
+                    if (clientDevice.isNullOrBlank()) null else "'query.context.clientDevice':${clientDevice!!.json}",
+                    if (clientId.isNullOrBlank()) null else "'query.context.clientId':${clientId!!.json}"
                 ).toBsonFilter()
             val count = col.count(baseFilter)
             if (count > start) {
