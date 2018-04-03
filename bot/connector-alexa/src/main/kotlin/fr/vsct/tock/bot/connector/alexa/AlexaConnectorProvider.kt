@@ -33,7 +33,7 @@ internal object AlexaConnectorProvider : ConnectorProvider {
     private const val PROJECT_ID_SEPARATOR = ","
     private const val ALEXA_MAPPER = "_mapper"
 
-    const val DEFAULT_TIMESTAMP: Long = 10000L
+    private const val DEFAULT_TIMESTAMP: Long = 10000L
 
     override val connectorType: ConnectorType = alexaConnectorType
 

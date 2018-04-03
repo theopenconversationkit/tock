@@ -118,6 +118,7 @@ open class AlexaTockMapper(val applicationId: String) {
             applicationId,
             botId,
             null,
+            messages = mutableListOf(AlexaInputMessage(request)),
             state = EventState(
                 targetConnectorType = alexaConnectorType,
                 userInterface = alexaConnectorType.userInterfaceType
