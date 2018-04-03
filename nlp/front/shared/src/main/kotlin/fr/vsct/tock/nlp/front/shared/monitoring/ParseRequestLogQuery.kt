@@ -33,5 +33,6 @@ data class ParseRequestLogQuery(val applicationId: Id<ApplicationDefinition>,
                                 val onlyExactMatch: Boolean = false,
                                 val searchMark: SearchMark? = null,
                                 val clientDevice: String? = null,
+                                val clientId: String? = null,
                                 val sinceDate: Instant? = null) {
 }

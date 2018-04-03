@@ -140,7 +140,8 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                     if (search.isNullOrBlank()) null else if (query.onlyExactMatch) "'text':${search!!.json}" else "'text':/${search!!.trim()}/i",
                     if (searchMark == null) null else "date:{$lte: ${searchMark!!.date.json}}",
                     if (sinceDate == null) null else "date:{$gte: ${sinceDate!!.json}}",
-                    if (clientDevice.isNullOrBlank()) null else "'query.context.clientDevice':${clientDevice!!.json}"
+                    if (clientDevice.isNullOrBlank()) null else "'query.context.clientDevice':${clientDevice!!.json}",
+                    if (clientId.isNullOrBlank()) null else "'query.context.clientId':${clientId!!.json}"
                 ).toBsonFilter()
             val count = col.count(baseFilter)
             if (count > start) {
