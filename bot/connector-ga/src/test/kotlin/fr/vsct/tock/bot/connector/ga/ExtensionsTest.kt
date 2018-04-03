@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.connector.ga
 
 import fr.vsct.tock.translator.TextAndVoiceTranslatedString
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 /**

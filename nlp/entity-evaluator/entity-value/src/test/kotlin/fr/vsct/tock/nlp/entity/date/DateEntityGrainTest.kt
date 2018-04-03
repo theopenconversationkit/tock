@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.nlp.entity.date
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.time.LocalTime
 import java.time.ZoneId
 import java.time.ZonedDateTime

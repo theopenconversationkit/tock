@@ -25,7 +25,7 @@ import fr.vsct.tock.bot.engine.message.Choice
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import io.mockk.every
 import io.mockk.verify
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 

@@ -17,10 +17,10 @@
 package fr.vsct.tock.nlp.entity.date
 
 import fr.vsct.tock.nlp.entity.Value
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import kotlin.test.assertEquals
 
 /**
  *

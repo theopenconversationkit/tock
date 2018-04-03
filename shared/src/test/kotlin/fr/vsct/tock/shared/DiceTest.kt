@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.shared
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertTrue
 
 /**
@@ -27,7 +27,7 @@ class DiceTest {
     @Test
     fun newId_ShouldReturnAtLeats23CharsAndAtMost24() {
         Dice.newId().apply {
-            assertTrue(length >= 23 && length <= 24)
+            assertTrue(length in 23..24)
         }
     }
 }

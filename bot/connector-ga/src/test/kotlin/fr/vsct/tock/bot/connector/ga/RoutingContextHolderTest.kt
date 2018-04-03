@@ -24,16 +24,14 @@ import fr.vsct.tock.bot.connector.ga.model.request.GASurface
 import fr.vsct.tock.bot.connector.ga.model.request.GAUser
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.ConnectorController
-import fr.vsct.tock.bot.engine.I18nTranslator
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.spyk
 import io.vertx.ext.web.RoutingContext
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 /**
@@ -45,7 +43,7 @@ class RoutingContextHolderTest {
     private val context: RoutingContext = mockk(relaxed = true)
     private val controller: ConnectorController = mockk(relaxed = true)
 
-    @Before
+    @BeforeEach
     fun init() {
         every { bus.translate(any<CharSequence>()) } answers { firstArg() }
         every { bus.translateAndReturnBlankAsNull(any()) } answers { firstArg() }

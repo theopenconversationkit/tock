@@ -18,9 +18,9 @@ package fr.vsct.tock.shared.security
 
 import fr.vsct.tock.shared.security.StringObfuscatorMode.display
 import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 
@@ -29,12 +29,12 @@ import kotlin.test.assertEquals
  */
 class StringObfuscatorServiceTest {
 
-    @Before
+    @BeforeEach
     fun before() {
         StringObfuscatorService.registerObfuscator(SimpleObfuscator("\\d{9}".toRegex(), "sososecret", "?"))
     }
 
-    @After
+    @AfterEach
     fun after() {
         StringObfuscatorService.deregisterObfuscators()
     }

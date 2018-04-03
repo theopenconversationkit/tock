@@ -30,8 +30,9 @@ import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.shared.tockInternalInjector
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 import kotlin.test.assertEquals
 
 /**
@@ -41,7 +42,7 @@ class MessengerBuildersTest {
 
     val bus: BotBus = mockk(relaxed = true)
 
-    @Before
+    @BeforeEach
     fun before() {
         tockInternalInjector = KodeinInjector().apply {
             inject(Kodein {
@@ -54,35 +55,46 @@ class MessengerBuildersTest {
         every { bus.translate(allAny()) } answers { firstArg() ?: "" }
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test
     fun `listTemplate throws exception WHEN at least one element does not contain an image url AND list style is not compact`() {
-        listTemplate(bus.listElement("title"), bus.listElement("title2"))
+        assertThrows<IllegalStateException> {
+            listTemplate(bus.listElement("title"), bus.listElement("title2"))
+        }
     }
 
     @Test
     fun testImage() {
-        assertEquals(AttachmentMessage(
-                attachment = Attachment(type = image,
-                        payload = UrlPayload("http://test", null, true))
-        ), bus.image("http://test")
+        assertEquals(
+            AttachmentMessage(
+                attachment = Attachment(
+                    type = image,
+                    payload = UrlPayload("http://test", null, true)
+                )
+            ), bus.image("http://test")
         )
     }
 
     @Test
     fun testVideo() {
-        assertEquals(AttachmentMessage(
-                attachment = Attachment(type = video,
-                        payload = UrlPayload("http://test", null, true))
-        ), bus.video("http://test")
+        assertEquals(
+            AttachmentMessage(
+                attachment = Attachment(
+                    type = video,
+                    payload = UrlPayload("http://test", null, true)
+                )
+            ), bus.video("http://test")
         )
     }
 
     @Test
     fun testAudio() {
-        assertEquals(AttachmentMessage(
-                attachment = Attachment(type = audio,
-                        payload = UrlPayload("http://test", null, true))
-        ), bus.audio("http://test")
+        assertEquals(
+            AttachmentMessage(
+                attachment = Attachment(
+                    type = audio,
+                    payload = UrlPayload("http://test", null, true)
+                )
+            ), bus.audio("http://test")
         )
     }
 }

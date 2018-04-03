@@ -22,8 +22,8 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import fr.vsct.tock.shared.tockInternalInjector
 import io.mockk.mockk
-import org.junit.After
-import org.junit.Before
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 
 /**
  *
@@ -40,7 +40,7 @@ abstract class AbstractTest {
         }
     }
 
-    @Before
+    @BeforeEach
     fun initContext() {
         tockInternalInjector = KodeinInjector()
         tockInternalInjector.inject(Kodein {
@@ -49,7 +49,7 @@ abstract class AbstractTest {
         Translator.enabled = true
     }
 
-    @After
+    @AfterEach
     fun cleanupContext() {
         tockInternalInjector = KodeinInjector()
         Translator.enabled = false

@@ -17,7 +17,7 @@
 package fr.vsct.tock.duckling.client
 
 import fr.vsct.tock.nlp.entity.NumberValue
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
 import kotlin.test.assertEquals
 

@@ -19,18 +19,17 @@ package fr.vsct.tock.bot.connector.messenger.json.webhook
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.Sender
-import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Message
 import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageEcho
 import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageEchoWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Optin
 import fr.vsct.tock.bot.connector.messenger.model.webhook.OptinWebhook
-import fr.vsct.tock.bot.connector.messenger.model.webhook.UserActionPayload
 import fr.vsct.tock.bot.connector.messenger.model.webhook.PostbackWebhook
+import fr.vsct.tock.bot.connector.messenger.model.webhook.UserActionPayload
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Webhook
 import fr.vsct.tock.shared.jackson.mapper
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 class WebhookDeserializationTest {
@@ -45,7 +44,8 @@ class WebhookDeserializationTest {
     @Test
     fun testMessageWebhookWithEmptyAttachmentDeserialization() {
         val m = MessageWebhook(Sender("1"), Recipient("2"), 1L, Message("aa", 2, "text"))
-        val s = """{"sender":{"id":"1"},"recipient":{"id":"2"},"timestamp":1,"message":{"mid":"aa","seq":2,"text":"text","attachments":[{}]}}"""
+        val s =
+            """{"sender":{"id":"1"},"recipient":{"id":"2"},"timestamp":1,"message":{"mid":"aa","seq":2,"text":"text","attachments":[{}]}}"""
         assertEquals(m, mapper.readValue<Webhook>(s))
     }
 
@@ -90,17 +90,19 @@ class WebhookDeserializationTest {
                 "  }\n" +
                 "} "
         val output = mapper.readValue<MessageWebhook>(input)
-        assertEquals(MessageWebhook(
+        assertEquals(
+            MessageWebhook(
                 Sender("USER_ID"),
                 Recipient("PAGE_ID"),
                 1464990849275,
                 Message(
                     "mid.1464990849238:b9a22a2bcb1de31773",
-                        69,
-                        "Red",
-                        emptyList(),
-                        UserActionPayload("DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED")
+                    69,
+                    "Red",
+                    emptyList(),
+                    UserActionPayload("DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED")
                 )
-        ), output)
+            ), output
+        )
     }
 }

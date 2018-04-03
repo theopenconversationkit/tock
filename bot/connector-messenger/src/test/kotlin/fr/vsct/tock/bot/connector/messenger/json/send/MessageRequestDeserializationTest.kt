@@ -18,9 +18,21 @@ package fr.vsct.tock.bot.connector.messenger.json.send
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
-import fr.vsct.tock.bot.connector.messenger.model.send.*
+import fr.vsct.tock.bot.connector.messenger.model.send.Attachment
+import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
+import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType
+import fr.vsct.tock.bot.connector.messenger.model.send.Element
+import fr.vsct.tock.bot.connector.messenger.model.send.GenericPayload
+import fr.vsct.tock.bot.connector.messenger.model.send.LocationQuickReply
+import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
+import fr.vsct.tock.bot.connector.messenger.model.send.MessageTag
+import fr.vsct.tock.bot.connector.messenger.model.send.PostbackButton
+import fr.vsct.tock.bot.connector.messenger.model.send.QuickReply
+import fr.vsct.tock.bot.connector.messenger.model.send.TextMessage
+import fr.vsct.tock.bot.connector.messenger.model.send.TextQuickReply
+import fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload
 import fr.vsct.tock.shared.jackson.mapper
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 /**
@@ -31,33 +43,37 @@ class MessageRequestDeserializationTest {
     @Test
     fun testMessageRequestWithButtonDeserialization() {
         val m = MessageRequest(
-                Recipient("2"),
-                AttachmentMessage(
-                        Attachment(
-                                AttachmentType.template,
-                                GenericPayload(
-                                        listOf(
-                                                Element(
-                                                        "title",
-                                                        buttons = listOf(
-                                                                PostbackButton(
-                                                                        "payload",
-                                                                        "titleButton"
-                                                                )
-                                                        )
-                                                )
-                                        )
+            Recipient("2"),
+            AttachmentMessage(
+                Attachment(
+                    AttachmentType.template,
+                    GenericPayload(
+                        listOf(
+                            Element(
+                                "title",
+                                buttons = listOf(
+                                    PostbackButton(
+                                        "payload",
+                                        "titleButton"
+                                    )
                                 )
+                            )
                         )
+                    )
                 )
-        ,tag = MessageTag.FEATURE_FUNCTIONALITY_UPDATE)
+            )
+            , tag = MessageTag.FEATURE_FUNCTIONALITY_UPDATE
+        )
         val s = mapper.writeValueAsString(m)
         assertEquals(m, mapper.readValue<MessageRequest>(s))
     }
 
     @Test
     fun testMessageRequestWithUrlPayload() {
-        val m = MessageRequest(Recipient("2"), AttachmentMessage(Attachment(AttachmentType.image, UrlPayload("http://test/test.png", null, null))))
+        val m = MessageRequest(
+            Recipient("2"),
+            AttachmentMessage(Attachment(AttachmentType.image, UrlPayload("http://test/test.png", null, null)))
+        )
         val s = mapper.writeValueAsString(m)
         assertEquals(m, mapper.readValue<MessageRequest>(s))
     }
@@ -71,11 +87,11 @@ class MessageRequestDeserializationTest {
                 "      }"
         val output = mapper.readValue<QuickReply>(input)
         assertEquals(
-                TextQuickReply(
-                        "Green",
-                        "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN"
-                ),
-                output
+            TextQuickReply(
+                "Green",
+                "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN"
+            ),
+            output
         )
     }
 
@@ -86,8 +102,8 @@ class MessageRequestDeserializationTest {
                 "      }"
         val output = mapper.readValue<QuickReply>(input)
         assertEquals(
-                LocationQuickReply(),
-                output
+            LocationQuickReply(),
+            output
         )
     }
 
@@ -115,24 +131,24 @@ class MessageRequestDeserializationTest {
                 "}"
         val output = mapper.readValue<MessageRequest>(input)
         assertEquals(
-                MessageRequest(
-                        Recipient("USER_ID"),
-                        TextMessage(
-                                "Pick a color:",
-                                listOf(
-                                        TextQuickReply(
-                                                "Red",
-                                                "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED"
-                                        ),
-                                        TextQuickReply(
-                                                "Green",
-                                                "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN"
-                                        )
-                                )
+            MessageRequest(
+                Recipient("USER_ID"),
+                TextMessage(
+                    "Pick a color:",
+                    listOf(
+                        TextQuickReply(
+                            "Red",
+                            "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_RED"
+                        ),
+                        TextQuickReply(
+                            "Green",
+                            "DEVELOPER_DEFINED_PAYLOAD_FOR_PICKING_GREEN"
                         )
+                    )
+                )
 
-                ),
-                output
+            ),
+            output
         )
 
         assertEquals(output, mapper.readValue(mapper.writeValueAsString(output)))

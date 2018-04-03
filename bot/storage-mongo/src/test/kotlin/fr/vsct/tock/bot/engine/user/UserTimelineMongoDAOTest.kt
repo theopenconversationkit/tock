@@ -18,7 +18,7 @@ package fr.vsct.tock.bot.engine.user
 
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.mongo.UserTimelineMongoDAO
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 /**

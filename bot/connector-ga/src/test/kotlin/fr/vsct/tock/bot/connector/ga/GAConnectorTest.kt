@@ -27,10 +27,9 @@ import io.mockk.every
 import io.mockk.mockk
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 /**
  *
@@ -43,7 +42,7 @@ class GAConnectorTest {
     val context: RoutingContext = mockk(relaxed = true)
     val response: HttpServerResponse = mockk(relaxed = true)
 
-    @Before
+    @BeforeEach
     fun before() {
         every { context.response() } returns response
     }
@@ -61,7 +60,11 @@ class GAConnectorTest {
             )
         }
 
-        connector.handleRequest(controller, context, Resources.toString(resource("/request-with-permission.json"), Charsets.UTF_8))
+        connector.handleRequest(
+            controller,
+            context,
+            Resources.toString(resource("/request-with-permission.json"), Charsets.UTF_8)
+        )
 
         assertEquals("Pierre", userPreferences.firstName)
         assertEquals("Totor", userPreferences.lastName)

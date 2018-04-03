@@ -31,7 +31,7 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.litote.kmongo.toId
 import java.util.Locale.FRENCH
 import kotlin.test.assertEquals
