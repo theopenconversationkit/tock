@@ -23,10 +23,25 @@ import fr.vsct.tock.shared.mapNotNullValues
  * Configuration parameters used by a [ConnectorProvided] to create a new [Connector] instance.
  */
 data class ConnectorConfiguration(
+    /**
+     * The connector id - unique for a given bot.
+     */
     val connectorId: String,
+    /**
+     * The relative REST path of the connector.
+     */
     val path: String,
+    /**
+     * The connector type.
+     */
     val type: ConnectorType,
+    /**
+     * The underlying connector type. For example, you can have connectorType=rest and ownerConnectorType=messenger.
+     */
     val ownerConnectorType: ConnectorType? = null,
+    /**
+     * Additional parameters for this connector.
+     */
     val parameters: Map<String, String> = emptyMap()
 ) {
 
@@ -50,13 +65,35 @@ data class ConnectorConfiguration(
         )
     )
 
+    internal constructor(
+        base: ConnectorConfiguration,
+        botApplicationConfiguration: BotApplicationConfiguration
+    ) : this(
+        botApplicationConfiguration.applicationId,
+        botApplicationConfiguration.path ?: base.path,
+        botApplicationConfiguration.connectorType,
+        botApplicationConfiguration.name,
+        botApplicationConfiguration.baseUrl,
+        botApplicationConfiguration.ownerConnectorType,
+        botApplicationConfiguration.parameters + mapNotNullValues(
+            APPLICATION_NAME to botApplicationConfiguration.name,
+            BASE_URL to botApplicationConfiguration.baseUrl
+        )
+    )
+
     companion object {
         private const val APPLICATION_NAME: String = "_name"
         private const val BASE_URL: String = "_base_url"
     }
 
+    /**
+     * The name of application.
+     */
     fun getName(): String = parameters.getOrDefault(APPLICATION_NAME, connectorId)
 
+    /**
+     * The base url of the connector.
+     */
     fun getBaseUrl(): String = parameters.getOrDefault(BASE_URL, BotApplicationConfiguration.defaultBaseUrl)
 
     internal fun parametersWithoutDefaultKeys(): Map<String, String> =

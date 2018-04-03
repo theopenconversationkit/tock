@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.bot.engine
 
-import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
@@ -55,7 +54,12 @@ object BotRepository {
 
     private val logger = KotlinLogging.logger {}
 
-    private val botConfigurationDAO: BotApplicationConfigurationDAO by injector.instance()
+    private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
+    internal val botProviders: MutableSet<BotProvider> = mutableSetOf()
+    internal val storyHandlerListeners: MutableList<StoryHandlerListener> = mutableListOf()
+    internal val nlpListeners: MutableList<NlpListener> = mutableListOf(BuiltInKeywordListener)
+    private val nlpClient: NlpClient get() = injector.provide()
+    private val executor: Executor get() = injector.provide()
 
     internal val connectorProviders: MutableSet<ConnectorProvider> = mutableSetOf(
         object : ConnectorProvider {
@@ -69,11 +73,6 @@ object BotRepository {
         }
     )
 
-    internal val botProviders: MutableSet<BotProvider> = mutableSetOf()
-    internal val storyHandlerListeners: MutableList<StoryHandlerListener> = mutableListOf()
-    internal val nlpListeners: MutableList<NlpListener> = mutableListOf(BuiltInKeywordListener)
-    private val nlpClient: NlpClient get() = injector.provide()
-    private val executor: Executor get() = injector.provide()
 
     /**
      * Request timer for connectors.
@@ -131,34 +130,6 @@ object BotRepository {
     ) {
         val verticle = BotVerticle()
 
-        fun saveApplicationConfigurationAndRegister(
-            connector: Connector,
-            bot: Bot,
-            configuration: ConnectorConfiguration
-        ): BotApplicationConfiguration {
-            return with(bot.botDefinition) {
-                val conf = BotApplicationConfiguration(
-                    configuration.connectorId.run { if (isBlank()) botId else this },
-                    botId,
-                    namespace,
-                    nlpModelName,
-                    configuration.type,
-                    configuration.ownerConnectorType,
-                    configuration.getName().run { if (isBlank()) botId else this },
-                    configuration.getBaseUrl(),
-                    configuration.parametersWithoutDefaultKeys()
-                )
-
-                TockConnectorController.register(connector, bot, verticle)
-
-                botConfigurationDAO.updateIfNotManuallyModified(conf)
-            }
-        }
-
-        fun findConnectorProvider(connectorType: ConnectorType): ConnectorProvider {
-            return connectorProviders.first { it.connectorType == connectorType }
-        }
-
         val connectorConfigurations = ConnectorConfigurationRepository.getConfigurations()
             .run {
                 if (isEmpty()) {
@@ -184,36 +155,11 @@ object BotRepository {
                 error("A least two configurations have the same connectorId: ${this}")
             }
 
-        val bots: MutableSet<BotDefinition> = mutableSetOf()
-        connectorConfigurations.forEach { conf ->
-            findConnectorProvider(conf.type)
-                .apply {
-                    connector(conf)
-                        .let { connector ->
-                            botProviders.forEach { botProvider ->
-                                Bot(botProvider.botDefinition()).let { bot ->
-                                    //set default namespace to bot namespace if not already set
-                                    if (tockAppDefaultNamespace == DEFAULT_APP_NAMESPACE) {
-                                        tockAppDefaultNamespace = bot.botDefinition.namespace
-                                    }
-                                    val appConf = saveApplicationConfigurationAndRegister(connector, bot, conf)
-                                    BotConfigurationSynchronizer.monitor(bot)
+        val bots = botProviders.map { it.botDefinition() }
 
-                                    //init rest built-in configuration if we need it
-                                    adminRestConnectorInstaller.invoke(appConf)
-                                        ?.apply {
-                                            saveApplicationConfigurationAndRegister(
-                                                findConnectorProvider(type).connector(this),
-                                                bot,
-                                                this
-                                            )
-                                        }
-
-                                    bots.add(bot.botDefinition)
-                                }
-                            }
-                        }
-                }
+        //install each bot
+        bots.forEach {
+            installBot(verticle, it, connectorConfigurations, adminRestConnectorInstaller)
         }
 
         //check that nlp applications exist
@@ -241,4 +187,95 @@ object BotRepository {
         vertx.deployVerticle(verticle)
     }
 
+    private fun installBot(
+        verticle: BotVerticle,
+        botDefinition: BotDefinition,
+        connectorConfigurations: List<ConnectorConfiguration>,
+        adminRestConnectorInstaller: (BotApplicationConfiguration) -> ConnectorConfiguration?
+    ) {
+
+        fun findConnectorProvider(connectorType: ConnectorType): ConnectorProvider {
+            return connectorProviders.first { it.connectorType == connectorType }
+        }
+
+        val bot = Bot(botDefinition)
+        val existingBotConfigurations =
+            botConfigurationDAO
+                .getConfigurationsByBotId(botDefinition.botId)
+                .groupBy { it.applicationId }
+                .map { (key, value) ->
+                    if (value.size > 1) {
+                        logger.warn { "more than one configuration in database: $value" }
+                    }
+                    key to value.first()
+                }
+                .toMap()
+
+        connectorConfigurations.forEach { baseConf ->
+            findConnectorProvider(baseConf.type)
+                .apply {
+                    //1 refresh connector conf
+                    val conf = refreshBotConfiguration(baseConf, existingBotConfigurations)
+                    //2 create and install connector
+                    val connector = connector(conf)
+                    //3 set default namespace to bot namespace if not already set
+                    if (tockAppDefaultNamespace == DEFAULT_APP_NAMESPACE) {
+                        tockAppDefaultNamespace = bot.botDefinition.namespace
+                    }
+                    //4 update bot conf
+                    val appConf =
+                        saveConfiguration(verticle, connector, conf, bot)
+
+                    //5 monitor conf
+                    BotConfigurationSynchronizer.monitor(bot)
+
+                    //6 generate and install rest connector
+                    adminRestConnectorInstaller.invoke(appConf)
+                        ?.also {
+                            val restConf = refreshBotConfiguration(it, existingBotConfigurations)
+                            saveConfiguration(
+                                verticle,
+                                findConnectorProvider(restConf.type).connector(restConf),
+                                restConf,
+                                bot
+                            )
+                        }
+                }
+        }
+    }
+
+    private fun refreshBotConfiguration(
+        configuration: ConnectorConfiguration,
+        existingBotConfigurations: Map<String, BotApplicationConfiguration>
+    ): ConnectorConfiguration =
+        existingBotConfigurations[configuration.connectorId]?.run {
+            ConnectorConfiguration(configuration, this)
+        } ?: configuration
+
+    private fun saveConfiguration(
+        verticle: BotVerticle,
+        connector: Connector,
+        configuration: ConnectorConfiguration,
+        bot: Bot
+    ): BotApplicationConfiguration {
+
+        return with(bot.botDefinition) {
+            val conf = BotApplicationConfiguration(
+                configuration.connectorId.run { if (isBlank()) botId else this },
+                botId,
+                namespace,
+                nlpModelName,
+                configuration.type,
+                configuration.ownerConnectorType,
+                configuration.getName().run { if (isBlank()) botId else this },
+                configuration.getBaseUrl(),
+                configuration.parametersWithoutDefaultKeys(),
+                path = configuration.path
+            )
+
+            TockConnectorController.register(connector, bot, verticle)
+
+            botConfigurationDAO.updateIfNotManuallyModified(conf)
+        }
+    }
 }

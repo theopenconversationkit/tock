@@ -23,17 +23,19 @@ import org.litote.kmongo.Id
  */
 interface BotApplicationConfigurationDAO {
 
-    fun save(conf: BotApplicationConfiguration) : BotApplicationConfiguration
+    fun save(conf: BotApplicationConfiguration): BotApplicationConfiguration
 
-    fun updateIfNotManuallyModified(conf: BotApplicationConfiguration) : BotApplicationConfiguration
+    fun updateIfNotManuallyModified(conf: BotApplicationConfiguration): BotApplicationConfiguration
 
     fun getConfigurationsByNamespaceAndNlpModel(namespace: String, nlpModel: String): List<BotApplicationConfiguration>
 
     fun getConfigurations(): List<BotApplicationConfiguration>
 
-    fun getConfigurationById(id: Id<BotApplicationConfiguration>) : BotApplicationConfiguration?
+    fun getConfigurationById(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration?
 
-    fun getConfigurationByApplicationIdAndBotId(applicationId:String, botId:String) : BotApplicationConfiguration?
+    fun getConfigurationByApplicationIdAndBotId(applicationId: String, botId: String): BotApplicationConfiguration?
+
+    fun getConfigurationsByBotId(botId: String): List<BotApplicationConfiguration>
 
     fun delete(conf: BotApplicationConfiguration)
 }

@@ -51,8 +51,15 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
         return col.findOneById(id) ?: col.findOneById(ObjectId(id.toString()))
     }
 
-    override fun getConfigurationByApplicationIdAndBotId(applicationId: String, botId: String): BotApplicationConfiguration? {
+    override fun getConfigurationByApplicationIdAndBotId(
+        applicationId: String,
+        botId: String
+    ): BotApplicationConfiguration? {
         return col.findOne("{applicationId:${applicationId.json}, botId:${botId.json}}")
+    }
+
+    override fun getConfigurationsByBotId(botId: String): List<BotApplicationConfiguration> {
+        return col.find("{botId:${botId.json}}").toList()
     }
 
     override fun save(conf: BotApplicationConfiguration): BotApplicationConfiguration {
@@ -90,7 +97,10 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
         }
     }
 
-    override fun getConfigurationsByNamespaceAndNlpModel(namespace: String, nlpModel: String): List<BotApplicationConfiguration> {
+    override fun getConfigurationsByNamespaceAndNlpModel(
+        namespace: String,
+        nlpModel: String
+    ): List<BotApplicationConfiguration> {
         return col.find("{namespace:${namespace.json}, nlpModel:${nlpModel.json}}").toList()
     }
 

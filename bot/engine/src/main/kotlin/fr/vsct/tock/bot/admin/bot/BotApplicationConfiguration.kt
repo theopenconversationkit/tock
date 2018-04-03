@@ -24,38 +24,79 @@ import java.net.Inet4Address
 import java.net.NetworkInterface
 
 /**
- *
+ * Configuration details for a bot and a connector.
  */
 data class BotApplicationConfiguration(
-        val applicationId: String,
-        val botId: String,
-        val namespace: String,
-        val nlpModel: String,
-        val connectorType: ConnectorType,
-        val ownerConnectorType: ConnectorType? = null,
-        val name: String = applicationId,
-        val baseUrl: String? = defaultBaseUrl,
-        val parameters: Map<String, String> = emptyMap(),
-        val manuallyModified: Boolean = false,
-        val _id: Id<BotApplicationConfiguration> = newId()) {
+    /**
+     * The application identifier.
+     */
+    val applicationId: String,
+    /**
+     * The bot identifier.
+     */
+    val botId: String,
+    /**
+     * The namespace of the model.
+     */
+    val namespace: String,
+    /**
+     * The name of the model.
+     */
+    val nlpModel: String,
+    /**
+     * The type of connector for the configuration.
+     */
+    val connectorType: ConnectorType,
+    /**
+     * The underlying connector type. For example, you can have connectorType=rest and ownerConnectorType=messenger.
+     */
+    val ownerConnectorType: ConnectorType? = null,
+    /**
+     * The name of the configuration.
+     */
+    val name: String = applicationId,
+    /**
+     * The base url of the connector.
+     */
+    val baseUrl: String? = defaultBaseUrl,
+    /**
+     * Additional parameters for this connector.
+     */
+    val parameters: Map<String, String> = emptyMap(),
+    /**
+     * Has this connector been manualy modified?
+     */
+    val manuallyModified: Boolean = false,
+    /**
+     * The relative path of the connector. If null, the default path is used.
+     */
+    val path: String? = null,
+    /**
+     * The configuration identifier.
+     */
+    val _id: Id<BotApplicationConfiguration> = newId()
+) {
 
     companion object {
         val defaultBaseUrl: String =
-                property(
-                        "tock_configuration_bot_default_base_url",
-                        "http://${getLocalhostIP()}:${property("botverticle_port", "8080")}"
-                )
+            property(
+                "tock_configuration_bot_default_base_url",
+                "http://${getLocalhostIP()}:${property("botverticle_port", "8080")}"
+            )
 
         private fun getLocalhostIP(): String {
             return NetworkInterface.getNetworkInterfaces()
-                    .toList()
-                    .flatMap { it.inetAddresses.toList().filterIsInstance<Inet4Address>() }
-                    .find { it.hostName.startsWith("192.168.0") }
-                    ?.hostName
+                .toList()
+                .flatMap { it.inetAddresses.toList().filterIsInstance<Inet4Address>() }
+                .find { it.hostName.startsWith("192.168.0") }
+                ?.hostName
                     ?: "localhost"
         }
     }
 
+    /**
+     * The target connector type is the [ownerConnectorType]. If null [connectorType] is used.
+     */
     @Transient
     val targetConnectorType = ownerConnectorType ?: connectorType
 }

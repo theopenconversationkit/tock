@@ -16,13 +16,18 @@
 
 package fr.vsct.tock.bot.engine
 
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
+import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
+import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.engine.BotRepository.botProviders
 import fr.vsct.tock.bot.engine.ConnectorConfigurationRepository.addConfiguration
 import fr.vsct.tock.shared.defaultLocale
+import io.mockk.every
+import io.mockk.mockk
 import io.mockk.verify
 import org.junit.Before
 import org.junit.Test
@@ -96,5 +101,38 @@ class BotRepositoryTest : BotEngineTest() {
         })
         BotRepository.installBots(emptyList())
         verify { nlpClient.createApplication(botDefinition.namespace, botDefinition.nlpModelName, defaultLocale) }
+    }
+
+    @Test
+    fun `installBots refreshes the configuration from the stored bot configuration`() {
+        val connectorType = ConnectorType("test")
+        val botId = botDefinition.botId
+        val botConfs = listOf(
+            BotApplicationConfiguration(
+                connectorType.id,
+                botId,
+                botDefinition.namespace,
+                botDefinition.nlpModelName,
+                connectorType,
+                parameters = mapOf("test" to "test")
+            )
+        )
+        val connectorProvider = object : ConnectorProvider {
+            override val connectorType: ConnectorType = connectorType
+            override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
+                return mockk(relaxed = true)
+            }
+        }
+        ConnectorConfigurationRepository.addConfiguration(
+            ConnectorConfiguration(connectorType.id, "", connectorType)
+        )
+        BotRepository.registerConnectorProvider(connectorProvider)
+        BotRepository.registerBotProvider(object : BotProvider {
+            override fun botDefinition(): BotDefinition = botDefinition
+        })
+
+        every { botConfDAO.getConfigurationsByBotId(any()) } returns botConfs
+        BotRepository.installBots(emptyList())
+        verify { botConfDAO.updateIfNotManuallyModified(match { it.parameters.containsKey("test") }) }
     }
 }

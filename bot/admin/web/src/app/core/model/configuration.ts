@@ -26,7 +26,8 @@ export class BotApplicationConfiguration {
               public parameters: Map<string, string>,
               public baseUrl?: string,
               public _id?: string,
-              public ownerConnectorType?: ConnectorType) {
+              public ownerConnectorType?: ConnectorType,
+              public path?:string) {
   }
 
   static fromJSON(json?: any): BotApplicationConfiguration {
