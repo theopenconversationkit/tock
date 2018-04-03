@@ -24,39 +24,42 @@ import fr.vsct.tock.bot.engine.BotRepository.botProviders
 import fr.vsct.tock.bot.engine.ConnectorConfigurationRepository.addConfiguration
 import fr.vsct.tock.shared.defaultLocale
 import io.mockk.verify
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.assertThrows
 
 /**
  *
  */
 class BotRepositoryTest : BotEngineTest() {
 
-    @Before
+    @BeforeEach
     fun beforeTest() {
         ConnectorConfigurationRepository.cleanup()
         botProviders.clear()
     }
 
-    @Test(expected = IllegalStateException::class)
+    @Test
     fun `installBots with two configurations of the same id throws error`() {
-        addConfiguration(
-            ConnectorConfiguration(
-                "id",
-                "",
-                ConnectorType.none,
-                ConnectorType.none
+        assertThrows<IllegalStateException> {
+            addConfiguration(
+                ConnectorConfiguration(
+                    "id",
+                    "",
+                    ConnectorType.none,
+                    ConnectorType.none
+                )
             )
-        )
-        addConfiguration(
-            ConnectorConfiguration(
-                "id",
-                "",
-                ConnectorType.none,
-                ConnectorType.none
+            addConfiguration(
+                ConnectorConfiguration(
+                    "id",
+                    "",
+                    ConnectorType.none,
+                    ConnectorType.none
+                )
             )
-        )
-        BotRepository.installBots(emptyList())
+            BotRepository.installBots(emptyList())
+        }
     }
 
     @Test

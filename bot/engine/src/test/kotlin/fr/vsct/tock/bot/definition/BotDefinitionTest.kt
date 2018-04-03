@@ -19,7 +19,7 @@ package fr.vsct.tock.bot.definition
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.BotDefinitionTest
 import fr.vsct.tock.translator.I18nLabelKey
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.util.Locale
 import kotlin.test.assertEquals
 
@@ -34,12 +34,13 @@ class BotDefinitionTest {
     fun `i18nTranslator() returns an I18nTranslator that use BotDefinition#i18nKeyFromLabel`() {
         val result = botDef.i18nTranslator(Locale.ENGLISH, ConnectorType.none).i18nKeyFromLabel("test")
         assertEquals(
-                I18nLabelKey(
-                        "bottest_test",
-                        "namespace",
-                        "bottest",
-                        "test"
-                )
-                , result)
+            I18nLabelKey(
+                "bottest_test",
+                "namespace",
+                "bottest",
+                "test"
+            )
+            , result
+        )
     }
 }

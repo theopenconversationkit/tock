@@ -20,7 +20,7 @@ import fr.vsct.tock.shared.vertx.defaultVertxOptions
 import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.core.VertxOptions
 import io.vertx.core.impl.VertxInternal
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.util.concurrent.ThreadPoolExecutor
 import kotlin.test.assertEquals
 

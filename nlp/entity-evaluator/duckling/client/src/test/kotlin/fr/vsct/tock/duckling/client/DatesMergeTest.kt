@@ -30,7 +30,7 @@ import fr.vsct.tock.nlp.model.EntityCallContextForEntity
 import fr.vsct.tock.shared.injector
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.Locale
@@ -45,80 +45,94 @@ internal class DatesMergeTest {
         val referenceTime: ZonedDateTime = ZonedDateTime.now()
 
         val context = EntityCallContextForEntity(
-                EntityType("duckling:datetime"),
-                Locale.FRENCH,
-                NlpEngineType.opennlp,
-                referenceTime)
+            EntityType("duckling:datetime"),
+            Locale.FRENCH,
+            NlpEngineType.opennlp,
+            referenceTime
+        )
 
         val tomorrow = ValueDescriptor(
-                DateEntityValue(
-                        referenceTime.plusDays(1),
-                        DateEntityGrain.day
-                ),
-                "demain",
-                false,
-                12)
+            DateEntityValue(
+                referenceTime.plusDays(1),
+                DateEntityGrain.day
+            ),
+            "demain",
+            false,
+            12
+        )
 
         val twoDaysAfter = ValueDescriptor(
-                DateEntityValue(
-                        referenceTime.plusDays(2),
-                        DateEntityGrain.day
-                ),
-                "2 jours Après",
-                false,
-                12,
-                0.8)
+            DateEntityValue(
+                referenceTime.plusDays(2),
+                DateEntityGrain.day
+            ),
+            "2 jours Après",
+            false,
+            12,
+            0.8
+        )
 
         val evening = ValueDescriptor(
-                DateIntervalEntityValue(
-                        DateEntityValue(referenceTime.withHour(18), DateEntityGrain.hour),
-                        DateEntityValue(referenceTime.withHour(23), DateEntityGrain.hour)
-                ),
-                "en soirée",
-                false,
-                2)
+            DateIntervalEntityValue(
+                DateEntityValue(referenceTime.withHour(18), DateEntityGrain.hour),
+                DateEntityValue(referenceTime.withHour(23), DateEntityGrain.hour)
+            ),
+            "en soirée",
+            false,
+            2
+        )
 
         val tomorrowInTheEvening = DateIntervalEntityValue(
-                DateEntityValue(referenceTime.plusDays(1).withHour(18), DateEntityGrain.hour),
-                DateEntityValue(referenceTime.plusDays(1).withHour(23), DateEntityGrain.hour)
+            DateEntityValue(referenceTime.plusDays(1).withHour(18), DateEntityGrain.hour),
+            DateEntityValue(referenceTime.plusDays(1).withHour(23), DateEntityGrain.hour)
         )
 
         val tomorrowAt8 = ValueDescriptor(
-                DateEntityValue(
-                        referenceTime.plusDays(1).withHour(20),
-                        DateEntityGrain.hour
-                ),
-                "demain à 20h",
-                false,
-                2)
+            DateEntityValue(
+                referenceTime.plusDays(1).withHour(20),
+                DateEntityGrain.hour
+            ),
+            "demain à 20h",
+            false,
+            2
+        )
 
         val inThreeDays =
-                DateEntityValue(
-                        referenceTime.plusDays(3),
-                        DateEntityGrain.day
-                )
+            DateEntityValue(
+                referenceTime.plusDays(3),
+                DateEntityGrain.day
+            )
 
         val parser: Parser = mockk(relaxed = true)
 
         init {
 
-            every { parser.parse(
-                eq(Locale.FRENCH.language),
-                eq(timeDucklingDimension),
-                eq((tomorrow.value as DateEntityValue).date),
-                eq("2 jours Après")) } answers { listOf(ValueWithRange(0, 0, inThreeDays, timeDucklingDimension)) }
+            every {
+                parser.parse(
+                    eq(Locale.FRENCH.language),
+                    eq(timeDucklingDimension),
+                    eq((tomorrow.value as DateEntityValue).date),
+                    eq("2 jours Après")
+                )
+            } answers { listOf(ValueWithRange(0, 0, inThreeDays, timeDucklingDimension)) }
 
-            every { parser.parse(
-                eq(Locale.FRENCH.language),
-                eq(timeDucklingDimension),
-                eq(referenceTime),
-                eq("en soirée demain")) } answers { listOf(ValueWithRange(0, 0, tomorrowInTheEvening, timeDucklingDimension)) }
+            every {
+                parser.parse(
+                    eq(Locale.FRENCH.language),
+                    eq(timeDucklingDimension),
+                    eq(referenceTime),
+                    eq("en soirée demain")
+                )
+            } answers { listOf(ValueWithRange(0, 0, tomorrowInTheEvening, timeDucklingDimension)) }
 
-            every { parser.parse(
-                eq(Locale.FRENCH.language),
-                eq(timeDucklingDimension),
-                eq((tomorrow.value as DateEntityValue).date.truncatedTo(ChronoUnit.DAYS)),
-                eq("en soirée")) } answers { listOf(ValueWithRange(0, 0, tomorrowInTheEvening, timeDucklingDimension)) }
+            every {
+                parser.parse(
+                    eq(Locale.FRENCH.language),
+                    eq(timeDucklingDimension),
+                    eq((tomorrow.value as DateEntityValue).date.truncatedTo(ChronoUnit.DAYS)),
+                    eq("en soirée")
+                )
+            } answers { listOf(ValueWithRange(0, 0, tomorrowInTheEvening, timeDucklingDimension)) }
 
             injector.inject(Kodein {
                 bind<Parser>() with provider { parser }

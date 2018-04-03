@@ -24,7 +24,7 @@ import fr.vsct.tock.bot.engine.stt.SttListener
 import fr.vsct.tock.bot.engine.stt.SttService
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.resource
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

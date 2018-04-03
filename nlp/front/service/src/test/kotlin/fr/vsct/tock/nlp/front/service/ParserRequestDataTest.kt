@@ -18,7 +18,7 @@ package fr.vsct.tock.nlp.front.service
 
 import fr.vsct.tock.nlp.front.shared.parser.IntentQualifier
 import fr.vsct.tock.nlp.front.shared.parser.QueryState
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertTrue
 
 /**
@@ -30,11 +30,11 @@ class ParserRequestDataTest : AbstractTest() {
     fun isStateEnabledForIntentId_shouldReturnTrue_whenIntentIsEnabledAndIntentSupportState() {
         val testState = "testState"
         val data = ParserRequestData(
-                app,
-                parseQuery.copy(state = QueryState(setOf(testState))),
-                defaultClassifiedSentence,
-                setOf(IntentQualifier(defaultIntentName, 0.2)),
-                listOf(defaultIntentDefinition)
+            app,
+            parseQuery.copy(state = QueryState(setOf(testState))),
+            defaultClassifiedSentence,
+            setOf(IntentQualifier(defaultIntentName, 0.2)),
+            listOf(defaultIntentDefinition)
         )
         assertTrue(data.isStateEnabledForIntentId(defaultIntentDefinition._id))
     }

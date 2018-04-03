@@ -18,7 +18,7 @@ package fr.vsct.tock.bot.engine.dialog
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.api.client.model.EntityType
 import fr.vsct.tock.nlp.entity.NumberValue
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 import kotlin.test.assertTrue

@@ -17,7 +17,7 @@
 package fr.vsct.tock.shared.security
 
 import fr.vsct.tock.shared.security.StringObfuscatorMode.display
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 

@@ -39,8 +39,8 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.tockInternalInjector
 import io.mockk.mockk
-import org.junit.After
-import org.junit.Before
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.Instant
@@ -100,12 +100,12 @@ abstract class AbstractTest {
 
     val parseQuery = ParseQuery(emptyList(), namespace, appName, QueryContext(defaultLocale, Dice.newId()))
 
-    @Before
+    @BeforeEach
     fun initContext() {
         context.init()
     }
 
-    @After
+    @AfterEach
     fun cleanupContext() {
         tockInternalInjector = KodeinInjector()
     }

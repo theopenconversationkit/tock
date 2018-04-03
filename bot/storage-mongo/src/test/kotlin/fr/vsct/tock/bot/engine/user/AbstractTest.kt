@@ -27,7 +27,7 @@ import fr.vsct.tock.bot.mongo.MONGO_DATABASE
 import fr.vsct.tock.bot.mongo.UserTimelineCol
 import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.shared.tockInternalInjector
-import org.junit.Before
+import org.junit.jupiter.api.BeforeEach
 import org.litote.kmongo.KFongoRule.Companion.rule
 
 /**
@@ -43,7 +43,7 @@ abstract class AbstractTest {
         }
     }
 
-    @Before
+    @BeforeEach
     fun before() {
         tockInternalInjector = KodeinInjector()
         tockInternalInjector.inject(Kodein {

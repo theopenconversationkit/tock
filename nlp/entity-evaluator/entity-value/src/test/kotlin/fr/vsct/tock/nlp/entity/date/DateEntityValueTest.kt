@@ -18,7 +18,7 @@ package fr.vsct.tock.nlp.entity.date
 
 import fr.vsct.tock.nlp.entity.date.DateEntityGrain.day
 import fr.vsct.tock.nlp.entity.date.DateEntityGrain.hour
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.time.Duration
 import java.time.ZonedDateTime
 import kotlin.test.assertEquals

@@ -18,7 +18,7 @@ package fr.vsct.tock.bot.connector.ga.model.response
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.shared.jackson.mapper
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 /**
@@ -29,33 +29,35 @@ class GAOptionValueSpecTest {
     @Test
     fun testSerializationAndDeserialization() {
         val option = GAOptionValueSpec(
-                carouselSelect =
-                GACarouselSelect(
-                        listOf(
-                                GACarouselItem(
-                                        GAOptionInfo(
-                                                "key1",
-                                                listOf("synonym1")
-                                        ),
-                                        "titre1",
-                                        "description1",
-                                        GAImage(
-                                                "https://aaa.com/test.png",
-                                                "Image with text")
-                                ),
-                                GACarouselItem(
-                                        GAOptionInfo(
-                                                "key2",
-                                                listOf("synonym2")
-                                        ),
-                                        "titre2",
-                                        "description2",
-                                        GAImage(
-                                                "https://aaa.com/test2.png",
-                                                "Image with text")
-                                )
+            carouselSelect =
+            GACarouselSelect(
+                listOf(
+                    GACarouselItem(
+                        GAOptionInfo(
+                            "key1",
+                            listOf("synonym1")
+                        ),
+                        "titre1",
+                        "description1",
+                        GAImage(
+                            "https://aaa.com/test.png",
+                            "Image with text"
                         )
+                    ),
+                    GACarouselItem(
+                        GAOptionInfo(
+                            "key2",
+                            listOf("synonym2")
+                        ),
+                        "titre2",
+                        "description2",
+                        GAImage(
+                            "https://aaa.com/test2.png",
+                            "Image with text"
+                        )
+                    )
                 )
+            )
         )
         val s = mapper.writeValueAsString(option)
         assertEquals(option, mapper.readValue<GAInputValueData>(s))

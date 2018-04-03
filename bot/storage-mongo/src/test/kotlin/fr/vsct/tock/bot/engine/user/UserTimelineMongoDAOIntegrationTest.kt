@@ -24,7 +24,7 @@ import fr.vsct.tock.bot.mongo.botMongoModule
 import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.sharedModule
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.util.Locale
 
 /**
@@ -40,13 +40,15 @@ class UserTimelineMongoDAOIntegrationTest {
 
     @Test
     fun testSearch() {
-        println(UserTimelineMongoDAO.search(
+        println(
+            UserTimelineMongoDAO.search(
                 UserReportQuery(
-                        defaultNamespace,
-                        "bot_open_data",
-                        Locale.FRENCH,
-                        flags = mapOf("tock_profile_loaded" to "true")
+                    defaultNamespace,
+                    "bot_open_data",
+                    Locale.FRENCH,
+                    flags = mapOf("tock_profile_loaded" to "true")
                 )
-        ))
+            )
+        )
     }
 }

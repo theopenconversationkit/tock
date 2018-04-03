@@ -54,11 +54,12 @@
         <commons-codec>1.11</commons-codec>
         <commons-lang>3.7</commons-lang>
 
-        <junit>4.12</junit>
+        <junit-platform>1.1.0</junit-platform>
+        <junit-jupiter>5.1.0</junit-jupiter>
         <mockito-kotlin>1.5.0</mockito-kotlin>
         <mockk>1.7.10</mockk>
 
-        <plugin.surefire>2.21.0</plugin.surefire>
+        <plugin.surefire>2.19.1</plugin.surefire>
         <plugin.source>3.0.1</plugin.source>
         <plugin.release>2.5.3</plugin.release>
         <plugin.gpg>1.6</plugin.gpg>
@@ -354,14 +355,20 @@
             </dependency>
 
             <dependency>
-                <groupId>junit</groupId>
-                <artifactId>junit</artifactId>
-                <version>${junit}</version>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-engine</artifactId>
+                <version>${junit-jupiter}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.junit.jupiter</groupId>
+                <artifactId>junit-jupiter-api</artifactId>
+                <version>${junit-jupiter}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-test-junit</artifactId>
+                <artifactId>kotlin-test</artifactId>
                 <version>${kotlin}</version>
                 <scope>test</scope>
             </dependency>
@@ -411,6 +418,13 @@
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>${plugin.surefire}</version>
+                <dependencies>
+                    <dependency>
+                        <groupId>org.junit.platform</groupId>
+                        <artifactId>junit-platform-surefire-provider</artifactId>
+                        <version>${junit-platform}</version>
+                    </dependency>
+                </dependencies>
                 <configuration>
                     <includes>
                         <include>**/*Test.*</include>
@@ -420,7 +434,6 @@
                     <excludes>
                         <exclude>**/*IntegrationTest.*</exclude>
                     </excludes>
-
                 </configuration>
             </plugin>
             <plugin>

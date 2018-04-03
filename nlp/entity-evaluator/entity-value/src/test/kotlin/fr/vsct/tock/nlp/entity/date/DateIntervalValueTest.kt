@@ -16,11 +16,11 @@
 
 package fr.vsct.tock.nlp.entity.date
 
-import org.junit.Assert
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.time.Duration
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import kotlin.test.assertEquals
 
 /**
  *
@@ -32,6 +32,12 @@ class DateIntervalValueTest {
         val actual = ZonedDateTime.now()
         val duration = Duration.ofHours(2)
         val end = actual.plusHours(1).withZoneSameInstant(ZoneId.of("America/Phoenix"))
-        Assert.assertEquals(duration, DateIntervalEntityValue(DateEntityValue(actual, DateEntityGrain.hour), DateEntityValue(end, DateEntityGrain.hour)).duration())
+        assertEquals(
+            duration,
+            DateIntervalEntityValue(
+                DateEntityValue(actual, DateEntityGrain.hour),
+                DateEntityValue(end, DateEntityGrain.hour)
+            ).duration()
+        )
     }
 }

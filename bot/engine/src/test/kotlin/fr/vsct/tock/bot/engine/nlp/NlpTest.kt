@@ -30,7 +30,7 @@ import fr.vsct.tock.nlp.entity.Value
 import io.mockk.every
 import io.mockk.slot
 import io.mockk.verify
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertTrue

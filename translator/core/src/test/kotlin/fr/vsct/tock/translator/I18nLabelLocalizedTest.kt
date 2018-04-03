@@ -17,7 +17,7 @@
 package fr.vsct.tock.translator
 
 import fr.vsct.tock.shared.defaultLocale
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 /**

@@ -25,9 +25,9 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
 import fr.vsct.tock.shared.defaultLocale
 import io.mockk.every
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import io.mockk.verify
-import org.junit.Before
-import org.junit.Test
 import org.litote.kmongo.toId
 import java.time.Instant.now
 import java.util.Locale
@@ -40,7 +40,7 @@ import kotlin.test.assertTrue
  */
 class ApplicationCodecServiceTest : AbstractTest() {
 
-    @Before
+    @BeforeEach
     fun before() {
         every { context.config.getApplicationByNamespaceAndName(any(), any()) } returns app
     }

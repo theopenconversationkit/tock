@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.translator
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -33,12 +33,12 @@ class I18nTest {
         val date = LocalDate.now().with(DayOfWeek.FRIDAY)
         val format = DateTimeFormatter.ofPattern("EEEE")
         assertEquals(
-                "Friday",
-                date.formatWith(format, Locale.ENGLISH).toString()
+            "Friday",
+            date.formatWith(format, Locale.ENGLISH).toString()
         )
         assertEquals(
-                "vendredi",
-                date.formatWith(format, Locale.FRENCH).toString()
+            "vendredi",
+            date.formatWith(format, Locale.FRENCH).toString()
         )
     }
 }

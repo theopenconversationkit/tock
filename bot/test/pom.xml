@@ -28,6 +28,10 @@
     <name>Tock Bot Test Toolkit</name>
     <description>Bot Test helpers and mocks</description>
 
+    <properties>
+        <junit4>4.12</junit4>
+    </properties>
+
     <dependencies>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
@@ -35,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-test-junit</artifactId>
+            <artifactId>kotlin-test</artifactId>
             <scope>compile</scope>
         </dependency>
         <dependency>
@@ -48,6 +52,17 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
+            <scope>provided</scope>
+            <version>${junit4}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
             <scope>provided</scope>
         </dependency>
         <dependency>

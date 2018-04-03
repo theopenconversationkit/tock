@@ -18,9 +18,9 @@ package fr.vsct.tock.nlp.front.service
 
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import io.mockk.every
-import org.junit.After
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFalse
 import kotlin.test.assertNull
@@ -33,12 +33,12 @@ class FrontRepositoryTest : AbstractTest() {
 
     val entityTypes = mutableListOf(EntityTypeDefinition("present"))
 
-    @Before
+    @BeforeEach
     fun before() {
         every { context.config.getEntityTypes() } returns entityTypes
     }
 
-    @After
+    @AfterEach
     fun after() {
         FrontRepository.entityTypes.clear()
     }

@@ -29,7 +29,7 @@ import io.mockk.every
 import io.mockk.mockk
 import opennlp.tools.namefind.NameFinderME
 import opennlp.tools.util.Span
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.time.ZonedDateTime
 import kotlin.test.assertEquals
 
@@ -42,15 +42,16 @@ class OpenNlpEntityClassifierTest {
     fun classify_withAdjacentEntitiesOfSameRole_shouldMergeEntities() {
         val entity = Entity(EntityType("test:test"), "test")
         val context = EntityCallContextForIntent(
-                "test",
-                Intent("test", listOf(entity)),
-                defaultLocale,
-                NlpEngineType.opennlp,
-                ZonedDateTime.now())
+            "test",
+            Intent("test", listOf(entity)),
+            defaultLocale,
+            NlpEngineType.opennlp,
+            ZonedDateTime.now()
+        )
         val text = "a b"
         val tokens = arrayOf("a", "b")
         val model: NameFinderME = mockk()
-        every { model.find(eq(tokens)) } answers  { arrayOf(Span(0, 1, "test", 0.8), Span(1, 2, "test", 0.6)) }
+        every { model.find(eq(tokens)) } answers { arrayOf(Span(0, 1, "test", 0.8), Span(1, 2, "test", 0.6)) }
 
         val classifier = OpenNlpEntityClassifier(EntityModelHolder(model))
 
@@ -64,15 +65,16 @@ class OpenNlpEntityClassifierTest {
     fun classify_withAdjacentMultiTokensEntitiesOfSameRole_shouldMergeEntities() {
         val entity = Entity(EntityType("test:test"), "test")
         val context = EntityCallContextForIntent(
-                "test",
-                Intent("test", listOf(entity)),
-                defaultLocale,
-                NlpEngineType.opennlp,
-                ZonedDateTime.now())
+            "test",
+            Intent("test", listOf(entity)),
+            defaultLocale,
+            NlpEngineType.opennlp,
+            ZonedDateTime.now()
+        )
         val text = "a a b"
         val tokens = arrayOf("a", "a", "b")
         val model: NameFinderME = mockk()
-        every { model.find(eq(tokens))} answers { arrayOf(Span(0, 2, "test", 0.8), Span(2, 3, "test", 0.6)) }
+        every { model.find(eq(tokens)) } answers { arrayOf(Span(0, 2, "test", 0.8), Span(2, 3, "test", 0.6)) }
 
         val classifier = OpenNlpEntityClassifier(EntityModelHolder(model))
 
@@ -86,11 +88,12 @@ class OpenNlpEntityClassifierTest {
     fun classify_withNotAdjacentEntitiesOfSameRole_shouldReturnsTwoEntities() {
         val entity = Entity(EntityType("test:test"), "test")
         val context = EntityCallContextForIntent(
-                "test",
-                Intent("test", listOf(entity)),
-                defaultLocale,
-                NlpEngineType.opennlp,
-                ZonedDateTime.now())
+            "test",
+            Intent("test", listOf(entity)),
+            defaultLocale,
+            NlpEngineType.opennlp,
+            ZonedDateTime.now()
+        )
         val text = "a toto b"
         val tokens = arrayOf("a", "toto", "b")
         val model: NameFinderME = mockk()
@@ -102,9 +105,10 @@ class OpenNlpEntityClassifierTest {
 
         println(result)
         assertEquals(
-                listOf(
-                        EntityRecognition(EntityValue(0, 1, entity), 0.8),
-                        EntityRecognition(EntityValue(7, 8, entity), 0.6)
-                ), result)
+            listOf(
+                EntityRecognition(EntityValue(0, 1, entity), 0.8),
+                EntityRecognition(EntityValue(7, 8, entity), 0.6)
+            ), result
+        )
     }
 }

@@ -23,7 +23,7 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import fr.vsct.tock.shared.defaultLocale
 import io.mockk.verify
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.litote.kmongo.toId
 import java.util.Locale
 import kotlin.test.assertEquals
@@ -49,8 +49,8 @@ class ParserServiceTest : AbstractTest() {
     @Test
     fun findLanguage_shouldReturnDefault_WhenLocaleParameterIsNotSupportedAndDefaultIsSupported() {
         val locale = ParserService.findLanguage(
-                ApplicationDefinition("test", "test", supportedLocales = setOf(defaultLocale)),
-                Locale.JAPANESE
+            ApplicationDefinition("test", "test", supportedLocales = setOf(defaultLocale)),
+            Locale.JAPANESE
         )
 
         assertEquals(defaultLocale, locale)
@@ -59,14 +59,15 @@ class ParserServiceTest : AbstractTest() {
     @Test
     fun findLanguage_shouldReturnFirstFound_WhenLocaleParameterIsNotSupportedAndDefaultIsNotSupported() {
         val locale = ParserService.findLanguage(
-                ApplicationDefinition("test", "test", supportedLocales = setOf(Locale.ITALIAN)),
-                Locale.JAPANESE
+            ApplicationDefinition("test", "test", supportedLocales = setOf(Locale.ITALIAN)),
+            Locale.JAPANESE
         )
 
         assertEquals(Locale.ITALIAN, locale)
     }
 
-    private val validatedSentence = defaultClassifiedSentence.copy(classification = defaultClassification.copy("new_intent".toId()))
+    private val validatedSentence =
+        defaultClassifiedSentence.copy(classification = defaultClassification.copy("new_intent".toId()))
 
 
     @Test

@@ -31,7 +31,7 @@ import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import fr.vsct.tock.shared.jackson.mapper
 import io.mockk.mockk
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -45,8 +45,9 @@ class DialogColDeserializationTest : AbstractTest() {
     @Test
     fun serializeAndDeserializeAnyValueWrapper_shouldLeftDataInchanged() {
         val value = AnyValueWrapper(
-                UserLocation::class,
-                UserLocation(1.0, 2.0))
+            UserLocation::class,
+            UserLocation(1.0, 2.0)
+        )
         val s = mapper.writeValueAsString(value)
         val newValue = mapper.readValue<AnyValueWrapper>(s)
         assertEquals(value, newValue)
@@ -55,23 +56,25 @@ class DialogColDeserializationTest : AbstractTest() {
     @Test
     fun serializeAndDeserializeStateMongoWrapper_shouldLeftDataInchanged() {
         val state = DialogStateMongoWrapper(
-                Intent("test"),
-                mapOf("role" to EntityStateValueWrapper(
-                        ContextValue(
-                                0,
-                                1,
-                                Entity(EntityType("type"), "role"),
-                                "content"
-                        ),
-                        emptyList()
-                )),
-                emptyMap(),
-                UserLocation(1.0, 2.0),
-                NextUserActionState(
-                        listOf(NlpIntentQualifier("test")),
-                        ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC")),
-                        ZoneId.systemDefault()
+            Intent("test"),
+            mapOf(
+                "role" to EntityStateValueWrapper(
+                    ContextValue(
+                        0,
+                        1,
+                        Entity(EntityType("type"), "role"),
+                        "content"
+                    ),
+                    emptyList()
                 )
+            ),
+            emptyMap(),
+            UserLocation(1.0, 2.0),
+            NextUserActionState(
+                listOf(NlpIntentQualifier("test")),
+                ZonedDateTime.now().withZoneSameInstant(ZoneId.of("UTC")),
+                ZoneId.systemDefault()
+            )
         )
         val s = mapper.writeValueAsString(state)
         val newValue = mapper.readValue<DialogStateMongoWrapper>(s)
@@ -82,8 +85,9 @@ class DialogColDeserializationTest : AbstractTest() {
     @Test
     fun serializeAndDeserializeDialog_shouldLeftDataInchanged() {
         val dialog = Dialog(
-                emptySet(),
-                state = fr.vsct.tock.bot.engine.dialog.DialogState(context = mutableMapOf("a" to LocalDateTime.now())))
+            emptySet(),
+            state = fr.vsct.tock.bot.engine.dialog.DialogState(context = mutableMapOf("a" to LocalDateTime.now()))
+        )
         val playerId = PlayerId("a", PlayerType.user)
         val s = mapper.writeValueAsString(DialogCol(dialog, UserTimelineCol(UserTimeline(playerId), null)))
         val newValue = mapper.readValue<DialogCol>(s)
