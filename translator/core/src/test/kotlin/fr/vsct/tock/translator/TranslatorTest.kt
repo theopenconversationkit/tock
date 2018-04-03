@@ -21,7 +21,7 @@ import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.translator.UserInterfaceType.textChat
 import io.mockk.every
 import io.mockk.verify
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.litote.kmongo.toId
 import kotlin.test.assertEquals
 

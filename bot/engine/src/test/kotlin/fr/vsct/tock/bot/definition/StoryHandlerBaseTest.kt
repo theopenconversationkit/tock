@@ -27,7 +27,7 @@ import fr.vsct.tock.bot.engine.TestStoryDefinition.test
 import fr.vsct.tock.bot.engine.TestStoryDefinition.test2
 import fr.vsct.tock.bot.engine.TockBotBus
 import fr.vsct.tock.translator.UserInterfaceType
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 

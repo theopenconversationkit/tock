@@ -49,8 +49,8 @@ import fr.vsct.tock.shared.tockInternalInjector
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.TranslatorEngine
 import io.mockk.mockk
-import org.junit.After
-import org.junit.Before
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 
 /**
  *
@@ -112,7 +112,7 @@ abstract class BotEngineTest {
         }
     }
 
-    @Before
+    @BeforeEach
     fun before() {
         tockInternalInjector = KodeinInjector()
         injector.inject(Kodein {
@@ -120,7 +120,7 @@ abstract class BotEngineTest {
         })
     }
 
-    @After
+    @AfterEach
     fun after() {
         tockInternalInjector = KodeinInjector()
     }

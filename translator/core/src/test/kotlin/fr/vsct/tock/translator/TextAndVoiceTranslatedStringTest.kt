@@ -16,8 +16,8 @@
 
 package fr.vsct.tock.translator
 
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
 /**
  *

@@ -18,8 +18,8 @@ package fr.vsct.tock.bot.connector.ga.model.request
 
 import fr.vsct.tock.bot.connector.ga.model.request.GACapability.Companion.AUDIO_OUTPUT
 import fr.vsct.tock.translator.UserInterfaceType
-import org.junit.Assert.assertEquals
-import org.junit.Test
+import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
 /**
  *
@@ -29,11 +29,12 @@ class GARequestTest {
     @Test
     fun getEventState_shouldReturnsVoiceAssistant_whenOnlyAudioCapability() {
         val request = GARequest(
-                GAUser("a"),
-                GADevice(),
-                GASurface(listOf(GACapability(AUDIO_OUTPUT))),
-                GAConversation(),
-                emptyList())
+            GAUser("a"),
+            GADevice(),
+            GASurface(listOf(GACapability(AUDIO_OUTPUT))),
+            GAConversation(),
+            emptyList()
+        )
 
         assertEquals(UserInterfaceType.voiceAssistant, request.getEventState().userInterface)
     }

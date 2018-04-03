@@ -20,7 +20,7 @@ import fr.vsct.tock.bot.connector.rest.client.model.ClientAttachment
 import fr.vsct.tock.bot.connector.rest.client.model.ClientAttachmentType
 import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.message.Attachment
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 /**
@@ -33,8 +33,8 @@ class ClientMessageConverterTest {
         val a = Attachment("a", SendAttachment.AttachmentType.file, 200)
 
         assertEquals(
-                ClientAttachment("a", ClientAttachmentType.file),
-                a.toClientMessage()
+            ClientAttachment("a", ClientAttachmentType.file),
+            a.toClientMessage()
         )
     }
 }

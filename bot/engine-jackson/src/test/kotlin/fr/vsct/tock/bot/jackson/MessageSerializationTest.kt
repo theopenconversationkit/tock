@@ -25,7 +25,7 @@ import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.message.Sentence
 import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.shared.jackson.mapper
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 /**
@@ -33,9 +33,10 @@ import kotlin.test.assertEquals
  */
 class MessageSerializationTest {
     data class MessageRequest(
-            val userId: String,
-            val recipientId: String,
-            val message: Message)
+        val userId: String,
+        val recipientId: String,
+        val message: Message
+    )
 
     init {
         BotEngineJacksonConfiguration.init()

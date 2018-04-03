@@ -25,7 +25,7 @@ import fr.vsct.tock.bot.engine.message.Sentence
 import fr.vsct.tock.bot.engine.message.SentenceElement
 import fr.vsct.tock.bot.engine.message.SentenceSubElement
 import fr.vsct.tock.bot.engine.user.UserLocation
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 /**
@@ -72,50 +72,62 @@ class MessageParserTest {
     @Test
     fun parse_shouldWork_forSentenceWithChoicesAndTextsAndMetaData() {
         val s = Sentence(
-                null,
-                mutableListOf(
-                        SentenceElement(
-                                texts = mapOf("1" to "2", "3" to "4"),
-                                metadata = mapOf("a" to "b", "c" to "d"),
-                                choices = listOf(
-                                        Choice("intent1"),
-                                        Choice("intent2", mapOf("1" to "2", "3" to "4")
-                                        ))
-                        )))
+            null,
+            mutableListOf(
+                SentenceElement(
+                    texts = mapOf("1" to "2", "3" to "4"),
+                    metadata = mapOf("a" to "b", "c" to "d"),
+                    choices = listOf(
+                        Choice("intent1"),
+                        Choice(
+                            "intent2", mapOf("1" to "2", "3" to "4")
+                        )
+                    )
+                )
+            )
+        )
         assertEquals(s, MessageParser.parse(s.toPrettyString()).first())
     }
 
     @Test
     fun parse_shouldWork_forSentenceWithChoicesAndTextsAndMetaDataAndSubElements() {
         val s = Sentence(
-                null,
-                mutableListOf(
-                        SentenceElement(
-                                texts = mapOf("1" to "2", "3" to "4"),
-                                metadata = mapOf("a" to "b", "c" to "d"),
-                                choices = listOf(
-                                        Choice("intent1"),
-                                        Choice("intent2", mapOf("1" to "2", "3" to "4")
-                                        )),
-                                subElements = listOf(
-                                        SentenceSubElement(
-                                                texts = mapOf("1" to "2", "3" to "4"),
-                                                metadata = mapOf("a" to "b", "c" to "d"),
-                                                choices = listOf(
-                                                        Choice("intent1"),
-                                                        Choice("intent2", mapOf("1" to "2", "3" to "4")
-                                                        ))
-                                        ),
-                                        SentenceSubElement(
-                                                texts = mapOf("1" to "2", "3" to "4"),
-                                                metadata = mapOf("a" to "b", "c" to "d"),
-                                                choices = listOf(
-                                                        Choice("intent1"),
-                                                        Choice("intent2", mapOf("1" to "2", "3" to "4")
-                                                        ))
-                                        )
+            null,
+            mutableListOf(
+                SentenceElement(
+                    texts = mapOf("1" to "2", "3" to "4"),
+                    metadata = mapOf("a" to "b", "c" to "d"),
+                    choices = listOf(
+                        Choice("intent1"),
+                        Choice(
+                            "intent2", mapOf("1" to "2", "3" to "4")
+                        )
+                    ),
+                    subElements = listOf(
+                        SentenceSubElement(
+                            texts = mapOf("1" to "2", "3" to "4"),
+                            metadata = mapOf("a" to "b", "c" to "d"),
+                            choices = listOf(
+                                Choice("intent1"),
+                                Choice(
+                                    "intent2", mapOf("1" to "2", "3" to "4")
                                 )
-                        )))
+                            )
+                        ),
+                        SentenceSubElement(
+                            texts = mapOf("1" to "2", "3" to "4"),
+                            metadata = mapOf("a" to "b", "c" to "d"),
+                            choices = listOf(
+                                Choice("intent1"),
+                                Choice(
+                                    "intent2", mapOf("1" to "2", "3" to "4")
+                                )
+                            )
+                        )
+                    )
+                )
+            )
+        )
         assertEquals(s, MessageParser.parse(s.toPrettyString()).first())
     }
 

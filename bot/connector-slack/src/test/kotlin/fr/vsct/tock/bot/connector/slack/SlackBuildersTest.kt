@@ -20,8 +20,8 @@ import fr.vsct.tock.bot.connector.slack.model.AttachmentField
 import fr.vsct.tock.bot.engine.BotBus
 import io.mockk.every
 import io.mockk.mockk
-import org.junit.Before
-import org.junit.Test
+import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 
@@ -29,7 +29,7 @@ class SlackBuildersTest {
 
     val bus: BotBus = mockk<BotBus>(relaxed = true)
 
-    @Before
+    @BeforeEach
     fun init() {
         every { bus.translate(any<CharSequence>()) } answers { firstArg() }
         every { bus.translateAndReturnBlankAsNull(any()) } answers { firstArg() }

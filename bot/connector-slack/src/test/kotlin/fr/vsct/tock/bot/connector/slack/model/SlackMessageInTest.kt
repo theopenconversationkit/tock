@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.bot.connector.slack.model
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 /**

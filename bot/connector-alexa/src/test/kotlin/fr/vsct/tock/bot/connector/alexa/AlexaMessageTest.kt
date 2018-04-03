@@ -21,7 +21,7 @@ import com.amazon.speech.ui.StandardCard
 import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.message.Attachment
 import fr.vsct.tock.bot.engine.message.SentenceElement
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 /**

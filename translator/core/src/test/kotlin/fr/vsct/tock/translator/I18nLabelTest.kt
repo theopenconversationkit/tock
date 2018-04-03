@@ -17,7 +17,7 @@
 package fr.vsct.tock.translator
 
 import fr.vsct.tock.shared.defaultNamespace
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import org.litote.kmongo.toId
 import java.util.Locale
 import kotlin.test.assertNotNull

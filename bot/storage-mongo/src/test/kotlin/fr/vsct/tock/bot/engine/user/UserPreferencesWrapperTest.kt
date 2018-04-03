@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.engine.user
 
 import fr.vsct.tock.bot.mongo.UserTimelineCol.UserPreferencesWrapper
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals
 import kotlin.test.assertTrue

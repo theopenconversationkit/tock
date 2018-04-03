@@ -18,7 +18,7 @@ package fr.vsct.tock.shared
 
 import fr.vsct.tock.shared.security.decrypt
 import fr.vsct.tock.shared.security.encrypt
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.security.SecureRandom
 import kotlin.test.assertEquals
 import kotlin.test.assertNotEquals

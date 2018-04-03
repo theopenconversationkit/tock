@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.engine.action
 
 import fr.vsct.tock.bot.definition.Intent
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 /**

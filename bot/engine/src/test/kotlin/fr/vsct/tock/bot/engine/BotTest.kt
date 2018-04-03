@@ -20,7 +20,7 @@ import fr.vsct.tock.bot.engine.TestStoryDefinition.test
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.message.Choice
 import io.mockk.verify
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 /**
@@ -38,15 +38,15 @@ class BotTest : BotEngineTest() {
     @Test
     fun handleSendChoice_shouldNotReturnUnknownStory_whenIntentIsSecondaryIntentAndNoStoryExists() {
         val choice = action(
-                Choice(
-                        secondaryIntent.name,
-                        mapOf(
-                                SendChoice.PREVIOUS_INTENT_PARAMETER to test.name
-                        )
+            Choice(
+                secondaryIntent.name,
+                mapOf(
+                    SendChoice.PREVIOUS_INTENT_PARAMETER to test.name
                 )
+            )
         )
         dialog.stories.clear()
-        bot.handle(choice, userTimeline, connectorController,connectorData)
+        bot.handle(choice, userTimeline, connectorController, connectorData)
 
         assertEquals(story.definition.id, dialog.currentStory()!!.definition.id)
         assertEquals(test.mainIntent(), dialog.currentStory()!!.starterIntent)

@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.admin.kotlin.compiler.client
 
 import fr.vsct.tock.bot.admin.kotlin.compiler.KotlinFile
-import org.junit.Test
+import org.junit.jupiter.api.Test
 
 /**
  *

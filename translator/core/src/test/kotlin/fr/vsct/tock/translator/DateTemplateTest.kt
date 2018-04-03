@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.translator
 
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.time.DayOfWeek
 import java.time.LocalDate.now
 import java.util.Formatter
@@ -35,14 +35,14 @@ class DateTemplateTest {
         var formatter = Formatter(Locale.ENGLISH)
         dateTemplate.formatTo(formatter, 0, 0, 0)
         assertEquals(
-                "Friday",
-                formatter.toString()
+            "Friday",
+            formatter.toString()
         )
         formatter = Formatter(Locale.FRENCH)
         dateTemplate.formatTo(formatter, 0, 0, 0)
         assertEquals(
-                "vendredi",
-                formatter.toString()
+            "vendredi",
+            formatter.toString()
         )
     }
 

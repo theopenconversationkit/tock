@@ -20,7 +20,7 @@ import fr.vsct.tock.bot.connector.ga.model.response.GAFinalResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GAItem
 import fr.vsct.tock.bot.connector.ga.model.response.GARichResponse
 import fr.vsct.tock.bot.connector.ga.model.response.GASimpleResponse
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 /**
@@ -31,16 +31,16 @@ class GAResponseConnectorMessageTest {
     @Test
     fun toSentenceElement_shouldRenderSimpleText() {
         val r = GAResponseConnectorMessage(
-                finalResponse =
-                GAFinalResponse(
-                        GARichResponse(
-                                listOf(
-                                        GAItem(
-                                                GASimpleResponse("ok computer")
-                                        )
-                                )
+            finalResponse =
+            GAFinalResponse(
+                GARichResponse(
+                    listOf(
+                        GAItem(
+                            GASimpleResponse("ok computer")
                         )
+                    )
                 )
+            )
         )
         val e = r.toSentenceElement()
         assertEquals(mapOf("textToSpeech" to "ok computer"), e!!.texts)
