@@ -25,7 +25,7 @@
     </button>
   </div>
 
-  <div class="i18n-label__entry i18n-label__entry--language-{{l.locale}} i18n-label__entry--mode-{{l.interfaceType}}" *ngFor="let l of i.i18n">
+  <div class="i18n-label__entry i18n-label__entry--language-{{l.locale}} i18n-label__entry--mode-{{l.interfaceType}}" *ngFor="let l of i.i18n; let isLast = last; let index = index">
     <div class="i18n-label__entry__locale">{{l.locale}}</div>
 
     <div class="i18n-label__entry__mode">
@@ -95,8 +95,8 @@
       </div>
     </div>
 
-    <div class="i18n-label__entry__connectors">
-      <span *ngFor="let connector of [{id: 'ga'}, {id: 'alexa'}, {id: 'messenger'}]">
+    <div class="i18n-label__entry__connectors" *ngIf="isLast || i.i18n[index + 1].interfaceType !== l.interfaceType || i.i18n[index + 1].locale !== l.locale">
+      <span *ngFor="let connector of [{id: 'alexa'}, {id: 'ga'}, {id: 'messenger'}]">
           <button *ngIf="!i.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.id)" md-icon-button
                   (click)="addLocalizedLabelForConnector(i, l, connector.id)" md-tooltip="Clear localized label" color="warn">
             <img
@@ -109,7 +109,7 @@
   </div>
 </div>
 
-<h4 md-line>
+<!-- <h4 md-line>
   <span class="defaultLabel" md-tooltip="id: {{i._id}}">{{i.defaultLocalizedLabel().label}}</span>
   <button *ngIf="deleteAllowed" md-button (click)="deleteLabel(i)" md-tooltip="Delete Label" color="warn">
     <md-icon>delete_forever</md-icon>
@@ -163,4 +163,4 @@
     <md-icon>add</md-icon>
   </button>
 </div>
-<div md-line></div>
+<div md-line></div> -->
