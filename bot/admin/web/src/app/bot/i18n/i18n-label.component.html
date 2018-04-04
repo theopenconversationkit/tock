@@ -18,7 +18,7 @@
   <div class="i18n-label__title">
     <span class="i18n-label__title__label" title="{{i._id}}">{{i.defaultLocalizedLabel().label}}</span>
 
-    <span class="i18n-label__title__intent">agreement</span>
+    <span class="i18n-label__title__intent">{{intent}}</span>
 
     <button class="i18n-label__title__delete" *ngIf="deleteAllowed" md-button (click)="deleteLabel(i)" md-tooltip="Delete Label" color="warn">
       delete

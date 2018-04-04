@@ -36,6 +36,9 @@ export class I18nLabelComponent implements OnInit {
   @Input()
   i18nController: I18nController;
 
+  @Input()
+  intent:string;
+
   constructor(public state: StateService,
               public config: BotConfigurationService,
               private botService: BotService,
