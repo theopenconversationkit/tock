@@ -14,60 +14,97 @@
   ~ limitations under the License.
   -->
 
-<md-list-item *ngIf="i.i18n.length !== 0">
-  <h4 md-line>
-    <span class="defaultLabel" md-tooltip="id: {{i._id}}">{{i.defaultLocalizedLabel().label}}</span>
-    <button *ngIf="deleteAllowed" md-button (click)="deleteLabel(i)" md-tooltip="Delete Label" color="warn">
-      <md-icon>delete_forever</md-icon>
-    </button>
-  </h4>
-  <div md-line *ngFor="let l of i.i18n">
-    <div class="locale">{{l.locale}}</div>
-    <md-icon class="userInterface" *ngIf="l.interfaceType === 0" md-list-avatar>chat</md-icon>
-    <md-icon class="userInterface" *ngIf="l.interfaceType === 1" md-list-avatar>record_voice_over</md-icon>
-    <img *ngIf="l.connectorId"
-         src="/assets/images/{{l.connectorId}}.svg"
-         class="connector"
-         [md-tooltip]="l.connectorId"/>
+<div class="i18n-label" *ngIf="i.i18n.length !== 0">
+  <div class="i18n-label__title">
+    <span class="i18n-label__title__label" title="{{i._id}}">{{i.defaultLocalizedLabel().label}}</span>
 
-    <md-input-container class="input text-area">
-      <textarea mdInput [(ngModel)]="l.label" (change)="save(i)" cols="100" rows="1"></textarea>
-    </md-input-container>
+    <span class="i18n-label__title__intent">{{intent}}</span>
 
-    <md-checkbox [(ngModel)]="l.validated" (change)="save(i)">
-      Validated
-    </md-checkbox>
-
-    <button
-      *ngIf="l.connectorId || !i.hasLocalAndInterfaceWithASpecifiedConnector(l.locale, l.interfaceType)"
-      md-icon-button (click)="removeLocalizedLabel(i, l)" md-tooltip="Clear localized label" color="warn">
-      <md-icon>clear</md-icon>
-    </button>
-
-    <span *ngFor="let connector of config.supportedConnectors | async">
-        <button *ngIf="!i.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.id)" md-icon-button
-                (click)="addLocalizedLabelForConnector(i, l, connector.id)" md-tooltip="Clear localized label" color="warn">
-          <img
-            src="/assets/images/{{connector.id}}.svg"
-            class="connector"
-            md-tooltip="Add specific label for connector {{connector.id}}"/>
-        </button>
-          </span>
-
-    <span *ngFor="let a of l.alternatives;let index=index;">
-          <br>
-          <md-input-container class="input-alternative text-area">
-            <textarea mdInput [value]="a" (change)="addAlternative(i, l, index, $event.target.value)" cols="90"
-                      rows="1"></textarea>
-          </md-input-container>
-          <button md-button (click)="removeAlternative(i, l, index)" md-tooltip="Remove alternative">
-            <md-icon>remove</md-icon>
-          </button>
-        </span>
-
-    <button md-icon-button (click)="addNewAlternative(l)" md-tooltip="Add an alternative">
-      <md-icon>add</md-icon>
+    <button class="i18n-label__title__delete" *ngIf="deleteAllowed" md-button (click)="deleteLabel(i)" md-tooltip="Delete Label" color="warn">
+      delete
     </button>
   </div>
-  <div md-line></div>
-</md-list-item>
+
+  <div class="i18n-label__entry i18n-label__entry--language-{{l.locale}} i18n-label__entry--mode-{{l.interfaceType}}" *ngFor="let l of i.i18n; let isLast = last; let index = index">
+    <div class="i18n-label__entry__locale">{{l.locale}}</div>
+
+    <div class="i18n-label__entry__mode">
+      <md-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 0" md-list-avatar>chat</md-icon>
+      <md-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 1" md-list-avatar>record_voice_over</md-icon>
+    </div>
+
+    <div class="i18n-label__entry__connector" *ngIf="l.connectorId">
+      <img *ngIf="l.connectorId"
+           src="/assets/images/{{l.connectorId}}.svg"
+           class="i18n-label__entry__connector__img"
+           [md-tooltip]="l.connectorId"/>
+    </div>
+
+    <div class="i18n-label__entry__input">
+      <textarea class="i18n-label__entry__input__textarea" mdInput [(ngModel)]="l.label" (change)="save(i)"></textarea>
+    </div>
+
+    <div class="i18n-label__entry__alternative-management">
+      <button class="i18n-label__entry__alternatives__button" md-button (click)="addNewAlternative(l)">
+        <md-icon>add</md-icon>
+
+        Add an alternative
+      </button>
+    </div>
+
+    <div class="i18n-label__entry__validation">
+      <md-checkbox [(ngModel)]="l.validated" (change)="save(i)"></md-checkbox>
+    </div>
+
+    <div class="i18n-label__entry__delete">
+      <button *ngIf="deleteAllowed" md-button (click)="removeLocalizedLabel(i, l)" md-tooltip="Delete Label" color="warn">
+        <md-icon>delete_forever</md-icon>
+      </button>
+    </div>
+
+    <div class="i18n-label__entry__alternatives" *ngFor="let a of l.alternatives;let index=index;">
+      <div class="i18n-label__entry__locale">{{l.locale}}</div>
+
+      <div class="i18n-label__entry__mode">
+        <md-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 0" md-list-avatar>chat</md-icon>
+        <md-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 1" md-list-avatar>record_voice_over</md-icon>
+      </div>
+
+      <div class="i18n-label__entry__connector" *ngIf="l.connectorId">
+        <img *ngIf="l.connectorId"
+             src="/assets/images/{{l.connectorId}}.svg"
+             class="i18n-label__entry__connector__img"
+             [md-tooltip]="l.connectorId"/>
+      </div>
+
+      <div class="i18n-label__entry__input">
+        <textarea class="i18n-label__entry__input__textarea"
+                  mdInput
+                  [value]="a"
+                  (change)="addAlternative(i, l, index, $event.target.value)"
+                  cols="90"
+                  rows="1"></textarea>
+      </div>
+
+      <div class="i18n-label__entry__alternative-management">
+        <button class="i18n-label__entry__alternatives__button" md-button (click)="removeAlternative(i, l, index)">
+          <md-icon>remove</md-icon>
+
+          Remove alternative
+        </button>
+      </div>
+    </div>
+
+    <div class="i18n-label__entry__connectors" *ngIf="isLast || i.i18n[index + 1].interfaceType !== l.interfaceType || i.i18n[index + 1].locale !== l.locale">
+      <span *ngFor="let connector of [{id: 'alexa'}, {id: 'ga'}, {id: 'messenger'}]">
+          <button *ngIf="!i.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.id)" md-icon-button
+                  (click)="addLocalizedLabelForConnector(i, l, connector.id)" md-tooltip="Clear localized label" color="warn">
+            <img
+              src="/assets/images/{{connector.id}}.svg"
+              class="connector"
+              md-tooltip="Add specific label for connector {{connector.id}}"/>
+          </button>
+      </span>
+    </div>
+  </div>
+</div>
