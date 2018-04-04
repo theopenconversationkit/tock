@@ -57,7 +57,7 @@
     </div>
 
     <div class="i18n-label__entry__delete">
-      <button *ngIf="deleteAllowed" md-button (click)="deleteLabel(i)" md-tooltip="Delete Label" color="warn">
+      <button *ngIf="deleteAllowed" md-button (click)="removeLocalizedLabel(i, l)" md-tooltip="Delete Label" color="warn">
         <md-icon>delete_forever</md-icon>
       </button>
     </div>
