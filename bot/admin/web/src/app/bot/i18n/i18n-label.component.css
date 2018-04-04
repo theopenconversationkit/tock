@@ -1,180 +1,134 @@
 /*
- * Copyright (C) 2017 VSCT
- *
- * Licensed under the Apache License, Version 2.0 (the "License");
- * you may not use this file except in compliance with the License.
- * You may obtain a copy of the License at
- *
- * http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- * distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- * See the License for the specific language governing permissions and
- * limitations under the License.
- */
+* Copyright (C) 2017 VSCT
+*
+* Licensed under the Apache License, Version 2.0 (the "License");
+* you may not use this file except in compliance with the License.
+* You may obtain a copy of the License at
+*
+* http://www.apache.org/licenses/LICENSE-2.0
+*
+*  Unless required by applicable law or agreed to in writing, software
+* distributed under the License is distributed on an "AS IS" BASIS,
+*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+* See the License for the specific language governing permissions and
+* limitations under the License.
+*/
 
- .i18n-label {
-   width: 100%;
-   display: block;
-   max-width: 800px;
-   margin-bottom: 60px;
-   padding: 0 20px;
+.i18n-label {
+  width: 100%;
+  display: block;
+  max-width: 800px;
+  margin-bottom: 60px;
+  padding: 0 20px;
 
-   font-family: Roboto,"Helvetica Neue",sans-serif;
- }
-
- .i18n-label__title {
-   display: flex;
-   align-items: baseline;
-   margin-bottom: 20px;
- }
-
- .i18n-label__title__label {
-   margin-right: 20px;
-
-   font-size: 20px;
- }
-
- .i18n-label__title__intent {
-   font-size: 13px;
-
-   opacity: 0.5;
- }
-
- .i18n-label__title__delete {
-   margin-left: auto;
- }
-
- .i18n-label__entry {
-   display: flex;
-   flex-wrap: wrap;
-   margin-bottom: 15px;
- }
-
- .i18n-label__entry__locale {
-   margin-left: 20px;
-
-   text-transform: uppercase;
-   font-size: 13px;
- }
-
- .i18n-label__entry__mode {
-    margin-left: 15px;
- }
-
- .i18n-label__entry__mode__icon {
-   width: auto;
-
-   font-size: 15px;
- }
-
- .i18n-label__entry__connector {
-   margin-left: 15px;
- }
-
- .i18n-label__entry__connector__img {
-   width: 20px;
-   height: auto;
- }
-
- .i18n-label__entry__input {
-   flex-grow: 1;
-   margin-left: 15px;
- }
-
- .i18n-label__entry__input__textarea {
-   width: 100%;
-   height: 23px;
-
-   border-bottom: 1px solid rgba(0, 0, 0, 0.5);
- }
-
- .i18n-label__entry__connectors {
-   display: block;
-   flex-basis: 100%;
-   margin-left: 70px;
- }
-
- .i18n-label__entry__validation {
-   padding-top: 7px;
- }
-
- .i18n-label__entry__alternative-management {
-   margin-right: 5px;
- }
-
- .i18n-label__entry__validation {
-   margin-right: 10px;
- }
-
- .i18n-label__entry__delete {
-
- }
-
- .i18n-label__entry__delete .mat-button {
-   padding: 0;
-   min-width: 0;
-   position: relative;
-   bottom: 1px;
- }
-
- .i18n-label__entry__alternatives {
-   flex-basis: 100%;
-   display: flex;
-   margin-right: 49px;
- }
-
-  .i18n-label__entry__alternatives .i18n-label__entry__locale,
-  .i18n-label__entry__alternatives .i18n-label__entry__mode,
-  .i18n-label__entry__alternatives .i18n-label__entry__connector {
-    opacity: 0.5;
-  }
-
-
-.i18n {
-  font-size: 10px;
+  font-family: Roboto,"Helvetica Neue",sans-serif;
 }
 
-.userInterface {
+.i18n-label__title {
+  display: flex;
+  align-items: baseline;
+  margin-bottom: 20px;
+}
+
+.i18n-label__title__label {
+  margin-right: 20px;
+
+  font-size: 20px;
+}
+
+.i18n-label__title__intent {
+  font-size: 13px;
+
+  opacity: 0.5;
+}
+
+.i18n-label__title__delete {
+  margin-left: auto;
+}
+
+.i18n-label__entry {
+  display: flex;
+  flex-wrap: wrap;
+  margin-bottom: 15px;
+}
+
+.i18n-label__entry__locale {
+  margin-left: 20px;
+
+  text-transform: uppercase;
+  font-size: 13px;
+}
+
+.i18n-label__entry__mode {
+  margin-left: 15px;
+}
+
+.i18n-label__entry__mode__icon {
+  width: auto;
+
   font-size: 15px;
-  vertical-align: sub;
 }
 
-.input {
-  line-height: 12px;
+.i18n-label__entry__connector {
+  margin-left: 15px;
 }
 
-.text-area {
-  min-width:500px;
+.i18n-label__entry__connector__img {
+  width: 20px;
+  height: auto;
 }
 
-.input-alternative {
-  line-height: 12px;
-  margin-left: 100px;
+.i18n-label__entry__input {
+  flex-grow: 1;
+  margin-left: 15px;
 }
 
+.i18n-label__entry__input__textarea {
+  width: 100%;
+  height: 23px;
 
-.defaultLabel {
-  font-weight: bold;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.5);
 }
 
-.validated {
-  color: green;
+.i18n-label__entry__connectors {
+  display: block;
+  flex-basis: 100%;
+  margin-left: 70px;
 }
 
-.notValidated {
-  color: orangered;
+.i18n-label__entry__validation {
+  padding-top: 7px;
 }
 
-.spinner {
-  width:36px;
-  height:36px;
+.i18n-label__entry__alternative-management {
+  margin-right: 5px;
 }
 
-.locale {
-  display: inline-block;
-  width: 1em;
+.i18n-label__entry__validation {
+  margin-right: 10px;
+}
+
+.i18n-label__entry__delete {
+
+}
+
+.i18n-label__entry__delete .mat-button {
+  padding: 0;
+  min-width: 0;
+  position: relative;
+  bottom: 1px;
+}
+
+.i18n-label__entry__alternatives {
+  flex-basis: 100%;
+  display: flex;
+  margin-right: 49px;
+}
+
+.i18n-label__entry__alternatives .i18n-label__entry__locale,
+.i18n-label__entry__alternatives .i18n-label__entry__mode,
+.i18n-label__entry__alternatives .i18n-label__entry__connector {
+  opacity: 0.5;
 }
 
 .connector {
