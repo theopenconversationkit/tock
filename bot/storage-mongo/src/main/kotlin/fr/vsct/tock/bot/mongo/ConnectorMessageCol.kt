@@ -26,7 +26,7 @@ import java.time.Instant.now
 internal data class ConnectorMessageColId(val actionId: Id<Action>, val dialogId: Id<Dialog>)
 
 /**
- *
+ * TODO annotate with @Data
  */
 internal data class ConnectorMessageCol(
         val _id: ConnectorMessageColId,

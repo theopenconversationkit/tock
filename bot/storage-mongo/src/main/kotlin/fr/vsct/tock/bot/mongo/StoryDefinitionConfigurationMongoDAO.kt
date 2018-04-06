@@ -18,29 +18,34 @@ package fr.vsct.tock.bot.mongo
 
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
+import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration_.Companion.BotId
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
+import fr.vsct.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Conf
+import fr.vsct.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Date
 import mu.KotlinLogging
 import org.bson.Document
+import org.litote.kmongo.Data
+import org.litote.kmongo.ascendingSort
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
-import org.litote.kmongo.find
+import org.litote.kmongo.eq
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
-import org.litote.kmongo.json
+import org.litote.kmongo.path
 import org.litote.kmongo.projection
 import org.litote.kmongo.save
-import org.litote.kmongo.sort
 import org.litote.kmongo.withDocumentClass
 import java.time.Instant
 
 /**
  *
  */
-internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurationDAO {
+object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurationDAO {
 
     private val logger = KotlinLogging.logger {}
 
-    private data class StoryDefinitionConfigurationHistoryCol(
+    @Data
+    data class StoryDefinitionConfigurationHistoryCol(
         val conf: StoryDefinitionConfiguration,
         val deleted: Boolean = false,
         val date: Instant = Instant.now()
@@ -51,9 +56,9 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         database.getCollection<StoryDefinitionConfigurationHistoryCol>("story_configuration_history")
 
     init {
-        col.ensureIndex("{botId:1}")
-        historyCol.ensureIndex("{'conf.botId':1}")
-        historyCol.ensureIndex("{date:1}")
+        col.ensureIndex(BotId)
+        historyCol.ensureIndex(Conf.botId)
+        historyCol.ensureIndex(Date)
     }
 
     override fun getStoryDefinitionById(id: String): StoryDefinitionConfiguration? {
@@ -63,16 +68,16 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
     override fun getLastUpdateTimestamp(botId: String): Instant? =
         historyCol
             .withDocumentClass<Document>()
-            .find("{'conf.botId':${botId.json}}")
-            .sort("{date:1}")
-            .projection("{date:1}")
+            .find(Conf.botId eq botId)
+            .ascendingSort(Date)
+            .projection(Date)
             .limit(1)
             .firstOrNull()
-            ?.getDate("date")
+            ?.getDate(Date.path())
             ?.toInstant()
 
     override fun getStoryDefinitions(botId: String): List<StoryDefinitionConfiguration> {
-        return col.find("{'botId':${botId.json}}").toList()
+        return col.find(BotId eq botId).toList()
     }
 
     override fun save(story: StoryDefinitionConfiguration) {

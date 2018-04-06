@@ -16,16 +16,20 @@
 
 package fr.vsct.tock.bot.mongo
 
-import com.mongodb.client.model.IndexOptions
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.ApplicationId
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.BotId
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Namespace
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.NlpModel
 import fr.vsct.tock.shared.error
 import mu.KotlinLogging
 import org.bson.types.ObjectId
 import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.deleteOneById
-import org.litote.kmongo.ensureIndex
+import org.litote.kmongo.ensureUniqueIndex
+import org.litote.kmongo.eq
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
@@ -43,7 +47,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
     private val col = MongoBotConfiguration.database.getCollection<BotApplicationConfiguration>("bot_configuration")
 
     init {
-        col.ensureIndex("{applicationId:1, botId:1}", IndexOptions().unique(true))
+        col.ensureUniqueIndex(ApplicationId, BotId)
     }
 
     override fun getConfigurationById(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration? {
@@ -55,11 +59,11 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
         applicationId: String,
         botId: String
     ): BotApplicationConfiguration? {
-        return col.findOne("{applicationId:${applicationId.json}, botId:${botId.json}}")
+        return col.findOne(ApplicationId eq applicationId, BotId eq botId)
     }
 
     override fun getConfigurationsByBotId(botId: String): List<BotApplicationConfiguration> {
-        return col.find("{botId:${botId.json}}").toList()
+        return col.find(BotId eq botId).toList()
     }
 
     override fun save(conf: BotApplicationConfiguration): BotApplicationConfiguration {
@@ -83,7 +87,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
     }
 
     override fun updateIfNotManuallyModified(conf: BotApplicationConfiguration): BotApplicationConfiguration {
-        return col.findOne("{applicationId:${conf.applicationId.json}, botId:${conf.botId.json}}").let {
+        return col.findOne(ApplicationId eq conf.applicationId, BotId eq conf.botId).let {
             if (it == null) {
                 col.save(conf)
                 conf
@@ -101,7 +105,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
         namespace: String,
         nlpModel: String
     ): List<BotApplicationConfiguration> {
-        return col.find("{namespace:${namespace.json}, nlpModel:${nlpModel.json}}").toList()
+        return col.find(Namespace eq namespace, NlpModel eq nlpModel).toList()
     }
 
     override fun getConfigurations(): List<BotApplicationConfiguration> {

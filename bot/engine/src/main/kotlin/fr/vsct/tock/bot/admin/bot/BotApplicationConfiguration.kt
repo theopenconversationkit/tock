@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.admin.bot
 
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.shared.property
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.net.Inet4Address
@@ -26,6 +27,7 @@ import java.net.NetworkInterface
 /**
  * Configuration details for a bot and a connector.
  */
+@Data
 data class BotApplicationConfiguration(
     /**
      * The application identifier.

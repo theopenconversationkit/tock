@@ -18,8 +18,6 @@ package fr.vsct.tock.bot.mongo
 
 import com.github.salomonbrys.kodein.instance
 import com.mongodb.client.model.IndexOptions
-import com.mongodb.client.model.Sorts
-import com.mongodb.client.model.UpdateOptions
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
@@ -38,7 +36,15 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
+import fr.vsct.tock.bot.mongo.DialogCol_.Companion.PlayerIds
+import fr.vsct.tock.bot.mongo.DialogCol_.Companion.Stories
+import fr.vsct.tock.bot.mongo.DialogCol_.Companion._id
+import fr.vsct.tock.bot.mongo.DialogTextCol_.Companion.Date
+import fr.vsct.tock.bot.mongo.DialogTextCol_.Companion.DialogId
+import fr.vsct.tock.bot.mongo.DialogTextCol_.Companion.Text
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
+import fr.vsct.tock.bot.mongo.UserTimelineCol_.Companion.ApplicationIds
+import fr.vsct.tock.bot.mongo.UserTimelineCol_.Companion.LastUpdateDate
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
@@ -50,24 +56,30 @@ import org.litote.kmongo.MongoOperator.addToSet
 import org.litote.kmongo.MongoOperator.and
 import org.litote.kmongo.MongoOperator.each
 import org.litote.kmongo.MongoOperator.gt
-import org.litote.kmongo.MongoOperator.limit
-import org.litote.kmongo.MongoOperator.lt
-import org.litote.kmongo.MongoOperator.match
 import org.litote.kmongo.MongoOperator.or
-import org.litote.kmongo.MongoOperator.sort
 import org.litote.kmongo.MongoOperator.type
+import org.litote.kmongo.`in`
 import org.litote.kmongo.aggregate
-import org.litote.kmongo.count
-import org.litote.kmongo.deleteMany
-import org.litote.kmongo.deleteOne
+import org.litote.kmongo.and
+import org.litote.kmongo.bson
+import org.litote.kmongo.descending
+import org.litote.kmongo.descendingSort
 import org.litote.kmongo.ensureIndex
-import org.litote.kmongo.find
+import org.litote.kmongo.ensureUniqueIndex
+import org.litote.kmongo.eq
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
+import org.litote.kmongo.gt
 import org.litote.kmongo.json
-import org.litote.kmongo.replaceOne
+import org.litote.kmongo.limit
+import org.litote.kmongo.lt
+import org.litote.kmongo.match
+import org.litote.kmongo.regex
 import org.litote.kmongo.save
+import org.litote.kmongo.sort
+import org.litote.kmongo.toId
 import org.litote.kmongo.updateOneById
+import org.litote.kmongo.upsert
 import java.lang.Exception
 import java.time.Instant
 import java.time.Instant.now
@@ -95,19 +107,19 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     private val snapshotCol = database.getCollection<SnapshotCol>("dialog_snapshot")
 
     init {
-        userTimelineCol.ensureIndex("{'playerId.id':1}", IndexOptions().unique(true))
-        userTimelineCol.ensureIndex("{lastUpdateDate:1}")
-        dialogCol.ensureIndex("{'playerIds.id':1}")
-        dialogCol.ensureIndex("{'playerIds.clientId':1}")
+        userTimelineCol.ensureUniqueIndex(UserTimelineCol_.PlayerId.id)
+        userTimelineCol.ensureIndex(LastUpdateDate)
+        dialogCol.ensureIndex(DialogCol_.PlayerIds.id)
+        dialogCol.ensureIndex(DialogCol_.PlayerIds.clientId)
         dialogCol.ensureIndex(
-            "{lastUpdateDate:1}",
-            IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
+            DialogCol_.LastUpdateDate,
+            indexOptions = IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
         )
-        dialogTextCol.ensureIndex("{text:1}")
-        dialogTextCol.ensureIndex("{text:1, dialogId:1}", IndexOptions().unique(true))
+        dialogTextCol.ensureIndex(Text)
+        dialogTextCol.ensureUniqueIndex(Text, DialogId)
         dialogTextCol.ensureIndex(
-            "{date:1}",
-            IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
+            Date,
+            indexOptions = IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
         )
         connectorMessageCol.ensureIndex(
             "{date:1}",
@@ -115,8 +127,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         )
         connectorMessageCol.ensureIndex("{'_id.dialogId':1}")
         snapshotCol.ensureIndex(
-            "{lastUpdateDate:1}",
-            IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
+            SnapshotCol_.LastUpdateDate,
+            indexOptions = IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
         )
     }
 
@@ -139,8 +151,9 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             if (userTimeline.playerId.clientId != null) {
                 clientIdCol.updateOneById(
                     userTimeline.playerId.clientId!!,
+                    //TODO use dsl
                     "{ $addToSet: {userIds: { $each : [ ${userTimeline.playerId.id.json} ] } } }",
-                    UpdateOptions().upsert(true)
+                    upsert()
                 )
             }
             for (dialog in userTimeline.dialogs) {
@@ -166,9 +179,9 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                         if (action is SendSentence && action.stringText != null) {
                             val text = textKey(action.stringText!!)
                             dialogTextCol.replaceOne(
-                                "{text:${text.json}, dialogId:${dialog.id.json}}",
+                                and(Text eq text, DialogId eq dialog.id),
                                 DialogTextCol(text, dialog.id),
-                                UpdateOptions().upsert(true)
+                                upsert()
                             )
                         }
                     }
@@ -229,8 +242,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     }
 
     override fun remove(playerId: PlayerId) {
-        dialogCol.deleteMany("{'playerIds.id':${playerId.id.json}}")
-        userTimelineCol.deleteOne("{'playerId.id':${playerId.id.json}}")
+        dialogCol.deleteMany(PlayerIds.id eq playerId.id)
+        userTimelineCol.deleteOne(UserTimelineCol_.PlayerId.id eq playerId.id)
         MongoUserLock.deleteLock(playerId.id)
     }
 
@@ -250,10 +263,13 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
     private fun loadLastValidDialogCol(userId: PlayerId): DialogCol? {
         return dialogCol.aggregate<DialogCol>(
-            """[{${match}:{'playerIds.id':${userId.id.json}, lastUpdateDate : {${gt} : ${Instant.now().minusSeconds(60 * 60 * 24).json}}}},
-                               {${sort}:{lastUpdateDate:-1}},
-                               {${limit}:1}
-                              ]"""
+            match(
+                PlayerIds.id eq userId.id, LastUpdateDate gt now().minusSeconds(60 * 60 * 24)
+            ),
+            sort(
+                descending(LastUpdateDate)
+            ),
+            limit(1)
         ).firstOrNull()
     }
 
@@ -274,11 +290,12 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     .map { it.applicationId }
                     .distinct()
             val filter =
-                listOfNotNull(
-                    "'applicationIds':{\$in:${applicationsIds.filter { it.isNotEmpty() }.json}}",
-                    if (name.isNullOrBlank()) null else "'userPreferences.lastName':/${name!!.trim()}/i",
-                    if (from == null) null else "'lastUpdateDate':{$gt:${from!!.json}}",
-                    if (to == null) null else "'lastUpdateDate':{$lt:${to!!.json}}",
+                and(
+                    ApplicationIds `in` applicationsIds.filter { it.isNotEmpty() },
+                    if (name.isNullOrBlank()) null
+                    else UserTimelineCol_.UserPreferences.lastName.regex(name!!.trim(), "i"),
+                    if (from == null) null else LastUpdateDate gt from,
+                    if (to == null) null else LastUpdateDate lt to,
                     if (flags.isEmpty()) null
                     else flags.flatMap {
                         "userState.flags.${it.key}".let { key ->
@@ -287,16 +304,13 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                 "{$or:[{'$key.expirationDate':{$gt:${now().json}}},{'$key.expirationDate':{$type:10}}]}"
                             )
                         }
-                    }.joinToString(",", "$and:[", "]")
-
-                ).joinToString(",", "{$and:[", "]}") {
-                    "{$it}"
-                }
+                    }.joinToString(",", "$and:[", "]").bson
+                )
             logger.debug("user search query: $filter")
             val count = userTimelineCol.count(filter)
             if (count > start) {
                 val list = userTimelineCol.find(filter)
-                    .skip(start.toInt()).limit(size).sort(Sorts.descending("lastUpdateDate")).toList()
+                    .skip(start.toInt()).limit(size).descendingSort(LastUpdateDate).toList()
                 return UserReportQueryResult(count, start, start + size, list.map { it.toUserReport() })
             } else {
                 return UserReportQueryResult(0, 0, 0, emptyList())
@@ -315,32 +329,33 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 emptySet()
             } else {
                 if (query.exactMatch) {
-                    dialogTextCol.find("{text:${textKey(query.text!!.trim()).json}}").toList().map { it.dialogId }
+                    dialogTextCol.find(Text eq textKey(query.text!!.trim())).toList().map { it.dialogId }
                         .toSet()
                 } else {
-                    dialogTextCol.find("{text:/${textKey(query.text!!.trim())}/i}").toList().map { it.dialogId }.toSet()
+                    dialogTextCol
+                        .find(Text.regex(textKey(query.text!!.trim()), "i"))
+                        .toList()
+                        .map { it.dialogId }
+                        .toSet()
                 }
             }
             if (dialogIds.isEmpty() && !query.text.isNullOrBlank()) {
                 return DialogReportQueryResult(0, 0, 0, emptyList())
             }
-            val filter =
-                listOfNotNull(
-                    "'applicationIds':{\$in:${applicationsIds.filter { it.isNotEmpty() }.json}}",
-                    if (query.playerId == null) null else "'playerIds.id':${query.playerId!!.id.json}",
-                    if (query.dialogId == null) null else "'_id':${query.dialogId!!.json}",
-                    if (dialogIds.isEmpty()) null else "'_id':{\$in:${dialogIds.json}}",
-                    if (from == null) null else "'lastUpdateDate':{$gt:${from!!.json}}",
-                    if (to == null) null else "'lastUpdateDate':{$lt:${to!!.json}}",
-                    if (query.intentName.isNullOrBlank()) null else "'stories.currentIntent.name':${query.intentName!!.json}"
-                ).joinToString(",", "{$and:[", "]}") {
-                    "{$it}"
-                }
+            val filter = and(
+                DialogCol_.ApplicationIds `in` applicationsIds.filter { it.isNotEmpty() },
+                if (query.playerId == null) null else PlayerIds.id eq query.playerId!!.id,
+                if (query.dialogId == null) null else _id eq query.dialogId!!.toId(),
+                if (dialogIds.isEmpty()) null else _id `in` dialogIds,
+                if (from == null) null else LastUpdateDate gt from,
+                if (to == null) null else LastUpdateDate lt to,
+                if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName
+            )
             logger.debug("dialog search query: $filter")
             val count = dialogCol.count(filter)
             if (count > start) {
                 val list = dialogCol.find(filter)
-                    .skip(start.toInt()).limit(size).sort(Sorts.descending("lastUpdateDate")).toList()
+                    .skip(start.toInt()).limit(size).descendingSort(LastUpdateDate).toList()
                 return DialogReportQueryResult(count, start, start + size, list.map { it.toDialogReport() })
             } else {
                 return DialogReportQueryResult(0, 0, 0, emptyList())
@@ -361,8 +376,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             emptyList()
         } else {
             dialogCol
-                .find("{'playerIds.id': { \$in : ${ids.json} } }")
-                .sortedByDescending { it.lastUpdateDate }
+                .find(PlayerIds.id `in` ids)
+                .descendingSort(LastUpdateDate)
                 .map { it.toDialog(storyDefinitionProvider) }
                 .toList()
         }
@@ -373,7 +388,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         storyDefinitionProvider: (String) -> StoryDefinition
     ): List<Dialog> {
         return dialogCol
-            .find("{'lastUpdateDate':{$gt:${from.json}}}")
+            .find(LastUpdateDate gt from)
             .map { it.toDialog(storyDefinitionProvider) }
             .toList()
     }

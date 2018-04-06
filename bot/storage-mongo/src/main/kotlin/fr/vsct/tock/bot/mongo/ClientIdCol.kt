@@ -16,14 +16,15 @@
 
 package fr.vsct.tock.bot.mongo
 
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
 /**
  *
  */
-internal data class ClientIdCol(
+@Data
+data class ClientIdCol(
         val userIds: Set<String>,
         val _id: Id<ClientIdCol> = newId()
-) {
-}
+)

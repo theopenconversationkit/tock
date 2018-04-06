@@ -20,23 +20,54 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.shared.defaultLocale
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.util.Locale
 
 /**
- *
+ * A test plan is a set of dialogs to replay.
  */
+@Data
 data class TestPlan(
-        val dialogs: List<TestDialogReport>,
-        val name: String,
-        val applicationId: String,
-        val namespace: String,
-        val nlpModel: String,
-        val botApplicationConfigurationId: Id<BotApplicationConfiguration>,
-        val locale: Locale = defaultLocale,
-        val startAction: Message? = null,
-        val targetConnectorType: ConnectorType = ConnectorType.none,
-        val _id: Id<TestPlan> = newId()
-) {
-}
+    /**
+     * The dialogs of the test.
+     */
+    val dialogs: List<TestDialogReport>,
+    /**
+     * The name of the test.
+     */
+    val name: String,
+    /**
+     * The tested application identifier.
+     */
+    val applicationId: String,
+    /**
+     * The namespace of the nlp model.
+     */
+    val namespace: String,
+    /**
+     * The name of the nlp model.
+     */
+    val nlpModel: String,
+    /**
+     * The bot configuration id.
+     */
+    val botApplicationConfigurationId: Id<BotApplicationConfiguration>,
+    /**
+     * The locale of the test.
+     */
+    val locale: Locale = defaultLocale,
+    /**
+     * The optional action to play, before starting the test.
+     */
+    val startAction: Message? = null,
+    /**
+     * The [ConnectorType] tested.
+     */
+    val targetConnectorType: ConnectorType = ConnectorType.none,
+    /**
+     * The identifier of the test plan.
+     */
+    val _id: Id<TestPlan> = newId()
+)

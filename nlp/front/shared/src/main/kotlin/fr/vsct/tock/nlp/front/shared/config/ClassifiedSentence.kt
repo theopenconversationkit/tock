@@ -23,40 +23,72 @@ import fr.vsct.tock.nlp.core.sample.SampleContext
 import fr.vsct.tock.nlp.core.sample.SampleEntity
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import java.time.Instant
 import java.util.Locale
 
 /**
- *
+ * A sentence with its classification for a [Locale] and an [ApplicationDefinition].
  */
-data class ClassifiedSentence(val text: String,
-                              val language: Locale,
-                              val applicationId: Id<ApplicationDefinition>,
-                              val creationDate: Instant,
-                              val updateDate: Instant,
-                              val status: ClassifiedSentenceStatus,
-                              val classification: Classification,
-                              val lastIntentProbability: Double?,
-                              val lastEntityProbability: Double?) {
+@Data
+data class ClassifiedSentence(
+    /**
+     * The text of the sentence.
+     */
+    val text: String,
+    /**
+     * The locale.
+     */
+    val language: Locale,
+    /**
+     * The application id.
+     */
+    val applicationId: Id<ApplicationDefinition>,
+    /**
+     * Date of creation of this sentence.
+     */
+    val creationDate: Instant,
+    /**
+     * Last update date.
+     */
+    val updateDate: Instant,
+    /**
+     * The current status of the sentence.
+     */
+    val status: ClassifiedSentenceStatus,
+    /**
+     * The current classification of the sentence.
+     */
+    val classification: Classification,
+    /**
+     * If not yet validated, the intent probability of the last evaluation.
+     */
+    val lastIntentProbability: Double?,
+    /**
+     * If not yet validated, the average entity probability of the last evaluation.
+     */
+    val lastEntityProbability: Double?
+) {
 
     constructor(
-            query: ParseResult,
-            language: Locale,
-            applicationId: Id<ApplicationDefinition>,
-            intentId: Id<IntentDefinition>,
-            lastIntentProbability: Double,
-            lastEntityProbability: Double)
+        query: ParseResult,
+        language: Locale,
+        applicationId: Id<ApplicationDefinition>,
+        intentId: Id<IntentDefinition>,
+        lastIntentProbability: Double,
+        lastEntityProbability: Double
+    )
             : this(
-            query.retainedQuery,
-            language,
-            applicationId,
-            Instant.now(),
-            Instant.now(),
-            ClassifiedSentenceStatus.inbox,
-            Classification(query, intentId),
-            lastIntentProbability,
-            lastEntityProbability
+        query.retainedQuery,
+        language,
+        applicationId,
+        Instant.now(),
+        Instant.now(),
+        ClassifiedSentenceStatus.inbox,
+        Classification(query, intentId),
+        lastIntentProbability,
+        lastEntityProbability
     )
 
     /**
@@ -64,11 +96,12 @@ data class ClassifiedSentence(val text: String,
      */
     fun hasSameContent(sentence: ClassifiedSentence?): Boolean {
         return this == sentence?.copy(
-                status = status,
-                creationDate = creationDate,
-                updateDate = updateDate,
-                lastIntentProbability = lastIntentProbability,
-                lastEntityProbability = lastEntityProbability)
+            status = status,
+            creationDate = creationDate,
+            updateDate = updateDate,
+            lastIntentProbability = lastIntentProbability,
+            lastEntityProbability = lastEntityProbability
+        )
     }
 
     /**
@@ -77,25 +110,30 @@ data class ClassifiedSentence(val text: String,
      * @param intentProvider intent id -> intent provider
      * @param entityTypeProvider entity type name -> entity type provider
      */
-    fun toSampleExpression(intentProvider: (Id<IntentDefinition>) -> Intent, entityTypeProvider: (String) -> EntityType?): SampleExpression {
+    fun toSampleExpression(
+        intentProvider: (Id<IntentDefinition>) -> Intent,
+        entityTypeProvider: (String) -> EntityType?
+    ): SampleExpression {
         return SampleExpression(
-                text,
-                intentProvider.invoke(classification.intentId),
-                classification.entities.mapNotNull {
-                    toSampleEntity(it, entityTypeProvider)
-                },
-                SampleContext(language))
+            text,
+            intentProvider.invoke(classification.intentId),
+            classification.entities.mapNotNull {
+                toSampleEntity(it, entityTypeProvider)
+            },
+            SampleContext(language)
+        )
     }
 
     private fun toSampleEntity(entity: ClassifiedEntity, entityTypeProvider: (String) -> EntityType?): SampleEntity? {
         return entityTypeProvider
-                .invoke(entity.type)
-                ?.run {
-                    SampleEntity(
-                            Entity(this, entity.role),
-                            entity.subEntities.mapNotNull { toSampleEntity(it, entityTypeProvider) },
-                            entity.start,
-                            entity.end)
-                }
+            .invoke(entity.type)
+            ?.run {
+                SampleEntity(
+                    Entity(this, entity.role),
+                    entity.subEntities.mapNotNull { toSampleEntity(it, entityTypeProvider) },
+                    entity.start,
+                    entity.end
+                )
+            }
     }
 }

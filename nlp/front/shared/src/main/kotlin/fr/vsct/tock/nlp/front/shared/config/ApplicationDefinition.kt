@@ -18,23 +18,57 @@ package fr.vsct.tock.nlp.front.shared.config
 
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.shared.withNamespace
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.util.Locale
 
 /**
- *
+ * An NLP application definition.
  */
-data class ApplicationDefinition(val name: String,
-                                 val namespace: String,
-                                 val intents: Set<Id<IntentDefinition>> = emptySet(),
-                                 val supportedLocales: Set<Locale> = emptySet(),
-                                 val intentStatesMap: Map<Id<IntentDefinition>, Set<String>> = emptyMap(),
-                                 val nlpEngineType: NlpEngineType = NlpEngineType.opennlp,
-                                 val mergeEngineTypes: Boolean = true,
-                                 val supportSubEntities: Boolean = false,
-                                 val _id: Id<ApplicationDefinition> = newId()) {
+@Data
+data class ApplicationDefinition(
+    /**
+     * The name of the app.
+     */
+    val name: String,
+    /**
+     * The namespace of the app.
+     */
+    val namespace: String,
+    /**
+     * The intents id of the app.
+     */
+    val intents: Set<Id<IntentDefinition>> = emptySet(),
+    /**
+     * The locales supported by the app.
+     */
+    val supportedLocales: Set<Locale> = emptySet(),
+    /**
+     * The states defined for each intent.
+     */
+    val intentStatesMap: Map<Id<IntentDefinition>, Set<String>> = emptyMap(),
+    /**
+     * The current nlp engine used to build the model.
+     */
+    val nlpEngineType: NlpEngineType = NlpEngineType.opennlp,
+    /**
+     * Is entity merge applied?
+     */
+    val mergeEngineTypes: Boolean = true,
+    /**
+     * Does this app support sub entities?
+     */
+    val supportSubEntities: Boolean = false,
+    /**
+     * The id of the app.
+     */
+    val _id: Id<ApplicationDefinition> = newId()
+) {
 
+    /**
+     * A qualified name (ie "namespace:name") of the app.
+     */
     @Transient
     val qualifiedName: String = name.withNamespace(namespace)
 

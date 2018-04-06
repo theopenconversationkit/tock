@@ -17,13 +17,11 @@
 package fr.vsct.tock.nlp.front.storage.mongo
 
 import com.mongodb.client.MongoCollection
-import com.mongodb.client.model.IndexOptions
-import com.mongodb.client.model.Sorts
-import com.mongodb.client.model.UpdateOptions
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.Classification
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity_.Companion.Role
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.inbox
@@ -31,25 +29,39 @@ import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
+import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.ApplicationId
+import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.FullText
+import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Language
+import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Status
+import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Text
+import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UpdateDate
 import mu.KotlinLogging
+import org.bson.json.JsonMode
+import org.bson.json.JsonWriterSettings
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
-import org.litote.kmongo.MongoOperator.`in`
 import org.litote.kmongo.MongoOperator.elemMatch
-import org.litote.kmongo.MongoOperator.gt
-import org.litote.kmongo.MongoOperator.lte
-import org.litote.kmongo.MongoOperator.ne
 import org.litote.kmongo.MongoOperator.pull
-import org.litote.kmongo.MongoOperator.set
-import org.litote.kmongo.count
-import org.litote.kmongo.deleteMany
+import org.litote.kmongo.`in`
+import org.litote.kmongo.and
+import org.litote.kmongo.descendingSort
 import org.litote.kmongo.ensureIndex
+import org.litote.kmongo.ensureUniqueIndex
+import org.litote.kmongo.eq
 import org.litote.kmongo.find
 import org.litote.kmongo.getCollection
+import org.litote.kmongo.gt
 import org.litote.kmongo.json
-import org.litote.kmongo.replaceOne
+import org.litote.kmongo.lte
+import org.litote.kmongo.ne
+import org.litote.kmongo.pullByFilter
+import org.litote.kmongo.regex
+import org.litote.kmongo.setTo
 import org.litote.kmongo.updateMany
+import org.litote.kmongo.upsert
 import java.time.Instant
 import java.util.Locale
+
 
 /**
  *
@@ -58,7 +70,11 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private val logger = KotlinLogging.logger {}
 
-    private data class ClassifiedSentenceCol(
+    //alias
+    private val Classification_ = ClassifiedSentenceCol_.Classification
+
+    @Data
+    data class ClassifiedSentenceCol(
         val text: String,
         val fullText: String = text,
         val language: Locale,
@@ -101,11 +117,11 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private val col: MongoCollection<ClassifiedSentenceCol> by lazy {
         val c = MongoFrontConfiguration.database.getCollection<ClassifiedSentenceCol>("classified_sentence")
-        c.ensureIndex("{'text':1,'language':1,'applicationId':1}", IndexOptions().unique(true))
-        c.ensureIndex("{'language':1,'applicationId':1,'status':1}")
-        c.ensureIndex("{'status':1}")
-        c.ensureIndex("{'updateDate':1}")
-        c.ensureIndex("{'language':1, 'status':1, 'classification.intentId':1}")
+        c.ensureUniqueIndex(Text, Language, ApplicationId)
+        c.ensureIndex(Language, ApplicationId, Status)
+        c.ensureIndex(Status)
+        c.ensureIndex(UpdateDate)
+        c.ensureIndex(Language, Status, Classification_.intentId)
         c
     }
 
@@ -117,13 +133,15 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         if (intents == null && language == null && status == null) {
             error("at least one parameter should be not null")
         }
-        val query = listOfNotNull(
-            if (intents != null) "'classification.intentId':{\$in:${intents.json}}" else null,
-            if (language != null) "'language':${language.json}" else null,
-            if (status != null) "'status':${status.json}" else null
-        ).joinToString(prefix = "{", postfix = "}")
 
-        return col.find(query).toList().map { it.toSentence() }
+        return col
+            .find(
+                if (intents != null) Classification_.intentId `in` intents else null,
+                if (language != null) Language eq language else null,
+                if (status != null) Status eq status else null
+            )
+            .toList()
+            .map { it.toSentence() }
     }
 
     override fun switchSentencesStatus(sentences: List<ClassifiedSentence>, newStatus: ClassifiedSentenceStatus) {
@@ -133,50 +151,51 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     }
 
     override fun deleteSentencesByStatus(status: ClassifiedSentenceStatus) {
-        col.deleteMany("{'status':${status.json}}")
+        col.deleteMany(Status eq status)
     }
 
     override fun deleteSentencesByApplicationId(applicationId: Id<ApplicationDefinition>) {
-        col.deleteMany("{'applicationId':${applicationId.json}}")
+        col.deleteMany(ApplicationId eq applicationId)
     }
 
     override fun save(sentence: ClassifiedSentence) {
         col.replaceOne(
-            "{'text':${textKey(sentence.text).json},'language':${sentence.language.json},'applicationId':${sentence.applicationId.json}}",
+            and(
+                Text eq textKey(sentence.text),
+                Language eq sentence.language,
+                ApplicationId eq sentence.applicationId
+            ),
             ClassifiedSentenceCol(sentence),
-            UpdateOptions().upsert(true)
+            upsert()
         )
     }
 
     override fun search(query: SentencesQuery): SentencesQueryResult {
         with(query) {
-            val filterStatus = listOfNotNull(
-                if (status.isEmpty()) null else status.joinToString(",", "$`in`:[", "]") { "'$it'" },
-                if (status.isNotEmpty() || notStatus == null) null else "$ne:${notStatus!!.json}"
-            ).joinToString(",", "status:{", "}")
-
             val filterBase =
-                listOf(
-                    "'applicationId':${applicationId.json}",
-                    if (language == null) null else "'language':${language!!.json}",
-                    if (search.isNullOrBlank()) null else if (query.onlyExactMatch) "'text':${search!!.json}" else "'fullText':/${search!!.trim()}/i",
-                    if (intentId == null) null else "'classification.intentId':${intentId!!.json}",
-                    if (filterStatus.isEmpty()) null else filterStatus,
-                    if (entityType == null) null else "'classification.entities.type':${entityType!!.json}",
-                    if (entityRole == null) null else "'classification.entities.role':${entityRole!!.json}",
+                and(
+                    ApplicationId eq applicationId,
+                    if (language == null) null else Language eq language,
+                    if (search.isNullOrBlank()) null
+                    else if (query.onlyExactMatch) Text eq search
+                    else FullText.regex(search!!.trim(), "i"),
+                    if (intentId == null) null else Classification_.intentId eq intentId,
+                    if (status.isNotEmpty()) Status `in` status else if (notStatus != null) Status ne notStatus else null,
+                    if (entityType == null) null else Classification_.entities.type eq entityType,
+                    if (entityRole == null) null else Classification_.entities.role eq entityRole,
                     if (modifiedAfter == null)
-                        if (searchMark == null) null else "updateDate:{$lte: ${searchMark!!.date.json}}"
-                    else if (searchMark == null) "updateDate:{$gt: ${modifiedAfter!!.json}}"
-                    else "updateDate:{$lte: ${searchMark!!.date.json}, $gt: ${modifiedAfter!!.json}}"
-                ).toBsonFilter()
+                        if (searchMark == null) null else UpdateDate lte searchMark!!.date
+                    else if (searchMark == null) UpdateDate gt modifiedAfter
+                    else and(UpdateDate lte searchMark!!.date, UpdateDate gt modifiedAfter)
+                )
 
-            logger.debug { filterBase }
+            logger.debug { filterBase.json }
             val count = col.count(filterBase)
             logger.debug { "count : $count" }
             if (count > start) {
                 val list = col
                     .find(filterBase)
-                    .sort(Sorts.descending("updateDate"))
+                    .descendingSort(UpdateDate)
                     .skip(start.toInt())
                     .limit(size)
 
@@ -193,8 +212,13 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         newIntentId: Id<IntentDefinition>
     ) {
         col.updateMany(
-            "{'applicationId':${applicationId.json}, 'classification.intentId':${oldIntentId.json}}",
-            "{$set: {'classification.intentId':${newIntentId.json},'classification.entities':[],'status':'${inbox}'}}"
+            and(
+                ApplicationId eq applicationId,
+                Classification_.intentId eq oldIntentId
+            ),
+            Classification_.intentId setTo newIntentId,
+            Classification_.entities setTo emptyList(),
+            Status setTo inbox
         )
     }
 
@@ -241,8 +265,11 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         role: String
     ) {
         col.updateMany(
-            "{'applicationId':${applicationId.json}, 'classification.intentId':${intentId.json}, 'classification.entities':{$elemMatch:{type:${entityType.json},'role':${role.json}}}}",
-            "{$pull:{'classification.entities':{'role':${role.json}}}}"
+            and(
+                ApplicationId eq applicationId,
+                Classification_.intentId eq intentId
+            ),
+            pullByFilter(Classification_.entities, Role eq role)
         )
     }
 

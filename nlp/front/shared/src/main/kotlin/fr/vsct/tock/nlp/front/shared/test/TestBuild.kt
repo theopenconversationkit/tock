@@ -17,22 +17,47 @@
 package fr.vsct.tock.nlp.front.shared.test
 
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import java.time.Duration
 import java.time.Instant
 import java.util.Locale
 
 /**
- *
+ * A build used to test the model.
  */
+@Data
 data class TestBuild(
-        val applicationId: Id<ApplicationDefinition>,
-        val language: Locale,
-        val startDate: Instant,
-        val buildModelDuration: Duration,
-        val testSentencesDuration: Duration,
-        val nbSentencesInModel: Int,
-        val nbSentencesTested: Int,
-        val nbErrors: Int
-) {
-}
+    /**
+     * The application id to test.
+     */
+    val applicationId: Id<ApplicationDefinition>,
+    /**
+     * The tested language.
+     */
+    val language: Locale,
+    /**
+     * Start of the build.
+     */
+    val startDate: Instant,
+    /**
+     * Duration of the build.
+     */
+    val buildModelDuration: Duration,
+    /**
+     * Duration of sentences tests.
+     */
+    val testSentencesDuration: Duration,
+    /**
+     * Number of sentences included in the model.
+     */
+    val nbSentencesInModel: Int,
+    /**
+     * Number of sentences tested.
+     */
+    val nbSentencesTested: Int,
+    /**
+     * Number of errors.
+     */
+    val nbErrors: Int
+)

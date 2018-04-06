@@ -16,19 +16,50 @@
 
 package fr.vsct.tock.nlp.front.shared.parser
 
+import org.litote.kmongo.Data
 import java.util.Locale
 
 /**
- *
+ * A NLP parse result.
  */
-data class ParseResult(val intent: String,
-                       val intentNamespace: String,
-                       val language: Locale,
-                       val entities: List<ParsedEntityValue>,
-                       val intentProbability: Double,
-                       val entitiesProbability: Double,
-                       val retainedQuery: String,
-                       val otherIntentsProbabilities: Map<String, Double>) {
+@Data
+data class ParseResult(
+    /**
+     * The intent selected.
+     */
+    val intent: String,
+    /**
+     * the namesapce of the selected intent.
+     */
+    val intentNamespace: String,
+    /**
+     * The language selected.
+     */
+    val language: Locale,
+    /**
+     * The entities found.
+     */
+    val entities: List<ParsedEntityValue>,
+    /**
+     * The intent evaluated probability.
+     */
+    val intentProbability: Double,
+    /**
+     * The average entity evaluation probability.
+     */
+    val entitiesProbability: Double,
+    /**
+     * The analysed query.
+     */
+    val retainedQuery: String,
+    /**
+     * Other intents with significant probabilities.
+     */
+    val otherIntentsProbabilities: Map<String, Double>
+) {
 
+    /**
+     * Returns the first value for the specified entity role.
+     */
     fun firstValue(role: String): ParsedEntityValue? = entities.firstOrNull { it.entity.role == role }
 }

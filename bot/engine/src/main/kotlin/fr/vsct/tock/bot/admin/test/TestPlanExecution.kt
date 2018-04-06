@@ -16,19 +16,39 @@
 
 package fr.vsct.tock.bot.admin.test
 
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.time.Duration
 import java.time.Instant
 
 /**
- *
+ * An execution of a [TestPlan], with its result.
  */
+@Data
 data class TestPlanExecution(
-        val testPlanId: Id<TestPlan>,
-        val dialogs: List<DialogExecutionReport>,
-        val nbErrors: Int,
-        val date: Instant = Instant.now(),
-        val duration: Duration = Duration.ZERO,
-        val _id: Id<TestPlanExecution> = newId()) {
-}
+    /**
+     * The test plan identifier.
+     */
+    val testPlanId: Id<TestPlan>,
+    /**
+     * The dialog execution test reports.
+     */
+    val dialogs: List<DialogExecutionReport>,
+    /**
+     * Number of errors, if any.
+     */
+    val nbErrors: Int,
+    /**
+     * Date of the execution.
+     */
+    val date: Instant = Instant.now(),
+    /**
+     * Duration of the execution.
+     */
+    val duration: Duration = Duration.ZERO,
+    /**
+     * The execution identifier.
+     */
+    val _id: Id<TestPlanExecution> = newId()
+)

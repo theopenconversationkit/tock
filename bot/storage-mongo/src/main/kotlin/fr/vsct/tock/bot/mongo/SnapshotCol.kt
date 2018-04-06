@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.mongo
 
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.Snapshot
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import java.time.Instant
 import java.time.Instant.now
@@ -25,7 +26,8 @@ import java.time.Instant.now
 /**
  *
  */
-internal data class SnapshotCol(
+@Data
+data class SnapshotCol(
         val _id: Id<Dialog>,
         val snapshots: List<Snapshot>,
         val lastUpdateDate: Instant = now()

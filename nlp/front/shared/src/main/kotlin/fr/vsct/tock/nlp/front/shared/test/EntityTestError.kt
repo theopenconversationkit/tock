@@ -19,6 +19,7 @@ package fr.vsct.tock.nlp.front.shared.test
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import java.time.Instant
 import java.util.Locale
@@ -26,6 +27,7 @@ import java.util.Locale
 /**
  *
  */
+@Data
 data class EntityTestError(
         val applicationId: Id<ApplicationDefinition>,
         val language: Locale,

@@ -40,13 +40,15 @@ import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 import fr.vsct.tock.shared.security.decrypt
 import fr.vsct.tock.shared.security.encrypt
 import fr.vsct.tock.shared.security.encryptionEnabled
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 import java.time.Instant
 import java.time.ZoneId
 import java.util.Locale
 
-internal data class UserTimelineCol(
+@Data
+data class UserTimelineCol(
     val _id: Id<UserTimelineCol>,
     val playerId: PlayerId,
     val userPreferences: UserPreferencesWrapper,
@@ -107,6 +109,7 @@ internal data class UserTimelineCol(
         )
     }
 
+    @Data
     data class UserPreferencesWrapper(
         var firstName: String? = null,
         var lastName: String? = null,
@@ -149,6 +152,7 @@ internal data class UserTimelineCol(
 
     }
 
+    @Data
     class UserStateWrapper(
         val creationDate: Instant = Instant.now(),
         val lastUpdateDate: Instant = creationDate,

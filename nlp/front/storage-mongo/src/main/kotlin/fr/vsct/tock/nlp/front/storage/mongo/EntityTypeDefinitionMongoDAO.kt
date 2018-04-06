@@ -17,17 +17,15 @@
 package fr.vsct.tock.nlp.front.storage.mongo
 
 import com.mongodb.client.MongoCollection
-import com.mongodb.client.model.IndexOptions
-import com.mongodb.client.model.UpdateOptions
 import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
+import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition_.Companion.Name
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
-import org.litote.kmongo.deleteOne
-import org.litote.kmongo.ensureIndex
+import org.litote.kmongo.ensureUniqueIndex
+import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
-import org.litote.kmongo.json
-import org.litote.kmongo.replaceOne
+import org.litote.kmongo.upsert
 
 /**
  *
@@ -36,16 +34,16 @@ object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
 
     private val col: MongoCollection<EntityTypeDefinition> by lazy {
         val c = database.getCollection<EntityTypeDefinition>()
-        c.ensureIndex("{'name':1}", IndexOptions().unique(true))
+        c.ensureUniqueIndex(Name)
         c
     }
 
     override fun save(entityType: EntityTypeDefinition) {
-        col.replaceOne("{'name':${entityType.name.json}}", entityType, UpdateOptions().upsert(true))
+        col.replaceOne(Name eq entityType.name, entityType, upsert())
     }
 
     override fun getEntityTypeByName(name: String): EntityTypeDefinition? {
-        return col.findOne("{'name':${name.json}}")
+        return col.findOne(Name eq name)
     }
 
     override fun getEntityTypes(): List<EntityTypeDefinition> {
@@ -53,6 +51,6 @@ object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
     }
 
     override fun deleteEntityTypeByName(name: String): Boolean {
-        return col.deleteOne("{'name':${name.json}}").deletedCount == 1L
+        return col.deleteOne(Name eq name).deletedCount == 1L
     }
 }

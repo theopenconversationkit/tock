@@ -21,16 +21,18 @@ import fr.vsct.tock.nlp.front.service.storage.ModelBuildTriggerDAO
 import fr.vsct.tock.nlp.front.shared.build.ModelBuild
 import fr.vsct.tock.nlp.front.shared.build.ModelBuildQueryResult
 import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
+import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger_.Companion.ApplicationId
+import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger_.Companion.OnlyIfModelNotExists
+import fr.vsct.tock.nlp.front.shared.build.ModelBuild_
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import org.litote.kmongo.Id
-import org.litote.kmongo.count
+import org.litote.kmongo.and
 import org.litote.kmongo.deleteMany
+import org.litote.kmongo.descendingSort
 import org.litote.kmongo.ensureIndex
-import org.litote.kmongo.find
+import org.litote.kmongo.eq
 import org.litote.kmongo.getCollection
-import org.litote.kmongo.json
 import org.litote.kmongo.save
-import org.litote.kmongo.sort
 import java.util.Locale
 
 /**
@@ -40,14 +42,14 @@ object ModelBuildTriggerMongoDAO : ModelBuildTriggerDAO {
 
     private val col: MongoCollection<ModelBuildTrigger> by lazy {
         val c = MongoFrontConfiguration.database.getCollection<ModelBuildTrigger>()
-        c.ensureIndex("{'applicationId':1}")
+        c.ensureIndex(ApplicationId)
         c
     }
 
     private val modelCol: MongoCollection<ModelBuild> by lazy {
         val c = MongoFrontConfiguration.database.getCollection<ModelBuild>()
-        c.ensureIndex("{'applicationId':1,'language':1}")
-        c.ensureIndex("{'applicationId':1,'language':1,'date':1}")
+        c.ensureIndex(ModelBuild_.ApplicationId, ModelBuild_.Language)
+        c.ensureIndex(ModelBuild_.ApplicationId, ModelBuild_.Language, ModelBuild_.Date)
         c
     }
 
@@ -56,7 +58,10 @@ object ModelBuildTriggerMongoDAO : ModelBuildTriggerDAO {
     }
 
     override fun deleteTrigger(trigger: ModelBuildTrigger) {
-        col.deleteMany("{'applicationId':${trigger.applicationId.json},'onlyIfModelNotExists':${trigger.onlyIfModelNotExists}}")
+        col.deleteMany(
+            ApplicationId eq trigger.applicationId,
+            OnlyIfModelNotExists eq trigger.onlyIfModelNotExists
+        )
     }
 
     override fun getTriggers(): List<ModelBuildTrigger> {
@@ -67,17 +72,25 @@ object ModelBuildTriggerMongoDAO : ModelBuildTriggerDAO {
         modelCol.save(build)
     }
 
-    override fun builds(applicationId: Id<ApplicationDefinition>, language: Locale, start: Int, size: Int): ModelBuildQueryResult {
-        val filter = "{'applicationId':${applicationId.json},'language':${language.json}}"
+    override fun builds(
+        applicationId: Id<ApplicationDefinition>,
+        language: Locale,
+        start: Int,
+        size: Int
+    ): ModelBuildQueryResult {
+        val filter = and(
+            ModelBuild_.ApplicationId eq applicationId,
+            ModelBuild_.Language eq language
+        )
 
         return ModelBuildQueryResult(
-                modelCol.count(filter),
-                modelCol
-                        .find(filter)
-                        .sort("{date:1}")
-                        .skip(start)
-                        .limit(size)
-                        .toList()
+            modelCol.count(filter),
+            modelCol
+                .find(filter)
+                .descendingSort(ModelBuild_.Date)
+                .skip(start)
+                .limit(size)
+                .toList()
         )
     }
 }

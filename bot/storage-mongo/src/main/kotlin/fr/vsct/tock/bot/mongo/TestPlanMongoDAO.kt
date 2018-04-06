@@ -19,16 +19,19 @@ package fr.vsct.tock.bot.mongo
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanDAO
 import fr.vsct.tock.bot.admin.test.TestPlanExecution
+import fr.vsct.tock.bot.admin.test.TestPlanExecution_.Companion.Date
+import fr.vsct.tock.bot.admin.test.TestPlanExecution_.Companion.TestPlanId
+import fr.vsct.tock.bot.admin.test.TestPlan_.Companion.ApplicationId
+import fr.vsct.tock.bot.admin.test.TestPlan_.Companion.Name
 import org.litote.kmongo.Id
-import org.litote.kmongo.deleteMany
+import org.litote.kmongo.ascendingSort
 import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.descendingSort
 import org.litote.kmongo.ensureIndex
-import org.litote.kmongo.find
+import org.litote.kmongo.eq
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
-import org.litote.kmongo.json
 import org.litote.kmongo.save
-import org.litote.kmongo.sort
 
 /**
  *
@@ -39,7 +42,7 @@ internal object TestPlanMongoDAO : TestPlanDAO {
     private val testPlanExecutionCol = MongoBotConfiguration.database.getCollection<TestPlanExecution>()
 
     init {
-        testPlanCol.ensureIndex("{applicationId:1}")
+        testPlanCol.ensureIndex(ApplicationId)
     }
 
     override fun save(testPlan: TestPlan) {
@@ -48,7 +51,7 @@ internal object TestPlanMongoDAO : TestPlanDAO {
 
     override fun removeTestPlan(planId: Id<TestPlan>) {
         testPlanCol.deleteOneById(planId)
-        testPlanExecutionCol.deleteMany("{'testPlanId':${planId.json}}")
+        testPlanExecutionCol.deleteMany(TestPlanId eq planId)
     }
 
     override fun save(testPlan: TestPlanExecution) {
@@ -60,14 +63,14 @@ internal object TestPlanMongoDAO : TestPlanDAO {
     }
 
     override fun getPlansByApplicationId(applicationId: String): List<TestPlan> {
-        return testPlanCol.find("{applicationId:${applicationId.json}}").sort("{name:1}").toList()
+        return testPlanCol.find(ApplicationId eq applicationId).ascendingSort(Name).toList()
     }
 
     override fun getPlans(): List<TestPlan> {
-        return testPlanCol.find().sort("{name:1}").toList()
+        return testPlanCol.find().ascendingSort(Name).toList()
     }
 
     override fun getPlanExecutions(testPlanId: Id<TestPlan>): List<TestPlanExecution> {
-        return testPlanExecutionCol.find("{'testPlanId':${testPlanId.json}}").sort("{date:-1}").toList()
+        return testPlanExecutionCol.find(TestPlanId eq testPlanId).descendingSort(Date).toList()
     }
 }

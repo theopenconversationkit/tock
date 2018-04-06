@@ -22,20 +22,46 @@ import java.time.ZoneId
 import java.util.Locale
 
 /**
- *
+ * User preferences.
  */
-data class UserPreferences(var firstName: String? = null,
-                           var lastName: String? = null,
-                           var email: String? = null,
-                           var timezone: ZoneId = defaultZoneId,
-                           var locale: Locale = defaultLocale,
-                           var picture: String? = null,
-                           var gender: String? = null,
-                           /**
-                            * Is it a test user?
-                            */
-                           var test: Boolean = false) {
+data class UserPreferences(
+    /**
+     * First name of the user.
+     */
+    var firstName: String? = null,
+    /**
+     * Last name of the user.
+     */
+    var lastName: String? = null,
+    /**
+     * Email of the user.
+     */
+    var email: String? = null,
+    /**
+     * Timezone of the user.
+     */
+    var timezone: ZoneId = defaultZoneId,
+    /**
+     * Locale of the user.
+     */
+    var locale: Locale = defaultLocale,
+    /**
+     * Picture url of the user.
+     */
+    var picture: String? = null,
+    /**
+     * Gender of the user.
+     */
+    var gender: String? = null,
+    /**
+     * Is it a test user?
+     */
+    var test: Boolean = false
+) {
 
+    /**
+     * Fill the current [UserPreferences] with the specified [UserPreferences].
+     */
     fun fillWith(userPref: UserPreferences) {
         firstName = userPref.firstName
         lastName = userPref.lastName

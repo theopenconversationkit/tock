@@ -17,13 +17,15 @@
 package fr.vsct.tock.bot.mongo
 
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import java.time.Instant
 
 /**
  * To index dialog text
  */
-internal data class DialogTextCol(
+@Data
+data class DialogTextCol(
         val text: String,
         val dialogId: Id<Dialog>,
         val date: Instant = Instant.now()) {

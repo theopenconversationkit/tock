@@ -20,12 +20,14 @@ import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.I18nLabel
+import fr.vsct.tock.translator.I18nLabel_.Companion.Namespace
+import fr.vsct.tock.translator.I18nLabel_.Companion._id
 import fr.vsct.tock.translator.I18nLocalizedLabel
 import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOne
+import org.litote.kmongo.eq
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
-import org.litote.kmongo.json
 import org.litote.kmongo.save
 
 /**
@@ -66,6 +68,6 @@ internal object I18nMongoDAO : I18nDAO {
     }
 
     override fun deleteByNamespaceAndId(namespace: String, id: Id<I18nLabel>) {
-        col.deleteOne("{namespace:${namespace.json}, _id:${id.json}}")
+        col.deleteOne(Namespace eq namespace, _id eq id)
     }
 }

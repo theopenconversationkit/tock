@@ -17,15 +17,25 @@
 package fr.vsct.tock.nlp.front.shared.config
 
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 
 /**
- *
+ * A classification for a sentence.
  */
-data class Classification(val intentId: Id<IntentDefinition>, val entities: List<ClassifiedEntity>) {
+@Data
+data class Classification(
+    /**
+     * The intent id.
+     */
+    val intentId: Id<IntentDefinition>,
+    /**
+     * The entities.
+     */
+    val entities: List<ClassifiedEntity>) {
 
     constructor(query: ParseResult, intentId: Id<IntentDefinition>) : this(
-            intentId,
-            query.entities.map { ClassifiedEntity(it) }
+        intentId,
+        query.entities.map { ClassifiedEntity(it) }
     )
 }

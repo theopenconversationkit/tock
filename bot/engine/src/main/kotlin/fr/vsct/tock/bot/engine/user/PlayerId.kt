@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.engine.user
 
+import org.litote.kmongo.Data
+
 /**
  * The user identifier.
  *
@@ -26,14 +28,23 @@ package fr.vsct.tock.bot.engine.user
  *
  * A [PlayerId] is equals to another [PlayerId] if both [id] are equals.
  */
+@Data
 data class PlayerId(
-        val id: String,
-        val type: PlayerType = PlayerType.user,
-        val clientId: String? = null) {
+    /**
+     * The unique identifier of the player.
+     */
+    val id: String,
+    /**
+     * The type of the player.
+     */
+    val type: PlayerType = PlayerType.user,
+    /**
+     * The optional business client id.
+     */
+    val clientId: String? = null
+) {
 
-    override fun equals(other: Any?): Boolean
-            = (other as? PlayerId)?.id == id
+    override fun equals(other: Any?): Boolean = (other as? PlayerId)?.id == id
 
-    override fun hashCode(): Int
-            = id.hashCode()
+    override fun hashCode(): Int = id.hashCode()
 }

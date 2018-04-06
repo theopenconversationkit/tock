@@ -18,7 +18,6 @@ package fr.vsct.tock.nlp.front.storage.mongo
 
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.IndexOptions
-import com.mongodb.client.model.Sorts
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLog
@@ -28,28 +27,47 @@ import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogStat
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogStatQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
+import fr.vsct.tock.nlp.front.storage.mongo.DayAndYear_.Companion.DayOfYear
+import fr.vsct.tock.nlp.front.storage.mongo.DayAndYear_.Companion.Year
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.ApplicationId
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.Date
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.DurationInMS
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.Error
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.Query
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.Result
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.Text
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion.Count
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion.Duration
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion.EntitiesProbability
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion.IntentProbability
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion._id
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
-import org.litote.kmongo.MongoOperator.avg
-import org.litote.kmongo.MongoOperator.cond
-import org.litote.kmongo.MongoOperator.dayOfYear
-import org.litote.kmongo.MongoOperator.group
-import org.litote.kmongo.MongoOperator.lte
-import org.litote.kmongo.MongoOperator.gte
-import org.litote.kmongo.MongoOperator.match
-import org.litote.kmongo.MongoOperator.project
-import org.litote.kmongo.MongoOperator.sort
-import org.litote.kmongo.MongoOperator.sum
-import org.litote.kmongo.MongoOperator.year
 import org.litote.kmongo.aggregate
-import org.litote.kmongo.count
+import org.litote.kmongo.and
+import org.litote.kmongo.ascending
+import org.litote.kmongo.avg
+import org.litote.kmongo.cond
+import org.litote.kmongo.dayOfYear
+import org.litote.kmongo.descendingSort
+import org.litote.kmongo.document
 import org.litote.kmongo.ensureIndex
-import org.litote.kmongo.find
+import org.litote.kmongo.eq
+import org.litote.kmongo.from
 import org.litote.kmongo.getCollection
-import org.litote.kmongo.json
+import org.litote.kmongo.group
+import org.litote.kmongo.gte
+import org.litote.kmongo.lte
+import org.litote.kmongo.match
+import org.litote.kmongo.project
+import org.litote.kmongo.regex
+import org.litote.kmongo.sort
+import org.litote.kmongo.sum
 import org.litote.kmongo.toList
+import org.litote.kmongo.year
 import java.time.Instant
 import java.time.LocalDate
 import java.util.concurrent.TimeUnit
@@ -59,7 +77,8 @@ import java.util.concurrent.TimeUnit
  */
 object ParseRequestLogMongoDAO : ParseRequestLogDAO {
 
-    private data class ParseRequestLogCol(
+    @Data
+    data class ParseRequestLogCol(
         val text: String,
         val applicationId: Id<ApplicationDefinition>,
         val query: ParseQuery,
@@ -91,9 +110,11 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
             )
     }
 
-    private data class DayAndYear(val dayOfYear: Int, val year: Int)
+    @Data
+    data class DayAndYear(val dayOfYear: Int, val year: Int)
 
-    private data class ParseRequestLogStatResult(
+    @Data
+    data class ParseRequestLogStatResult(
         val _id: DayAndYear,
         val error: Int,
         val count: Int,
@@ -114,11 +135,11 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
 
     private val col: MongoCollection<ParseRequestLogCol> by lazy {
         val c = database.getCollection<ParseRequestLogCol>("parse_request_log")
-        c.ensureIndex("{'query.context.language':1,'applicationId':1}")
-        c.ensureIndex("{'query.context.language':1,'applicationId':1, 'text':1}")
+        c.ensureIndex(Query.context.language, ApplicationId)
+        c.ensureIndex(Query.context.language, ApplicationId, Text)
         c.ensureIndex(
-            "{'date':1}",
-            IndexOptions().expireAfter(longProperty("tock_nlp_log_index_ttl_days", 7), TimeUnit.DAYS)
+            Date,
+            indexOptions = IndexOptions().expireAfter(longProperty("tock_nlp_log_index_ttl_days", 7), TimeUnit.DAYS)
         )
         c
     }
@@ -134,19 +155,21 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
     override fun search(query: ParseRequestLogQuery): ParseRequestLogQueryResult {
         with(query) {
             val baseFilter =
-                listOf(
-                    "'applicationId':${applicationId.json}",
-                    "'query.context.language':${language.json}",
-                    if (search.isNullOrBlank()) null else if (query.onlyExactMatch) "'text':${search!!.json}" else "'text':/${search!!.trim()}/i",
-                    if (searchMark == null) null else "date:{$lte: ${searchMark!!.date.json}}",
-                    if (sinceDate == null) null else "date:{$gte: ${sinceDate!!.json}}",
-                    if (clientDevice.isNullOrBlank()) null else "'query.context.clientDevice':${clientDevice!!.json}",
-                    if (clientId.isNullOrBlank()) null else "'query.context.clientId':${clientId!!.json}"
-                ).toBsonFilter()
+                and(
+                    ApplicationId eq applicationId,
+                    Query.context.language eq language,
+                    if (search.isNullOrBlank()) null
+                    else if (query.onlyExactMatch) Text eq search
+                    else Text.regex(search!!.trim(), "i"),
+                    if (searchMark == null) null else Date lte searchMark!!.date,
+                    if (sinceDate == null) null else Date gte sinceDate,
+                    if (clientDevice.isNullOrBlank()) null else Query.context.clientDevice eq clientDevice,
+                    if (clientId.isNullOrBlank()) null else Query.context.clientId eq clientId
+                )
             val count = col.count(baseFilter)
             if (count > start) {
                 val list = col.find(baseFilter)
-                    .sort(Sorts.descending("date"))
+                    .descendingSort(Date)
                     .skip(start.toInt())
                     .limit(size)
 
@@ -159,22 +182,41 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
 
     override fun stats(query: ParseRequestLogStatQuery): List<ParseRequestLogStat> {
         return with(query) {
-            val filter =
-                listOfNotNull(
-                    "'applicationId':${applicationId.json}",
-                    "'query.context.language':${language.json}",
-                    if (intent == null) null else "'result.intent':${intent!!.json}"
-                ).joinToString(",", "{", "}")
-
-            val match = "{$match:$filter}"
-            val project =
-                "{$project:{error:{$cond:['\$error',1,0]},dayOfYear:{$dayOfYear:'\$date'},year:{$year:'\$date'},duration:'\$durationInMS',intentProbability:'\$result.intentProbability',entitiesProbability:'\$result.entitiesProbability'}}"
-            val group =
-                "{$group:{ _id:{dayOfYear:'\$dayOfYear',year:'\$year'},error:{$sum:'\$error'},count:{$sum:1},duration:{$avg:'\$duration'},intentProbability:{$avg:'\$intentProbability'},entitiesProbability:{$avg:'\$entitiesProbability'}}}"
-            val sort = "{$sort:{'_id.year':1,'_id.dayOfYear':1}}"
-            col.aggregate<ParseRequestLogStatResult>(match, project, group, sort)
+            col.aggregate<ParseRequestLogStatResult>(
+                match(
+                    and(
+                        ApplicationId eq applicationId,
+                        Query.context.language eq language,
+                        if (intent == null) null else Result.intent eq intent
+                    )
+                ),
+                project(
+                    Error from cond(Error, 1, 0),
+                    DayOfYear from dayOfYear(Date),
+                    Year from year(Date),
+                    Duration from DurationInMS,
+                    IntentProbability from Result.intentProbability,
+                    EntitiesProbability from Result.entitiesProbability
+                ),
+                group(
+                    document(
+                        DayOfYear from DayOfYear,
+                        Year from Year
+                    ),
+                    Error sum Error,
+                    Count sum 1,
+                    Duration avg Duration,
+                    IntentProbability avg IntentProbability,
+                    EntitiesProbability avg EntitiesProbability
+                ),
+                sort(
+                    ascending(
+                        _id.year,
+                        _id.dayOfYear
+                    )
+                )
+            )
                 .toList().map { it.toStat() }
-
         }
     }
 }

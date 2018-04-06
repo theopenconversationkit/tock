@@ -44,6 +44,7 @@ import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 import fr.vsct.tock.translator.UserInterfaceType.textChat
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import java.time.Instant
 import java.time.Instant.now
@@ -51,7 +52,8 @@ import java.time.Instant.now
 /**
  *
  */
-internal data class DialogCol(val playerIds: Set<PlayerId>,
+@Data
+data class DialogCol(val playerIds: Set<PlayerId>,
                               var _id: Id<Dialog>,
                               val state: DialogStateMongoWrapper,
                               val stories: List<StoryMongoWrapper>,
@@ -173,7 +175,7 @@ internal data class DialogCol(val playerIds: Set<PlayerId>,
         }
     }
 
-
+    @Data
     class StoryMongoWrapper(val storyDefinitionId: String,
                             var currentIntent: Intent?,
                             val currentStep: String?,

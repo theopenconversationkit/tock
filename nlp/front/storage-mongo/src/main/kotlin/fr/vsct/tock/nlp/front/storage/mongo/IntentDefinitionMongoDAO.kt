@@ -17,19 +17,23 @@
 package fr.vsct.tock.nlp.front.storage.mongo
 
 import com.mongodb.client.MongoCollection
-import com.mongodb.client.model.IndexOptions
 import fr.vsct.tock.nlp.front.service.storage.IntentDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition_.Companion.Applications
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition_.Companion.Entities
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition_.Companion.Name
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition_.Companion.Namespace
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import org.litote.kmongo.Id
+import org.litote.kmongo.contains
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
-import org.litote.kmongo.find
+import org.litote.kmongo.ensureUniqueIndex
+import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
-import org.litote.kmongo.json
 import org.litote.kmongo.save
 
 /**
@@ -39,17 +43,17 @@ object IntentDefinitionMongoDAO : IntentDefinitionDAO {
 
     private val col: MongoCollection<IntentDefinition> by lazy {
         val c = database.getCollection<IntentDefinition>()
-        c.ensureIndex("{'applications':1}")
-        c.ensureIndex("{'namespace':1,'name':1}", IndexOptions().unique(true))
+        c.ensureIndex(Applications)
+        c.ensureUniqueIndex(Namespace, Name)
         c
     }
 
     override fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition> {
-        return col.find("{'applications':${applicationId.json}}").toList()
+        return col.find(Applications contains applicationId).toList()
     }
 
     override fun getIntentByNamespaceAndName(namespace: String, name: String): IntentDefinition? {
-        return col.findOne("{'name':${name.json},'namespace':${namespace.json}}")
+        return col.findOne(Name eq name, Namespace eq namespace)
     }
 
     override fun getIntentById(id: Id<IntentDefinition>): IntentDefinition? {
@@ -65,6 +69,6 @@ object IntentDefinitionMongoDAO : IntentDefinitionDAO {
     }
 
     override fun getIntentsUsingEntity(entityType: String): List<IntentDefinition> {
-        return col.find("{'entities.entityTypeName':${entityType.json}}").toList()
+        return col.find(Entities.entityTypeName eq entityType).toList()
     }
 }

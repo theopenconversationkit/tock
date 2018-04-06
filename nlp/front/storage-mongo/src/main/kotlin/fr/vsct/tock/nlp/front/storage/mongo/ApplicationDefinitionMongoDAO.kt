@@ -17,17 +17,18 @@
 package fr.vsct.tock.nlp.front.storage.mongo
 
 import com.mongodb.client.MongoCollection
-import com.mongodb.client.model.IndexOptions
 import fr.vsct.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition_.Companion.Name
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition_.Companion.Namespace
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOneById
-import org.litote.kmongo.ensureIndex
+import org.litote.kmongo.ensureUniqueIndex
+import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
-import org.litote.kmongo.json
 import org.litote.kmongo.save
 
 /**
@@ -37,7 +38,7 @@ object ApplicationDefinitionMongoDAO : ApplicationDefinitionDAO {
 
     private val col: MongoCollection<ApplicationDefinition> by lazy {
         val c = database.getCollection<ApplicationDefinition>()
-        c.ensureIndex("{'name':1,'namespace':1}", IndexOptions().unique(true))
+        c.ensureUniqueIndex(Name, Namespace)
         c
     }
 
@@ -51,7 +52,7 @@ object ApplicationDefinitionMongoDAO : ApplicationDefinitionDAO {
     }
 
     override fun getApplicationByNamespaceAndName(namespace: String, name: String): ApplicationDefinition? {
-        return col.findOne("{'name':${name.json},'namespace':${namespace.json}}")
+        return col.findOne(Name eq name, Namespace eq namespace)
     }
 
     override fun getApplicationById(id: Id<ApplicationDefinition>): ApplicationDefinition? {

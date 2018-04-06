@@ -16,12 +16,33 @@
 
 package fr.vsct.tock.nlp.front.shared.parser
 
+import org.litote.kmongo.Data
+
 /**
- *
+ * A NLP parse query.
  */
-data class ParseQuery(val queries: List<String>,
-                      val namespace: String,
-                      val applicationName: String,
-                      val context: QueryContext,
-                      val state: QueryState = QueryState.noState) {
+@Data
+data class ParseQuery(
+    /**
+     * A list of queries to parse.
+     * Usually there is only one element in the list, but some STT engines provides alternatives.
+     */
+    val queries: List<String>,
+    /**
+     * The namespace of the application.
+     */
+    val namespace: String,
+    /**
+     * The name of the application.
+     */
+    val applicationName: String,
+    /**
+     * The context of the query.
+     */
+    val context: QueryContext,
+    /**
+     * The state of the query.
+     */
+    val state: QueryState = QueryState.noState
+) {
 }

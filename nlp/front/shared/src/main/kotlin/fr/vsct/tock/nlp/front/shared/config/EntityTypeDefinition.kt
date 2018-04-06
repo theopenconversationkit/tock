@@ -16,15 +16,31 @@
 
 package fr.vsct.tock.nlp.front.shared.config
 
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
 /**
- *
+ * A type of entity.
  */
-data class EntityTypeDefinition(val name: String,
-                                val description: String = "",
-                                val subEntities: List<EntityDefinition> = emptyList(),
-                                val _id: Id<EntityTypeDefinition> = newId()) {
+@Data
+data class EntityTypeDefinition(
+    /**
+     * The qualified name of the entity (ie namespace:name)
+     */
+    val name: String,
+    /**
+     * The description of the entity.
+     */
+    val description: String = "",
+    /**
+     * The sub entites of this entity.
+     */
+    val subEntities: List<EntityDefinition> = emptyList(),
+    /**
+     * The unique id of the entity.
+     */
+    val _id: Id<EntityTypeDefinition> = newId()
+) {
 
 }

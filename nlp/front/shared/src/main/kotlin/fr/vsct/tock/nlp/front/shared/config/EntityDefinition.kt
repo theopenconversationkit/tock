@@ -18,12 +18,20 @@ package fr.vsct.tock.nlp.front.shared.config
 
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.shared.name
+import org.litote.kmongo.Data
 
 /**
- *
+ * An entity is an [EntityTypeDefinition] with a [role].
  */
+@Data
 data class EntityDefinition(
+    /**
+     * The qualified name of the entity type.
+     */
     val entityTypeName: String,
+    /**
+     * The role.
+     */
     val role: String = entityTypeName.name(),
     /**
      * To evaluate time.

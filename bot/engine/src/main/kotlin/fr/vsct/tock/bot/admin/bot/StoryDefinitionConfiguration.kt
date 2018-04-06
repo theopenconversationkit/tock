@@ -21,19 +21,42 @@ import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
 import fr.vsct.tock.bot.admin.answer.ScriptAnswerConfiguration
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
 /**
  * A [StoryDefinition] defined at runtime.
  */
+@Data
 data class StoryDefinitionConfiguration(
+    /**
+     * The story definition identifier.
+     */
     val storyId: String,
+    /**
+     * The bot identifier.
+     */
     val botId: String,
+    /**
+     * The target intent.
+     */
     val intent: Intent,
+    /**
+     * The type of answer configuration.
+     */
     val currentType: AnswerConfigurationType,
+    /**
+     * The answers available.
+     */
     val answers: List<AnswerConfiguration>,
-    val version:Int = 0,
+    /**
+     * The version of the story.
+     */
+    val version: Int = 0,
+    /**
+     * The configuration identifier.
+     */
     val _id: Id<StoryDefinitionConfiguration> = newId()
 ) {
 

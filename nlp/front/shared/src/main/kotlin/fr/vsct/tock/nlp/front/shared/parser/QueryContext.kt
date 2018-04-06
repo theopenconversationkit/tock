@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.shared.parser
 
 import fr.vsct.tock.shared.Dice
+import org.litote.kmongo.Data
 import java.time.ZoneId
 import java.time.ZoneOffset.UTC
 import java.time.ZonedDateTime
@@ -24,31 +25,51 @@ import java.time.ZonedDateTime.now
 import java.util.Locale
 
 /**
- *
+ * The context of a user query.
  */
-data class QueryContext(val language: Locale,
-                        val clientId: String = Dice.newId(),
-                        val clientDevice: String? = null,
-                        val dialogId: String = Dice.newId(),
-                        val referenceDate: ZonedDateTime = now(UTC),
-                        val referenceTimezone: ZoneId = UTC,
-                        /**
-                         * Is it a non regression test?
-                         */
-                        val test: Boolean = false,
-                        /**
-                         * Should the query be saved in db if not already present?
-                         */
-                        val registerQuery: Boolean = !test,
-                        /**
-                         * If a query is already validated in the model,
-                         * returns directly the result without using the NLP model if
-                         * [checkExistingQuery] is true
-                         */
-                        val checkExistingQuery: Boolean = true,
-                        /**
-                         * Add this query in built-in stats.
-                         */
-                        val increaseQueryCounter: Boolean = !test
+@Data
+data class QueryContext(
+    /**
+     * The language of the query.
+     */
+    val language: Locale,
+    /**
+     * The unique client identifier.
+     */
+    val clientId: String = Dice.newId(),
+    /**
+     * The optional client device.
+     */
+    val clientDevice: String? = null,
+    /**
+     * The dialog identifier.
+     */
+    val dialogId: String = Dice.newId(),
+    /**
+     * The reference date used to parse the query.
+     */
+    val referenceDate: ZonedDateTime = now(UTC),
+    /**
+     * The user timezone.
+     */
+    val referenceTimezone: ZoneId = UTC,
+    /**
+     * Is it a non regression test?
+     */
+    val test: Boolean = false,
+    /**
+     * Should the query be saved in db if not already present?
+     */
+    val registerQuery: Boolean = !test,
+    /**
+     * If a query is already validated in the model,
+     * returns directly the result without using the NLP model if
+     * [checkExistingQuery] is true
+     */
+    val checkExistingQuery: Boolean = true,
+    /**
+     * Add this query in built-in stats.
+     */
+    val increaseQueryCounter: Boolean = !test
 ) {
 }

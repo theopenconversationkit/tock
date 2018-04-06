@@ -17,14 +17,27 @@
 package fr.vsct.tock.bot.definition
 
 import fr.vsct.tock.shared.TOCK_NAMESPACE
+import org.litote.kmongo.Data
 
 /**
  * An intent definition.
  */
-data class Intent(val name: String) : IntentAware {
+@Data
+data class Intent(
+    /**
+     * The name of the intent.
+     */
+    val name: String
+) : IntentAware {
 
     companion object {
+        /**
+         * The unknown intent.
+         */
         val unknown: Intent = Intent("$TOCK_NAMESPACE:unknown")
+        /**
+         * The keyword intent.
+         */
         val keyword: Intent = Intent("$TOCK_NAMESPACE:keyword")
     }
 
