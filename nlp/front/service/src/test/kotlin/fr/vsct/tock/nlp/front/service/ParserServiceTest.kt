@@ -16,12 +16,17 @@
 
 package fr.vsct.tock.nlp.front.service
 
+import fr.vsct.tock.nlp.core.ParsingResult
 import fr.vsct.tock.nlp.front.service.ParserService.formatQuery
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
+import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
+import fr.vsct.tock.nlp.front.shared.parser.IntentQualifier
 import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.shared.name
+import io.mockk.every
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.toId
@@ -32,6 +37,9 @@ import kotlin.test.assertEquals
  *
  */
 class ParserServiceTest : AbstractTest() {
+
+    private val validatedSentence =
+        defaultClassifiedSentence.copy(classification = defaultClassification.copy("new_intent".toId()))
 
     @Test
     fun formatQuery_shouldRemoveAllTabsAndCarriage() {
@@ -66,10 +74,6 @@ class ParserServiceTest : AbstractTest() {
         assertEquals(Locale.ITALIAN, locale)
     }
 
-    private val validatedSentence =
-        defaultClassifiedSentence.copy(classification = defaultClassification.copy("new_intent".toId()))
-
-
     @Test
     fun saveSentence_shouldSaveTheSentence_ifTheAlreadyExistingSentenceHasInboxStatusAndNotSameContent() {
         ParserService.saveSentence(defaultClassifiedSentence, validatedSentence)
@@ -86,6 +90,32 @@ class ParserServiceTest : AbstractTest() {
     fun saveSentence_shouldNotSaveTheSentence_ifTheAlreadyExistingSentenceHasModelStatus() {
         ParserService.saveSentence(defaultClassifiedSentence, validatedSentence.copy(status = model))
         verify(exactly = 0) { context.config.save(any<ClassifiedSentence>()) }
+    }
+
+    @Test
+    fun `GIVEN a request for intentSubsetParseQuery WHEN the sentence is validated and in intents modifiers THEN this sentence is used`() {
+        every { context.config.search(any()) } returns SentencesQueryResult(1, listOf(intent2ClassifiedSentence))
+
+        val result = ParserService.parseIntentEntities(intentSubsetParseQuery)
+
+        assertEquals(intent2Name.name(), result.intent)
+    }
+
+    @Test
+    fun `GIVEN a request for intentSubsetParseQuery WHEN the sentence is validated but not in intents modifiers THEN the nlp model is used`() {
+        every { context.config.search(any()) } returns SentencesQueryResult(1, listOf(intent2ClassifiedSentence))
+        every { context.core.parse(any(), any(), any()) } returns
+                ParsingResult(
+                    defaultIntentName,
+                    emptyList(),
+                    1.0,
+                    1.0
+                )
+
+        val query = intentSubsetParseQuery.copy(intents = setOf(IntentQualifier(defaultIntentName, 0.0)))
+        val result = ParserService.parseIntentEntities(query)
+
+        assertEquals(defaultIntentName.name(), result.intent)
     }
 
 }

@@ -22,6 +22,9 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.front.service.storage.ApplicationDefinitionDAO
+import fr.vsct.tock.nlp.front.service.storage.ClassifiedSentenceDAO
+import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
+import fr.vsct.tock.nlp.front.service.storage.IntentDefinitionDAO
 import fr.vsct.tock.nlp.front.service.storage.ModelBuildTriggerDAO
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
 import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
@@ -30,6 +33,8 @@ import fr.vsct.tock.nlp.front.shared.config.Classification
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
+import fr.vsct.tock.nlp.front.shared.parser.IntentQualifier
+import fr.vsct.tock.nlp.front.shared.parser.ParseIntentEntitiesQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.nlp.front.shared.parser.QueryContext
 import fr.vsct.tock.shared.Dice
@@ -38,6 +43,7 @@ import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.tockInternalInjector
+import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -50,7 +56,7 @@ import java.time.Instant
  */
 abstract class AbstractTest {
 
-    class TestContext {
+    inner class TestContext {
 
         val core: NlpCore = mockk(relaxed = true)
         val config: ApplicationConfiguration = mockk(relaxed = true)
@@ -58,6 +64,9 @@ abstract class AbstractTest {
         val logDAO: ParseRequestLogDAO = mockk(relaxed = true)
         val modelBuildTriggerDAO: ModelBuildTriggerDAO = mockk(relaxed = true)
         val applicationDefinitionDAO: ApplicationDefinitionDAO = mockk(relaxed = true)
+        val entityTypeDefinitionDAO: EntityTypeDefinitionDAO = mockk(relaxed = true)
+        val intentDefinitionDAO: IntentDefinitionDAO = mockk(relaxed = true)
+        val classifiedSentenceDAO: ClassifiedSentenceDAO = mockk(relaxed = true)
 
         val frontTestModule = Kodein.Module {
             bind<ApplicationConfiguration>() with provider { config }
@@ -66,9 +75,21 @@ abstract class AbstractTest {
             bind<ParseRequestLogDAO>() with provider { logDAO }
             bind<ModelBuildTriggerDAO>() with provider { modelBuildTriggerDAO }
             bind<ApplicationDefinitionDAO>() with provider { applicationDefinitionDAO }
+            bind<EntityTypeDefinitionDAO>() with provider { entityTypeDefinitionDAO }
+            bind<IntentDefinitionDAO>() with provider { intentDefinitionDAO }
+            bind<ClassifiedSentenceDAO>() with provider { classifiedSentenceDAO }
         }
 
         fun init() {
+            every { config.getApplicationByNamespaceAndName(namespace, appName) } returns app
+            every { config.getIntentsByApplicationId(app._id) } returns
+                    listOf(
+                        defaultIntentDefinition,
+                        intent2Definition
+                    )
+            every { config.getIntentById(defaultIntentDefinition._id) } returns defaultIntentDefinition
+            every { config.getIntentById(intent2Definition._id) } returns intent2Definition
+
             tockInternalInjector = KodeinInjector()
             injector.inject(Kodein {
                 import(frontTestModule)
@@ -80,7 +101,12 @@ abstract class AbstractTest {
 
     val namespace = "namespace"
     val appName = "test"
-    val app = ApplicationDefinition(appName, namespace, _id = "id".toId())
+    val app = ApplicationDefinition(
+        appName,
+        namespace,
+        _id = "id".toId(),
+        supportedLocales = setOf(defaultLocale)
+    )
 
     val defaultIntentName = "$namespace:intent"
     val defaultIntentDefinition =
@@ -98,7 +124,34 @@ abstract class AbstractTest {
         1.0
     )
 
-    val parseQuery = ParseQuery(emptyList(), namespace, appName, QueryContext(defaultLocale, Dice.newId()))
+    val parseQuery = ParseQuery(listOf("a"), namespace, appName, QueryContext(defaultLocale, Dice.newId()))
+
+
+    val intent2Name = "$namespace:intent2"
+    val intent2Definition =
+        IntentDefinition(intent2Name.name(), namespace, setOf(app._id), emptySet(), _id = newId())
+    val intent2Classification = Classification(intent2Definition._id, emptyList())
+
+    val intent2ClassifiedSentence = ClassifiedSentence(
+        "text",
+        defaultLocale,
+        "id".toId(),
+        Instant.now(),
+        Instant.now(),
+        ClassifiedSentenceStatus.validated,
+        intent2Classification,
+        1.0,
+        1.0
+    )
+    val intentSubsetParseQuery = ParseIntentEntitiesQuery(
+        setOf(IntentQualifier(intent2Name, 0.0)),
+        ParseQuery(
+            listOf("text"),
+            namespace,
+            appName,
+            QueryContext(defaultLocale, Dice.newId())
+        )
+    )
 
     @BeforeEach
     fun initContext() {

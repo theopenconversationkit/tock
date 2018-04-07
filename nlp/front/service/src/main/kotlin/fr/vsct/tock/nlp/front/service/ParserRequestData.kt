@@ -28,18 +28,19 @@ import org.litote.kmongo.Id
  * Data used in [ParserService].
  */
 internal data class ParserRequestData(
-        val application: ApplicationDefinition,
-        val query: ParseQuery,
-        val classifiedSentence: ClassifiedSentence?,
-        val intentsQualifiers: Set<IntentQualifier>,
-        val intents: List<IntentDefinition>) {
+    val application: ApplicationDefinition,
+    val query: ParseQuery,
+    val classifiedSentence: ClassifiedSentence?,
+    val intentsQualifiers: Set<IntentQualifier>,
+    val intents: List<IntentDefinition>
+) {
 
     private val intentsById = intents.map { it._id to it }.toMap()
     private val intentsByName = intents.map { it.qualifiedName to it }.toMap()
 
     private fun isIntentEnabled(intentId: Id<IntentDefinition>?): Boolean {
         return intentsQualifiers.isEmpty()
-                || intentsQualifiers.any { intentsByName.containsKey(intentsById[intentId]?.qualifiedName) }
+                || intentsQualifiers.any { it.intent == intentsById[intentId]?.qualifiedName }
     }
 
     fun isStateEnabledForIntentId(intentId: Id<IntentDefinition>?): Boolean {

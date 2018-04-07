@@ -25,9 +25,9 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
 import fr.vsct.tock.shared.defaultLocale
 import io.mockk.every
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import io.mockk.verify
 import org.litote.kmongo.toId
 import java.time.Instant.now
 import java.util.Locale
@@ -81,12 +81,18 @@ class ApplicationCodecServiceTest : AbstractTest() {
     }
 
     @Test
-    fun `import existing app_with a new locale add the locale to the app`() {
-        val app = app.copy(supportedLocales = setOf(Locale.ITALIAN))
+    fun `import existing app with a new locale add the locale to the app`() {
+        val newLocale = if (Locale.ITALIAN == defaultLocale) Locale.ENGLISH else Locale.ITALIAN
+        val app = app.copy(supportedLocales = setOf(newLocale))
         val dump = ApplicationDump(app)
 
         val report = ApplicationCodecService.import(namespace, dump)
         assertTrue(report.modified)
-        verify { context.config.save(app) }
+        verify {
+            context.config.save(match<ApplicationDefinition> {
+                it.supportedLocales.contains(newLocale)
+                        && it.supportedLocales.contains(defaultLocale)
+            })
+        }
     }
 }
