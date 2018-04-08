@@ -56,10 +56,9 @@
 
         <junit-platform>1.1.0</junit-platform>
         <junit-jupiter>5.1.0</junit-jupiter>
-        <mockito-kotlin>1.5.0</mockito-kotlin>
         <mockk>1.7.15</mockk>
 
-        <plugin.surefire>2.21.0</plugin.surefire>
+        <plugin.surefire>2.19.1</plugin.surefire>
         <plugin.source>3.0.1</plugin.source>
         <plugin.release>2.5.3</plugin.release>
         <plugin.gpg>1.6</plugin.gpg>

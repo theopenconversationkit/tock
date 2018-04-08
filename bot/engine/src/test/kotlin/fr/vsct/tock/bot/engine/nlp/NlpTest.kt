@@ -48,11 +48,11 @@ class NlpTest : BotEngineTest() {
     }
 
     @Test
-    fun parseSentence_shouldCallNlpClientParseIntentEntities_whenIntentsQualifiersIsNotNullInDialogState() {
+    fun `GIVEN intent qualifiers not null in dialog state, THEN parse is_called with intentsSubset not empty`() {
         dialog.state.nextActionState = NextUserActionState(listOf(NlpIntentQualifier("test2")))
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
         verify { nlpClient.parse(match { it.intentsSubset.isNotEmpty() }) }
-        verify(exactly = 0) { nlpClient.parse(any()) }
+        verify(exactly = 0) { nlpClient.parse(match { it.intentsSubset.isEmpty() }) }
     }
 
     @Test
