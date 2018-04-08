@@ -17,10 +17,33 @@
 package fr.vsct.tock.nlp.api.client.model
 
 /**
- *
+ * A NLP parse query.
  */
-data class NlpQuery(val queries: List<String>,
-                    val namespace: String,
-                    val applicationName: String,
-                    val context: QueryContext,
-                    val state: QueryState = QueryState.noState)
+data class NlpQuery(
+    /**
+     * A list of queries to parse.
+     * Usually there is only one element in the list, but some STT engines provides alternatives.
+     */
+    val queries: List<String>,
+    /**
+     * The namespace of the application.
+     */
+    val namespace: String,
+    /**
+     * The name of the application.
+     */
+    val applicationName: String,
+    /**
+     * The context of the query.
+     */
+    val context: QueryContext,
+    /**
+     * The state of the query.
+     */
+    val state: QueryState = QueryState.noState,
+    /**
+     * The query is restricted to the specified intents only.
+     * If the set is empty all intents of the application are allowed.
+     */
+    val intentsSubset: Set<NlpIntentQualifier> = emptySet()
+)

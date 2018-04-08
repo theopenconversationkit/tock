@@ -44,14 +44,14 @@ class NlpTest : BotEngineTest() {
     fun parseSentence_shouldCallNlpClientParse_whenExpectedIntentIsNullInDialogState() {
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
         verify { nlpClient.parse(any()) }
-        verify(exactly = 0) { nlpClient.parseIntentEntities(any()) }
+        verify(exactly = 0) { nlpClient.parse(match { it.intentsSubset.isNotEmpty() }) }
     }
 
     @Test
     fun parseSentence_shouldCallNlpClientParseIntentEntities_whenIntentsQualifiersIsNotNullInDialogState() {
         dialog.state.nextActionState = NextUserActionState(listOf(NlpIntentQualifier("test2")))
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
-        verify { nlpClient.parseIntentEntities(any()) }
+        verify { nlpClient.parse(match { it.intentsSubset.isNotEmpty() }) }
         verify(exactly = 0) { nlpClient.parse(any()) }
     }
 
@@ -90,7 +90,7 @@ class NlpTest : BotEngineTest() {
     fun parseSentence_shouldUseNlpListenersEntityEvaluation_WhenAvailable() {
 
         every { nlpClient.parse(any()) } returns nlpResult
-        every { nlpClient.parseIntentEntities(any()) } returns nlpResult
+        every { nlpClient.parse(match { it.intentsSubset.isNotEmpty() }) } returns nlpResult
 
         val customValue = ContextValue(entityB, object : Value {}, "b")
         val nlpListener = object : NlpListener {

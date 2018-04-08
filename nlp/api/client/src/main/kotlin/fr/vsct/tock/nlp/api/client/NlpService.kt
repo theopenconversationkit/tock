@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.nlp.api.client
 
-import fr.vsct.tock.nlp.api.client.model.NlpIntentEntitiesQuery
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDefinition
@@ -45,9 +44,6 @@ internal interface NlpService {
 
     @POST("parse")
     fun parse(@Body query: NlpQuery): Call<NlpResult>
-
-    @POST("parse/intent/entities")
-    fun parseIntentEntities(@Body query: NlpIntentEntitiesQuery): Call<NlpResult>
 
     @POST("evaluate")
     fun evaluateEntities(@Body query: EntityEvaluationQuery): Call<EntityEvaluationResult>

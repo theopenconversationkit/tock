@@ -33,7 +33,6 @@ import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.NlpClient
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.api.client.model.EntityValue
-import fr.vsct.tock.nlp.api.client.model.NlpIntentEntitiesQuery
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.QueryContext
@@ -313,11 +312,14 @@ internal class Nlp : NlpController {
             val result = if (!useQualifiers) {
                 nlpClient.parse(request)
             } else {
-                nlpClient.parseIntentEntities(
-                    NlpIntentEntitiesQuery(
-                        intentsQualifiers!!.map { it.copy(intent = it.intent.withNamespace(request.namespace)) }.toSet(),
-                        request
-                    )
+                nlpClient.parse(
+                    request.copy(intentsSubset = intentsQualifiers!!.map {
+                        it.copy(
+                            intent = it.intent.withNamespace(
+                                request.namespace
+                            )
+                        )
+                    }.toSet())
                 )
             }
             if (result != null && useQualifiers) {

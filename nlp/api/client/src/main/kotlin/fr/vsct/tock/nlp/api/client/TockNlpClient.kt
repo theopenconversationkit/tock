@@ -22,7 +22,6 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
-import fr.vsct.tock.nlp.api.client.model.NlpIntentEntitiesQuery
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDefinition
@@ -95,10 +94,6 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
 
     override fun parse(query: NlpQuery): NlpResult? {
         return nlpService.parse(query).execute().parseAndReturns()
-    }
-
-    override fun parseIntentEntities(query: NlpIntentEntitiesQuery): NlpResult? {
-        return nlpService.parseIntentEntities(query).execute().parseAndReturns()
     }
 
     override fun evaluateEntities(query: EntityEvaluationQuery): EntityEvaluationResult? {

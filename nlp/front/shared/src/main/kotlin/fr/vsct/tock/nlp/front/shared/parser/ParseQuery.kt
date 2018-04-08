@@ -43,6 +43,10 @@ data class ParseQuery(
     /**
      * The state of the query.
      */
-    val state: QueryState = QueryState.noState
-) {
-}
+    val state: QueryState = QueryState.noState,
+    /**
+     * The query is restricted to the specified intents only.
+     * If the set is empty all intents of the application are allowed.
+     */
+    val intentsSubset: Set<IntentQualifier> = emptySet()
+)

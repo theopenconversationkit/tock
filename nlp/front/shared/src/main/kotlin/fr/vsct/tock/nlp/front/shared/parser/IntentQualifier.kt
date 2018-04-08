@@ -17,9 +17,17 @@
 package fr.vsct.tock.nlp.front.shared.parser
 
 /**
- * Each allowed intent in [ParseIntentEntitiesQuery].
+ * Each allowed intent if [ParseQuery.intentsSubset] is set.
  */
 data class IntentQualifier(
-        val intent: String,
-        val modifier: Double = 0.0) {
-}
+    /**
+     * The intent.
+     */
+    val intent: String,
+    /**
+     * The probability modifier.
+     * if positive, the probability of the intent is increased.
+     * If negative, the probability of the intent is decreased.
+     */
+    val modifier: Double = 0.0
+)

@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.nlp.api.client
 
-import fr.vsct.tock.nlp.api.client.model.NlpIntentEntitiesQuery
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDefinition
@@ -39,11 +38,6 @@ interface NlpClient {
      * Analyse a sentence and returns the result.
      */
     fun parse(query: NlpQuery): NlpResult?
-
-    /**
-     * Analyse a sentence and returns entities values, given a predefined intent.
-     */
-    fun parseIntentEntities(query: NlpIntentEntitiesQuery): NlpResult?
 
     /**
      * Evaluate entities.

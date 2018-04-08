@@ -25,7 +25,6 @@ import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
-import fr.vsct.tock.nlp.front.shared.parser.ParseIntentEntitiesQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.injector
@@ -57,16 +56,6 @@ class NlpVerticle : WebVerticle() {
     override fun configure() {
         val front = FrontClient
         initEncryptor()
-
-        blockingJsonPost("/parse/intent/entities") { context, query: ParseIntentEntitiesQuery ->
-            if (protectPath && context.organization != query.query.namespace) {
-                unauthorized()
-            } else if (query.query.queries.isEmpty()) {
-                error("please set queries field with at least one query")
-            } else {
-                front.parseIntentEntities(query)
-            }
-        }
 
         blockingJsonPost("/parse") { context, query: ParseQuery ->
             if (protectPath && context.organization != query.namespace) {

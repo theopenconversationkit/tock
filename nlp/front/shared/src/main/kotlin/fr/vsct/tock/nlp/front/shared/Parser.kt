@@ -16,13 +16,12 @@
 
 package fr.vsct.tock.nlp.front.shared
 
-import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
-import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeResult
-import fr.vsct.tock.nlp.front.shared.parser.ParseIntentEntitiesQuery
-import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
-import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.shared.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.front.shared.evaluation.EntityEvaluationResult
+import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
+import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeResult
+import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
+import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 
 /**
  *
@@ -33,12 +32,6 @@ interface Parser {
      * Parse sentences with NLP.
      */
     fun parse(query: ParseQuery): ParseResult
-
-    /**
-     * Parse entities for a specified intent.
-     * This is useful when a result is expected and you just need to know the entities.
-     */
-    fun parseIntentEntities(query: ParseIntentEntitiesQuery): ParseResult
 
     /**
      * Evaluate entities.

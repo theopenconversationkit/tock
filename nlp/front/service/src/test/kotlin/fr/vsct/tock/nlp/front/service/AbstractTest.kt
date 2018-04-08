@@ -34,7 +34,6 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.parser.IntentQualifier
-import fr.vsct.tock.nlp.front.shared.parser.ParseIntentEntitiesQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.nlp.front.shared.parser.QueryContext
 import fr.vsct.tock.shared.Dice
@@ -143,14 +142,12 @@ abstract class AbstractTest {
         1.0,
         1.0
     )
-    val intentSubsetParseQuery = ParseIntentEntitiesQuery(
-        setOf(IntentQualifier(intent2Name, 0.0)),
-        ParseQuery(
-            listOf("text"),
-            namespace,
-            appName,
-            QueryContext(defaultLocale, Dice.newId())
-        )
+    val intentSubsetParseQuery = ParseQuery(
+        listOf("text"),
+        namespace,
+        appName,
+        QueryContext(defaultLocale, Dice.newId()),
+        intentsSubset = setOf(IntentQualifier(intent2Name, 0.0))
     )
 
     @BeforeEach
