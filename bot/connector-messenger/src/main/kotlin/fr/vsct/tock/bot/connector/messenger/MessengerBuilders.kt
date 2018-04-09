@@ -240,6 +240,7 @@ fun BotBus.attachment(
         AttachmentType.image -> cachedAttachment(attachmentUrl, AttachmentType.image, quickReplies = quickReplies)
         AttachmentType.audio -> cachedAttachment(attachmentUrl, AttachmentType.audio, quickReplies = quickReplies)
         AttachmentType.video -> cachedAttachment(attachmentUrl, AttachmentType.video, quickReplies = quickReplies)
+        AttachmentType.file -> cachedAttachment(attachmentUrl, AttachmentType.file, quickReplies = quickReplies)
         else -> {
             error { "not supported attachment type $type" }
         }
