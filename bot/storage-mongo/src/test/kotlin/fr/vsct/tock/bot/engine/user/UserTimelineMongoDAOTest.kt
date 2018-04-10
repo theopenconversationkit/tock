@@ -16,9 +16,12 @@
 
 package fr.vsct.tock.bot.engine.user
 
+import fr.vsct.tock.bot.admin.user.UserReportQuery
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.mongo.UserTimelineMongoDAO
+import fr.vsct.tock.shared.defaultNamespace
 import org.junit.jupiter.api.Test
+import java.util.Locale
 import kotlin.test.assertEquals
 
 /**
@@ -27,13 +30,25 @@ import kotlin.test.assertEquals
 internal class UserTimelineMongoDAOTest : AbstractTest() {
 
     @Test
-    fun `getClientDialogs retrieve user timeline WHEN clientId is not null`() {
+    fun `getClientDialogs retrieves user timeline WHEN clientId is not null`() {
         val id = PlayerId("id", PlayerType.user, "clientId")
         val u = UserTimeline(id, dialogs = mutableListOf(Dialog(setOf(id))))
         UserTimelineMongoDAO.save(u)
         assertEquals(
             u.dialogs,
             UserTimelineMongoDAO.getClientDialogs(id.clientId!!, { error("no story provided") })
+        )
+    }
+
+    @Test
+    fun `search with flags does not fail`() {
+        UserTimelineMongoDAO.search(
+            UserReportQuery(
+                defaultNamespace,
+                "bot_open_data",
+                Locale.FRENCH,
+                flags = mapOf("tock_profile_loaded" to "true")
+            )
         )
     }
 }

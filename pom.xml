@@ -38,7 +38,7 @@
         <kotlin-logging>1.5.4</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>3.6.4-SNAPSHOT</kmongo>
+        <kmongo>3.7.0-rc0</kmongo>
         <fongo>2.2.0-RC1</fongo>
         <jackson>2.9.3</jackson>
         <jackson-module>2.9.3</jackson-module>
@@ -54,8 +54,8 @@
         <commons-codec>1.11</commons-codec>
         <commons-lang>3.7</commons-lang>
 
-        <junit-platform>1.1.0</junit-platform>
-        <junit-jupiter>5.1.0</junit-jupiter>
+        <junit-platform>1.1.1</junit-platform>
+        <junit-jupiter>5.1.1</junit-jupiter>
         <mockk>1.7.15</mockk>
 
         <plugin.surefire>2.19.1</plugin.surefire>
@@ -67,7 +67,7 @@
         <plugin.assembly>3.1.0</plugin.assembly>
         <plugin.frontend>1.6</plugin.frontend>
         <plugin.clean>3.0.0</plugin.clean>
-        <plugin.jar>3.0.2</plugin.jar>
+        <plugin.jar>3.1.0</plugin.jar>
 
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
 
@@ -219,7 +219,7 @@
             </dependency>
             <dependency>
                 <groupId>org.litote.kmongo</groupId>
-                <artifactId>kmongo-fongo</artifactId>
+                <artifactId>kmongo-flapdoodle</artifactId>
                 <version>${kmongo}</version>
                 <scope>test</scope>
             </dependency>

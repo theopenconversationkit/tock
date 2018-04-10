@@ -304,7 +304,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                 "{$or:[{'$key.expirationDate':{$gt:${now().json}}},{'$key.expirationDate':{$type:10}}]}"
                             )
                         }
-                    }.joinToString(",", "$and:[", "]").bson
+                    }.joinToString(",", "{$and:[", "]}").bson
                 )
             logger.debug("user search query: $filter")
             val count = userTimelineCol.count(filter)

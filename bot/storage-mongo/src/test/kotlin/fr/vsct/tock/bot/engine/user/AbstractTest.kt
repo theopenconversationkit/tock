@@ -28,7 +28,7 @@ import fr.vsct.tock.bot.mongo.UserTimelineCol
 import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.shared.tockInternalInjector
 import org.junit.jupiter.api.BeforeEach
-import org.litote.kmongo.KFongoRule.Companion.rule
+import org.litote.kmongo.KFlapdoodleRule.Companion.rule
 
 /**
  *
