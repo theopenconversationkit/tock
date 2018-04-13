@@ -36,7 +36,7 @@ import kotlin.test.assertEquals
  */
 class GAConnectorTest {
 
-    val connector = GAConnector("", "", emptySet())
+    val connector = GAConnector("appId", "/path", emptySet())
     val userPreferences: UserPreferences = UserPreferences()
     val controller: ConnectorController = mockk(relaxed = true)
     val context: RoutingContext = mockk(relaxed = true)

@@ -89,14 +89,13 @@
       <div class="i18n-label__entry__alternative-management">
         <button class="i18n-label__entry__alternatives__button" md-button (click)="removeAlternative(i, l, index)">
           <md-icon>remove</md-icon>
-
           Remove alternative
         </button>
       </div>
     </div>
 
     <div class="i18n-label__entry__connectors" *ngIf="isLast || i.i18n[index + 1].interfaceType !== l.interfaceType || i.i18n[index + 1].locale !== l.locale">
-      <span *ngFor="let connector of [{id: 'alexa'}, {id: 'ga'}, {id: 'messenger'}]">
+      <span *ngFor="let connector of connectorTypes">
           <button *ngIf="!i.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.id)" md-icon-button
                   (click)="addLocalizedLabelForConnector(i, l, connector.id)" md-tooltip="Clear localized label" color="warn">
             <img

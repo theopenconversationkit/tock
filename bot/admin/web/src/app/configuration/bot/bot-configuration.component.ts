@@ -15,7 +15,8 @@
  */
 
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
-import {BotApplicationConfiguration} from "../../core/model/configuration";
+import {BotApplicationConfiguration, ConnectorType, UserInterfaceType} from "../../core/model/configuration";
+import {BotSharedService} from "../../shared/bot-shared.service";
 
 @Component({
   selector: 'tock-bot-configuration',
@@ -33,10 +34,26 @@ export class BotConfigurationComponent implements OnInit {
   @Output()
   onValidate = new EventEmitter<boolean>();
 
-  constructor() {
+  connectorTypes: ConnectorType[] = [];
+  connectorTypesAndRestType: ConnectorType[] = [];
+
+  constructor(private botSharedService: BotSharedService) {
   }
 
   ngOnInit(): void {
+    this
+      .botSharedService
+      .getConnectorTypes()
+      .subscribe(
+        c => {
+          this.connectorTypes = c;
+          this.connectorTypesAndRestType = c.slice(0);
+          this.connectorTypesAndRestType.push(new ConnectorType("rest", UserInterfaceType.textChat));
+          if (!this.configuration._id && c.length > 0) {
+            this.configuration.connectorType = c[0];
+          }
+        }
+      )
   }
 
   remove() {

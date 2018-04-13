@@ -66,11 +66,11 @@ data class ConnectorConfiguration(
     )
 
     internal constructor(
-        base: ConnectorConfiguration,
+        base: ConnectorConfiguration?,
         botApplicationConfiguration: BotApplicationConfiguration
     ) : this(
         botApplicationConfiguration.applicationId,
-        botApplicationConfiguration.path ?: base.path,
+        botApplicationConfiguration.path ?: base?.path ?: "",
         botApplicationConfiguration.connectorType,
         botApplicationConfiguration.name,
         botApplicationConfiguration.baseUrl,
@@ -80,6 +80,9 @@ data class ConnectorConfiguration(
             BASE_URL to botApplicationConfiguration.baseUrl
         )
     )
+
+    internal constructor(botApplicationConfiguration: BotApplicationConfiguration) :
+            this(null, botApplicationConfiguration)
 
     companion object {
         private const val APPLICATION_NAME: String = "_name"

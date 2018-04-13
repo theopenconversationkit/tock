@@ -28,6 +28,7 @@ import fr.vsct.tock.bot.admin.model.UpdateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanService
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.nlp.admin.AdminVerticle
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 import fr.vsct.tock.shared.injector
@@ -94,7 +95,7 @@ open class BotAdminVerticle : AdminVerticle() {
                             bot.botId
                         ) != null
                     ) {
-                        unauthorized()
+                        badRequest("Connector identifier already exists")
                     }
                 }
                 BotAdminService.saveApplicationConfiguration(bot.toBotApplicationConfiguration())
@@ -250,6 +251,10 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingUploadPost("/i18n/import/json", botUser) { context, content ->
             val labels: List<I18nLabel> = mapper.readValue(content)
             i18n.save(labels.filter { it.namespace == context.organization })
+        }
+
+        blockingJsonGet("/connectorTypes", botUser) {
+            ConnectorType.connectorTypes
         }
 
         configureStaticHandling()

@@ -78,5 +78,6 @@ internal object AlexaConnectorProvider : ConnectorProvider {
             )
         )
     }
-
 }
+
+internal class AlexaConnectorProviderService : ConnectorProvider by AlexaConnectorProvider

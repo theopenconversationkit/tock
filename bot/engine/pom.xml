@@ -52,6 +52,11 @@
         </dependency>
 
         <dependency>
+            <groupId>fr.vsct.tock</groupId>
+            <artifactId>tock-shared</artifactId>
+            <type>test-jar</type>
+        </dependency>
+        <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test</artifactId>
             <scope>test</scope>

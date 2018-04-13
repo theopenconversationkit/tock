@@ -19,6 +19,8 @@ import {I18nLabel, I18nLocalizedLabel, userInterfaces} from "../model/i18n";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {BotService} from "../bot-service";
 import {MdSnackBar} from "@angular/material";
+import {ConnectorType, UserInterfaceType} from "../../core/model/configuration";
+import {BotSharedService} from "../../shared/bot-shared.service";
 
 @Component({
   selector: 'tock-i18n-label',
@@ -39,13 +41,25 @@ export class I18nLabelComponent implements OnInit {
   @Input()
   intent:string;
 
+  connectorTypes: ConnectorType[] = [];
+
   constructor(public state: StateService,
               public config: BotConfigurationService,
               private botService: BotService,
-              private snackBar: MdSnackBar) {
+              private snackBar: MdSnackBar,
+              private botSharedService: BotSharedService) {
   }
 
   ngOnInit(): void {
+    this
+      .botSharedService
+      .getConnectorTypes()
+      .subscribe(
+        c => {
+          this.connectorTypes = c;
+        }
+      );
+
     if (!this.i18nController) {
       this.i18nController = new I18nController(this.state, [this.i]);
       this.i18nController.sortLabels();

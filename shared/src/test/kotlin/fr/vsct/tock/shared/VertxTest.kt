@@ -16,10 +16,18 @@
 
 package fr.vsct.tock.shared
 
+import com.github.salomonbrys.kodein.Kodein
+import com.github.salomonbrys.kodein.KodeinInjector
+import com.github.salomonbrys.kodein.bind
+import com.github.salomonbrys.kodein.provider
+import fr.vsct.tock.shared.vertx.TockVertxProvider
+import fr.vsct.tock.shared.vertx.VertxProvider
 import fr.vsct.tock.shared.vertx.defaultVertxOptions
 import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.core.VertxOptions
 import io.vertx.core.impl.VertxInternal
+import org.junit.jupiter.api.AfterEach
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import java.util.concurrent.ThreadPoolExecutor
 import kotlin.test.assertEquals
@@ -28,6 +36,19 @@ import kotlin.test.assertEquals
  *
  */
 class VertxTest {
+
+    @BeforeEach
+    fun before() {
+        tockInternalInjector = KodeinInjector()
+        tockInternalInjector.inject(Kodein.invoke {
+            bind<VertxProvider>() with provider { TockVertxProvider }
+        })
+    }
+
+    @AfterEach
+    fun after() {
+        tockInternalInjector = KodeinInjector()
+    }
 
     @Test
     fun testThatVertxOptionCouldBeOverrided() {

@@ -17,16 +17,21 @@
 import {Injectable, OnDestroy} from "@angular/core";
 import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
+import {Observable} from "rxjs/Observable";
+import {ConnectorType} from "../core/model/configuration";
 
 @Injectable()
 export class BotSharedService implements OnDestroy {
-
 
   constructor(private rest: RestService,
               private state: StateService) {
   }
 
   ngOnDestroy(): void {
+  }
+
+  getConnectorTypes(): Observable<ConnectorType[]> {
+    return this.rest.get(`/connectorTypes`, ConnectorType.fromJSONArray);
   }
 
 }

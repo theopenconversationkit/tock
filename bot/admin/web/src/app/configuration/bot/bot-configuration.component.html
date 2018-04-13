@@ -14,27 +14,43 @@
   ~ limitations under the License.
   -->
 
-<md-card *ngIf="configuration" class="conf">
+<md-card *ngIf="configuration" [ngClass]="{'conf': configuration._id, 'newConf': !configuration._id}">
   <md-input-container>
     <input mdInput placeholder="Configuration name" [(ngModel)]="configuration.name">
   </md-input-container>
-  <md-input-container>
+  <md-input-container *ngIf="configuration._id">
     <input mdInput
            placeholder="Connector type"
            [ngModel]="configuration.connectorType.id"
-           [disabled]="configuration._id">
+           [disabled]="true">
   </md-input-container>
-  <md-input-container *ngIf="configuration.connectorType.isRest()">
+
+  <md-select *ngIf="!configuration._id"
+             placeholder="Connector type"
+             [(ngModel)]="configuration.connectorType">
+    <md-option *ngFor="let c of connectorTypesAndRestType"
+               [value]="c">{{ c.id }}</md-option>
+  </md-select>
+
+  <md-input-container *ngIf="configuration._id && configuration.connectorType.isRest()">
     <input mdInput
            placeholder="Owner connector type"
            [ngModel]="configuration.ownerConnectorType?.id"
            [disabled]="true">
   </md-input-container>
+
+  <md-select *ngIf="!configuration._id && configuration.connectorType.isRest()"
+             placeholder="Owner connector type"
+             [(ngModel)]="configuration.ownerConnectorType">
+    <md-option *ngFor="let c of connectorTypes"
+               [value]="c">{{ c.id }}</md-option>
+  </md-select>
+
   <md-input-container>
     <input mdInput placeholder="Bot identifier" [(ngModel)]="configuration.botId">
   </md-input-container>
   <md-input-container>
-    <input mdInput placeholder="Application identifier" [(ngModel)]="configuration.applicationId">
+    <input mdInput placeholder="Connector identifier" [(ngModel)]="configuration.applicationId">
   </md-input-container>
   <md-input-container>
     <input mdInput placeholder="Relative REST path" [(ngModel)]="configuration.path">

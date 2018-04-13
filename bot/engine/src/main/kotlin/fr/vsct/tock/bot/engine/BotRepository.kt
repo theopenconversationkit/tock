@@ -131,20 +131,6 @@ object BotRepository {
         val verticle = BotVerticle()
 
         val connectorConfigurations = ConnectorConfigurationRepository.getConfigurations()
-            .run {
-                if (isEmpty()) {
-                    listOf(
-                        ConnectorConfiguration(
-                            "",
-                            "",
-                            ConnectorType.none,
-                            ConnectorType.none
-                        )
-                    )
-                } else {
-                    this
-                }
-            }
 
         //check connector id integrity
         connectorConfigurations
@@ -199,9 +185,19 @@ object BotRepository {
         }
 
         val bot = Bot(botDefinition)
-        val existingBotConfigurations =
-            botConfigurationDAO
-                .getConfigurationsByBotId(botDefinition.botId)
+        val existingBotConfigurations = botConfigurationDAO.getConfigurationsByBotId(botDefinition.botId)
+        val allConnectorConfigurations =
+            connectorConfigurations +
+                    existingBotConfigurations
+                        .filter {
+                            it.connectorType != ConnectorType.rest
+                                    && connectorConfigurations.none { c -> it.applicationId == c.connectorId }
+                        }
+                        .map {
+                            ConnectorConfiguration(it)
+                        }
+        val existingBotConfigurationsMap =
+            existingBotConfigurations
                 .groupBy { it.applicationId }
                 .map { (key, value) ->
                     if (value.size > 1) {
@@ -211,11 +207,11 @@ object BotRepository {
                 }
                 .toMap()
 
-        connectorConfigurations.forEach { baseConf ->
+        allConnectorConfigurations.forEach { baseConf ->
             findConnectorProvider(baseConf.type)
                 .apply {
                     //1 refresh connector conf
-                    val conf = refreshBotConfiguration(baseConf, existingBotConfigurations)
+                    val conf = refreshBotConfiguration(baseConf, existingBotConfigurationsMap)
                     //2 create and install connector
                     val connector = connector(conf)
                     //3 set default namespace to bot namespace if not already set
@@ -223,8 +219,7 @@ object BotRepository {
                         tockAppDefaultNamespace = bot.botDefinition.namespace
                     }
                     //4 update bot conf
-                    val appConf =
-                        saveConfiguration(verticle, connector, conf, bot)
+                    val appConf = saveConfiguration(verticle, connector, conf, bot)
 
                     //5 monitor conf
                     BotConfigurationSynchronizer.monitor(bot)
@@ -232,7 +227,7 @@ object BotRepository {
                     //6 generate and install rest connector
                     adminRestConnectorInstaller.invoke(appConf)
                         ?.also {
-                            val restConf = refreshBotConfiguration(it, existingBotConfigurations)
+                            val restConf = refreshBotConfiguration(it, existingBotConfigurationsMap)
                             saveConfiguration(
                                 verticle,
                                 findConnectorProvider(restConf.type).connector(restConf),

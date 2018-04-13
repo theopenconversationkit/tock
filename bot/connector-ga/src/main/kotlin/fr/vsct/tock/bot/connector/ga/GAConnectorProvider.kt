@@ -29,7 +29,7 @@ internal object GAConnectorProvider : ConnectorProvider {
     private const val PROJECT_IDS = "_project_ids"
     private const val PROJECT_ID_SEPARATOR = ","
 
-    override val connectorType: ConnectorType = gaConnectorType
+    override val connectorType: ConnectorType get() = gaConnectorType
 
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
@@ -66,3 +66,5 @@ internal object GAConnectorProvider : ConnectorProvider {
         )
     }
 }
+
+internal class GAConnectorProviderService : ConnectorProvider by GAConnectorProvider

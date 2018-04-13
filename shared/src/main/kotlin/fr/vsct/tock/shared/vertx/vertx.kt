@@ -19,6 +19,8 @@ package fr.vsct.tock.shared.vertx
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.provide
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Vertx
@@ -39,10 +41,22 @@ var defaultVertxOptions = VertxOptions().apply {
     }
 }
 
+internal interface VertxProvider {
+
+    fun vertx(): Vertx
+}
+
+internal object TockVertxProvider : VertxProvider {
+
+    override fun vertx(): Vertx = Vertx.vertx(defaultVertxOptions)
+}
+
+private val internalVertx: Vertx by lazy { injector.provide<VertxProvider>().vertx() }
+
 /**
  * The Tock [Vertx] entry point instance.
  */
-val vertx: Vertx by lazy { Vertx.vertx(defaultVertxOptions) }
+val vertx: Vertx get() = internalVertx
 
 /**
  * Execute a blocking task (with ordered false).

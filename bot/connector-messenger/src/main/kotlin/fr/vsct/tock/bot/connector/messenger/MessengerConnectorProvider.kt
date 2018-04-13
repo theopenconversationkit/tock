@@ -36,12 +36,13 @@ internal object MessengerConnectorProvider : ConnectorProvider {
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
             return MessengerConnector(
-                    connectorId,
-                    path,
-                    parameters.getValue(PAGE_ID),
-                    parameters.getValue(TOKEN),
-                    parameters.get(VERIFY_TOKEN),
-                    MessengerClient(parameters.getValue(SECRET)))
+                connectorId,
+                path,
+                parameters.getValue(PAGE_ID),
+                parameters.getValue(TOKEN),
+                parameters.get(VERIFY_TOKEN),
+                MessengerClient(parameters.getValue(SECRET))
+            )
         }
     }
 
@@ -56,21 +57,25 @@ internal object MessengerConnectorProvider : ConnectorProvider {
         connectorId: String = pageId,
         path: String = "/messenger",
         name: String = connectorId,
-        baseUrl: String? = null): ConnectorConfiguration {
+        baseUrl: String? = null
+    ): ConnectorConfiguration {
 
 
         return ConnectorConfiguration(
-                connectorId,
-                path,
-                connectorType,
-                name,
-                baseUrl,
-                null,
-                mapNotNullValues(
-                        PAGE_ID to pageId,
-                        TOKEN to pageToken,
-                        SECRET to applicationSecret,
-                        VERIFY_TOKEN to webhookVerifyToken
-                ))
+            connectorId,
+            path,
+            connectorType,
+            name,
+            baseUrl,
+            null,
+            mapNotNullValues(
+                PAGE_ID to pageId,
+                TOKEN to pageToken,
+                SECRET to applicationSecret,
+                VERIFY_TOKEN to webhookVerifyToken
+            )
+        )
     }
 }
+
+internal class MessengerConnectorProviderService : ConnectorProvider by MessengerConnectorProvider

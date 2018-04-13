@@ -64,3 +64,5 @@ internal object SlackConnectorProvider : ConnectorProvider {
     }
 
 }
+
+internal class SlackConnectorProviderService : ConnectorProvider by SlackConnectorProvider

@@ -20,6 +20,8 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import fr.vsct.tock.shared.cache.TockCache
+import fr.vsct.tock.shared.vertx.VertxProvider
+import io.mockk.mockk
 import org.litote.kmongo.Id
 import java.time.Duration
 import java.util.concurrent.Callable
@@ -30,6 +32,7 @@ import java.util.concurrent.Callable
 val sharedTestModule = Kodein.Module {
     bind<Executor>() with provider { TestExecutor }
     bind<TockCache>() with provider { NoOpCache }
+    bind<VertxProvider>() with provider { mockk<VertxProvider>(relaxed = true) }
 }
 
 private object NoOpCache : TockCache {
@@ -46,13 +49,13 @@ private object NoOpCache : TockCache {
 
     override fun <T> getAll(type: String): Map<Id<T>, Any> {
         return map
-                .entries
-                .filter { it.key.second == type }
-                .map {
-                    @Suppress("UNCHECKED_CAST")
-                    it.key.first as Id<T> to it.value
-                }
-                .toMap()
+            .entries
+            .filter { it.key.second == type }
+            .map {
+                @Suppress("UNCHECKED_CAST")
+                it.key.first as Id<T> to it.value
+            }
+            .toMap()
     }
 
     override fun <T> remove(id: Id<T>, type: String) {

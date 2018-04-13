@@ -27,7 +27,7 @@ export class BotApplicationConfiguration {
               public baseUrl?: string,
               public _id?: string,
               public ownerConnectorType?: ConnectorType,
-              public path?:string) {
+              public path?: string) {
   }
 
   static fromJSON(json?: any): BotApplicationConfiguration {
@@ -75,6 +75,10 @@ export class ConnectorType {
     });
 
     return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): ConnectorType[] {
+    return json ? json.map(ConnectorType.fromJSON) : [];
   }
 }
 

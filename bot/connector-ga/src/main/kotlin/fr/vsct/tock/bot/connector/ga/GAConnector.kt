@@ -34,6 +34,7 @@ import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.provide
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import kotlin.LazyThreadSafetyMode.PUBLICATION
@@ -52,7 +53,7 @@ class GAConnector internal constructor(
         private val logger = KotlinLogging.logger {}
     }
 
-    private val executor: Executor by injector.instance()
+    private val executor: Executor get() = injector.provide()
     private val verifier: IdTokenVerifier by lazy(PUBLICATION) { IdTokenVerifier.Builder().build() }
 
 

@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.connector
 
 import fr.vsct.tock.translator.UserInterfaceType
+import java.util.ServiceLoader
 
 /**
  * A connector identifier.
@@ -37,10 +38,18 @@ data class ConnectorType(
          * Not a specific connector type.
          */
         val none: ConnectorType = ConnectorType("NONE")
+
         /**
          * built-in rest connector.
          */
         val rest: ConnectorType = ConnectorType("rest")
+
+        /**
+         * The available not built-in connector types.
+         * Retrieving using [ServiceLoader].
+         */
+        val connectorTypes: Set<ConnectorType> =
+            ServiceLoader.load(ConnectorProvider::class.java).map { it.connectorType }.toSet()
     }
 
     override fun toString(): String {

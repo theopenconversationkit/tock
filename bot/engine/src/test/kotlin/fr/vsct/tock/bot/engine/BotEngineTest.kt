@@ -42,9 +42,9 @@ import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.api.client.model.EntityType
 import fr.vsct.tock.nlp.api.client.model.EntityValue
 import fr.vsct.tock.nlp.api.client.model.NlpResult
-import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.shared.tockInternalInjector
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.TranslatorEngine
@@ -92,7 +92,6 @@ abstract class BotEngineTest {
 
     val nlpClient: NlpClient = mockk(relaxed = true)
     internal val nlp: NlpController = mockk(relaxed = true)
-    val executor: Executor = mockk(relaxed = true)
     val connector: Connector = mockk(relaxed = true)
     val userTimeline = UserTimeline(userId)
 
@@ -100,9 +99,9 @@ abstract class BotEngineTest {
 
     open fun baseModule(): Kodein.Module {
         return Kodein.Module {
+            import(sharedTestModule)
             bind<NlpClient>() with provider { nlpClient }
             bind<NlpController>() with provider { nlp }
-            bind<Executor>() with provider { executor }
             bind<UserLock>() with provider { userLock }
             bind<UserTimelineDAO>() with provider { userTimelineDAO }
             bind<I18nDAO>() with provider { i18nDAO }

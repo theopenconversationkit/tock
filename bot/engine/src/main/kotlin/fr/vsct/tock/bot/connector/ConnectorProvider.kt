@@ -18,6 +18,8 @@ package fr.vsct.tock.bot.connector
 
 /**
  * To provide a new [Connector] from a [ConnectorConfiguration].
+ * The implementation is loaded at runtime to list all available connectors, using the java [java.util.ServiceLoader]
+ * - you need to provide a META-INF/services/fr.vsct.tock.bot.connector.ConnectorProvider file.
  */
 interface ConnectorProvider {
 

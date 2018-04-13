@@ -17,6 +17,9 @@
 .conf {
   margin-bottom: 10px;
 }
+.newConf {
+  margin-bottom: 100px;
+}
 .long-text {
   width:90%;
 }

@@ -24,6 +24,7 @@ import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.engine.BotRepository.botProviders
+import fr.vsct.tock.bot.engine.BotRepository.connectorProviders
 import fr.vsct.tock.bot.engine.ConnectorConfigurationRepository.addConfiguration
 import fr.vsct.tock.shared.defaultLocale
 import io.mockk.every
@@ -42,6 +43,7 @@ class BotRepositoryTest : BotEngineTest() {
     fun beforeTest() {
         ConnectorConfigurationRepository.cleanup()
         botProviders.clear()
+        connectorProviders.clear()
     }
 
     @Test
@@ -102,6 +104,10 @@ class BotRepositoryTest : BotEngineTest() {
         BotRepository.registerBotProvider(object : BotProvider {
             override fun botDefinition(): BotDefinition = botDefinition
         })
+        BotRepository.registerConnectorProvider(object : ConnectorProvider {
+            override val connectorType: ConnectorType = ConnectorType.none
+            override fun connector(connectorConfiguration: ConnectorConfiguration): Connector = mockk(relaxed = true)
+        })
         BotRepository.installBots(emptyList())
         verify { nlpClient.createApplication(botDefinition.namespace, botDefinition.nlpModelName, defaultLocale) }
     }
@@ -137,5 +143,34 @@ class BotRepositoryTest : BotEngineTest() {
         every { botConfDAO.getConfigurationsByBotId(any()) } returns botConfs
         BotRepository.installBots(emptyList())
         verify { botConfDAO.updateIfNotManuallyModified(match { it.parameters.containsKey("test") }) }
+    }
+
+    @Test
+    fun `installBots uses existing stored bot configuration`() {
+        val connectorType = ConnectorType("test")
+        val botId = botDefinition.botId
+        val connector: Connector = mockk(relaxed = true)
+        val botConfs = listOf(
+            BotApplicationConfiguration(
+                connectorType.id,
+                botId,
+                botDefinition.namespace,
+                botDefinition.nlpModelName,
+                connectorType,
+                parameters = mapOf("test" to "test")
+            )
+        )
+        val connectorProvider = object : ConnectorProvider {
+            override val connectorType: ConnectorType = connectorType
+            override fun connector(connectorConfiguration: ConnectorConfiguration): Connector = connector
+        }
+        BotRepository.registerConnectorProvider(connectorProvider)
+        BotRepository.registerBotProvider(object : BotProvider {
+            override fun botDefinition(): BotDefinition = botDefinition
+        })
+
+        every { botConfDAO.getConfigurationsByBotId(any()) } returns botConfs
+        BotRepository.installBots(emptyList())
+        verify { connector.register(any()) }
     }
 }
