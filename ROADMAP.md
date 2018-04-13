@@ -12,6 +12,7 @@
     - Spark NLP support
     - Intent disambiguation support    
     - Bot API
+    - New design for admin web interface
 
 - 2.0.0 September 2018
     - Conversational framework: allow to create a bot in the administration interface without IDE
