@@ -1,5 +1,5 @@
 - 1.0.0 April 2018
-    - GA availability
+    - GA release
 
 - 1.1.0 May 2018
     - NLP stats improvements (better error detections)
