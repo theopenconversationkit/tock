@@ -3,7 +3,8 @@
 # compiled output
 /dist
 /tmp
-target
+**/target/*
+!**/target/generated-sources
 node_modules
 
 # IDEs and editors
