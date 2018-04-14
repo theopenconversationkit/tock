@@ -210,31 +210,37 @@ object BotRepository {
         allConnectorConfigurations.forEach { baseConf ->
             findConnectorProvider(baseConf.type)
                 .apply {
-                    //1 refresh connector conf
-                    val conf = refreshBotConfiguration(baseConf, existingBotConfigurationsMap)
-                    //2 create and install connector
-                    val connector = connector(conf)
-                    //3 set default namespace to bot namespace if not already set
-                    if (tockAppDefaultNamespace == DEFAULT_APP_NAMESPACE) {
-                        tockAppDefaultNamespace = bot.botDefinition.namespace
-                    }
-                    //4 update bot conf
-                    val appConf = saveConfiguration(verticle, connector, conf, bot)
-
-                    //5 monitor conf
-                    BotConfigurationSynchronizer.monitor(bot)
-
-                    //6 generate and install rest connector
-                    adminRestConnectorInstaller.invoke(appConf)
-                        ?.also {
-                            val restConf = refreshBotConfiguration(it, existingBotConfigurationsMap)
-                            saveConfiguration(
-                                verticle,
-                                findConnectorProvider(restConf.type).connector(restConf),
-                                restConf,
-                                bot
-                            )
+                    try {
+                        //1 refresh connector conf
+                        val conf = refreshBotConfiguration(baseConf, existingBotConfigurationsMap)
+                        //2 create and install connector
+                        val connector = connector(conf)
+                        //3 set default namespace to bot namespace if not already set
+                        if (tockAppDefaultNamespace == DEFAULT_APP_NAMESPACE) {
+                            tockAppDefaultNamespace = bot.botDefinition.namespace
                         }
+                        //4 update bot conf
+                        val appConf = saveConfiguration(verticle, connector, conf, bot)
+
+                        //5 monitor conf
+                        BotConfigurationSynchronizer.monitor(bot)
+
+                        //6 generate and install rest connector
+                        adminRestConnectorInstaller.invoke(appConf)
+                            ?.also {
+                                val restConf = refreshBotConfiguration(it, existingBotConfigurationsMap)
+                                saveConfiguration(
+                                    verticle,
+                                    findConnectorProvider(restConf.type).connector(restConf),
+                                    restConf,
+                                    bot
+                                )
+                            }
+                    }catch(e:Exception) {
+                        logger.error(e) {
+                            "unable to install connector $baseConf"
+                        }
+                    }
                 }
         }
     }

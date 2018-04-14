@@ -32,7 +32,7 @@ internal object MessengerConnectorProvider : ConnectorProvider {
     private const val VERIFY_TOKEN = "verifyToken"
     private const val SECRET = "secret"
 
-    override val connectorType: ConnectorType = messengerConnectorType
+    override val connectorType: ConnectorType get() = messengerConnectorType
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
             return MessengerConnector(

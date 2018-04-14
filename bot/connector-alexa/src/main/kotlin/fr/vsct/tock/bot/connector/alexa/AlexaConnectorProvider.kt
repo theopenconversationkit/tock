@@ -35,7 +35,7 @@ internal object AlexaConnectorProvider : ConnectorProvider {
 
     private const val DEFAULT_TIMESTAMP: Long = 10000L
 
-    override val connectorType: ConnectorType = alexaConnectorType
+    override val connectorType: ConnectorType get() = alexaConnectorType
 
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector =
         with(connectorConfiguration) {

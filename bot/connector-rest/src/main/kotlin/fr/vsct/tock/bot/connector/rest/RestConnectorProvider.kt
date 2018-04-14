@@ -32,7 +32,7 @@ object RestConnectorProvider : ConnectorProvider {
         BotEngineJacksonConfiguration.init()
     }
 
-    override val connectorType: ConnectorType = ConnectorType.rest
+    override val connectorType: ConnectorType get() = ConnectorType.rest
 
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         return RestConnector(

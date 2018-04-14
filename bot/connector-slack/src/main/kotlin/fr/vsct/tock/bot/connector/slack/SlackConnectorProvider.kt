@@ -28,7 +28,7 @@ internal object SlackConnectorProvider : ConnectorProvider {
     private const val OUT_TOKEN_2 = "outToken2"
     private const val OUT_TOKEN_3 = "outToken3"
 
-    override val connectorType: ConnectorType = slackConnectorType
+    override val connectorType: ConnectorType get() = slackConnectorType
 
 
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
