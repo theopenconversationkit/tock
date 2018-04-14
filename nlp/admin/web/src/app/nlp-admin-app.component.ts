@@ -18,8 +18,9 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AuthService} from "./core/auth/auth.service";
 import {StateService} from "./core/state.service";
 import {RestService} from "./core/rest/rest.service";
-import {MdSnackBar} from "@angular/material";
+import {MdIconRegistry, MdSnackBar} from "@angular/material";
 import {UserRole} from "./model/auth";
+import {DomSanitizer} from "@angular/platform-browser";
 
 @Component({
   selector: 'tock-nlp-admin-root',
@@ -34,7 +35,12 @@ export class NlpAdminAppComponent implements OnInit, OnDestroy {
   constructor(public auth: AuthService,
               public state: StateService,
               private rest: RestService,
-              private snackBar: MdSnackBar) {
+              private snackBar: MdSnackBar,
+              iconRegistry: MdIconRegistry,
+              sanitizer: DomSanitizer) {
+    iconRegistry.addSvgIcon(
+      'logo',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg'));
   }
 
   ngOnInit(): void {

@@ -18,8 +18,9 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AuthService} from "tock-nlp-admin/src/app/core/auth/auth.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
-import {MdSnackBar} from "@angular/material";
+import {MdIconRegistry, MdSnackBar} from "@angular/material";
 import {UserRole} from "tock-nlp-admin/src/app/model/auth";
+import {DomSanitizer} from "@angular/platform-browser";
 
 
 @Component({
@@ -35,7 +36,12 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
   constructor(public auth: AuthService,
               public state: StateService,
               private rest: RestService,
-              private snackBar: MdSnackBar) {
+              private snackBar: MdSnackBar,
+              iconRegistry: MdIconRegistry,
+              sanitizer: DomSanitizer) {
+    iconRegistry.addSvgIcon(
+      'logo',
+      sanitizer.bypassSecurityTrustResourceUrl('assets/images/logo.svg'));
   }
 
   ngOnInit(): void {

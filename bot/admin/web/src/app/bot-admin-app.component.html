@@ -16,30 +16,18 @@
 
 <md-sidenav-container>
   <md-sidenav #sidenav mode="side" class="tock-sidenav">
-    <button md-icon-button class="menu-close" #closeStartButton (click)="sidenav.close()">
-      <md-icon class="md-24">close</md-icon>
-    </button>
-    <p></p>
-    <md-list>
-      <md-list-item>
-        <a *ngIf="state.hasRole(UserRole.admin)" routerLink="/configuration/nlp">Configuration</a>
+    <md-nav-list>
+      <md-list-item (click)="sidenav.close()">
+        <md-icon aria-hidden="true" mdListIcon svgIcon="logo"></md-icon>
+        <h3>Tock</h3>
       </md-list-item>
-      <md-list-item>
-        <a *ngIf="state.hasRole(UserRole.nlpUser)" routerLink="/nlp/inbox">NLP</a>
-      </md-list-item>
-      <md-list-item>
-        <a *ngIf="state.hasRole(UserRole.nlpUser)" routerLink="/quality/log-stats">NLP QA</a>
-      </md-list-item>
-      <md-list-item>
-        <a *ngIf="state.hasRole(UserRole.botUser)" routerLink="/build/intent-create">Build</a>
-      </md-list-item>
-      <md-list-item>
-        <a *ngIf="state.hasRole(UserRole.botUser)" routerLink="/test/test">Test</a>
-      </md-list-item>
-      <md-list-item>
-        <a *ngIf="state.hasRole(UserRole.botUser)" routerLink="/monitoring/users">Monitoring</a>
-      </md-list-item>
-    </md-list>
+        <a md-list-item *ngIf="state.hasRole(UserRole.admin)" routerLink="/configuration/nlp">Configuration</a>
+        <a md-list-item *ngIf="state.hasRole(UserRole.nlpUser)" routerLink="/nlp/inbox">NLP</a>
+        <a md-list-item *ngIf="state.hasRole(UserRole.nlpUser)" routerLink="/quality/log-stats">NLP QA</a>
+        <a md-list-item *ngIf="state.hasRole(UserRole.botUser)" routerLink="/build/intent-create">Build</a>
+        <a md-list-item *ngIf="state.hasRole(UserRole.botUser)" routerLink="/test/test">Test</a>
+        <a md-list-item *ngIf="state.hasRole(UserRole.botUser)" routerLink="/monitoring/users">Monitoring</a>
+    </md-nav-list>
   </md-sidenav>
 
   <md-toolbar color="primary">

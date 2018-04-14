@@ -18,11 +18,7 @@
   padding: 10px;
   min-width: 100px;
   overflow-y: visible;
-}
-
-.menu-close {
-  position: absolute;
-  right: 0;
+  background-color:#fafafa;
 }
 
 .tock-menu-button {
