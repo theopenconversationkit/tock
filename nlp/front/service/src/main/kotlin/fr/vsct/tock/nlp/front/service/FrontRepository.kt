@@ -56,38 +56,38 @@ internal object FrontRepository {
         val entityTypesMap = entityTypesDefinitionMap.mapValues { (_, v) -> EntityType(v.name) }
 
         val entityTypes: MutableMap<String, EntityType?> =
-                entityTypesMap
-                        .mapValues { (_, v) ->
-                            v.copy(
-                                    subEntities = entityTypesDefinitionMap[v.name]?.subEntities?.mapNotNull {
-                                        entityTypesMap[it.entityTypeName]?.let { e ->
-                                            Entity(e, it.role)
-                                        }.apply {
-                                                    if (this == null) {
-                                                        logger.error { "entity ${it.entityTypeName} not found" }
-                                                    }
-                                                }
-                                    } ?: emptyList<Entity>()
-                            )
-                        }
-                        .toMap()
-                        .toMutableMap()
-        return ConcurrentHashMap(entityTypes)
-                //try to reload and refresh the cache if not found
-                .withDefault {
-                    val newValues = loadEntityTypes()
-                    entityTypes.forEach { e ->
-                        if (!newValues.containsKey(e.key)) {
-                            entityTypes.remove(e.key)
-                        }
-                    }
-                    entityTypes.putAll(newValues)
-                    val result = newValues[it]
-                    if (result == null) {
-                        logger.error { "unknown entity type $it" }
-                    }
-                    result
+            entityTypesMap
+                .mapValues { (_, v) ->
+                    v.copy(
+                        subEntities = entityTypesDefinitionMap[v.name]?.subEntities?.mapNotNull {
+                            entityTypesMap[it.entityTypeName]?.let { e ->
+                                Entity(e, it.role)
+                            }.apply {
+                                if (this == null) {
+                                    logger.error { "entity ${it.entityTypeName} not found" }
+                                }
+                            }
+                        } ?: emptyList<Entity>()
+                    )
                 }
+                .toMap()
+                .toMutableMap()
+        return ConcurrentHashMap(entityTypes)
+            //try to reload and refresh the cache if not found
+            .withDefault {
+                val newValues = loadEntityTypes()
+                entityTypes.forEach { e ->
+                    if (!newValues.containsKey(e.key)) {
+                        entityTypes.remove(e.key)
+                    }
+                }
+                entityTypes.putAll(newValues)
+                val result = newValues[it]
+                if (result == null) {
+                    logger.error { "unknown entity type $it" }
+                }
+                result
+            }
     }
 
     fun entityTypeExists(name: String): Boolean {
@@ -107,13 +107,13 @@ internal object FrontRepository {
     fun addNewEntityType(entityType: EntityTypeDefinition) {
         if (entityTypeByName(entityType.name) == null) {
             entityTypes.put(
+                entityType.name,
+                EntityType(
                     entityType.name,
-                    EntityType(
-                            entityType.name,
-                            entityType.subEntities.mapNotNull {
-                                it.toEntity()
-                            }
-                    )
+                    entityType.subEntities.mapNotNull {
+                        it.toEntity()
+                    }
+                )
             )
         }
     }
@@ -130,8 +130,8 @@ internal object FrontRepository {
         val intentDefinitions = config.getIntentsByApplicationId(applicationDefinition._id)
         val intents = intentDefinitions.map {
             Intent(it.qualifiedName,
-                    it.entities.mapNotNull { toEntity(it.entityTypeName, it.role) },
-                    it.entitiesRegexp.mapValues { it.value.map { EntitiesRegexp(it.regexp) } })
+                it.entities.mapNotNull { toEntity(it.entityTypeName, it.role) },
+                it.entitiesRegexp.mapValues { LinkedHashSet(it.value.map { EntitiesRegexp(it.regexp) }) })
         }
         return Application(applicationDefinition.name, intents, applicationDefinition.supportedLocales)
     }

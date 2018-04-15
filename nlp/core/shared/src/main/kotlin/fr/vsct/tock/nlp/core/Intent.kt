@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.core
 
 import fr.vsct.tock.shared.TOCK_NAMESPACE
+import java.util.LinkedHashSet
 import java.util.Locale
 
 /**
@@ -25,7 +26,7 @@ import java.util.Locale
 data class Intent(
     val name: String,
     val entities: List<Entity>,
-    val entitiesRegexp: Map<Locale, List<EntitiesRegexp>> = emptyMap()
+    val entitiesRegexp: Map<Locale, LinkedHashSet<EntitiesRegexp>> = emptyMap()
 ) {
 
     companion object {

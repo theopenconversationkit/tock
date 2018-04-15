@@ -103,7 +103,13 @@ object AdminService {
                 intent
             } else {
                 val oldIntent = front.getIntentById(intentId)!!.run {
-                    copy(applications = applications + intent.applications)
+                    copy(
+                        applications = applications + intent.applications,
+                        entities = intent.entities + entities.filter { e -> intent.entities.none { it.role == e.role } },
+                        entitiesRegexp = entitiesRegexp + intent.entitiesRegexp,
+                        mandatoryStates = intent.mandatoryStates + mandatoryStates,
+                        sharedIntents = intent.sharedIntents + sharedIntents
+                    )
                 }
                 front.save(oldIntent)
                 oldIntent

@@ -1,10 +1,10 @@
 package fr.vsct.tock.nlp.front.shared.config
 
 import fr.vsct.tock.nlp.core.EntitiesRegexp
+import java.util.LinkedHashSet
 import java.util.Locale
 import kotlin.String
 import kotlin.collections.Collection
-import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.collections.Set
 import kotlin.reflect.KProperty1
@@ -24,7 +24,7 @@ class IntentDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
     val entities: EntityDefinition_Col<T>
         get() = EntityDefinition_Col(this,IntentDefinition::entities)
 
-    val entitiesRegexp: KProperty1<T, Map<Locale, List<EntitiesRegexp>>?>
+    val entitiesRegexp: KProperty1<T, Map<Locale, LinkedHashSet<EntitiesRegexp>>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,IntentDefinition::entitiesRegexp)
 
     val mandatoryStates: KProperty1<T, Set<String>?>
@@ -44,7 +44,7 @@ class IntentDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
             get() = IntentDefinition::applications
         val Entities: EntityDefinition_Col<IntentDefinition>
             get() = EntityDefinition_Col<IntentDefinition>(null,IntentDefinition::entities)
-        val EntitiesRegexp: KProperty1<IntentDefinition, Map<Locale, List<EntitiesRegexp>>?>
+        val EntitiesRegexp: KProperty1<IntentDefinition, Map<Locale, LinkedHashSet<EntitiesRegexp>>?>
             get() = IntentDefinition::entitiesRegexp
         val MandatoryStates: KProperty1<IntentDefinition, Set<String>?>
             get() = IntentDefinition::mandatoryStates
@@ -67,7 +67,7 @@ class IntentDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KPropert
     val entities: EntityDefinition_Col<T>
         get() = EntityDefinition_Col(this,IntentDefinition::entities)
 
-    val entitiesRegexp: KProperty1<T, Map<Locale, List<EntitiesRegexp>>?>
+    val entitiesRegexp: KProperty1<T, Map<Locale, LinkedHashSet<EntitiesRegexp>>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,IntentDefinition::entitiesRegexp)
 
     val mandatoryStates: KProperty1<T, Set<String>?>

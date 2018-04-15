@@ -22,6 +22,7 @@ import fr.vsct.tock.shared.withNamespace
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
+import java.util.LinkedHashSet
 import java.util.Locale
 
 /**
@@ -45,7 +46,7 @@ data class IntentDefinition(
      * The [EntityDefinition] of this intent.
      */
     val entities: Set<EntityDefinition>,
-    val entitiesRegexp: Map<Locale, List<EntitiesRegexp>> = emptyMap(),
+    val entitiesRegexp: Map<Locale, LinkedHashSet<EntitiesRegexp>> = emptyMap(),
     /**
      * This intent is returned as a classification result
      * only if at least one of the mandatory states is requested.
