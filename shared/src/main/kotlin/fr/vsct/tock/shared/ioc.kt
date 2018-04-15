@@ -20,6 +20,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
+import com.github.salomonbrys.kodein.providerOrNull
 import fr.vsct.tock.shared.cache.TockCache
 import fr.vsct.tock.shared.cache.mongo.MongoCache
 import fr.vsct.tock.shared.vertx.TockVertxProvider
@@ -40,7 +41,19 @@ val injector: KodeinInjector get() = tockInternalInjector
  * Extension function for Ioc. Pattern:
  * <code>val core: NlpCore get() = injector.provide()</code>
  */
-inline fun <reified T : Any> KodeinInjector.provide(tag: Any? = null): T = injector.provider<T>(tag).value.invoke()
+inline fun <reified T : Any> KodeinInjector.provide(tag: Any? = null): T =
+    injector.provider<T>(tag).value.invoke()
+
+/**
+ * Extension function for Ioc. Pattern:
+ * <code>val core: NlpCore get() = injector.provideOrDefault() { ... }</code>
+ */
+inline fun <reified T : Any> KodeinInjector.provideOrDefault(tag: Any? = null, defaultValueProvider: () -> T): T =
+    try {
+        injector.providerOrNull<T>(tag).value?.invoke() ?: defaultValueProvider.invoke()
+    } catch (e: KodeinInjector.UninjectedException) {
+        defaultValueProvider.invoke()
+    }
 
 /**
  * IOC of shared module.
