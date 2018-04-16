@@ -62,7 +62,9 @@ export class ApplicationComponent implements OnInit {
   }
 
   saveApplication() {
-    if (this.application.supportedLocales.length === 0) {
+    if(this.application.name.trim().length === 0) {
+      this.snackBar.open(`Please choose an application name`, "ERROR", {duration: 5000});
+    } else if (this.application.supportedLocales.length === 0) {
       this.snackBar.open(`Please choose at least one locale`, "ERROR", {duration: 5000});
     } else {
       this.application.nlpEngineType = this.state.supportedNlpEngines.find(e => e.name === this.nlpEngineType);

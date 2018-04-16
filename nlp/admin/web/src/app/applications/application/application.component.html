@@ -28,11 +28,8 @@
       <md-checkbox [(ngModel)]="application.supportSubEntities" md-tooltip="If selected, you can use subentities in your nlp models">Allow subentities</md-checkbox>
     </md-card>
     <md-card *ngIf="state.locales" class="locales">
-      <md-card-header>
-        <md-card-title>Supported Locales</md-card-title>
-      </md-card-header>
-      <md-card-content>
-      <md-chip-list>
+      <md-card-content *ngIf="application.supportedLocales.length !== 0">
+      <md-chip-list placeholder="Supported Locales">
         <md-chip *ngFor="let locale of application.supportedLocales"
                  mdTooltip="Delete locale"
                  [selected]="true"

@@ -18,7 +18,7 @@
 <div md-dialog-content>
   <form #intentForm="ngForm">
     <md-input-container>
-      <input mdInput required name="name" placeholder="Intent Name" [(ngModel)]="name" (keyup)="format()">
+      <input mdInput required name="name" placeholder="Intent Name" [(ngModel)]="name" (keyup)="format()" (keyup.enter)="save()">
     </md-input-container>
   </form>
 </div>
