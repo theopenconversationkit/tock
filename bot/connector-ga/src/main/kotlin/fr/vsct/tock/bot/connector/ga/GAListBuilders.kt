@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.connector.ga
 
 import fr.vsct.tock.bot.connector.ga.model.GAIntent
 import fr.vsct.tock.bot.connector.ga.model.response.GAExpectedIntent
+import fr.vsct.tock.bot.connector.ga.model.response.GAImage
 import fr.vsct.tock.bot.connector.ga.model.response.GAListItem
 import fr.vsct.tock.bot.connector.ga.model.response.GAListSelect
 import fr.vsct.tock.bot.connector.ga.model.response.GARichResponse
@@ -126,8 +127,18 @@ fun BotBus.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
     vararg parameters: Pair<String, String>
-)
-        : GAListItem = listItem(title, targetIntent, null, null, *parameters)
+): GAListItem = listItem(title, targetIntent, null, null, null, *parameters)
+
+/**
+ * Provides a [GAListItem] with [String] parameters with description and optional imageUrl.
+ */
+fun BotBus.listItem(
+    title: CharSequence,
+    targetIntent: IntentAware,
+    description: CharSequence,
+    imageUrl: String? = null,
+    vararg parameters: Pair<String, String>
+): GAListItem = listItem(title, targetIntent, null, description, imageUrl, *parameters)
 
 /**
  * Provides a [GAListItem] with [String] parameters without description.
@@ -136,9 +147,18 @@ fun BotBus.listItem(
     title: CharSequence,
     targetIntent: IntentAware,
     parameters: Parameters
-)
-        : GAListItem = listItem(title, targetIntent, null, null, parameters)
+): GAListItem = listItem(title, targetIntent, null, null, parameters)
 
+/**
+ * Provides a [GAListItem] with [String] parameters  with description and optional imageUrl.
+ */
+fun BotBus.listItem(
+    title: CharSequence,
+    targetIntent: IntentAware,
+    description: CharSequence?,
+    imageUrl: String? = null,
+    parameters: Parameters
+): GAListItem = listItem(title, targetIntent, null, description, imageUrl, *parameters.toArray())
 
 /**
  * Provides a [GAListItem] with [StoryStep] and [Parameters] parameters without description.
@@ -148,8 +168,7 @@ fun BotBus.listItem(
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>?,
     parameters: Parameters
-)
-        : GAListItem = listItem(title, targetIntent, step, null, parameters)
+): GAListItem = listItem(title, targetIntent, step, null, null, parameters)
 
 /**
  * Provides a [GAListItem] with [StoryStep] and [Parameters] parameters without description.
@@ -159,8 +178,7 @@ fun BotBus.listItem(
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>?,
     vararg parameters: Pair<String, String>
-)
-        : GAListItem = listItem(title, targetIntent, step, null, *parameters)
+): GAListItem = listItem(title, targetIntent, step, null, null, *parameters)
 
 /**
  * Provides a [GAListItem] with [StoryStep] and [Parameters] parameters.
@@ -170,9 +188,9 @@ fun BotBus.listItem(
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>?,
     description: CharSequence? = null,
+    imageUrl: String? = null,
     parameters: Parameters
-)
-        : GAListItem = listItem(title, targetIntent, step, description, *parameters.toArray())
+): GAListItem = listItem(title, targetIntent, step, description, imageUrl, *parameters.toArray())
 
 /**
  * Provides a [GAListItem] with [StoryStep] and [Parameters] parameters.
@@ -182,9 +200,9 @@ fun BotBus.listItem(
     targetIntent: IntentAware,
     step: StoryStep<out StoryHandlerDefinition>?,
     description: CharSequence? = null,
+    imageUrl: String? = null,
     vararg parameters: Pair<String, String>
-)
-        : GAListItem {
+): GAListItem {
     val t = translate(title)
     val d = translateAndReturnBlankAsNull(description)
     return GAListItem(
@@ -195,6 +213,7 @@ fun BotBus.listItem(
             *parameters
         ),
         t.toString(),
-        d
+        d,
+        if (imageUrl == null) null else GAImage(imageUrl, t.toString())
     )
 }
