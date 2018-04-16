@@ -19,10 +19,28 @@ package fr.vsct.tock.bot.connector.messenger
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorConfigurationRepository
+import java.util.Properties
 
 
 /**
- * Adds a messenger connector.
+ * Adds a messenger using a property file in the classpath.
+ */
+fun BotDefinition.addMessengerConnector(propertyFileName: String = "/messenger.properties") {
+    Properties().apply {
+        load(MessengerConnector::class.java.getResourceAsStream(propertyFileName))
+        addMessengerConnector(
+            getProperty("pageId"),
+            getProperty("pageToken"),
+            getProperty("applicationSecret"),
+            getProperty("verifyToken"),
+            getProperty("path") ?: "/messenger",
+            getProperty("baseUrl")
+        )
+    }
+}
+
+/**
+ * Adds a messenger connector with the specified params.
  */
 fun BotDefinition.addMessengerConnector(
     /**
