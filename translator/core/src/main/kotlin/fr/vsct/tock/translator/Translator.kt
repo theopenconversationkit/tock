@@ -46,11 +46,11 @@ object Translator {
     private val oldKeyTransformer = booleanProperty("tock_old_key_transformer", false)
 
     /**
-     * Translator and i18n support is enable by default.
-     * Set it to false if you want to disable i18n.
+     * Translator and i18n support is disable by default.
+     * Set it to true if you want to enable i18n.
      */
     @Volatile
-    var enabled: Boolean = booleanProperty("tock_i18n_enabled", true)
+    var enabled: Boolean = booleanProperty("tock_i18n_enabled", false)
 
     private val keyLabelRegex = "[^\\p{L}_]+".toRegex()
     private val defaultInterface: UserInterfaceType = textChat
