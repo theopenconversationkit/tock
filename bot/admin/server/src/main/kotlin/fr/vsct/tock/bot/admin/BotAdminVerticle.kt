@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.admin
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
+import fr.vsct.tock.bot.admin.BotAdminService.getBotConfigurationByApplicationIdAndBotId
 import fr.vsct.tock.bot.admin.model.BotConfiguration
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotIntentSearchRequest
@@ -86,14 +87,16 @@ open class BotAdminVerticle : AdminVerticle() {
             if (context.organization == bot.namespace) {
                 if (bot._id != null) {
                     val conf = BotAdminService.getBotConfigurationById(bot._id)
-                    if (conf == null || bot.namespace != conf.namespace || bot.botId != conf.botId || bot.applicationId != conf.applicationId) {
+                    if (conf == null || bot.namespace != conf.namespace || bot.botId != conf.botId) {
                         unauthorized()
                     }
+                    if (getBotConfigurationByApplicationIdAndBotId(bot.applicationId, bot.botId)
+                            ?.run { _id != conf._id } == true
+                    ) {
+                        badRequest("Connector identifier already exists")
+                    }
                 } else {
-                    if (BotAdminService.getBotConfigurationByApplicationIdAndBotId(
-                            bot.applicationId,
-                            bot.botId
-                        ) != null
+                    if (getBotConfigurationByApplicationIdAndBotId(bot.applicationId, bot.botId) != null
                     ) {
                         badRequest("Connector identifier already exists")
                     }

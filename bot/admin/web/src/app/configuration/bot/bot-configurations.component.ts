@@ -78,8 +78,8 @@ export class BotConfigurationsComponent implements OnInit {
       .subscribe(_ => {
         this.botConfiguration.updateConfigurations();
         this.snackBar.open(`Configuration created`, "Creation", {duration: 5000});
+        this.newApplicationConfiguration = null;
       });
-    this.newApplicationConfiguration = null;
   }
 
   update(conf: BotApplicationConfiguration) {
