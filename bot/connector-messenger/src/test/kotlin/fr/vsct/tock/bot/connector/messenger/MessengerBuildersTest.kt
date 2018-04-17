@@ -23,6 +23,8 @@ import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.audio
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.image
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.video
+import fr.vsct.tock.bot.connector.messenger.model.send.ListElementStyle
+import fr.vsct.tock.bot.connector.messenger.model.send.ListPayload
 import fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.user.UserPreferences
@@ -60,6 +62,13 @@ class MessengerBuildersTest {
         assertThrows<IllegalStateException> {
             listTemplate(bus.listElement("title"), bus.listElement("title2"))
         }
+    }
+
+    @Test
+    fun `flexibleListTemplate does not throw exception and keep only first four items WHEN more than four items`() {
+        val elements = (1..5).map { bus.listElement("title$it") }
+        val template = flexibleListTemplate(elements, ListElementStyle.compact)
+        assertEquals(elements.subList(0, 4), (template.attachment.payload as ListPayload).elements)
     }
 
     @Test

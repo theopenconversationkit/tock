@@ -118,7 +118,7 @@ fun flexibleListTemplate(
     return if (elements.size == 1) {
         genericTemplate(elements, *actions.filterIsInstance(QuickReply::class.java).toTypedArray())
     } else {
-        listTemplate(elements, topElementStyle, actions)
+        listTemplate(elements.take(4), topElementStyle, actions)
     }
 }
 
