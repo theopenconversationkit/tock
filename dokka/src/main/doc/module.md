@@ -148,7 +148,7 @@ User definition and encryption methods
 
 # Package fr.vsct.tock.shared.vertx
 
-Vertx related package
+Vert.x related package
 	
 
 
