@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="../../../style.css">
 </HEAD>
 <BODY>
-<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine.dialog</a>&nbsp;/&nbsp;<a href=".">EntityStateValue</a><br/>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine.dialog</a>&nbsp;/&nbsp;<a href="./index.html">EntityStateValue</a><br/>
 <br/>
 <h1>EntityStateValue</h1>
 <code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">EntityStateValue</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/dialog/EntityStateValue.kt#L28">(source)</a>
@@ -18,7 +18,7 @@
 <p><a href="-init-.html">&lt;init&gt;</a></p>
 </td>
 <td>
-<code><span class="identifier">EntityStateValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.EntityStateValue$<init>(fr.vsct.tock.bot.engine.dialog.ContextValue, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue)), java.time.Instant)/_value">_value</span><span class="symbol">:</span>&nbsp;<a href="../-context-value/index.html"><span class="identifier">ContextValue</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.EntityStateValue$<init>(fr.vsct.tock.bot.engine.dialog.ContextValue, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue)), java.time.Instant)/_history">_history</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../-archived-entity-value/index.html"><span class="identifier">ArchivedEntityValue</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;mutableListOf()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.EntityStateValue$<init>(fr.vsct.tock.bot.engine.dialog.ContextValue, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue)), java.time.Instant)/_lastUpdate">_lastUpdate</span><span class="symbol">:</span>&nbsp;<span class="identifier">Instant</span>&nbsp;<span class="symbol">=</span>&nbsp;now()<span class="symbol">)</span></code>
+<code><span class="identifier">EntityStateValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.EntityStateValue$<init>(fr.vsct.tock.bot.engine.dialog.ContextValue, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue)), java.time.Instant)/_value">_value</span><span class="symbol">:</span>&nbsp;<a href="../-context-value/index.html"><span class="identifier">ContextValue</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.EntityStateValue$<init>(fr.vsct.tock.bot.engine.dialog.ContextValue, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue)), java.time.Instant)/_history">_history</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../-archived-entity-value/index.html"><span class="identifier">ArchivedEntityValue</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;mutableListOf()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.EntityStateValue$<init>(fr.vsct.tock.bot.engine.dialog.ContextValue, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue)), java.time.Instant)/_lastUpdate">_lastUpdate</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/8/docs/api/java/time/Instant.html"><span class="identifier">Instant</span></a>&nbsp;<span class="symbol">=</span>&nbsp;now()<span class="symbol">)</span></code>
 <p>EntityStateValue is the current value of an entity with its history.</p>
 </td>
 </tr>
@@ -42,7 +42,7 @@ Could be empty if there is no history and current value is null.</p>
 <p><a href="last-update.html">lastUpdate</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">lastUpdate</span><span class="symbol">: </span><span class="identifier">Instant</span></code>
+<code><span class="keyword">val </span><span class="identifier">lastUpdate</span><span class="symbol">: </span><a href="http://docs.oracle.com/javase/8/docs/api/java/time/Instant.html"><span class="identifier">Instant</span></a></code>
 <p>The last update date of the value.</p>
 </td>
 </tr>

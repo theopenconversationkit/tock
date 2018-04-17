@@ -5,10 +5,10 @@
 <link rel="stylesheet" href="../../../style.css">
 </HEAD>
 <BODY>
-<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine</a>&nbsp;/&nbsp;<a href=".">BotRepository</a><br/>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine</a>&nbsp;/&nbsp;<a href="./index.html">BotRepository</a><br/>
 <br/>
 <h1>BotRepository</h1>
-<code><span class="keyword">object </span><span class="identifier">BotRepository</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/BotRepository.kt#L49">(source)</a>
+<code><span class="keyword">object </span><span class="identifier">BotRepository</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/BotRepository.kt#L53">(source)</a>
 <p>Advanced bot configuration.</p>
 <p><a href="../../fr.vsct.tock.bot/register-and-install-bot.html">fr.vsct.tock.bot.registerAndInstallBot</a> method is the preferred way to start a bot in most use cases.</p>
 <h3>Properties</h3>
@@ -43,7 +43,7 @@
 </td>
 <td>
 <code><span class="keyword">fun </span><span class="identifier">installBots</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotRepository$installBots(kotlin.collections.List((kotlin.Function1((io.vertx.ext.web.Router, kotlin.Unit)))), kotlin.Function1((fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration, fr.vsct.tock.bot.connector.ConnectorConfiguration)))/routerHandlers">routerHandlers</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><span class="symbol">(</span><span class="identifier">Router</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotRepository$installBots(kotlin.collections.List((kotlin.Function1((io.vertx.ext.web.Router, kotlin.Unit)))), kotlin.Function1((fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration, fr.vsct.tock.bot.connector.ConnectorConfiguration)))/adminRestConnectorInstaller">adminRestConnectorInstaller</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><a href="../../fr.vsct.tock.bot.admin.bot/-bot-application-configuration/index.html"><span class="identifier">BotApplicationConfiguration</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-configuration/index.html"><span class="identifier">ConnectorConfiguration</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;{ null }<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
-<p>Install the bot(s).</p>
+<p>Installs the bot(s).</p>
 </td>
 </tr>
 <tr>
@@ -52,7 +52,7 @@
 </td>
 <td>
 <code><span class="keyword">fun </span><span class="identifier">registerBotProvider</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotRepository$registerBotProvider(fr.vsct.tock.bot.definition.BotProvider)/bot">bot</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-bot-provider/index.html"><span class="identifier">BotProvider</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
-<p>Register a new <a href="../../fr.vsct.tock.bot.definition/-bot-provider/index.html">BotProvider</a>.</p>
+<p>Registers a new <a href="../../fr.vsct.tock.bot.definition/-bot-provider/index.html">BotProvider</a>.</p>
 </td>
 </tr>
 <tr>
@@ -61,7 +61,7 @@
 </td>
 <td>
 <code><span class="keyword">fun </span><span class="identifier">registerConnectorProvider</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotRepository$registerConnectorProvider(fr.vsct.tock.bot.connector.ConnectorProvider)/connectorProvider">connectorProvider</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-provider/index.html"><span class="identifier">ConnectorProvider</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
-<p>Register a new <a href="../../fr.vsct.tock.bot.connector/-connector-provider/index.html">ConnectorProvider</a>.</p>
+<p>Registers a new <a href="../../fr.vsct.tock.bot.connector/-connector-provider/index.html">ConnectorProvider</a>.</p>
 </td>
 </tr>
 <tr>
@@ -70,7 +70,7 @@
 </td>
 <td>
 <code><span class="keyword">fun </span><span class="identifier">registerNlpListener</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotRepository$registerNlpListener(fr.vsct.tock.bot.engine.nlp.NlpListener)/listener">listener</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.nlp/-nlp-listener/index.html"><span class="identifier">NlpListener</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
-<p>Register an new <a href="../../fr.vsct.tock.bot.engine.nlp/-nlp-listener/index.html">NlpListener</a>.</p>
+<p>Registers an new <a href="../../fr.vsct.tock.bot.engine.nlp/-nlp-listener/index.html">NlpListener</a>.</p>
 </td>
 </tr>
 <tr>
@@ -79,7 +79,7 @@
 </td>
 <td>
 <code><span class="keyword">fun </span><span class="identifier">registerStoryHandlerListener</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotRepository$registerStoryHandlerListener(fr.vsct.tock.bot.definition.StoryHandlerListener)/listener">listener</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-story-handler-listener/index.html"><span class="identifier">StoryHandlerListener</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
-<p>Register a new <a href="../../fr.vsct.tock.bot.definition/-story-handler-listener/index.html">StoryHandlerListener</a>.</p>
+<p>Registers a new <a href="../../fr.vsct.tock.bot.definition/-story-handler-listener/index.html">StoryHandlerListener</a>.</p>
 </td>
 </tr>
 </tbody>

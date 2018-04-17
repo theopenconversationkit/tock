@@ -5,10 +5,11 @@
 <link rel="stylesheet" href="../../../style.css">
 </HEAD>
 <BODY>
-<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.admin.test</a>&nbsp;/&nbsp;<a href=".">TestPlanExecution</a><br/>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.admin.test</a>&nbsp;/&nbsp;<a href="./index.html">TestPlanExecution</a><br/>
 <br/>
 <h1>TestPlanExecution</h1>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">TestPlanExecution</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/admin/test/TestPlanExecution.kt#L27">(source)</a>
+<code><span class="identifier">@Data</span> <span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">TestPlanExecution</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/admin/test/TestPlanExecution.kt#L29">(source)</a>
+<p>An execution of a <a href="../-test-plan/index.html">TestPlan</a>, with its result.</p>
 <h3>Constructors</h3>
 <table>
 <tbody>
@@ -17,7 +18,9 @@
 <p><a href="-init-.html">&lt;init&gt;</a></p>
 </td>
 <td>
-<code><span class="identifier">TestPlanExecution</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanExecution$<init>(org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlan)), kotlin.collections.List((fr.vsct.tock.bot.admin.test.DialogExecutionReport)), kotlin.Int, java.time.Instant, java.time.Duration, org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlanExecution)))/testPlanId">testPlanId</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanExecution$<init>(org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlan)), kotlin.collections.List((fr.vsct.tock.bot.admin.test.DialogExecutionReport)), kotlin.Int, java.time.Instant, java.time.Duration, org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlanExecution)))/dialogs">dialogs</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-dialog-execution-report/index.html"><span class="identifier">DialogExecutionReport</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanExecution$<init>(org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlan)), kotlin.collections.List((fr.vsct.tock.bot.admin.test.DialogExecutionReport)), kotlin.Int, java.time.Instant, java.time.Duration, org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlanExecution)))/nbErrors">nbErrors</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanExecution$<init>(org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlan)), kotlin.collections.List((fr.vsct.tock.bot.admin.test.DialogExecutionReport)), kotlin.Int, java.time.Instant, java.time.Duration, org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlanExecution)))/date">date</span><span class="symbol">:</span>&nbsp;<span class="identifier">Instant</span>&nbsp;<span class="symbol">=</span>&nbsp;Instant.now()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanExecution$<init>(org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlan)), kotlin.collections.List((fr.vsct.tock.bot.admin.test.DialogExecutionReport)), kotlin.Int, java.time.Instant, java.time.Duration, org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlanExecution)))/duration">duration</span><span class="symbol">:</span>&nbsp;<span class="identifier">Duration</span>&nbsp;<span class="symbol">=</span>&nbsp;Duration.ZERO<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanExecution$<init>(org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlan)), kotlin.collections.List((fr.vsct.tock.bot.admin.test.DialogExecutionReport)), kotlin.Int, java.time.Instant, java.time.Duration, org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlanExecution)))/_id">_id</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><span class="identifier">TestPlanExecution</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;newId()<span class="symbol">)</span></code></td>
+<code><span class="identifier">TestPlanExecution</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanExecution$<init>(org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlan)), kotlin.collections.List((fr.vsct.tock.bot.admin.test.DialogExecutionReport)), kotlin.Int, java.time.Instant, java.time.Duration, org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlanExecution)))/testPlanId">testPlanId</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanExecution$<init>(org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlan)), kotlin.collections.List((fr.vsct.tock.bot.admin.test.DialogExecutionReport)), kotlin.Int, java.time.Instant, java.time.Duration, org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlanExecution)))/dialogs">dialogs</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-dialog-execution-report/index.html"><span class="identifier">DialogExecutionReport</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanExecution$<init>(org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlan)), kotlin.collections.List((fr.vsct.tock.bot.admin.test.DialogExecutionReport)), kotlin.Int, java.time.Instant, java.time.Duration, org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlanExecution)))/nbErrors">nbErrors</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanExecution$<init>(org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlan)), kotlin.collections.List((fr.vsct.tock.bot.admin.test.DialogExecutionReport)), kotlin.Int, java.time.Instant, java.time.Duration, org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlanExecution)))/date">date</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/8/docs/api/java/time/Instant.html"><span class="identifier">Instant</span></a>&nbsp;<span class="symbol">=</span>&nbsp;Instant.now()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanExecution$<init>(org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlan)), kotlin.collections.List((fr.vsct.tock.bot.admin.test.DialogExecutionReport)), kotlin.Int, java.time.Instant, java.time.Duration, org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlanExecution)))/duration">duration</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/8/docs/api/java/time/Duration.html"><span class="identifier">Duration</span></a>&nbsp;<span class="symbol">=</span>&nbsp;Duration.ZERO<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.admin.test.TestPlanExecution$<init>(org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlan)), kotlin.collections.List((fr.vsct.tock.bot.admin.test.DialogExecutionReport)), kotlin.Int, java.time.Instant, java.time.Duration, org.litote.kmongo.Id((fr.vsct.tock.bot.admin.test.TestPlanExecution)))/_id">_id</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">TestPlanExecution</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;newId()<span class="symbol">)</span></code>
+<p>An execution of a <a href="../-test-plan/index.html">TestPlan</a>, with its result.</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -29,42 +32,54 @@
 <p><a href="_id.html">_id</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">_id</span><span class="symbol">: </span><span class="identifier">Id</span><span class="symbol">&lt;</span><span class="identifier">TestPlanExecution</span><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">_id</span><span class="symbol">: </span><span class="identifier">Id</span><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">TestPlanExecution</span></a><span class="symbol">&gt;</span></code>
+<p>The execution identifier.</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="date.html">date</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">date</span><span class="symbol">: </span><span class="identifier">Instant</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">date</span><span class="symbol">: </span><a href="http://docs.oracle.com/javase/8/docs/api/java/time/Instant.html"><span class="identifier">Instant</span></a></code>
+<p>Date of the execution.</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="dialogs.html">dialogs</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">dialogs</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-dialog-execution-report/index.html"><span class="identifier">DialogExecutionReport</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">dialogs</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-dialog-execution-report/index.html"><span class="identifier">DialogExecutionReport</span></a><span class="symbol">&gt;</span></code>
+<p>The dialog execution test reports.</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="duration.html">duration</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">duration</span><span class="symbol">: </span><span class="identifier">Duration</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">duration</span><span class="symbol">: </span><a href="http://docs.oracle.com/javase/8/docs/api/java/time/Duration.html"><span class="identifier">Duration</span></a></code>
+<p>Duration of the execution.</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="nb-errors.html">nbErrors</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">nbErrors</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+<code><span class="keyword">val </span><span class="identifier">nbErrors</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code>
+<p>Number of errors, if any.</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="test-plan-id.html">testPlanId</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">testPlanId</span><span class="symbol">: </span><span class="identifier">Id</span><span class="symbol">&lt;</span><a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">testPlanId</span><span class="symbol">: </span><span class="identifier">Id</span><span class="symbol">&lt;</span><a href="../-test-plan/index.html"><span class="identifier">TestPlan</span></a><span class="symbol">&gt;</span></code>
+<p>The test plan identifier.</p>
+</td>
 </tr>
 </tbody>
 </table>

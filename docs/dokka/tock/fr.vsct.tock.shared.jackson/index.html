@@ -1,0 +1,70 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>fr.vsct.tock.shared.jackson - tock</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">tock</a>&nbsp;/&nbsp;<a href="./index.html">fr.vsct.tock.shared.jackson</a><br/>
+<br/>
+<h2>Package fr.vsct.tock.shared.jackson</h2>
+<p>Jackson configuration and extension methods</p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-any-value-wrapper/index.html">AnyValueWrapper</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AnyValueWrapper</span></code>
+<p>A jackson wrapper to store class name with dynamic type value.
+Use with care, as it stores the class name in json.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-jackson-deserializer/index.html">JacksonDeserializer</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">JacksonDeserializer</span><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">JsonDeserializer</span><span class="symbol">&lt;</span><a href="-jackson-deserializer/index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>Convenient base class for jackson <a href="#">JsonDeserializer</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Extensions for External Classes</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="com.fasterxml.jackson.core.-json-parser/index.html">com.fasterxml.jackson.core.JsonParser</a></p>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="com.fasterxml.jackson.databind.module.-simple-module/index.html">com.fasterxml.jackson.databind.module.SimpleModule</a></p>
+</td>
+<td>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="mapper.html">mapper</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">mapper</span><span class="symbol">: </span><span class="identifier">ObjectMapper</span></code>
+<p>The Tock jackson mapper.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

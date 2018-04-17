@@ -5,10 +5,11 @@
 <link rel="stylesheet" href="../../../style.css">
 </HEAD>
 <BODY>
-<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.test</a>&nbsp;/&nbsp;<a href=".">TestContext</a><br/>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.test</a>&nbsp;/&nbsp;<a href="./index.html">TestContext</a><br/>
 <br/>
 <h1>TestContext</h1>
-<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">TestContext</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/test/src/main/kotlin/fr/vsct/tock/bot/test/TestContext.kt#L49">(source)</a>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">TestContext</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/test/src/main/kotlin/fr/vsct/tock/bot/test/TestContext.kt#L50">(source)</a>
+<p>A test context initialized for each test.</p>
 <h3>Constructors</h3>
 <table>
 <tbody>
@@ -17,7 +18,9 @@
 <p><a href="-init-.html">&lt;init&gt;</a></p>
 </td>
 <td>
-<code><span class="identifier">TestContext</span><span class="symbol">(</span><span class="symbol">)</span></code></td>
+<code><span class="identifier">TestContext</span><span class="symbol">(</span><span class="symbol">)</span></code>
+<p>A test context initialized for each test.</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -29,7 +32,9 @@
 <p><a href="bot-bus-mock-context.html">botBusMockContext</a></p>
 </td>
 <td>
-<code><span class="keyword">lateinit</span> <span class="keyword">var </span><span class="identifier">botBusMockContext</span><span class="symbol">: </span><a href="../-bot-bus-mock-context/index.html"><span class="identifier">BotBusMockContext</span></a></code></td>
+<code><span class="keyword">lateinit</span> <span class="keyword">var </span><span class="identifier">botBusMockContext</span><span class="symbol">: </span><a href="../-bot-bus-mock-context/index.html"><span class="identifier">BotBusMockContext</span></a></code>
+<p>The context of the bus.</p>
+</td>
 </tr>
 <tr>
 <td>
@@ -167,8 +172,8 @@
 <p><a href="default-locale.html">defaultLocale</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">defaultLocale</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Locale</span></code>
-<p>Default <a href="#">Locale</a> if none is provided.</p>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">defaultLocale</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="http://docs.oracle.com/javase/8/docs/api/java/util/Locale.html"><span class="identifier">Locale</span></a></code>
+<p>Default <a href="http://docs.oracle.com/javase/8/docs/api/java/util/Locale.html">Locale</a> if none is provided.</p>
 </td>
 </tr>
 <tr>
@@ -203,7 +208,10 @@
 <p><a href="new-mock.html">newMock</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span> <span class="identifier">newMock</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">&lt;ERROR CLASS&gt;</span></code></td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span> <span class="identifier">newMock</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="new-mock.html#T"><span class="identifier">T</span></a></code><br/>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span> <span class="identifier">newMock</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.test.TestContext$newMock(kotlin.reflect.KClass((fr.vsct.tock.bot.test.TestContext.newMock.T)))/kClass">kClass</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html"><span class="identifier">KClass</span></a><span class="symbol">&lt;</span><a href="new-mock.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="new-mock.html#T"><span class="identifier">T</span></a></code>
+<p>Creates a new mock.</p>
+</td>
 </tr>
 </tbody>
 </table>

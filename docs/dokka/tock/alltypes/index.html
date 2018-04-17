@@ -11,6 +11,24 @@
 <tbody>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.webhook/-account-linking/index.html">fr.vsct.tock.bot.connector.messenger.model.webhook.AccountLinking</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.webhook/-account-linking-status/index.html">fr.vsct.tock.bot.connector.messenger.model.webhook.AccountLinkingStatus</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.webhook/-account-linking-webhook/index.html">fr.vsct.tock.bot.connector.messenger.model.webhook.AccountLinkingWebhook</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.engine.action/-action/index.html">fr.vsct.tock.bot.engine.action.Action</a></td>
 <td>
 <p>A user (or bot) action.</p>
@@ -57,18 +75,18 @@
 </tr>
 <tr>
 <td>
-<a href="../fr.vsct.tock.bot.connector.alexa/-alexa-connector-provider/index.html">fr.vsct.tock.bot.connector.alexa.AlexaConnectorProvider</a></td>
-<td>
-<p><a href="../fr.vsct.tock.bot.connector/-connector-provider/index.html">ConnectorProvider</a> for <a href="../fr.vsct.tock.bot.connector.alexa/-alexa-connector/index.html">AlexaConnector</a>.</p>
-</td>
-</tr>
-<tr>
-<td>
 <a href="../fr.vsct.tock.bot.connector.alexa/-alexa-handler/index.html">fr.vsct.tock.bot.connector.alexa.AlexaHandler</a></td>
 <td>
 <p>To specify <a href="../fr.vsct.tock.bot.definition/-connector-story-handler/index.html">ConnectorStoryHandler</a> for Alexa connector.
 <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a> passed as <a href="../fr.vsct.tock.bot.connector.alexa/-alexa-handler/value.html">value</a> of this annotation must have a primary constructor
 with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.alexa/-alexa-input-message/index.html">fr.vsct.tock.bot.connector.alexa.AlexaInputMessage</a></td>
+<td>
+<p>The user message sent by Alexa.</p>
 </td>
 </tr>
 <tr>
@@ -182,6 +200,7 @@ Use with care, as it stores the class name in json.</p>
 <td>
 <a href="../fr.vsct.tock.bot.admin.bot/-bot-application-configuration/index.html">fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration</a></td>
 <td>
+<p>Configuration details for a bot and a connector.</p>
 </td>
 </tr>
 <tr>
@@ -222,7 +241,7 @@ Use with care, as it stores the class name in json.</p>
 <td>
 <a href="../fr.vsct.tock.bot.definition/-bot-definition/index.html">fr.vsct.tock.bot.definition.BotDefinition</a></td>
 <td>
-<p>The main interface of the bot.</p>
+<p>The main interface used to define the behaviour of the bot.</p>
 </td>
 </tr>
 <tr>
@@ -416,7 +435,8 @@ Used only by connector implementation.</p>
 <td>
 <a href="../fr.vsct.tock.bot.connector/-connector-provider/index.html">fr.vsct.tock.bot.connector.ConnectorProvider</a></td>
 <td>
-<p>To provide a new <a href="../fr.vsct.tock.bot.connector/-connector/index.html">Connector</a> from a <a href="../fr.vsct.tock.bot.connector/-connector-configuration/index.html">ConnectorConfiguration</a>.</p>
+<p>To provide a new <a href="../fr.vsct.tock.bot.connector/-connector/index.html">Connector</a> from a <a href="../fr.vsct.tock.bot.connector/-connector-configuration/index.html">ConnectorConfiguration</a>.
+The implementation is loaded at runtime to list all available connectors, using the java <a href="http://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html">java.util.ServiceLoader</a></p>
 </td>
 </tr>
 <tr>
@@ -444,7 +464,19 @@ Used only by connector implementation.</p>
 <td>
 <a href="../fr.vsct.tock.bot.engine.dialog/-context-value/index.html">fr.vsct.tock.bot.engine.dialog.ContextValue</a></td>
 <td>
-<p>A potential or already evaluated value linked to an entity.</p>
+<p>A (may be not yet evaluated) value linked to an entity stored in the context.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.send/-custom-event/index.html">fr.vsct.tock.bot.connector.messenger.model.send.CustomEvent</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.send/-custom-event-request/index.html">fr.vsct.tock.bot.connector.messenger.model.send.CustomEventRequest</a></td>
+<td>
 </td>
 </tr>
 <tr>
@@ -511,6 +543,12 @@ The dialog has a (current) <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/st
 <a href="../fr.vsct.tock.bot.engine.event/-end-conversation-event/index.html">fr.vsct.tock.bot.engine.event.EndConversationEvent</a></td>
 <td>
 <p>Event created when closing a conversation - connector support is not required!</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.engine.dialog/fr.vsct.tock.nlp.api.client.model.-entity/index.html">fr.vsct.tock.nlp.api.client.model.Entity</a> (extensions in package fr.vsct.tock.bot.engine.dialog)</td>
+<td>
 </td>
 </tr>
 <tr>
@@ -673,12 +711,6 @@ The dialog has a (current) <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/st
 <tr>
 <td>
 <a href="../fr.vsct.tock.bot.connector.ga/-g-a-connector/index.html">fr.vsct.tock.bot.connector.ga.GAConnector</a></td>
-<td>
-</td>
-</tr>
-<tr>
-<td>
-<a href="../fr.vsct.tock.bot.connector.ga/-g-a-connector-provider/index.html">fr.vsct.tock.bot.connector.ga.GAConnectorProvider</a></td>
 <td>
 </td>
 </tr>
@@ -1240,6 +1272,13 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.engine/-i18n-translator/index.html">fr.vsct.tock.bot.engine.I18nTranslator</a></td>
+<td>
+<p>Translates <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html">CharSequence</a> depending of current <a href="../fr.vsct.tock.bot.engine/-i18n-translator/user-locale.html">userLocale</a>, <a href="../fr.vsct.tock.bot.engine/-i18n-translator/user-interface-type.html">userInterfaceType</a> and <a href="../fr.vsct.tock.bot.engine/-i18n-translator/target-connector-type.html">targetConnectorType</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.definition/-intent/index.html">fr.vsct.tock.bot.definition.Intent</a></td>
 <td>
 <p>An intent definition.</p>
@@ -1339,7 +1378,7 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 <td>
 <a href="../fr.vsct.tock.shared/-loader/index.html">fr.vsct.tock.shared.Loader</a></td>
 <td>
-<p>Helper methods to deal with <a href="#">ServiceLoader</a>.</p>
+<p>Helper methods to deal with <a href="http://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html">ServiceLoader</a>.</p>
 </td>
 </tr>
 <tr>
@@ -1366,6 +1405,32 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 <td>
 <a href="../fr.vsct.tock.bot.connector.messenger.model.send/-location-quick-reply/index.html">fr.vsct.tock.bot.connector.messenger.model.send.LocationQuickReply</a></td>
 <td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.send/-login-button/index.html">fr.vsct.tock.bot.connector.messenger.model.send.LoginButton</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.engine.event/-login-event/index.html">fr.vsct.tock.bot.engine.event.LoginEvent</a></td>
+<td>
+<p>A login event, in order to provide account linking.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.send/-logout-button/index.html">fr.vsct.tock.bot.connector.messenger.model.send.LogoutButton</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.engine.event/-logout-event/index.html">fr.vsct.tock.bot.engine.event.LogoutEvent</a></td>
+<td>
+<p>An event used to cancel a <a href="../fr.vsct.tock.bot.engine.event/-login-event/index.html">LoginEvent</a>.</p>
 </td>
 </tr>
 <tr>
@@ -1448,6 +1513,14 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 <a href="../fr.vsct.tock.bot.engine.message/-messages-list/index.html">fr.vsct.tock.bot.engine.message.MessagesList</a></td>
 <td>
 <p>A list of messages.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.send/-messaging-type/index.html">fr.vsct.tock.bot.connector.messenger.model.send.MessagingType</a></td>
+<td>
+<p>Messaging type.
+See <a href="facebook documentation">https://developers.facebook.com/docs/messenger-platform/send-messages#messaging_types</a>.</p>
 </td>
 </tr>
 <tr>
@@ -2085,6 +2158,7 @@ Used to manage workflow in a <a href="../fr.vsct.tock.bot.definition/-story-hand
 <td>
 <a href="../fr.vsct.tock.bot.test/-test-context/index.html">fr.vsct.tock.bot.test.TestContext</a></td>
 <td>
+<p>A test context initialized for each test.</p>
 </td>
 </tr>
 <tr>
@@ -2103,6 +2177,7 @@ Used to manage workflow in a <a href="../fr.vsct.tock.bot.definition/-story-hand
 <td>
 <a href="../fr.vsct.tock.bot.admin.test/-test-plan/index.html">fr.vsct.tock.bot.admin.test.TestPlan</a></td>
 <td>
+<p>A test plan is a set of dialogs to replay.</p>
 </td>
 </tr>
 <tr>
@@ -2115,6 +2190,7 @@ Used to manage workflow in a <a href="../fr.vsct.tock.bot.definition/-story-hand
 <td>
 <a href="../fr.vsct.tock.bot.admin.test/-test-plan-execution/index.html">fr.vsct.tock.bot.admin.test.TestPlanExecution</a></td>
 <td>
+<p>An execution of a <a href="../fr.vsct.tock.bot.admin.test/-test-plan/index.html">TestPlan</a>, with its result.</p>
 </td>
 </tr>
 <tr>
@@ -2148,6 +2224,20 @@ Used to manage workflow in a <a href="../fr.vsct.tock.bot.definition/-story-hand
 <a href="../fr.vsct.tock.bot.test.junit/-tock-j-unit4-rule/index.html">fr.vsct.tock.bot.test.junit.TockJUnit4Rule</a></td>
 <td>
 <p>A JUnit4 Rule to initialize the context for each call.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.test.junit/-tock-j-unit5-extension/index.html">fr.vsct.tock.bot.test.junit.TockJUnit5Extension</a></td>
+<td>
+<p>JUnit5 extension.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.test.junit/-tock-j-unit5-extension-base/index.html">fr.vsct.tock.bot.test.junit.TockJUnit5ExtensionBase</a></td>
+<td>
+<p>JUnit5 base extension.</p>
 </td>
 </tr>
 <tr>
@@ -2232,6 +2322,7 @@ Used to manage workflow in a <a href="../fr.vsct.tock.bot.definition/-story-hand
 <td>
 <a href="../fr.vsct.tock.bot.engine.user/-user-preferences/index.html">fr.vsct.tock.bot.engine.user.UserPreferences</a></td>
 <td>
+<p>User preferences.</p>
 </td>
 </tr>
 <tr>

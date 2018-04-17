@@ -5,10 +5,10 @@
 <link rel="stylesheet" href="../../../style.css">
 </HEAD>
 <BODY>
-<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.connector.messenger</a>&nbsp;/&nbsp;<a href=".">MessengerConnector</a><br/>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.connector.messenger</a>&nbsp;/&nbsp;<a href="./index.html">MessengerConnector</a><br/>
 <br/>
 <h1>MessengerConnector</h1>
-<code><span class="keyword">class </span><span class="identifier">MessengerConnector</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-base/index.html"><span class="identifier">ConnectorBase</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-messenger/src/main/kotlin/fr/vsct/tock/bot/connector/messenger/MessengerConnector.kt#L69">(source)</a>
+<code><span class="keyword">class </span><span class="identifier">MessengerConnector</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-base/index.html"><span class="identifier">ConnectorBase</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-messenger/src/main/kotlin/fr/vsct/tock/bot/connector/messenger/MessengerConnector.kt#L70">(source)</a>
 <p>Contains built-in checks to ensure that two <a href="../../fr.vsct.tock.bot.connector.messenger.model.send/-message-request/index.html">MessageRequest</a> for the same recipient are sent sequentially.</p>
 <h3>Properties</h3>
 <table>
@@ -105,6 +105,15 @@ Contains checks to ensure that two <a href="../../fr.vsct.tock.bot.engine.action
 </tr>
 <tr>
 <td>
+<p><a href="send-custom-event.html">sendCustomEvent</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">sendCustomEvent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$sendCustomEvent(kotlin.String, fr.vsct.tock.bot.connector.messenger.model.send.CustomEventRequest)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector$sendCustomEvent(kotlin.String, fr.vsct.tock.bot.connector.messenger.model.send.CustomEventRequest)/customEventRequest">customEventRequest</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector.messenger.model.send/-custom-event-request/index.html"><span class="identifier">CustomEventRequest</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Send a custom event to messenger</p>
+</td>
+</tr>
+<tr>
+<td>
 <p><a href="send-event.html">sendEvent</a></p>
 </td>
 <td>
@@ -146,7 +155,7 @@ See https://developers.facebook.com/docs/messenger-platform/plugin-reference/che
 <p><a href="get-connector-by-page-id.html">getConnectorByPageId</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">getConnectorByPageId</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector.Companion$getConnectorByPageId(kotlin.String)/pageId">pageId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">MessengerConnector</span><span class="symbol">?</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">getConnectorByPageId</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.MessengerConnector.Companion$getConnectorByPageId(kotlin.String)/pageId">pageId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">MessengerConnector</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>

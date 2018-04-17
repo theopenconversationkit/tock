@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="../../style.css">
 </HEAD>
 <BODY>
-<a href="../index.html">tock</a>&nbsp;/&nbsp;<a href=".">fr.vsct.tock.bot.engine</a><br/>
+<a href="../index.html">tock</a>&nbsp;/&nbsp;<a href="./index.html">fr.vsct.tock.bot.engine</a><br/>
 <br/>
 <h2>Package fr.vsct.tock.bot.engine</h2>
 <p><strong>Core conversational engine</strong> with the main interface <a href="-bot-bus/index.html">BotBus</a> used by all bot implementations</p>
@@ -17,7 +17,7 @@
 <p><a href="-bot-bus/index.html">BotBus</a></p>
 </td>
 <td>
-<code><span class="keyword">interface </span><span class="identifier">BotBus</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">I18nKeyProvider</span></code>
+<code><span class="keyword">interface </span><span class="identifier">BotBus</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-i18n-translator/index.html"><span class="identifier">I18nTranslator</span></a></code>
 <p>A new bus is generated for each user request.</p>
 </td>
 </tr>
@@ -46,6 +46,15 @@
 <td>
 <code><span class="keyword">interface </span><span class="identifier">ConnectorController</span></code>
 <p>Controller to connect <a href="../fr.vsct.tock.bot.connector/-connector/index.html">Connector</a> and <a href="../fr.vsct.tock.bot.definition/-bot-definition/index.html">BotDefinition</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-i18n-translator/index.html">I18nTranslator</a></p>
+</td>
+<td>
+<code><span class="keyword">interface </span><span class="identifier">I18nTranslator</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">I18nKeyProvider</span></code>
+<p>Translates <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html">CharSequence</a> depending of current <a href="-i18n-translator/user-locale.html">userLocale</a>, <a href="-i18n-translator/user-interface-type.html">userInterfaceType</a> and <a href="-i18n-translator/target-connector-type.html">targetConnectorType</a>.</p>
 </td>
 </tr>
 </tbody>

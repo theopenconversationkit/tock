@@ -1,0 +1,390 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>WebVerticle - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.shared.vertx</a>&nbsp;/&nbsp;<a href="./index.html">WebVerticle</a><br/>
+<br/>
+<h1>WebVerticle</h1>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">WebVerticle</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">AbstractVerticle</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/shared/src/main/kotlin/fr/vsct/tock/shared/vertx/WebVerticle.kt#L72">(source)</a>
+<p>Base class for web Tock <a href="#">io.vertx.core.Verticle</a>s. Provides utility methods.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">WebVerticle</span><span class="symbol">(</span><span class="symbol">)</span></code>
+<p>Base class for web Tock <a href="#">io.vertx.core.Verticle</a>s. Provides utility methods.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="authenticate-path.html">authenticatePath</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">authenticatePath</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="logger.html">logger</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">logger</span><span class="symbol">: </span><span class="identifier">KLogger</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="logout-path.html">logoutPath</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">logoutPath</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="organization.html">organization</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">RoutingContext</span><span class="symbol">.</span><span class="identifier">organization</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="root-path.html">rootPath</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">rootPath</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="router.html">router</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">router</span><span class="symbol">: </span><span class="identifier">Router</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="server.html">server</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">server</span><span class="symbol">: </span><span class="identifier">HttpServer</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="add-auth.html">addAuth</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">addAuth</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$addAuth(io.vertx.ext.auth.AuthProvider, kotlin.collections.List((kotlin.String)))/authProvider">authProvider</span><span class="symbol">:</span>&nbsp;<span class="identifier">AuthProvider</span>&nbsp;<span class="symbol">=</span>&nbsp;defaultAuthProvider()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$addAuth(io.vertx.ext.auth.AuthProvider, kotlin.collections.List((kotlin.String)))/pathsToProtect">pathsToProtect</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;listOf("${protectedPath()}/*")<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="add-dev-cors-handler.html">addDevCorsHandler</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">addDevCorsHandler</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="auth-provider.html">authProvider</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">authProvider</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">AuthProvider</span><span class="symbol">?</span></code>
+<p>By default there is no auth provider - ie nothing is protected.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="bad-request.html">badRequest</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">badRequest</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$badRequest(kotlin.String)/message">message</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-nothing/index.html"><span class="identifier">Nothing</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="blocking.html">blocking</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">blocking</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blocking(io.vertx.core.http.HttpMethod, kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))/method">method</span><span class="symbol">:</span>&nbsp;<span class="identifier">HttpMethod</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blocking(io.vertx.core.http.HttpMethod, kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blocking(io.vertx.core.http.HttpMethod, kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))/role">role</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security/-tock-user-role/index.html"><span class="identifier">TockUserRole</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;defaultRole()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blocking(io.vertx.core.http.HttpMethod, kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))/handler">handler</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="blocking-delete.html">blockingDelete</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">blockingDelete</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingDelete(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingDelete(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))/role">role</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security/-tock-user-role/index.html"><span class="identifier">TockUserRole</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;defaultRole()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingDelete(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))/handler">handler</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="blocking-json-delete.html">blockingJsonDelete</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">blockingJsonDelete</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingJsonDelete(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Boolean)))/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingJsonDelete(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Boolean)))/role">role</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security/-tock-user-role/index.html"><span class="identifier">TockUserRole</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;defaultRole()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingJsonDelete(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Boolean)))/handler">handler</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="blocking-json-get.html">blockingJsonGet</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">O</span><span class="symbol">&gt;</span> <span class="identifier">blockingJsonGet</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingJsonGet(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.blockingJsonGet.O)))/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingJsonGet(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.blockingJsonGet.O)))/role">role</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security/-tock-user-role/index.html"><span class="identifier">TockUserRole</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;defaultRole()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingJsonGet(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.blockingJsonGet.O)))/handler">handler</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="blocking-json-get.html#O"><span class="identifier">O</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="blocking-json-post.html">blockingJsonPost</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">I</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">, </span><span class="identifier">O</span><span class="symbol">&gt;</span> <span class="identifier">blockingJsonPost</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingJsonPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function2((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.blockingJsonPost.I, fr.vsct.tock.shared.vertx.WebVerticle.blockingJsonPost.O)))/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingJsonPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function2((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.blockingJsonPost.I, fr.vsct.tock.shared.vertx.WebVerticle.blockingJsonPost.O)))/role">role</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security/-tock-user-role/index.html"><span class="identifier">TockUserRole</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;defaultRole()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingJsonPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function2((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.blockingJsonPost.I, fr.vsct.tock.shared.vertx.WebVerticle.blockingJsonPost.O)))/handler">handler</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">,</span>&nbsp;<a href="blocking-json-post.html#I"><span class="identifier">I</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="blocking-json-post.html#O"><span class="identifier">O</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="blocking-post.html">blockingPost</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">blockingPost</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))/role">role</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security/-tock-user-role/index.html"><span class="identifier">TockUserRole</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;defaultRole()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))/handler">handler</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="blocking-upload-json-post.html">blockingUploadJsonPost</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">F</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">, </span><span class="identifier">O</span><span class="symbol">&gt;</span> <span class="identifier">blockingUploadJsonPost</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingUploadJsonPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function2((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.blockingUploadJsonPost.F, fr.vsct.tock.shared.vertx.WebVerticle.blockingUploadJsonPost.O)))/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingUploadJsonPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function2((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.blockingUploadJsonPost.F, fr.vsct.tock.shared.vertx.WebVerticle.blockingUploadJsonPost.O)))/role">role</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security/-tock-user-role/index.html"><span class="identifier">TockUserRole</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;defaultRole()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingUploadJsonPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function2((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.blockingUploadJsonPost.F, fr.vsct.tock.shared.vertx.WebVerticle.blockingUploadJsonPost.O)))/handler">handler</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">,</span>&nbsp;<a href="blocking-upload-json-post.html#F"><span class="identifier">F</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="blocking-upload-json-post.html#O"><span class="identifier">O</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="blocking-upload-post.html">blockingUploadPost</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">O</span><span class="symbol">&gt;</span> <span class="identifier">blockingUploadPost</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingUploadPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function2((io.vertx.ext.web.RoutingContext, kotlin.String, fr.vsct.tock.shared.vertx.WebVerticle.blockingUploadPost.O)))/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingUploadPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function2((io.vertx.ext.web.RoutingContext, kotlin.String, fr.vsct.tock.shared.vertx.WebVerticle.blockingUploadPost.O)))/role">role</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security/-tock-user-role/index.html"><span class="identifier">TockUserRole</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;defaultRole()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingUploadPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function2((io.vertx.ext.web.RoutingContext, kotlin.String, fr.vsct.tock.shared.vertx.WebVerticle.blockingUploadPost.O)))/handler">handler</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="blocking-upload-post.html#O"><span class="identifier">O</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="blocking-with-body-json.html">blockingWithBodyJson</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">I</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">, </span><span class="identifier">O</span><span class="symbol">&gt;</span> <span class="identifier">blockingWithBodyJson</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingWithBodyJson(io.vertx.core.http.HttpMethod, kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function2((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.blockingWithBodyJson.I, fr.vsct.tock.shared.vertx.WebVerticle.blockingWithBodyJson.O)))/method">method</span><span class="symbol">:</span>&nbsp;<span class="identifier">HttpMethod</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingWithBodyJson(io.vertx.core.http.HttpMethod, kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function2((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.blockingWithBodyJson.I, fr.vsct.tock.shared.vertx.WebVerticle.blockingWithBodyJson.O)))/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingWithBodyJson(io.vertx.core.http.HttpMethod, kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function2((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.blockingWithBodyJson.I, fr.vsct.tock.shared.vertx.WebVerticle.blockingWithBodyJson.O)))/role">role</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security/-tock-user-role/index.html"><span class="identifier">TockUserRole</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$blockingWithBodyJson(io.vertx.core.http.HttpMethod, kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function2((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.blockingWithBodyJson.I, fr.vsct.tock.shared.vertx.WebVerticle.blockingWithBodyJson.O)))/handler">handler</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">,</span>&nbsp;<a href="blocking-with-body-json.html#I"><span class="identifier">I</span></a><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="blocking-with-body-json.html#O"><span class="identifier">O</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="body-handler.html">bodyHandler</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">bodyHandler</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">BodyHandler</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="configure.html">configure</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">configure</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="cors-handler.html">corsHandler</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">corsHandler</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$corsHandler(kotlin.String, kotlin.Boolean, kotlin.collections.Set((io.vertx.core.http.HttpMethod)), kotlin.collections.Set((kotlin.String)))/origin">origin</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;"*"<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$corsHandler(kotlin.String, kotlin.Boolean, kotlin.collections.Set((io.vertx.core.http.HttpMethod)), kotlin.collections.Set((kotlin.String)))/allowCredentials">allowCredentials</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a>&nbsp;<span class="symbol">=</span>&nbsp;false<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$corsHandler(kotlin.String, kotlin.Boolean, kotlin.collections.Set((io.vertx.core.http.HttpMethod)), kotlin.collections.Set((kotlin.String)))/allowedMethods">allowedMethods</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><span class="identifier">HttpMethod</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;EnumSet.of(GET, POST, DELETE)<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$corsHandler(kotlin.String, kotlin.Boolean, kotlin.collections.Set((io.vertx.core.http.HttpMethod)), kotlin.collections.Set((kotlin.String)))/allowedHeaders">allowedHeaders</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;listOfNotNull(
+            "X-Requested-With",
+            "Access-Control-Allow-Origin",
+            if (allowCredentials) "Authorization" else null,
+            "Content-Type"
+        ).toSet()<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">CorsHandler</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="default-auth-provider.html">defaultAuthProvider</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">defaultAuthProvider</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">AuthProvider</span></code>
+<p>The auth provider provided by default.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="default-role.html">defaultRole</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">defaultRole</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.shared.security/-tock-user-role/index.html"><span class="identifier">TockUserRole</span></a><span class="symbol">?</span></code>
+<p>The default role of a service.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="end-json.html">endJson</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">RoutingContext</span><span class="symbol">.</span><span class="identifier">endJson</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$endJson(io.vertx.ext.web.RoutingContext, kotlin.Boolean)/success">success</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">fun </span><span class="identifier">RoutingContext</span><span class="symbol">.</span><span class="identifier">endJson</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$endJson(io.vertx.ext.web.RoutingContext, kotlin.Any)/result">result</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code><br/>
+<code><span class="keyword">fun </span><span class="identifier">HttpServerResponse</span><span class="symbol">.</span><span class="identifier">endJson</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$endJson(io.vertx.core.http.HttpServerResponse, kotlin.Any)/result">result</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="execute-blocking.html">executeBlocking</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">RoutingContext</span><span class="symbol">.</span><span class="identifier">executeBlocking</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$executeBlocking(io.vertx.ext.web.RoutingContext, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))/handler">handler</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Execute blocking code using <a href="#">Vertx.executeBlocking</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="first-query-param.html">firstQueryParam</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">RoutingContext</span><span class="symbol">.</span><span class="identifier">firstQueryParam</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$firstQueryParam(io.vertx.ext.web.RoutingContext, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="healthcheck.html">healthcheck</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">healthcheck</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="is-authorized.html">isAuthorized</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">RoutingContext</span><span class="symbol">.</span><span class="identifier">isAuthorized</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$isAuthorized(io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.core.AsyncResult((kotlin.Boolean)), kotlin.Unit)))/role">role</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security/-tock-user-role/index.html"><span class="identifier">TockUserRole</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$isAuthorized(io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.core.AsyncResult((kotlin.Boolean)), kotlin.Unit)))/resultHandler">resultHandler</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">AsyncResult</span><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">&gt;</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="json-post.html">jsonPost</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">I</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">, </span><span class="identifier">O</span><span class="symbol">&gt;</span> <span class="identifier">jsonPost</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$jsonPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function3((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.jsonPost.I, io.vertx.core.Handler((fr.vsct.tock.shared.vertx.WebVerticle.jsonPost.O)), kotlin.Unit)))/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$jsonPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function3((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.jsonPost.I, io.vertx.core.Handler((fr.vsct.tock.shared.vertx.WebVerticle.jsonPost.O)), kotlin.Unit)))/role">role</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security/-tock-user-role/index.html"><span class="identifier">TockUserRole</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;defaultRole()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$jsonPost(kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function3((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.jsonPost.I, io.vertx.core.Handler((fr.vsct.tock.shared.vertx.WebVerticle.jsonPost.O)), kotlin.Unit)))/handler">handler</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">,</span>&nbsp;<a href="json-post.html#I"><span class="identifier">I</span></a><span class="symbol">,</span>&nbsp;<span class="identifier">Handler</span><span class="symbol">&lt;</span><a href="json-post.html#O"><span class="identifier">O</span></a><span class="symbol">&gt;</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="not-found.html">notFound</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">notFound</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-nothing/index.html"><span class="identifier">Nothing</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="path-id.html">pathId</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span> <span class="identifier">RoutingContext</span><span class="symbol">.</span><span class="identifier">pathId</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$pathId(io.vertx.ext.web.RoutingContext, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Id</span><span class="symbol">&lt;</span><a href="path-id.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="protected-path.html">protectedPath</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">protectedPath</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="query-id.html">queryId</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span> <span class="identifier">RoutingContext</span><span class="symbol">.</span><span class="identifier">queryId</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$queryId(io.vertx.ext.web.RoutingContext, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Id</span><span class="symbol">&lt;</span><a href="query-id.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="read-json.html">readJson</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span> <span class="identifier">RoutingContext</span><span class="symbol">.</span><span class="identifier">readJson</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="read-json.html#T"><span class="identifier">T</span></a></code><br/>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span> <span class="identifier">readJson</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$readJson(io.vertx.ext.web.FileUpload)/upload">upload</span><span class="symbol">:</span>&nbsp;<span class="identifier">FileUpload</span><span class="symbol">)</span><span class="symbol">: </span><a href="read-json.html#T"><span class="identifier">T</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="read-string.html">readString</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">readString</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$readString(io.vertx.ext.web.FileUpload)/upload">upload</span><span class="symbol">:</span>&nbsp;<span class="identifier">FileUpload</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="register.html">register</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">register</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$register(io.vertx.core.http.HttpMethod, kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))/method">method</span><span class="symbol">:</span>&nbsp;<span class="identifier">HttpMethod</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$register(io.vertx.core.http.HttpMethod, kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$register(io.vertx.core.http.HttpMethod, kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))/role">role</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security/-tock-user-role/index.html"><span class="identifier">TockUserRole</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;defaultRole()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$register(io.vertx.core.http.HttpMethod, kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))/handler">handler</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="start.html">start</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">start</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$start(io.vertx.core.Future((java.lang.Void)))/startFuture">startFuture</span><span class="symbol">:</span>&nbsp;<span class="identifier">Future</span><span class="symbol">&lt;</span><a href="http://docs.oracle.com/javase/8/docs/api/java/lang/Void.html"><span class="identifier">Void</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="start-server.html">startServer</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">startServer</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$startServer(io.vertx.core.Future((java.lang.Void)))/startFuture">startFuture</span><span class="symbol">:</span>&nbsp;<span class="identifier">Future</span><span class="symbol">&lt;</span><a href="http://docs.oracle.com/javase/8/docs/api/java/lang/Void.html"><span class="identifier">Void</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="stop.html">stop</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">stop</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$stop(io.vertx.core.Future((java.lang.Void)))/stopFuture">stopFuture</span><span class="symbol">:</span>&nbsp;<span class="identifier">Future</span><span class="symbol">&lt;</span><a href="http://docs.oracle.com/javase/8/docs/api/java/lang/Void.html"><span class="identifier">Void</span></a><span class="symbol">&gt;</span><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="success.html">success</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">RoutingContext</span><span class="symbol">.</span><span class="identifier">success</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="unauthorized.html">unauthorized</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">unauthorized</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-nothing/index.html"><span class="identifier">Nothing</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="verticle-boolean-property.html">verticleBooleanProperty</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">verticleBooleanProperty</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$verticleBooleanProperty(kotlin.String, kotlin.Boolean)/propertyName">propertyName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$verticleBooleanProperty(kotlin.String, kotlin.Boolean)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="verticle-int-property.html">verticleIntProperty</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">verticleIntProperty</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$verticleIntProperty(kotlin.String, kotlin.Int)/propertyName">propertyName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$verticleIntProperty(kotlin.String, kotlin.Int)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-int/index.html"><span class="identifier">Int</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="verticle-long-property.html">verticleLongProperty</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">verticleLongProperty</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$verticleLongProperty(kotlin.String, kotlin.Long)/propertyName">propertyName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$verticleLongProperty(kotlin.String, kotlin.Long)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="verticle-property.html">verticleProperty</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">verticleProperty</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$verticleProperty(kotlin.String, kotlin.String)/propertyName">propertyName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$verticleProperty(kotlin.String, kotlin.String)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="with-body-json.html">withBodyJson</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">I</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">, </span><span class="identifier">O</span><span class="symbol">&gt;</span> <span class="identifier">withBodyJson</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$withBodyJson(io.vertx.core.http.HttpMethod, kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function3((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.withBodyJson.I, io.vertx.core.Handler((fr.vsct.tock.shared.vertx.WebVerticle.withBodyJson.O)), kotlin.Unit)))/method">method</span><span class="symbol">:</span>&nbsp;<span class="identifier">HttpMethod</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$withBodyJson(io.vertx.core.http.HttpMethod, kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function3((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.withBodyJson.I, io.vertx.core.Handler((fr.vsct.tock.shared.vertx.WebVerticle.withBodyJson.O)), kotlin.Unit)))/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$withBodyJson(io.vertx.core.http.HttpMethod, kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function3((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.withBodyJson.I, io.vertx.core.Handler((fr.vsct.tock.shared.vertx.WebVerticle.withBodyJson.O)), kotlin.Unit)))/role">role</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security/-tock-user-role/index.html"><span class="identifier">TockUserRole</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$withBodyJson(io.vertx.core.http.HttpMethod, kotlin.String, fr.vsct.tock.shared.security.TockUserRole, kotlin.Function3((io.vertx.ext.web.RoutingContext, fr.vsct.tock.shared.vertx.WebVerticle.withBodyJson.I, io.vertx.core.Handler((fr.vsct.tock.shared.vertx.WebVerticle.withBodyJson.O)), kotlin.Unit)))/handler">handler</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">RoutingContext</span><span class="symbol">,</span>&nbsp;<a href="with-body-json.html#I"><span class="identifier">I</span></a><span class="symbol">,</span>&nbsp;<span class="identifier">Handler</span><span class="symbol">&lt;</span><a href="with-body-json.html#O"><span class="identifier">O</span></a><span class="symbol">&gt;</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

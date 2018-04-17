@@ -1,0 +1,134 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>fr.vsct.tock.bot.connector.alexa - tock</title>
+<link rel="stylesheet" href="../../style.css">
+</HEAD>
+<BODY>
+<a href="../index.html">tock</a>&nbsp;/&nbsp;<a href="./index.html">fr.vsct.tock.bot.connector.alexa</a><br/>
+<br/>
+<h2>Package fr.vsct.tock.bot.connector.alexa</h2>
+<p>Alexa connector implementation. See <a href="-alexa-connector/index.html">AlexaConnector</a></p>
+<h3>Types</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-alexa-connector/index.html">AlexaConnector</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">AlexaConnector</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../fr.vsct.tock.bot.connector/-connector-base/index.html"><span class="identifier">ConnectorBase</span></a></code>
+<p><a href="#">Connector</a> for Amazon Alexa.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alexa-input-message/index.html">AlexaInputMessage</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AlexaInputMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a></code>
+<p>The user message sent by Alexa.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alexa-message/index.html">AlexaMessage</a></p>
+</td>
+<td>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AlexaMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a></code>
+<p>An alexa message.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-alexa-tock-mapper/index.html">AlexaTockMapper</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">AlexaTockMapper</span></code>
+<p>An Alexa model to Tock model mapper. Provided via <a href="#">addAlexaConnector.alexaTockMapper</a> parameter.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Annotations</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-alexa-handler/index.html">AlexaHandler</a></p>
+</td>
+<td>
+<code><span class="keyword">annotation</span> <span class="keyword">class </span><span class="identifier">AlexaHandler</span></code>
+<p>To specify <a href="../fr.vsct.tock.bot.definition/-connector-story-handler/index.html">ConnectorStoryHandler</a> for Alexa connector.
+<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html">KClass</a> passed as <a href="-alexa-handler/value.html">value</a> of this annotation must have a primary constructor
+with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="alexa-connector-type.html">alexaConnectorType</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">alexaConnectorType</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code>
+<p>The Alexa <a href="../fr.vsct.tock.bot.connector/-connector-type/index.html">ConnectorType</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="add-alexa-connector.html">addAlexaConnector</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.definition/-bot-definition/index.html"><span class="identifier">BotDefinition</span></a><span class="symbol">.</span><span class="identifier">addAlexaConnector</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.alexa$addAlexaConnector(fr.vsct.tock.bot.definition.BotDefinition, kotlin.collections.Set((kotlin.String)), kotlin.String, kotlin.String, kotlin.reflect.KClass((fr.vsct.tock.bot.connector.alexa.AlexaTockMapper)))/supportedAlexaApplicationIds">supportedAlexaApplicationIds</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptySet()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.alexa$addAlexaConnector(fr.vsct.tock.bot.definition.BotDefinition, kotlin.collections.Set((kotlin.String)), kotlin.String, kotlin.String, kotlin.reflect.KClass((fr.vsct.tock.bot.connector.alexa.AlexaTockMapper)))/connectorId">connectorId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;supportedAlexaApplicationIds.firstOrNull() ?: "alexaApp"<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.alexa$addAlexaConnector(fr.vsct.tock.bot.definition.BotDefinition, kotlin.collections.Set((kotlin.String)), kotlin.String, kotlin.String, kotlin.reflect.KClass((fr.vsct.tock.bot.connector.alexa.AlexaTockMapper)))/path">path</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;"/alexa/$connectorId"<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.alexa$addAlexaConnector(fr.vsct.tock.bot.definition.BotDefinition, kotlin.collections.Set((kotlin.String)), kotlin.String, kotlin.String, kotlin.reflect.KClass((fr.vsct.tock.bot.connector.alexa.AlexaTockMapper)))/alexaTockMapper">alexaTockMapper</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.reflect/-k-class/index.html"><span class="identifier">KClass</span></a><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<a href="-alexa-tock-mapper/index.html"><span class="identifier">AlexaTockMapper</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;AlexaTockMapper::class<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Adds a alexa connector.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="alexa-end-conversation.html">alexaEndConversation</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">alexaEndConversation</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="-alexa-message/index.html"><span class="identifier">AlexaMessage</span></a></code>
+<p>End the conversation with the skill.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="alexa-reprompt.html">alexaReprompt</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.engine/-i18n-translator/index.html"><span class="identifier">I18nTranslator</span></a><span class="symbol">.</span><span class="identifier">alexaReprompt</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.alexa$alexaReprompt(fr.vsct.tock.bot.engine.I18nTranslator, kotlin.CharSequence)/reprompt">reprompt</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="-alexa-message/index.html"><span class="identifier">AlexaMessage</span></a></code>
+<p>Set a reprompt.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="alexa-standard-card.html">alexaStandardCard</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.engine/-i18n-translator/index.html"><span class="identifier">I18nTranslator</span></a><span class="symbol">.</span><span class="identifier">alexaStandardCard</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.alexa$alexaStandardCard(fr.vsct.tock.bot.engine.I18nTranslator, kotlin.CharSequence, kotlin.CharSequence, kotlin.String, kotlin.String)/title">title</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.alexa$alexaStandardCard(fr.vsct.tock.bot.engine.I18nTranslator, kotlin.CharSequence, kotlin.CharSequence, kotlin.String, kotlin.String)/text">text</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.alexa$alexaStandardCard(fr.vsct.tock.bot.engine.I18nTranslator, kotlin.CharSequence, kotlin.CharSequence, kotlin.String, kotlin.String)/smallImageUrl">smallImageUrl</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.alexa$alexaStandardCard(fr.vsct.tock.bot.engine.I18nTranslator, kotlin.CharSequence, kotlin.CharSequence, kotlin.String, kotlin.String)/largeImageUrl">largeImageUrl</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;smallImageUrl<span class="symbol">)</span><span class="symbol">: </span><a href="-alexa-message/index.html"><span class="identifier">AlexaMessage</span></a></code>
+<p>Add the specified card.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="with-alexa.html">withAlexa</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="identifier">withAlexa</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.alexa$withAlexa(fr.vsct.tock.bot.engine.BotBus, kotlin.Function0((fr.vsct.tock.bot.connector.alexa.AlexaMessage)))/messageProvider">messageProvider</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="-alexa-message/index.html"><span class="identifier">AlexaMessage</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a></code>
+<p>Add a <a href="../fr.vsct.tock.bot.connector/-connector-message/index.html">ConnectorMessage</a> for Alexa.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

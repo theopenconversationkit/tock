@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="../../style.css">
 </HEAD>
 <BODY>
-<a href="../index.html">tock</a>&nbsp;/&nbsp;<a href=".">fr.vsct.tock.bot</a><br/>
+<a href="../index.html">tock</a>&nbsp;/&nbsp;<a href="./index.html">fr.vsct.tock.bot</a><br/>
 <br/>
 <h2>Package fr.vsct.tock.bot</h2>
 <p>Utility methods to <strong>start a new bot</strong></p>
@@ -26,6 +26,15 @@
 <h3>Functions</h3>
 <table>
 <tbody>
+<tr>
+<td>
+<p><a href="get-intents-by-namespace-and-name.html">getIntentsByNamespaceAndName</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">getIntentsByNamespaceAndName</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot$getIntentsByNamespaceAndName(kotlin.String, kotlin.String)/namespace">namespace</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot$getIntentsByNamespaceAndName(kotlin.String, kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><span class="identifier">IntentDefinition</span><span class="symbol">&gt;</span><span class="symbol">?</span></code>
+<p>Export list of IntentDefinition</p>
+</td>
+</tr>
 <tr>
 <td>
 <p><a href="import-i18n-dump.html">importI18nDump</a></p>
@@ -58,8 +67,8 @@
 <p><a href="install-bots.html">installBots</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">installBots</span><span class="symbol">(</span><span class="keyword">vararg</span> <span class="identifier" id="fr.vsct.tock.bot$installBots(kotlin.Array((kotlin.Function1((io.vertx.ext.web.Router, kotlin.Unit)))))/routerHandlers">routerHandlers</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">Router</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
-<p>Install the bot(s) with the specified additional router handlers.</p>
+<code><span class="keyword">fun </span><span class="identifier">installBots</span><span class="symbol">(</span><span class="keyword">vararg</span> <span class="identifier" id="fr.vsct.tock.bot$installBots(kotlin.Array((kotlin.Function1((io.vertx.ext.web.Router, kotlin.Unit)))), kotlin.collections.List((com.github.salomonbrys.kodein.Kodein.Module)))/routerHandlers">routerHandlers</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">Router</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot$installBots(kotlin.Array((kotlin.Function1((io.vertx.ext.web.Router, kotlin.Unit)))), kotlin.collections.List((com.github.salomonbrys.kodein.Kodein.Module)))/additionalModules">additionalModules</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><span class="identifier">Module</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyList()<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Install the bot(s) with the specified additional router handlers and additional Tock Modules</p>
 </td>
 </tr>
 <tr>

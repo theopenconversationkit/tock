@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="../../style.css">
 </HEAD>
 <BODY>
-<a href="../index.html">tock</a>&nbsp;/&nbsp;<a href=".">fr.vsct.tock.bot.connector</a><br/>
+<a href="../index.html">tock</a>&nbsp;/&nbsp;<a href="./index.html">fr.vsct.tock.bot.connector</a><br/>
 <br/>
 <h2>Package fr.vsct.tock.bot.connector</h2>
 <p>Contains classes used to define a new <a href="-connector/index.html">Connector</a></p>
@@ -81,7 +81,8 @@
 </td>
 <td>
 <code><span class="keyword">interface </span><span class="identifier">ConnectorProvider</span></code>
-<p>To provide a new <a href="-connector/index.html">Connector</a> from a <a href="-connector-configuration/index.html">ConnectorConfiguration</a>.</p>
+<p>To provide a new <a href="-connector/index.html">Connector</a> from a <a href="-connector-configuration/index.html">ConnectorConfiguration</a>.
+The implementation is loaded at runtime to list all available connectors, using the java <a href="http://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html">java.util.ServiceLoader</a></p>
 </td>
 </tr>
 <tr>

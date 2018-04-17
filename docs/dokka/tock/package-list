@@ -1,5 +1,7 @@
 $dokka.format:html
 $dokka.linkExtension:html
+$dokka.location:fr.vsct.tock.bot.engine.dialog$set(fr.vsct.tock.nlp.api.client.model.Entity, fr.vsct.tock.nlp.entity.Value)fr.vsct.tock.bot.engine.dialog/fr.vsct.tock.nlp.api.client.model.-entity/set.html
+$dokka.location:fr.vsct.tock.bot.engine.dialog$set(fr.vsct.tock.nlp.api.client.model.Entity, kotlin.String)fr.vsct.tock.bot.engine.dialog/fr.vsct.tock.nlp.api.client.model.-entity/set.html
 $dokka.location:fr.vsct.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.String, fr.vsct.tock.bot.engine.monitoring.RequestTimerData)fr.vsct.tock.bot.engine.monitoring/mu.-k-logger/log-error.html
 $dokka.location:fr.vsct.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.Throwable, fr.vsct.tock.bot.engine.monitoring.RequestTimerData)fr.vsct.tock.bot.engine.monitoring/mu.-k-logger/log-error.html
 $dokka.location:fr.vsct.tock.shared$addJacksonConverter(retrofit2.Retrofit.Builder, com.fasterxml.jackson.databind.ObjectMapper)fr.vsct.tock.shared/retrofit2.-retrofit.-builder/add-jackson-converter.html
@@ -10,6 +12,7 @@ $dokka.location:fr.vsct.tock.shared$name(kotlin.String)fr.vsct.tock.shared/kotl
 $dokka.location:fr.vsct.tock.shared$namespace(kotlin.String)fr.vsct.tock.shared/kotlin.-string/namespace.html
 $dokka.location:fr.vsct.tock.shared$namespaceAndName(kotlin.String)fr.vsct.tock.shared/kotlin.-string/namespace-and-name.html
 $dokka.location:fr.vsct.tock.shared$provide(com.github.salomonbrys.kodein.KodeinInjector, kotlin.Any)fr.vsct.tock.shared/com.github.salomonbrys.kodein.-kodein-injector/provide.html
+$dokka.location:fr.vsct.tock.shared$provideOrDefault(com.github.salomonbrys.kodein.KodeinInjector, kotlin.Any, kotlin.Function0((fr.vsct.tock.shared.provideOrDefault.T)))fr.vsct.tock.shared/com.github.salomonbrys.kodein.-kodein-injector/provide-or-default.html
 $dokka.location:fr.vsct.tock.shared$toList(kotlin.collections.Iterator((fr.vsct.tock.shared.toList.T)))fr.vsct.tock.shared/kotlin.collections.-iterator/to-list.html
 $dokka.location:fr.vsct.tock.shared$toSet(java.util.Enumeration((fr.vsct.tock.shared.toSet.T)))fr.vsct.tock.shared/java.util.-enumeration/to-set.html
 $dokka.location:fr.vsct.tock.shared$withNamespace(kotlin.String, kotlin.String)fr.vsct.tock.shared/kotlin.-string/with-namespace.html

@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="../../../style.css">
 </HEAD>
 <BODY>
-<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.definition</a>&nbsp;/&nbsp;<a href=".">StoryHandlerBase</a><br/>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.definition</a>&nbsp;/&nbsp;<a href="./index.html">StoryHandlerBase</a><br/>
 <br/>
 <h1>StoryHandlerBase</h1>
 <code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">StoryHandlerBase</span><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler/index.html"><span class="identifier">StoryHandler</span></a><span class="symbol">, </span><span class="identifier">I18nKeyProvider</span><span class="symbol">, </span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/definition/StoryHandlerBase.kt#L30">(source)</a>
@@ -119,8 +119,8 @@ Provides also a convenient implementation of <a href="#">I18nKeyProvider</a> to 
 <p><a href="new-handler-definition.html">newHandlerDefinition</a></p>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">newHandlerDefinition</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$newHandlerDefinition(fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span></code>
-<p>Instantiate new instance of <a href="#">T</a>.</p>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">newHandlerDefinition</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$newHandlerDefinition(fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="index.html#T"><span class="identifier">T</span></a></code>
+<p>Instantiate new instance of <a href="index.html#T">T</a>.</p>
 </td>
 </tr>
 <tr>
@@ -128,7 +128,7 @@ Provides also a convenient implementation of <a href="#">I18nKeyProvider</a> to 
 <p><a href="setup-handler-definition.html">setupHandlerDefinition</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setupHandlerDefinition</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$setupHandlerDefinition(fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">?</span></code>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">setupHandlerDefinition</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$setupHandlerDefinition(fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">?</span></code>
 <p>Handle precondition like checking mandatory entities, and create <a href="../-story-handler-definition/index.html">StoryHandlerDefinition</a>.
 If this function returns null, this implied that <a href="../../fr.vsct.tock.bot.engine/-bot-bus/end.html">BotBus.end</a> has been called in this function
 (as the <a href="../-story-handler-definition/handle.html">StoryHandlerDefinition.handle</a> function is not called).</p>
@@ -165,7 +165,7 @@ If this function returns null, this implied that <a href="../../fr.vsct.tock.bot
 <p><a href="../-simple-story-handler-base/index.html">SimpleStoryHandlerBase</a></p>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">SimpleStoryHandlerBase</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">StoryHandlerBase</span><span class="symbol">&lt;</span><a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span></code>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">SimpleStoryHandlerBase</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">StoryHandlerBase</span></a><span class="symbol">&lt;</span><a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span></code>
 <p>For simple stories that do not use custom <a href="../-story-handler-definition/index.html">StoryHandlerDefinition</a>.</p>
 </td>
 </tr>

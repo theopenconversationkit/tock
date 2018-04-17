@@ -5,10 +5,10 @@
 <link rel="stylesheet" href="../../../style.css">
 </HEAD>
 <BODY>
-<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.definition</a>&nbsp;/&nbsp;<a href=".">StoryStep</a><br/>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.definition</a>&nbsp;/&nbsp;<a href="./index.html">StoryStep</a><br/>
 <br/>
 <h1>StoryStep</h1>
-<code><span class="keyword">interface </span><span class="identifier">StoryStep</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/definition/StoryStep.kt#L23">(source)</a>
+<code><span class="keyword">interface </span><span class="identifier">StoryStep</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/definition/StoryStep.kt#L27">(source)</a>
 <p>A step (the implementation is usually an enum) is a part of a <a href="../-story-definition/index.html">StoryDefinition</a>.
 Used to manage workflow in a <a href="../-story-handler/index.html">StoryHandler</a>.</p>
 <h3>Properties</h3>
@@ -61,7 +61,7 @@ the current step remains this step.</p>
 <p><a href="answer.html">answer</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">answer</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">T</span><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span></code>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">answer</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="index.html#T"><span class="identifier">T</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span></code>
 <p>The custom answer for this step.
 When returning a null value,
 it means that the step is not able to answer to the current request.</p>
@@ -91,8 +91,8 @@ it means that the step is not able to answer to the current request.</p>
 <p><a href="../-simple-story-step.html">SimpleStoryStep</a></p>
 </td>
 <td>
-<code><span class="keyword">interface </span><span class="identifier">SimpleStoryStep</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">StoryStep</span><span class="symbol">&lt;</span><a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span></code>
-<p>StoryStep without custom <a href="../-story-handler-definition/index.html">StoryHandlerDefinition</a>.</p>
+<code><span class="keyword">interface </span><span class="identifier">SimpleStoryStep</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">StoryStep</span></a><span class="symbol">&lt;</span><a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span></code>
+<p><a href="./index.html">StoryStep</a> without custom <a href="../-story-handler-definition/index.html">StoryHandlerDefinition</a>.</p>
 </td>
 </tr>
 </tbody>

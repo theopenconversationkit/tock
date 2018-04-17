@@ -5,10 +5,10 @@
 <link rel="stylesheet" href="../../../style.css">
 </HEAD>
 <BODY>
-<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine.action</a>&nbsp;/&nbsp;<a href=".">Action</a><br/>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine.action</a>&nbsp;/&nbsp;<a href="./index.html">Action</a><br/>
 <br/>
 <h1>Action</h1>
-<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Action</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/action/Action.kt#L32">(source)</a>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">Action</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.event/-event/index.html"><span class="identifier">Event</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/action/Action.kt#L35">(source)</a>
 <p>A user (or bot) action.</p>
 <h3>Constructors</h3>
 <table>
@@ -18,7 +18,7 @@
 <p><a href="-init-.html">&lt;init&gt;</a></p>
 </td>
 <td>
-<code><span class="identifier">Action</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$<init>(fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/playerId">playerId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$<init>(fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/recipientId">recipientId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$<init>(fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$<init>(fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/id">id</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><span class="identifier">Action</span><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$<init>(fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/date">date</span><span class="symbol">:</span>&nbsp;<span class="identifier">Instant</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$<init>(fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/state">state</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.dialog/-event-state/index.html"><span class="identifier">EventState</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$<init>(fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/metadata">metadata</span><span class="symbol">:</span>&nbsp;<a href="../-action-metadata/index.html"><span class="identifier">ActionMetadata</span></a>&nbsp;<span class="symbol">=</span>&nbsp;ActionMetadata()<span class="symbol">)</span></code>
+<code><span class="identifier">Action</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$<init>(fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/playerId">playerId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$<init>(fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/recipientId">recipientId</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$<init>(fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/applicationId">applicationId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$<init>(fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/id">id</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">Action</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$<init>(fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/date">date</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/8/docs/api/java/time/Instant.html"><span class="identifier">Instant</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$<init>(fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/state">state</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.dialog/-event-state/index.html"><span class="identifier">EventState</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$<init>(fr.vsct.tock.bot.engine.user.PlayerId, fr.vsct.tock.bot.engine.user.PlayerId, kotlin.String, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), java.time.Instant, fr.vsct.tock.bot.engine.dialog.EventState, fr.vsct.tock.bot.engine.action.ActionMetadata)/metadata">metadata</span><span class="symbol">:</span>&nbsp;<a href="../-action-metadata/index.html"><span class="identifier">ActionMetadata</span></a>&nbsp;<span class="symbol">=</span>&nbsp;ActionMetadata()<span class="symbol">)</span></code>
 <p>A user (or bot) action.</p>
 </td>
 </tr>
@@ -65,7 +65,7 @@
 <p><a href="../../fr.vsct.tock.bot.engine.event/-event/date.html">date</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">date</span><span class="symbol">: </span><span class="identifier">Instant</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">date</span><span class="symbol">: </span><a href="http://docs.oracle.com/javase/8/docs/api/java/time/Instant.html"><span class="identifier">Instant</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -88,6 +88,37 @@
 <tbody>
 <tr>
 <td>
+<p><a href="boolean-choice.html">booleanChoice</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">booleanChoice</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$booleanChoice(fr.vsct.tock.bot.definition.ParameterKey)/key">key</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-parameter-key/index.html"><span class="identifier">ParameterKey</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Returns true if the specified choice as the "true" value, false either.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="choice.html">choice</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">choice</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$choice(fr.vsct.tock.bot.definition.ParameterKey)/key">key</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-parameter-key/index.html"><span class="identifier">ParameterKey</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code>
+<p>Returns the value of the specified choice parameter,
+null if the user action is not a <a href="../-send-choice/index.html">SendChoice</a>
+or if this parameter is not set.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="json-choice.html">jsonChoice</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">&gt;</span> <span class="identifier">jsonChoice</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.action.Action$jsonChoice(fr.vsct.tock.bot.definition.ParameterKey)/key">key</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-parameter-key/index.html"><span class="identifier">ParameterKey</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="json-choice.html#T"><span class="identifier">T</span></a><span class="symbol">?</span></code>
+<p>Returns the value of the specified choice parameter,
+null if the user action is not a <a href="../-send-choice/index.html">SendChoice</a>
+or if this parameter is not set.</p>
+</td>
+</tr>
+<tr>
+<td>
 <p><a href="obfuscate.html">obfuscate</a></p>
 </td>
 <td>
@@ -100,7 +131,7 @@
 <p><a href="to-action-id.html">toActionId</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">toActionId</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Id</span><span class="symbol">&lt;</span><span class="identifier">Action</span><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">fun </span><span class="identifier">toActionId</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Id</span><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">Action</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
@@ -131,7 +162,7 @@
 <p><a href="../-send-attachment/index.html">SendAttachment</a></p>
 </td>
 <td>
-<code><span class="keyword">class </span><span class="identifier">SendAttachment</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Action</span></code>
+<code><span class="keyword">class </span><span class="identifier">SendAttachment</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Action</span></a></code>
 <p>A simple attachment file sent.</p>
 </td>
 </tr>
@@ -140,7 +171,7 @@
 <p><a href="../-send-choice/index.html">SendChoice</a></p>
 </td>
 <td>
-<code><span class="keyword">class </span><span class="identifier">SendChoice</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Action</span></code>
+<code><span class="keyword">class </span><span class="identifier">SendChoice</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Action</span></a></code>
 <p>A user choice (click on a button or direct action).</p>
 </td>
 </tr>
@@ -149,7 +180,7 @@
 <p><a href="../-send-location/index.html">SendLocation</a></p>
 </td>
 <td>
-<code><span class="keyword">class </span><span class="identifier">SendLocation</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Action</span></code>
+<code><span class="keyword">class </span><span class="identifier">SendLocation</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Action</span></a></code>
 <p>A user location transmission.</p>
 </td>
 </tr>
@@ -158,8 +189,8 @@
 <p><a href="../-send-sentence/index.html">SendSentence</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SendSentence</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">Action</span></code>
-<p>The most important Action class.
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SendSentence</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">Action</span></a></code>
+<p>The most important <a href="./index.html">Action</a> class.
 Could be a simple text, or a complex message using one or more <a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html">ConnectorMessage</a>.</p>
 </td>
 </tr>

@@ -5,10 +5,10 @@
 <link rel="stylesheet" href="../../../style.css">
 </HEAD>
 <BODY>
-<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.connector</a>&nbsp;/&nbsp;<a href=".">ConnectorType</a><br/>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.connector</a>&nbsp;/&nbsp;<a href="./index.html">ConnectorType</a><br/>
 <br/>
 <h1>ConnectorType</h1>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">ConnectorType</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/connector/ConnectorType.kt#L24">(source)</a>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">ConnectorType</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/connector/ConnectorType.kt#L25">(source)</a>
 <p>A connector identifier.</p>
 <h3>Constructors</h3>
 <table>
@@ -64,10 +64,20 @@
 <tbody>
 <tr>
 <td>
+<p><a href="connector-types.html">connectorTypes</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">connectorTypes</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">ConnectorType</span></a><span class="symbol">&gt;</span></code>
+<p>The available not built-in connector types.
+Retrieving using <a href="http://docs.oracle.com/javase/8/docs/api/java/util/ServiceLoader.html">ServiceLoader</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
 <p><a href="none.html">none</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">none</span><span class="symbol">: </span><span class="identifier">ConnectorType</span></code>
+<code><span class="keyword">val </span><span class="identifier">none</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">ConnectorType</span></a></code>
 <p>Not a specific connector type.</p>
 </td>
 </tr>
@@ -76,7 +86,7 @@
 <p><a href="rest.html">rest</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">rest</span><span class="symbol">: </span><span class="identifier">ConnectorType</span></code>
+<code><span class="keyword">val </span><span class="identifier">rest</span><span class="symbol">: </span><a href="./index.html"><span class="identifier">ConnectorType</span></a></code>
 <p>built-in rest connector.</p>
 </td>
 </tr>

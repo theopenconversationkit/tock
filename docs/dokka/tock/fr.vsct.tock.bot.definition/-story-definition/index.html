@@ -5,7 +5,7 @@
 <link rel="stylesheet" href="../../../style.css">
 </HEAD>
 <BODY>
-<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.definition</a>&nbsp;/&nbsp;<a href=".">StoryDefinition</a><br/>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.definition</a>&nbsp;/&nbsp;<a href="./index.html">StoryDefinition</a><br/>
 <br/>
 <h1>StoryDefinition</h1>
 <code><span class="keyword">interface </span><span class="identifier">StoryDefinition</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/definition/StoryDefinition.kt#L30">(source)</a>
@@ -134,8 +134,8 @@ Usually, you don't have the same starter intent in two different story definitio
 <p><a href="../-simple-story-definition/index.html">SimpleStoryDefinition</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SimpleStoryDefinition</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">StoryDefinition</span></code>
-<p>Simple implementation of StoryDefinition.</p>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">SimpleStoryDefinition</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">StoryDefinition</span></a></code>
+<p>Simple implementation of <a href="./index.html">StoryDefinition</a>.</p>
 </td>
 </tr>
 <tr>
@@ -143,18 +143,18 @@ Usually, you don't have the same starter intent in two different story definitio
 <p><a href="../-story-definition-base/index.html">StoryDefinitionBase</a></p>
 </td>
 <td>
-<code><span class="keyword">class </span><span class="identifier">StoryDefinitionBase</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">StoryDefinition</span></code></td>
+<code><span class="keyword">class </span><span class="identifier">StoryDefinitionBase</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">StoryDefinition</span></a></code></td>
 </tr>
 <tr>
 <td>
 <p><a href="../-story-definition-extended/index.html">StoryDefinitionExtended</a></p>
 </td>
 <td>
-<code><span class="keyword">interface </span><span class="identifier">StoryDefinitionExtended</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">StoryDefinition</span></code>
+<code><span class="keyword">interface </span><span class="identifier">StoryDefinitionExtended</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">StoryDefinition</span></a></code>
 <p>Helper methods for StoryDefinition implementation.
 Usually direct implementations are enums.
 This interface add a starter (and main) intent with intent name equals to the property of value <a href="../-story-definition-extended/name.html">name</a>
-to the StoryDefinition.
+to the <a href="./index.html">StoryDefinition</a>.
 Warning: advanced usage only.</p>
 </td>
 </tr>
