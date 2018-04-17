@@ -21,7 +21,7 @@
     <parent>
         <groupId>fr.vsct.tock</groupId>
         <artifactId>tock-nlp-entity-evaluator</artifactId>
-        <version>0.9.5-SNAPSHOT</version>
+        <version>1.0.0-rc0</version>
     </parent>
 
     <artifactId>tock-nlp-entity-value</artifactId>
