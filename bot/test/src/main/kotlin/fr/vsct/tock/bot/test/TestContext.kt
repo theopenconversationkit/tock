@@ -163,32 +163,34 @@ open class TestContext {
         return newTestInjector
     }
 
+    internal fun isInitialized() : Boolean = ::botBusMockContext.isInitialized
+
     /**
      * Default [StoryDefinition] if none is provided.
      */
     open fun defaultStoryDefinition(botDefinition: BotDefinition): StoryDefinition =
-        if (::botBusMockContext.isInitialized) botBusMockContext.story.definition
+        if (isInitialized()) botBusMockContext.story.definition
         else botDefinition.helloStory ?: botDefinition.stories.first()
 
     /**
      * Default [ConnectorType] if none is provided.
      */
     open fun defaultConnectorType(): ConnectorType =
-        if (::botBusMockContext.isInitialized) botBusMockContext.connectorType
+        if (isInitialized()) botBusMockContext.connectorType
         else messengerConnectorType
 
     /**
      * Default [Locale] if none is provided.
      */
     open fun defaultLocale(): Locale =
-        if (::botBusMockContext.isInitialized) botBusMockContext.userPreferences.locale
+        if (isInitialized()) botBusMockContext.userPreferences.locale
         else defaultLocale
 
     /**
      * Default [PlayerId] if none is provided.
      */
     open fun defaultPlayerId(): PlayerId =
-        if (::botBusMockContext.isInitialized) botBusMockContext.firstAction.playerId
+        if (isInitialized()) botBusMockContext.firstAction.playerId
         else PlayerId("user")
 
 }

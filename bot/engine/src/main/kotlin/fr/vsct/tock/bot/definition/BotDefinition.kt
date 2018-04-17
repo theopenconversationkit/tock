@@ -56,10 +56,10 @@ interface BotDefinition : I18nKeyProvider {
          * Is no valid [StoryDefinition] found, returns the [unknownStory].
          */
         fun findStoryDefinition(
-                stories: List<StoryDefinition>,
-                intent: String?,
-                unknownStory: StoryDefinition,
-                keywordStory: StoryDefinition
+            stories: List<StoryDefinition>,
+            intent: String?,
+            unknownStory: StoryDefinition,
+            keywordStory: StoryDefinition
         ): StoryDefinition {
             return if (intent == null) {
                 unknownStory
@@ -111,7 +111,11 @@ interface BotDefinition : I18nKeyProvider {
      * Finds a [StoryDefinition] from an [Intent].
      */
     fun findStoryDefinition(intent: IntentAware?): StoryDefinition {
-        return findStoryDefinition(intent?.wrappedIntent()?.name)
+        return if (intent is StoryDefinition) {
+            intent
+        } else {
+            findStoryDefinition(intent?.wrappedIntent()?.name)
+        }
     }
 
     /**
@@ -166,10 +170,10 @@ interface BotDefinition : I18nKeyProvider {
      */
     fun errorAction(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {
         return SendSentence(
-                playerId,
-                applicationId,
-                recipientId,
-                "Technical error :( sorry!"
+            playerId,
+            applicationId,
+            recipientId,
+            "Technical error :( sorry!"
         )
     }
 
@@ -183,7 +187,7 @@ interface BotDefinition : I18nKeyProvider {
      * Is this intent disable the bot?
      */
     fun isBotDisabledIntent(intent: Intent?): Boolean =
-            intent != null && botDisabledStory?.isStarterIntent(intent) ?: false
+        intent != null && botDisabledStory?.isStarterIntent(intent) ?: false
 
     /**
      * To manage reactivation.
@@ -194,7 +198,7 @@ interface BotDefinition : I18nKeyProvider {
      * Is this intent is reactivating the bot?
      */
     fun isBotEnabledIntent(intent: Intent?): Boolean =
-            intent != null && botEnabledStory?.isStarterIntent(intent) ?: false
+        intent != null && botEnabledStory?.isStarterIntent(intent) ?: false
 
     /**
      * Returns a [TestBehaviour]. Used in Integration Tests.
@@ -204,11 +208,11 @@ interface BotDefinition : I18nKeyProvider {
     override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey {
         val prefix = javaClass.kotlin.simpleName?.replace("Definition", "") ?: ""
         return i18nKey(
-                "${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}",
-                namespace,
-                prefix,
-                defaultLabel,
-                args
+            "${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}",
+            namespace,
+            prefix,
+            defaultLabel,
+            args
         )
     }
 
@@ -216,29 +220,29 @@ interface BotDefinition : I18nKeyProvider {
      * Returns the entity with the specified name and optional role.
      */
     fun entity(name: String, role: String? = null): Entity =
-            Entity(
-                    EntityType(name.withNamespace(namespace)),
-                    role ?: name.withoutNamespace(namespace)
-            )
+        Entity(
+            EntityType(name.withNamespace(namespace)),
+            role ?: name.withoutNamespace(namespace)
+        )
 
     /**
      * Returns an [I18nTranslator] for the specified [userLocale] and [connectorType].
      */
     fun i18nTranslator(
-            userLocale: Locale,
-            connectorType: ConnectorType,
-            userInterfaceType: UserInterfaceType = connectorType.userInterfaceType
+        userLocale: Locale,
+        connectorType: ConnectorType,
+        userInterfaceType: UserInterfaceType = connectorType.userInterfaceType
     ): I18nTranslator =
-            object : I18nTranslator {
-                override val userLocale: Locale
-                    get() = userLocale
-                override val userInterfaceType: UserInterfaceType
-                    get() = userInterfaceType
-                override val targetConnectorType: ConnectorType
-                    get() = connectorType
+        object : I18nTranslator {
+            override val userLocale: Locale
+                get() = userLocale
+            override val userInterfaceType: UserInterfaceType
+                get() = userInterfaceType
+            override val targetConnectorType: ConnectorType
+                get() = connectorType
 
-                override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey {
-                    return this@BotDefinition.i18nKeyFromLabel(defaultLabel, args)
-                }
+            override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey {
+                return this@BotDefinition.i18nKeyFromLabel(defaultLabel, args)
             }
+        }
 }
