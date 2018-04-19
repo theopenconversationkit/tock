@@ -24,12 +24,26 @@ import fr.vsct.tock.nlp.entity.Value
 /**
  * Takes a [Value] applied to the current [Entity] and returns a [ContextValue].
  */
+infix fun Entity.setTo(value: Value?): ContextValue =
+    ContextValue(this, value)
+
+/**
+ * Takes a [String] applied to the current [Entity] and returns a not yet evaluated [ContextValue].
+ */
+infix fun Entity.setTo(text: String): ContextValue =
+    ContextValue(null, null, this, text, null, false)
+
+/**
+ * Takes a [Value] applied to the current [Entity] and returns a [ContextValue].
+ */
+@Deprecated("use setTo method")
 infix fun Entity.set(value: Value?): ContextValue =
     ContextValue(this, value)
 
 /**
  * Takes a [String] applied to the current [Entity] and returns a not yet evaluated [ContextValue].
  */
+@Deprecated("use setTo method")
 infix fun Entity.set(text: String): ContextValue =
     ContextValue(null, null, this, text, null, false)
 

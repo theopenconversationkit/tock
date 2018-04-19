@@ -110,10 +110,10 @@ Il est possible de simuler un dialogue complet. Par exemple, on simule ici que l
         ext.send("Je voudrais rechercher un itinéraire", search, locale = Locale.FRENCH) {
             firstAnswer.assertText("Pour quelle destination?")
         }
-        ext.send("Lille", indicate_location, locationEntity set lille) {
+        ext.send("Lille", indicate_location, locationEntity setTo lille) {
             firstBusAnswer.assertText("Pour quelle origine?")
         }
-        ext.send("Paris", indicate_location, locationEntity set paris) {
+        ext.send("Paris", indicate_location, locationEntity setTo paris) {
             firstBusAnswer.assertText("Quand souhaitez-vous partir?")
         }
     }
@@ -135,7 +135,7 @@ Par exemple :
         )
     )
 
-    ext.send("Lille", indicate_location, locationEntity set lille)
+    ext.send("Lille", indicate_location, locationEntity setTo lille)
 ```
 
 permet d'indiquer que la phrase "Lille" est catégorisée comme une intention *indicate_location* et avec une valeur 

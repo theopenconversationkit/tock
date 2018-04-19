@@ -515,10 +515,10 @@ Supposons que nous souhaitons la story <strong>search</strong>, nous devons pré
         <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Je voudrais rechercher un itinéraire&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span><span class="p">)</span> <span class="p">{</span>
             <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Pour quelle destination?&quot;</span><span class="p">)</span>
         <span class="p">}</span>
-        <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Lille&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="k">set</span> <span class="n">lille</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Lille&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="n">setTo</span> <span class="n">lille</span><span class="p">)</span> <span class="p">{</span>
             <span class="n">firstBusAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Pour quelle origine?&quot;</span><span class="p">)</span>
         <span class="p">}</span>
-        <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Paris&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="k">set</span> <span class="n">paris</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Paris&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="n">setTo</span> <span class="n">paris</span><span class="p">)</span> <span class="p">{</span>
             <span class="n">firstBusAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -539,7 +539,7 @@ Par exemple : </p>
         <span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Lille&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="k">set</span> <span class="n">lille</span><span class="p">)</span>
+    <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Lille&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="n">setTo</span> <span class="n">lille</span><span class="p">)</span>
 </pre></div>
 
 

@@ -115,10 +115,10 @@ You can simulate a whole conversation. For example, here the user indicates the 
         ext.send("I would like to find a train", search) {
             firstAnswer.assertText("For which destination?")
         }
-        ext.send("Lille", indicate_location, locationEntity set lille) {
+        ext.send("Lille", indicate_location, locationEntity setTo lille) {
             firstBusAnswer.assertText("For which origin?")
         }
-        ext.send("Paris", indicate_location, locationEntity set paris) {
+        ext.send("Paris", indicate_location, locationEntity setTo paris) {
             firstBusAnswer.assertText("When?")
         }
     }
@@ -141,7 +141,7 @@ For example :
         )
     )
 
-    ext.send("Lille", indicate_location, locationEntity set lille)
+    ext.send("Lille", indicate_location, locationEntity setTo lille)
 ```
 
 indicate that the phrase "Lille" is categorized as an *indicate_location* intent with a value *lille* for the entity *location*.

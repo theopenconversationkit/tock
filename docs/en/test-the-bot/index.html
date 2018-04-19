@@ -522,10 +522,10 @@ A dedicated extension for Tock is <a href="../../dokka/tock/fr.vsct.tock.bot.tes
         <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;I would like to find a train&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span> <span class="p">{</span>
             <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;For which destination?&quot;</span><span class="p">)</span>
         <span class="p">}</span>
-        <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Lille&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="k">set</span> <span class="n">lille</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Lille&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="n">setTo</span> <span class="n">lille</span><span class="p">)</span> <span class="p">{</span>
             <span class="n">firstBusAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;For which origin?&quot;</span><span class="p">)</span>
         <span class="p">}</span>
-        <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Paris&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="k">set</span> <span class="n">paris</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Paris&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="n">setTo</span> <span class="n">paris</span><span class="p">)</span> <span class="p">{</span>
             <span class="n">firstBusAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;When?&quot;</span><span class="p">)</span>
         <span class="p">}</span>
     <span class="p">}</span>
@@ -546,7 +546,7 @@ For example : </p>
         <span class="p">)</span>
     <span class="p">)</span>
 
-    <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Lille&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="k">set</span> <span class="n">lille</span><span class="p">)</span>
+    <span class="n">ext</span><span class="p">.</span><span class="n">send</span><span class="p">(</span><span class="s">&quot;Lille&quot;</span><span class="p">,</span> <span class="n">indicate_location</span><span class="p">,</span> <span class="n">locationEntity</span> <span class="n">setTo</span> <span class="n">lille</span><span class="p">)</span>
 </pre></div>
 
 
