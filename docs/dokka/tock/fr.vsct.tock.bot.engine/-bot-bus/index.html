@@ -314,13 +314,6 @@ Bus context values are useful to store a temporary (ie request scoped) state.</p
 </tr>
 <tr>
 <td>
-<p><a href="i18n-key-from-label.html">i18nKeyFromLabel</a></p>
-</td>
-<td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">i18nKeyFromLabel</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$i18nKeyFromLabel(kotlin.CharSequence, kotlin.collections.List((kotlin.Any)))/defaultLabel">defaultLabel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$i18nKeyFromLabel(kotlin.CharSequence, kotlin.collections.List((kotlin.Any)))/args">args</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">I18nLabelKey</span></code></td>
-</tr>
-<tr>
-<td>
 <p><a href="is-intent.html">isIntent</a></p>
 </td>
 <td>
@@ -336,6 +329,13 @@ Bus context values are useful to store a temporary (ie request scoped) state.</p
 <code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">nlpStats</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.nlp/-nlp-call-stats/index.html"><span class="identifier">NlpCallStats</span></a><span class="symbol">?</span></code>
 <p>Returns the NLP call stats if an NLP call has occurred, null either.</p>
 </td>
+</tr>
+<tr>
+<td>
+<p><a href="provide-i18n-value.html">provideI18nValue</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">provideI18nValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$provideI18nValue(kotlin.CharSequence, kotlin.collections.List((kotlin.Any)))/defaultLabel">defaultLabel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.BotBus$provideI18nValue(kotlin.CharSequence, kotlin.collections.List((kotlin.Any)))/args">args</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">I18nLabelValue</span></code></td>
 </tr>
 <tr>
 <td>
@@ -461,7 +461,7 @@ Bus context values are useful to store a temporary (ie request scoped) state.</p
 <td>
 <code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">translate</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.I18nTranslator$translate(kotlin.CharSequence, kotlin.Array((kotlin.Any)))/text">text</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="keyword">vararg</span> <span class="identifier" id="fr.vsct.tock.bot.engine.I18nTranslator$translate(kotlin.CharSequence, kotlin.Array((kotlin.Any)))/args">args</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a></code>
 <p>Translates and format if needed the text with the optionals args.</p>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">translate</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.I18nTranslator$translate(fr.vsct.tock.translator.I18nLabelKey)/key">key</span><span class="symbol">:</span>&nbsp;<span class="identifier">I18nLabelKey</span><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a></code>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">translate</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.I18nTranslator$translate(fr.vsct.tock.translator.I18nLabelValue)/key">key</span><span class="symbol">:</span>&nbsp;<span class="identifier">I18nLabelValue</span><span class="symbol">?</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a></code>
 <p>Translates the specified key.</p>
 </td>
 </tr>

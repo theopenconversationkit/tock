@@ -14,6 +14,7 @@ pages:
     - Présentation du bot Open Data: presentation-du-bot-open-data.md
     - Développer un bot: developper-un-bot.md
     - Tester le bot: tester-le-bot.md
+    - i18n: i18n.md
     - KDoc: kdoc.md
 theme:
   name: 'material'

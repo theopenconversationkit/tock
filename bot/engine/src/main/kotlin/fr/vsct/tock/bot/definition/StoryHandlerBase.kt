@@ -136,11 +136,11 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
      * Gets I18nKey with specified key. Current namespace is used.
      */
     fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue {
-        val prefix = i18nKeyCategory()
+        val category = i18nKeyCategory()
         return i18nValue(
             key,
             i18nNamespace,
-            prefix,
+            category,
             defaultLabel,
             args.toList()
         )
