@@ -68,7 +68,7 @@ class StoryHandlerBaseTest : BotEngineTest() {
             override fun action(bus: BotBus) {
             }
         }
-        assertEquals("test", handler.i18nKeyFromLabel("test").toString())
+        assertEquals("test", handler.provideI18nValue("test").toString())
     }
 
 

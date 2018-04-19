@@ -88,16 +88,16 @@ object Translator {
 
     private fun getLabel(id: String): I18nLabel? = loadLabel(id)
 
-    fun getLabel(key: I18nLabelKey): I18nLabel? = getLabel(key.key)
+    private fun getLabel(key: I18nLabelValue): I18nLabel? = getLabel(key.key)
         ?.apply {
             if (defaultLabel != null && key.defaultLabel != key.defaultLabel.toString()) {
                 logger.warn { "default label has changed - old value $defaultLabel - new value : ${key.defaultLabel}" }
             }
         }
 
-    fun saveIfNotExists(key: I18nLabelKey): I18nLabel = saveIfNotExists(key, defaultLocale)
+    fun saveIfNotExists(key: I18nLabelValue): I18nLabel = saveIfNotExists(key, defaultLocale)
 
-    fun saveIfNotExists(key: I18nLabelKey, defaultLocale: Locale): I18nLabel = getLabel(key) ?: {
+    fun saveIfNotExists(key: I18nLabelValue, defaultLocale: Locale): I18nLabel = getLabel(key) ?: {
         val defaultLabelKey = key.defaultLabel.toString()
         val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, defaultLabelKey)
         val label =
@@ -107,7 +107,7 @@ object Translator {
     }.invoke()
 
     fun translate(
-        key: I18nLabelKey,
+        key: I18nLabelValue,
         locale: Locale,
         userInterfaceType: UserInterfaceType,
         connectorId: String? = null
@@ -340,7 +340,7 @@ object Translator {
             is Number? -> arg ?: -1
             is Boolean? -> if (arg == null) -1 else if (arg) 1 else 0
             is Enum<*>? -> arg?.ordinal ?: -1
-            is I18nLabelKey -> translate(arg, locale, userInterfaceType, connectorId)
+            is I18nLabelValue -> translate(arg, locale, userInterfaceType, connectorId)
             null -> ""
             else -> Formatter().format(locale, "%s", arg).toString()
         }
@@ -358,7 +358,7 @@ object Translator {
         connectorId: String
     ): CharSequence {
         return translate(
-            I18nLabelKey(
+            I18nLabelValue(
                 key.toLowerCase(),
                 namespace,
                 category.toLowerCase(),

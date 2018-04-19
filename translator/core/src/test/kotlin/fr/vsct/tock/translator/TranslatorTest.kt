@@ -70,7 +70,7 @@ class TranslatorTest : AbstractTest() {
                     )
                 )
 
-        val key = I18nLabelKey(
+        val key = I18nLabelValue(
             id,
             defaultNamespace,
             category,
@@ -80,7 +80,7 @@ class TranslatorTest : AbstractTest() {
         val translated = Translator.translate(key, defaultLocale, textChat)
         assertEquals(target, translated.toString())
 
-        val key2 = I18nLabelKey(
+        val key2 = I18nLabelValue(
             Translator.getKeyFromDefaultLabel(translated),
             defaultNamespace,
             category,
@@ -115,7 +115,7 @@ class TranslatorTest : AbstractTest() {
                 )
 
 
-        val key = I18nLabelKey(
+        val key = I18nLabelValue(
             id,
             defaultNamespace,
             category,
@@ -136,7 +136,7 @@ class TranslatorTest : AbstractTest() {
         val toTranslate = "aaa"
         val id = "not_existing_id"
 
-        val key = I18nLabelKey(
+        val key = I18nLabelValue(
             id,
             defaultNamespace,
             category,

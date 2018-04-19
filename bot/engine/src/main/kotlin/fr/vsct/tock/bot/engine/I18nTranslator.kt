@@ -18,7 +18,7 @@ package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.translator.I18nKeyProvider
-import fr.vsct.tock.translator.I18nLabelKey
+import fr.vsct.tock.translator.I18nLabelValue
 import fr.vsct.tock.translator.RawString
 import fr.vsct.tock.translator.TranslatedString
 import fr.vsct.tock.translator.Translator
@@ -51,19 +51,19 @@ interface I18nTranslator : I18nKeyProvider {
     fun translate(text: CharSequence?, vararg args: Any?): CharSequence {
         return if (text.isNullOrBlank()) {
             ""
-        } else if (text is I18nLabelKey) {
+        } else if (text is I18nLabelValue) {
             translate(text)
         } else if (text is TranslatedString || text is RawString) {
             text
         } else {
-            return translate(i18nKeyFromLabel(text!!, args.toList()))
+            return translate(provideI18nValue(text!!, args.toList()))
         }
     }
 
     /**
      * Translates the specified key.
      */
-    fun translate(key: I18nLabelKey?): CharSequence =
+    fun translate(key: I18nLabelValue?): CharSequence =
         if (key == null) ""
         else Translator.translate(
             key,

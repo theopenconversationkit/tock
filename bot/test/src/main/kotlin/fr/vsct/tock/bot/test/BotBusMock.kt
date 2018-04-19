@@ -41,7 +41,7 @@ import fr.vsct.tock.nlp.entity.Value
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.provide
 import fr.vsct.tock.translator.I18nKeyProvider
-import fr.vsct.tock.translator.I18nLabelKey
+import fr.vsct.tock.translator.I18nLabelValue
 import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.TranslatorEngine
 import fr.vsct.tock.translator.UserInterfaceType
@@ -342,7 +342,7 @@ open class BotBusMock(val context: BotBusMockContext,
         userPreferences.fillWith(context.initialUserPreferences)
     }
 
-    override fun translate(key: I18nLabelKey?): CharSequence =
+    override fun translate(key: I18nLabelValue?): CharSequence =
             if (key == null) ""
             else Translator.formatMessage(
                     translator.translate(

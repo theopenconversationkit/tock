@@ -16,16 +16,16 @@
 
 package fr.vsct.tock.bot.admin.message
 
-import fr.vsct.tock.translator.I18nLabelKey
+import fr.vsct.tock.translator.I18nLabelValue
 
 /**
  *
  */
 data class SentenceSubElementConfiguration(
-        val attachments: List<AttachmentConfiguration> = emptyList(),
-        val choices: List<ChoiceConfiguration> = emptyList(),
-        val texts: Map<String, I18nLabelKey> = emptyMap(),
-        val locations: List<LocationConfiguration> = emptyList(),
-        val metadata: Map<String, String> = emptyMap()
+    val attachments: List<AttachmentConfiguration> = emptyList(),
+    val choices: List<ChoiceConfiguration> = emptyList(),
+    val texts: Map<String, I18nLabelValue> = emptyMap(),
+    val locations: List<LocationConfiguration> = emptyList(),
+    val metadata: Map<String, String> = emptyMap()
 ) {
 }

@@ -19,8 +19,7 @@ package fr.vsct.tock.bot.definition
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.translator.I18nKeyProvider
-import fr.vsct.tock.translator.I18nLabelKey
-import fr.vsct.tock.translator.Translator
+import fr.vsct.tock.translator.I18nLabelValue
 import mu.KotlinLogging
 
 /**
@@ -34,18 +33,18 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     private val logger = KotlinLogging.logger {}
 
     /**
-     * Check preconditions - if [BotBus.end] is called,
+     * Checks preconditions - if [BotBus.end] is called,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
     open fun checkPreconditions(): BotBus.() -> Unit = {}
 
     /**
-     * Instantiate new instance of [T].
+     * Instantiates new instance of [T].
      */
     abstract fun newHandlerDefinition(bus: BotBus): T
 
     /**
-     * Handle precondition like checking mandatory entities, and create [StoryHandlerDefinition].
+     * Handles precondition like checking mandatory entities, and create [StoryHandlerDefinition].
      * If this function returns null, this implied that [BotBus.end] has been called in this function
      * (as the [StoryHandlerDefinition.handle] function is not called).
      */
@@ -58,7 +57,6 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
         }
     }
 
-
     /**
      * Has [BotBus.end] been already called?
      */
@@ -70,6 +68,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
         if (findStoryDefinition(bus)?.unsupportedUserInterfaces?.contains(bus.userInterfaceType) == true) {
             bus.botDefinition.unknownStory.storyHandler.handle(bus)
         } else {
+            //set current i18n provider
             bus.i18nProvider = this
             val handler = setupHandlerDefinition(bus)
 
@@ -86,7 +85,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     }
 
     /**
-     * Find the story definition of this handler.
+     * Finds the story definition of this handler.
      */
     open fun findStoryDefinition(bus: BotBus): StoryDefinition? = bus
         .botDefinition
@@ -94,7 +93,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
         .find { it.storyHandler == this }
 
     /**
-     * Handle the action and switch the context to the underlying story definition.
+     * Handles the action and switch the context to the underlying story definition.
      */
     fun handleAndSwitchStory(bus: BotBus) {
         findStoryDefinition(bus)
@@ -106,37 +105,39 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     }
 
     /**
-     * Wait 1s by default
+     * Waits 1s by default
      */
     open val breath = 1000L
 
     /**
      * The namespace for [I18nKeyProvider] implementation.
+     * Will be overridden when bot owner is known.
      */
-    protected open val i18nNamespace: String get() = defaultNamespace
+    @Volatile
+    internal var i18nNamespace: String = defaultNamespace
 
     /**
-     * Default i18n prefix.
+     * Story i18n category.
      */
-    protected fun i18nKeyPrefix(): String = findMainIntentName() ?: i18nNamespace
+    private fun i18nKeyCategory(): String = findMainIntentName() ?: i18nNamespace
 
-    override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey {
-        val prefix = i18nKeyPrefix()
-        return i18nKey(
-            "${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}",
+    override fun provideI18nValue(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
+        val category = i18nKeyCategory()
+        return i18nValue(
+            generateKey(i18nNamespace, category, defaultLabel),
             i18nNamespace,
-            prefix,
+            category,
             defaultLabel,
             args
         )
     }
 
     /**
-     * Get I18nKey with specified key. Current namespace is used.
+     * Gets I18nKey with specified key. Current namespace is used.
      */
-    fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelKey {
-        val prefix = i18nKeyPrefix()
-        return i18nKey(
+    fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue {
+        val prefix = i18nKeyCategory()
+        return i18nValue(
             key,
             i18nNamespace,
             prefix,

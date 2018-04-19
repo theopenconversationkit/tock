@@ -44,7 +44,7 @@ import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
 import fr.vsct.tock.translator.I18nKeyProvider
-import fr.vsct.tock.translator.I18nLabelKey
+import fr.vsct.tock.translator.I18nLabelValue
 import fr.vsct.tock.translator.UserInterfaceType
 import java.util.Locale
 
@@ -462,6 +462,6 @@ interface BotBus : I18nTranslator {
     }
 
     //i18n provider implementation
-    override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey =
-        i18nProvider.i18nKeyFromLabel(defaultLabel, args)
+    override fun provideI18nValue(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue =
+        i18nProvider.provideI18nValue(defaultLabel, args)
 }

@@ -27,8 +27,6 @@ import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.vertx.vertx
-import fr.vsct.tock.translator.I18nLabelKey
-import fr.vsct.tock.translator.Translator
 import mu.KotlinLogging
 
 /**
@@ -129,8 +127,8 @@ open class BotDefinitionBase(
             defaultLabel: String,
             vararg args: Any?
         ): CharSequence =
-            I18nLabelKey(
-                Translator.getKeyFromDefaultLabel(defaultLabel),
+            i18nValue(
+                generateKey(botDefinition.namespace, "keywords", defaultLabel),
                 botDefinition.namespace,
                 "keywords",
                 defaultLabel,

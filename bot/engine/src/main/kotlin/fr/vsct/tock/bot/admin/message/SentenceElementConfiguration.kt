@@ -18,22 +18,22 @@ package fr.vsct.tock.bot.admin.message
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.translator.I18nLabelKey
+import fr.vsct.tock.translator.I18nLabelValue
 
 /**
  * An aggregation of [Message]s used in [SentenceConfiguration].
  * This a usually "generic" view of [ConnectorMessage].
  */
 data class SentenceElementConfiguration(
-        val connectorType: ConnectorType = ConnectorType.none,
-        val attachments: List<AttachmentConfiguration> = emptyList(),
-        val choices: List<ChoiceConfiguration> = emptyList(),
+    val connectorType: ConnectorType = ConnectorType.none,
+    val attachments: List<AttachmentConfiguration> = emptyList(),
+    val choices: List<ChoiceConfiguration> = emptyList(),
         //a qualified text map (ie "title" to "Ok computer", "subtitle" to "please listen")
-        val texts: Map<String, I18nLabelKey> = emptyMap(),
-        val locations: List<LocationConfiguration> = emptyList(),
-        val metadata: Map<String, String> = emptyMap(),
-        val subElements: List<SentenceSubElementConfiguration> = emptyList(),
-        @Transient private val connectorMessage: ConnectorMessage? = null) {
+    val texts: Map<String, I18nLabelValue> = emptyMap(),
+    val locations: List<LocationConfiguration> = emptyList(),
+    val metadata: Map<String, String> = emptyMap(),
+    val subElements: List<SentenceSubElementConfiguration> = emptyList(),
+    @Transient private val connectorMessage: ConnectorMessage? = null) {
 
     internal fun findConnectorMessage() = connectorMessage
 

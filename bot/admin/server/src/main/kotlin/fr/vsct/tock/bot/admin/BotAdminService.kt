@@ -63,7 +63,7 @@ import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.vertx.UnauthorizedException
-import fr.vsct.tock.translator.I18nLabelKey
+import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.Translator
 import mu.KotlinLogging
 import org.litote.kmongo.Id
@@ -267,12 +267,10 @@ object BotAdminService {
         language: Locale?,
         reply: String
     ): SimpleAnswerConfiguration {
-        val labelKey = I18nLabelKey(
-            Translator.getKeyFromDefaultLabel(reply),
-            namespace,
-            "simple",
-            reply
-        )
+        val labelKey =
+            I18nKeyProvider
+                .simpleKeyProvider(namespace, "simple")
+                .i18n(reply)
         //save the label
         if (language != null) {
             Translator.saveIfNotExists(labelKey, language)

@@ -21,25 +21,39 @@ import mu.KotlinLogging
 import java.util.Locale
 
 /**
- *
+ * A label localized for a [locale] and a [UserInterfaceType], with optional [alternatives].
  */
-data class I18nLocalizedLabel(val locale: Locale,
-                              val interfaceType: UserInterfaceType,
-                              val label: String,
-                              val validated: Boolean,
-                              val connectorId: String? = null,
-                              val alternatives: List<String> = emptyList()) {
+data class I18nLocalizedLabel(
+    val locale: Locale,
+    val interfaceType: UserInterfaceType,
+    val label: String,
+    val validated: Boolean,
+    val connectorId: String? = null,
+    val alternatives: List<String> = emptyList()
+) {
 
-    constructor(locale: Locale, interfaceType: UserInterfaceType, label: String, alternatives: List<String>) : this(locale, interfaceType, label, false, null, alternatives)
+    constructor(locale: Locale, interfaceType: UserInterfaceType, label: String, alternatives: List<String>) : this(
+        locale,
+        interfaceType,
+        label,
+        false,
+        null,
+        alternatives
+    )
 
-    constructor(locale: Locale, interfaceType: UserInterfaceType, label: String) : this(locale, interfaceType, label, emptyList())
+    constructor(locale: Locale, interfaceType: UserInterfaceType, label: String) : this(
+        locale,
+        interfaceType,
+        label,
+        emptyList()
+    )
 
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
     fun randomAlternativesIndex(): Int =
-            if (alternatives.isEmpty()) 0 else newInt(alternatives.size + 1)
+        if (alternatives.isEmpty()) 0 else newInt(alternatives.size + 1)
 
     fun randomText(index: Int? = null): String {
         return if (alternatives.isEmpty()) {

@@ -28,8 +28,7 @@ import fr.vsct.tock.nlp.api.client.model.EntityType
 import fr.vsct.tock.shared.withNamespace
 import fr.vsct.tock.shared.withoutNamespace
 import fr.vsct.tock.translator.I18nKeyProvider
-import fr.vsct.tock.translator.I18nLabelKey
-import fr.vsct.tock.translator.Translator
+import fr.vsct.tock.translator.I18nLabelValue
 import fr.vsct.tock.translator.UserInterfaceType
 import java.util.Locale
 
@@ -69,7 +68,6 @@ interface BotDefinition : I18nKeyProvider {
                         ?: if (intent == keyword.name) keywordStory else unknownStory
             }
         }
-
     }
 
     /**
@@ -205,12 +203,12 @@ interface BotDefinition : I18nKeyProvider {
      */
     val testBehaviour: TestBehaviour get() = TestBehaviourBase()
 
-    override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey {
-        val prefix = javaClass.kotlin.simpleName?.replace("Definition", "") ?: ""
-        return i18nKey(
-            "${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}",
+    override fun provideI18nValue(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
+        val category = javaClass.kotlin.simpleName?.replace("Definition", "") ?: ""
+        return i18nValue(
+            generateKey(namespace, category, defaultLabel),
             namespace,
-            prefix,
+            category,
             defaultLabel,
             args
         )
@@ -241,8 +239,8 @@ interface BotDefinition : I18nKeyProvider {
             override val targetConnectorType: ConnectorType
                 get() = connectorType
 
-            override fun i18nKeyFromLabel(defaultLabel: CharSequence, args: List<Any?>): I18nLabelKey {
-                return this@BotDefinition.i18nKeyFromLabel(defaultLabel, args)
+            override fun provideI18nValue(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
+                return this@BotDefinition.provideI18nValue(defaultLabel, args)
             }
         }
 }
