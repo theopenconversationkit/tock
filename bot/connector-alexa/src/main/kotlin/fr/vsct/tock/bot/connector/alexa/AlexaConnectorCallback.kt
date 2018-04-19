@@ -29,6 +29,7 @@ import com.amazon.speech.ui.Reprompt
 import com.amazon.speech.ui.SsmlOutputSpeech
 import fr.vsct.tock.bot.connector.ConnectorCallbackBase
 import fr.vsct.tock.bot.connector.ConnectorData
+import fr.vsct.tock.bot.connector.alexa.AlexaConnector.Companion.sendTechnicalError
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
@@ -149,21 +150,9 @@ internal data class AlexaConnectorCallback(
 
     override fun exceptionThrown(event: Event, throwable: Throwable) {
         super.exceptionThrown(event, throwable)
-        sendTechnicalError(throwable)
+        sendTechnicalError(context, throwable)
     }
 
-    private fun sendTechnicalError(
-        throwable: Throwable,
-        request: IntentRequest? = null
-    ) {
-        try {
-            logger.error("request: $request", throwable)
-            context.fail(throwable)
-        } catch (t: Throwable) {
-            logger.error(t)
-            context.fail(t)
-        }
-    }
 
     private fun logRequest(method: String, req: SpeechletRequestEnvelope<*>) {
         logger.debug {
@@ -194,7 +183,7 @@ internal data class AlexaConnectorCallback(
             controller.handle(event, ConnectorData(this))
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
-            sendTechnicalError(t, requestEnvelope.request)
+            sendTechnicalError(context, t, requestEnvelope.request)
         } finally {
             BotRepository.requestTimer.end(timerData)
         }

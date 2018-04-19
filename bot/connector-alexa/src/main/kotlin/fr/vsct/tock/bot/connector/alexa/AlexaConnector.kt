@@ -16,7 +16,11 @@
 
 package fr.vsct.tock.bot.connector.alexa
 
+import com.amazon.speech.Sdk
+import com.amazon.speech.speechlet.IntentRequest
 import com.amazon.speech.speechlet.SpeechletRequestHandler
+import com.amazon.speech.speechlet.SpeechletRequestHandlerException
+import com.amazon.speech.speechlet.authentication.SpeechletRequestSignatureVerifier
 import com.amazon.speech.speechlet.verifier.ApplicationIdSpeechletRequestEnvelopeVerifier
 import com.amazon.speech.speechlet.verifier.SpeechletRequestVerifierWrapper
 import com.amazon.speech.speechlet.verifier.TimestampSpeechletRequestVerifier
@@ -26,16 +30,11 @@ import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.event.Event
-import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.bot.engine.user.UserPreferences
-import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
 import io.vertx.core.buffer.Buffer
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
-import org.apache.commons.lang3.LocaleUtils
-import java.lang.Exception
-import java.time.ZoneOffset
 import java.util.concurrent.TimeUnit
 
 /**
@@ -51,6 +50,25 @@ class AlexaConnector internal constructor(
 
     companion object {
         private val logger = KotlinLogging.logger {}
+        private val disableRequestSignatureCheck = booleanProperty("tock_alexa_disable_request_signature_check", false)
+
+        internal fun sendTechnicalError(
+            context: RoutingContext,
+            throwable: Throwable,
+            request: IntentRequest? = null
+        ) {
+            try {
+                logger.error("request: $request", throwable)
+                if (throwable is SpeechletRequestHandlerException || throwable is SecurityException) {
+                    context.fail(400)
+                } else {
+                    context.fail(throwable)
+                }
+            } catch (t: Throwable) {
+                logger.error(t)
+                context.fail(t)
+            }
+        }
     }
 
     private val requestHandler = SpeechletRequestHandler(
@@ -93,17 +111,29 @@ class AlexaConnector internal constructor(
     ) {
         val timerData = BotRepository.requestTimer.start("alexa_webhook")
         try {
-            context.response().end(
-                Buffer.buffer(
-                    requestHandler.handleSpeechletCall(
-                        AlexaConnectorCallback(applicationId, controller, alexaTockMapper, context),
-                        context.body.bytes
+            val bytes = context.body.bytes
+            // Check certificate
+            if (!disableRequestSignatureCheck) {
+                SpeechletRequestSignatureVerifier.checkRequestSignature(
+                    bytes,
+                    context.request().getHeader(Sdk.SIGNATURE_REQUEST_HEADER),
+                    context.request().getHeader(Sdk.SIGNATURE_CERTIFICATE_CHAIN_URL_REQUEST_HEADER)
+                )
+            }
+            context
+                .response()
+                .putHeader("Content-Type", "application/json")
+                .end(
+                    Buffer.buffer(
+                        requestHandler.handleSpeechletCall(
+                            AlexaConnectorCallback(applicationId, controller, alexaTockMapper, context),
+                            bytes
+                        )
                     )
                 )
-            )
-        } catch (t: Throwable) {
-            BotRepository.requestTimer.throwable(t, timerData)
-            context.fail(t)
+        } catch (ex: Throwable) {
+            BotRepository.requestTimer.throwable(ex, timerData)
+            sendTechnicalError(context, ex)
         } finally {
             BotRepository.requestTimer.end(timerData)
         }
