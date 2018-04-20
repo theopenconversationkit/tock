@@ -623,7 +623,7 @@ Here it's a text with buttons for Messenger, and a text with suggestions for Goo
 <p>Of course, the <em>StoryHandler</em> of <em>greetings</em> does not depend on the context: the answer is always the same.</p>
 <h3 id="secondary-intentions">Secondary Intentions<a class="headerlink" href="#secondary-intentions" title="Permanent link">&para;</a></h3>
 <p>Here is the beginning of the definition of the <em>search</em> story :</p>
-<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">story</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">storyDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
         <span class="s">&quot;search&quot;</span><span class="p">,</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
@@ -658,7 +658,7 @@ There is a corresponding entity in the NLP model.</p>
 <p>A variable <em>destination</em> is defined, which will simplify the handling of this entity in the conversational code.
 This variable contains the current value of the destination in the user context.</p>
 <p>Here's a full version of the <em>search</em> story that uses <em>destination</em>:</p>
-<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">story</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">storyDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
         <span class="s">&quot;search&quot;</span><span class="p">,</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
@@ -677,7 +677,7 @@ This variable contains the current value of the destination in the user context.
 Same behaviour for the origin or date of departure.</p>
 <p>If the 3 required values are specified, then the real answer developed in the <em>SearchDef</em> class is used.</p>
 <p>Here is the full version of this first part of the code:</p>
-<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">story</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">storyDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
         <span class="s">&quot;search&quot;</span><span class="p">,</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>

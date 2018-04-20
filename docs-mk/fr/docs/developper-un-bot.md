@@ -122,7 +122,7 @@ Pour le développement de stories complexes, nous avons besoin d'une abstraction
 Voici le début de la définition de la story *search* :
 
 ```kotlin
-val search = story<SearchDef>(
+val search = storyDef<SearchDef>(
         "search",
         setOf(indicate_origin),
         setOf(indicate_location)) {
@@ -168,7 +168,7 @@ Voici une version complétée de la story *search* qui utilise *destination* :
 
 ```kotlin
 
-val search = story<SearchDef>(
+val search = storyDef<SearchDef>(
         "search",
         setOf(indicate_origin),
         setOf(indicate_location)) {
@@ -192,7 +192,7 @@ La version complète de cette première partie du code est la suivante :
 
 ```kotlin
 
-val search = story<SearchDef>(
+val search = storyDef<SearchDef>(
         "search",
         setOf(indicate_origin),
         setOf(indicate_location)) {

@@ -27,7 +27,20 @@ import mu.KotlinLogging
  * Provides also a convenient implementation of [I18nKeyProvider] to support i18n.
  */
 abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
-    private val mainIntentName: String? = null
+    /**
+     * The main intent of the story definition.
+     */
+    private val mainIntentName: String? = null,
+    /**
+     * The namespace for [I18nKeyProvider] implementation.
+     * Will be modified when bot owner is known.
+     */
+    @Volatile
+    internal var i18nNamespace: String = defaultNamespace,
+    /**
+     * Convenient value to wait before next answer sentence. 1s by default.
+     */
+    val breath: Long = 1000L
 ) : StoryHandler, I18nKeyProvider, IntentAware {
 
     private val logger = KotlinLogging.logger {}
@@ -103,18 +116,6 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
 
         handle(bus)
     }
-
-    /**
-     * Waits 1s by default
-     */
-    open val breath = 1000L
-
-    /**
-     * The namespace for [I18nKeyProvider] implementation.
-     * Will be overridden when bot owner is known.
-     */
-    @Volatile
-    internal var i18nNamespace: String = defaultNamespace
 
     /**
      * Story i18n category.

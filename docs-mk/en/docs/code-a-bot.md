@@ -118,7 +118,7 @@ Of course, the *StoryHandler* of *greetings* does not depend on the context: the
 Here is the beginning of the definition of the *search* story :
 
 ```kotlin
-val search = story<SearchDef>(
+val search = storyDef<SearchDef>(
         "search",
         setOf(indicate_origin),
         setOf(indicate_location)) {
@@ -164,7 +164,7 @@ Here's a full version of the *search* story that uses *destination*:
  
 ```kotlin
 
-val search = story<SearchDef>(
+val search = storyDef<SearchDef>(
         "search",
         setOf(indicate_origin),
         setOf(indicate_location)) {
@@ -188,7 +188,7 @@ Here is the full version of this first part of the code:
 
 ```kotlin
 
-val search = story<SearchDef>(
+val search = storyDef<SearchDef>(
         "search",
         setOf(indicate_origin),
         setOf(indicate_location)) {

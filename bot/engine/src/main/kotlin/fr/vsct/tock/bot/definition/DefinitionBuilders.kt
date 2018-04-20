@@ -25,7 +25,7 @@ import kotlin.reflect.full.primaryConstructor
 
 
 /**
- * Create a new bot.
+ * Creates a new bot.
  */
 fun bot(
     /**
@@ -85,9 +85,7 @@ fun bot(
      * To handle keywords.
      */
     keywordStory: StoryDefinition = defaultKeywordStory
-)
-        : BotDefinitionBase {
-
+): SimpleBotDefinition {
     fun findStory(intent: IntentAware?): StoryDefinition? =
         findStoryDefinition(stories, intent?.wrappedIntent()?.name, unknownStory, keywordStory)
             .let {
@@ -98,8 +96,7 @@ fun bot(
                 }
             }
 
-
-    return BotDefinitionBase(
+    return SimpleBotDefinition(
         botId,
         namespace,
         stories,
@@ -118,7 +115,7 @@ fun bot(
 }
 
 /**
- * Create a new story.
+ * Creates a new story.
  */
 fun story(
     /**
@@ -141,8 +138,7 @@ fun story(
      * Is this story unsupported for a [UserInterfaceType]?
      */
     unsupportedUserInterface: UserInterfaceType? = null
-)
-        : StoryDefinitionBase =
+): StoryDefinitionBase =
     StoryDefinitionBase(
         handler.wrappedIntent().name,
         handler,
@@ -153,7 +149,7 @@ fun story(
     )
 
 /**
- * Create a new story.
+ * Creates a new story.
  */
 fun story(
     /**
@@ -180,8 +176,7 @@ fun story(
      * The handler for the story.
      */
     handler: (BotBus).() -> Unit
-)
-        : StoryDefinitionBase =
+): StoryDefinitionBase =
     StoryDefinitionBase(
         intentName,
         object : SimpleStoryHandlerBase(intentName) {
@@ -194,7 +189,7 @@ fun story(
     )
 
 /**
- * Create a new story.
+ * Creates a new story.
  */
 inline fun <reified T : StoryHandlerDefinition> story(
     /**
@@ -217,8 +212,7 @@ inline fun <reified T : StoryHandlerDefinition> story(
      * Is this story unsupported for a [UserInterfaceType]?
      */
     unsupportedUserInterface: UserInterfaceType? = null
-)
-        : StoryDefinitionBase =
+): StoryDefinitionBase =
     StoryDefinitionBase(
         handler.wrappedIntent().name,
         handler,
@@ -229,7 +223,7 @@ inline fun <reified T : StoryHandlerDefinition> story(
     )
 
 /**
- * Create a new story.
+ * Creates a new story.
  */
 inline fun <reified T : StoryHandlerDefinition> storyDef(
     /**
@@ -261,8 +255,7 @@ inline fun <reified T : StoryHandlerDefinition> storyDef(
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
      */
     noinline preconditionsChecker: BotBus.() -> Unit
-)
-        : StoryDefinitionBase =
+): StoryDefinitionBase =
     StoryDefinitionBase(
         intentName,
         object : StoryHandlerBase<T>(intentName) {
@@ -279,7 +272,7 @@ inline fun <reified T : StoryHandlerDefinition> storyDef(
     )
 
 /**
- * Create a new story from a [StoryHandler].
+ * Creates a new story from a [StoryHandler].
  */
 fun story(
     /**
@@ -306,8 +299,7 @@ fun story(
      * Is this story unsupported for a [UserInterfaceType]?
      */
     unsupportedUserInterface: UserInterfaceType? = null
-):
-        StoryDefinitionBase =
+): StoryDefinitionBase =
     StoryDefinitionBase(
         intent.wrappedIntent().name,
         storyHandler,
@@ -318,7 +310,7 @@ fun story(
     )
 
 /**
- * Create a new story from a [StoryHandlerBase].
+ * Creates a new story from a [StoryHandlerBase].
  */
 inline fun <reified T> storyWithSteps(
     /**
@@ -337,8 +329,7 @@ inline fun <reified T> storyWithSteps(
      * Is this story unsupported for a [UserInterfaceType]?
      */
     unsupportedUserInterface: UserInterfaceType? = null
-)
-        : StoryDefinitionBase
+): StoryDefinitionBase
         where T : Enum<T>, T : StoryStep<out StoryHandlerDefinition> =
     story(
         handler,
@@ -350,7 +341,7 @@ inline fun <reified T> storyWithSteps(
     )
 
 /**
- * Create a new story from a [StoryHandler].
+ * Creates a new story from a [StoryHandler].
  */
 inline fun <reified T> storyWithSteps(
     /**
@@ -373,8 +364,7 @@ inline fun <reified T> storyWithSteps(
      * Is this story unsupported for a [UserInterfaceType]?
      */
     unsupportedUserInterface: UserInterfaceType? = null
-)
-        : StoryDefinitionBase where T : Enum<T>, T : StoryStep<out StoryHandlerDefinition> =
+): StoryDefinitionBase where T : Enum<T>, T : StoryStep<out StoryHandlerDefinition> =
     story(
         intent,
         storyHandler,
@@ -385,7 +375,7 @@ inline fun <reified T> storyWithSteps(
     )
 
 /**
- * Create a new story.
+ * Creates a new story.
  */
 inline fun <reified T> storyWithSteps(
     /**
@@ -408,8 +398,7 @@ inline fun <reified T> storyWithSteps(
      * The handler for the story.
      */
     noinline handler: (BotBus).() -> Unit
-)
-        : StoryDefinitionBase where T : Enum<T>, T : StoryStep<out StoryHandlerDefinition> =
+): StoryDefinitionBase where T : Enum<T>, T : StoryStep<out StoryHandlerDefinition> =
     story(
         intentName,
         otherStarterIntents,

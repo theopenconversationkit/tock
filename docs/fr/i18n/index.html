@@ -371,6 +371,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#locale-de-lutilisateur" title="Locale de l'utilisateur" class="md-nav__link">
+    Locale de l'utilisateur
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#points-dattention" title="Points d'attention" class="md-nav__link">
     Points d'attention
   </a>
@@ -480,6 +487,13 @@
 </li>
         
           <li class="md-nav__item">
+  <a href="#locale-de-lutilisateur" title="Locale de l'utilisateur" class="md-nav__link">
+    Locale de l'utilisateur
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#points-dattention" title="Points d'attention" class="md-nav__link">
     Points d'attention
   </a>
@@ -542,7 +556,7 @@ Il est désactivé par défaut.</p>
 </pre></div>
 
 
-<p>Ou de passer la propriété <code>-Dtock_i18n_enabled=true</code> à la JVM.</p>
+<p>ou de passer la propriété <code>-Dtock_i18n_enabled=true</code> à la JVM.</p>
 <h2 id="utilisation-dans-le-code">Utilisation dans le code<a class="headerlink" href="#utilisation-dans-le-code" title="Permanent link">&para;</a></h2>
 <h3 id="principe-de-fonctionnement">Principe de fonctionnement<a class="headerlink" href="#principe-de-fonctionnement" title="Permanent link">&para;</a></h3>
 <p>Le code ne change pas une fois l'internationalisation activée. Par exemple : </p>
@@ -550,12 +564,14 @@ Il est désactivé par défaut.</p>
 </pre></div>
 
 
-<p>Est toujours un code complètement valide. Par contre, à l'exécution, les opérations suivantes vont être effectuées :</p>
+<p>est un code valide que le module soit activé ou non. </p>
+<p>Par contre, à l'exécution, le comportement diffère significativement.</p>
+<p>Si l'internationalisation est activée, les opérations suivantes vont être effectuées :</p>
 <ol>
 <li>
-<p>Une clé va être générée à partir du texte passé en paramètre, en fonction du namespace et de la story dans lequel est demandé 
-ce libellé. Dans le cas ci-dessus, cela devrait ressembler à <code>app_arrivals_arrival_at_</code> où <em>app</em> est le namespace et 
-<em>arrivals</em> l'intention principale de la story</p>
+<p>Une clé va être générée à partir du texte passé en paramètre, en fonction du namespace (l'organisation du créateur du bot)
+ et de la story dans laquelle est demandé ce libellé. Dans le cas ci-dessus, cela devrait ressembler à <code>app_arrivals_arrival_at_</code> où <em>app</em> est le namespace et 
+<em>arrivals</em> l'intention principale de la story.</p>
 </li>
 <li>
 <p>Tock vérifie ensuite si cette clé est déjà présente en base. </p>
@@ -571,13 +587,32 @@ ce libellé. Dans le cas ci-dessus, cela devrait ressembler à <code>app_arrival
 <p><img alt="Internationalisation" src="../img/i18n.png" title="Internationalisation" /></p>
 <h3 id="format-supporte">Format supporté<a class="headerlink" href="#format-supporte" title="Permanent link">&para;</a></h3>
 <p>Le format supporté est celui du support i18n de java, en particulier celui de la classe <a href="https://docs.oracle.com/javase/10/docs/api/java/text/MessageFormat.html">MessageFormat</a>
-en java. Cela inclue le support de <a href="https://docs.oracle.com/javase/10/docs/api/java/text/ChoiceFormat.html">ChoiceFormat</a> :</p>
+en java. Cela inclut le support de <a href="https://docs.oracle.com/javase/10/docs/api/java/text/ChoiceFormat.html">ChoiceFormat</a> :</p>
 <div class="codehilite"><pre><span></span>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There {0,choice,0#are no files|1#is one file|1&lt;are {0,number,integer} files}.&quot;</span><span class="p">,</span> <span class="m">2</span><span class="p">)</span>  
 </pre></div>
 
 
 <p>Par ailleurs, Tock met à disposition une extension <em>by</em> pour les dates qui permet d'indiquer un format dans les paramètres :</p>
 <div class="codehilite"><pre><span></span>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;Departure at {0}&quot;</span><span class="p">,</span> <span class="n">departureDateTime</span> <span class="k">by</span> <span class="n">timeFormat</span><span class="p">)</span> 
+</pre></div>
+
+
+<h3 id="locale-de-lutilisateur">Locale de l'utilisateur<a class="headerlink" href="#locale-de-lutilisateur" title="Permanent link">&para;</a></h3>
+<ul>
+<li>Quand c'est possible, la locale de l'utilisateur est importée de celle de son compte. </li>
+</ul>
+<p>Par exemple, si le compte d'un utilisateur Messenger est configuré en français, le français sera automatiquement
+ utilisé comme locale par Tock.</p>
+<ul>
+<li>
+<p>Si il n'y a pas d'indication de locale, c'est la valeur <code>defaultLocale</code> qui est pris en compte.
+  Il est possible de modifier cette valeur par défaut avec la propriété <code>-Dtock_default_locale=fr</code></p>
+</li>
+<li>
+<p>Enfin il est possible de modifier la locale de l'utilisateur dans le bot lui-même : </p>
+</li>
+</ul>
+<div class="codehilite"><pre><span></span>    <span class="n">userPreferences</span><span class="p">.</span><span class="n">locale</span><span class="p">=</span><span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span>
 </pre></div>
 
 
@@ -591,9 +626,9 @@ en java. Cela inclue le support de <a href="https://docs.oracle.com/javase/10/do
 </pre></div>
 
 
-<p>Mais pose problème si il est activé. En effet, les chiffres étant supprimés de la clé générée, le libellé traduit sera toujours
+<p>mais pose problème si il est activé. En effet, les chiffres étant supprimés de la clé générée, le libellé traduit sera toujours
  le même quel que soit la valeur de la variable <em>nb</em> !</p>
-<p>Si il est nécessaire d'envoyer des réponses à ne pas traduire, il est possible d'utiliser 
+<p>Si il est nécessaire d'envoyer des réponses "à ne pas traduire", il est possible d'utiliser 
 les méthodes <em>sendRaw</em>, <em>endRaw</em> ou <em>String.raw</em></p>
 <div class="codehilite"><pre><span></span>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are $nb files&quot;</span><span class="p">.</span><span class="n">raw</span><span class="p">)</span> <span class="c1">//CORRECT </span>
 </pre></div>
@@ -601,7 +636,7 @@ les méthodes <em>sendRaw</em>, <em>endRaw</em> ou <em>String.raw</em></p>
 
 <ul>
 <li>Le risque de collision entre deux libellés est faible puisque l'intention principale de la story fait partie de la clé. 
-Si vous souhaitez cependant éviter tout problème, il est possible d'utiliser la méthode <em>i18nKey</em> :</li>
+Si vous souhaitez cependant éviter tout risque, vous pouvez utiliser la méthode <em>i18nKey</em> :</li>
 </ul>
 <div class="codehilite"><pre><span></span>    <span class="n">send</span><span class="p">(</span><span class="n">i18nKey</span><span class="p">(</span><span class="s">&quot;my_unique_key&quot;</span><span class="p">,</span> <span class="s">&quot;There are {0} files&quot;</span><span class="p">,</span> <span class="n">nb</span><span class="p">))</span> 
 </pre></div>
@@ -616,10 +651,10 @@ Si vous souhaitez cependant éviter tout problème, il est possible d'utiliser l
 <li>par type d'interface (Texte ou voix) - c'est utile par exemple dans le cas de Google Assistant pour supporter les cas
  des parcours voix uniquement.</li>
 </ul>
-<p>Enfin, il est possible à chaque fois de spécifier des <em>alternatives</em>.
+<p>Enfin, vous pouvez spécifier des <em>alternatives</em>.
 Dans ce cas, le bot utilise une des alternatives possible au hasard, à chaque fois qu'il envoie une réponse à l'utilisateur.</p>
 <h3 id="import-et-export-des-donnees">Import et export des données<a class="headerlink" href="#import-et-export-des-donnees" title="Permanent link">&para;</a></h3>
-<p>Il est possible d'exporter ou d'importer les libellés au format json ou csv. Dans le cas d'un import, seuls les
+<p>Une fonctionnalité d'import et d'export des libellés au format json ou csv est disponible. Dans le cas d'un import, seuls les
 libellés indiqués comme <em>validés</em> sont pris en compte. </p>
                 
                   

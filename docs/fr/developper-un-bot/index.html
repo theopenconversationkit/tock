@@ -638,7 +638,7 @@ Ici un texte avec des boutons pour Messenger, et un texte avec des suggestions p
 <p>Pour le développement de stories complexes, nous avons besoin d'une abstraction supplémentaire.</p>
 <h3 id="intentions-secondaires">Intentions secondaires<a class="headerlink" href="#intentions-secondaires" title="Permanent link">&para;</a></h3>
 <p>Voici le début de la définition de la story <em>search</em> :</p>
-<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">story</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">storyDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
         <span class="s">&quot;search&quot;</span><span class="p">,</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
@@ -673,7 +673,7 @@ Il s'agit de l'entité correspondante dans le modèle NLP.</p>
 <p>Une variable <em>destination</em> est définie, qui va simplifier la manipulation de cette entité dans le code métier.
 Cette variable contient la valeur actuelle de la destination dans le contexte utilisateur.</p>
 <p>Voici une version complétée de la story <em>search</em> qui utilise <em>destination</em> :</p>
-<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">story</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">storyDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
         <span class="s">&quot;search&quot;</span><span class="p">,</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
@@ -692,7 +692,7 @@ Cette variable contient la valeur actuelle de la destination dans le contexte ut
 Idem pour l'origine ou la date de départ.</p>
 <p>Si les 3 valeurs obligatoires sont spécifiées, il passe à la réponse proprement dite développée dans la classe (<em>SearchDef</em>).</p>
 <p>La version complète de cette première partie du code est la suivante :</p>
-<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">story</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">storyDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
         <span class="s">&quot;search&quot;</span><span class="p">,</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
         <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
