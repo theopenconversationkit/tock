@@ -38,6 +38,7 @@ import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
+import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.name
@@ -106,7 +107,18 @@ object ApplicationCodecService : ApplicationCodec {
                             logger.debug { "Import application $appToSave" }
                             config.save(appToSave)
                         } else {
-                            app
+                            //a fresh empty model has been initialized before with the default locale
+                            //then remove the default locale
+                            if (
+                                configuration.defaultModelMayExist
+                                && app.supportedLocales.size == 1
+                                && app.supportedLocales.contains(defaultLocale)
+                                && app.intents.isEmpty()
+                            ) {
+                                app.copy(supportedLocales = emptySet())
+                            } else {
+                                app
+                            }
                         }
                     }
                 val appId = app._id

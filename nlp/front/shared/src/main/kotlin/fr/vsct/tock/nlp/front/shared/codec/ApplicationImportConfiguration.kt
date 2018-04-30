@@ -19,5 +19,15 @@ package fr.vsct.tock.nlp.front.shared.codec
 /**
  * Application import options.
  */
-data class ApplicationImportConfiguration(val newApplicationName: String? = null) {
+data class ApplicationImportConfiguration(
+    /**
+     * The target application name - if null, dump application name is used.
+     */
+    val newApplicationName: String? = null,
+    /**
+     * If true, an automatically generated model may exist.
+     * Then the default model options are removed from the model when importing the dump.
+     */
+    val defaultModelMayExist: Boolean = false
+) {
 }

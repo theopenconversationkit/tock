@@ -21,11 +21,14 @@ import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition_.Companion.Name
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
+import org.bson.BsonDocument
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.upsert
+import org.litote.kmongo.util.KMongoUtil.filterIdToBson
+import org.litote.kmongo.withDocumentClass
 
 /**
  *
@@ -39,7 +42,8 @@ object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
     }
 
     override fun save(entityType: EntityTypeDefinition) {
-        col.replaceOne(Name eq entityType.name, entityType, upsert())
+        //TODO use new KMongo replaceOne method
+        col.withDocumentClass<BsonDocument>().replaceOne(Name eq entityType.name, filterIdToBson(entityType), upsert())
     }
 
     override fun getEntityTypeByName(name: String): EntityTypeDefinition? {

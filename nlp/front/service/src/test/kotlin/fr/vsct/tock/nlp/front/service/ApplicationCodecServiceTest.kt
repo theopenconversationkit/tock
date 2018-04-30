@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.service
 
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
+import fr.vsct.tock.nlp.front.shared.codec.ApplicationImportConfiguration
 import fr.vsct.tock.nlp.front.shared.codec.DumpType
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.Classification
@@ -81,7 +82,7 @@ class ApplicationCodecServiceTest : AbstractTest() {
     }
 
     @Test
-    fun `import existing app with a new locale add the locale to the app`() {
+    fun `importing existing app with a new locale adds the locale to the app`() {
         val newLocale = if (Locale.ITALIAN == defaultLocale) Locale.ENGLISH else Locale.ITALIAN
         val app = app.copy(supportedLocales = setOf(newLocale))
         val dump = ApplicationDump(app)
@@ -92,6 +93,22 @@ class ApplicationCodecServiceTest : AbstractTest() {
             context.config.save(match<ApplicationDefinition> {
                 it.supportedLocales.contains(newLocale)
                         && it.supportedLocales.contains(defaultLocale)
+            })
+        }
+    }
+
+    @Test
+    fun `importing existing app with defaultModelMayExist option set to true removes the default locale`() {
+        val newLocale = if (Locale.ITALIAN == defaultLocale) Locale.ENGLISH else Locale.ITALIAN
+        val app = app.copy(supportedLocales = setOf(newLocale))
+        val dump = ApplicationDump(app)
+
+        val report = ApplicationCodecService.import(namespace, dump, ApplicationImportConfiguration(defaultModelMayExist = true))
+        assertTrue(report.modified)
+        verify {
+            context.config.save(match<ApplicationDefinition> {
+                it.supportedLocales.contains(newLocale)
+                        && !it.supportedLocales.contains(defaultLocale)
             })
         }
     }

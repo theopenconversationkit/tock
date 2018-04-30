@@ -20,6 +20,7 @@ import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.service.UnknownApplicationException
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
+import fr.vsct.tock.nlp.front.shared.codec.ApplicationImportConfiguration
 import fr.vsct.tock.nlp.front.shared.codec.CreateApplicationQuery
 import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
@@ -126,7 +127,11 @@ class NlpVerticle : WebVerticle() {
             if (protectPath) {
                 unauthorized()
             } else {
-                front.import(dump.application.namespace, dump).modified
+                front.import(
+                    dump.application.namespace,
+                    dump,
+                    ApplicationImportConfiguration(defaultModelMayExist = true)
+                ).modified
             }
         }
 
@@ -134,7 +139,11 @@ class NlpVerticle : WebVerticle() {
             if (protectPath) {
                 unauthorized()
             } else {
-                front.import(dump.application.namespace, dump).modified
+                front.import(
+                    dump.application.namespace,
+                    dump,
+                    ApplicationImportConfiguration(defaultModelMayExist = true)
+                ).modified
             }
         }
 
