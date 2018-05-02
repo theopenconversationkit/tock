@@ -203,10 +203,10 @@ interface BotDefinition : I18nKeyProvider {
      */
     val testBehaviour: TestBehaviour get() = TestBehaviourBase()
 
-    override fun provideI18nValue(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
+    override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
         val category = javaClass.kotlin.simpleName?.replace("Definition", "") ?: ""
-        return i18nValue(
-            generateKey(namespace, category, defaultLabel),
+        return I18nLabelValue(
+            I18nKeyProvider.generateKey(namespace, category, defaultLabel),
             namespace,
             category,
             defaultLabel,
@@ -239,8 +239,8 @@ interface BotDefinition : I18nKeyProvider {
             override val targetConnectorType: ConnectorType
                 get() = connectorType
 
-            override fun provideI18nValue(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
-                return this@BotDefinition.provideI18nValue(defaultLabel, args)
+            override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
+                return this@BotDefinition.i18n(defaultLabel, args)
             }
         }
 }

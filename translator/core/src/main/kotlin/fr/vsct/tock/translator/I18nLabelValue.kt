@@ -21,32 +21,44 @@ package fr.vsct.tock.translator
  * There is also a default label used to generate the label if no translation is found, and optional
  * format pattern arguments.
  */
-data class I18nLabelValue internal constructor(
-    val key: String,
-    val namespace: String,
-    val category: String,
+class I18nLabelValue constructor(
+    _key: String,
+    _namespace: String,
+    _category: String,
     val defaultLabel: CharSequence,
     val args: List<Any?> = emptyList()
 ) : CharSequence by defaultLabel {
 
-    internal constructor(
-        key: String,
-        namespace: String,
-        category: String,
-        defaultLabel: CharSequence,
-        vararg args: Any?
-    ) : this(key, namespace, category, defaultLabel, args.toList())
-
-    internal constructor(
-        key: String,
-        namespace: String,
-        category: String,
-        defaultLabel: CharSequence,
-        arg: Any?
-    ) : this(key, namespace, category, defaultLabel, listOf(arg))
+    val key: String = _key.toLowerCase()
+    val namespace: String = _namespace.toLowerCase()
+    val category: String = _category.toLowerCase()
 
     override fun toString(): String {
         return defaultLabel.toString()
+    }
+
+    override fun equals(other: Any?): Boolean {
+        if (this === other) return true
+        if (javaClass != other?.javaClass) return false
+
+        other as I18nLabelValue
+
+        if (defaultLabel != other.defaultLabel) return false
+        if (args != other.args) return false
+        if (key != other.key) return false
+        if (namespace != other.namespace) return false
+        if (category != other.category) return false
+
+        return true
+    }
+
+    override fun hashCode(): Int {
+        var result = defaultLabel.hashCode()
+        result = 31 * result + args.hashCode()
+        result = 31 * result + key.hashCode()
+        result = 31 * result + namespace.hashCode()
+        result = 31 * result + category.hashCode()
+        return result
     }
 
 }

@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.definition
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.translator.I18nKeyProvider
+import fr.vsct.tock.translator.I18nKeyProvider.Companion.generateKey
 import fr.vsct.tock.translator.I18nLabelValue
 import mu.KotlinLogging
 
@@ -122,9 +123,9 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
      */
     private fun i18nKeyCategory(): String = findMainIntentName() ?: i18nNamespace
 
-    override fun provideI18nValue(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
+    override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
         val category = i18nKeyCategory()
-        return i18nValue(
+        return I18nLabelValue(
             generateKey(i18nNamespace, category, defaultLabel),
             i18nNamespace,
             category,
@@ -138,7 +139,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
      */
     fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue {
         val category = i18nKeyCategory()
-        return i18nValue(
+        return I18nLabelValue(
             key,
             i18nNamespace,
             category,

@@ -30,9 +30,29 @@ interface I18nKeyProvider {
          */
         fun simpleKeyProvider(namespace: String, category: String): I18nKeyProvider =
             object : I18nKeyProvider {
-                override fun provideI18nValue(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue =
-                    i18nValue(generateKey(namespace, category, defaultLabel), namespace, category, defaultLabel, args)
+                override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue =
+                    I18nLabelValue(
+                        generateKey(namespace, category, defaultLabel),
+                        namespace,
+                        category,
+                        defaultLabel,
+                        args
+                    )
             }
+
+        /**
+         * Generates a label key from a namespace, a category and a default label.
+         */
+        fun generateKey(namespace: String, category: String, defaultLabel: CharSequence): String {
+            val prefix = if (i18nOldIdBehaviour) {
+                category
+            } else if (category.isEmpty()) {
+                namespace
+            } else {
+                "${namespace}_$category"
+            }
+            return "${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}"
+        }
 
         //TODO remove this for 1.1.0
         private val i18nOldIdBehaviour = booleanProperty("tock_bot_i18n_generated_id", false)
@@ -42,44 +62,10 @@ interface I18nKeyProvider {
      * Gets an [I18nLabelValue] from a default label and option args.
      * This is the method to implement for this interface.
      */
-    fun provideI18nValue(defaultLabel: CharSequence, args: List<Any?> = emptyList()): I18nLabelValue
+    fun i18n(defaultLabel: CharSequence, args: List<Any?> = emptyList()): I18nLabelValue
 
     /**
-     * Generates a label key from a namespace, a category and a default label.
+     * Shortcut method of [i18n] with varargs.
      */
-    fun generateKey(namespace: String, category: String, defaultLabel: CharSequence): String {
-        val prefix = if (i18nOldIdBehaviour) {
-            category
-        } else if (category.isEmpty()) {
-            namespace
-        } else {
-            "${namespace}_$category"
-        }
-        return "${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}"
-    }
-
-    /**
-     * Instantiates an [I18nLabelValue].
-     */
-    fun i18nValue(
-        key: String,
-        namespace: String,
-        category: String,
-        defaultLabel: CharSequence,
-        args: List<Any?> = emptyList()
-    ): I18nLabelValue =
-        I18nLabelValue(
-            key.toLowerCase(),
-            namespace,
-            category.toLowerCase(),
-            defaultLabel,
-            args
-        )
-
-    /**
-     * Shortcut method.
-     */
-    fun i18n(defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue =
-        provideI18nValue(defaultLabel, args.toList())
-
+    fun i18n(defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue = i18n(defaultLabel, args.toList())
 }
