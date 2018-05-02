@@ -464,4 +464,7 @@ interface BotBus : I18nTranslator {
     //i18n provider implementation
     override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue =
         i18nProvider.i18n(defaultLabel, args)
+
+    //I18nTranslator implementation
+    override val contextId: String? get() = dialog.id.toString()
 }

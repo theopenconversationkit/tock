@@ -229,15 +229,14 @@ interface BotDefinition : I18nKeyProvider {
     fun i18nTranslator(
         userLocale: Locale,
         connectorType: ConnectorType,
-        userInterfaceType: UserInterfaceType = connectorType.userInterfaceType
+        userInterfaceType: UserInterfaceType = connectorType.userInterfaceType,
+        contextId: String? = null
     ): I18nTranslator =
         object : I18nTranslator {
-            override val userLocale: Locale
-                get() = userLocale
-            override val userInterfaceType: UserInterfaceType
-                get() = userInterfaceType
-            override val targetConnectorType: ConnectorType
-                get() = connectorType
+            override val userLocale: Locale get() = userLocale
+            override val userInterfaceType: UserInterfaceType get() = userInterfaceType
+            override val targetConnectorType: ConnectorType get() = connectorType
+            override val contextId: String? get() = contextId
 
             override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue {
                 return this@BotDefinition.i18n(defaultLabel, args)

@@ -55,17 +55,6 @@ data class I18nLocalizedLabel(
     fun randomAlternativesIndex(): Int =
         if (alternatives.isEmpty()) 0 else newInt(alternatives.size + 1)
 
-    fun randomText(index: Int? = null): String {
-        return if (alternatives.isEmpty()) {
-            label
-        } else {
-            (listOf(label) + alternatives).run {
-                val i = index ?: randomAlternativesIndex()
-                if (i >= size) {
-                    logger.warn { "not valid index $i for $this" }
-                }
-                this[i]
-            }
-        }
-    }
+    fun alternative(index:Int) : String = if (index == 0) label else alternatives[index - 1]
+
 }

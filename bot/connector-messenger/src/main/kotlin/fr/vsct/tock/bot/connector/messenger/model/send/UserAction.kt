@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.connector.messenger.model.send
 
 /**
- * Generic interface for messenger user action ( [Button] our [QuickReply] ).
+ * Generic interface for messenger user action ( [Button] or [QuickReply] ).
  */
 interface UserAction {
 

@@ -24,7 +24,9 @@ import java.util.Locale
 interface VoiceTransformer {
 
     /**
-     * Transform an arg to another arg.
+     * Transforms an argument passed to a [Translator].
+     *
+     * @return the new argument
      */
     fun transformArg(arg: Any, locale: Locale, userInterfaceType: UserInterfaceType): Any
 }

@@ -17,20 +17,45 @@
 package fr.vsct.tock.translator
 
 /**
- * A label value contains an unique key used to retrieve the label translations from the db,
+ * A label value contains an unique key used to retrieve the translations from the database.
+ *
  * There is also a default label used to generate the label if no translation is found, and optional
- * format pattern arguments.
+ * format pattern arguments for this current translation.
  */
 class I18nLabelValue constructor(
+    /**
+     * Unique key of the label (for a given namespace).
+     */
     _key: String,
+    /**
+     * Namespace of the label.
+     */
     _namespace: String,
+    /**
+     * Category of the label.
+     */
     _category: String,
+    /**
+     * The default label if no translation is found.
+     */
     val defaultLabel: CharSequence,
+    /**
+     * The optional format pattern arguments.
+     */
     val args: List<Any?> = emptyList()
 ) : CharSequence by defaultLabel {
 
+    /**
+     * Unique key of the label (for a given namespace).
+     */
     val key: String = _key.toLowerCase()
+    /**
+     * Namespace of the label.
+     */
     val namespace: String = _namespace.toLowerCase()
+    /**
+     * Category of the label.
+     */
     val category: String = _category.toLowerCase()
 
     override fun toString(): String {

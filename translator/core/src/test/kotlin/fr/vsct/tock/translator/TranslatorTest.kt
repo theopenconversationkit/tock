@@ -34,9 +34,11 @@ class TranslatorTest : AbstractTest() {
     fun formatMessage_shouldHandleWell_SpecialCharInChoiceFormat() {
         val result = Translator.formatMessage(
             "Hey'{0,choice,0#|1# and %%<b>when</b>%%} ?",
-            defaultLocale,
-            textChat,
-            null,
+            I18nContext(
+                defaultLocale,
+                textChat,
+                null
+            ),
             listOf(true)
         )
         assertEquals("Hey' and <b>when</b> ?", result)
@@ -44,7 +46,7 @@ class TranslatorTest : AbstractTest() {
 
     @Test
     fun formatMessage_shouldHandleWell_NullArgValue() {
-        val result = Translator.formatMessage("a {0}", defaultLocale, textChat, null, listOf(null))
+        val result = Translator.formatMessage("a {0}", I18nContext(defaultLocale, textChat, null), listOf(null))
         assertEquals("a ", result)
     }
 
@@ -77,7 +79,7 @@ class TranslatorTest : AbstractTest() {
             toTranslate
         )
 
-        val translated = Translator.translate(key, defaultLocale, textChat)
+        val translated = Translator.translate(key, I18nContext(defaultLocale, textChat))
         assertEquals(target, translated.toString())
 
         val key2 = I18nLabelValue(
@@ -87,7 +89,7 @@ class TranslatorTest : AbstractTest() {
             translated
         )
 
-        val translated2 = Translator.translate(key2, defaultLocale, textChat)
+        val translated2 = Translator.translate(key2, I18nContext(defaultLocale, textChat))
 
         assertEquals(translated, translated2)
     }
@@ -123,9 +125,9 @@ class TranslatorTest : AbstractTest() {
         )
 
 
-        assertEquals(target, Translator.translate(key, defaultLocale, textChat).toString())
+        assertEquals(target, Translator.translate(key, I18nContext(defaultLocale, textChat)).toString())
 
-        assertEquals(target, Translator.translate(key, defaultLocale, textChat).toString())
+        assertEquals(target, Translator.translate(key, I18nContext(defaultLocale, textChat)).toString())
 
         verify { i18nDAO.getLabelById(id.toId()) }
     }
@@ -145,8 +147,22 @@ class TranslatorTest : AbstractTest() {
 
         every { i18nDAO.getLabelById(id.toId()) }.returns(null)
 
-        assertEquals(toTranslate, Translator.translate(key, defaultLocale, textChat).toString())
+        assertEquals(toTranslate, Translator.translate(key, I18nContext(defaultLocale, textChat)).toString())
 
         verify { i18nDAO.getLabelById(id.toId()) }
+    }
+
+    @Test
+    fun `randomText returns the same label when index specified`() {
+        val label = I18nLocalizedLabel(defaultLocale, defaultUserInterface, "a", listOf("b"))
+        val l = I18nLabel(
+            "".toId(),
+            defaultNamespace,
+            "",
+            LinkedHashSet(listOf(label))
+        )
+
+        val index = 1
+        assertEquals("b", Translator.randomText(l, label, "contextId", index))
     }
 }

@@ -19,7 +19,7 @@ package fr.vsct.tock.translator
 import org.litote.kmongo.Id
 
 /**
- *
+ * I18n storage.
  */
 interface I18nDAO {
 
@@ -34,5 +34,20 @@ interface I18nDAO {
     fun saveIfNotExist(i18n: List<I18nLabel>)
 
     fun deleteByNamespaceAndId(namespace: String, id: Id<I18nLabel>)
+
+    /**
+     * Marks an alternative index as used, for the given localized label and context identifier.
+     */
+    fun addAlternativeIndex(label: I18nLabel, localized: I18nLocalizedLabel, alternativeIndex: Int, contextId: String)
+
+    /**
+     * Removes all alternative indexes for the given localized label and context identifier.
+     */
+    fun deleteAlternativeIndexes(label: I18nLabel, localized: I18nLocalizedLabel, contextId: String)
+
+    /**
+     * Get all current alternative indexes for the given localized label and context identifier.
+     */
+    fun getAlternativeIndexes(label: I18nLabel, localized: I18nLocalizedLabel, contextId: String): Set<Int>
 
 }

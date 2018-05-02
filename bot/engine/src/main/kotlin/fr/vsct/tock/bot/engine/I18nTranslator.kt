@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.translator.I18nContext
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelValue
 import fr.vsct.tock.translator.RawString
@@ -46,6 +47,11 @@ interface I18nTranslator : I18nKeyProvider {
     val targetConnectorType: ConnectorType
 
     /**
+     * The current context identifier.
+     */
+    val contextId: String?
+
+    /**
      * Translates and format if needed the text with the optionals args.
      */
     fun translate(text: CharSequence?, vararg args: Any?): CharSequence {
@@ -67,9 +73,12 @@ interface I18nTranslator : I18nKeyProvider {
         if (key == null) ""
         else Translator.translate(
             key,
-            userLocale,
-            userInterfaceType,
-            targetConnectorType.id
+            I18nContext(
+                userLocale,
+                userInterfaceType,
+                targetConnectorType.id,
+                contextId
+            )
         )
 
     /**

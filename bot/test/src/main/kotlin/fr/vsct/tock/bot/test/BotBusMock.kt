@@ -40,6 +40,7 @@ import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.provide
+import fr.vsct.tock.translator.I18nContext
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelValue
 import fr.vsct.tock.translator.Translator
@@ -53,8 +54,10 @@ import java.util.Locale
  *
  * The answers of the bot are available in the [answers] property.
  */
-open class BotBusMock(val context: BotBusMockContext,
-                      override val action: Action = context.firstAction) : BotBus {
+open class BotBusMock(
+    val context: BotBusMockContext,
+    override val action: Action = context.firstAction
+) : BotBus {
 
     private val logger = KotlinLogging.logger {}
 
@@ -144,7 +147,8 @@ open class BotBusMock(val context: BotBusMockContext,
     /**
      * Simulate an action entity.
      */
-    fun addActionEntity(entity: Entity, textContent: String): BotBusMock = addActionEntity(ContextValue(entity, null, textContent))
+    fun addActionEntity(entity: Entity, textContent: String): BotBusMock =
+        addActionEntity(ContextValue(entity, null, textContent))
 
     override var userTimeline: UserTimeline
         get() = context.userTimeline
@@ -182,7 +186,8 @@ open class BotBusMock(val context: BotBusMockContext,
             context.connectorType = value
         }
 
-    override var connectorData: ConnectorData = ConnectorData(ConnectorCallbackBase(action.applicationId, connectorType))
+    override var connectorData: ConnectorData =
+        ConnectorData(ConnectorCallbackBase(action.applicationId, connectorType))
     /**
      * The translator used to translate labels - default is NoOp.
      */
@@ -230,7 +235,8 @@ open class BotBusMock(val context: BotBusMockContext,
         }
 
         if (context.dialog.state.currentIntent != null
-                && !context.story.definition.supportIntent(context.dialog.state.currentIntent!!)) {
+            && !context.story.definition.supportIntent(context.dialog.state.currentIntent!!)
+        ) {
             val storyDefinition = context.botDefinition.findStoryDefinition(context.dialog.state.currentIntent!!)
             context.story = Story(storyDefinition, storyDefinition.mainIntent())
             context.dialog.stories.add(context.story)
@@ -283,10 +289,10 @@ open class BotBusMock(val context: BotBusMockContext,
 
     private fun addSnapshot() {
         context.snapshots.add(
-                Snapshot(
-                        dialog.state.currentIntent?.name,
-                        dialog.state.entityValues.values.mapNotNull { it.value }
-                )
+            Snapshot(
+                dialog.state.currentIntent?.name,
+                dialog.state.entityValues.values.mapNotNull { it.value }
+            )
         )
     }
 
@@ -343,15 +349,19 @@ open class BotBusMock(val context: BotBusMockContext,
     }
 
     override fun translate(key: I18nLabelValue?): CharSequence =
-            if (key == null) ""
-            else Translator.formatMessage(
-                    translator.translate(
-                            key.defaultLabel.toString(),
-                            defaultLocale,
-                            userTimeline.userPreferences.locale
-                    ),
-                    userTimeline.userPreferences.locale,
-                    userInterfaceType,
-                    targetConnectorType.id,
-                    key.args)
+        if (key == null) ""
+        else Translator.formatMessage(
+            translator.translate(
+                key.defaultLabel.toString(),
+                defaultLocale,
+                userTimeline.userPreferences.locale
+            ),
+            I18nContext(
+                userTimeline.userPreferences.locale,
+                userInterfaceType,
+                targetConnectorType.id,
+                dialog.id.toString()
+            ),
+            key.args
+        )
 }

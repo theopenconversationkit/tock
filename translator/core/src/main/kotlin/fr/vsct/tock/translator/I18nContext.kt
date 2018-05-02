@@ -16,19 +16,27 @@
 
 package fr.vsct.tock.translator
 
-import fr.vsct.tock.shared.defaultLocale
-import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
+import java.util.Locale
 
 /**
- *
+ * Contains all data used to select the more relevant translation.
  */
-class I18nLabelLocalizedTest {
-
-    @Test
-    fun randomText_shouldReturnsTheSameLabel_WhenIndexSpecified() {
-        val label = I18nLocalizedLabel(defaultLocale, defaultUserInterface, "a", listOf("b"))
-        val index = 1
-        assertEquals(label.randomText(index), label.randomText(index))
-    }
+data class I18nContext(
+    /**
+     * The current user [Locale].
+     */
+    val userLocale: Locale,
+    /**
+     * The current user interface type.
+     */
+    val userInterfaceType: UserInterfaceType,
+    /**
+     * The connector identifier used for the response.
+     */
+    val connectorId: String? = null,
+    /**
+     * The current context identifier.
+     */
+    val contextId: String? = null
+) {
 }
