@@ -23,12 +23,16 @@ import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.Classification
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
 import fr.vsct.tock.shared.defaultLocale
 import io.mockk.every
 import io.mockk.verify
+import mu.KotlinLogging
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.litote.kmongo.Id
+import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.Instant.now
 import java.util.Locale
@@ -40,6 +44,8 @@ import kotlin.test.assertTrue
  *
  */
 class ApplicationCodecServiceTest : AbstractTest() {
+
+    private val logger = KotlinLogging.logger {}
 
     @BeforeEach
     fun before() {
@@ -103,12 +109,70 @@ class ApplicationCodecServiceTest : AbstractTest() {
         val app = app.copy(supportedLocales = setOf(newLocale))
         val dump = ApplicationDump(app)
 
-        val report = ApplicationCodecService.import(namespace, dump, ApplicationImportConfiguration(defaultModelMayExist = true))
+        val report =
+            ApplicationCodecService.import(namespace, dump, ApplicationImportConfiguration(defaultModelMayExist = true))
         assertTrue(report.modified)
         verify {
             context.config.save(match<ApplicationDefinition> {
                 it.supportedLocales.contains(newLocale)
                         && !it.supportedLocales.contains(defaultLocale)
+            })
+        }
+    }
+
+    @Test
+    fun `importing shared intent does not add unknown intent id to the app`() {
+        val newLocale = if (Locale.ITALIAN == defaultLocale) Locale.ENGLISH else Locale.ITALIAN
+        val otherIntent =
+            intent2Definition.copy(_id = newId(), name = "other", sharedIntents = setOf(defaultIntentDefinition._id))
+        val andOtherIntent =
+            intent2Definition.copy(_id = newId(), name = "andOther", sharedIntents = setOf(otherIntent._id))
+
+        logger.debug { otherIntent }
+        logger.debug { andOtherIntent }
+
+        val app = app.copy(
+            supportedLocales = setOf(newLocale),
+            intents = setOf(defaultIntentDefinition._id, otherIntent._id, andOtherIntent._id)
+        )
+        val dump = ApplicationDump(
+            app,
+            intents = listOf(
+                defaultIntentDefinition.copy(sharedIntents = setOf(otherIntent._id)),
+                otherIntent,
+                andOtherIntent
+            )
+        )
+
+        val report = ApplicationCodecService.import(namespace, dump)
+        assertTrue(report.modified)
+        assertEquals(2, report.intentsImported.size)
+        verify {
+            context.config.save(match<IntentDefinition> {
+                it.name == defaultIntentDefinition.name
+                        && it._id == defaultIntentDefinition._id
+                        && it.sharedIntents.isEmpty()
+            })
+        }
+        var newOtherIntentId: Id<IntentDefinition>? = null
+        verify {
+            context.config.save(match<IntentDefinition> {
+                (it.name == otherIntent.name
+                        && it._id != otherIntent._id
+                        && it.sharedIntents.size == 1
+                        && it.sharedIntents.contains(defaultIntentDefinition._id)
+                        )
+                    .apply { if (this) newOtherIntentId = it._id }
+
+            })
+        }
+        verify {
+            context.config.save(match<IntentDefinition> {
+                it.name == andOtherIntent.name
+                        && it._id != andOtherIntent._id
+                        && it.sharedIntents.size == 1
+                        && it.sharedIntents.contains(newOtherIntentId)
+
             })
         }
     }

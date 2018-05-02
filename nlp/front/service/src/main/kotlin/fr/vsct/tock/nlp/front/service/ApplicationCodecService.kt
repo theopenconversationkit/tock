@@ -123,18 +123,25 @@ object ApplicationCodecService : ApplicationCodec {
                     }
                 val appId = app._id
 
+                val intentsToCreate = mutableListOf<IntentDefinition>()
                 var intentsIdsMap = dump.intents.map { i ->
                     var intent = config.getIntentByNamespaceAndName(i.namespace, i.name)
                     if (intent == null) {
                         intent = i.copy(_id = newId(), applications = setOf(appId))
-                        config.save(intent)
-                        report.add(intent)
-                        logger.debug { "Import intent $intent" }
+                        intentsToCreate.add(intent)
                     } else {
                         config.save(intent.copy(applications = intent.applications + appId))
                     }
                     i._id to intent._id
                 }.toMap()
+
+                //save new intents
+                intentsToCreate.forEach { intent ->
+                    val newIntent = intent.copy(sharedIntents = intent.sharedIntents.mapNotNull { intentsIdsMap[it] }.toSet())
+                    config.save(newIntent)
+                    report.add(newIntent)
+                    logger.debug { "Import intent $newIntent" }
+                }
 
                 //update application intent list & locales
                 config.save(

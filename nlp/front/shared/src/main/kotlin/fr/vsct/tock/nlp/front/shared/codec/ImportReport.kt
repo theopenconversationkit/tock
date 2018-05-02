@@ -22,22 +22,24 @@ import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 
 /**
- *
+ * The import result report.
  */
 data class ImportReport(
-        val applicationsImported: MutableSet<String> = mutableSetOf(),
-        val entitiesImported: MutableSet<String> = mutableSetOf(),
-        val intentsImported: MutableSet<String> = mutableSetOf(),
-        var sentencesImported: Long = 0L,
-        var localeAdded: Boolean  = false,
-        var success: Boolean = true,
-        val errorMessages: MutableList<String> = mutableListOf()) {
+    val applicationsImported: MutableSet<String> = mutableSetOf(),
+    val entitiesImported: MutableSet<String> = mutableSetOf(),
+    val intentsImported: MutableSet<String> = mutableSetOf(),
+    var sentencesImported: Long = 0L,
+    var localeAdded: Boolean = false,
+    var success: Boolean = true,
+    val errorMessages: MutableList<String> = mutableListOf()
+) {
 
-    val modified: Boolean get() = applicationsImported.isNotEmpty()
-            || entitiesImported.isNotEmpty()
-            || intentsImported.isNotEmpty()
-            || sentencesImported != 0L
-            || localeAdded
+    val modified: Boolean
+        get() = applicationsImported.isNotEmpty()
+                || entitiesImported.isNotEmpty()
+                || intentsImported.isNotEmpty()
+                || sentencesImported != 0L
+                || localeAdded
 
     fun add(app: ApplicationDefinition) = applicationsImported.add(app.qualifiedName)
 

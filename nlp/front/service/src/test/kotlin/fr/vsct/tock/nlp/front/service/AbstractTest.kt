@@ -86,8 +86,14 @@ abstract class AbstractTest {
                         defaultIntentDefinition,
                         intent2Definition
                     )
+
+            every { config.getIntentById(any()) } returns null
             every { config.getIntentById(defaultIntentDefinition._id) } returns defaultIntentDefinition
             every { config.getIntentById(intent2Definition._id) } returns intent2Definition
+
+            every { config.getIntentByNamespaceAndName(any(), any()) } returns null
+            every { config.getIntentByNamespaceAndName(namespace, defaultIntentDefinition.name) } returns defaultIntentDefinition
+            every { config.getIntentByNamespaceAndName(namespace, intent2Definition.name) } returns intent2Definition
 
             tockInternalInjector = KodeinInjector()
             injector.inject(Kodein {
