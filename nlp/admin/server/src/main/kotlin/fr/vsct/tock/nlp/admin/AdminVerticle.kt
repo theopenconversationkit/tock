@@ -410,7 +410,8 @@ open class AdminVerticle : WebVerticle() {
                     ?.run {
                         copy(
                             description = entityType.description,
-                            subEntities = entityType.subEntities
+                            subEntities = entityType.subEntities,
+                            aliases = entityType.aliases
                         )
                     }
                 if (update != null) {

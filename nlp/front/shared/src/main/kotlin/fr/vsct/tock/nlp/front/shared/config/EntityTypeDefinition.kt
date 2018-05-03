@@ -19,6 +19,7 @@ package fr.vsct.tock.nlp.front.shared.config
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
+import java.util.Locale
 
 /**
  * A type of entity.
@@ -37,6 +38,10 @@ data class EntityTypeDefinition(
      * The sub entites of this entity.
      */
     val subEntities: List<EntityDefinition> = emptyList(),
+    /**
+     * The entity aliases
+     */
+    val aliases: Map<Locale, List<String>> = emptyMap(),
     /**
      * The unique id of the entity.
      */
