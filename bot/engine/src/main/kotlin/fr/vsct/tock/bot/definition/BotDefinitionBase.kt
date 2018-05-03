@@ -62,7 +62,7 @@ open class BotDefinitionBase(
                 "tock_unknown_story",
                 object : SimpleStoryHandlerBase() {
                     override fun action(bus: BotBus) {
-                        bus.end(bus.baseI18nKey("Sorry, I didn't understand :("))
+                        bus.end(bus.botDefinition.defaultUnknownAnswer)
                     }
                 },
                 setOf(Intent.unknown)
@@ -128,10 +128,16 @@ open class BotDefinitionBase(
         private fun BotBus.baseI18nKey(
             defaultLabel: String,
             vararg args: Any?
-        ): CharSequence =
+        ): I18nLabelKey = i18nKey(botDefinition.namespace, defaultLabel, *args)
+
+        private fun i18nKey(
+            namespace: String,
+            defaultLabel: String,
+            vararg args: Any?
+        ): I18nLabelKey =
             I18nLabelKey(
                 Translator.getKeyFromDefaultLabel(defaultLabel),
-                botDefinition.namespace,
+                namespace,
                 "keywords",
                 defaultLabel,
                 args.toList()
@@ -179,4 +185,9 @@ open class BotDefinitionBase(
      * Constructor intended to be used by an enum.
      */
     constructor(botId: String, stories: Array<out StoryDefinition>) : this(botId, botId, stories.toList(), botId)
+
+    /**
+     * The default unknown answer.
+     */
+    override val defaultUnknownAnswer: I18nLabelKey get() = i18nKey(namespace, "Sorry, I didn't understand :(")
 }

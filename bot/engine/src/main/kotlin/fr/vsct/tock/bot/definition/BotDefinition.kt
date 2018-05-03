@@ -127,6 +127,11 @@ interface BotDefinition : I18nKeyProvider {
     val unknownStory: StoryDefinition
 
     /**
+     * The default unknown answer.
+     */
+    val defaultUnknownAnswer: I18nLabelKey
+
+    /**
      * To handle keywords - used to bypass nlp.
      */
     val keywordStory: StoryDefinition
