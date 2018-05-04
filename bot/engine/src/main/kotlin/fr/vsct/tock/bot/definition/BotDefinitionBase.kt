@@ -90,7 +90,7 @@ open class BotDefinitionBase(
             )
             bus.botDefinition.testBehaviour.setup(bus)
             if (sendEnd) {
-                bus.end(bus.baseI18nKey("test context activated (user state cleaned)"))
+                bus.end(bus.baseI18nValue("test context activated (user state cleaned)"))
             }
         }
 
@@ -105,7 +105,7 @@ open class BotDefinitionBase(
             )
             bus.botDefinition.testBehaviour.cleanup(bus)
             if (sendEnd) {
-                bus.end(bus.baseI18nKey("test context disabled"))
+                bus.end(bus.baseI18nValue("test context disabled"))
             }
         }
 
@@ -116,7 +116,7 @@ open class BotDefinitionBase(
             bus.handleDelete()
             if (sendEnd) {
                 bus.end(
-                    bus.baseI18nKey(
+                    bus.baseI18nValue(
                         "user removed - {0} {1}",
                         bus.userTimeline.userPreferences.firstName,
                         bus.userTimeline.userPreferences.lastName
@@ -125,12 +125,12 @@ open class BotDefinitionBase(
             }
         }
 
-        private fun BotBus.baseI18nKey(
+        private fun BotBus.baseI18nValue(
             defaultLabel: String,
             vararg args: Any?
-        ): I18nLabelValue = i18nKey(botDefinition.namespace, defaultLabel, *args)
+        ): I18nLabelValue = i18nValue(botDefinition.namespace, defaultLabel, *args)
 
-        private fun i18nKey(
+        private fun i18nValue(
             namespace: String,
             defaultLabel: String,
             vararg args: Any?
@@ -173,7 +173,7 @@ open class BotDefinitionBase(
                             deleteKeyword -> deleteKeywordHandler(bus)
                             testContextKeyword -> testContextKeywordHandler(bus)
                             endTestContextKeyword -> endTestContextKeywordHandler(bus)
-                            else -> bus.end(bus.baseI18nKey("unknown keyword : {0}"), text)
+                            else -> bus.end(bus.baseI18nValue("unknown keyword : {0}"), text)
                         }
                     }
                 },

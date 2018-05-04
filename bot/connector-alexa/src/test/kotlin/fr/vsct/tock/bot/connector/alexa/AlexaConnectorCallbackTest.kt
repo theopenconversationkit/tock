@@ -20,7 +20,7 @@ import com.amazon.speech.ui.PlainTextOutputSpeech
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.I18nTranslator
-import fr.vsct.tock.translator.I18nLabelKey
+import fr.vsct.tock.translator.I18nLabelValue
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
@@ -35,12 +35,12 @@ class AlexaConnectorCallbackTest {
     fun `sendResponse with no test returns unknown response`() {
         val botDefinition: BotDefinition = mockk()
         val controller: ConnectorController = mockk()
-        val unknownAnswer: I18nLabelKey = I18nLabelKey("", "", "", "label")
+        val unknownAnswer = I18nLabelValue("", "", "", "label")
         val i18nTranslator: I18nTranslator = mockk()
         every { controller.botDefinition } returns botDefinition
         every { botDefinition.i18nTranslator(any(), any(), any()) } returns i18nTranslator
         every { botDefinition.defaultUnknownAnswer } returns unknownAnswer
-        every { i18nTranslator.translate(any<I18nLabelKey>()) } returns unknownAnswer
+        every { i18nTranslator.translate(any<I18nLabelValue>()) } returns unknownAnswer
         val callback = AlexaConnectorCallback(
             "id",
             controller,
