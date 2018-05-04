@@ -36,11 +36,14 @@ import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.shared.concat
+import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.translator.UserInterfaceType
 import fr.vsct.tock.translator.isSSML
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
+import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
@@ -48,16 +51,18 @@ import java.util.concurrent.CopyOnWriteArrayList
  */
 internal data class AlexaConnectorCallback(
     override val applicationId: String,
-    val controller: ConnectorController,
-    val alexaTockMapper: AlexaTockMapper,
-    val context: RoutingContext,
-    val actions: MutableList<ActionWithDelay> = CopyOnWriteArrayList()
+    private val controller: ConnectorController,
+    private val alexaTockMapper: AlexaTockMapper,
+    private val context: RoutingContext,
+    private val actions: MutableList<ActionWithDelay> = CopyOnWriteArrayList()
 ) : ConnectorCallbackBase(applicationId, alexaConnectorType), SpeechletV2 {
 
     @Volatile
     private var answered: Boolean = false
     @Volatile
-    private var alexaResponse: SpeechletResponse? = null
+    internal var alexaResponse: SpeechletResponse? = null
+    @Volatile
+    private var locale: Locale = defaultLocale
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -76,7 +81,8 @@ internal data class AlexaConnectorCallback(
     private fun buildResponse(): SpeechletResponse {
         val answer = actions.mapNotNull { it.action as? SendSentence }
             .mapNotNull { it.stringText }
-            .reduce(::concat)
+            .takeUnless { it.isEmpty() }
+            ?.reduce(::concat)
         val end = actions.map { it.action }.filterIsInstance<SendSentence>().any {
             (it.message(alexaConnectorType) as? AlexaMessage?)?.end ?: false
         }
@@ -87,7 +93,15 @@ internal data class AlexaConnectorCallback(
                 .firstOrNull { it.card != null }
                 ?.card
         val speech =
-            if (answer.isSSML()) SsmlOutputSpeech().apply { ssml = answer }
+            if (answer == null) PlainTextOutputSpeech().apply {
+
+                text = controller.botDefinition.i18nTranslator(
+                    locale,
+                    alexaConnectorType,
+                    UserInterfaceType.voiceAssistant
+                ).translate(controller.botDefinition.defaultUnknownAnswer).toString()
+            }
+            else if (answer.isSSML()) SsmlOutputSpeech().apply { ssml = answer }
             else PlainTextOutputSpeech().apply { text = answer }
 
         val reprompt = actions.map { it.action }
@@ -155,10 +169,14 @@ internal data class AlexaConnectorCallback(
 
 
     private fun logRequest(method: String, req: SpeechletRequestEnvelope<*>) {
-        logger.debug {
-            "$method : \n${mapper.writeValueAsString(req.context)}\n${mapper.writeValueAsString(req.session)}\n${mapper.writeValueAsString(
-                req.request
-            )}"
+        try {
+            logger.debug {
+                "$method : \n${mapper.writeValueAsString(req.context)}\n${mapper.writeValueAsString(req.session)}\n${mapper.writeValueAsString(
+                    req.request
+                )}"
+            }
+        } catch (e: Exception) {
+            logger.error(e)
         }
     }
 
@@ -180,6 +198,8 @@ internal data class AlexaConnectorCallback(
                 requestEnvelope.request,
                 controller.botDefinition
             )
+            locale = Locale(requestEnvelope.request.locale.language)
+
             controller.handle(event, ConnectorData(this))
         } catch (t: Throwable) {
             BotRepository.requestTimer.throwable(t, timerData)
