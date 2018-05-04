@@ -56,19 +56,21 @@ class SlackConnector(val applicationId: String,
                     val body = context.convertUrlEncodedStringToJson()
                     logger.info { "message received from slack: $body" }
                     val message = mapper.readValue<SlackMessageIn>(body, SlackMessageIn::class.java)
-
-                    vertx.executeBlocking<Void>({
-                        try {
-                            val event = SlackRequestConverter.toEvent(message, applicationId)
-                            if (event != null) {
-                                controller.handle(event)
-                            } else {
-                                logger.logError("unable to convert $message to event", requestTimerData)
+                    if(message.user_id != "USLACKBOT")
+                    {
+                        vertx.executeBlocking<Void>({
+                            try {
+                                val event = SlackRequestConverter.toEvent(message, applicationId)
+                                if (event != null) {
+                                    controller.handle(event)
+                                } else {
+                                    logger.logError("unable to convert $message to event", requestTimerData)
+                                }
+                            } catch (e: Throwable) {
+                                logger.logError(e, requestTimerData)
                             }
-                        } catch (e: Throwable) {
-                            logger.logError(e, requestTimerData)
-                        }
-                    }, false, {})
+                        }, false, {})
+                    }
                 } catch (e: Throwable) {
                     logger.logError(e, requestTimerData)
                 } finally {
