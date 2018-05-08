@@ -64,6 +64,14 @@ export class ConnectorType {
     return this.id === "ga";
   }
 
+  isSlack(): boolean {
+    return this.id === "slack";
+  }
+
+  isAlexa(): boolean {
+    return this.id === "alexa";
+  }
+
   static fromJSON(json?: any): ConnectorType {
     if (!json) {
       return null;
