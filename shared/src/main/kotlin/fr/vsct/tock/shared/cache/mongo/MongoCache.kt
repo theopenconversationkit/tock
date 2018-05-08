@@ -19,7 +19,7 @@ package fr.vsct.tock.shared.cache.mongo
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
 import com.mongodb.client.model.IndexOptions
-import com.mongodb.client.model.UpdateOptions
+import com.mongodb.client.model.ReplaceOptions
 import fr.vsct.tock.shared.cache.TockCache
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.getDatabase
@@ -52,12 +52,12 @@ internal object MongoCache : TockCache {
 
     override fun <T> getAll(type: String): Map<Id<T>, Any> {
         return col
-                .find("{'type':${type.json}}")
-                .map {
-                    @Suppress("UNCHECKED_CAST")
-                    it.id as Id<T> to it.toValue()
-                }
-                .toMap()
+            .find("{'type':${type.json}}")
+            .map {
+                @Suppress("UNCHECKED_CAST")
+                it.id as Id<T> to it.toValue()
+            }
+            .toMap()
     }
 
     override fun <T> get(id: Id<T>, type: String): T? {
@@ -73,9 +73,10 @@ internal object MongoCache : TockCache {
 
     override fun <T : Any> put(id: Id<T>, type: String, data: T) {
         col.replaceOne(
-                "{id:${id.json}, type:${type.json}}",
-                MongoCacheData.fromValue(id, type, data),
-                UpdateOptions().upsert(true))
+            "{id:${id.json}, type:${type.json}}",
+            MongoCacheData.fromValue(id, type, data),
+            ReplaceOptions().upsert(true)
+        )
     }
 
     override fun <T> remove(id: Id<T>, type: String) {

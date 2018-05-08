@@ -136,7 +136,7 @@ Shared utility classes and extensions
 
 # Package fr.vsct.tock.shared.cache
 
-Cache utilities - deprecated package - will be removed in 1.0
+Internal cache utilities
 
 # Package fr.vsct.tock.shared.jackson
 

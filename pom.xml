@@ -31,22 +31,22 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.2.31</kotlin>
+        <kotlin>1.2.41</kotlin>
 
         <slf4j>1.7.25</slf4j>
         <logback>1.2.3</logback>
         <kotlin-logging>1.5.4</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>3.7.0-rc0</kmongo>
+        <kmongo>3.7.0</kmongo>
         <fongo>2.2.0-RC1</fongo>
         <jackson>2.9.3</jackson>
         <jackson-module>2.9.3</jackson-module>
-        <klaxon>2.1.14</klaxon>
+        <klaxon>3.0.2</klaxon>
         <vertx>3.5.1</vertx>
         <retrofit>2.4.0</retrofit>
         <okhttp>3.10.0</okhttp>
-        <guava>24.1-jre</guava>
+        <guava>25.0-jre</guava>
         <google-auth>1.23.0</google-auth>
         <jasypt>1.9.2</jasypt>
         <commons-csv>1.5</commons-csv>
@@ -55,8 +55,8 @@
         <commons-lang>3.7</commons-lang>
 
         <junit-platform>1.1.1</junit-platform>
-        <junit-jupiter>5.1.1</junit-jupiter>
-        <mockk>1.7.15</mockk>
+        <junit-jupiter>5.2.0</junit-jupiter>
+        <mockk>1.7.17</mockk>
 
         <plugin.surefire>2.19.1</plugin.surefire>
         <plugin.source>3.0.1</plugin.source>
@@ -66,7 +66,7 @@
         <plugin.dokka>0.9.16</plugin.dokka>
         <plugin.assembly>3.1.0</plugin.assembly>
         <plugin.frontend>1.6</plugin.frontend>
-        <plugin.clean>3.0.0</plugin.clean>
+        <plugin.clean>3.1.0</plugin.clean>
         <plugin.jar>3.1.0</plugin.jar>
 
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
