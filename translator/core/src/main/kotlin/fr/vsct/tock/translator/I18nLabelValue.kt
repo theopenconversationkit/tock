@@ -26,15 +26,15 @@ class I18nLabelValue constructor(
     /**
      * Unique key of the label (for a given namespace).
      */
-    _key: String,
+    key: String,
     /**
      * Namespace of the label.
      */
-    _namespace: String,
+    namespace: String,
     /**
      * Category of the label.
      */
-    _category: String,
+    category: String,
     /**
      * The default label if no translation is found.
      */
@@ -48,15 +48,15 @@ class I18nLabelValue constructor(
     /**
      * Unique key of the label (for a given namespace).
      */
-    val key: String = _key.toLowerCase()
+    val key: String = key.toLowerCase()
     /**
      * Namespace of the label.
      */
-    val namespace: String = _namespace.toLowerCase()
+    val namespace: String = namespace.toLowerCase()
     /**
      * Category of the label.
      */
-    val category: String = _category.toLowerCase()
+    val category: String = category.toLowerCase()
 
     override fun toString(): String {
         return defaultLabel.toString()
