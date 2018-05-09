@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.bot.admin.bot
 
-import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.shared.property
 import org.litote.kmongo.Data
@@ -90,10 +89,14 @@ data class BotApplicationConfiguration(
         private fun getLocalhostIP(): String {
             return NetworkInterface.getNetworkInterfaces()
                 .toList()
-                .flatMap { it.inetAddresses.toList().filterIsInstance<Inet4Address>() }
-                .find { it.hostName.startsWith("192.168.0") }
-                ?.hostName
-                    ?: "localhost"
+                .run {
+                    find { it.name.contains("eno") }
+                        ?.inetAddresses?.toList()?.filterIsInstance<Inet4Address>()?.firstOrNull()?.hostName
+                            ?: flatMap { it.inetAddresses.toList().filterIsInstance<Inet4Address>() }
+                                .find { it.hostName.startsWith("192.168.0") }
+                                ?.hostName
+                            ?: "localhost"
+                }
         }
     }
 
