@@ -49,7 +49,7 @@ import fr.vsct.tock.translator.UserInterfaceType
 import java.util.Locale
 
 /**
- * A new bus is generated for each user request.
+ * A new bus instance is created for each user request.
  *
  * The bus is used by bot implementations to reply to the user request.
  */

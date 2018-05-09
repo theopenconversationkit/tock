@@ -10,7 +10,7 @@ Avec Maven :
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>bot-test</artifactId>
-            <version>1.0.0-rc0</version>
+            <version>1.0.0</version>
             <scope>test</scope>
         </dependency>
 ```
@@ -18,7 +18,7 @@ Avec Maven :
 ou Gradle :
 
 ```gradle
-      testCompile 'fr.vsct.tock:bot-test:1.0.0-rc0'
+      testCompile 'fr.vsct.tock:bot-test:1.0.0'
 ``` 
 
 L'ensemble de ce framework est documenté au format KDoc [ici](../dokka/tock/fr.vsct.tock.bot.test).
@@ -141,7 +141,7 @@ Par exemple :
 permet d'indiquer que la phrase "Lille" est catégorisée comme une intention *indicate_location* et avec une valeur 
 pour l'entité *location* qui va être la localisation *lille*
 
-Enfin Il est possible de modifier toutes les valeurs du bus mocké à l'initialisation. Dans l'exemple suivant, on simule l'intention secondaire *indicate_location*
+Enfin il est possible de modifier toutes les valeurs du bus mocké à l'initialisation. Dans l'exemple suivant, on simule l'intention secondaire *indicate_location*
 afin d'indiquer l'origine : 
 
 ```kotlin

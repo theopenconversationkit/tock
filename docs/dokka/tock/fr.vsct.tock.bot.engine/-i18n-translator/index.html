@@ -8,11 +8,20 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine</a>&nbsp;/&nbsp;<a href="./index.html">I18nTranslator</a><br/>
 <br/>
 <h1>I18nTranslator</h1>
-<code><span class="keyword">interface </span><span class="identifier">I18nTranslator</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">I18nKeyProvider</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/I18nTranslator.kt#L31">(source)</a>
+<code><span class="keyword">interface </span><span class="identifier">I18nTranslator</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">I18nKeyProvider</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/I18nTranslator.kt#L32">(source)</a>
 <p>Translates <a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html">CharSequence</a> depending of current <a href="user-locale.html">userLocale</a>, <a href="user-interface-type.html">userInterfaceType</a> and <a href="target-connector-type.html">targetConnectorType</a>.</p>
 <h3>Properties</h3>
 <table>
 <tbody>
+<tr>
+<td>
+<p><a href="context-id.html">contextId</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">contextId</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code>
+<p>The current context identifier.</p>
+</td>
+</tr>
 <tr>
 <td>
 <p><a href="target-connector-type.html">targetConnectorType</a></p>
@@ -520,7 +529,7 @@ from an <a href="./index.html">I18nTranslator</a>.</p>
 </td>
 <td>
 <code><span class="keyword">interface </span><span class="identifier">BotBus</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="./index.html"><span class="identifier">I18nTranslator</span></a></code>
-<p>A new bus is generated for each user request.</p>
+<p>A new bus instance is created for each user request.</p>
 </td>
 </tr>
 </tbody>

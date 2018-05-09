@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.definition</a>&nbsp;/&nbsp;<a href="./index.html">StoryHandlerBase</a><br/>
 <br/>
 <h1>StoryHandlerBase</h1>
-<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">StoryHandlerBase</span><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler/index.html"><span class="identifier">StoryHandler</span></a><span class="symbol">, </span><span class="identifier">I18nKeyProvider</span><span class="symbol">, </span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/definition/StoryHandlerBase.kt#L29">(source)</a>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">StoryHandlerBase</span><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler/index.html"><span class="identifier">StoryHandler</span></a><span class="symbol">, </span><span class="identifier">I18nKeyProvider</span><span class="symbol">, </span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/definition/StoryHandlerBase.kt#L30">(source)</a>
 <p>Base implementation of <a href="../-story-handler/index.html">StoryHandler</a>.
 Provides also a convenient implementation of <a href="#">I18nKeyProvider</a> to support i18n.</p>
 <h3>Constructors</h3>
@@ -82,6 +82,13 @@ Provides also a convenient implementation of <a href="#">I18nKeyProvider</a> to 
 </tr>
 <tr>
 <td>
+<p><a href="i18n.html">i18n</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">i18n</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$i18n(kotlin.CharSequence, kotlin.collections.List((kotlin.Any)))/defaultLabel">defaultLabel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$i18n(kotlin.CharSequence, kotlin.collections.List((kotlin.Any)))/args">args</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">I18nLabelValue</span></code></td>
+</tr>
+<tr>
+<td>
 <p><a href="i18n-key.html">i18nKey</a></p>
 </td>
 <td>
@@ -97,13 +104,6 @@ Provides also a convenient implementation of <a href="#">I18nKeyProvider</a> to 
 <code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">newHandlerDefinition</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$newHandlerDefinition(fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="index.html#T"><span class="identifier">T</span></a></code>
 <p>Instantiates new instance of <a href="index.html#T">T</a>.</p>
 </td>
-</tr>
-<tr>
-<td>
-<p><a href="provide-i18n-value.html">provideI18nValue</a></p>
-</td>
-<td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">provideI18nValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$provideI18nValue(kotlin.CharSequence, kotlin.collections.List((kotlin.Any)))/defaultLabel">defaultLabel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$provideI18nValue(kotlin.CharSequence, kotlin.collections.List((kotlin.Any)))/args">args</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-any/index.html"><span class="identifier">Any</span></a><span class="symbol">?</span><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">I18nLabelValue</span></code></td>
 </tr>
 <tr>
 <td>

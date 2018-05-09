@@ -383,6 +383,18 @@
   </li>
 
         
+        
+        
+        
+
+
+  <li class="md-nav__item">
+    <a href="../contribuer/" title="Contribuer au projet" class="md-nav__link">
+      Contribuer au projet
+    </a>
+  </li>
+
+        
     </ul>
 </nav>
                   </div>
@@ -446,14 +458,14 @@
 <div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>fr.vsct.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>bot-test<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>1.0.0-rc0<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;version&gt;</span>1.0.0<span class="nt">&lt;/version&gt;</span>
             <span class="nt">&lt;scope&gt;</span>test<span class="nt">&lt;/scope&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 
 
 <p>ou Gradle :</p>
-<div class="codehilite"><pre><span></span>      testCompile &#39;fr.vsct.tock:bot-test:1.0.0-rc0&#39;
+<div class="codehilite"><pre><span></span>      testCompile &#39;fr.vsct.tock:bot-test:1.0.0&#39;
 </pre></div>
 
 
@@ -557,7 +569,7 @@ Par exemple : </p>
 
 <p>permet d'indiquer que la phrase "Lille" est catégorisée comme une intention <em>indicate_location</em> et avec une valeur 
 pour l'entité <em>location</em> qui va être la localisation <em>lille</em></p>
-<p>Enfin Il est possible de modifier toutes les valeurs du bus mocké à l'initialisation. Dans l'exemple suivant, on simule l'intention secondaire <em>indicate_location</em>
+<p>Enfin il est possible de modifier toutes les valeurs du bus mocké à l'initialisation. Dans l'exemple suivant, on simule l'intention secondaire <em>indicate_location</em>
 afin d'indiquer l'origine : </p>
 <div class="codehilite"><pre><span></span>    <span class="n">@Test</span>
     <span class="k">fun</span> <span class="err">`</span><span class="nf">search</span> <span class="n">story</span> <span class="n">asks</span> <span class="k">for</span> <span class="n">departure</span> <span class="n">date</span> <span class="n">WHEN</span> <span class="n">there</span> <span class="k">is</span> <span class="n">a</span> <span class="n">destination</span> <span class="n">and</span> <span class="n">an</span> <span class="n">origin</span> <span class="n">but</span> <span class="n">no</span> <span class="n">departure</span> <span class="n">date</span> <span class="k">in</span> <span class="n">context</span><span class="err">`</span><span class="p">()</span> <span class="p">{</span>

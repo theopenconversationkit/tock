@@ -16,6 +16,7 @@ pages:
     - Tester le bot: tester-le-bot.md
     - i18n: i18n.md
     - KDoc: kdoc.md
+    - Contribuer au projet: contribuer.md
 theme:
   name: 'material'
   custom_dir: 'theme'

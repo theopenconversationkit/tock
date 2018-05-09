@@ -14,7 +14,9 @@ pages:
     - The Open Data Bot: the-open-data-bot.md
     - Code a bot: code-a-bot.md
     - Test the bot: test-the-bot.md
+    - i18n: i18n.md
     - KDoc: kdoc.md
+    - Contribute: contribute.md
 theme:
   name: 'material'
   logo: 'assets/images/logo.svg'

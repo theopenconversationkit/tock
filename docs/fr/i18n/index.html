@@ -384,6 +384,13 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#tester-linternationalisation" title="Tester l'internationalisation" class="md-nav__link">
+    Tester l'internationalisation
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
@@ -433,6 +440,18 @@
   <li class="md-nav__item">
     <a href="../kdoc/" title="KDoc" class="md-nav__link">
       KDoc
+    </a>
+  </li>
+
+        
+        
+        
+        
+
+
+  <li class="md-nav__item">
+    <a href="../contribuer/" title="Contribuer au projet" class="md-nav__link">
+      Contribuer au projet
     </a>
   </li>
 
@@ -496,6 +515,13 @@
           <li class="md-nav__item">
   <a href="#points-dattention" title="Points d'attention" class="md-nav__link">
     Points d'attention
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#tester-linternationalisation" title="Tester l'internationalisation" class="md-nav__link">
+    Tester l'internationalisation
   </a>
   
 </li>
@@ -612,7 +638,7 @@ en java. Cela inclut le support de <a href="https://docs.oracle.com/javase/10/do
 <p>Enfin il est possible de modifier la locale de l'utilisateur dans le bot lui-même : </p>
 </li>
 </ul>
-<div class="codehilite"><pre><span></span>    <span class="n">userPreferences</span><span class="p">.</span><span class="n">locale</span><span class="p">=</span><span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span>
+<div class="codehilite"><pre><span></span>    <span class="n">userPreferences</span><span class="p">.</span><span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span>
 </pre></div>
 
 
@@ -628,9 +654,13 @@ en java. Cela inclut le support de <a href="https://docs.oracle.com/javase/10/do
 
 <p>mais pose problème si il est activé. En effet, les chiffres étant supprimés de la clé générée, le libellé traduit sera toujours
  le même quel que soit la valeur de la variable <em>nb</em> !</p>
-<p>Si il est nécessaire d'envoyer des réponses "à ne pas traduire", il est possible d'utiliser 
-les méthodes <em>sendRaw</em>, <em>endRaw</em> ou <em>String.raw</em></p>
+<p>Si il est nécessaire d'envoyer des réponses "à ne pas traduire", utilisez 
+les méthodes <em>BotBus.sendRaw</em>, <em>BotBus.endRaw</em> ou <em>String.raw</em></p>
 <div class="codehilite"><pre><span></span>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are $nb files&quot;</span><span class="p">.</span><span class="n">raw</span><span class="p">)</span> <span class="c1">//CORRECT </span>
+</pre></div>
+
+
+<div class="codehilite"><pre><span></span>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are {0} files&quot;</span><span class="p">,</span> <span class="n">nb</span><span class="p">)</span> <span class="c1">//FORMAT A SUIVRE </span>
 </pre></div>
 
 
@@ -639,6 +669,26 @@ les méthodes <em>sendRaw</em>, <em>endRaw</em> ou <em>String.raw</em></p>
 Si vous souhaitez cependant éviter tout risque, vous pouvez utiliser la méthode <em>i18nKey</em> :</li>
 </ul>
 <div class="codehilite"><pre><span></span>    <span class="n">send</span><span class="p">(</span><span class="n">i18nKey</span><span class="p">(</span><span class="s">&quot;my_unique_key&quot;</span><span class="p">,</span> <span class="s">&quot;There are {0} files&quot;</span><span class="p">,</span> <span class="n">nb</span><span class="p">))</span> 
+</pre></div>
+
+
+<h3 id="tester-linternationalisation">Tester l'internationalisation<a class="headerlink" href="#tester-linternationalisation" title="Permanent link">&para;</a></h3>
+<p>Un exemple de dispositif de test est disponible dans le
+<a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data/tree/master/src/test/kotlin/fr/vsct/tock/bot/open/data/rule">code source du bot d'exemple</a>
+Il est nécessaire d'étendre <a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data/blob/master/src/test/kotlin/fr/vsct/tock/bot/open/data/rule/OpenDataJUnitExtension.kt">l'extension de test</a>
+pour ensuite indiquer la <a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data/blob/master/src/test/kotlin/fr/vsct/tock/bot/open/data/rule/TranslatorEngineMock.kt">correspondance des libellés</a> à tester.</p>
+<p>Il ne reste plus qu'à indiquer la locale souhaitée : </p>
+<div class="codehilite"><pre><span></span>    <span class="n">@Test</span>
+    <span class="k">fun</span> <span class="err">`</span><span class="nf">search</span> <span class="n">story</span> <span class="n">asks</span> <span class="k">for</span> <span class="n">departure</span> <span class="n">date</span> <span class="n">WHEN</span> <span class="n">there</span> <span class="k">is</span> <span class="n">a</span> <span class="n">destination</span> <span class="n">and</span> <span class="n">an</span> <span class="n">origin</span> <span class="n">but</span> <span class="n">no</span> <span class="n">departure</span> <span class="n">date</span> <span class="k">in</span> <span class="n">context</span><span class="err">`</span><span class="p">()</span> <span class="p">{</span>
+        <span class="n">ext</span><span class="p">.</span><span class="n">newRequest</span><span class="p">(</span><span class="s">&quot;Recherche&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">,</span> <span class="n">locale</span> <span class="p">=</span> <span class="n">Locale</span><span class="p">.</span><span class="n">FRENCH</span><span class="p">)</span> <span class="p">{</span>
+            <span class="n">destination</span> <span class="p">=</span> <span class="n">lille</span>
+            <span class="n">origin</span> <span class="p">=</span> <span class="n">paris</span>
+
+            <span class="n">run</span><span class="p">()</span>
+
+            <span class="n">firstAnswer</span><span class="p">.</span><span class="n">assertText</span><span class="p">(</span><span class="s">&quot;Quand souhaitez-vous partir?&quot;</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">}</span>
 </pre></div>
 
 

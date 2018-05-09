@@ -8,8 +8,8 @@
 node_modules
 
 # IDEs and editors
-/.idea
-!/.idea/runConfigurations/*.xml
+/.idea/*
+!/.idea/runConfigurations
 .project
 .classpath
 *.iml
