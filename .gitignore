@@ -9,6 +9,7 @@ node_modules
 
 # IDEs and editors
 /.idea
+!/.idea/runConfigurations/*.xml
 .project
 .classpath
 *.iml
@@ -31,3 +32,4 @@ Thumbs.db
 #vert.x
 /file-uploads
 *.log
+
