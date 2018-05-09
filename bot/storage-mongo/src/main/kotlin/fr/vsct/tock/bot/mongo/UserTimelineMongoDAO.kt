@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.mongo
 
 import com.github.salomonbrys.kodein.instance
 import com.mongodb.client.model.IndexOptions
+import com.mongodb.client.model.ReplaceOptions
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
@@ -75,6 +76,7 @@ import org.litote.kmongo.limit
 import org.litote.kmongo.lt
 import org.litote.kmongo.match
 import org.litote.kmongo.regex
+import org.litote.kmongo.replaceOneWithFilter
 import org.litote.kmongo.save
 import org.litote.kmongo.sort
 import org.litote.kmongo.toId
@@ -178,10 +180,10 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     ?.let { action ->
                         if (action is SendSentence && action.stringText != null) {
                             val text = textKey(action.stringText!!)
-                            dialogTextCol.replaceOne(
+                            dialogTextCol.replaceOneWithFilter(
                                 and(Text eq text, DialogId eq dialog.id),
                                 DialogTextCol(text, dialog.id),
-                                upsert()
+                                ReplaceOptions().upsert(true)
                             )
                         }
                     }

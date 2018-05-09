@@ -48,15 +48,15 @@ object NlpEngineMongoModelIO : NlpEngineModelIO {
     private val database: MongoDatabase by injector.instance(MONGO_DATABASE)
     private val entityBucket: GridFSBucket  by lazy {
         GridFSBuckets.create(database, "fs_entity")
-                .apply {
-                    database.getCollection("fs_entity.files").ensureIndex("{filename:1}")
-                }
+            .apply {
+                database.getCollection("fs_entity.files").ensureIndex("{filename:1}")
+            }
     }
     private val intentBucket: GridFSBucket  by lazy {
         GridFSBuckets.create(database, "fs_intent")
-                .apply {
-                    database.getCollection("fs_intent.files").ensureIndex("{filename:1}")
-                }
+            .apply {
+                database.getCollection("fs_intent.files").ensureIndex("{filename:1}")
+            }
     }
 
     private fun getGridFSFile(bucket: GridFSBucket, key: ClassifierContextKey): GridFSFile? {
@@ -78,30 +78,28 @@ object NlpEngineMongoModelIO : NlpEngineModelIO {
         val filename = key.id()
         val newId = bucket.uploadFromStream(filename, stream)
         //remove old versions
-        if (newId != null) {
-            bucket.find(and(ne("_id", newId), eq("filename", filename))).forEach {
-                logger.debug { "Remove file ${it.objectId} for $key" }
-                bucket.delete(it.objectId)
-            }
+        bucket.find(and(ne("_id", newId), eq("filename", filename))).forEach {
+            logger.debug { "Remove file ${it.objectId} for $key" }
+            bucket.delete(it.objectId)
         }
     }
 
     private fun deleteModel(bucket: GridFSBucket, key: ClassifierContextKey) {
         bucket.find(eq("filename", key.id()))
-                .limit(1)
-                .first()
-                ?.apply {
-                    logger.debug { "Remove file ${objectId} for $key" }
-                    bucket.delete(objectId)
-                }
+            .limit(1)
+            .first()
+            ?.apply {
+                logger.debug { "Remove file ${objectId} for $key" }
+                bucket.delete(objectId)
+            }
     }
 
     private fun deleteModelNotIn(bucket: GridFSBucket, keys: List<ClassifierContextKey>) {
         bucket.find(Filters.not(Filters.`in`("filename", keys.map { it.id() })))
-                .forEach {
-                    logger.debug { "Remove file ${it.objectId} for ${it.filename}" }
-                    bucket.delete(it.objectId)
-                }
+            .forEach {
+                logger.debug { "Remove file ${it.objectId} for ${it.filename}" }
+                bucket.delete(it.objectId)
+            }
     }
 
     private fun getModelInputStream(bucket: GridFSBucket, key: ClassifierContextKey): NlpModelStream? {

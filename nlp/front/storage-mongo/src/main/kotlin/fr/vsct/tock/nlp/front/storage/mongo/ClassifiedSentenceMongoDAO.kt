@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.storage.mongo
 
 import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.ReplaceOptions
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
@@ -56,6 +57,7 @@ import org.litote.kmongo.lte
 import org.litote.kmongo.ne
 import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.regex
+import org.litote.kmongo.replaceOneWithFilter
 import org.litote.kmongo.setTo
 import org.litote.kmongo.updateMany
 import org.litote.kmongo.upsert
@@ -159,14 +161,14 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     }
 
     override fun save(sentence: ClassifiedSentence) {
-        col.replaceOne(
+        col.replaceOneWithFilter(
             and(
                 Text eq textKey(sentence.text),
                 Language eq sentence.language,
                 ApplicationId eq sentence.applicationId
             ),
             ClassifiedSentenceCol(sentence),
-            upsert()
+            ReplaceOptions().upsert(true)
         )
     }
 
