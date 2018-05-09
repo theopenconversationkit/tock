@@ -66,9 +66,9 @@ export class IntentsComponent implements OnInit {
   }
 
   removeState(intent: Intent, state: string) {
-    intent.mandatoryStates.splice(intent.mandatoryStates.indexOf(state), 1);
-    this.nlp.saveIntent(intent).subscribe(
+    this.nlp.removeState(this.state.currentApplication, intent, state).subscribe(
       result => {
+        intent.mandatoryStates.splice(intent.mandatoryStates.indexOf(state), 1);
         this.snackBar.open(`State ${state} removed from Intent ${intent.name}`, "Remove State", {duration: 1000} as MdSnackBarConfig);
       },
       _ => {
@@ -123,9 +123,9 @@ export class IntentsComponent implements OnInit {
   }
 
   removeSharedIntent(intent: Intent, intentId: string) {
-    intent.sharedIntents.splice(intent.sharedIntents.indexOf(intentId), 1);
-    this.nlp.saveIntent(intent).subscribe(
+    this.nlp.removeSharedIntent(this.state.currentApplication, intent, intentId).subscribe(
       result => {
+        intent.sharedIntents.splice(intent.sharedIntents.indexOf(intentId), 1);
         this.snackBar.open(`Shared Intent removed from Intent ${intent.name}`, "Remove Intent", {duration: 1000} as MdSnackBarConfig);
       },
       _ => {

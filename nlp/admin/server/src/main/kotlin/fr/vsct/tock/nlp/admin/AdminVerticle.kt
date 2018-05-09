@@ -60,6 +60,7 @@ import io.vertx.ext.web.handler.StaticHandler
 import mu.KLogger
 import mu.KotlinLogging
 import org.litote.kmongo.Id
+import org.litote.kmongo.toId
 import java.nio.charset.StandardCharsets
 import java.util.Locale
 
@@ -87,8 +88,8 @@ open class AdminVerticle : WebVerticle() {
             front.getApplications().filter {
                 it.namespace == context.organization
             }.map {
-                    service.getApplicationWithIntents(it)
-                }
+                service.getApplicationWithIntents(it)
+            }
         }
 
         blockingJsonGet("/application/:id") { context ->
@@ -247,6 +248,32 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
+        blockingJsonDelete("/application/:appId/intent/:intentId/state/:state") {
+            val app = front.getApplicationById(it.pathId("appId"))
+            val intentId: Id<IntentDefinition> = it.pathId("intentId")
+            val state = it.pathParam("state")
+            val intent = front.getIntentById(intentId)!!
+            if (intent.applications.size == 1 && it.organization == app?.namespace && it.organization == intent.namespace) {
+                front.save(intent.copy(mandatoryStates = intent.mandatoryStates - state))
+                true
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonDelete("/application/:appId/intent/:intentId/shared/:sharedIntentId") {
+            val app = front.getApplicationById(it.pathId("appId"))
+            val intentId: Id<IntentDefinition> = it.pathId("intentId")
+            val sharedIntentId = it.pathParam("sharedIntentId")
+            val intent = front.getIntentById(intentId)!!
+            if (intent.applications.size == 1 && it.organization == app?.namespace && it.organization == intent.namespace) {
+                front.save(intent.copy(sharedIntents = intent.sharedIntents - sharedIntentId.toId()))
+                true
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonDelete("/application/:appId/entity/:entityType/:role") {
             val app = front.getApplicationById(it.pathId("appId"))!!
             val entityTypeName = it.pathParam("entityType")
@@ -338,8 +365,8 @@ open class AdminVerticle : WebVerticle() {
             front.getApplications().filter {
                 it.namespace == context.organization
             }.map {
-                    service.getApplicationWithIntents(it)
-                }
+                service.getApplicationWithIntents(it)
+            }
         }
 
         blockingJsonGet("/entity-types") { context ->

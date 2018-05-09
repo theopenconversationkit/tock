@@ -60,6 +60,14 @@ export class NlpService implements OnDestroy {
     return this.rest.post("/intent", intent, Intent.fromJSON);
   }
 
+  removeState(application: Application, intent:Intent, state:string) : Observable<boolean> {
+    return this.rest.delete(`/application/${application._id}/intent/${intent._id}/state/${state}`);
+  }
+
+  removeSharedIntent(application: Application, intent:Intent, intentId:string) : Observable<boolean> {
+    return this.rest.delete(`/application/${application._id}/intent/${intent._id}/shared/${intentId}`);
+  }
+
   removeIntent(application: Application, intent: Intent): Observable<boolean> {
     return this.rest.delete(`/application/${application._id}/intent/${intent._id}`);
   }

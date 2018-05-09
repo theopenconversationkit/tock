@@ -44,7 +44,8 @@
           </span>
         </td>
         <td class="shared">
-          <md-select class="intent"
+          <md-select *ngIf="i.applications.length === 1"
+                     class="intent"
                      placeholder="Add shared intent"
                      (change)="addSharedIntent(i, $event.value)">
             <md-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
@@ -52,25 +53,38 @@
             </md-option>
           </md-select>
           <div *ngIf="i.sharedIntents.length !== 0" class="shared_list">
-            <md-chip-list mdTooltip="Shared intent - click to remove">
+            <md-chip-list *ngIf="i.applications.length === 1" mdTooltip="Shared intent - click to remove">
               <md-chip *ngFor="let intentId of i.sharedIntents" color="accent" selected="true"
                        (click)="removeSharedIntent(i, intentId)">
-                {{state.findIntentById(intentId).name}}
+                {{state.findIntentById(intentId)?.name}}
+              </md-chip>
+            </md-chip-list>
+            <md-chip-list *ngIf="i.applications.length !== 1" mdTooltip="Shared intent">
+              <md-chip *ngFor="let intentId of i.sharedIntents" color="accent" selected="true">
+                {{state.findIntentById(intentId)?.name}}
               </md-chip>
             </md-chip-list>
           </div>
         </td>
         <td class="states">
-          <button md-button (click)="addState(i)">
+          <button *ngIf="i.applications.length === 1" md-button (click)="addState(i)">
             <md-icon>add_box</md-icon>
             Add state
           </button>
-          <md-chip-list *ngIf="i.mandatoryStates.length !== 0" mdTooltip="Mandatory states - click to delete">
-            <br>
-            <md-chip *ngFor="let s of i.mandatoryStates" color="accent" selected="true" (click)="removeState(i, s)">
-              {{s}}
-            </md-chip>
-          </md-chip-list>
+          <div *ngIf="i.mandatoryStates.length !== 0" class="shared_list">
+            <md-chip-list *ngIf="i.applications.length === 1" mdTooltip="Mandatory states - click to delete">
+              <br>
+              <md-chip *ngFor="let s of i.mandatoryStates" color="accent" selected="true" (click)="removeState(i, s)">
+                {{s}}
+              </md-chip>
+            </md-chip-list>
+            <md-chip-list *ngIf="i.applications.length !== 1" mdTooltip="Mandatory states">
+              <br>
+              <md-chip *ngFor="let s of i.mandatoryStates" color="accent" selected="true">
+                {{s}}
+              </md-chip>
+            </md-chip-list>
+          </div>
         </td>
         <td class="actions">
           <button *ngIf="state.hasRole(UserRole.admin)" (click)="downloadSentencesDump(i)" md-icon-button
