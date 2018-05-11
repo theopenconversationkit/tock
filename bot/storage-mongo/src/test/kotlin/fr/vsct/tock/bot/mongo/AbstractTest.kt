@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.user
+package fr.vsct.tock.bot.mongo
 
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector

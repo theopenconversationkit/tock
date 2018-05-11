@@ -14,17 +14,19 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.user
+package fr.vsct.tock.bot.mongo
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
-import fr.vsct.tock.bot.mongo.DialogCol
+import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.PlayerType
+import fr.vsct.tock.bot.engine.user.UserLocation
+import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.bot.mongo.DialogCol.DialogStateMongoWrapper
 import fr.vsct.tock.bot.mongo.DialogCol.EntityStateValueWrapper
-import fr.vsct.tock.bot.mongo.UserTimelineCol
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.api.client.model.EntityType
 import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
@@ -89,7 +91,10 @@ class DialogColDeserializationTest : AbstractTest() {
             state = fr.vsct.tock.bot.engine.dialog.DialogState(context = mutableMapOf("a" to LocalDateTime.now()))
         )
         val playerId = PlayerId("a", PlayerType.user)
-        val s = mapper.writeValueAsString(DialogCol(dialog, UserTimelineCol(UserTimeline(playerId), null)))
+        val s = mapper.writeValueAsString(DialogCol(dialog, UserTimelineCol(
+            UserTimeline(
+                playerId
+            ), null)))
         val newValue = mapper.readValue<DialogCol>(s)
         assertEquals(dialog, newValue.toDialog { mockk() })
     }

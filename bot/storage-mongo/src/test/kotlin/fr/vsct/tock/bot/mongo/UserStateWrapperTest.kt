@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.user
+package fr.vsct.tock.bot.mongo
 
+import fr.vsct.tock.bot.engine.user.UserState
 import fr.vsct.tock.bot.mongo.UserTimelineCol.UserStateWrapper
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals

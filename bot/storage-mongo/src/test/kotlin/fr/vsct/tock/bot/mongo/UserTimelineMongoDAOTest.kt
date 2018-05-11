@@ -14,11 +14,13 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.user
+package fr.vsct.tock.bot.mongo
 
 import fr.vsct.tock.bot.admin.user.UserReportQuery
 import fr.vsct.tock.bot.engine.dialog.Dialog
-import fr.vsct.tock.bot.mongo.UserTimelineMongoDAO
+import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.PlayerType
+import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.shared.defaultNamespace
 import org.junit.jupiter.api.Test
 import java.util.Locale
