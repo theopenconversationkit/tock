@@ -10,6 +10,7 @@
     <option name="WORKING_DIRECTORY" value="" />
     <envs>
       <env name="tock_nlp_model_refresh_rate" value="10" />
+      <env name="botadminverticle_port" value="7999" />
     </envs>
     <method />
   </configuration>

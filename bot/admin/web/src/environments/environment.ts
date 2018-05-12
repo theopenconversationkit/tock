@@ -9,5 +9,5 @@ export const environment = {
   default_user:"admin@app.com",
   default_namespace:"app",
   default_password:"password",
-  serverUrl: 'http://localhost:8080/rest'
+  serverUrl: 'http://localhost:7999/rest'
 };
