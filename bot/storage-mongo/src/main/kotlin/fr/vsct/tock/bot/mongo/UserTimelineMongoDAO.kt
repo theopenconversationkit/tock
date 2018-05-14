@@ -37,6 +37,7 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
+import fr.vsct.tock.bot.mongo.ClientIdCol_.Companion.UserIds
 import fr.vsct.tock.bot.mongo.DialogCol_.Companion.PlayerIds
 import fr.vsct.tock.bot.mongo.DialogCol_.Companion.Stories
 import fr.vsct.tock.bot.mongo.DialogCol_.Companion._id
@@ -53,13 +54,12 @@ import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import fr.vsct.tock.shared.longProperty
 import mu.KotlinLogging
 import org.litote.kmongo.Id
-import org.litote.kmongo.MongoOperator.addToSet
 import org.litote.kmongo.MongoOperator.and
-import org.litote.kmongo.MongoOperator.each
 import org.litote.kmongo.MongoOperator.gt
 import org.litote.kmongo.MongoOperator.or
 import org.litote.kmongo.MongoOperator.type
 import org.litote.kmongo.`in`
+import org.litote.kmongo.addEachToSet
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.and
 import org.litote.kmongo.bson
@@ -153,8 +153,10 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             if (userTimeline.playerId.clientId != null) {
                 clientIdCol.updateOneById(
                     userTimeline.playerId.clientId!!,
-                    //TODO use dsl
-                    "{ $addToSet: {userIds: { $each : [ ${userTimeline.playerId.id.json} ] } } }",
+                    addEachToSet(
+                        UserIds,
+                        listOf(userTimeline.playerId.id)
+                    ),
                     upsert()
                 )
             }
