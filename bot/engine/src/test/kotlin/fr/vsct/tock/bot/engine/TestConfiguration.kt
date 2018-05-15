@@ -24,6 +24,7 @@ import fr.vsct.tock.bot.definition.SimpleStoryStep
 import fr.vsct.tock.bot.definition.StoryDefinitionExtended
 import fr.vsct.tock.translator.UserInterfaceType
 import fr.vsct.tock.translator.UserInterfaceType.voiceAssistant
+import fr.vsct.tock.translator.raw
 
 val secondaryIntent = Intent("secondary")
 
@@ -42,6 +43,7 @@ abstract class AbstractStoryHandler : SimpleStoryHandlerBase() {
 
     override fun action(bus: BotBus) {
         registeredBus = bus
+        bus.end(this::class.simpleName!!.raw)
     }
 }
 

@@ -107,7 +107,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
         .find { it.storyHandler == this }
 
     /**
-     * Handles the action and switch the context to the underlying story definition.
+     * Handles the action and switches the context to the underlying story definition.
      */
     fun handleAndSwitchStory(bus: BotBus) {
         findStoryDefinition(bus)

@@ -453,12 +453,20 @@ interface BotBus : I18nTranslator {
     fun reloadProfile()
 
     /**
-     * Switches the context to the underlying story definition (start a new [Story]).
+     * Switches the context to the specified story definition (start a new [Story]).
      */
     fun switchStory(storyDefinition: StoryDefinition) {
         val starterIntent = storyDefinition.mainIntent()
         story = Story(storyDefinition, starterIntent)
         dialog.state.currentIntent = starterIntent
+    }
+
+    /**
+     * Handles the action and switches the context to the specified story definition.
+     */
+    fun handleAndSwitchStory(storyDefinition: StoryDefinition) {
+        switchStory(storyDefinition)
+        storyDefinition.storyHandler.handle(this)
     }
 
     //i18n provider implementation
@@ -467,4 +475,5 @@ interface BotBus : I18nTranslator {
 
     //I18nTranslator implementation
     override val contextId: String? get() = dialog.id.toString()
+
 }

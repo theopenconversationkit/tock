@@ -17,10 +17,13 @@
 package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.engine.TestStoryDefinition.test
+import fr.vsct.tock.bot.engine.TestStoryDefinition.test2
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionPriority
 import fr.vsct.tock.bot.engine.action.ActionPriority.urgent
 import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.message.Choice
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import io.mockk.every
@@ -71,5 +74,20 @@ class BotBusTest : BotEngineTest() {
         bus.reloadProfile()
         assertNull(bus.userPreferences.firstName)
         assertNull(bus.userPreferences.lastName)
+    }
+
+    @Test
+    fun `handleAndSwitchStory switch story and run the new handler`() {
+        assertEquals(test, bus.story.definition)
+        bus.handleAndSwitchStory(test2)
+        assertEquals(test2, bus.story.definition)
+        verify {
+            connector.send(
+                match<SendSentence> {
+                    it.text.toString() == "StoryHandler2Test"
+                },
+                any()
+            )
+        }
     }
 }
