@@ -37,6 +37,8 @@ import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.Error
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.Query
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.Result
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.Text
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatCol_.Companion.Language
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatCol_.Companion.LastUsage
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion.Count
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion.Duration
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion.EntitiesProbability
@@ -50,6 +52,7 @@ import org.litote.kmongo.aggregate
 import org.litote.kmongo.and
 import org.litote.kmongo.ascending
 import org.litote.kmongo.avg
+import org.litote.kmongo.combine
 import org.litote.kmongo.cond
 import org.litote.kmongo.dayOfYear
 import org.litote.kmongo.descendingSort
@@ -60,16 +63,20 @@ import org.litote.kmongo.from
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.group
 import org.litote.kmongo.gte
+import org.litote.kmongo.inc
 import org.litote.kmongo.lte
 import org.litote.kmongo.match
 import org.litote.kmongo.project
 import org.litote.kmongo.regex
+import org.litote.kmongo.set
 import org.litote.kmongo.sort
 import org.litote.kmongo.sum
 import org.litote.kmongo.toList
+import org.litote.kmongo.upsert
 import org.litote.kmongo.year
 import java.time.Instant
 import java.time.LocalDate
+import java.util.Locale
 import java.util.concurrent.TimeUnit
 
 /**
@@ -111,6 +118,28 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
     }
 
     @Data
+    data class ParseRequestLogStatCol(
+        val text: String,
+        val applicationId: Id<ApplicationDefinition>,
+        val language: Locale,
+        val intentProbability: Double?,
+        val entitiesProbability: Double?,
+        val lastUsage: Instant = Instant.now(),
+        val count: Long = 1
+    ) {
+
+        constructor(request: ParseRequestLog) :
+                this(
+                    textKey(request.result?.retainedQuery ?: request.query.queries.firstOrNull() ?: ""),
+                    request.applicationId,
+                    request.query.context.language,
+                    request.result?.intentProbability,
+                    request.result?.entitiesProbability,
+                    request.date
+                )
+    }
+
+    @Data
     data class DayAndYear(val dayOfYear: Int, val year: Int)
 
     @Data
@@ -133,7 +162,7 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
         )
     }
 
-    private val col: MongoCollection<ParseRequestLogCol> by lazy {
+    internal val col: MongoCollection<ParseRequestLogCol> by lazy {
         val c = database.getCollection<ParseRequestLogCol>("parse_request_log")
         c.ensureIndex(Query.context.language, ApplicationId)
         c.ensureIndex(Query.context.language, ApplicationId, Text)
@@ -144,12 +173,35 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
         c
     }
 
+    internal val statsCol: MongoCollection<ParseRequestLogStatCol> by lazy {
+        val c = database.getCollection<ParseRequestLogStatCol>("parse_request_log_stats")
+        c.ensureIndex(Language, ApplicationId, Text)
+        c
+    }
+
     override fun save(log: ParseRequestLog) {
         val savedLog = log.copy(
             query = log.query.copy(queries = obfuscate(log.query.queries)),
             result = log.result?.copy(retainedQuery = obfuscate(log.result?.retainedQuery) ?: "")
         )
         col.insertOne(ParseRequestLogCol(savedLog))
+        val stat = ParseRequestLogStatCol(log)
+        statsCol.updateOne(
+            and(
+                Language eq stat.language,
+                ApplicationId eq stat.applicationId,
+                Text eq stat.text
+            ),
+            combine(
+                listOfNotNull(
+                    stat.intentProbability?.let { set(IntentProbability, it) },
+                    stat.entitiesProbability?.let { set(EntitiesProbability, stat.entitiesProbability) },
+                    set(LastUsage, stat.lastUsage),
+                    inc(Count, 1)
+                )
+            ),
+            upsert()
+        )
     }
 
     override fun search(query: ParseRequestLogQuery): ParseRequestLogQueryResult {

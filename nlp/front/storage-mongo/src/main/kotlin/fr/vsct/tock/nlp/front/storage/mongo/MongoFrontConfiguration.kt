@@ -23,9 +23,8 @@ import fr.vsct.tock.shared.injector
 /**
  *
  */
-object MongoFrontConfiguration {
+internal object MongoFrontConfiguration {
 
     val database: MongoDatabase by injector.instance(MONGO_DATABASE)
-
 
 }

@@ -22,9 +22,12 @@ import com.github.salomonbrys.kodein.provider
 import fr.vsct.tock.shared.cache.TockCache
 import fr.vsct.tock.shared.vertx.VertxProvider
 import io.mockk.mockk
+import mu.KotlinLogging
 import org.litote.kmongo.Id
 import java.time.Duration
 import java.util.concurrent.Callable
+
+private val logger = KotlinLogging.logger {}
 
 /**
  * Test module used by tests using Ioc.
@@ -33,6 +36,11 @@ val sharedTestModule = Kodein.Module {
     bind<Executor>() with provider { TestExecutor }
     bind<TockCache>() with provider { NoOpCache }
     bind<VertxProvider>() with provider { mockk<VertxProvider>(relaxed = true) }
+    try {
+        configureKMongo()
+    } catch (t: Throwable) {
+        logger.trace("erreur during KMongo configuration", t)
+    }
 }
 
 private object NoOpCache : TockCache {

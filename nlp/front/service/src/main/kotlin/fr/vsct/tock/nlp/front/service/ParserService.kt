@@ -275,7 +275,7 @@ object ParserService : Parser {
                 validatedSentence?.status != model
                 && !hasSameContent(validatedSentence)
             ) {
-                //do not persist analyse if intent probability is < 0.1
+                //do not persist analysis if intent probability is < 0.1
                 val sentence = if ((lastIntentProbability ?: 0.0) > 0.1) this
                 else copy(classification = classification.copy(UNKNOWN_INTENT.toId(), emptyList()))
 

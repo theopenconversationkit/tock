@@ -62,10 +62,7 @@ internal val collectionBuilder: (KClass<*>) -> String = {
  */
 val mongoJacksonModules = mutableListOf<Module>()
 
-/**
- * The [MongoClient] of Tock.
- */
-val mongoClient: MongoClient by lazy {
+internal fun configureKMongo() {
     logger.info { "init mongo jackson mapper with additional modules $mongoJacksonModules" }
     CollectionNameFormatter.defaultCollectionNameBuilder = collectionBuilder
     IdGenerator.defaultGenerator = ObjectIdToStringGenerator
@@ -102,6 +99,13 @@ val mongoClient: MongoClient by lazy {
     mongoJacksonModules.forEach {
         KMongoConfiguration.registerBsonModule(it)
     }
+}
+
+/**
+ * The [MongoClient] of Tock.
+ */
+val mongoClient: MongoClient by lazy {
+    configureKMongo()
     KMongo.createClient(
         MongoClientURI(
             property("tock_mongo_url", "mongodb://localhost:27017")
