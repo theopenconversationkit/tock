@@ -22,13 +22,10 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.mongodb.client.MongoDatabase
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
-import fr.vsct.tock.bot.mongo.BotApplicationConfigurationMongoDAO
-import fr.vsct.tock.bot.mongo.MONGO_DATABASE
-import fr.vsct.tock.bot.mongo.UserTimelineCol
+import fr.vsct.tock.shared.getDatabase
 import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.shared.tockInternalInjector
 import org.junit.jupiter.api.BeforeEach
-import org.litote.kmongo.KFlapdoodleRule.Companion.rule
 
 /**
  *
@@ -48,8 +45,7 @@ abstract class AbstractTest {
         tockInternalInjector = KodeinInjector()
         tockInternalInjector.inject(Kodein {
             import(sharedTestModule)
-            val rule = rule<UserTimelineCol>()
-            bind<MongoDatabase>(MONGO_DATABASE) with provider { rule.database }
+            bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
             bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
         }
         )

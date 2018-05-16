@@ -21,6 +21,7 @@ import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.mongodb.client.MongoDatabase
+import fr.vsct.tock.shared.getDatabase
 import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.shared.tockInternalInjector
 import org.bson.Document
@@ -37,8 +38,7 @@ abstract class AbstractTest {
         tockInternalInjector = KodeinInjector()
         tockInternalInjector.inject(Kodein {
             import(sharedTestModule)
-            val rule = rule<Document>()
-            bind<MongoDatabase>(MONGO_DATABASE) with provider { rule.database }
+            bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
         }
         )
     }

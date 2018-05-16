@@ -135,6 +135,11 @@
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
+        <dependency>
+            <groupId>org.litote.kmongo</groupId>
+            <artifactId>kmongo-flapdoodle</artifactId>
+            <scope>provided</scope>
+        </dependency>
     </dependencies>
 
 </project>

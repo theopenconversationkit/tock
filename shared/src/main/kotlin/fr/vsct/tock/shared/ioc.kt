@@ -21,6 +21,8 @@ import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.github.salomonbrys.kodein.providerOrNull
+import com.github.salomonbrys.kodein.singleton
+import com.mongodb.MongoClient
 import fr.vsct.tock.shared.cache.TockCache
 import fr.vsct.tock.shared.cache.mongo.MongoCache
 import fr.vsct.tock.shared.vertx.TockVertxProvider
@@ -62,4 +64,5 @@ val sharedModule = Kodein.Module {
     bind<Executor>() with provider { vertxExecutor() }
     bind<TockCache>() with provider { MongoCache }
     bind<VertxProvider>() with provider { TockVertxProvider }
+    bind<MongoClient>() with singleton { mongoClient }
 }

@@ -104,7 +104,7 @@ internal fun configureKMongo() {
 /**
  * The [MongoClient] of Tock.
  */
-val mongoClient: MongoClient by lazy {
+internal val mongoClient: MongoClient by lazy {
     configureKMongo()
     KMongo.createClient(
         MongoClientURI(
@@ -120,5 +120,5 @@ val mongoClient: MongoClient by lazy {
 fun getDatabase(databaseNameProperty: String): MongoDatabase {
     val databaseName = property(databaseNameProperty, databaseNameProperty).replace("_mongo_db", "")
     logger.info("get database $databaseName")
-    return mongoClient.getDatabase(databaseName)
+    return injector.provide<MongoClient>().getDatabase(databaseName)
 }

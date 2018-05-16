@@ -19,27 +19,40 @@ package fr.vsct.tock.shared
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
+import com.github.salomonbrys.kodein.singleton
+import com.mongodb.MongoClient
 import fr.vsct.tock.shared.cache.TockCache
 import fr.vsct.tock.shared.vertx.VertxProvider
 import io.mockk.mockk
 import mu.KotlinLogging
+import org.bson.Document
 import org.litote.kmongo.Id
+import org.litote.kmongo.KFlapdoodleRule.Companion.rule
 import java.time.Duration
 import java.util.concurrent.Callable
 
 private val logger = KotlinLogging.logger {}
 
 /**
- * Test module used by tests using Ioc.
+ * Shared test module to be imported by tests using Ioc.
  */
 val sharedTestModule = Kodein.Module {
     bind<Executor>() with provider { TestExecutor }
     bind<TockCache>() with provider { NoOpCache }
     bind<VertxProvider>() with provider { mockk<VertxProvider>(relaxed = true) }
     try {
-        configureKMongo()
+        bind<MongoClient>() with singleton {
+            try {
+                //init kmongo configuration for persistence tests
+                configureKMongo()
+                rule<Document>().mongoClient
+            } catch (t: Throwable) {
+                logger.trace("error during KMongo configuration", t)
+                mockk<MongoClient>(relaxed = true)
+            }
+        }
     } catch (t: Throwable) {
-        logger.trace("erreur during KMongo configuration", t)
+        logger.trace("mongo driver is not present in classpath")
     }
 }
 
