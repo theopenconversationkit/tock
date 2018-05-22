@@ -91,17 +91,17 @@
       </ng-container>
 
       <ng-container mdColumnDef="text">
-        <md-header-cell *mdHeaderCellDef> Text</md-header-cell>
+        <md-header-cell *mdHeaderCellDef>Text</md-header-cell>
         <md-cell *mdCellDef="let row"> <tock-highlight [sentence]="row" [readOnly]="true"></tock-highlight></md-cell>
       </ng-container>
 
       <ng-container mdColumnDef="currentIntent">
-        <md-header-cell *mdHeaderCellDef> Intent</md-header-cell>
+        <md-header-cell *mdHeaderCellDef>Intent</md-header-cell>
         <md-cell *mdCellDef="let row"><span style="color:green">{{row.getIntentLabel(state)}}</span></md-cell>
       </ng-container>
 
       <ng-container mdColumnDef="status" *ngIf="displayStatus">
-        <md-header-cell *mdHeaderCellDef> Intent</md-header-cell>
+        <md-header-cell *mdHeaderCellDef>Status</md-header-cell>
         <md-cell *mdCellDef="let row"><span class="status" [style.background]="row.statusColor()">{{row.statusDisplayed()}}</span></md-cell>
       </ng-container>
 

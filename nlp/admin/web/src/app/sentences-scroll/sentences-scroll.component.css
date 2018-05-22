@@ -39,6 +39,7 @@
 .status {
   border-radius: 25px;
   padding: 8px;
+  white-space: nowrap;
 }
 
 .md-column-select {
