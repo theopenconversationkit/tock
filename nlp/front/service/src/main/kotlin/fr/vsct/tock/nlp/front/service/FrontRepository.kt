@@ -65,8 +65,10 @@ internal object FrontRepository {
     private fun loadEntityTypes(): MutableMap<String, EntityType?> {
         logger.trace { "load entity types" }
         val entityTypesDefinitionMap = config.getEntityTypes().map { it.name to it }.toMap()
-        val entityTypesMap = entityTypesDefinitionMap.mapValues { (_, v) -> EntityType(v.name) }
+        //init subEntities only when all entities are known
+        val entityTypesMap = entityTypesDefinitionMap.mapValues { (_, v) -> EntityType(v.name, predefinedValues = v.predefinedValues) }
 
+        //init subEntities
         val entityTypes: MutableMap<String, EntityType?> =
             entityTypesMap
                 .mapValues { (_, v) ->
@@ -118,7 +120,8 @@ internal object FrontRepository {
                     entityType.name,
                     entityType.subEntities.mapNotNull {
                         it.toEntity()
-                    }
+                    },
+                    entityType.predefinedValues
                 )
             )
         }

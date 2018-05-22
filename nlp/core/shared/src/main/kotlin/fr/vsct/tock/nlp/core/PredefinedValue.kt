@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 VSCT
+ * Copyright (C) 2018 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -16,25 +16,12 @@
 
 package fr.vsct.tock.nlp.core
 
+import java.util.Locale
+
 /**
- *
+ * Used to deal with entities with predefined values list.
  */
-data class EntityType(
-    /**
-     * The qualified name of the entity (ie namespace:name)
-     */
-    val name: String,
-    /**
-     * The sub entites of this entity.
-     */
-    val subEntities: List<Entity> = emptyList(),
-    /**
-     * The entity predefined values.
-     */
-    val predefinedValues: List<PredefinedValue> = emptyList()
-) {
-
-    fun hasSubEntities(): Boolean = subEntities.isNotEmpty()
-
-    fun findSubEntity(role: String): Entity? = subEntities.first { it.role == role }
-}
+data class PredefinedValue(
+    val value: String,
+    val synonyms: Map<Locale, List<String>> = emptyMap()
+)
