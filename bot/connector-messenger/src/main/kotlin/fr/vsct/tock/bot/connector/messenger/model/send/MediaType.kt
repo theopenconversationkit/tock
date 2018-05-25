@@ -14,14 +14,20 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger
+package fr.vsct.tock.bot.connector.messenger.model.send
 
-import fr.vsct.tock.shared.booleanProperty
+import fr.vsct.tock.bot.engine.action.SendAttachment
 
 /**
- * To handle messenger behaviour.
+ *
  */
-internal object MessengerConfiguration {
+enum class MediaType {
+    image, video;
 
-    val reuseAttachmentByDefault: Boolean = booleanProperty("tock_bot_messenger_reuse_attachment", true)
+    fun toAttachmentType(): SendAttachment.AttachmentType =
+        when (this) {
+            image -> SendAttachment.AttachmentType.image
+            video -> SendAttachment.AttachmentType.video
+        }
+
 }

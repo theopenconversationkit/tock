@@ -23,10 +23,16 @@ import com.google.common.cache.CacheBuilder
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
+import fr.vsct.tock.bot.connector.messenger.AttachmentCacheService.getAttachmentId
+import fr.vsct.tock.bot.connector.messenger.AttachmentCacheService.setAttachmentId
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
+import fr.vsct.tock.bot.connector.messenger.model.attachment.AttachmentRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
+import fr.vsct.tock.bot.connector.messenger.model.send.Attachment
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
+import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType
 import fr.vsct.tock.bot.connector.messenger.model.send.CustomEventRequest
+import fr.vsct.tock.bot.connector.messenger.model.send.MediaPayload
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.SendResponse
 import fr.vsct.tock.bot.connector.messenger.model.send.SenderAction.mark_seen
@@ -240,17 +246,60 @@ class MessengerConnector internal constructor(
                     message = transformMessageRequest.invoke(message)
                     logger.debug { "message sent: $message to ${event.recipientId}" }
                     val token = getToken(event)
+
+                    //need to get the attachment id for the media payload
+                    val attachmentMessage = message.message as? AttachmentMessage
+                    val payload = attachmentMessage?.attachment?.payload
+                    if (payload is MediaPayload) {
+                        val firstElement = payload.elements.first()
+                        val url = firstElement.attachmentId
+                        val attachmentId =
+                            getAttachmentId(event.applicationId, url)
+                                .let {
+                                    if (it == null) {
+                                        client.sendAttachment(
+                                            token,
+                                            AttachmentRequest(
+                                                AttachmentMessage(
+                                                    Attachment(
+                                                        AttachmentType.fromTockAttachmentType(
+                                                            firstElement.mediaType.toAttachmentType()
+                                                        ),
+                                                        UrlPayload(
+                                                            url,
+                                                            null,
+                                                            true
+                                                        )
+                                                    )
+                                                )
+                                            )
+                                        )!!
+                                            .apply {
+                                                setAttachmentId(event.applicationId, url, attachmentId!!)
+                                            }
+                                            .attachmentId!!
+                                    } else {
+                                        it
+                                    }
+                                }
+                        message = message.copy(
+                            message = AttachmentMessage(
+                                Attachment(
+                                    AttachmentType.template,
+                                    payload.copy(elements = listOf(firstElement.copy(attachmentId = attachmentId)))
+                                ),
+                                attachmentMessage.quickReplies
+                            )
+                        )
+                    }
+
                     val response = client.sendMessage(token, message)
                     if (response.attachmentId != null) {
                         val m = message.message
                         if (m is AttachmentMessage) {
                             val payload = m.attachment.payload
                             if (payload is UrlPayload && payload.url != null) {
-                                AttachmentCacheService.setAttachmentId(
-                                    event.applicationId,
-                                    payload.url,
-                                    response.attachmentId
-                                )
+                                setAttachmentId(event.applicationId, payload.url, response.attachmentId)
                             }
                         }
                     }

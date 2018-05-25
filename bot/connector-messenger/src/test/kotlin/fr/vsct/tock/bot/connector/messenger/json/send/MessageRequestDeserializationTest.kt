@@ -24,6 +24,9 @@ import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType
 import fr.vsct.tock.bot.connector.messenger.model.send.Element
 import fr.vsct.tock.bot.connector.messenger.model.send.GenericPayload
 import fr.vsct.tock.bot.connector.messenger.model.send.LocationQuickReply
+import fr.vsct.tock.bot.connector.messenger.model.send.MediaElement
+import fr.vsct.tock.bot.connector.messenger.model.send.MediaPayload
+import fr.vsct.tock.bot.connector.messenger.model.send.MediaType
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageTag
 import fr.vsct.tock.bot.connector.messenger.model.send.PostbackButton
@@ -65,7 +68,38 @@ class MessageRequestDeserializationTest {
             , tag = MessageTag.FEATURE_FUNCTIONALITY_UPDATE
         )
         val s = mapper.writeValueAsString(m)
-        assertEquals(m, mapper.readValue<MessageRequest>(s))
+        assertEquals(m, mapper.readValue(s))
+    }
+
+    @Test
+    fun `media payload deserialization is ok`() {
+        val m = MessageRequest(
+            Recipient("2"),
+            AttachmentMessage(
+                Attachment(
+                    AttachmentType.template,
+                    MediaPayload(
+                        listOf(
+                            MediaElement(
+                                MediaType.image,
+                                "http://test.com",
+                                buttons = listOf(
+                                    PostbackButton(
+                                        "payload",
+                                        "titleButton"
+                                    )
+                                )
+                            )
+                        ),
+                        true
+
+                    )
+                )
+            )
+            , tag = MessageTag.FEATURE_FUNCTIONALITY_UPDATE
+        )
+        val s = mapper.writeValueAsString(m)
+        assertEquals(m, mapper.readValue(s))
     }
 
     @Test

@@ -14,14 +14,22 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger
+package fr.vsct.tock.bot.connector.messenger.model.send
 
-import fr.vsct.tock.shared.booleanProperty
+import fr.vsct.tock.bot.engine.message.SentenceElement
 
 /**
- * To handle messenger behaviour.
+ * A Media payload see [https://developers.facebook.com/docs/messenger-platform/send-messages/template/media].
  */
-internal object MessengerConfiguration {
+data class MediaPayload(
+    val elements: List<MediaElement>,
+    val sharable: Boolean = false
+) : ModelPayload(PayloadType.media) {
 
-    val reuseAttachmentByDefault: Boolean = booleanProperty("tock_bot_messenger_reuse_attachment", true)
+    override fun toSentenceElement(): SentenceElement? {
+        return SentenceElement(
+            subElements = elements.map { it.toSentenceSubElement() }
+        )
+    }
+
 }

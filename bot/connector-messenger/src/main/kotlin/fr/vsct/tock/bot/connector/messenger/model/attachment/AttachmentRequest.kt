@@ -14,14 +14,12 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger
+package fr.vsct.tock.bot.connector.messenger.model.attachment
 
-import fr.vsct.tock.shared.booleanProperty
+import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
 
 /**
- * To handle messenger behaviour.
+ *
  */
-internal object MessengerConfiguration {
-
-    val reuseAttachmentByDefault: Boolean = booleanProperty("tock_bot_messenger_reuse_attachment", true)
+data class AttachmentRequest(val message:AttachmentMessage) {
 }

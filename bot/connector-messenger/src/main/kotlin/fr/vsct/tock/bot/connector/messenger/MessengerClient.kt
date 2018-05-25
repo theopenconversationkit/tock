@@ -20,6 +20,7 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.connector.ConnectorException
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.UserProfile
+import fr.vsct.tock.bot.connector.messenger.model.attachment.AttachmentRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.CustomEventRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
@@ -64,6 +65,10 @@ internal class MessengerClient(val secretKey: String) {
 
         @POST("/{appId}/activities")
         fun sendCustomEvent(@Path("appId") appId: String, @Body customEventRequest: CustomEventRequest): Call<SendResponse>
+
+        @POST("/v2.12/me/message_attachments")
+        fun sendAttachment(@Query("access_token") accessToken: String, @Body attachmentRequest: AttachmentRequest): Call<SendResponse>
+
     }
 
     interface StatusApi {
@@ -108,6 +113,10 @@ internal class MessengerClient(val secretKey: String) {
 
     fun sendMessage(token: String, messageRequest: MessageRequest): SendResponse {
         return send(messageRequest, { graphApi.sendMessage(token, messageRequest).execute() })
+    }
+
+    fun sendAttachment(token: String, request: AttachmentRequest): SendResponse? {
+        return graphApi.sendAttachment(token, request).execute().body()
     }
 
     fun sendAction(token: String, actionRequest: ActionRequest): SendResponse? {

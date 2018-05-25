@@ -31,6 +31,9 @@ import fr.vsct.tock.bot.connector.messenger.model.send.ListPayload
 import fr.vsct.tock.bot.connector.messenger.model.send.LocationQuickReply
 import fr.vsct.tock.bot.connector.messenger.model.send.LoginButton
 import fr.vsct.tock.bot.connector.messenger.model.send.LogoutButton
+import fr.vsct.tock.bot.connector.messenger.model.send.MediaElement
+import fr.vsct.tock.bot.connector.messenger.model.send.MediaPayload
+import fr.vsct.tock.bot.connector.messenger.model.send.MediaType
 import fr.vsct.tock.bot.connector.messenger.model.send.PostbackButton
 import fr.vsct.tock.bot.connector.messenger.model.send.QuickReply
 import fr.vsct.tock.bot.connector.messenger.model.send.TextMessage
@@ -65,20 +68,20 @@ internal const val MESSENGER_CONNECTOR_TYPE_ID = "messenger"
 val messengerConnectorType = ConnectorType(MESSENGER_CONNECTOR_TYPE_ID)
 
 /**
- * Add a Messenger [ConnectorMessage] if the current connector is Messenger.
+ * Adds a Messenger [ConnectorMessage] if the current connector is Messenger.
  */
 fun BotBus.withMessenger(messageProvider: () -> MessengerConnectorMessage): BotBus {
     return withMessage(messengerConnectorType, messageProvider)
 }
 
 /**
- * Create a button template [https://developers.facebook.com/docs/messenger-platform/send-api-reference/button-template]
+ * Creates a button template [https://developers.facebook.com/docs/messenger-platform/send-api-reference/button-template]
  */
 fun I18nTranslator.buttonsTemplate(text: CharSequence, vararg actions: UserAction): AttachmentMessage =
     buttonsTemplate(text, actions.toList())
 
 /**
- * Create a button template [https://developers.facebook.com/docs/messenger-platform/send-api-reference/button-template]
+ * Creates a button template [https://developers.facebook.com/docs/messenger-platform/send-api-reference/button-template]
  */
 fun I18nTranslator.buttonsTemplate(text: CharSequence, actions: List<UserAction> = emptyList()): AttachmentMessage {
     return AttachmentMessage(
@@ -90,6 +93,42 @@ fun I18nTranslator.buttonsTemplate(text: CharSequence, actions: List<UserAction>
             )
         ),
         extractQuickReplies(actions.toList())
+    )
+}
+
+/**
+ * Creates a media template [https://developers.facebook.com/docs/messenger-platform/send-messages/template/media]
+ */
+fun mediaTemplate(
+    mediaUrl: String,
+    mediaType: MediaType = MediaType.image,
+    sharable: Boolean = false,
+    vararg actions: UserAction
+): AttachmentMessage = mediaTemplate(mediaUrl, mediaType, sharable, actions.toList())
+
+/**
+ * Creates a media template [https://developers.facebook.com/docs/messenger-platform/send-messages/template/media]
+ */
+fun mediaTemplate(
+    mediaUrl: String,
+    mediaType: MediaType = MediaType.image,
+    sharable: Boolean = false,
+    actions: List<UserAction> = emptyList()
+): AttachmentMessage {
+    return AttachmentMessage(
+        Attachment(
+            AttachmentType.template,
+            MediaPayload(
+                listOf(
+                    MediaElement(
+                        mediaType,
+                        mediaUrl,
+                        extractButtons(actions).run { if (isEmpty()) null else this })
+                ),
+                sharable
+            )
+        ),
+        extractQuickReplies(actions)
     )
 }
 
@@ -123,7 +162,7 @@ fun flexibleListTemplate(
 }
 
 /**
- * Create a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
+ * Creates a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
  */
 fun listTemplate(
     e1: Element,
@@ -136,7 +175,7 @@ fun listTemplate(
     listTemplate(e1, e2, e3, e4, topElementStyle, actions.toList())
 
 /**
- * Create a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
+ * Creates a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
  */
 fun listTemplate(
     e1: Element,
@@ -150,7 +189,7 @@ fun listTemplate(
 }
 
 /**
- * Create a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
+ * Creates a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
  */
 fun listTemplate(
     elements: List<Element>,
@@ -159,7 +198,7 @@ fun listTemplate(
 ): AttachmentMessage = listTemplate(elements, topElementStyle, actions.toList())
 
 /**
- * Create a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
+ * Creates a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
  */
 fun listTemplate(
     elements: List<Element>,
@@ -193,14 +232,14 @@ fun listTemplate(
 }
 
 /**
- * Create a [generic template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic).
+ * Creates a [generic template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic).
  */
 fun genericTemplate(vararg elements: Element): AttachmentMessage {
     return genericTemplate(elements.toList())
 }
 
 /**
- * Create a [generic template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic).
+ * Creates a [generic template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic).
  */
 fun genericTemplate(elements: List<Element>, vararg quickReplies: QuickReply): AttachmentMessage {
     if (elements.isEmpty() || elements.size > 10) {
@@ -219,7 +258,7 @@ fun genericTemplate(elements: List<Element>, vararg quickReplies: QuickReply): A
 }
 
 /**
- * Create an [attachment](https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
+ * Creates an [attachment](https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
 fun BotBus.attachment(
     attachmentUrl: String,
@@ -229,7 +268,7 @@ fun BotBus.attachment(
     attachment(attachmentUrl, type, quickReplies.toList())
 
 /**
- * Create an [attachment](https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
+ * Creates an [attachment](https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
 fun BotBus.attachment(
     attachmentUrl: String,
@@ -264,55 +303,55 @@ private fun BotBus.cachedAttachment(
 }
 
 /**
- * Create an [image] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
+ * Creates an [image] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
 fun BotBus.image(imageUrl: String, vararg quickReplies: QuickReply): AttachmentMessage =
     image(imageUrl, quickReplies.toList())
 
 /**
- * Create an [image] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
+ * Creates an [image] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
 fun BotBus.image(imageUrl: String, quickReplies: List<QuickReply>): AttachmentMessage =
     cachedAttachment(imageUrl, AttachmentType.image, quickReplies = quickReplies)
 
 /**
- * Create an [audio file] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
+ * Creates an [audio file] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
 fun BotBus.audio(audioUrl: String, vararg quickReplies: QuickReply): AttachmentMessage =
     audio(audioUrl, quickReplies.toList())
 
 /**
- * Create an [audio file] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
+ * Creates an [audio file] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
 fun BotBus.audio(audioUrl: String, quickReplies: List<QuickReply>): AttachmentMessage =
     cachedAttachment(audioUrl, AttachmentType.audio, quickReplies = quickReplies.toList())
 
 /**
- * Create a [video] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
+ * Creates a [video] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
 fun BotBus.video(videoUrl: String, vararg quickReplies: QuickReply): AttachmentMessage =
     video(videoUrl, quickReplies.toList())
 
 /**
- * Create a [video] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
+ * Creates a [video] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
 fun BotBus.video(videoUrl: String, quickReplies: List<QuickReply>): AttachmentMessage =
     cachedAttachment(videoUrl, AttachmentType.video, quickReplies = quickReplies)
 
 /**
- * Create a text with quick replies.
+ * Creates a text with quick replies.
  */
 fun I18nTranslator.text(text: CharSequence, vararg quickReplies: QuickReply): TextMessage =
     text(text, quickReplies.toList())
 
 /**
- * Create a text with quick replies.
+ * Creates a text with quick replies.
  */
 fun I18nTranslator.text(text: CharSequence, quickReplies: List<QuickReply>): TextMessage =
     TextMessage(translate(text).toString(), quickReplies)
 
 /**
- * Create a [generic element](https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic).
+ * Creates a [generic element](https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic).
  */
 fun I18nTranslator.genericElement(
     title: CharSequence,
@@ -340,7 +379,7 @@ fun I18nTranslator.genericElement(
 }
 
 /**
- * Create a [list element](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
+ * Creates a [list element](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
  */
 fun I18nTranslator.listElement(
     title: CharSequence,
@@ -376,7 +415,7 @@ fun loginButton(url: String): LoginButton = LoginButton(url)
 fun logoutButton(): LogoutButton = LogoutButton()
 
 /**
- * Create a [location quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies#location).
+ * Creates a [location quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies#location).
  */
 fun locationQuickReply(): QuickReply = LocationQuickReply()
 
@@ -395,7 +434,7 @@ fun I18nTranslator.nlpQuickReply(
     )
 
 /**
- * Create a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies)
+ * Creates a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies)
  * from an [I18nTranslator].
  */
 fun I18nTranslator.standaloneQuickReply(
@@ -433,7 +472,7 @@ fun I18nTranslator.standaloneQuickReply(
     }
 
 /**
- * Create a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
+ * Creates a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
  */
 fun BotBus.quickReply(
     title: CharSequence,
@@ -443,7 +482,7 @@ fun BotBus.quickReply(
     quickReply(title, targetIntent, null, step, parameters)
 
 /**
- * Create a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
+ * Creates a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
  */
 fun BotBus.quickReply(
     title: CharSequence,
@@ -467,7 +506,7 @@ fun BotBus.quickReply(
     quickReply(title, targetIntent.wrappedIntent(), imageUrl, step, parameters.toMap())
 
 /**
- * Create a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
+ * Creates a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
  */
 fun BotBus.quickReply(
     title: CharSequence,
@@ -479,7 +518,7 @@ fun BotBus.quickReply(
     quickReply(title, targetIntent, imageUrl, step, parameters.toMap())
 
 /**
- * Create a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
+ * Creates a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
  */
 fun BotBus.quickReply(
     title: CharSequence,
@@ -512,7 +551,7 @@ private fun I18nTranslator.quickReply(
 }
 
 /**
- * Create a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
+ * Creates a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
  * from an [I18nTranslator].
  */
 fun I18nTranslator.standalonePostbackButton(
@@ -551,7 +590,7 @@ fun I18nTranslator.standalonePostbackButton(
     }
 
 /**
- * Create a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
+ * Creates a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
  */
 fun BotBus.postbackButton(
     title: CharSequence,
@@ -561,7 +600,7 @@ fun BotBus.postbackButton(
     postbackButton(title, targetIntent, null, *parameters)
 
 /**
- * Create a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
+ * Creates a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
  */
 fun BotBus.postbackButton(
     title: CharSequence,
@@ -571,7 +610,7 @@ fun BotBus.postbackButton(
     postbackButton(title, targetIntent, null, parameters)
 
 /**
- * Create a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
+ * Creates a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
  */
 fun BotBus.postbackButton(
     title: CharSequence,
@@ -582,7 +621,7 @@ fun BotBus.postbackButton(
     postbackButton(title, targetIntent, step, *parameters.toArray())
 
 /**
- * Create a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
+ * Creates a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
  */
 fun BotBus.postbackButton(
     title: CharSequence,
@@ -618,7 +657,7 @@ private fun I18nTranslator.postbackButton(
 }
 
 /**
- * Create an [url button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#url).
+ * Creates an [url button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#url).
  */
 fun I18nTranslator.urlButton(title: CharSequence, url: String): UrlButton {
     val t = translate(title)

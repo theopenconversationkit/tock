@@ -20,5 +20,5 @@ package fr.vsct.tock.bot.connector.messenger.model.send
  *
  */
 enum class PayloadType {
-    button, generic, list
+    button, generic, list, media
 }

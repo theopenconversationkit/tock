@@ -37,8 +37,6 @@ data class UrlPayload(
         /**
          * Create an UrlPayload from an url.
          * Uses default cache configuration.
-         * @param applicationId the applicationId
-         * @param url the url
          */
         fun getUrlPayload(attachment: SendAttachment): UrlPayload {
             return getUrlPayload(
