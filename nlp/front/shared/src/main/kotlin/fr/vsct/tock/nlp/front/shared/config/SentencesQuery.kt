@@ -21,19 +21,24 @@ import java.time.ZonedDateTime
 import java.util.Locale
 
 /**
- * The query to search sentences based on multi-criteria.
+ * Complex query to search classified sentences.
  */
-data class SentencesQuery(val applicationId: Id<ApplicationDefinition>,
-                          val language: Locale? = null,
-                          val start: Long = 0,
-                          val size: Int = 1,
-                          val search: String? = null,
-                          val intentId: Id<IntentDefinition>? = null,
-                          val status: Set<ClassifiedSentenceStatus> = emptySet(),
-                          val notStatus: ClassifiedSentenceStatus? = ClassifiedSentenceStatus.deleted,
-                          val onlyExactMatch: Boolean = false,
-                          val entityType: String? = null,
-                          val entityRole: String? = null,
-                          val modifiedAfter: ZonedDateTime? = null,
-                          val searchMark: SearchMark? = null) {
-}
+data class SentencesQuery(
+    val applicationId: Id<ApplicationDefinition>,
+    val language: Locale? = null,
+    val start: Long = 0,
+    val size: Int = 1,
+    val search: String? = null,
+    val intentId: Id<IntentDefinition>? = null,
+    val status: Set<ClassifiedSentenceStatus> = emptySet(),
+    val notStatus: ClassifiedSentenceStatus? = ClassifiedSentenceStatus.deleted,
+    val onlyExactMatch: Boolean = false,
+    val entityType: String? = null,
+    val entityRole: String? = null,
+    val modifiedAfter: ZonedDateTime? = null,
+    val searchMark: SearchMark? = null,
+    /**
+     * The optional sort parameters.
+     */
+    val sort: List<Pair<String, Boolean>> = emptyList()
+)

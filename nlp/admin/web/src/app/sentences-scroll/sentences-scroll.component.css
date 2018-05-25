@@ -42,16 +42,36 @@
   white-space: nowrap;
 }
 
-.md-column-select {
-  overflow: initial;
-}
-
 .mat-column-select {
+  overflow: initial;
   max-width: 48px;
 }
 .mat-column-currentIntent {
   max-width: 256px;
 }
 .mat-column-status {
+  max-width: 156px;
+}
+.mat-column-intentProbability {
+  max-width: 48px;
+}
+.mat-column-intentProbability {
+  max-width: 48px;
+}
+.mat-column-entitiesProbability {
+  max-width: 48px;
+}
+.mat-column-usageCount {
+  max-width: 48px;
+}
+.mat-column-lastUpdate {
   max-width: 128px;
+}
+.mat-column-lastUsage {
+  max-width: 128px;
+}
+
+.mat-sort-header-container {
+  display:flex;
+  justify-content:center;
 }

@@ -23,15 +23,13 @@ import fr.vsct.tock.nlp.core.sample.SampleContext
 import fr.vsct.tock.nlp.core.sample.SampleEntity
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
-import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import java.time.Instant
 import java.util.Locale
 
 /**
- * A sentence with its classification for a [Locale] and an [ApplicationDefinition].
+ * A sentence with its classification for a given [Locale] and an [ApplicationDefinition].
  */
-@Data
 data class ClassifiedSentence(
     /**
      * The text of the sentence.
@@ -68,7 +66,15 @@ data class ClassifiedSentence(
     /**
      * If not yet validated, the average entity probability of the last evaluation.
      */
-    val lastEntityProbability: Double?
+    val lastEntityProbability: Double?,
+    /**
+     * The last usage date (for a real user) if any.
+     */
+    val lastUsage: Instant? = null,
+    /**
+     * The total number of uses of this sentence.
+     */
+    val usageCount: Long = 0
 ) {
 
     constructor(

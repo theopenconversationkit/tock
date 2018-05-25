@@ -17,7 +17,9 @@
 package fr.vsct.tock.nlp.front.storage.mongo
 
 import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.FindOneAndUpdateOptions
 import com.mongodb.client.model.IndexOptions
+import com.mongodb.client.model.ReturnDocument.AFTER
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLog
@@ -72,7 +74,6 @@ import org.litote.kmongo.set
 import org.litote.kmongo.sort
 import org.litote.kmongo.sum
 import org.litote.kmongo.toList
-import org.litote.kmongo.upsert
 import org.litote.kmongo.year
 import java.time.Instant
 import java.time.LocalDate
@@ -185,23 +186,26 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
             result = log.result?.copy(retainedQuery = obfuscate(log.result?.retainedQuery) ?: "")
         )
         col.insertOne(ParseRequestLogCol(savedLog))
-        val stat = ParseRequestLogStatCol(log)
-        statsCol.updateOne(
-            and(
-                Language eq stat.language,
-                ApplicationId eq stat.applicationId,
-                Text eq stat.text
-            ),
-            combine(
-                listOfNotNull(
-                    stat.intentProbability?.let { set(IntentProbability, it) },
-                    stat.entitiesProbability?.let { set(EntitiesProbability, stat.entitiesProbability) },
-                    set(LastUsage, stat.lastUsage),
-                    inc(Count, 1)
-                )
-            ),
-            upsert()
-        )
+        if(log.query.context.increaseQueryCounter) {
+            val stat = ParseRequestLogStatCol(log)
+            val updatedStat = statsCol.findOneAndUpdate(
+                and(
+                    Language eq stat.language,
+                    ApplicationId eq stat.applicationId,
+                    Text eq stat.text
+                ),
+                combine(
+                    listOfNotNull(
+                        stat.intentProbability?.let { set(IntentProbability, it) },
+                        stat.entitiesProbability?.let { set(EntitiesProbability, it) },
+                        set(LastUsage, stat.lastUsage),
+                        inc(Count, 1)
+                    )
+                ),
+                FindOneAndUpdateOptions().upsert(true).returnDocument(AFTER)
+            )
+            ClassifiedSentenceMongoDAO.updateSentenceState(updatedStat)
+        }
     }
 
     override fun search(query: ParseRequestLogQuery): ParseRequestLogQueryResult {

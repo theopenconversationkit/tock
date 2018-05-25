@@ -15,22 +15,24 @@
  */
 
 import {saveAs} from "file-saver";
-import {AfterViewInit, Component, EventEmitter, Input, Output, ViewChild} from "@angular/core";
+import {AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, ViewEncapsulation} from "@angular/core";
 import {PaginatedResult, SearchQuery, Sentence, SentenceStatus} from "../model/nlp";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {StateService} from "../core/state.service";
 import {ScrollComponent} from "../scroll/scroll.component";
-import {PaginatedQuery, SearchMark} from "../model/commons";
+import {Entry, PaginatedQuery, SearchMark} from "../model/commons";
 import {Observable} from "rxjs/Observable";
 import {MdPaginator, MdSnackBar} from "@angular/material";
 import {UserRole} from "../model/auth";
 import {DataSource, SelectionModel} from "@angular/cdk/collections";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
+import {Sort} from "@angular/material/sort/typings/sort";
 
 @Component({
   selector: 'tock-sentences-scroll',
   templateUrl: './sentences-scroll.component.html',
-  styleUrls: ['./sentences-scroll.component.css']
+  styleUrls: ['./sentences-scroll.component.css'],
+  encapsulation: ViewEncapsulation.None
 })
 export class SentencesScrollComponent extends ScrollComponent<Sentence> implements AfterViewInit {
 
@@ -45,10 +47,13 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   pageIndex: number = 0;
 
   tableView: boolean = false;
+  advancedView: boolean = false;
   displayedColumns = [];
   @ViewChild(MdPaginator) paginator: MdPaginator;
   dataSource: SentencesDataSource | null;
   selection: SelectionModel<Sentence> = new SelectionModel<Sentence>(true, []);
+
+  private sort: Sort[] = [];
 
   constructor(state: StateService,
               private nlp: NlpService,
@@ -64,12 +69,24 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
     );
   }
 
-  ngOnInit(): void {
+  private initColumns() {
     if (this.displayStatus) {
-      this.displayedColumns = ['select', 'text', 'currentIntent', 'status'];
+      if (this.advancedView) {
+        this.displayedColumns = ['select', 'text', 'currentIntent', 'status', 'lastUpdate', 'intentProbability', 'entitiesProbability', 'lastUsage', 'usageCount'];
+      } else {
+        this.displayedColumns = ['select', 'text', 'currentIntent', 'status'];
+      }
     } else {
-      this.displayedColumns = ['select', 'text', 'currentIntent'];
+      if (this.advancedView) {
+        this.displayedColumns = ['select', 'text', 'currentIntent', 'lastUpdate', 'intentProbability', 'entitiesProbability', 'lastUsage', 'usageCount'];
+      } else {
+        this.displayedColumns = ['select', 'text', 'currentIntent'];
+      }
     }
+  }
+
+  ngOnInit(): void {
+    this.initColumns();
     this.dataSource = new SentencesDataSource();
 
     super.ngOnInit();
@@ -88,8 +105,8 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
     })
   }
 
-  reset(): void {
-    super.reset();
+  resetCursor() {
+    super.resetCursor();
     this.pageIndex = 0;
     this.selection.clear();
     this.fireSelectionChange();
@@ -108,7 +125,11 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
       this.filter.status,
       !this.filter.entityType || this.filter.entityType.length === 0 ? null : this.filter.entityType,
       !this.filter.entityRole || this.filter.entityRole.length === 0 ? null : this.filter.entityRole,
-      this.filter.modifiedAfter)
+      this.filter.modifiedAfter,
+      this.tableView && this.sort.length !== 0
+        ? this.sort.map(s => new Entry<string, boolean>(s.active, s.direction === 'asc'))
+        : null
+    )
   }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<Sentence>> {
@@ -133,6 +154,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   }
 
   switchToScrollView() {
+    this.sort = [];
     this.reset();
     this.tableView = false;
     this.refresh();
@@ -142,6 +164,24 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
     this.reset();
     this.tableView = true;
     this.refresh();
+  }
+
+  sortChange(s: Sort) {
+    this.sort.splice(0, 0, s);
+    for (let i = this.sort.length - 1; i >= 0; --i) {
+      if (this.sort[i].direction === '' || (i > 0 && this.sort[i].active === s.active)) {
+        this.sort.splice(i, 1)
+      }
+    }
+    this.data = [];
+    this.resetCursor();
+    this.load();
+  }
+
+  switchAdvancedView(advanced: boolean) {
+    this.advancedView = advanced;
+    this.initColumns();
+    this.dataSource.refreshDataSource();
   }
 
   protected loadResults(result: PaginatedResult<Sentence>, init: boolean): boolean {
@@ -197,6 +237,10 @@ export class SentenceFilter {
 export class SentencesDataSource extends DataSource<Sentence> {
 
   private subject = new BehaviorSubject([]);
+
+  refreshDataSource() {
+    this.subject.next(this.subject.value.slice(0));
+  }
 
   setNewValues(values: Sentence[]) {
     this.subject.next(values);

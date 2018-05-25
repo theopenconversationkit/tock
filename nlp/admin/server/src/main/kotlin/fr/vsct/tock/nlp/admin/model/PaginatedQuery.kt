@@ -22,10 +22,14 @@ import fr.vsct.tock.nlp.front.shared.config.SearchMark
  *
  */
 open class PaginatedQuery(
-        val start: Long = 0,
-        val size: Int = 10,
-        /**
-         * If searchMark is not null, the results start with the elements after the [searchMark].
-         */
-        val searchMark: SearchMark? = null) : ApplicationScopedQuery() {
-}
+    val start: Long = 0,
+    val size: Int = 10,
+    /**
+     * If searchMark is not null, the results start with the elements after the [searchMark].
+     */
+    val searchMark: SearchMark? = null,
+    /**
+     * The optional sort parameters.
+     */
+    val sort: List<Pair<String, Boolean>>? = null
+) : ApplicationScopedQuery()

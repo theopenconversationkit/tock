@@ -6,6 +6,7 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import java.time.Instant
 import java.util.Locale
 import kotlin.Double
+import kotlin.Long
 import kotlin.String
 import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
@@ -42,6 +43,12 @@ class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, property: KPrope
 
     val lastEntityProbability: KProperty1<T, Double?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastEntityProbability)
+
+    val lastUsage: KProperty1<T, Instant?>
+        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastUsage)
+
+    val usageCount: KProperty1<T, Long?>
+        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::usageCount)
     companion object {
         val Text: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
             get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::text
@@ -62,7 +69,11 @@ class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, property: KPrope
         val LastIntentProbability: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, Double?>
             get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastIntentProbability
         val LastEntityProbability: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, Double?>
-            get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastEntityProbability}
+            get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastEntityProbability
+        val LastUsage: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, Instant?>
+            get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastUsage
+        val UsageCount: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, Long?>
+            get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::usageCount}
 }
 
 class ClassifiedSentenceCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>?>) : KPropertyPath<T, Collection<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>?>(previous,property) {
@@ -95,4 +106,10 @@ class ClassifiedSentenceCol_Col<T>(previous: KPropertyPath<T, *>?, property: KPr
 
     val lastEntityProbability: KProperty1<T, Double?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastEntityProbability)
+
+    val lastUsage: KProperty1<T, Instant?>
+        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastUsage)
+
+    val usageCount: KProperty1<T, Long?>
+        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::usageCount)
 }

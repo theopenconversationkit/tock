@@ -40,6 +40,14 @@
             mdTooltip="Switch to scroll view">
       <md-icon>grid_off</md-icon>
     </button>
+    <button *ngIf="tableView && !advancedView" md-icon-button (click)="switchAdvancedView(true)" class="button"
+            mdTooltip="Display additional stats">
+      <md-icon>expand_more</md-icon>
+    </button>
+    <button *ngIf="tableView && advancedView" md-icon-button (click)="switchAdvancedView(false)" class="button"
+            mdTooltip="Hide additional stats">
+      <md-icon>expand_less</md-icon>
+    </button>
     <button *ngIf="!tableView" md-icon-button (click)="switchToTableView()" class="button"
             mdTooltip="Switch to table view">
       <md-icon>grid_on</md-icon>
@@ -73,7 +81,7 @@
 
   <div *ngIf="tableView">
 
-    <md-table #table [dataSource]="dataSource">
+    <md-table #table mdSort [dataSource]="dataSource" (mdSortChange)="sortChange($event)">
 
       <ng-container mdColumnDef="select">
         <md-header-cell *mdHeaderCellDef>
@@ -91,18 +99,43 @@
       </ng-container>
 
       <ng-container mdColumnDef="text">
-        <md-header-cell *mdHeaderCellDef>Text</md-header-cell>
+        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Text</md-header-cell>
         <md-cell *mdCellDef="let row"> <tock-highlight [sentence]="row" [readOnly]="true"></tock-highlight></md-cell>
       </ng-container>
 
       <ng-container mdColumnDef="currentIntent">
-        <md-header-cell *mdHeaderCellDef>Intent</md-header-cell>
+        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Intent</md-header-cell>
         <md-cell *mdCellDef="let row"><span style="color:green">{{row.getIntentLabel(state)}}</span></md-cell>
       </ng-container>
 
       <ng-container mdColumnDef="status" *ngIf="displayStatus">
-        <md-header-cell *mdHeaderCellDef>Status</md-header-cell>
+        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Status</md-header-cell>
         <md-cell *mdCellDef="let row"><span class="status" [style.background]="row.statusColor()">{{row.statusDisplayed()}}</span></md-cell>
+      </ng-container>
+
+      <ng-container mdColumnDef="lastUpdate" *ngIf="advancedView">
+        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Last update</md-header-cell>
+        <md-cell *mdCellDef="let row"><span style="color:green">{{row.updateDate | date:'yyyy-MM-dd HH:mm'}}</span></md-cell>
+      </ng-container>
+
+      <ng-container mdColumnDef="intentProbability" *ngIf="advancedView">
+        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Intent proba</md-header-cell>
+        <md-cell *mdCellDef="let row"><span style="color:green">{{row.classification.intentProbability | number:'1.1-2'}}</span></md-cell>
+      </ng-container>
+
+      <ng-container mdColumnDef="entitiesProbability" *ngIf="advancedView">
+        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Entities proba</md-header-cell>
+        <md-cell *mdCellDef="let row"><span style="color:green">{{row.classification.entitiesProbability| number:'1.1-2'}}</span></md-cell>
+      </ng-container>
+
+      <ng-container mdColumnDef="lastUsage" *ngIf="advancedView">
+        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Last usage</md-header-cell>
+        <md-cell *mdCellDef="let row"><span style="color:green">{{row.classification.lastUsage| date:'yyyy-MM-dd HH:mm'}}</span></md-cell>
+      </ng-container>
+
+      <ng-container mdColumnDef="usageCount" *ngIf="advancedView">
+        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Usages</md-header-cell>
+        <md-cell *mdCellDef="let row"><span style="color:green">{{row.classification.usageCount}}</span></md-cell>
       </ng-container>
 
       <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>

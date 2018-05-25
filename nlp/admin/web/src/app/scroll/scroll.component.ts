@@ -55,10 +55,14 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
   }
 
   reset() {
+    this.resetCursor();
     this.loading = false;
-    this.cursor = 0;
     this.total = -1;
     this.mark = null;
+  }
+
+  resetCursor() {
+    this.cursor = 0;
   }
 
   refresh() {

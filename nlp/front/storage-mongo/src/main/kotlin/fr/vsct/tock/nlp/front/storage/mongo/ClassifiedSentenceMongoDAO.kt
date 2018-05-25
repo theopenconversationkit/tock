@@ -17,6 +17,8 @@
 package fr.vsct.tock.nlp.front.storage.mongo
 
 import com.mongodb.client.MongoCollection
+import com.mongodb.client.model.Collation
+import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.ReplaceOptions
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.front.service.storage.ClassifiedSentenceDAO
@@ -33,18 +35,23 @@ import fr.vsct.tock.nlp.front.shared.config.SentencesQueryResult
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.ApplicationId
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.FullText
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Language
+import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastEntityProbability
+import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastIntentProbability
+import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastUsage
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Status
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Text
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UpdateDate
+import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UsageCount
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogMongoDAO.ParseRequestLogStatCol
+import fr.vsct.tock.shared.defaultLocale
 import mu.KotlinLogging
-import org.bson.json.JsonMode
-import org.bson.json.JsonWriterSettings
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.MongoOperator.elemMatch
 import org.litote.kmongo.MongoOperator.pull
 import org.litote.kmongo.`in`
 import org.litote.kmongo.and
+import org.litote.kmongo.combine
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
@@ -55,14 +62,16 @@ import org.litote.kmongo.gt
 import org.litote.kmongo.json
 import org.litote.kmongo.lte
 import org.litote.kmongo.ne
+import org.litote.kmongo.orderBy
 import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.regex
 import org.litote.kmongo.replaceOneWithFilter
+import org.litote.kmongo.set
 import org.litote.kmongo.setTo
 import org.litote.kmongo.updateMany
-import org.litote.kmongo.upsert
 import java.time.Instant
 import java.util.Locale
+import kotlin.reflect.KProperty
 
 
 /**
@@ -86,7 +95,9 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         val status: ClassifiedSentenceStatus,
         val classification: Classification,
         val lastIntentProbability: Double? = null,
-        val lastEntityProbability: Double? = null
+        val lastEntityProbability: Double? = null,
+        val lastUsage: Instant? = null,
+        val usageCount: Long? = null
     ) {
 
         constructor(sentence: ClassifiedSentence) :
@@ -100,7 +111,9 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     sentence.status,
                     sentence.classification,
                     sentence.lastIntentProbability,
-                    sentence.lastEntityProbability
+                    sentence.lastEntityProbability,
+                    sentence.lastUsage,
+                    if (sentence.usageCount == 0L) null else sentence.usageCount
                 )
 
         fun toSentence(): ClassifiedSentence =
@@ -113,7 +126,9 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 status,
                 classification,
                 lastIntentProbability,
-                lastEntityProbability
+                lastEntityProbability,
+                lastUsage,
+                usageCount ?: 0
             )
     }
 
@@ -123,6 +138,10 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         c.ensureIndex(Language, ApplicationId, Status)
         c.ensureIndex(Status)
         c.ensureIndex(UpdateDate)
+        c.ensureIndex(
+            UsageCount,
+            indexOptions = IndexOptions().background(true).sparse(true)
+        )
         c.ensureIndex(Language, Status, Classification_.intentId)
         c
     }
@@ -197,13 +216,42 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
             if (count > start) {
                 val list = col
                     .find(filterBase)
-                    .descendingSort(UpdateDate)
+                    .run {
+                        if (query.sort.isEmpty()) {
+                            descendingSort(UpdateDate)
+                        } else {
+                            @Suppress("UNCHECKED_CAST")
+                            sort(
+                                orderBy(
+                                    query.sort.map {
+                                        when (it.first) {
+                                            "text" -> Text
+                                            "currentIntent" -> Classification_.intentId
+                                            "intentProbability" -> LastIntentProbability
+                                            "entitiesProbability" -> LastEntityProbability
+                                            "lastUpdate" -> UpdateDate
+                                            "lastUsage" -> LastUsage
+                                            "usageCount" -> UsageCount
+                                            else -> UpdateDate
+                                        } to it.second
+                                    }.toMap() as Map<KProperty<*>, Boolean>
+                                )
+                            )
+                        }
+                    }
+                    .collation(
+                        Collation
+                            .builder()
+                            .caseLevel(false)
+                            .locale((query.language ?: defaultLocale).toLanguageTag())
+                            .build()
+                    )
                     .skip(start.toInt())
                     .limit(size)
 
                 return SentencesQueryResult(count, list.map { it.toSentence() }.toList())
             } else {
-                return SentencesQueryResult(0, emptyList())
+                return SentencesQueryResult(count, emptyList())
             }
         }
     }
@@ -313,5 +361,24 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                         }
                     }"""
         )
+    }
+
+    internal fun updateSentenceState(stat: ParseRequestLogStatCol) {
+        col.updateOne(
+            and(
+                Language eq stat.language,
+                ApplicationId eq stat.applicationId,
+                Text eq stat.text
+            ),
+            combine(
+                listOfNotNull(
+                    stat.intentProbability?.let { set(LastIntentProbability, it) },
+                    stat.entitiesProbability?.let { set(LastEntityProbability, it) },
+                    set(LastUsage, stat.lastUsage),
+                    set(UsageCount, stat.count)
+                )
+            )
+        )
+
     }
 }

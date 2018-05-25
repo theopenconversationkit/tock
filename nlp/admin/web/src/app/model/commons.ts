@@ -57,7 +57,8 @@ export class PaginatedQuery extends ApplicationScopedQuery {
               public language: string,
               public start: number,
               public size: number,
-              public searchMark?: SearchMark) {
+              public searchMark?: SearchMark,
+              public sort? : Entry<string,boolean>[]) {
     super(namespace, applicationName, language)
   }
 }

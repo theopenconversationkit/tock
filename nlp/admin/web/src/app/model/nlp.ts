@@ -14,10 +14,11 @@
  * limitations under the License.
  */
 
-import {ApplicationScopedQuery, JsonUtils, PaginatedQuery, SearchMark} from "./commons";
+import {ApplicationScopedQuery, Entry, JsonUtils, PaginatedQuery, SearchMark} from "./commons";
 import {User} from "./auth";
 import {isNullOrUndefined} from "util";
 import {StateService} from "../core/state.service";
+import {Sort} from "@angular/material/sort";
 
 export class EntityDefinition {
 
@@ -284,7 +285,7 @@ export class Sentence extends EntityContainer {
               public classification: Classification,
               public creationDate: Date,
               public updateDate: Date,
-              public key?: string) {
+              public key?: string,) {
     super()
   }
 
@@ -492,7 +493,15 @@ export class Classification {
               public entities: ClassifiedEntity[],
               public intentProbability: number,
               public entitiesProbability: number,
-              public otherIntentsProbabilities: Map<string, number>) {
+              public otherIntentsProbabilities: Map<string, number>,
+              /**
+               * The last usage date (for a real user) if any.
+               */
+              public lastUsage?: Date,
+              /**
+               * The total number of uses of this sentence.
+               */
+              public usageCount?: number) {
   }
 
   hasIntentProbability(): boolean {
@@ -509,7 +518,9 @@ export class Classification {
       this.entities.slice(0),
       this.intentProbability,
       this.entitiesProbability,
-      this.otherIntentsProbabilities);
+      this.otherIntentsProbabilities,
+      this.lastUsage,
+      this.usageCount);
   }
 
   static fromJSON(json?: any): Classification {
@@ -606,7 +617,7 @@ export class ParseQuery extends ApplicationScopedQuery {
               public language: string,
               public query: string,
               public checkExistingQuery: boolean,
-              public state?: string) {
+              public state?: string,) {
     super(namespace, applicationName, language)
   }
 }
@@ -624,8 +635,9 @@ export class SearchQuery extends PaginatedQuery {
               public status?: SentenceStatus[],
               public entityType?: string,
               public entityRole?: string,
-              public modifiedAfter?: Date) {
-    super(namespace, applicationName, language, start, size, searchMark)
+              public modifiedAfter?: Date,
+              public sort? : Entry<string,boolean>[]) {
+    super(namespace, applicationName, language, start, size, searchMark, sort)
   }
 }
 

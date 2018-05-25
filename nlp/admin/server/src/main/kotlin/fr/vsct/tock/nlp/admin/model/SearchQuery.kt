@@ -27,25 +27,28 @@ import java.time.ZonedDateTime
  *
  */
 data class SearchQuery(
-        val search: String?,
-        val intentId: Id<IntentDefinition>?,
-        val status: Set<ClassifiedSentenceStatus> = emptySet(),
-        val entityType: String? = null,
-        val entityRole: String? = null,
-        val modifiedAfter: ZonedDateTime? = null) : PaginatedQuery() {
+    val search: String?,
+    val intentId: Id<IntentDefinition>?,
+    val status: Set<ClassifiedSentenceStatus> = emptySet(),
+    val entityType: String? = null,
+    val entityRole: String? = null,
+    val modifiedAfter: ZonedDateTime? = null
+) : PaginatedQuery() {
 
     fun toSentencesQuery(applicationId: Id<ApplicationDefinition>): SentencesQuery {
         return SentencesQuery(
-                applicationId,
-                language,
-                start,
-                size,
-                search,
-                intentId,
-                status,
-                entityType = entityType,
-                entityRole = entityRole,
-                modifiedAfter = modifiedAfter,
-                searchMark = searchMark)
+            applicationId,
+            language,
+            start,
+            size,
+            search,
+            intentId,
+            status,
+            entityType = entityType,
+            entityRole = entityRole,
+            modifiedAfter = modifiedAfter,
+            searchMark = searchMark,
+            sort = sort ?: emptyList()
+        )
     }
 }

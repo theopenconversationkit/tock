@@ -42,6 +42,7 @@ import {
   MdTabsModule,
   MdToolbarModule,
   MdTooltipModule,
+  MdSortModule,
 } from "@angular/material";
 import {MapToIterablePipe} from "./map-to-iterable.pipe";
 import {ScrollComponent} from "../scroll/scroll.component";
@@ -93,6 +94,7 @@ import {ScrollComponent} from "../scroll/scroll.component";
     MdSelectModule,
     MdSidenavModule,
     MdSnackBarModule,
+    MdSortModule,
     MdTableModule,
     MdTabsModule,
     MdToolbarModule,
