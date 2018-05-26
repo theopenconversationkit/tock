@@ -40,7 +40,7 @@ class FrontRepositoryTest : AbstractTest() {
 
     @AfterEach
     fun after() {
-        FrontRepository.entityTypes.clear()
+        FrontRepository.clearEntityTypesCache()
     }
 
     @Test

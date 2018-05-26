@@ -19,9 +19,9 @@ package fr.vsct.tock.nlp.front.service
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
+import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.front.service.FrontRepository.addNewEntityType
-import fr.vsct.tock.nlp.front.service.FrontRepository.config
 import fr.vsct.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import fr.vsct.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
@@ -35,6 +35,7 @@ import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.namespaceAndName
+import fr.vsct.tock.shared.provide
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
@@ -55,6 +56,10 @@ object ApplicationConfigurationService :
     ApplicationConfiguration {
 
     private val logger = KotlinLogging.logger {}
+
+    private val core: NlpCore get() = injector.provide()
+
+    private val config: ApplicationConfiguration get() = injector.provide()
 
     override fun deleteApplicationById(id: Id<ApplicationDefinition>) {
         sentenceDAO.deleteSentencesByApplicationId(id)
@@ -146,7 +151,7 @@ object ApplicationConfigurationService :
     }
 
     override fun getSupportedNlpEngineTypes(): Set<NlpEngineType> {
-        return FrontRepository.core.supportedNlpEngineTypes()
+        return core.supportedNlpEngineTypes()
     }
 
     override fun deleteEntityTypeByName(name: String): Boolean {
@@ -160,8 +165,10 @@ object ApplicationConfigurationService :
                 }
             }
         }
-        FrontRepository.entityTypes.remove(name)
-        return entityTypeDAO.deleteEntityTypeByName(name)
+
+        return entityTypeDAO.deleteEntityTypeByName(name).apply {
+            FrontRepository.clearEntityTypesCache()
+        }
     }
 
     override fun initData() {
@@ -175,7 +182,7 @@ object ApplicationConfigurationService :
     private fun findIntent(intentId: Id<IntentDefinition>): Intent {
         return getIntentById(intentId)?.let {
             toIntent(it)
-        } ?: Intent(Intent.Companion.UNKNOWN_INTENT, emptyList())
+        } ?: Intent(Intent.UNKNOWN_INTENT, emptyList())
     }
 
     fun toIntent(intent: IntentDefinition): Intent {
@@ -192,7 +199,7 @@ object ApplicationConfigurationService :
         targetIntentId: Id<IntentDefinition>
     ): Int {
 
-        var s = sentences.filter { it.classification.intentId != targetIntentId }
+        val s = sentences.filter { it.classification.intentId != targetIntentId }
 
         //1 collect entities
         val entities = s

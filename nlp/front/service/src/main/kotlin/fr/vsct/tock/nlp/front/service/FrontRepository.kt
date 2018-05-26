@@ -16,6 +16,10 @@
 
 package fr.vsct.tock.nlp.front.service
 
+import com.google.common.base.Supplier
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
+import com.google.common.cache.CacheLoader
 import fr.vsct.tock.nlp.core.Application
 import fr.vsct.tock.nlp.core.EntitiesRegexp
 import fr.vsct.tock.nlp.core.Entity
@@ -26,9 +30,11 @@ import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.provide
 import mu.KotlinLogging
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.TimeUnit
 
 /**
  *
@@ -37,21 +43,27 @@ internal object FrontRepository {
 
     private val logger = KotlinLogging.logger {}
 
-    val core: NlpCore get() = injector.provide()
+    private val core: NlpCore get() = injector.provide()
 
-    val config: ApplicationConfiguration get() = injector.provide()
+    private val config: ApplicationConfiguration get() = injector.provide()
 
-    //internal for tests
-    internal val entityTypes: MutableMap<String, EntityType?> by lazy {
-        loadEntityTypes()
+    @Suppress("UNCHECKED_CAST")
+    private val entityTypesCache: Cache<String, MutableMap<String, EntityType?>> = CacheBuilder.newBuilder()
+        .expireAfterWrite(
+            longProperty("tock_entity_types_cache_write_timeout_in_seconds", 10),
+            TimeUnit.SECONDS
+        )
+        .build(CacheLoader.from(Supplier<MutableMap<String, EntityType?>> { loadEntityTypes() }))
+
+    fun clearEntityTypesCache() {
+        entityTypesCache.invalidateAll()
     }
 
-    private fun reloadEntityTypes() {
-        entityTypes.putAll(loadEntityTypes())
-    }
+    private val entityTypes: MutableMap<String, EntityType?>
+        get() = entityTypesCache.get("", { loadEntityTypes()})
 
     private fun loadEntityTypes(): MutableMap<String, EntityType?> {
-        logger.info { "load entity types" }
+        logger.trace { "load entity types" }
         val entityTypesDefinitionMap = config.getEntityTypes().map { it.name to it }.toMap()
         val entityTypesMap = entityTypesDefinitionMap.mapValues { (_, v) -> EntityType(v.name) }
 
@@ -67,7 +79,7 @@ internal object FrontRepository {
                                     logger.error { "entity ${it.entityTypeName} not found" }
                                 }
                             }
-                        } ?: emptyList<Entity>()
+                        } ?: emptyList()
                     )
                 }
                 .toMap()
@@ -91,16 +103,10 @@ internal object FrontRepository {
     }
 
     fun entityTypeExists(name: String): Boolean {
-        if (entityTypes.isEmpty()) {
-            reloadEntityTypes()
-        }
         return entityTypes.containsKey(name)
     }
 
     fun entityTypeByName(name: String): EntityType? {
-        if (entityTypes.isEmpty()) {
-            reloadEntityTypes()
-        }
         return entityTypes.getValue(name) ?: null.apply { logger.error { "unknown entity $name" } }
     }
 
@@ -143,6 +149,7 @@ internal object FrontRepository {
                     logger.debug { "save built-in entity type $it" }
                     val entityType = EntityTypeDefinition(it, "built-in entity $it")
                     config.save(entityType)
+                    clearEntityTypesCache()
                 } catch (e: Exception) {
                     logger.warn("Fail to save built-in entity type $it", e)
                 }

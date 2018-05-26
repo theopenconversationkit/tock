@@ -16,18 +16,17 @@
 
 package fr.vsct.tock.nlp.front.service
 
-import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityEvaluationContext
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
-import fr.vsct.tock.nlp.front.service.FrontRepository.config
-import fr.vsct.tock.nlp.front.service.FrontRepository.core
+import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
 import fr.vsct.tock.nlp.front.service.selector.IntentSelectorService
 import fr.vsct.tock.nlp.front.service.selector.IntentSelectorService.isValidClassifiedSentence
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
+import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration
 import fr.vsct.tock.nlp.front.shared.Parser
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
@@ -51,6 +50,7 @@ import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.namespace
+import fr.vsct.tock.shared.provide
 import fr.vsct.tock.shared.withNamespace
 import fr.vsct.tock.shared.withoutNamespace
 import mu.KotlinLogging
@@ -67,10 +67,13 @@ object ParserService : Parser {
     private val logger = KotlinLogging.logger {}
     private val tabCarriageRegexp = "[\\n\\r\\t]+".toRegex()
 
-    private val executor: Executor by injector.instance()
-    private val logDAO: ParseRequestLogDAO by injector.instance()
-
     private val validateSentenceTest = booleanProperty("tock_parser_validate_sentence_test", false)
+
+    private val executor: Executor get() = injector.provide()
+    private val logDAO: ParseRequestLogDAO get() = injector.provide()
+    private val core: NlpCore get() = injector.provide()
+
+    private val config: ApplicationConfiguration get() = injector.provide()
 
     private data class CallMetadata(
         val application: ApplicationDefinition,
