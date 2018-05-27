@@ -31,7 +31,7 @@ import fr.vsct.tock.bot.engine.dialog.DialogState
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.NlpClient
-import fr.vsct.tock.nlp.api.client.model.NlpEntity
+import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.api.client.model.NlpEntityValue
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
@@ -258,7 +258,7 @@ internal class Nlp : NlpController {
         }
 
         private fun mergeValues(
-            entity: NlpEntity,
+            entity: Entity,
             newValues: List<EntityValue>,
             defaultNewValue: EntityValue,
             initialValue: EntityStateValue? = null

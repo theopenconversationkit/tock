@@ -17,6 +17,6 @@
 package fr.vsct.tock.nlp.api.client.model
 
 /**
- * An entity returned by [NlpResult].
+ * An [EntityType] with a role.
  */
-data class NlpEntity(val entityType: NlpEntityType, val role: String)
+data class Entity(val entityType: EntityType, val role: String)

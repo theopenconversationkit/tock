@@ -18,7 +18,7 @@ package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.user.UserLocation
-import fr.vsct.tock.nlp.api.client.model.NlpEntity
+import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
 
 /**
@@ -63,7 +63,7 @@ data class DialogState(
      * @entity the entity
      * @value the new entity value
      */
-    fun setValue(entity: NlpEntity, value: Value) {
+    fun setValue(entity: Entity, value: Value) {
         entityValues[entity.role] = EntityStateValue(entity, value)
     }
 
@@ -73,7 +73,7 @@ data class DialogState(
      * @entity the entity
      * @newValue the new entity value
      */
-    fun changeValue(entity: NlpEntity, newValue: Value?) {
+    fun changeValue(entity: Entity, newValue: Value?) {
         entityValues[entity.role]?.changeValue(entity, newValue)
                 ?: if (newValue != null) setValue(entity, newValue)
     }

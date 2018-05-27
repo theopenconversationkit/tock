@@ -17,9 +17,9 @@
 package fr.vsct.tock.nlp.api.client.model
 
 /**
- * An entity type returned by [NlpResult].
+ * An entity type, with optional subentities.
  */
-data class NlpEntityType(
+data class EntityType(
     val name: String,
-    val subEntities: List<NlpEntity> = emptyList()
+    val subEntities: List<Entity> = emptyList()
 )

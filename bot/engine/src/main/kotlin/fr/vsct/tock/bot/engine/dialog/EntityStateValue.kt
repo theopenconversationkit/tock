@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.nlp.api.client.model.NlpEntity
+import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
 import java.time.Instant
 import java.time.Instant.now
@@ -33,7 +33,7 @@ data class EntityStateValue(
     internal constructor(action: Action, entityValue: EntityValue)
             : this(entityValue, mutableListOf(ArchivedEntityValue(entityValue, action)))
 
-    internal constructor(entity: NlpEntity, value: Value) : this(EntityValue(entity, value))
+    internal constructor(entity: Entity, value: Value) : this(EntityValue(entity, value))
 
     init {
         if (value != null) {
@@ -41,7 +41,7 @@ data class EntityStateValue(
         }
     }
 
-    internal fun changeValue(entity: NlpEntity, newValue: Value?, action: Action? = null): EntityStateValue {
+    internal fun changeValue(entity: Entity, newValue: Value?, action: Action? = null): EntityStateValue {
         return changeValue(EntityValue(entity, newValue), action)
     }
 

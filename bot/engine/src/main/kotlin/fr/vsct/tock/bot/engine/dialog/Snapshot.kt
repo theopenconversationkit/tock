@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.bot.engine.dialog
 
-import fr.vsct.tock.nlp.api.client.model.NlpEntity
+import fr.vsct.tock.nlp.api.client.model.Entity
 import java.time.Instant
 import java.time.Instant.now
 
@@ -31,10 +31,10 @@ data class Snapshot(
     /**
      * Does this value exist in the snapshot?
      */
-    fun hasValue(entity: NlpEntity): Boolean = getValue(entity) != null
+    fun hasValue(entity: Entity): Boolean = getValue(entity) != null
 
     /**
      * Returns the value if it exists.
      */
-    fun getValue(entity: NlpEntity): EntityValue? = entityValues.firstOrNull { it.entity == entity }
+    fun getValue(entity: Entity): EntityValue? = entityValues.firstOrNull { it.entity == entity }
 }

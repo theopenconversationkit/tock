@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.nlp.api.client.model.merge
 
-import fr.vsct.tock.nlp.api.client.model.NlpEntity
+import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.api.client.model.NlpQueryContext
 
 /**
@@ -26,5 +26,5 @@ data class ValuesMergeQuery(
     val namespace: String,
     val applicationName: String,
     val context: NlpQueryContext,
-    val entity: NlpEntity,
+    val entity: Entity,
     val values: List<ValueToMerge>)

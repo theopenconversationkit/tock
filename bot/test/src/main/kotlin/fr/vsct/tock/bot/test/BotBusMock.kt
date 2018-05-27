@@ -36,7 +36,7 @@ import fr.vsct.tock.bot.engine.dialog.Snapshot
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
-import fr.vsct.tock.nlp.api.client.model.NlpEntity
+import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.provide
@@ -142,12 +142,12 @@ open class BotBusMock(
     /**
      * Add an entity set in the current action.
      */
-    fun addActionEntity(entity: NlpEntity, newValue: Value?): BotBusMock = addActionEntity(EntityValue(entity, newValue))
+    fun addActionEntity(entity: Entity, newValue: Value?): BotBusMock = addActionEntity(EntityValue(entity, newValue))
 
     /**
      * Simulate an action entity.
      */
-    fun addActionEntity(entity: NlpEntity, textContent: String): BotBusMock =
+    fun addActionEntity(entity: Entity, textContent: String): BotBusMock =
         addActionEntity(EntityValue(entity, null, textContent))
 
     override var userTimeline: UserTimeline

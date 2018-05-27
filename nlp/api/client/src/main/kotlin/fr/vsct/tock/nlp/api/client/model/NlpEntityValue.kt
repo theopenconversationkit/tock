@@ -24,7 +24,7 @@ import fr.vsct.tock.nlp.entity.Value
 data class NlpEntityValue(
     val start: Int,
     val end: Int,
-    val entity: NlpEntity,
+    val entity: Entity,
     val value: Value? = null,
     val evaluated: Boolean = false,
     val subEntities: List<NlpEntityValue> = emptyList(),

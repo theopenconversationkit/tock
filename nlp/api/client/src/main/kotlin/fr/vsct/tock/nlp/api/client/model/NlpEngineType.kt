@@ -18,7 +18,7 @@ package fr.vsct.tock.nlp.api.client.model
 
 
 /**
- *
+ * A NLP engine unique identifier.
  */
 data class NlpEngineType(val name: String) {
 

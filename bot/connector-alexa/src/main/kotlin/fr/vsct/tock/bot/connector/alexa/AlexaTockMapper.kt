@@ -24,8 +24,8 @@ import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
-import fr.vsct.tock.nlp.api.client.model.NlpEntity
-import fr.vsct.tock.nlp.api.client.model.NlpEntityType
+import fr.vsct.tock.nlp.api.client.model.Entity
+import fr.vsct.tock.nlp.api.client.model.EntityType
 import fr.vsct.tock.nlp.api.client.model.NlpEntityValue
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import java.util.Locale
@@ -55,10 +55,10 @@ open class AlexaTockMapper(val applicationId: String) {
         intent: String,
         slot: String,
         botDefinition: BotDefinition
-    ): NlpEntity? {
+    ): Entity? {
         val entityName = slot.substring(0, slot.length - "_slot".length)
         val namespace = botDefinition.namespace
-        return NlpEntity(NlpEntityType("$namespace:$entityName"), entityName)
+        return Entity(EntityType("$namespace:$entityName"), entityName)
     }
 
     /**

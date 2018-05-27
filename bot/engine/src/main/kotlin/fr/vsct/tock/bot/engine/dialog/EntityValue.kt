@@ -16,21 +16,21 @@
 
 package fr.vsct.tock.bot.engine.dialog
 
-import fr.vsct.tock.nlp.api.client.model.NlpEntity
+import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.api.client.model.NlpEntityValue
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.entity.Value
 
 /**
- * Takes a [Value] applied to the current [NlpEntity] and returns a [EntityValue].
+ * Takes a [Value] applied to the current [Entity] and returns a [EntityValue].
  */
-infix fun NlpEntity.setTo(value: Value?): EntityValue =
+infix fun Entity.setTo(value: Value?): EntityValue =
     EntityValue(this, value)
 
 /**
- * Takes a [String] applied to the current [NlpEntity] and returns a not yet evaluated [EntityValue].
+ * Takes a [String] applied to the current [Entity] and returns a not yet evaluated [EntityValue].
  */
-infix fun NlpEntity.setTo(text: String): EntityValue =
+infix fun Entity.setTo(text: String): EntityValue =
     EntityValue(null, null, this, text, null, false)
 
 /**
@@ -46,9 +46,9 @@ data class EntityValue(
      */
     val end: Int?,
     /**
-     * The linked [NlpEntity].
+     * The linked [Entity].
      */
-    val entity: NlpEntity,
+    val entity: Entity,
     /**
      * Text content if any.
      */
@@ -90,7 +90,7 @@ data class EntityValue(
         value.mergeSupport
     )
 
-    constructor(entity: NlpEntity, value: Value?, content: String? = null)
+    constructor(entity: Entity, value: Value?, content: String? = null)
             : this(
         null,
         null,
