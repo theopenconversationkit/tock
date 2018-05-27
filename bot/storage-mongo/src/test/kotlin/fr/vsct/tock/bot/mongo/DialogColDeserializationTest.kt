@@ -18,7 +18,7 @@ package fr.vsct.tock.bot.mongo
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.engine.dialog.ContextValue
+import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -27,8 +27,8 @@ import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.bot.mongo.DialogCol.DialogStateMongoWrapper
 import fr.vsct.tock.bot.mongo.DialogCol.EntityStateValueWrapper
-import fr.vsct.tock.nlp.api.client.model.Entity
-import fr.vsct.tock.nlp.api.client.model.EntityType
+import fr.vsct.tock.nlp.api.client.model.NlpEntity
+import fr.vsct.tock.nlp.api.client.model.NlpEntityType
 import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import fr.vsct.tock.shared.jackson.mapper
@@ -61,10 +61,10 @@ class DialogColDeserializationTest : AbstractTest() {
             Intent("test"),
             mapOf(
                 "role" to EntityStateValueWrapper(
-                    ContextValue(
+                    EntityValue(
                         0,
                         1,
-                        Entity(EntityType("type"), "role"),
+                        NlpEntity(NlpEntityType("type"), "role"),
                         "content"
                     ),
                     emptyList()

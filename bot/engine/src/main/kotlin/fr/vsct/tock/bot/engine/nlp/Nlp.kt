@@ -25,18 +25,18 @@ import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.TockConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.dialog.ContextValue
+import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.DialogState
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.NlpClient
-import fr.vsct.tock.nlp.api.client.model.Entity
-import fr.vsct.tock.nlp.api.client.model.EntityValue
+import fr.vsct.tock.nlp.api.client.model.NlpEntity
+import fr.vsct.tock.nlp.api.client.model.NlpEntityValue
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
-import fr.vsct.tock.nlp.api.client.model.QueryContext
-import fr.vsct.tock.nlp.api.client.model.QueryState
+import fr.vsct.tock.nlp.api.client.model.NlpQueryContext
+import fr.vsct.tock.nlp.api.client.model.NlpQueryState
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
 import fr.vsct.tock.nlp.api.client.model.dump.IntentDefinition
 import fr.vsct.tock.nlp.api.client.model.dump.SentencesDump
@@ -104,7 +104,7 @@ internal class Nlp : NlpController {
                             customEntityEvaluations +
                                     nlpResult.entities
                                         .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
-                                        .map { ContextValue(nlpResult, it) }
+                                        .map { EntityValue(nlpResult, it) }
                         )
 
                         sentence.nlpStats = NlpCallStats(
@@ -133,7 +133,7 @@ internal class Nlp : NlpController {
         }
 
         private fun evaluateEntitiesForPrecomputedNlp(nlpQuery: NlpQuery, nlpResult: NlpResult): NlpResult {
-            fun EntityValue.toEntityToEvaluate(): EntityToEvaluate = EntityToEvaluate(
+            fun NlpEntityValue.toEntityToEvaluate(): EntityToEvaluate = EntityToEvaluate(
                 start,
                 end,
                 entity,
@@ -203,9 +203,9 @@ internal class Nlp : NlpController {
             }
         }
 
-        private fun toQueryContext(): QueryContext {
+        private fun toQueryContext(): NlpQueryContext {
             val test = userTimeline.userPreferences.test
-            return QueryContext(
+            return NlpQueryContext(
                 userTimeline.userPreferences.locale,
                 sentence.playerId.id,
                 dialog.id.toString(),
@@ -223,7 +223,7 @@ internal class Nlp : NlpController {
                 botDefinition.namespace,
                 botDefinition.nlpModelName,
                 toQueryContext(),
-                QueryState(
+                NlpQueryState(
                     dialog.state.nextActionState?.states
                             ?: listOfNotNull(dialog.currentStory()?.definition?.mainIntent()?.name).toSet()
                 )
@@ -232,7 +232,7 @@ internal class Nlp : NlpController {
 
         private fun mergeEntityValues(
             action: Action,
-            newValues: List<ContextValue>,
+            newValues: List<EntityValue>,
             oldValue: EntityStateValue? = null
         ): EntityStateValue {
             val entity = newValues.first().entity
@@ -258,11 +258,11 @@ internal class Nlp : NlpController {
         }
 
         private fun mergeValues(
-            entity: Entity,
-            newValues: List<ContextValue>,
-            defaultNewValue: ContextValue,
+            entity: NlpEntity,
+            newValues: List<EntityValue>,
+            defaultNewValue: EntityValue,
             initialValue: EntityStateValue? = null
-        ): ContextValue {
+        ): EntityValue {
             val result = mergeValues(
                 ValuesMergeQuery(
                     botDefinition.namespace,
@@ -291,7 +291,7 @@ internal class Nlp : NlpController {
             return if (result == null || result.value == null) {
                 defaultNewValue
             } else {
-                ContextValue(entity, result.value, result.content)
+                EntityValue(entity, result.value, result.content)
             }
         }
 

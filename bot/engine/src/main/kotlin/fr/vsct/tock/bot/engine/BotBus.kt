@@ -30,9 +30,9 @@ import fr.vsct.tock.bot.engine.action.ActionNotificationType
 import fr.vsct.tock.bot.engine.action.ActionPriority
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.dialog.ContextValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
+import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.message.Message
@@ -41,7 +41,7 @@ import fr.vsct.tock.bot.engine.nlp.NlpCallStats
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
-import fr.vsct.tock.nlp.api.client.model.Entity
+import fr.vsct.tock.nlp.api.client.model.NlpEntity
 import fr.vsct.tock.nlp.entity.Value
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelValue
@@ -180,14 +180,14 @@ interface BotBus : I18nTranslator {
     /**
      * Returns true if the current action has the specified entity role.
      */
-    fun hasActionEntity(entity: Entity): Boolean = hasActionEntity(entity.role)
+    fun hasActionEntity(entity: NlpEntity): Boolean = hasActionEntity(entity.role)
 
     /**
      * Returns the current value for the specified entity role.
      */
     fun <T : Value> entityValue(
         role: String,
-        valueTransformer: (ContextValue) -> T? = @Suppress("UNCHECKED_CAST") { it.value as? T? }
+        valueTransformer: (EntityValue) -> T? = @Suppress("UNCHECKED_CAST") { it.value as? T? }
     ): T? {
         return entities[role]?.value?.let { valueTransformer.invoke(it) }
     }
@@ -196,36 +196,36 @@ interface BotBus : I18nTranslator {
      * Returns the current value for the specified entity.
      */
     fun <T : Value> entityValue(
-        entity: Entity,
-        valueTransformer: (ContextValue) -> T? = @Suppress("UNCHECKED_CAST") { it.value as? T? }
+        entity: NlpEntity,
+        valueTransformer: (EntityValue) -> T? = @Suppress("UNCHECKED_CAST") { it.value as? T? }
     ): T? = entityValue(entity.role, valueTransformer)
 
     /**
      * Returns the current text content for the specified entity.
      */
-    fun entityText(entity: Entity): String? = entityContextValue(entity)?.content
+    fun entityText(entity: NlpEntity): String? = entityValueDetails(entity)?.content
 
     /**
      * Returns the current text content for the specified entity.
      */
-    fun entityText(role: String): String? = entityContextValue(role)?.content
+    fun entityText(role: String): String? = entityValueDetails(role)?.content
 
     /**
-     * Returns the current entity ContextValue.
+     * Returns the current [EntityValue] for the specified entity.
      */
-    fun entityContextValue(entity: Entity): ContextValue? = entityContextValue(entity.role)
+    fun entityValueDetails(entity: NlpEntity): EntityValue? = entityValueDetails(entity.role)
 
     /**
-     * Returns the current entity ContextValue.
+     * Returns the current [EntityValue] for the specified role.
      */
-    fun entityContextValue(role: String): ContextValue? = entities[role]?.value
+    fun entityValueDetails(role: String): EntityValue? = entities[role]?.value
 
     /**
      * Updates the current entity value in the dialog.
      * @param role entity role
      * @param newValue the new entity value
      */
-    fun changeEntityValue(role: String, newValue: ContextValue?) {
+    fun changeEntityValue(role: String, newValue: EntityValue?) {
         dialog.state.changeValue(role, newValue)
     }
 
@@ -234,26 +234,38 @@ interface BotBus : I18nTranslator {
      * @param entity the entity definition
      * @param newValue the new entity value
      */
-    fun changeEntityValue(entity: Entity, newValue: Value?) {
+    fun changeEntityValue(entity: NlpEntity, newValue: Value?) {
         dialog.state.changeValue(entity, newValue)
     }
 
     /**
      * Updates the current entity value in the dialog.
      * @param entity the entity definition
-     * @param newValue the new entity context value
+     * @param newValue the new entity value
      */
-    fun changeEntityValue(entity: Entity, newValue: ContextValue) = changeEntityValue(entity.role, newValue)
+    fun changeEntityValue(entity: NlpEntity, newValue: EntityValue) = changeEntityValue(entity.role, newValue)
 
     /**
      * Updates the current entity text value in the dialog.
      * @param entity the entity definition
      * @param textContent the new entity text content
      */
-    fun changeEntityValue(entity: Entity, textContent: String) =
+    @Deprecated("use changeEntityText instead")
+    fun changeEntityValue(entity: NlpEntity, textContent: String) =
         changeEntityValue(
             entity.role,
-            ContextValue(entity, null, textContent)
+            EntityValue(entity, null, textContent)
+        )
+
+    /**
+     * Updates the current entity text value in the dialog.
+     * @param entity the entity definition
+     * @param textContent the new entity text content
+     */
+    fun changeEntityText(entity: NlpEntity, textContent: String) =
+        changeEntityValue(
+            entity.role,
+            EntityValue(entity, null, textContent)
         )
 
     /**
@@ -266,7 +278,7 @@ interface BotBus : I18nTranslator {
     /**
      * Removes entity value for the specified role.
      */
-    fun removeEntityValue(entity: Entity) = removeEntityValue(entity.role)
+    fun removeEntityValue(entity: NlpEntity) = removeEntityValue(entity.role)
 
     /**
      * Removes all current entity values.

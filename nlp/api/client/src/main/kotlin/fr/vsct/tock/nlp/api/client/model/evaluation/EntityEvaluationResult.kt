@@ -16,10 +16,10 @@
 
 package fr.vsct.tock.nlp.api.client.model.evaluation
 
-import fr.vsct.tock.nlp.api.client.model.EntityValue
+import fr.vsct.tock.nlp.api.client.model.NlpEntityValue
 
 /**
  *
  */
-data class EntityEvaluationResult(val values: List<EntityValue>) {
+data class EntityEvaluationResult(val values: List<NlpEntityValue>) {
 }

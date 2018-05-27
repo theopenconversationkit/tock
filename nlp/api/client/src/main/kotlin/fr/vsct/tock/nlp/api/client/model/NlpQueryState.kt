@@ -14,15 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.engine.dialog
-
-import fr.vsct.tock.bot.engine.action.Action
-import java.time.Instant
+package fr.vsct.tock.nlp.api.client.model
 
 /**
- * An archived (old) entity value.
+ * State used in [NlpQuery].
  */
-data class ArchivedEntityValue(
-    val entityValue: EntityValue?,
-    val action: Action?,
-    val date: Instant = action?.date ?: Instant.now())
+data class NlpQueryState(val states: Set<String> = emptySet()) {
+
+    companion object {
+        val noState = NlpQueryState(emptySet())
+    }
+}

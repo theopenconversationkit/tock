@@ -16,14 +16,14 @@
 
 package fr.vsct.tock.nlp.api.client.model.evaluation
 
-import fr.vsct.tock.nlp.api.client.model.QueryContext
+import fr.vsct.tock.nlp.api.client.model.NlpQueryContext
 
 /**
  *
  */
 data class EntityEvaluationQuery(val namespace: String,
                                  val applicationName: String,
-                                 val context: QueryContext,
+                                 val context: NlpQueryContext,
                                  val entities: List<EntityToEvaluate>,
                                  val text: String) {
 }

@@ -24,9 +24,9 @@ import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
-import fr.vsct.tock.nlp.api.client.model.Entity
-import fr.vsct.tock.nlp.api.client.model.EntityType
-import fr.vsct.tock.nlp.api.client.model.EntityValue
+import fr.vsct.tock.nlp.api.client.model.NlpEntity
+import fr.vsct.tock.nlp.api.client.model.NlpEntityType
+import fr.vsct.tock.nlp.api.client.model.NlpEntityValue
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import java.util.Locale
 
@@ -55,14 +55,14 @@ open class AlexaTockMapper(val applicationId: String) {
         intent: String,
         slot: String,
         botDefinition: BotDefinition
-    ): Entity? {
+    ): NlpEntity? {
         val entityName = slot.substring(0, slot.length - "_slot".length)
         val namespace = botDefinition.namespace
-        return Entity(EntityType("$namespace:$entityName"), entityName)
+        return NlpEntity(NlpEntityType("$namespace:$entityName"), entityName)
     }
 
     /**
-     * Returns a Tock [EntityValue] from an Alexa slot.
+     * Returns a Tock [NlpEntityValue] from an Alexa slot.
      */
     open fun alexaEntityToTockEntityValue(
         request: IntentRequest,
@@ -70,9 +70,9 @@ open class AlexaTockMapper(val applicationId: String) {
         slot: Slot,
         botDefinition: BotDefinition,
         index: Int
-    ): EntityValue {
+    ): NlpEntityValue {
         val entity = alexaEntityToTockEntity(request, intent, slot.name, botDefinition)!!
-        return EntityValue(
+        return NlpEntityValue(
             index,
             index + slot.value!!.length,
             entity

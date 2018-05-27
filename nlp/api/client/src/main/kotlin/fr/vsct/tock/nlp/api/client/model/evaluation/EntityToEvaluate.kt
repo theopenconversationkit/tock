@@ -16,13 +16,13 @@
 
 package fr.vsct.tock.nlp.api.client.model.evaluation
 
-import fr.vsct.tock.nlp.api.client.model.Entity
+import fr.vsct.tock.nlp.api.client.model.NlpEntity
 
 /**
  *
  */
 data class EntityToEvaluate(val start: Int,
                             val end: Int,
-                            val entity: Entity,
+                            val entity: NlpEntity,
                             val subEntities: List<EntityToEvaluate> = emptyList()) {
 }

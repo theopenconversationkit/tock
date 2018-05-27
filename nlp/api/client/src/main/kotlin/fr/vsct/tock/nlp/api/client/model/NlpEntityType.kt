@@ -17,11 +17,9 @@
 package fr.vsct.tock.nlp.api.client.model
 
 /**
- *
+ * An entity type returned by [NlpResult].
  */
-data class QueryState(val states: Set<String> = emptySet()) {
-
-    companion object {
-        val noState = QueryState(emptySet())
-    }
-}
+data class NlpEntityType(
+    val name: String,
+    val subEntities: List<NlpEntity> = emptyList()
+)

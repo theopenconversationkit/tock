@@ -36,11 +36,11 @@ data class NlpQuery(
     /**
      * The context of the query.
      */
-    val context: QueryContext,
+    val context: NlpQueryContext,
     /**
      * The state of the query.
      */
-    val state: QueryState = QueryState.noState,
+    val state: NlpQueryState = NlpQueryState.noState,
     /**
      * The query is restricted to the specified intents only.
      * If the set is empty all intents of the application are allowed.

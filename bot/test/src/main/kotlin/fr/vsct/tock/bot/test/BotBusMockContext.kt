@@ -30,7 +30,7 @@ import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendChoice.Companion.decodeChoiceId
 import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.dialog.ContextValue
+import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.Snapshot
 import fr.vsct.tock.bot.engine.dialog.Story
@@ -151,7 +151,7 @@ data class BotBusMockContext(
      */
     fun sentence(
         text: String,
-        vararg entityValues: ContextValue
+        vararg entityValues: EntityValue
     ): SendSentence =
         sentence(text, entityValues.toList())
 
@@ -160,7 +160,7 @@ data class BotBusMockContext(
      */
     fun sentence(
         text: String,
-        entityValues: List<ContextValue> = emptyList()
+        entityValues: List<EntityValue> = emptyList()
     ): SendSentence =
         sentence(text, null as IntentAware?, entityValues.toList())
 
@@ -171,7 +171,7 @@ data class BotBusMockContext(
     fun sentence(
         text: String,
         intent: IntentAware? = null,
-        vararg entityValues: ContextValue
+        vararg entityValues: EntityValue
     ) = sentence(text, intent, entityValues.toList())
 
     /**
@@ -180,7 +180,7 @@ data class BotBusMockContext(
     fun sentence(
         text: String,
         intent: IntentAware? = null,
-        entityValues: List<ContextValue> = emptyList()
+        entityValues: List<EntityValue> = emptyList()
     ): SendSentence =
         SendSentence(userId, applicationId, botId, text).apply {
             state.intent = intent?.wrappedIntent()?.name
@@ -192,7 +192,7 @@ data class BotBusMockContext(
      */
     fun sentence(
         message: ConnectorMessage,
-        vararg entityValues: ContextValue
+        vararg entityValues: EntityValue
     ): SendSentence =
         sentence(message, entityValues.toList())
 
@@ -201,7 +201,7 @@ data class BotBusMockContext(
      */
     fun sentence(
         message: ConnectorMessage,
-        entityValues: List<ContextValue> = emptyList()
+        entityValues: List<EntityValue> = emptyList()
     ): SendSentence =
         sentence(message, null as IntentAware?, entityValues.toList())
 
@@ -212,7 +212,7 @@ data class BotBusMockContext(
     fun sentence(
         message: ConnectorMessage,
         intent: IntentAware? = null,
-        vararg entityValues: ContextValue
+        vararg entityValues: EntityValue
     ) = sentence(message, intent, entityValues.toList())
 
     /**
@@ -221,7 +221,7 @@ data class BotBusMockContext(
     fun sentence(
         message: ConnectorMessage,
         intent: IntentAware? = null,
-        entityValues: List<ContextValue> = emptyList()
+        entityValues: List<EntityValue> = emptyList()
     ): SendSentence =
         SendSentence(userId, applicationId, botId, null, mutableListOf(message)).apply {
             state.intent = intent?.wrappedIntent()?.name

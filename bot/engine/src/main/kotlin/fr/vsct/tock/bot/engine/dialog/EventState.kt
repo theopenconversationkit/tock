@@ -23,32 +23,32 @@ import fr.vsct.tock.translator.UserInterfaceType
  * State in event scope.
  */
 data class EventState(
-        /**
+    /**
          * The entity values.
          */
-        val entityValues: MutableList<ContextValue> = mutableListOf(),
-        /**
+        val entityValues: MutableList<EntityValue> = mutableListOf(),
+    /**
          * Is it a "test" event - flag used by automatic tests.
          */
         var testEvent: Boolean = false,
-        /**
+    /**
          * The target connector type - usually the source connector but not always.
          */
         var targetConnectorType: ConnectorType? = null,
-        /**
+    /**
          * The user interface - if different of default interface of [ConnectorType].
          */
         var userInterface: UserInterfaceType? = null,
-        /**
+    /**
          * The current intent of the action.
          */
         var intent: String? = null,
-        /**
+    /**
          * The current step.
          */
         var step: String? = null) {
 
-    fun getEntity(role: String): List<ContextValue> {
+    fun getEntity(role: String): List<EntityValue> {
         return entityValues.filter { it.entity.role == role }
     }
 

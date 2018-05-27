@@ -18,7 +18,7 @@ package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.user.UserLocation
-import fr.vsct.tock.nlp.api.client.model.Entity
+import fr.vsct.tock.nlp.api.client.model.NlpEntity
 import fr.vsct.tock.nlp.entity.Value
 
 /**
@@ -53,7 +53,7 @@ data class DialogState(
      * @role the role of the entity
      * @value the new entity value
      */
-    fun setValue(role: String, value: ContextValue) {
+    fun setValue(role: String, value: EntityValue) {
         entityValues[role] = EntityStateValue(value)
     }
 
@@ -63,7 +63,7 @@ data class DialogState(
      * @entity the entity
      * @value the new entity value
      */
-    fun setValue(entity: Entity, value: Value) {
+    fun setValue(entity: NlpEntity, value: Value) {
         entityValues[entity.role] = EntityStateValue(entity, value)
     }
 
@@ -73,7 +73,7 @@ data class DialogState(
      * @entity the entity
      * @newValue the new entity value
      */
-    fun changeValue(entity: Entity, newValue: Value?) {
+    fun changeValue(entity: NlpEntity, newValue: Value?) {
         entityValues[entity.role]?.changeValue(entity, newValue)
                 ?: if (newValue != null) setValue(entity, newValue)
     }
@@ -83,7 +83,7 @@ data class DialogState(
      *
      * @newValue the new entity value
      */
-    fun changeValue(newValue: ContextValue) = changeValue(newValue.entity.role, newValue)
+    fun changeValue(newValue: EntityValue) = changeValue(newValue.entity.role, newValue)
 
     /**
      * Change an entity value. Keep previous entity values history.
@@ -91,7 +91,7 @@ data class DialogState(
      * @role the role of the entity
      * @newValue the new entity value
      */
-    fun changeValue(role: String, newValue: ContextValue?) {
+    fun changeValue(role: String, newValue: EntityValue?) {
         entityValues[role]?.changeValue(newValue)
                 ?: if (newValue != null) setValue(role, newValue)
     }

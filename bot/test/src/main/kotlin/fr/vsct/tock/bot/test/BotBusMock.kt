@@ -28,7 +28,7 @@ import fr.vsct.tock.bot.engine.action.ActionNotificationType
 import fr.vsct.tock.bot.engine.action.ActionPriority
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.dialog.ContextValue
+import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
@@ -36,7 +36,7 @@ import fr.vsct.tock.bot.engine.dialog.Snapshot
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
-import fr.vsct.tock.nlp.api.client.model.Entity
+import fr.vsct.tock.nlp.api.client.model.NlpEntity
 import fr.vsct.tock.nlp.entity.Value
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.provide
@@ -134,7 +134,7 @@ open class BotBusMock(
     /**
      * Add an entity set in the current action.
      */
-    fun addActionEntity(contextValue: ContextValue): BotBusMock {
+    fun addActionEntity(contextValue: EntityValue): BotBusMock {
         action.state.entityValues.add(contextValue)
         return this
     }
@@ -142,13 +142,13 @@ open class BotBusMock(
     /**
      * Add an entity set in the current action.
      */
-    fun addActionEntity(entity: Entity, newValue: Value?): BotBusMock = addActionEntity(ContextValue(entity, newValue))
+    fun addActionEntity(entity: NlpEntity, newValue: Value?): BotBusMock = addActionEntity(EntityValue(entity, newValue))
 
     /**
      * Simulate an action entity.
      */
-    fun addActionEntity(entity: Entity, textContent: String): BotBusMock =
-        addActionEntity(ContextValue(entity, null, textContent))
+    fun addActionEntity(entity: NlpEntity, textContent: String): BotBusMock =
+        addActionEntity(EntityValue(entity, null, textContent))
 
     override var userTimeline: UserTimeline
         get() = context.userTimeline

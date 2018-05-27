@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.bot.engine.dialog
 
-import fr.vsct.tock.nlp.api.client.model.Entity
+import fr.vsct.tock.nlp.api.client.model.NlpEntity
 import java.time.Instant
 import java.time.Instant.now
 
@@ -24,17 +24,17 @@ import java.time.Instant.now
  * A "snapshot" is a readonly view of the state in the dialog, usually after a bot reply.
  */
 data class Snapshot(
-        val intentName: String?,
-        val entityValues: List<ContextValue>,
-        val date: Instant = now()) {
+    val intentName: String?,
+    val entityValues: List<EntityValue>,
+    val date: Instant = now()) {
 
     /**
      * Does this value exist in the snapshot?
      */
-    fun hasValue(entity: Entity): Boolean = getValue(entity) != null
+    fun hasValue(entity: NlpEntity): Boolean = getValue(entity) != null
 
     /**
      * Returns the value if it exists.
      */
-    fun getValue(entity: Entity): ContextValue? = entityValues.firstOrNull { it.entity == entity }
+    fun getValue(entity: NlpEntity): EntityValue? = entityValues.firstOrNull { it.entity == entity }
 }

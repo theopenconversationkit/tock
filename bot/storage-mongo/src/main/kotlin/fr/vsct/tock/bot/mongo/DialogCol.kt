@@ -31,7 +31,7 @@ import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue
-import fr.vsct.tock.bot.engine.dialog.ContextValue
+import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.DialogState
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
@@ -145,9 +145,9 @@ data class DialogCol(val playerIds: Set<PlayerId>,
     }
 
     data class EntityStateValueWrapper(
-            val value: ContextValue?,
-            val history: List<ArchivedEntityValueWrapper>,
-            val lastUpdate: Instant = now()) {
+        val value: EntityValue?,
+        val history: List<ArchivedEntityValueWrapper>,
+        val lastUpdate: Instant = now()) {
 
         constructor(value: EntityStateValue) : this(value.value, value.history.map { ArchivedEntityValueWrapper(it) }, value.lastUpdate)
 
@@ -161,9 +161,9 @@ data class DialogCol(val playerIds: Set<PlayerId>,
     }
 
     class ArchivedEntityValueWrapper(
-            val entityValue: ContextValue?,
-            val actionId: Id<Action>?,
-            val date: Instant = Instant.now()) {
+        val entityValue: EntityValue?,
+        val actionId: Id<Action>?,
+        val date: Instant = Instant.now()) {
 
         constructor(value: ArchivedEntityValue) : this(value.entityValue, value.action?.toActionId(), value.date)
 

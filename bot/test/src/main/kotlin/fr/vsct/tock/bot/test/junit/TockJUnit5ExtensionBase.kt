@@ -24,7 +24,7 @@ import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.dialog.ContextValue
+import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
@@ -94,7 +94,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
     fun send(
         text: String = "",
         intent: IntentAware = testContext.defaultStoryDefinition(botDefinition),
-        vararg entities: ContextValue,
+        vararg entities: EntityValue,
         connectorType: ConnectorType = testContext.defaultConnectorType(),
         userInterfaceType: UserInterfaceType = connectorType.userInterfaceType,
         locale: Locale = testContext.defaultLocale(),
@@ -204,7 +204,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
     fun newRequest(
         text: String = "",
         intent: IntentAware = testContext.defaultStoryDefinition(botDefinition),
-        vararg entities: ContextValue,
+        vararg entities: EntityValue,
         connectorType: ConnectorType = testContext.defaultConnectorType(),
         userInterfaceType: UserInterfaceType = connectorType.userInterfaceType,
         locale: Locale = testContext.defaultLocale(),

@@ -16,41 +16,27 @@
 
 package fr.vsct.tock.bot.engine.dialog
 
-import fr.vsct.tock.nlp.api.client.model.Entity
-import fr.vsct.tock.nlp.api.client.model.EntityValue
+import fr.vsct.tock.nlp.api.client.model.NlpEntity
+import fr.vsct.tock.nlp.api.client.model.NlpEntityValue
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.entity.Value
 
 /**
- * Takes a [Value] applied to the current [Entity] and returns a [ContextValue].
+ * Takes a [Value] applied to the current [NlpEntity] and returns a [EntityValue].
  */
-infix fun Entity.setTo(value: Value?): ContextValue =
-    ContextValue(this, value)
+infix fun NlpEntity.setTo(value: Value?): EntityValue =
+    EntityValue(this, value)
 
 /**
- * Takes a [String] applied to the current [Entity] and returns a not yet evaluated [ContextValue].
+ * Takes a [String] applied to the current [NlpEntity] and returns a not yet evaluated [EntityValue].
  */
-infix fun Entity.setTo(text: String): ContextValue =
-    ContextValue(null, null, this, text, null, false)
-
-/**
- * Takes a [Value] applied to the current [Entity] and returns a [ContextValue].
- */
-@Deprecated("use setTo method")
-infix fun Entity.set(value: Value?): ContextValue =
-    ContextValue(this, value)
-
-/**
- * Takes a [String] applied to the current [Entity] and returns a not yet evaluated [ContextValue].
- */
-@Deprecated("use setTo method")
-infix fun Entity.set(text: String): ContextValue =
-    ContextValue(null, null, this, text, null, false)
+infix fun NlpEntity.setTo(text: String): EntityValue =
+    EntityValue(null, null, this, text, null, false)
 
 /**
  * A (may be not yet evaluated) value linked to an entity stored in the context.
  */
-data class ContextValue(
+data class EntityValue(
     /**
      * If extracted from a sentence, start position of the text content in this sentence.
      */
@@ -60,9 +46,9 @@ data class ContextValue(
      */
     val end: Int?,
     /**
-     * The linked [Entity].
+     * The linked [NlpEntity].
      */
-    val entity: Entity,
+    val entity: NlpEntity,
     /**
      * Text content if any.
      */
@@ -78,7 +64,7 @@ data class ContextValue(
     /**
      * Sub entity values if any.
      */
-    val subEntities: List<ContextValue> = emptyList(),
+    val subEntities: List<EntityValue> = emptyList(),
     /**
      * The probability of the value.
      */
@@ -89,9 +75,9 @@ data class ContextValue(
     val mergeSupport: Boolean = false
 ) {
 
-    constructor(nlpResult: NlpResult, value: EntityValue) : this(nlpResult.retainedQuery, value)
+    constructor(nlpResult: NlpResult, value: NlpEntityValue) : this(nlpResult.retainedQuery, value)
 
-    constructor(sentence: String, value: EntityValue)
+    constructor(sentence: String, value: NlpEntityValue)
             : this(
         value.start,
         value.end,
@@ -99,12 +85,12 @@ data class ContextValue(
         sentence.substring(value.start, value.end),
         value.value,
         value.evaluated,
-        value.subEntities.map { ContextValue(sentence.substring(value.start, value.end), it) },
+        value.subEntities.map { EntityValue(sentence.substring(value.start, value.end), it) },
         value.probability,
         value.mergeSupport
     )
 
-    constructor(entity: Entity, value: Value?, content: String? = null)
+    constructor(entity: NlpEntity, value: Value?, content: String? = null)
             : this(
         null,
         null,

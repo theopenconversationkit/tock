@@ -38,9 +38,9 @@ import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.nlp.api.client.NlpClient
-import fr.vsct.tock.nlp.api.client.model.Entity
-import fr.vsct.tock.nlp.api.client.model.EntityType
-import fr.vsct.tock.nlp.api.client.model.EntityValue
+import fr.vsct.tock.nlp.api.client.model.NlpEntity
+import fr.vsct.tock.nlp.api.client.model.NlpEntityType
+import fr.vsct.tock.nlp.api.client.model.NlpEntityValue
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
@@ -72,12 +72,12 @@ abstract class BotEngineTest {
     val translator: TranslatorEngine = mockk(relaxed = true)
     val storyDefinitionConfigurationDAO: StoryDefinitionConfigurationDAO = mockk(relaxed = true)
 
-    val entityA = Entity(EntityType("a"), "a")
-    val entityAValue = EntityValue(0, 1, entityA, null, false)
-    val entityB = Entity(EntityType("a"), "b")
-    val entityBValue = EntityValue(2, 3, entityB, null, false)
-    val entityC = Entity(EntityType("c"), "c")
-    val entityCValue = EntityValue(4, 5, entityC, null, false)
+    val entityA = NlpEntity(NlpEntityType("a"), "a")
+    val entityAValue = NlpEntityValue(0, 1, entityA, null, false)
+    val entityB = NlpEntity(NlpEntityType("a"), "b")
+    val entityBValue = NlpEntityValue(2, 3, entityB, null, false)
+    val entityC = NlpEntity(NlpEntityType("c"), "c")
+    val entityCValue = NlpEntityValue(4, 5, entityC, null, false)
 
     val nlpResult = NlpResult(
         test.name,

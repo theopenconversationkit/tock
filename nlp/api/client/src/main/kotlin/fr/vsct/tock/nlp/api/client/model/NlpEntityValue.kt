@@ -19,16 +19,15 @@ package fr.vsct.tock.nlp.api.client.model
 import fr.vsct.tock.nlp.entity.Value
 
 /**
- *
+ * Entity value returned by [NlpResult].
  */
-data class EntityValue(
-        val start: Int,
-        val end: Int,
-        val entity: Entity,
-        val value: Value? = null,
-        val evaluated: Boolean = false,
-        val subEntities: List<EntityValue> = emptyList(),
-        val probability: Double = 1.0,
-        val mergeSupport: Boolean = false) {
-
-}
+data class NlpEntityValue(
+    val start: Int,
+    val end: Int,
+    val entity: NlpEntity,
+    val value: Value? = null,
+    val evaluated: Boolean = false,
+    val subEntities: List<NlpEntityValue> = emptyList(),
+    val probability: Double = 1.0,
+    val mergeSupport: Boolean = false
+)

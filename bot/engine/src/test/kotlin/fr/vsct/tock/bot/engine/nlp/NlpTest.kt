@@ -19,7 +19,7 @@ package fr.vsct.tock.bot.engine.nlp
 import fr.vsct.tock.bot.engine.BotEngineTest
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.dialog.ContextValue
+import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
 import fr.vsct.tock.bot.engine.user.UserTimeline
@@ -92,13 +92,13 @@ class NlpTest : BotEngineTest() {
         every { nlpClient.parse(any()) } returns nlpResult
         every { nlpClient.parse(match { it.intentsSubset.isNotEmpty() }) } returns nlpResult
 
-        val customValue = ContextValue(entityB, object : Value {}, "b")
+        val customValue = EntityValue(entityB, object : Value {}, "b")
         val nlpListener = object : NlpListener {
             override fun evaluateEntities(
                 userTimeline: UserTimeline,
                 dialog: Dialog,
                 nlpResult: NlpResult
-            ): List<ContextValue> {
+            ): List<EntityValue> {
                 return listOf(customValue)
             }
         }
@@ -107,7 +107,7 @@ class NlpTest : BotEngineTest() {
 
         assertEquals(3, userAction.state.entityValues.size)
         assertTrue(userAction.state.entityValues.contains(customValue))
-        assertTrue(userAction.state.entityValues.contains(ContextValue(nlpResult, entityAValue)))
-        assertTrue(userAction.state.entityValues.contains(ContextValue(nlpResult, entityCValue)))
+        assertTrue(userAction.state.entityValues.contains(EntityValue(nlpResult, entityAValue)))
+        assertTrue(userAction.state.entityValues.contains(EntityValue(nlpResult, entityCValue)))
     }
 }

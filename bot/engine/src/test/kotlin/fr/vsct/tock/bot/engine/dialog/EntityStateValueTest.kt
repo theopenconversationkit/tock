@@ -15,8 +15,8 @@
  */
 package fr.vsct.tock.bot.engine.dialog
 
-import fr.vsct.tock.nlp.api.client.model.Entity
-import fr.vsct.tock.nlp.api.client.model.EntityType
+import fr.vsct.tock.nlp.api.client.model.NlpEntity
+import fr.vsct.tock.nlp.api.client.model.NlpEntityType
 import fr.vsct.tock.nlp.entity.NumberValue
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -36,7 +36,7 @@ class EntityStateValueTest {
         assertTrue(state.history.isEmpty())
         assertTrue(state.previousValues.isEmpty())
 
-        val entity = Entity(EntityType("test"), "role")
+        val entity = NlpEntity(NlpEntityType("test"), "role")
 
         val value1 = NumberValue(1)
 

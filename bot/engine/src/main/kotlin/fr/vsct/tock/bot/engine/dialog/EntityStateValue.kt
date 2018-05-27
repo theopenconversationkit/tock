@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.bot.engine.action.Action
-import fr.vsct.tock.nlp.api.client.model.Entity
+import fr.vsct.tock.nlp.api.client.model.NlpEntity
 import fr.vsct.tock.nlp.entity.Value
 import java.time.Instant
 import java.time.Instant.now
@@ -26,14 +26,14 @@ import java.time.Instant.now
  * EntityStateValue is the current value of an entity with its history.
  */
 data class EntityStateValue(
-        private var _value: ContextValue?,
-        private val _history: MutableList<ArchivedEntityValue> = mutableListOf(),
-        private var _lastUpdate: Instant = now()) {
+    private var _value: EntityValue?,
+    private val _history: MutableList<ArchivedEntityValue> = mutableListOf(),
+    private var _lastUpdate: Instant = now()) {
 
-    internal constructor(action: Action, entityValue: ContextValue)
+    internal constructor(action: Action, entityValue: EntityValue)
             : this(entityValue, mutableListOf(ArchivedEntityValue(entityValue, action)))
 
-    internal constructor(entity: Entity, value: Value) : this(ContextValue(entity, value))
+    internal constructor(entity: NlpEntity, value: Value) : this(EntityValue(entity, value))
 
     init {
         if (value != null) {
@@ -41,11 +41,11 @@ data class EntityStateValue(
         }
     }
 
-    internal fun changeValue(entity: Entity, newValue: Value?, action: Action? = null): EntityStateValue {
-        return changeValue(ContextValue(entity, newValue), action)
+    internal fun changeValue(entity: NlpEntity, newValue: Value?, action: Action? = null): EntityStateValue {
+        return changeValue(EntityValue(entity, newValue), action)
     }
 
-    internal fun changeValue(newValue: ContextValue?, action: Action? = null): EntityStateValue {
+    internal fun changeValue(newValue: EntityValue?, action: Action? = null): EntityStateValue {
         _lastUpdate = now()
         _value = newValue
         //do not change history if previous value is exactly the same
@@ -59,7 +59,7 @@ data class EntityStateValue(
     /**
      * Current entity's value
      */
-    val value: ContextValue? get() = _value?.copy()
+    val value: EntityValue? get() = _value?.copy()
 
     /**
      * Returns previous values for this entity.
