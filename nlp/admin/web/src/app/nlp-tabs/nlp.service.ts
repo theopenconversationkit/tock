@@ -120,4 +120,20 @@ export class NlpService implements OnDestroy {
     return this.rest.post(`/sentences/dump/${full ? 'full/' : ''}${application._id}`, query, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
+  createPredefinedValue(entityName: string, predefinedValue: string): Observable<boolean> {
+    return this.rest.post(`/entity-type/${entityName}/predefined-value/${predefinedValue}`, "{}")
+  }
+
+  deletePredefinedValue(entityName: string, predefinedValue: string): Observable<boolean> {
+    return this.rest.delete(`/entity-type/${entityName}/predefined-value/${predefinedValue}`)
+  }
+
+  createSynonym(entityName: string, predefinedValue: string, locale: string, synonym: string): Observable<boolean> {
+    return this.rest.post(`/entity-type/${entityName}/predefined-value/${predefinedValue}/${locale}/synonyms/${synonym}`, "{}")
+  }
+
+  deleteSynonym(entityName: string, predefinedValue: string, locale: string, synonym: string): Observable<boolean> {
+    return this.rest.delete(`/entity-type/:${entityName}/predefined-value/${predefinedValue}/${locale}/synonyms/${synonym}`)
+  }
+
 }

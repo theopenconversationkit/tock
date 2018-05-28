@@ -32,6 +32,7 @@ import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.admin.model.SentencesReport
 import fr.vsct.tock.nlp.admin.model.UpdateEntityDefinitionQuery
 import fr.vsct.tock.nlp.admin.model.UpdateSentencesQuery
+import fr.vsct.tock.nlp.core.PredefinedValue
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
@@ -509,6 +510,113 @@ open class AdminVerticle : WebVerticle() {
                 unauthorized()
             }
         }
+
+        blockingJsonPost("/entity-type/:entity/predefined-value/:predefinedValue")
+        { context, data: String ->
+
+            val entityTypeName = context.pathParam("entity")
+            val predefinedValue = context.pathParam("predefinedValue")
+
+            val entityType = front.getEntityTypeByName(entityTypeName)
+                    ?: throw IllegalArgumentException() // TODO return error entity not exists
+
+            // Check if already exists
+            entityType
+                .predefinedValues
+                .forEach { pv -> if (pv.value.toLowerCase() == predefinedValue.toLowerCase()) {
+                    throw IllegalArgumentException() // TODO return error predefined value already exists
+                }
+            }
+
+            // Copy and add because immutability
+            val copy = mutableListOf<PredefinedValue>()
+            entityType.predefinedValues.forEach { copy.add(it) }
+            copy.add(PredefinedValue(predefinedValue))
+
+            // Save entity type
+            front.save(entityType.copy(predefinedValues = copy))
+
+            true
+        }
+
+        blockingJsonDelete("/entity-type/:entity/predefined-value/:predefinedValue")
+        { context ->
+
+            val entityTypeName = context.pathParam("entity")
+            val predefinedValue = context.pathParam("predefinedValue")
+
+            println("entity : [$entityTypeName")
+            println("predefined-value : [$predefinedValue")
+
+            false
+        }
+
+        blockingJsonPost("/entity-type/:entity/predefined-value/:predefinedValue/:locale/synonyms/:synonym")
+        { context, data: String ->
+
+            val entityTypeName = context.pathParam("entity")
+            val predefinedValue = context.pathParam("predefinedValue")
+            val locale = context.pathParam("locale")
+            val synonym = context.pathParam("synonym")
+
+            val entityType = front.getEntityTypeByName(entityTypeName)
+                    ?: throw IllegalArgumentException() // TODO return error entity not exists
+
+            val pv = entityType.predefinedValues
+                .find { pv -> pv.value.toLowerCase() == predefinedValue.toLowerCase() }
+                    ?: throw IllegalArgumentException() // TODO return error predefined value not exists
+
+            // Copy and add because immutability
+            val copy = mutableListOf<PredefinedValue>()
+            entityType.predefinedValues.forEach { copy.add(it) }
+            if (pv.value.toLowerCase() == predefinedValue.toLowerCase()) {
+                if (!pv.synonyms.containsKey(Locale.forLanguageTag(locale))) {
+                    val synonyms = mutableMapOf<Locale, List<String>>()
+                    synonyms.put(Locale.forLanguageTag(locale), listOf(synonym))
+                    copy.add(PredefinedValue(pv.value, synonyms))
+                } else {
+                    // TODO copy synonyms
+                    //pv.synonyms.put(Locale.forLanguageTag(locale), synonymCopy)
+                    mutableSynonyms(pv.synonyms)
+                    /*
+                    val synonymList = it.synonyms.get(Locale.forLanguageTag(locale))
+                    val synonymsCopy = mutableListOf<String>()
+                    synonymList?.forEach { synonymsCopy.add(it) }
+                    synonymsCopy.add(synonym)
+                    copy.add(PredefinedValue(it.value, synonymsCopy))
+                    */
+                }
+            } else {
+                copy.add(pv)
+            }
+
+            // Save entity type
+            front.save(entityType.copy(predefinedValues = copy))
+
+            true
+
+        }
+
+        blockingJsonDelete("/entity-type/:entity/predefined-value/:predefinedValue/:locale/synonyms/:synonym")
+        { context ->
+
+            val entityTypeName = context.pathParam("entity")
+            val predefinedValue = context.pathParam("predefinedValue")
+            val locale = context.pathParam("locale")
+            val synonym = context.pathParam("synonym")
+
+            println("entity : [$entityTypeName]")
+            println("predefined-value : [$predefinedValue]")
+            println("locale : [$locale]")
+            println("synonym : [$synonym]")
+
+            false
+        }
+
+    }
+
+    private fun mutableSynonyms(synonyms: Map<Locale, List<String>>): Map<Locale, List<String>> {
+        return mutableMapOf()
     }
 
     fun configureStaticHandling() {

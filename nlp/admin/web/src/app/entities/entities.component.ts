@@ -19,8 +19,9 @@ import {StateService} from "../core/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {MdDialog, MdDialogConfig, MdSnackBar, MdSnackBarConfig} from "@angular/material";
 import {ApplicationService} from "../core/applications.service";
-import {EntityDefinition, EntityType} from "../model/nlp";
+import {EntityDefinition, EntityType, PredefinedValue} from "../model/nlp";
 import {ConfirmDialogComponent} from "../shared/confirm-dialog/confirm-dialog.component";
+import {DataSource} from "@angular/cdk/collections";
 
 @Component({
   selector: 'tock-entities',
@@ -28,6 +29,8 @@ import {ConfirmDialogComponent} from "../shared/confirm-dialog/confirm-dialog.co
   styleUrls: ['./entities.component.css']
 })
 export class EntitiesComponent implements OnInit {
+
+  private selectedEntityType: EntityType;
 
   constructor(public state: StateService,
               private nlp: NlpService,
@@ -65,6 +68,57 @@ export class EntitiesComponent implements OnInit {
         );
       }
     });
+  }
+
+  selectEntityType(entityType:EntityType) {
+    console.log("Selected entity type :" + entityType.name);
+    this.selectedEntityType = entityType;
+  }
+
+  createPredefinedValue(name: string) {
+    console.log("Create predefined value for entity [" + this.selectedEntityType.name + "] -> [" + name + ", " + this.state.currentLocale + "]");
+    this.nlp.createPredefinedValue(this.selectedEntityType.name, name).subscribe(
+      next => {
+
+      },
+      error => this.snackBar.open(`Create Predefined Value '${name}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
+  }
+
+  deletePredefinedValue(name: string) {
+    console.log("Delete predefined value for entity [" + this.selectedEntityType.name + "] -> [" + name + ", " + this.state.currentLocale + "]");
+    this.nlp.deletePredefinedValue(this.selectedEntityType.name, name).subscribe(
+      next => {
+
+      },
+      error => this.snackBar.open(`Delete Predefined Value '${name}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
+  }
+
+  createSynonym(predefinedValue: PredefinedValue, name: string) {
+    console.log("Create synonym for predefined value [" + predefinedValue.value + ", " + this.state.currentLocale + "] -> " + name);
+    this.nlp.createSynonym(
+        this.selectedEntityType.name,
+        predefinedValue.value,
+        this.state.currentLocale,
+        name)
+      .subscribe(
+      next => {
+
+      },
+      error => this.snackBar.open(`Create Synonym '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
+  }
+
+  deleteSynonym(predefinedValue: PredefinedValue, name: string) {
+    console.log("Create synonym for predefined value [" + predefinedValue.value + ", " + this.state.currentLocale + "] -> " + name);
+    this.nlp.deleteSynonym(
+        this.selectedEntityType.name,
+        predefinedValue.value,
+        this.state.currentLocale,
+        name)
+      .subscribe(
+      next => {
+
+      },
+      error => this.snackBar.open(`Delete Synonym '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
   }
 
 }
