@@ -35,7 +35,7 @@ import ch.qos.logback.core.util.FileSize
 internal class LogbackConfigurator : ContextAwareBase(), Configurator {
 
     override fun configure(loggerContext: LoggerContext) {
-        if (booleanProperty("tock.logback.enabled", true)) {
+        if (booleanProperty("tock_logback_enabled", true)) {
             val c = context
 
             loggerContext.addListener(LevelChangePropagator().apply {
@@ -43,7 +43,7 @@ internal class LogbackConfigurator : ContextAwareBase(), Configurator {
                 start()
             })
 
-            val appender = if (booleanProperty("tock.logback.fileAppender", false)) {
+            val appender = if (booleanProperty("tock_logback_fileAppender", false)) {
                 RollingFileAppender<ILoggingEvent>().also {
                     it.name = "file"
                     it.file = "logFile.log"
