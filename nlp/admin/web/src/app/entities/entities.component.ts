@@ -30,7 +30,7 @@ import {DataSource} from "@angular/cdk/collections";
 })
 export class EntitiesComponent implements OnInit {
 
-  private selectedEntityType: EntityType;
+  selectedEntityType: EntityType;
 
   constructor(public state: StateService,
               private nlp: NlpService,
@@ -130,9 +130,7 @@ export class EntitiesComponent implements OnInit {
         let locale = this.state.currentLocale
         this.selectedEntityType.predefinedValues.forEach(function(pv) {
           if (pv.value === predefinedValue.value) {
-            let anies = pv.synonyms.get(locale).filter(s => { return s !== name });
-            pv.synonyms.set(locale, anies);
-            console.log(anies)
+            pv.synonyms.set(locale, pv.synonyms.get(locale).filter(s => { return s !== name }));
           }
         })
       },

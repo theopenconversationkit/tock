@@ -38,9 +38,9 @@
       </md-chip-list>
   </md-card-content>
 </md-card>
-<md-card class="entities" *ngIf="this.selectedEntityType != null">
+<md-card class="entities" *ngIf="selectedEntityType != null">
   <md-card-content>
-    <md-card-title>Predefined values for {{ this.selectedEntityType.name }}</md-card-title>
+    <md-card-title>Predefined values for {{ selectedEntityType.name }}</md-card-title>
       <table md-table [width]="'100%'">
         <thead md-head>
           <th md-column [width]="'20%'">Predefined Value</th>
@@ -48,7 +48,7 @@
           <th md-column [width]="'30%'">Actions</th>
         </thead>
         <tbody md-body>
-          <tr *ngFor="let predefinedValue of this.selectedEntityType.predefinedValues">
+          <tr *ngFor="let predefinedValue of selectedEntityType.predefinedValues">
             <td>{{ predefinedValue.value }}</td>
             <td>
               <md-chip-list>
