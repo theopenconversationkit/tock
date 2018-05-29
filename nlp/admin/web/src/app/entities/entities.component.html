@@ -38,7 +38,7 @@
       </md-chip-list>
   </md-card-content>
 </md-card>
-<md-card class="entities" *ngIf="this.selectedEntityType">
+<md-card class="entities" *ngIf="this.selectedEntityType != null">
   <md-card-content>
     <md-card-title>Predefined values for {{ this.selectedEntityType.name }}</md-card-title>
       <table md-table [width]="'100%'">

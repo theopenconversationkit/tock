@@ -84,6 +84,15 @@ export class RestService {
       .catch(e => RestService.handleError(this, e));
   }
 
+  put<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
+    return this.http.put(
+      `${this.url}${path}`,
+      value ? JSON.stringify(value) : "{}",
+      {headers: this.headers()})
+      .map((res: Response) => parseFunction ? parseFunction(res.json() || {}) : (res.json() || {}))
+      .catch(e => RestService.handleError(this, e));
+  }
+
   postNotAuthenticated<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
     return this.http.post(
       `${this.notAuthenticatedUrl}${path}`,

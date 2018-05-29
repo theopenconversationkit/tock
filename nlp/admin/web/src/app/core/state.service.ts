@@ -22,7 +22,15 @@ import {AuthenticateResponse, User, UserRole} from "../model/auth";
 import {SettingsService} from "./settings.service";
 import {ApplicationScopedQuery, Entry, PaginatedQuery, SearchMark} from "../model/commons";
 import {environment} from "../../environments/environment";
-import {EntityDefinition, EntityType, Intent, NlpEngineType, UpdateEntityDefinitionQuery} from "../model/nlp";
+import {
+  EntityDefinition,
+  EntityType,
+  Intent,
+  NlpEngineType,
+  PredefinedSynonymQuery,
+  PredefinedValueQuery,
+  UpdateEntityDefinitionQuery
+} from "../model/nlp";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {Observable} from "rxjs/Observable";
 
@@ -209,6 +217,22 @@ export class StateService implements AuthListener {
       start,
       size,
       searchMark
+    );
+  }
+
+  createPredefinedValueQuery(entityTypeName: string, predefinedValue: string): PredefinedValueQuery {
+    return new PredefinedValueQuery(
+      entityTypeName,
+      predefinedValue
+    );
+  }
+
+  createPredefinedSynonymQuery(entityTypeName: string, predefinedValue: string, locale: string, synonym: string): PredefinedSynonymQuery {
+    return new PredefinedSynonymQuery(
+      entityTypeName,
+      predefinedValue,
+      locale,
+      synonym
     );
   }
 

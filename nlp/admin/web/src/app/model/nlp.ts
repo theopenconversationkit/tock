@@ -80,6 +80,24 @@ export class UpdateEntityDefinitionQuery extends ApplicationScopedQuery {
   }
 }
 
+export class PredefinedValueQuery {
+
+  constructor(public entityTypeName: string,
+              public predefinedValue: string) {
+  }
+
+}
+
+export class PredefinedSynonymQuery {
+
+  constructor(public entityTypeName: string,
+              public predefinedValue: string,
+              public locale: string,
+              public synonym: string) {
+  }
+
+}
+
 export class EntityType {
 
   constructor(public name: string,

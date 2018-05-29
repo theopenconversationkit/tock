@@ -71,52 +71,70 @@ export class EntitiesComponent implements OnInit {
   }
 
   selectEntityType(entityType:EntityType) {
-    console.log("Selected entity type :" + entityType.name);
-    this.selectedEntityType = entityType;
+    if (entityType.namespace() === this.state.currentApplication.namespace) {
+      this.selectedEntityType = entityType;
+    } else {
+      this.selectedEntityType = null;
+    }
   }
 
   createPredefinedValue(name: string) {
-    console.log("Create predefined value for entity [" + this.selectedEntityType.name + "] -> [" + name + ", " + this.state.currentLocale + "]");
-    this.nlp.createPredefinedValue(this.selectedEntityType.name, name).subscribe(
+    this.nlp.createPredefinedValue(
+      this.state.createPredefinedValueQuery(this.selectedEntityType.name, name)).subscribe(
       next => {
-
+        this.selectedEntityType = next
       },
       error => this.snackBar.open(`Create Predefined Value '${name}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
   }
 
   deletePredefinedValue(name: string) {
-    console.log("Delete predefined value for entity [" + this.selectedEntityType.name + "] -> [" + name + ", " + this.state.currentLocale + "]");
-    this.nlp.deletePredefinedValue(this.selectedEntityType.name, name).subscribe(
+    this.nlp.deletePredefinedValue(
+      this.state.createPredefinedValueQuery(this.selectedEntityType.name, name)).subscribe(
       next => {
-
+        let index = -1;
+        this.selectedEntityType.predefinedValues.forEach( (pv, i) => {
+          if (pv.value === name) {
+            index = i;
+          }
+        });
+        if (index > -1) {
+          this.selectedEntityType.predefinedValues.splice(index, 1);
+        }
       },
       error => this.snackBar.open(`Delete Predefined Value '${name}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
   }
 
   createSynonym(predefinedValue: PredefinedValue, name: string) {
-    console.log("Create synonym for predefined value [" + predefinedValue.value + ", " + this.state.currentLocale + "] -> " + name);
     this.nlp.createSynonym(
+      this.state.createPredefinedSynonymQuery(
         this.selectedEntityType.name,
         predefinedValue.value,
         this.state.currentLocale,
-        name)
+        name))
       .subscribe(
       next => {
-
+        this.selectedEntityType = next
       },
       error => this.snackBar.open(`Create Synonym '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
   }
 
   deleteSynonym(predefinedValue: PredefinedValue, name: string) {
-    console.log("Create synonym for predefined value [" + predefinedValue.value + ", " + this.state.currentLocale + "] -> " + name);
     this.nlp.deleteSynonym(
+      this.state.createPredefinedSynonymQuery(
         this.selectedEntityType.name,
         predefinedValue.value,
         this.state.currentLocale,
-        name)
+        name))
       .subscribe(
       next => {
-
+        let locale = this.state.currentLocale
+        this.selectedEntityType.predefinedValues.forEach(function(pv) {
+          if (pv.value === predefinedValue.value) {
+            let anies = pv.synonyms.get(locale).filter(s => { return s !== name });
+            pv.synonyms.set(locale, anies);
+            console.log(anies)
+          }
+        })
       },
       error => this.snackBar.open(`Delete Synonym '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
   }

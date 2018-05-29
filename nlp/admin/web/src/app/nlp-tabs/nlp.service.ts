@@ -23,6 +23,8 @@ import {
   LogsQuery,
   LogsResult,
   ParseQuery,
+  PredefinedSynonymQuery,
+  PredefinedValueQuery,
   SearchQuery,
   Sentence,
   SentencesResult,
@@ -120,20 +122,20 @@ export class NlpService implements OnDestroy {
     return this.rest.post(`/sentences/dump/${full ? 'full/' : ''}${application._id}`, query, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
-  createPredefinedValue(entityName: string, predefinedValue: string): Observable<boolean> {
-    return this.rest.post(`/entity-type/${entityName}/predefined-value/${predefinedValue}`, "{}")
+  createPredefinedValue(query: PredefinedValueQuery): Observable<EntityType> {
+    return this.rest.post(`/entity-types/predefined-values`, query, EntityType.fromJSON)
   }
 
-  deletePredefinedValue(entityName: string, predefinedValue: string): Observable<boolean> {
-    return this.rest.delete(`/entity-type/${entityName}/predefined-value/${predefinedValue}`)
+  deletePredefinedValue(query: PredefinedValueQuery): Observable<boolean> {
+    return this.rest.put(`/entity-types/predefined-values`, query)
   }
 
-  createSynonym(entityName: string, predefinedValue: string, locale: string, synonym: string): Observable<boolean> {
-    return this.rest.post(`/entity-type/${entityName}/predefined-value/${predefinedValue}/${locale}/synonyms/${synonym}`, "{}")
+  createSynonym(query: PredefinedSynonymQuery): Observable<EntityType> {
+    return this.rest.post(`/entity-type/predefined-value//synonyms`, query, EntityType.fromJSON)
   }
 
-  deleteSynonym(entityName: string, predefinedValue: string, locale: string, synonym: string): Observable<boolean> {
-    return this.rest.delete(`/entity-type/:${entityName}/predefined-value/${predefinedValue}/${locale}/synonyms/${synonym}`)
+  deleteSynonym(query: PredefinedSynonymQuery): Observable<boolean> {
+    return this.rest.put(`/entity-type/predefined-value/synonyms`, query)
   }
 
 }

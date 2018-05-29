@@ -41,6 +41,7 @@ import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpMethod.DELETE
 import io.vertx.core.http.HttpMethod.GET
 import io.vertx.core.http.HttpMethod.POST
+import io.vertx.core.http.HttpMethod.PUT
 import io.vertx.core.http.HttpServer
 import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.http.HttpServerResponse
@@ -371,6 +372,14 @@ abstract class WebVerticle : AbstractVerticle() {
         blockingWithBodyJson<I, O>(POST, path, role, handler)
     }
 
+    protected inline fun <reified I : Any, O> blockingJsonPut(
+        path: String,
+        role: TockUserRole? = defaultRole(),
+        crossinline handler: (RoutingContext, I) -> O
+    ) {
+        blockingWithBodyJson<I, O>(PUT, path, role, handler)
+    }
+
     protected fun blockingDelete(path: String, role: TockUserRole? = defaultRole(), handler: (RoutingContext) -> Unit) {
         blocking(DELETE, path, role) { context ->
             handler.invoke(context)
@@ -425,7 +434,7 @@ abstract class WebVerticle : AbstractVerticle() {
     protected fun corsHandler(
         origin: String = "*",
         allowCredentials: Boolean = false,
-        allowedMethods: Set<HttpMethod> = EnumSet.of(GET, POST, DELETE),
+        allowedMethods: Set<HttpMethod> = EnumSet.of(GET, POST, PUT, DELETE),
         allowedHeaders: Set<String> = listOfNotNull(
             "X-Requested-With",
             "Access-Control-Allow-Origin",
