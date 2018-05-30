@@ -21,16 +21,57 @@ package fr.vsct.tock.bot.engine.event
  */
 enum class EventType(val action: Boolean = true) {
 
+    /**
+     * [SendSentence] action type.
+     */
     sentence,
+    /**
+     * [SendChoice] action type.
+     */
     choice,
+    /**
+     * [SendAttachment] action type.
+     */
     attachment,
+    /**
+     * [SendLocation] action type.
+     */
     location,
+    /**
+     * [SubscribingEvent] event type.
+     */
     subscribing(false),
+    /**
+     * [TypingOnEvent] event type.
+     */
     typingOn(false),
+    /**
+     * [TypingOffEvent] event type.
+     */
     typingOff(false),
+    /**
+     * [MarkSeenEvent] event type.
+     */
     markSeen(false),
+    /**
+     * [StartConversationEvent] event type.
+     */
     startConversation(false),
+    /**
+     * [EndConversationEvent] event type.
+     */
     endConversation(false),
-    noInput(false)
+    /**
+     * [NoInputEvent] event type.
+     */
+    noInput(false),
+    /**
+     * [StartSessionEvent] event type.
+     */
+    startSession(false),
+    /**
+     * [EndSessionEvent] event type.
+     */
+    endSession(false)
 
 }

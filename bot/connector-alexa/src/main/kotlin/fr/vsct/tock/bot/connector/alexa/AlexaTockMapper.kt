@@ -16,12 +16,17 @@
 
 package fr.vsct.tock.bot.connector.alexa
 
+import com.amazon.speech.json.SpeechletRequestEnvelope
 import com.amazon.speech.slu.Slot
 import com.amazon.speech.speechlet.IntentRequest
+import com.amazon.speech.speechlet.SessionEndedRequest
+import com.amazon.speech.speechlet.SessionStartedRequest
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.EventState
+import fr.vsct.tock.bot.engine.event.EndSessionEvent
 import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.bot.engine.event.StartSessionEvent
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.nlp.api.client.model.Entity
@@ -31,7 +36,8 @@ import fr.vsct.tock.nlp.api.client.model.NlpResult
 import java.util.Locale
 
 /**
- * An Alexa model to Tock model mapper. Provided via [addAlexaConnector.alexaTockMapper] parameter.
+ * An Alexa model to Tock model mapper.
+ * Provided via [addAlexaConnector.alexaTockMapper] parameter.
  */
 open class AlexaTockMapper(val applicationId: String) {
 
@@ -83,6 +89,26 @@ open class AlexaTockMapper(val applicationId: String) {
      * Gets slots from the intent request.
      */
     open fun getSlots(request: IntentRequest): Map<String, Slot>? = request.intent?.slots
+
+    /**
+     * Returns a [StartSessionEvent] from an Alexa [SessionStartedRequest].
+     */
+    open fun toStartSessionEvent(requestEnvelope: SpeechletRequestEnvelope<SessionStartedRequest>): StartSessionEvent {
+        return StartSessionEvent(
+            PlayerId(requestEnvelope.session.user.userId, PlayerType.user),
+            applicationId
+        )
+    }
+
+    /**
+     * Returns a [EndSessionEvent] from an Alexa [SessionEndedRequest].
+     */
+    open fun toEndSessionEvent(requestEnvelope: SpeechletRequestEnvelope<SessionEndedRequest>): EndSessionEvent {
+        return EndSessionEvent(
+            PlayerId(requestEnvelope.session.user.userId, PlayerType.user),
+            applicationId
+        )
+    }
 
     /**
      * Returns an [Event] from an Alexa [IntentRequest].

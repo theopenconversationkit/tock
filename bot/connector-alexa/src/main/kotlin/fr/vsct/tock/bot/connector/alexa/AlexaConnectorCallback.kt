@@ -47,9 +47,9 @@ import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
 
 /**
- *
+ * The alexa connector callback.
  */
-internal data class AlexaConnectorCallback(
+data class AlexaConnectorCallback internal constructor(
     override val applicationId: String,
     private val controller: ConnectorController,
     private val alexaTockMapper: AlexaTockMapper,
@@ -64,13 +64,21 @@ internal data class AlexaConnectorCallback(
     @Volatile
     private var locale: Locale = defaultLocale
 
+    /**
+     * The alexa raw request.
+     */
+    val alexaRequest: SpeechletRequestEnvelope<*>? get() = _alexaRequest
+
+    @Volatile
+    private var _alexaRequest: SpeechletRequestEnvelope<*>? = null
+
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    data class ActionWithDelay(val action: Action, val delayInMs: Long = 0)
+    internal data class ActionWithDelay(val action: Action, val delayInMs: Long = 0)
 
-    fun addAction(event: Event, delayInMs: Long) {
+    internal fun addAction(event: Event, delayInMs: Long) {
         if (event is Action) {
             actions.add(ActionWithDelay(event, delayInMs))
         } else {
@@ -136,7 +144,7 @@ internal data class AlexaConnectorCallback(
         }
     }
 
-    fun sendResponse() {
+    internal fun sendResponse() {
         try {
             if (!answered) {
                 answered = true
@@ -152,23 +160,13 @@ internal data class AlexaConnectorCallback(
         }
     }
 
-    override fun eventSkipped(event: Event) {
-        super.eventSkipped(event)
-        sendResponse()
-    }
-
-    override fun eventAnswered(event: Event) {
-        super.eventAnswered(event)
-        sendResponse()
-    }
-
     override fun exceptionThrown(event: Event, throwable: Throwable) {
         super.exceptionThrown(event, throwable)
         sendTechnicalError(context, throwable)
     }
 
-
     private fun logRequest(method: String, req: SpeechletRequestEnvelope<*>) {
+        _alexaRequest = req
         try {
             logger.debug {
                 "$method : \n${mapper.writeValueAsString(req.context)}\n${mapper.writeValueAsString(req.session)}\n${mapper.writeValueAsString(
@@ -182,10 +180,18 @@ internal data class AlexaConnectorCallback(
 
     override fun onSessionStarted(requestEnvelope: SpeechletRequestEnvelope<SessionStartedRequest>) {
         logRequest("onSessionStarted", requestEnvelope)
+        controller.handle(
+            alexaTockMapper.toStartSessionEvent(requestEnvelope),
+            ConnectorData(this)
+        )
     }
 
     override fun onSessionEnded(requestEnvelope: SpeechletRequestEnvelope<SessionEndedRequest>) {
         logRequest("onSessionEnded", requestEnvelope)
+        controller.handle(
+            alexaTockMapper.toEndSessionEvent(requestEnvelope),
+            ConnectorData(this)
+        )
     }
 
     override fun onIntent(requestEnvelope: SpeechletRequestEnvelope<IntentRequest>): SpeechletResponse? {

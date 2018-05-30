@@ -19,9 +19,11 @@ package fr.vsct.tock.bot.engine.event
 import fr.vsct.tock.bot.engine.user.PlayerId
 
 /**
- * Event created when closing a conversation - connector support is not required!
+ * Event provided when closing a conversation between a user and a bot
+ * - connector support is not required!
  */
 class EndConversationEvent(
-        userId: PlayerId,
-        recipientId: PlayerId,
-        applicationId: String) : OneToOneEvent(userId, recipientId, applicationId)
+    userId: PlayerId,
+    recipientId: PlayerId,
+    applicationId: String
+) : OneToOneEvent(userId, recipientId, applicationId)

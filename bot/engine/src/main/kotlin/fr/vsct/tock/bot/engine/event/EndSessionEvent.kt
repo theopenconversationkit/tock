@@ -19,11 +19,9 @@ package fr.vsct.tock.bot.engine.event
 import fr.vsct.tock.bot.engine.user.PlayerId
 
 /**
- * Event provided when starting a conversation a conversation between a user and a bot
- * - connector support is not required!
+ * The session is ended. dialog context should be cleared.
  */
-class StartConversationEvent(
-    userId: PlayerId,
-    recipientId: PlayerId,
+class EndSessionEvent(
+    val userId: PlayerId,
     applicationId: String
-) : OneToOneEvent(userId, recipientId, applicationId)
+) : Event(applicationId)
