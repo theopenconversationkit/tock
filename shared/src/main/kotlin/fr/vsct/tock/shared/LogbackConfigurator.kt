@@ -43,7 +43,7 @@ internal class LogbackConfigurator : ContextAwareBase(), Configurator {
                 start()
             })
 
-            val appender = if (booleanProperty("tock_logback_fileAppender", false)) {
+            val appender = if (booleanProperty("tock_logback_file_appender", false)) {
                 RollingFileAppender<ILoggingEvent>().also {
                     it.name = "file"
                     it.file = "logFile.log"
