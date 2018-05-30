@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
+import com.fasterxml.jackson.annotation.JsonProperty
 import fr.vsct.tock.bot.engine.action.SendChoice.Companion.EXIT_INTENT
 import fr.vsct.tock.bot.engine.action.SendChoice.Companion.TITLE_PARAMETER
 import fr.vsct.tock.bot.engine.action.SendChoice.Companion.URL_PARAMETER
@@ -25,7 +26,11 @@ import fr.vsct.tock.bot.engine.message.Choice
  *
  */
 data class UrlButton(val url: String,
-                     val title: String) : Button(ButtonType.web_url) {
+                     val title: String,
+                     @JsonProperty("webview_height_ratio") val webviewHeightRatio: String? = null,
+                     @JsonProperty("messenger_extensions") val messengerExtensions: String? = null,
+                     @JsonProperty("fallback_url") val fallBackUrl: String? = null
+) : Button(ButtonType.web_url) {
 
     override fun toChoice(): Choice {
         return Choice(
