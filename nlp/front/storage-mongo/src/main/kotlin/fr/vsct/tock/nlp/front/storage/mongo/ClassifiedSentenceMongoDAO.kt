@@ -43,6 +43,7 @@ import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Tex
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UpdateDate
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UsageCount
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogMongoDAO.ParseRequestLogStatCol
+import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.defaultLocale
 import mu.KotlinLogging
 import org.litote.kmongo.Data
@@ -83,6 +84,9 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     //alias
     private val Classification_ = ClassifiedSentenceCol_.Classification
+
+    //TODO remove in 1.1
+    private val collationSupport = booleanProperty("tock_mongo_collation_support", true)
 
     @Data
     data class ClassifiedSentenceCol(
@@ -239,13 +243,19 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                             )
                         }
                     }
-                    .collation(
-                        Collation
-                            .builder()
-                            .caseLevel(false)
-                            .locale((query.language ?: defaultLocale).toLanguageTag())
-                            .build()
-                    )
+                    .run {
+                        if (query.sort.isNotEmpty() && collationSupport) {
+                            collation(
+                                Collation
+                                    .builder()
+                                    .caseLevel(false)
+                                    .locale((query.language ?: defaultLocale).toLanguageTag())
+                                    .build()
+                            )
+                        } else {
+                            this
+                        }
+                    }
                     .skip(start.toInt())
                     .limit(size)
 
