@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.engine
 
+import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
@@ -479,6 +480,14 @@ interface BotBus : I18nTranslator {
     fun handleAndSwitchStory(storyDefinition: StoryDefinition) {
         switchStory(storyDefinition)
         storyDefinition.storyHandler.handle(this)
+    }
+
+    /**
+     * Does not send an answer. Synchronous [Connector]s (like Google Assistant or Alexa)
+     * usually do not support skipping answer.
+     */
+    fun skipAnswer() {
+        connectorData.skipAnswer = true
     }
 
     //i18n provider implementation

@@ -92,7 +92,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
                 handler.handle()
             }
 
-            if (bus.story.lastAction?.metadata?.lastAnswer != true) {
+            if (!bus.connectorData.skipAnswer && bus.story.lastAction?.metadata?.lastAnswer != true) {
                 logger.warn { "Bus.end not called" }
             }
         }

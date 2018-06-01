@@ -31,4 +31,10 @@ open class ConnectorData(
      * and the definitive identifier is now known.
      */
     val priorUserId: PlayerId? = null
-)
+) {
+    /**
+     * Set to true if the bot does not make any answer to a user sentence.
+     * Synchronous [Connector]s usually do not support skipping answer.
+     */
+    var skipAnswer: Boolean = false
+}
