@@ -116,9 +116,9 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
 
     private val executor: Executor by injector.instance()
 
-    override fun start() {
-        val canAnalyse = AtomicBoolean(true)
+    internal val canAnalyse = AtomicBoolean(true)
 
+    override fun start() {
         executor.setPeriodic(ofSeconds(1), {
             if (canAnalyse.get()) {
                 try {

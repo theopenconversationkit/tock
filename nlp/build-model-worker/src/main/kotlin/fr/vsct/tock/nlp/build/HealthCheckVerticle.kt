@@ -16,20 +16,30 @@
 
 package fr.vsct.tock.nlp.build
 
-import com.github.salomonbrys.kodein.Kodein
-import fr.vsct.tock.nlp.front.ioc.FrontIoc
-import fr.vsct.tock.shared.vertx.vertx
-import io.vertx.core.DeploymentOptions
+import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.vertx.WebVerticle
+import io.vertx.ext.web.RoutingContext
 
-fun main(args: Array<String>) {
-    startBuildWorker()
+/**
+ *
+ */
+class HealthCheckVerticle(
+    val buildVerticle: BuildModelWorkerVerticle
+) : WebVerticle() {
+
+    override fun configure() {
+        //do nothing
+    }
+
+    override fun healthcheck(): (RoutingContext) -> Unit =
+        { context ->
+            context.response().end(
+                mapper.writeValueAsString(
+                    listOf(
+                    "current build" to !buildVerticle.canAnalyse.get()
+                    )
+                )
+            )
+        }
+
 }
-
-fun startBuildWorker(vararg modules: Kodein.Module) {
-    FrontIoc.setup(*modules)
-    val buildModelWorkerVerticle = BuildModelWorkerVerticle()
-    vertx.deployVerticle(buildModelWorkerVerticle, DeploymentOptions().setWorker(true))
-    vertx.deployVerticle(CleanupModelWorkerVerticle(), DeploymentOptions().setWorker(true))
-    vertx.deployVerticle(HealthCheckVerticle(buildModelWorkerVerticle))
-}
-

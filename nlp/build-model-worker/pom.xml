@@ -39,7 +39,7 @@
         </dependency>
         <dependency>
             <groupId>io.vertx</groupId>
-            <artifactId>vertx-core</artifactId>
+            <artifactId>vertx-web</artifactId>
         </dependency>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
