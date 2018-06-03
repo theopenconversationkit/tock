@@ -21,6 +21,11 @@ import fr.vsct.tock.bot.connector.ConnectorException
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.UserProfile
 import fr.vsct.tock.bot.connector.messenger.model.attachment.AttachmentRequest
+import fr.vsct.tock.bot.connector.messenger.model.handover.PassThreadControlRequest
+import fr.vsct.tock.bot.connector.messenger.model.handover.RequestThreadControlRequest
+import fr.vsct.tock.bot.connector.messenger.model.handover.SecondaryReceiverResponse
+import fr.vsct.tock.bot.connector.messenger.model.handover.TakeThreadControlRequest
+import fr.vsct.tock.bot.connector.messenger.model.handover.ThreadOwnerResponse
 import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.CustomEventRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
@@ -68,6 +73,21 @@ internal class MessengerClient(val secretKey: String) {
 
         @POST("/v2.12/me/message_attachments")
         fun sendAttachment(@Query("access_token") accessToken: String, @Body attachmentRequest: AttachmentRequest): Call<SendResponse>
+
+        @POST("/v2.12/me/pass_thread_control")
+        fun passThreadControl(@Query("access_token") accessToken: String, @Body request: PassThreadControlRequest): Call<SendResponse>
+
+        @POST("/v2.12/me/take_thread_control")
+        fun takeThreadControl(@Query("access_token") accessToken: String, @Body request: TakeThreadControlRequest): Call<SendResponse>
+
+        @POST("/v2.12/me/request_thread_control")
+        fun requestThreadControl(@Query("access_token") accessToken: String, @Body request: RequestThreadControlRequest): Call<SendResponse>
+
+        @GET("/v2.12/me/secondary_receivers")
+        fun secondaryReceivers(@Query("access_token") accessToken: String, @Query("fields") recipient: String = "id,name"): Call<SecondaryReceiverResponse>
+
+        @GET("/v2.12/me/thread_owner")
+        fun threadOwner(@Query("access_token") accessToken: String, @Query("recipient") recipient: String): Call<ThreadOwnerResponse>
 
     }
 

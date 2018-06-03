@@ -20,6 +20,13 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.databind.DeserializationContext
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.Sender
+import fr.vsct.tock.bot.connector.messenger.model.handover.AppRolesWebhook
+import fr.vsct.tock.bot.connector.messenger.model.handover.PassThreadControl
+import fr.vsct.tock.bot.connector.messenger.model.handover.PassThreadControlWebhook
+import fr.vsct.tock.bot.connector.messenger.model.handover.RequestThreadControl
+import fr.vsct.tock.bot.connector.messenger.model.handover.RequestThreadControlWebhook
+import fr.vsct.tock.bot.connector.messenger.model.handover.TakeThreadControl
+import fr.vsct.tock.bot.connector.messenger.model.handover.TakeThreadControlWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.AccountLinking
 import fr.vsct.tock.bot.connector.messenger.model.webhook.AccountLinkingWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Message
@@ -55,12 +62,17 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
             var optin: Optin? = null,
             var postback: UserActionPayload? = null,
             var priorMessage: PriorMessage? = null,
-            var accountLinking: AccountLinking? = null
+            var accountLinking: AccountLinking? = null,
+            var passThreadControl: PassThreadControl? = null,
+            var takeThreadControl: TakeThreadControl? = null,
+            var requestThreadControl: RequestThreadControl? = null,
+            var appRoles: Map<String, List<String>>? = null
         )
 
         val (sender, recipient, timestamp,
                 message, optin, postback,
-                priorMessage, accountLinking)
+                priorMessage, accountLinking,
+                passThreadControl, takeThreadControl, requestThreadControl, appRoles)
                 = jp.read<WebhookFields> { fields, name ->
             with(fields) {
                 when (name) {
@@ -72,6 +84,10 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
                     PostbackWebhook::postback.name -> postback = jp.readValue()
                     "prior_message" -> priorMessage = jp.readValue()
                     "account_linking" -> accountLinking = jp.readValue()
+                    "pass_thread_control" -> passThreadControl = jp.readValue()
+                    "take_thread_control" -> takeThreadControl = jp.readValue()
+                    "request_thread_control" -> requestThreadControl = jp.readValue()
+                    "app_roles" -> appRoles = jp.readValue()
                     else -> unknownValue
                 }
             }
@@ -85,6 +101,8 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
         if (sender == null) {
             return if (optin != null) {
                 OptinWebhook(sender, recipient, timestamp, optin)
+            } else if (appRoles != null) {
+                AppRolesWebhook(recipient, timestamp, appRoles)
             } else {
                 logger.warn { "invalid webhook - null sender" }
                 return null
@@ -101,8 +119,14 @@ internal class WebhookDeserializer : JacksonDeserializer<Webhook>() {
             OptinWebhook(sender, recipient, timestamp, optin)
         } else if (accountLinking != null) {
             AccountLinkingWebhook(sender, recipient, timestamp, accountLinking)
-        }else if (postback != null) {
+        } else if (postback != null) {
             PostbackWebhook(sender, recipient, timestamp, postback, priorMessage)
+        } else if (passThreadControl != null) {
+            PassThreadControlWebhook(sender, recipient, timestamp, passThreadControl)
+        } else if (takeThreadControl != null) {
+            TakeThreadControlWebhook(sender, recipient, timestamp, takeThreadControl)
+        } else if (requestThreadControl != null) {
+            RequestThreadControlWebhook(sender, recipient, timestamp, requestThreadControl)
         } else {
             logger.error { "unknown webhook" }
             null

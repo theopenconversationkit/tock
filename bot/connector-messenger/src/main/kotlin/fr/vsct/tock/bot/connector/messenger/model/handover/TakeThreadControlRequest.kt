@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.webhook
+package fr.vsct.tock.bot.connector.messenger.model.handover
 
-data class Entry(
-    val id: String,
-    val time: Number,
-    val messaging: List<Webhook?>? = null,
-    val standby: List<Webhook?>? = null
+import fr.vsct.tock.bot.connector.messenger.model.Recipient
+
+/**
+ * See [https://developers.facebook.com/docs/messenger-platform/reference/handover-protocol#take].
+ */
+data class TakeThreadControlRequest(
+    val recipient: Recipient,
+    val metadata: String? = null
 )

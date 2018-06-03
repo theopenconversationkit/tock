@@ -19,6 +19,13 @@ package fr.vsct.tock.bot.connector.messenger.json.webhook
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.Sender
+import fr.vsct.tock.bot.connector.messenger.model.handover.AppRolesWebhook
+import fr.vsct.tock.bot.connector.messenger.model.handover.PassThreadControl
+import fr.vsct.tock.bot.connector.messenger.model.handover.PassThreadControlWebhook
+import fr.vsct.tock.bot.connector.messenger.model.handover.RequestThreadControl
+import fr.vsct.tock.bot.connector.messenger.model.handover.RequestThreadControlWebhook
+import fr.vsct.tock.bot.connector.messenger.model.handover.TakeThreadControl
+import fr.vsct.tock.bot.connector.messenger.model.handover.TakeThreadControlWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Message
 import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageEcho
 import fr.vsct.tock.bot.connector.messenger.model.webhook.MessageEchoWebhook
@@ -89,7 +96,7 @@ class WebhookDeserializationTest {
                 "    }\n" +
                 "  }\n" +
                 "} "
-        val output = mapper.readValue<MessageWebhook>(input)
+        val output = mapper.readValue<Webhook>(input)
         assertEquals(
             MessageWebhook(
                 Sender("USER_ID"),
@@ -105,4 +112,125 @@ class WebhookDeserializationTest {
             ), output
         )
     }
+
+    @Test
+    fun `PassThreadControlWebhook is deserialized successfully `() {
+        val input = """
+               {
+  "sender":{
+    "id":"<PSID>"
+  },
+  "recipient":{
+    "id":"<PAGE_ID>"
+  },
+  "timestamp":1458692752478,
+  "pass_thread_control":{
+    "new_owner_app_id":"123456789",
+    "metadata":"Additional content that the caller wants to set"
+  }
+}
+            """
+        val output = mapper.readValue<Webhook>(input)
+        assertEquals(
+            PassThreadControlWebhook(
+                sender = Sender("<PSID>"),
+                recipient = Recipient(id = "<PAGE_ID>"),
+                timestamp = 1458692752478,
+                passThreadControl = PassThreadControl(
+                    newOwnerAppId = "123456789",
+                    metadata = "Additional content that the caller wants to set"
+                )
+            ),
+            output
+        )
+    }
+
+    @Test
+    fun `TakeThreadControlWebhook is deserialized successfully `() {
+        val input = """
+               {
+  "sender":{
+    "id":"<PSID>"
+  },
+  "recipient":{
+    "id":"<PAGE_ID>"
+  },
+  "timestamp":1458692752478,
+  "take_thread_control":{
+    "previous_owner_app_id":"123456789",
+    "metadata":"Additional content that the caller wants to set"
+  }
+}
+            """
+        val output = mapper.readValue<Webhook>(input)
+        assertEquals(
+            TakeThreadControlWebhook(
+                sender = Sender("<PSID>"),
+                recipient = Recipient(id = "<PAGE_ID>"),
+                timestamp = 1458692752478,
+                takeThreadControl = TakeThreadControl(
+                    previousOwnerAppId = "123456789",
+                    metadata = "Additional content that the caller wants to set"
+                )
+            ),
+            output
+        )
+    }
+
+    @Test
+    fun `RequestThreadControlWebhook is deserialized successfully `() {
+        val input = """
+               {
+  "sender":{
+    "id":"<PSID>"
+  },
+  "recipient":{
+    "id":"<PAGE_ID>"
+  },
+  "timestamp":1458692752478,
+  "request_thread_control":{
+    "requested_owner_app_id":"123456789",
+    "metadata":"Additional content that the caller wants to set"
+  }
+}
+            """
+        val output = mapper.readValue<Webhook>(input)
+        assertEquals(
+            RequestThreadControlWebhook(
+                sender = Sender("<PSID>"),
+                recipient = Recipient(id = "<PAGE_ID>"),
+                timestamp = 1458692752478,
+                requestThreadControl = RequestThreadControl(
+                    requestOwnerAppId = "123456789",
+                    metadata = "Additional content that the caller wants to set"
+                )
+            ),
+            output
+        )
+    }
+
+    @Test
+    fun `AppRolesWebhook is deserialized successfully `() {
+        val input = """
+               {
+  "recipient":{
+    "id":"<PSID>"
+  },
+  "timestamp":1458692752478,
+  "app_roles":{
+    "123456789":["primary_receiver"]
+  }
+}
+            """
+        val output = mapper.readValue<Webhook>(input)
+        assertEquals(
+            AppRolesWebhook(
+                recipient = Recipient(id = "<PSID>"),
+                timestamp = 1458692752478,
+                appRoles = mapOf("123456789" to listOf("primary_receiver"))
+            ),
+            output
+        )
+    }
+
 }

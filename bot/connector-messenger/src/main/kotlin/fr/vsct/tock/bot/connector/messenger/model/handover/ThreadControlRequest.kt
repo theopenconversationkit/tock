@@ -14,11 +14,16 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.webhook
+package fr.vsct.tock.bot.connector.messenger.model.handover
 
-data class Entry(
-    val id: String,
-    val time: Number,
-    val messaging: List<Webhook?>? = null,
-    val standby: List<Webhook?>? = null
+import com.fasterxml.jackson.annotation.JsonProperty
+import fr.vsct.tock.bot.connector.messenger.model.Recipient
+
+/**
+ * See [https://developers.facebook.com/docs/messenger-platform/reference/handover-protocol].
+ */
+data class ThreadControlRequest(
+    val metadata : String,
+    val recipient:Recipient?,
+    @JsonProperty("target_app_id") val targetAppId: String
 )
