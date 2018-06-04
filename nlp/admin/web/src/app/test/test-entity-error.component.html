@@ -20,7 +20,7 @@
 
     <ng-container mdColumnDef="text">
       <md-header-cell *mdHeaderCellDef> Original </md-header-cell>
-      <md-cell *mdCellDef="let row"> <tock-highlight fontSize="smaller" [sentence]="row.originalSentence" [readOnly]="true"></tock-highlight>
+      <md-cell *mdCellDef="let row"> <tock-highlight fontSize="smaller" [sentence]="row.originalSentence" [readOnly]="true" [displayActions]="false"></tock-highlight>
       </md-cell>
     </ng-container>
 
@@ -31,7 +31,7 @@
 
     <ng-container mdColumnDef="error">
       <md-header-cell *mdHeaderCellDef> Last Error </md-header-cell>
-      <md-cell *mdCellDef="let row"> <tock-highlight fontSize="smaller" [sentence]="row.sentence" [readOnly]="true"></tock-highlight></md-cell>
+      <md-cell *mdCellDef="let row"> <tock-highlight fontSize="smaller" [sentence]="row.sentence" [readOnly]="true" [displayActions]="false"></tock-highlight></md-cell>
     </ng-container>
 
     <ng-container mdColumnDef="count">
