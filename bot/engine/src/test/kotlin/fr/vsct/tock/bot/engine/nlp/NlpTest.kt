@@ -19,8 +19,8 @@ package fr.vsct.tock.bot.engine.nlp
 import fr.vsct.tock.bot.engine.BotEngineTest
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
@@ -48,11 +48,21 @@ class NlpTest : BotEngineTest() {
     }
 
     @Test
-    fun `GIVEN intent qualifiers not null in dialog state, THEN parse is_called with intentsSubset not empty`() {
+    fun `GIVEN intent qualifiers not null in dialog state THEN parse is_called with intentsSubset not empty`() {
         dialog.state.nextActionState = NextUserActionState(listOf(NlpIntentQualifier("test2")))
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
         verify { nlpClient.parse(match { it.intentsSubset.isNotEmpty() }) }
         verify(exactly = 0) { nlpClient.parse(match { it.intentsSubset.isEmpty() }) }
+    }
+
+    @Test
+    fun `GIVEN intent qualifiers not null in dialog state WHEN parse call returns an intent not in the list THEN the the best modifier intent is returned`() {
+        dialog.state.nextActionState =
+                NextUserActionState(listOf(NlpIntentQualifier("test3", 0.2), NlpIntentQualifier("test2", 0.5)))
+        every { nlpClient.parse(any()) } returns nlpResult
+        val sentence = userAction as SendSentence
+        Nlp().parseSentence(sentence, userTimeline, dialog, connectorController, botDefinition)
+        assertEquals("test2", sentence.nlpStats?.intent?.name)
     }
 
     @Test

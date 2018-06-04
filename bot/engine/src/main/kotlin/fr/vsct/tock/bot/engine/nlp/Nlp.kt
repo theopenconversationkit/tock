@@ -25,18 +25,18 @@ import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.TockConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.DialogState
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
+import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.NlpClient
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.api.client.model.NlpEntityValue
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
-import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.NlpQueryContext
 import fr.vsct.tock.nlp.api.client.model.NlpQueryState
+import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
 import fr.vsct.tock.nlp.api.client.model.dump.IntentDefinition
 import fr.vsct.tock.nlp.api.client.model.dump.SentencesDump
@@ -325,7 +325,11 @@ internal class Nlp : NlpController {
             if (result != null && useQualifiers) {
                 //force intents qualifiers if unknown answer
                 if (intentsQualifiers!!.none { it.intent == result.intent }) {
-                    return result.copy(intent = intentsQualifiers.first().intent)
+                    return result.copy(
+                        intent = intentsQualifiers.maxBy { it.modifier }?.intent ?: intentsQualifiers.first().intent
+                    ).also {
+                        logger.warn { "${result.intent} not in intents qualifier $intentsQualifiers - use $it" }
+                    }
                 }
             }
             return result
