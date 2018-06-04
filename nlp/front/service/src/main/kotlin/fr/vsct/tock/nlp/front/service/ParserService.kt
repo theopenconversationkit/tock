@@ -20,7 +20,7 @@ import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityEvaluationContext
 import fr.vsct.tock.nlp.core.Intent
-import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
+import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
 import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
 import fr.vsct.tock.nlp.front.service.selector.IntentSelectorService
@@ -157,7 +157,7 @@ object ParserService : Parser {
             if (q.isEmpty()) {
                 logger.warn { "empty query after format - $query" }
                 return ParseResult(
-                    UNKNOWN_INTENT,
+                    UNKNOWN_INTENT_NAME,
                     application.namespace,
                     query.context.language,
                     emptyList(),
@@ -211,8 +211,8 @@ object ParserService : Parser {
                 )
                 val intent = config.getIntentById(validatedSentence.classification.intentId)
                 return ParseResult(
-                    intent?.name ?: Intent.UNKNOWN_INTENT.name(),
-                    intent?.namespace ?: Intent.UNKNOWN_INTENT.namespace(),
+                    intent?.name ?: Intent.UNKNOWN_INTENT_NAME.name(),
+                    intent?.namespace ?: Intent.UNKNOWN_INTENT_NAME.namespace(),
                     language,
                     entityValues.map { ParsedEntityValue(it.value, 1.0, core.supportValuesMerge(it.entityType)) },
                     1.0,
@@ -280,7 +280,7 @@ object ParserService : Parser {
             ) {
                 //do not persist analysis if intent probability is < 0.1
                 val sentence = if ((lastIntentProbability ?: 0.0) > 0.1) this
-                else copy(classification = classification.copy(UNKNOWN_INTENT.toId(), emptyList()))
+                else copy(classification = classification.copy(UNKNOWN_INTENT_NAME.toId(), emptyList()))
 
                 config.save(sentence)
             }

@@ -17,7 +17,7 @@
 package fr.vsct.tock.nlp.front.service
 
 import fr.vsct.tock.nlp.core.Intent
-import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
+import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
 import fr.vsct.tock.nlp.front.service.FrontRepository.entityTypeExists
 import fr.vsct.tock.nlp.front.service.ModelUpdaterService.triggerBuild
 import fr.vsct.tock.nlp.front.shared.ApplicationCodec
@@ -154,7 +154,7 @@ object ApplicationCodecService : ApplicationCodec {
                 report.localeAdded = !app.supportedLocales.containsAll(dump.application.supportedLocales)
 
                 //add unknown intent to intent map
-                intentsIdsMap += (Intent.UNKNOWN_INTENT.toId<IntentDefinition>() to Intent.UNKNOWN_INTENT.toId<IntentDefinition>())
+                intentsIdsMap += (Intent.UNKNOWN_INTENT_NAME.toId<IntentDefinition>() to Intent.UNKNOWN_INTENT_NAME.toId<IntentDefinition>())
 
                 dump.sentences.forEach { s ->
                     if (config.search(
@@ -236,7 +236,7 @@ object ApplicationCodecService : ApplicationCodec {
                         app = config.save(app.copy(supportedLocales = app.supportedLocales + language))
                     }
 
-                    val intent: IntentDefinition? = if (s.intent == UNKNOWN_INTENT) {
+                    val intent: IntentDefinition? = if (s.intent == UNKNOWN_INTENT_NAME) {
                         null
                     } else {
                         val newIntent: IntentDefinition = intentsByNameMap[s.intent]
@@ -307,7 +307,7 @@ object ApplicationCodecService : ApplicationCodec {
                             Instant.now(),
                             validated,
                             Classification(
-                                intent?._id ?: UNKNOWN_INTENT.toId(),
+                                intent?._id ?: UNKNOWN_INTENT_NAME.toId(),
                                 s.entities.map { it.toClassifiedEntity() }
                             ),
                             1.0,
@@ -358,7 +358,7 @@ object ApplicationCodecService : ApplicationCodec {
             app.qualifiedName,
             sentences = sentences.mapNotNull { s ->
                 val sentenceIntent = intents[s.classification.intentId]
-                if (sentenceIntent == null && s.classification.intentId != Intent.UNKNOWN_INTENT.toId<IntentDefinition>()) {
+                if (sentenceIntent == null && s.classification.intentId != Intent.UNKNOWN_INTENT_NAME.toId<IntentDefinition>()) {
                     logger.warn { "unknown intent ${s.classification.intentId}" }
                     null
                 } else {
@@ -367,7 +367,7 @@ object ApplicationCodecService : ApplicationCodec {
                     } else {
                         SentenceDump(
                             s.text,
-                            sentenceIntent?.qualifiedName ?: Intent.UNKNOWN_INTENT,
+                            sentenceIntent?.qualifiedName ?: Intent.UNKNOWN_INTENT_NAME,
                             s.classification.entities.map { SentenceEntityDump(it) },
                             s.language
                         )

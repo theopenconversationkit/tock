@@ -21,7 +21,7 @@ import java.util.LinkedHashSet
 import java.util.Locale
 
 /**
- *
+ * An intent is defined by an unique name.
  */
 data class Intent(
     val name: String,
@@ -30,7 +30,8 @@ data class Intent(
 ) {
 
     companion object {
-        const val UNKNOWN_INTENT: String = "$TOCK_NAMESPACE:unknown"
+        const val UNKNOWN_INTENT_NAME: String = "$TOCK_NAMESPACE:unknown"
+        val UNKNOWN_INTENT: Intent = Intent(UNKNOWN_INTENT_NAME, emptyList())
     }
 
     fun hasEntity(entityType: EntityType, role: String) =
