@@ -32,9 +32,9 @@ internal class OpenNlpIntentClassifier(model: IntentModelHolder) : NlpIntentClas
         return with(model) {
             val openNlpModel = nativeModel as AbstractModel
             val outcomes = openNlpModel.eval(tokens)
-                    .mapIndexed { index, d -> index to d }
-                    .sortedByDescending { it.second }
-                    .iterator()
+                .mapIndexed { index, d -> index to d }
+                .sortedByDescending { it.second }
+                .iterator()
 
             object : IntentClassification {
 
@@ -47,7 +47,7 @@ internal class OpenNlpIntentClassifier(model: IntentModelHolder) : NlpIntentClas
                 override fun next(): Intent {
                     return outcomes.next().let { (index, proba) ->
                         probability = proba
-                        application.getIntent(openNlpModel.getOutcome(index))
+                        application.getIntent(openNlpModel.getOutcome(index)) ?: Intent.UNKNOWN_INTENT
                     }
                 }
             }

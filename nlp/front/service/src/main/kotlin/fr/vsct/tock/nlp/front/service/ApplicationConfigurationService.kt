@@ -18,7 +18,7 @@ package fr.vsct.tock.nlp.front.service
 
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.Intent
-import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT
+import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
 import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.front.service.FrontRepository.addNewEntityType
@@ -75,7 +75,7 @@ object ApplicationConfigurationService :
         intentId: Id<IntentDefinition>
     ): Boolean {
         val intent = intentDAO.getIntentById(intentId)!!
-        sentenceDAO.switchSentencesIntent(application._id, intentId, Intent.UNKNOWN_INTENT.toId())
+        sentenceDAO.switchSentencesIntent(application._id, intentId, Intent.UNKNOWN_INTENT_NAME.toId())
         applicationDAO.save(application.copy(intents = application.intents - intentId))
         val newIntent = intent.copy(applications = intent.applications - application._id)
         return if (newIntent.applications.isEmpty()) {
@@ -146,7 +146,7 @@ object ApplicationConfigurationService :
     }
 
     override fun getIntentIdByQualifiedName(name: String): Id<IntentDefinition>? {
-        return if (name == UNKNOWN_INTENT) UNKNOWN_INTENT.toId()
+        return if (name == UNKNOWN_INTENT_NAME) UNKNOWN_INTENT_NAME.toId()
         else name.namespaceAndName().run { intentDAO.getIntentByNamespaceAndName(first, second)?._id }
     }
 
@@ -182,7 +182,7 @@ object ApplicationConfigurationService :
     private fun findIntent(intentId: Id<IntentDefinition>): Intent {
         return getIntentById(intentId)?.let {
             toIntent(it)
-        } ?: Intent(Intent.UNKNOWN_INTENT, emptyList())
+        } ?: Intent(Intent.UNKNOWN_INTENT_NAME, emptyList())
     }
 
     fun toIntent(intent: IntentDefinition): Intent {
@@ -209,7 +209,7 @@ object ApplicationConfigurationService :
             .distinct()
 
         //2 create entities where there are not present in the new intent (except if it's the unknown intent)
-        if (targetIntentId.toString() != UNKNOWN_INTENT) {
+        if (targetIntentId.toString() != UNKNOWN_INTENT_NAME) {
             val intent = getIntentById(targetIntentId)!!
             entities.filterNot { intent.hasEntity(it) }.apply {
                 if (isNotEmpty()) {
@@ -238,7 +238,7 @@ object ApplicationConfigurationService :
         }
 
         //1 create entities where there are not present in the intents
-        val intents = sentences.map { it.classification.intentId }.distinct().filter { it.toString() != UNKNOWN_INTENT }
+        val intents = sentences.map { it.classification.intentId }.distinct().filter { it.toString() != UNKNOWN_INTENT_NAME }
         intents.forEach {
             val intent = getIntentById(it)
             if (intent != null) {

@@ -285,7 +285,7 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     override fun switchSentencesIntent(sentences: List<ClassifiedSentence>, newIntentId: Id<IntentDefinition>) {
         //TODO updateMany
         sentences.forEach {
-            if (newIntentId.toString() == Intent.UNKNOWN_INTENT) {
+            if (newIntentId.toString() == Intent.UNKNOWN_INTENT_NAME) {
                 save(it.copy(classification = it.classification.copy(newIntentId, emptyList())))
             } else {
                 save(it.copy(classification = it.classification.copy(newIntentId)))

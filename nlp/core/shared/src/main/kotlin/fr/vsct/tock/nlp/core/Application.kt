@@ -16,18 +16,25 @@
 
 package fr.vsct.tock.nlp.core
 
+import mu.KotlinLogging
 import java.util.Locale
 
 /**
  *
  */
 data class Application(
-        val name: String,
-        val intents: List<Intent>,
-        val supportedLocales: Set<Locale>) {
+    val name: String,
+    val intents: List<Intent>,
+    val supportedLocales: Set<Locale>
+) {
+
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
 
     private val intentMap: Map<String, Intent> = intents.associateBy { it.name }
 
-    fun getIntent(intentName: String): Intent = intentMap[intentName] ?: error("Intent $intentName does not exist in $name")
+    fun getIntent(intentName: String): Intent? =
+        intentMap[intentName] ?: (null.also { logger.warn { "Intent $intentName does not exist in app $name" } })
 
 }
