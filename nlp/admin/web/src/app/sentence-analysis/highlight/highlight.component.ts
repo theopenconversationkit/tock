@@ -55,6 +55,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   @Input() fontSize: string = "inherit";
   @Input() prefix: string = "s";
   @Input() leftPadding: number = 0;
+  @Input() displayActions: boolean = true;
 
   entityProvider: EntityProvider;
   selectedStart: number;
