@@ -30,10 +30,11 @@ import mu.KotlinLogging
  * It is linked to at least one intent - the [starterIntent].
  */
 data class Story(
-        val definition: StoryDefinition,
-        val starterIntent: Intent,
-        var currentStep: String? = null,
-        val actions: MutableList<Action> = mutableListOf()) {
+    val definition: StoryDefinition,
+    val starterIntent: Intent,
+    var currentStep: String? = null,
+    val actions: MutableList<Action> = mutableListOf()
+) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -65,6 +66,9 @@ data class Story(
         }
     }
 
+    /**
+     * Handles a request.
+     */
     fun handle(bus: BotBus) {
         definition.storyHandler.apply {
             try {
@@ -77,5 +81,9 @@ data class Story(
         }
     }
 
+    /**
+     * What is the probability of this request support by the current bot?
+     */
+    fun support(bus: BotBus): Double = definition.storyHandler.support(bus)
 
 }

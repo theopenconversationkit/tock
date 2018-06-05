@@ -44,6 +44,8 @@ internal class ConfiguredStoryHandler(val configuration: StoryDefinitionConfigur
         }
     }
 
+    override fun support(bus: BotBus): Double = 1.0
+
     private fun BotBus.fallbackAnswer() =
         botDefinition.unknownStory.storyHandler.handle(this)
 

@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.definition
 
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nKeyProvider.Companion.generateKey
@@ -97,6 +98,13 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
             }
         }
     }
+
+    override fun support(bus: BotBus): Double =
+        if (bus.story.definition == bus.botDefinition.unknownStory) {
+            0.0
+        } else {
+            (bus.action as? SendSentence)?.nlpStats?.intentProbability ?: 1.0
+        }
 
     /**
      * Finds the story definition of this handler.

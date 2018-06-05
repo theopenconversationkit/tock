@@ -52,6 +52,17 @@ interface ConnectorController {
     )
 
     /**
+     * Return a probability of the support by the bot of this action
+     * - by default returns the nlp intent probability.
+     *
+     * @return a probability between 0.0 (not supported) and 1.0 (supported!)
+     */
+    fun support(
+        action: Action,
+        data: ConnectorData = ConnectorData(ConnectorCallbackBase(action.applicationId, connector.connectorType))
+    ): Double
+
+    /**
      * Register services at startup.
      */
     fun registerServices(rootPath: String, installer: (Router) -> Unit)

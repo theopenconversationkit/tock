@@ -19,9 +19,8 @@ package fr.vsct.tock.bot.connector.messenger
 import fr.vsct.tock.bot.connector.ConnectorCallbackBase
 
 /**
- *
+ * The messenger [ConnectorCallback].
  */
-internal class MessengerConnectorCallback(
+class MessengerConnectorCallback(
     applicationId: String
-) : ConnectorCallbackBase(applicationId, messengerConnectorType) {
-}
+) : ConnectorCallbackBase(applicationId, messengerConnectorType)
