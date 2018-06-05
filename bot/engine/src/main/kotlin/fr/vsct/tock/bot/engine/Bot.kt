@@ -55,10 +55,40 @@ internal class Bot(botDefinitionBase: BotDefinition) {
 
     val botDefinition: BotDefinitionWrapper = BotDefinitionWrapper(botDefinitionBase)
 
+    fun support(
+        action: Action,
+        userTimeline: UserTimeline,
+        connector: ConnectorController,
+        connectorData: ConnectorData
+    ): Double {
+        connector as TockConnectorController
+
+        if (action.state.targetConnectorType == null) {
+            action.state.targetConnectorType = connector.connectorType
+        }
+
+        loadProfileIfNotSet(connectorData, action, userTimeline, connector)
+
+        val dialog = getDialog(action, userTimeline)
+
+        parseAction(action, userTimeline, dialog, connector)
+
+        val story = getStory(action, dialog)
+
+        val bus = TockBotBus(connector, userTimeline, dialog, action, connectorData, botDefinition)
+
+        return story.support(bus)
+    }
+
     /**
      * Handle the user action.
      */
-    fun handle(action: Action, userTimeline: UserTimeline, connector: ConnectorController, connectorData: ConnectorData) {
+    fun handle(
+        action: Action,
+        userTimeline: UserTimeline,
+        connector: ConnectorController,
+        connectorData: ConnectorData
+    ) {
         connector as TockConnectorController
 
         if (action.state.targetConnectorType == null) {
@@ -109,18 +139,20 @@ internal class Bot(botDefinitionBase: BotDefinition) {
         val previousStory = dialog.currentStory()
 
         val story =
-                if (previousStory == null
-                        || (newIntent != null && !previousStory.definition.supportIntent(newIntent))) {
-                    val storyDefinition = botDefinition.findStoryDefinition(newIntent?.name)
-                    val newStory = Story(
-                            storyDefinition,
-                            if (newIntent != null && storyDefinition.isStarterIntent(newIntent)) newIntent
-                            else storyDefinition.mainIntent())
-                    dialog.stories.add(newStory)
-                    newStory
-                } else {
-                    previousStory
-                }
+            if (previousStory == null
+                || (newIntent != null && !previousStory.definition.supportIntent(newIntent))
+            ) {
+                val storyDefinition = botDefinition.findStoryDefinition(newIntent?.name)
+                val newStory = Story(
+                    storyDefinition,
+                    if (newIntent != null && storyDefinition.isStarterIntent(newIntent)) newIntent
+                    else storyDefinition.mainIntent()
+                )
+                dialog.stories.add(newStory)
+                newStory
+            } else {
+                previousStory
+            }
 
         //set current step if necessary
         var forced = false
@@ -138,10 +170,10 @@ internal class Bot(botDefinitionBase: BotDefinition) {
         //check the step from the intent
         if (!forced && step == null && newIntent != null) {
             story.definition.steps.find { it.supportStarterIntent(newIntent) }
-                    ?.apply {
-                        forced = true
-                        story.currentStep = name
-                    }
+                ?.apply {
+                    forced = true
+                    story.currentStep = name
+                }
         }
 
         //reset the step if applicable
@@ -158,10 +190,12 @@ internal class Bot(botDefinitionBase: BotDefinition) {
         return story
     }
 
-    private fun parseAction(action: Action,
-                            userTimeline: UserTimeline,
-                            dialog: Dialog,
-                            connector: TockConnectorController) {
+    private fun parseAction(
+        action: Action,
+        userTimeline: UserTimeline,
+        dialog: Dialog,
+        connector: TockConnectorController
+    ) {
         try {
             when (action) {
                 is SendChoice -> {
@@ -217,8 +251,9 @@ internal class Bot(botDefinitionBase: BotDefinition) {
                             //the new intent is a secondary intent, may be we need to create a intermediate story
                             val currentStory = dialog.currentStory()
                             if (currentStory == null
-                                    || !currentStory.definition.supportIntent(intent)
-                                    || !currentStory.definition.supportIntent(botDefinition.findIntent(previousIntentName))) {
+                                || !currentStory.definition.supportIntent(intent)
+                                || !currentStory.definition.supportIntent(botDefinition.findIntent(previousIntentName))
+                            ) {
                                 dialog.stories.add(Story(previousStory, intent))
                             }
                         }
@@ -230,10 +265,11 @@ internal class Bot(botDefinitionBase: BotDefinition) {
     }
 
     private fun loadProfileIfNotSet(
-            connectorData: ConnectorData,
-            action: Action,
-            userTimeline: UserTimeline,
-            connector: TockConnectorController) {
+        connectorData: ConnectorData,
+        action: Action,
+        userTimeline: UserTimeline,
+        connector: TockConnectorController
+    ) {
         with(userTimeline) {
             if (!userState.profileLoaded) {
                 val pref = connector.loadProfile(connectorData, userTimeline.playerId)

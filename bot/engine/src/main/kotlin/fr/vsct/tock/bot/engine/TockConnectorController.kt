@@ -57,10 +57,12 @@ internal class TockConnectorController constructor(
             connector: Connector,
             bot: Bot,
             verticle: BotVerticle
-        ) {
-            logger.info { "Register connector $connector for bot $bot" }
-            connector.register(TockConnectorController(bot, connector, verticle))
-        }
+        ): TockConnectorController =
+            TockConnectorController(bot, connector, verticle)
+                .apply {
+                    logger.info { "Register connector $connector for bot $bot" }
+                    connector.register(this)
+                }
     }
 
     private val executor: Executor by injector.instance()
@@ -122,6 +124,22 @@ internal class TockConnectorController constructor(
             }
         } catch (t: Throwable) {
             callback.exceptionThrown(action, t)
+        }
+    }
+
+    override fun support(action: Action, data: ConnectorData): Double {
+        val callback = data.callback
+        return try {
+            val userTimeline =
+                userTimelineDAO.loadWithLastValidDialog(
+                    action.playerId,
+                    data.priorUserId,
+                    { bot.botDefinition.findStoryDefinition(it) }
+                )
+            bot.support(action, userTimeline, this, data)
+        } catch (t: Throwable) {
+            callback.exceptionThrown(action, t)
+            0.0
         }
     }
 

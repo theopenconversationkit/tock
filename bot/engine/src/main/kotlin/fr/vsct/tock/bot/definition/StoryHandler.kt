@@ -31,4 +31,11 @@ interface StoryHandler {
      * @param bus the bus used to get the message and send the answer
      */
     fun handle(bus: BotBus)
+
+    /**
+     * What is the probability of bot support for the current request?
+     *
+     * @return a probability between 0.0 (not supported) and 1.0 (supported!)
+     */
+    fun support(bus: BotBus): Double
 }

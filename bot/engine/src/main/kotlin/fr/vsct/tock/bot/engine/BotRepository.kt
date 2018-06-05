@@ -44,6 +44,7 @@ import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
+import java.util.concurrent.ConcurrentHashMap
 
 /**
  * Advanced bot configuration.
@@ -72,6 +73,9 @@ object BotRepository {
                 }
         }
     )
+
+    private val connectorControllerMap: MutableMap<BotApplicationConfiguration, ConnectorController> =
+        ConcurrentHashMap()
 
 
     /**
@@ -116,6 +120,16 @@ object BotRepository {
      */
     fun registerNlpListener(listener: NlpListener) {
         nlpListeners.add(listener)
+    }
+
+    /**
+     * Returns the current [ConnectorController] for a given bot and application id.
+     */
+    fun getController(botId: String, applicationId: String): ConnectorController? {
+        return connectorControllerMap
+            .entries
+            .firstOrNull { it.key.applicationId == applicationId && it.key.botId == botId }
+            ?.value
     }
 
     /**
@@ -236,7 +250,7 @@ object BotRepository {
                                     bot
                                 )
                             }
-                    }catch(e:Exception) {
+                    } catch (e: Exception) {
                         logger.error(e) {
                             "unable to install connector $baseConf"
                         }
@@ -275,6 +289,9 @@ object BotRepository {
             )
 
             TockConnectorController.register(connector, bot, verticle)
+                .apply {
+                    connectorControllerMap.put(conf, this)
+                }
 
             botConfigurationDAO.updateIfNotManuallyModified(conf)
         }
