@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.engine
 
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.WebVerticle
@@ -51,7 +52,13 @@ internal class BotVerticle : WebVerticle() {
     override fun configure() {
         initEncryptor()
 
-        handlers.forEach { it.value.invoke(router) }
+        handlers.forEach {
+            try {
+                it.value.invoke(router)
+            } catch (e: Exception) {
+                logger.error(e)
+            }
+        }
     }
 
     override fun healthcheck(): (RoutingContext) -> Unit {
