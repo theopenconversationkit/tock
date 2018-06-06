@@ -37,5 +37,5 @@ interface StoryHandler {
      *
      * @return a probability between 0.0 (not supported) and 1.0 (supported!)
      */
-    fun support(bus: BotBus): Double
+    fun support(bus: BotBus): Double = 1.0
 }
