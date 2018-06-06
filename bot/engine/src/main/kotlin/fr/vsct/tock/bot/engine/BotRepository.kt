@@ -125,12 +125,13 @@ object BotRepository {
     /**
      * Returns the current [ConnectorController] for a given bot and application id.
      */
-    fun getController(botId: String, applicationId: String): ConnectorController? {
-        return connectorControllerMap
-            .entries
-            .firstOrNull { it.key.applicationId == applicationId && it.key.botId == botId }
-            ?.value
-    }
+    fun getController(predicate: (BotApplicationConfiguration) -> Boolean): ConnectorController? =
+        connectorControllerMap
+            .keys
+            .firstOrNull(predicate)
+            ?.let {
+                connectorControllerMap[it]
+            }
 
     /**
      * Installs the bot(s).
