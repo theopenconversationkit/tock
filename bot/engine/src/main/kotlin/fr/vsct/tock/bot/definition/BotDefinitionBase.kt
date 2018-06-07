@@ -189,5 +189,5 @@ open class BotDefinitionBase(
     /**
      * The default unknown answer.
      */
-    override val defaultUnknownAnswer: I18nLabelValue get() = i18n(namespace, "Sorry, I didn't understand :(")
+    override val defaultUnknownAnswer: I18nLabelValue get() = i18n("Sorry, I didn't understand :(")
 }
