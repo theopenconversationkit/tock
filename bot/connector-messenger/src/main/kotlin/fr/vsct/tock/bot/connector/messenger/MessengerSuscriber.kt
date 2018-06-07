@@ -25,23 +25,15 @@ import java.util.Properties
 /**
  * Adds a messenger using a property file in the classpath.
  */
+@Deprecated("This method is not used anymore and has no effect")
 fun BotDefinition.addMessengerConnector(propertyFileName: String = "/messenger.properties") {
-    Properties().apply {
-        load(MessengerConnector::class.java.getResourceAsStream(propertyFileName))
-        addMessengerConnector(
-            getProperty("pageId"),
-            getProperty("pageToken"),
-            getProperty("applicationSecret"),
-            getProperty("verifyToken"),
-            getProperty("path") ?: "/messenger",
-            getProperty("baseUrl")
-        )
-    }
+
 }
 
 /**
  * Adds a messenger connector with the specified params.
  */
+@Deprecated("This method is not used anymore and has no effect")
 fun BotDefinition.addMessengerConnector(
     /**
      * The facebook page id.
@@ -68,68 +60,5 @@ fun BotDefinition.addMessengerConnector(
      */
     baseUrl: String? = null
 ) {
-    addMessengerConnector(
-        pageId,
-        pageToken,
-        applicationSecret,
-        webhookVerifyToken,
-        pageId,
-        path,
-        nlpModelName,
-        baseUrl
-    )
-}
 
-/**
- * Adds a messenger connector.
- */
-@Deprecated("use addMessengerConnector with botDefinition receiver")
-fun addMessengerConnector(
-    /**
-     * The facebook page id.
-     */
-    pageId: String,
-    /**
-     * The messenger page token.
-     */
-    pageToken: String,
-    /**
-     * The messenger application secret key.
-     */
-    applicationSecret: String,
-    /**
-     * The webhook verify token.
-     */
-    webhookVerifyToken: String? = null,
-    /**
-     * Application id has to be different for each facebook page served by the bot.
-     */
-    applicationId: String = pageId,
-    /**
-     * The relative connector path.
-     */
-    path: String = "/messenger",
-    /**
-     * The name of the application.
-     */
-    name: String = applicationId,
-    /**
-     * The base url for the connector path.
-     */
-    baseUrl: String? = null
-) {
-
-    ConnectorConfigurationRepository.addConfiguration(
-        MessengerConnectorProvider.newConfiguration(
-            pageId,
-            pageToken,
-            applicationSecret,
-            webhookVerifyToken,
-            applicationId,
-            path,
-            name,
-            baseUrl
-        )
-    )
-    BotRepository.registerConnectorProvider(MessengerConnectorProvider)
 }

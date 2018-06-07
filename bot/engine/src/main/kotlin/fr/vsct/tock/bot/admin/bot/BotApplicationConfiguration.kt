@@ -106,4 +106,16 @@ data class BotApplicationConfiguration(
     @Transient
     val targetConnectorType = ownerConnectorType ?: connectorType
 
+    internal fun equalsWithoutId(conf: BotApplicationConfiguration): Boolean =
+        conf.applicationId == applicationId
+                && conf.botId == botId
+                && conf.namespace == namespace
+                && conf.nlpModel == nlpModel
+                && conf.connectorType == connectorType
+                && conf.ownerConnectorType == ownerConnectorType
+                && conf.name == name
+                && conf.baseUrl == baseUrl
+                && conf.parameters == parameters
+                && conf.path == path
+
 }

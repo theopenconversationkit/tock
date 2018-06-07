@@ -17,12 +17,11 @@
 package fr.vsct.tock.bot.connector.slack
 
 import fr.vsct.tock.bot.definition.BotDefinition
-import fr.vsct.tock.bot.engine.BotRepository
-import fr.vsct.tock.bot.engine.ConnectorConfigurationRepository
 
 /**
  * Adds a slack connector.
  */
+@Deprecated("This method is not used anymore and has no effect")
 fun BotDefinition.addSlackConnector(
     outToken1: String,
     outToken2: String,
@@ -33,38 +32,5 @@ fun BotDefinition.addSlackConnector(
     connectorId: String = "slackApp",
     path: String = "/slack/$connectorId",
     baseUrl: String? = null
-) = addSlackConnector(connectorId, path, nlpModelName, outToken1, outToken2, outToken3, baseUrl)
-
-/**
- * Adds a slack connector.
- */
-@Deprecated("use addSlackConnector with botDefinition receiver")
-fun addSlackConnector(
-    /**
-     * Should be unique for each connector.
-     */
-    connectorId: String,
-    path: String,
-    /**
-     * The name of the bot.
-     */
-    applicationName: String,
-    outToken1: String,
-    outToken2: String,
-    outToken3: String,
-    baseUrl: String? = null
 ) {
-    ConnectorConfigurationRepository.addConfiguration(
-        SlackConnectorProvider.newConfiguration(
-            connectorId,
-            path,
-            outToken1,
-            outToken2,
-            outToken3,
-            applicationName,
-            baseUrl
-        )
-    )
-    BotRepository.registerConnectorProvider(SlackConnectorProvider)
 }
-

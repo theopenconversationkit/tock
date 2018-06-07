@@ -24,6 +24,7 @@ import kotlin.reflect.KClass
 /**
  * Adds a alexa connector.
  */
+@Deprecated("This method is not used anymore and has no effect")
 fun BotDefinition.addAlexaConnector(
     /**
      * The allowed alexa application ids. If empty, all applications are allowed.
@@ -43,14 +44,5 @@ fun BotDefinition.addAlexaConnector(
     alexaTockMapper: KClass<out AlexaTockMapper> = AlexaTockMapper::class
 ) {
 
-    ConnectorConfigurationRepository.addConfiguration(
-        AlexaConnectorProvider.newConfiguration(
-            connectorId,
-            path,
-            nlpModelName,
-            alexaTockMapper,
-            supportedAlexaApplicationIds
-        )
-    )
-    BotRepository.registerConnectorProvider(AlexaConnectorProvider)
+
 }

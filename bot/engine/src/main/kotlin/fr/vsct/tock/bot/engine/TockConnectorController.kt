@@ -36,7 +36,7 @@ import fr.vsct.tock.shared.longProperty
 import io.vertx.ext.web.Router
 import mu.KotlinLogging
 import java.time.Duration
-import java.util.concurrent.CopyOnWriteArraySet
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  *
@@ -72,7 +72,7 @@ internal class TockConnectorController constructor(
 
     val connectorType: ConnectorType get() = connector.connectorType
 
-    private var routers: MutableSet<Router> = CopyOnWriteArraySet<Router>()
+    private var serviceInstallers: MutableList<BotVerticle.ServiceInstaller> = CopyOnWriteArrayList()
 
     override fun handle(event: Event, data: ConnectorData) {
         val callback = data.callback
@@ -146,12 +146,12 @@ internal class TockConnectorController constructor(
         }
     }
 
-    override fun registerServices(rootPath: String, installer: (Router) -> Unit) {
-        verticle.registerServices(rootPath, installer).also { routers.add(it) }
+    override fun registerServices(serviceIdentifier: String, installer: (Router) -> Unit) {
+        verticle.registerServices(serviceIdentifier, installer).also { serviceInstallers.add(it) }
     }
 
     override fun unregisterServices() {
-        routers.forEach { verticle.unregisterRouter(it) }
+        serviceInstallers.forEach { verticle.unregisterServices(it) }
     }
 
     internal fun send(data: ConnectorData, userAction: Action, action: Action, delay: Long = 0) {

@@ -21,74 +21,79 @@ import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.ext.auth.AuthProvider
+import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
+import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  *
  */
 internal class BotVerticle : WebVerticle() {
 
-    private inner class Installer(val router: Router, val installer: (Router) -> Unit) {
+    inner class ServiceInstaller(
+        val serviceId: String,
+        private val installer: (Router) -> Unit,
+        var routes: MutableList<Route> = CopyOnWriteArrayList()
+    ) {
+
         fun install() {
             try {
-                logger.debug("install $installer for $router")
+                logger.debug("install $serviceId")
+                val registeredRoutes = router.routes
                 installer.invoke(router)
+                routes.addAll(router.routes.subtract(registeredRoutes))
             } catch (e: Exception) {
                 logger.error(e)
             }
         }
-    }
 
-    private data class RouterWrapper(val router: Router) : Router by router
-
-    override val logger: KLogger = KotlinLogging.logger {}
-
-    private val handlers: MutableMap<String, Installer> = ConcurrentHashMap()
-    private val secondaryInstallers: MutableList<Installer> = CopyOnWriteArrayList()
-
-    override fun authProvider(): AuthProvider? = defaultAuthProvider()
-
-    fun registerServices(rootPath: String, installer: (Router) -> Unit): Router {
-        return if (!handlers.containsKey(rootPath)) {
-            val router = Router.router(vertx)
-            handlers.put(rootPath, Installer(router, installer))
-            router
-        } else {
-            logger.debug("path $rootPath already registered - skip it for now")
-            val router = RouterWrapper(handlers[rootPath]!!.router)
-            secondaryInstallers.add(Installer(router, installer))
-            router
+        fun uninstall() {
+            routes.forEach { it.remove() }
         }
     }
 
-    fun unregisterRouter(router: Router) {
-        val secondary = secondaryInstallers.find { it.router == router }
-        if (secondary == null) {
-            handlers.entries.firstOrNull { it.value.router == router }
-                ?.also {
-                    val r = it.value.router
-                    if (r == router) {
-                        val s = secondaryInstallers.find {
-                            it.router == router || (it.router as RouterWrapper).router == router
-                        }
-                        logger.debug { "remove installer $it" }
-                        router.clear()
-                        if (s != null) {
-                            s.install()
-                            handlers[it.key] = s
-                        } else {
-                            router.clear()
-                        }
-                        return
-                    }
-                }
+    override val logger: KLogger = KotlinLogging.logger {}
+
+    private val handlers: MutableMap<String, ServiceInstaller> = ConcurrentHashMap()
+    private val secondaryInstallers: MutableSet<ServiceInstaller> = CopyOnWriteArraySet()
+
+    override fun authProvider(): AuthProvider? = defaultAuthProvider()
+
+    fun registerServices(serviceIdentifier: String, installer: (Router) -> Unit): ServiceInstaller {
+        return ServiceInstaller(serviceIdentifier, installer).also {
+            if (!handlers.containsKey(serviceIdentifier)) {
+                handlers[serviceIdentifier] = it
+            } else {
+                logger.debug("service $serviceIdentifier already registered - skip it for now")
+                secondaryInstallers.add(it)
+            }
+        }
+    }
+
+    fun unregisterServices(installer: ServiceInstaller) {
+        if (secondaryInstallers.contains(installer)) {
+            secondaryInstallers.remove(installer)
         } else {
-            secondaryInstallers.remove(secondary)
+            handlers.remove(installer.serviceId)
+                ?.also {
+                    val s = secondaryInstallers.find {
+                        it.serviceId == installer.serviceId
+                    }
+
+                    logger.debug { "remove service ${it.serviceId}" }
+                    it.uninstall()
+                    if (s != null) {
+                        s.install()
+                        secondaryInstallers.remove(s)
+                        handlers[it.serviceId] = s
+                    }
+                    return
+                }
         }
     }
 
