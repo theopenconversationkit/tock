@@ -173,4 +173,15 @@ class BotRepositoryTest : BotEngineTest() {
         BotRepository.installBots(emptyList())
         verify { connector.register(any()) }
     }
+
+    @Test
+    fun `installBots without configuration and connector is ok`() {
+        BotRepository.registerBotProvider(object : BotProvider {
+            override fun botDefinition(): BotDefinition = botDefinition
+        })
+
+        BotRepository.installBots(emptyList())
+
+        verify(exactly = 0) { connector.register(any()) }
+    }
 }

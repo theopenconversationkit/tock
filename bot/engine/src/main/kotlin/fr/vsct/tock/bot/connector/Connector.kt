@@ -35,10 +35,16 @@ interface Connector {
     val connectorType: ConnectorType
 
     /**
-     * Register the connector for the specified controller.
-     * There is usually one controller by application.
+     * Registers the connector for the specified controller.
      */
     fun register(controller: ConnectorController)
+
+    /**
+     * Unregisters the connector.
+     */
+    fun unregister(controller: ConnectorController) {
+        controller.unregisterServices()
+    }
 
     /**
      * Send an event with this connector for the specified delay.
