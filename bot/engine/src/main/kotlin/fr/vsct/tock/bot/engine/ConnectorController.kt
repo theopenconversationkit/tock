@@ -68,6 +68,11 @@ interface ConnectorController {
     fun registerServices(rootPath: String, installer: (Router) -> Unit)
 
     /**
+     * Unregister services when [Connector] is unregistered.
+     */
+    fun unregisterServices()
+
+    /**
      * Returns an error message (technical error).
      */
     fun errorMessage(playerId: PlayerId, applicationId: String, recipientId: PlayerId): Action {

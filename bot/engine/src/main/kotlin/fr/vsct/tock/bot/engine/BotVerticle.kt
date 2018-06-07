@@ -25,23 +25,70 @@ import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
+import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArrayList
 
 /**
  *
  */
 internal class BotVerticle : WebVerticle() {
 
+    private inner class Installer(val router: Router, val installer: (Router) -> Unit) {
+        fun install() {
+            try {
+                logger.debug("install $installer for $router")
+                installer.invoke(router)
+            } catch (e: Exception) {
+                logger.error(e)
+            }
+        }
+    }
+
+    private data class RouterWrapper(val router: Router) : Router by router
+
     override val logger: KLogger = KotlinLogging.logger {}
 
-    private val handlers: MutableMap<String, (Router) -> Unit> = mutableMapOf()
+    private val handlers: MutableMap<String, Installer> = ConcurrentHashMap()
+    private val secondaryInstallers: MutableList<Installer> = CopyOnWriteArrayList()
 
     override fun authProvider(): AuthProvider? = defaultAuthProvider()
 
-    fun registerServices(rootPath: String, installer: (Router) -> Unit) {
-        if (!(handlers as Map<String, (Router) -> Unit>).containsKey(rootPath)) {
-            handlers.put(rootPath, installer)
+    fun registerServices(rootPath: String, installer: (Router) -> Unit): Router {
+        return if (!handlers.containsKey(rootPath)) {
+            val router = Router.router(vertx)
+            handlers.put(rootPath, Installer(router, installer))
+            router
         } else {
-            logger.debug("path $rootPath already registered - skip")
+            logger.debug("path $rootPath already registered - skip it for now")
+            val router = RouterWrapper(handlers[rootPath]!!.router)
+            secondaryInstallers.add(Installer(router, installer))
+            router
+        }
+    }
+
+    fun unregisterRouter(router: Router) {
+        val secondary = secondaryInstallers.find { it.router == router }
+        if (secondary == null) {
+            handlers.entries.firstOrNull { it.value.router == router }
+                ?.also {
+                    val r = it.value.router
+                    if (r == router) {
+                        val s = secondaryInstallers.find {
+                            it.router == router || (it.router as RouterWrapper).router == router
+                        }
+                        logger.debug { "remove installer $it" }
+                        router.clear()
+                        if (s != null) {
+                            s.install()
+                            handlers[it.key] = s
+                        } else {
+                            router.clear()
+                        }
+                        return
+                    }
+                }
+        } else {
+            secondaryInstallers.remove(secondary)
         }
     }
 
@@ -53,11 +100,7 @@ internal class BotVerticle : WebVerticle() {
         initEncryptor()
 
         handlers.forEach {
-            try {
-                it.value.invoke(router)
-            } catch (e: Exception) {
-                logger.error(e)
-            }
+            it.value.install()
         }
     }
 
