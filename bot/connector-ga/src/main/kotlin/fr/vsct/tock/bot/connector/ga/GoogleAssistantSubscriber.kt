@@ -23,6 +23,7 @@ import fr.vsct.tock.bot.engine.ConnectorConfigurationRepository
 /**
  * Adds a google assistant connector.
  */
+@Deprecated("This method is not used anymore and has no effect")
 fun BotDefinition.addGoogleAssistantConnector(
     /**
      * Which are the google actions project ids?
@@ -39,41 +40,5 @@ fun BotDefinition.addGoogleAssistantConnector(
      */
     path: String = "/ga/$connectorId"
 ) {
-    addGoogleAssistantConnector(connectorId, path, nlpModelName, allowedProjectIds)
-}
 
-/**
- * Adds a google assistant connector.
- */
-@Deprecated("use addGoogleAssistantConnector with botDefinition receiver")
-fun addGoogleAssistantConnector(
-    /**
-     * This connector id should be unique for an [applicationName].
-     */
-    connectorId: String = "app",
-    /**
-     * The relative connector path.
-     */
-    path: String = "/ga/$connectorId",
-    /**
-     * Application name has to be different for each google assistant app served by the bot.
-     */
-    applicationName: String = connectorId,
-    /**
-     * Which are the google actions project ids?
-     * If empty, no JWT is verified (so all project are allowed)
-     * see (https://developers.google.com/actions/reference/rest/verify-requests)
-     */
-    allowedProjectIds: Set<String> = emptySet()
-) {
-
-    ConnectorConfigurationRepository.addConfiguration(
-        GAConnectorProvider.newConfiguration(
-            connectorId,
-            path,
-            applicationName,
-            allowedProjectIds
-        )
-    )
-    BotRepository.registerConnectorProvider(GAConnectorProvider)
 }

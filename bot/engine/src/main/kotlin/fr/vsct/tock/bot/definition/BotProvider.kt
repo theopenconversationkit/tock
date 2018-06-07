@@ -27,4 +27,9 @@ interface BotProvider {
      */
     fun botDefinition(): BotDefinition
 
+    /**
+     * The bot unique identifier.
+     */
+    fun botId(): String = botDefinition().botId
+
 }

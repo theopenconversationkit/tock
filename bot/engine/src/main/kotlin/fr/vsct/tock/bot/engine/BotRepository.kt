@@ -19,8 +19,6 @@ package fr.vsct.tock.bot.engine
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
-import fr.vsct.tock.bot.connector.ConnectorBase
-import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
@@ -28,7 +26,6 @@ import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.StoryHandlerListener
 import fr.vsct.tock.bot.engine.config.BotConfigurationSynchronizer
-import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.monitoring.RequestTimer
 import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener
 import fr.vsct.tock.bot.engine.nlp.NlpListener
@@ -38,13 +35,17 @@ import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.provide
 import fr.vsct.tock.shared.tockAppDefaultNamespace
 import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
+import java.time.Duration
+import java.util.ServiceLoader
 import java.util.concurrent.ConcurrentHashMap
+import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  * Advanced bot configuration.
@@ -62,16 +63,8 @@ object BotRepository {
     private val nlpClient: NlpClient get() = injector.provide()
     private val executor: Executor get() = injector.provide()
 
-    internal val connectorProviders: MutableSet<ConnectorProvider> = mutableSetOf(
-        object : ConnectorProvider {
-            override val connectorType: ConnectorType = ConnectorType.none
-            override fun connector(connectorConfiguration: ConnectorConfiguration): Connector =
-                object : ConnectorBase(ConnectorType.none) {
-                    override fun register(controller: ConnectorController) = Unit
-
-                    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) = Unit
-                }
-        }
+    internal val connectorProviders: MutableSet<ConnectorProvider> = CopyOnWriteArraySet(
+        ServiceLoader.load(ConnectorProvider::class.java).map { it }
     )
 
     private val connectorControllerMap: MutableMap<BotApplicationConfiguration, ConnectorController> =
@@ -93,6 +86,8 @@ object BotRepository {
             it.response().setStatusCode(if (nlpClient.healthcheck()) 200 else 500).end()
         }
     }
+
+    private val verticle by lazy { BotVerticle() }
 
     /**
      * Registers a new [ConnectorProvider].
@@ -143,8 +138,6 @@ object BotRepository {
         routerHandlers: List<(Router) -> Unit>,
         adminRestConnectorInstaller: (BotApplicationConfiguration) -> ConnectorConfiguration? = { null }
     ) {
-        val verticle = BotVerticle()
-
         val connectorConfigurations = ConnectorConfigurationRepository.getConfigurations()
 
         //check connector id integrity
@@ -160,7 +153,7 @@ object BotRepository {
 
         //install each bot
         bots.forEach {
-            installBot(verticle, it, connectorConfigurations, adminRestConnectorInstaller)
+            installBot(it, connectorConfigurations, adminRestConnectorInstaller)
         }
 
         //check that nlp applications exist
@@ -186,19 +179,24 @@ object BotRepository {
 
         //deploy verticle
         vertx.deployVerticle(verticle)
+
+        executor.setPeriodic(
+            Duration.ofMillis(longProperty("tock_bot_connector_refresh_initial_delay", 5000)),
+            Duration.ofMillis(longProperty("tock_bot_connector_refresh", 5000))
+        ) {
+            checkBotConfigurations()
+        }
+    }
+
+    private fun findConnectorProvider(connectorType: ConnectorType): ConnectorProvider {
+        return connectorProviders.first { it.connectorType == connectorType }
     }
 
     private fun installBot(
-        verticle: BotVerticle,
         botDefinition: BotDefinition,
         connectorConfigurations: List<ConnectorConfiguration>,
         adminRestConnectorInstaller: (BotApplicationConfiguration) -> ConnectorConfiguration?
     ) {
-
-        fun findConnectorProvider(connectorType: ConnectorType): ConnectorProvider {
-            return connectorProviders.first { it.connectorType == connectorType }
-        }
-
         val bot = Bot(botDefinition)
         val existingBotConfigurations = botConfigurationDAO.getConfigurationsByBotId(botDefinition.botId)
         val allConnectorConfigurations =
@@ -235,9 +233,9 @@ object BotRepository {
                             tockAppDefaultNamespace = bot.botDefinition.namespace
                         }
                         //4 update bot conf
-                        val appConf = saveConfiguration(verticle, connector, conf, bot)
+                        val appConf = saveConfiguration(connector, conf, bot)
 
-                        //5 monitor conf
+                        //5 monitor bot
                         BotConfigurationSynchronizer.monitor(bot)
 
                         //6 generate and install rest connector
@@ -245,7 +243,6 @@ object BotRepository {
                             ?.also {
                                 val restConf = refreshBotConfiguration(it, existingBotConfigurationsMap)
                                 saveConfiguration(
-                                    verticle,
                                     findConnectorProvider(restConf.type).connector(restConf),
                                     restConf,
                                     bot
@@ -260,6 +257,38 @@ object BotRepository {
         }
     }
 
+    private fun checkBotConfigurations() {
+        try {
+            logger.trace { "check configurations" }
+            //clone conf list as we may update connectorControllerMap
+            val existingConfs = ArrayList(connectorControllerMap.keys)
+            botConfigurationDAO.getConfigurations().forEach { c ->
+                if (existingConfs.none { c.equalsWithoutId(it) }) {
+                    val botDefinition = botProviders.find { it.botId() == c.botId }?.botDefinition()
+                    if (botDefinition != null) {
+                        logger.debug { "refresh configuration $c" }
+                        val bot = Bot(botDefinition)
+                        val oldConfiguration = connectorControllerMap.keys.find { it._id == c._id }
+                        if (oldConfiguration != null) {
+                            logger.debug { "uninstall $oldConfiguration" }
+                            connectorControllerMap.remove(oldConfiguration)?.unregisterServices()
+                        }
+                        val conf = ConnectorConfiguration(c)
+                        val connector = findConnectorProvider(conf.type).connector(conf)
+                        TockConnectorController.register(connector, bot, verticle)
+                            .apply {
+                                connectorControllerMap.put(c, this)
+                            }
+                    } else {
+                        logger.debug { "unknown bot ${c.botId} - installation skipped" }
+                    }
+                }
+            }
+        } catch (e: Exception) {
+            logger.error(e)
+        }
+    }
+
     private fun refreshBotConfiguration(
         configuration: ConnectorConfiguration,
         existingBotConfigurations: Map<String, BotApplicationConfiguration>
@@ -269,7 +298,6 @@ object BotRepository {
         } ?: configuration
 
     private fun saveConfiguration(
-        verticle: BotVerticle,
         connector: Connector,
         configuration: ConnectorConfiguration,
         bot: Bot
@@ -289,12 +317,13 @@ object BotRepository {
                 path = configuration.path
             )
 
-            TockConnectorController.register(connector, bot, verticle)
-                .apply {
-                    connectorControllerMap.put(conf, this)
-                }
+            val controller = TockConnectorController.register(connector, bot, verticle)
 
             botConfigurationDAO.updateIfNotManuallyModified(conf)
+                .apply {
+                    connectorControllerMap.put(this, controller)
+                }
         }
     }
+
 }

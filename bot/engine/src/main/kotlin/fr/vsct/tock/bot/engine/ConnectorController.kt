@@ -65,7 +65,7 @@ interface ConnectorController {
     /**
      * Register services at startup.
      */
-    fun registerServices(rootPath: String, installer: (Router) -> Unit)
+    fun registerServices(serviceIdentifier: String, installer: (Router) -> Unit)
 
     /**
      * Unregister services when [Connector] is unregistered.

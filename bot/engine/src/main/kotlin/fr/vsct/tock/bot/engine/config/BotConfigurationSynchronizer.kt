@@ -63,7 +63,7 @@ internal object BotConfigurationSynchronizer {
             val botId = bot.botDefinition.botId
             val last = storyDAO.getLastUpdateTimestamp(botId)
             if (last != null && (lastUpdate == null || last > lastUpdate)) {
-                logger.info { "refresh configured stories for bot $botId" }
+                logger.trace { "refresh configured stories for bot $botId" }
                 bot.botDefinition.updateStories(
                     storyDAO.getStoryDefinitions(bot.botDefinition.botId)
                         .map { ConfiguredStoryDefinition(it) }
