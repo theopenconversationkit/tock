@@ -184,4 +184,33 @@ class BotRepositoryTest : BotEngineTest() {
 
         verify(exactly = 0) { connector.register(any()) }
     }
+
+    @Test
+    fun `install a bot with a configuration with an unknown connector provider does not crash`() {
+        val connectorType = ConnectorType("unknownType")
+        val botId = botDefinition.botId
+        val connector: Connector = mockk(relaxed = true)
+        val botConfs = listOf(
+            BotApplicationConfiguration(
+                connectorType.id,
+                botId,
+                botDefinition.namespace,
+                botDefinition.nlpModelName,
+                connectorType,
+                parameters = mapOf("test" to "test")
+            )
+        )
+        val connectorProvider = object : ConnectorProvider {
+            override val connectorType: ConnectorType = ConnectorType("other")
+            override fun connector(connectorConfiguration: ConnectorConfiguration): Connector = mockk(relaxed = true)
+        }
+        BotRepository.registerConnectorProvider(connectorProvider)
+        BotRepository.registerBotProvider(object : BotProvider {
+            override fun botDefinition(): BotDefinition = botDefinition
+        })
+
+        every { botConfDAO.getConfigurationsByBotId(any()) } returns botConfs
+        BotRepository.installBots(emptyList())
+        verify(exactly = 0) { connector.register(any()) }
+    }
 }
