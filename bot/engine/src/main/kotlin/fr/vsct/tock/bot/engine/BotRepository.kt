@@ -224,9 +224,9 @@ object BotRepository {
                 .toMap()
 
         allConnectorConfigurations.forEach { baseConf ->
-            findConnectorProvider(baseConf.type)
-                .apply {
-                    try {
+            try {
+                findConnectorProvider(baseConf.type)
+                    .apply {
                         //1 refresh connector conf
                         val conf = refreshBotConfiguration(baseConf, existingBotConfigurationsMap)
                         //2 create and install connector
@@ -251,12 +251,12 @@ object BotRepository {
                                     bot
                                 )
                             }
-                    } catch (e: Exception) {
-                        logger.error(e) {
-                            "unable to install connector $baseConf"
-                        }
                     }
+            } catch (e: Exception) {
+                logger.error(e) {
+                    "unable to install connector $baseConf"
                 }
+            }
         }
     }
 
