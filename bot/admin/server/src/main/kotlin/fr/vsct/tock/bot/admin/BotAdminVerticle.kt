@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.admin
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.admin.BotAdminService.getBotConfigurationByApplicationIdAndBotId
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.model.BotConfiguration
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotIntentSearchRequest
@@ -30,6 +31,7 @@ import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanService
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.rest.addRestConnector
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.nlp.admin.AdminVerticle
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
@@ -111,6 +113,24 @@ open class BotAdminVerticle : AdminVerticle() {
                         }
                     }
                 BotAdminService.saveApplicationConfiguration(conf)
+                //add rest connector
+                if(bot._id == null) {
+                    addRestConnector(conf).apply {
+                        BotAdminService.saveApplicationConfiguration(
+                            BotApplicationConfiguration(
+                                connectorId,
+                                conf.botId,
+                                conf.namespace,
+                                conf.nlpModel,
+                                type,
+                                ownerConnectorType,
+                                getName(),
+                                getBaseUrl(),
+                                path = path
+                            )
+                        )
+                    }
+                }
             } else {
                 unauthorized()
             }

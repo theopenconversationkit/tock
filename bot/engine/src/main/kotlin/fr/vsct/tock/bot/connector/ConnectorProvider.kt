@@ -44,7 +44,7 @@ interface ConnectorProvider {
             if(connectorId.isBlank()) {
                 list.add("connector id may not be empty")
             }
-            if(path.isBlank() || !path.trim().startsWith("/")) {
+            if(!path.isBlank() && !path.trim().startsWith("/")) {
                 list.add("path must start with /")
             }
         }

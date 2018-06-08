@@ -58,7 +58,6 @@ fun addRestConnector(
             ownerConnectorType
     )
     ConnectorConfigurationRepository.addConfiguration(configuration)
-    BotRepository.registerConnectorProvider(RestConnectorProvider)
     return configuration
 }
 

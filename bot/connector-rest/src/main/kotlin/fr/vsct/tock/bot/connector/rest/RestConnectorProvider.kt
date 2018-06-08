@@ -50,3 +50,5 @@ internal object RestConnectorProvider : ConnectorProvider {
                 )
 
 }
+
+internal class RestConnectorProviderService : ConnectorProvider by RestConnectorProvider
