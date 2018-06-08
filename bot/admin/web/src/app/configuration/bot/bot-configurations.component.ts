@@ -54,7 +54,7 @@ export class BotConfigurationsComponent implements OnInit {
   }
 
   prepareCreate() {
-    this.newApplicationConfiguration = new BotApplicationConfiguration(
+    const app = new BotApplicationConfiguration(
       this.state.currentApplication.name,
       this.state.currentApplication.name,
       this.state.currentApplication.namespace,
@@ -62,6 +62,8 @@ export class BotConfigurationsComponent implements OnInit {
       new ConnectorType("messenger", UserInterfaceType.textChat),
       this.state.currentApplication.name,
       new Map());
+    app.initConnectorProperties();
+    this.newApplicationConfiguration = app;
   }
 
   cancelCreate() {
