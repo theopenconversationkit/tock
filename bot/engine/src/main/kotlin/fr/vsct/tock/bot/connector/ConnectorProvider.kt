@@ -33,4 +33,22 @@ interface ConnectorProvider {
      */
     fun connector(connectorConfiguration: ConnectorConfiguration): Connector
 
+    /**
+     * Checks the connector configuration.
+     *
+     * @return empty list if there is no error, and a list of errors if this configuration is invalid.
+     */
+    fun check(connectorConfiguration: ConnectorConfiguration): List<String> {
+        val list = mutableListOf<String>()
+        with(connectorConfiguration) {
+            if(connectorId.isBlank()) {
+                list.add("connector id may not be empty")
+            }
+            if(path.isBlank() || !path.trim().startsWith("/")) {
+                list.add("path must start with /")
+            }
+        }
+        return list
+    }
+
 }

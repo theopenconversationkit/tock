@@ -33,6 +33,7 @@ internal object MessengerConnectorProvider : ConnectorProvider {
     private const val SECRET = "secret"
 
     override val connectorType: ConnectorType get() = messengerConnectorType
+
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
             return MessengerConnector(
@@ -40,11 +41,21 @@ internal object MessengerConnectorProvider : ConnectorProvider {
                 path,
                 parameters.getValue(PAGE_ID),
                 parameters.getValue(TOKEN),
-                parameters.get(VERIFY_TOKEN),
+                parameters[VERIFY_TOKEN],
                 MessengerClient(parameters.getValue(SECRET))
             )
         }
     }
+
+    override fun check(connectorConfiguration: ConnectorConfiguration): List<String> =
+        super.check(connectorConfiguration) +
+                with(connectorConfiguration) {
+                    listOfNotNull(
+                        if (parameters[PAGE_ID].isNullOrBlank()) "page id is mandatory" else null,
+                        if (parameters[TOKEN].isNullOrBlank()) "token is mandatory" else null,
+                        if (parameters[SECRET].isNullOrBlank()) "secret is mandatory" else null
+                    )
+                }
 
     /**
      * Create a new messenger connector configuration.

@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.admin.bot
 
+import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.shared.property
 import org.litote.kmongo.Data
@@ -105,6 +106,11 @@ data class BotApplicationConfiguration(
      */
     @Transient
     val targetConnectorType = ownerConnectorType ?: connectorType
+
+    /**
+     * Returns the linked [ConnectorConfiguration].
+     */
+    fun toConnectorConfiguration(): ConnectorConfiguration = ConnectorConfiguration(this)
 
     internal fun equalsWithoutId(conf: BotApplicationConfiguration): Boolean =
         conf.applicationId == applicationId

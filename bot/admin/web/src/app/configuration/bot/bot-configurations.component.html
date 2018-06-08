@@ -21,7 +21,7 @@
       <md-icon>refresh</md-icon>
     </button>
   </md-card-title>
-  <md-card-subtitle>
+  <md-card-subtitle *ngIf="!newApplicationConfiguration">
     <button md-button (click)="prepareCreate()" color="primary">
       <md-icon>add_box</md-icon>
       Create a new Configuration

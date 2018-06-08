@@ -27,8 +27,7 @@
 
   <md-select *ngIf="!configuration._id"
              placeholder="Connector type"
-             [(ngModel)]="configuration.connectorType"
-              (change)="configuration.initConnectorProperties()">
+             [(ngModel)]="configuration.connectorType">
     <md-option *ngFor="let c of connectorTypesAndRestType"
                [value]="c">{{ c.id }}</md-option>
   </md-select>

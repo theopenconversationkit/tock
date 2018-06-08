@@ -29,15 +29,6 @@ export class BotApplicationConfiguration {
               public path?: string) {
   }
 
-  initConnectorProperties() {
-    this.connectorType.getProperties().forEach(
-      p => {
-        if(!this.parameters.get(p)) {
-          this.parameters.set(p, "");
-        }
-      });
-  }
-
   static fromJSON(json?: any): BotApplicationConfiguration {
     const value = Object.create(BotApplicationConfiguration.prototype);
 

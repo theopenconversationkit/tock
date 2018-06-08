@@ -30,7 +30,7 @@ export class BotConfigurationsComponent implements OnInit {
 
   newApplicationConfiguration: BotApplicationConfiguration;
   configurations: BotConfiguration[];
-  displayTestConfigurations:boolean = false;
+  displayTestConfigurations: boolean = false;
 
   constructor(private state: StateService,
               private botConfiguration: BotConfigurationService,
@@ -54,16 +54,14 @@ export class BotConfigurationsComponent implements OnInit {
   }
 
   prepareCreate() {
-    const app = new BotApplicationConfiguration(
+    this.newApplicationConfiguration = new BotApplicationConfiguration(
       this.state.currentApplication.name,
       this.state.currentApplication.name,
       this.state.currentApplication.namespace,
       this.state.currentApplication.name,
       new ConnectorType("messenger", UserInterfaceType.textChat),
       this.state.currentApplication.name,
-      new Map());
-    app.initConnectorProperties();
-    this.newApplicationConfiguration = app;
+      new Map<string, string>());
   }
 
   cancelCreate() {
@@ -76,6 +74,12 @@ export class BotConfigurationsComponent implements OnInit {
   }
 
   create() {
+    //black magic? welcome to the js world! :)
+    const param = this.newApplicationConfiguration.parameters;
+    Object.keys(param).forEach(k => {
+      param.set(k, param[k])
+    });
+
     this.botConfiguration.saveConfiguration(this.newApplicationConfiguration)
       .subscribe(_ => {
         this.botConfiguration.updateConfigurations();

@@ -188,7 +188,10 @@ object BotRepository {
         }
     }
 
-    private fun findConnectorProvider(connectorType: ConnectorType): ConnectorProvider {
+    /**
+     * Returns the [ConnectorProvider] for the specified [ConnectorType].
+     */
+    fun findConnectorProvider(connectorType: ConnectorType): ConnectorProvider {
         return connectorProviders.first { it.connectorType == connectorType }
     }
 
@@ -280,7 +283,7 @@ object BotRepository {
                                 connectorControllerMap.put(c, this)
                             }
                     } else {
-                        logger.debug { "unknown bot ${c.botId} - installation skipped" }
+                        logger.trace { "unknown bot ${c.botId} - installation skipped" }
                     }
                 }
             }
