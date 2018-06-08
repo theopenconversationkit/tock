@@ -41,11 +41,14 @@ import fr.vsct.tock.nlp.model.service.engine.NlpEngineRepository.getModelIo
 import fr.vsct.tock.nlp.model.service.engine.NlpModelRepository
 import fr.vsct.tock.nlp.model.service.engine.NlpModelRepository.saveEntityModel
 import fr.vsct.tock.nlp.model.service.engine.NlpModelRepository.saveIntentModel
+import mu.KotlinLogging
 
 /**
  *
  */
 object NlpClassifierService : NlpClassifier {
+
+    private val logger = KotlinLogging.logger {}
 
     override fun supportedNlpEngineTypes(): Set<NlpEngineType> {
         return NlpEngineRepository.registeredNlpEngineTypes()
@@ -59,47 +62,56 @@ object NlpClassifierService : NlpClassifier {
         return NlpEngineRepository.getIntentClassifier(context).classifyIntent(context, text, tokens)
     }
 
-    override fun classifyIntent(context: IntentContext, modelHolder: ModelHolder, text: String, tokens: Array<String>): IntentClassification {
-        return NlpEngineRepository.getIntentClassifier(context, modelHolder as IntentModelHolder).classifyIntent(context, text, tokens)
+    override fun classifyIntent(
+        context: IntentContext,
+        modelHolder: ModelHolder,
+        text: String,
+        tokens: Array<String>
+    ): IntentClassification {
+        return NlpEngineRepository.getIntentClassifier(context, modelHolder as IntentModelHolder)
+            .classifyIntent(context, text, tokens)
     }
 
     override fun classifyEntities(
-            context: EntityCallContext,
-            text: String,
-            tokens: Array<String>): List<EntityRecognition> {
+        context: EntityCallContext,
+        text: String,
+        tokens: Array<String>
+    ): List<EntityRecognition> {
 
         val entityClassifier = NlpEngineRepository.getEntityClassifier(context)
         return classifyEntities(entityClassifier, context, text, tokens)
     }
 
     override fun classifyEntities(
-            context: EntityCallContext,
-            modelHolder: ModelHolder?,
-            text: String,
-            tokens: Array<String>): List<EntityRecognition> {
+        context: EntityCallContext,
+        modelHolder: ModelHolder?,
+        text: String,
+        tokens: Array<String>
+    ): List<EntityRecognition> {
         val entityClassifier = NlpEngineRepository.getEntityClassifier(context, modelHolder as EntityModelHolder?)
         return classifyEntities(entityClassifier, context, text, tokens)
     }
 
     private fun classifyEntities(
-            entityClassifier: EntityClassifier?,
-            context: EntityCallContext,
-            text: String,
-            tokens: Array<String>): List<EntityRecognition> {
+        entityClassifier: EntityClassifier?,
+        context: EntityCallContext,
+        text: String,
+        tokens: Array<String>
+    ): List<EntityRecognition> {
 
         val result = entityClassifier?.classifyEntities(context, text, tokens) ?: emptyList()
         return result.map { e ->
             if (e.hasSubEntities()) {
                 val entityText = e.textValue(text)
                 val subEntities = classifyEntities(
-                        EntityCallContextForSubEntities(
-                                e.entityType,
-                                context.language,
-                                context.engineType,
-                                context.referenceDate
-                        ),
-                        entityText,
-                        tokenize(TokenizerContext(context), entityText)
+                    EntityCallContextForSubEntities(
+                        e.entityType,
+                        context.language,
+                        context.engineType,
+                        context.referenceDate
+                    ),
+                    entityText,
+                    tokenize(TokenizerContext(context), entityText)
                 )
                 e.copy(value = e.value.copy(subEntities = subEntities))
             } else {
@@ -144,40 +156,52 @@ object NlpClassifierService : NlpClassifier {
     override fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>, entityTypes: List<EntityType>) {
         //remove intents
         NlpModelRepository.removeIntentModelsNotIn(
-                applicationsAndIntents.keys
-                        .flatMap { key ->
-                            key.supportedLocales
-                                    .flatMap { locale ->
-                                        supportedNlpEngineTypes()
-                                                .map { engineType ->
-                                                    IntentContextKey(key.name, locale, engineType)
-                                                }
-                                    }
+            applicationsAndIntents.keys
+                .flatMap { key ->
+                    key.supportedLocales
+                        .flatMap { locale ->
+                            supportedNlpEngineTypes()
+                                .map { engineType ->
+                                    IntentContextKey(key.name, locale, engineType)
+                                }
                         }
+                }
         )
 
         //remove entities
         NlpModelRepository.removeEntityModelsNotIn(
-                applicationsAndIntents.entries
-                        .flatMap { e ->
-                            e.key.supportedLocales
-                                    .flatMap { locale ->
-                                        supportedNlpEngineTypes()
-                                                .flatMap { engineType ->
-                                                    e.value.map { intent ->
-                                                        EntityContextKey(e.key.name, intent.name, locale, engineType)
-                                                    } + entityTypes.map { entityType ->
-                                                        EntityContextKey(
-                                                                null,
-                                                                null,
-                                                                locale,
-                                                                engineType,
-                                                                entityType,
-                                                                true)
-                                                    }
-                                                }
+            applicationsAndIntents.entries
+                .flatMap { e ->
+                    e.key.supportedLocales
+                        .flatMap { locale ->
+                            supportedNlpEngineTypes()
+                                .flatMap { engineType ->
+                                    e.value.map { intent ->
+                                        EntityContextKey(e.key.name, intent.name, locale, engineType)
+                                    } + entityTypes.map { entityType ->
+                                        EntityContextKey(
+                                            null,
+                                            null,
+                                            locale,
+                                            engineType,
+                                            entityType,
+                                            true
+                                        )
                                     }
+                                }
                         }
+                }
         )
     }
+
+    override fun warmupIntentModel(context: IntentContext) {
+        logger.debug { "warmup intent model $context" }
+        NlpEngineRepository.getIntentClassifier(context)
+    }
+
+    override fun warmupEntityModel(context: EntityCallContext) {
+        logger.debug { "warmup entity model $context" }
+        NlpEngineRepository.getEntityClassifier(context)
+    }
+
 }

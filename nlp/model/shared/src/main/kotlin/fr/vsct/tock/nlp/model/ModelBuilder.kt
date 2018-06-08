@@ -22,7 +22,7 @@ import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 
 /**
- *
+ * To manage nlp models.
  */
 interface ModelBuilder {
 
@@ -41,4 +41,14 @@ interface ModelBuilder {
     fun isEntityModelExist(context: EntityBuildContext): Boolean
 
     fun deleteOrphans(applicationsAndIntents: Map<Application, Set<Intent>>, entityTypes: List<EntityType>)
+
+    /**
+     * Stores in memory the model.
+     */
+    fun warmupIntentModel(context: IntentContext)
+
+    /**
+     * Stores in memory the model.
+     */
+    fun warmupEntityModel(context: EntityCallContext)
 }
