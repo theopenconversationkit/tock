@@ -30,6 +30,7 @@ import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanService
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.nlp.admin.AdminVerticle
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 import fr.vsct.tock.shared.injector
@@ -101,7 +102,15 @@ open class BotAdminVerticle : AdminVerticle() {
                         badRequest("Connector identifier already exists")
                     }
                 }
-                BotAdminService.saveApplicationConfiguration(bot.toBotApplicationConfiguration())
+                val conf = bot.toBotApplicationConfiguration()
+                val connectorProvider = BotRepository.findConnectorProvider(conf.connectorType)
+                connectorProvider.check(conf.toConnectorConfiguration())
+                    .apply {
+                        if (isNotEmpty()) {
+                            badRequest(joinToString())
+                        }
+                    }
+                BotAdminService.saveApplicationConfiguration(conf)
             } else {
                 unauthorized()
             }

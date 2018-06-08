@@ -24,9 +24,9 @@ import fr.vsct.tock.bot.jackson.BotEngineJacksonConfiguration
 
 
 /**
- *
+ * The [RestConnector] provider.
  */
-object RestConnectorProvider : ConnectorProvider {
+internal object RestConnectorProvider : ConnectorProvider {
 
     init {
         BotEngineJacksonConfiguration.init()
@@ -36,8 +36,17 @@ object RestConnectorProvider : ConnectorProvider {
 
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         return RestConnector(
-                connectorConfiguration.connectorId,
-                connectorConfiguration.path
+            connectorConfiguration.connectorId,
+            connectorConfiguration.path
         )
     }
+
+    override fun check(connectorConfiguration: ConnectorConfiguration): List<String> =
+        super.check(connectorConfiguration) +
+                listOfNotNull(
+                    if (connectorConfiguration.ownerConnectorType == null)
+                        "rest connector must have an owner connector type"
+                    else null
+                )
+
 }

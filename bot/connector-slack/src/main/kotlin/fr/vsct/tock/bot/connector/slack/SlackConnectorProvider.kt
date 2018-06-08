@@ -30,37 +30,42 @@ internal object SlackConnectorProvider : ConnectorProvider {
 
     override val connectorType: ConnectorType get() = slackConnectorType
 
-
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
             return SlackConnector(
-                    connectorId,
-                    path,
-                    "#bot",
-                    parameters.getValue(OUT_TOKEN_1),
-                    parameters.getValue(OUT_TOKEN_2),
-                    parameters.getValue(OUT_TOKEN_3),
-                    SlackClient)
+                connectorId,
+                path,
+                "#bot",
+                parameters.getValue(OUT_TOKEN_1),
+                parameters.getValue(OUT_TOKEN_2),
+                parameters.getValue(OUT_TOKEN_3),
+                SlackClient
+            )
         }
     }
 
-    fun newConfiguration(applicationId: String,
-                         path: String,
-                         outToken1: String,
-                         outToken2: String,
-                         outToken3: String,
-                         name: String = applicationId,
-                         baseUrl: String? = null): ConnectorConfiguration {
+    fun newConfiguration(
+        applicationId: String,
+        path: String,
+        outToken1: String,
+        outToken2: String,
+        outToken3: String,
+        name: String = applicationId,
+        baseUrl: String? = null
+    ): ConnectorConfiguration {
         return ConnectorConfiguration(
-                applicationId,
-                path,
-                connectorType,
-                name,
-                baseUrl,
-                null,
-                mapNotNullValues(OUT_TOKEN_1 to outToken1,
-                        OUT_TOKEN_2 to outToken2,
-                        OUT_TOKEN_3 to outToken3))
+            applicationId,
+            path,
+            connectorType,
+            name,
+            baseUrl,
+            null,
+            mapNotNullValues(
+                OUT_TOKEN_1 to outToken1,
+                OUT_TOKEN_2 to outToken2,
+                OUT_TOKEN_3 to outToken3
+            )
+        )
     }
 
 }
