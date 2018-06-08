@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-
 export class BotApplicationConfiguration {
 
   constructor(public applicationId: string,
@@ -28,6 +27,15 @@ export class BotApplicationConfiguration {
               public _id?: string,
               public ownerConnectorType?: ConnectorType,
               public path?: string) {
+  }
+
+  initConnectorProperties() {
+    this.connectorType.getProperties().forEach(
+      p => {
+        if(!this.parameters.get(p)) {
+          this.parameters.set(p, "");
+        }
+      });
   }
 
   static fromJSON(json?: any): BotApplicationConfiguration {
@@ -50,6 +58,22 @@ export class ConnectorType {
 
   constructor(public id: string,
               public userInterfaceType: UserInterfaceType) {
+  }
+
+  getProperties() : string[] {
+    if(this.isMessenger()) {
+      return ['pageId','token','verifyToken','secret'];
+    } else if(this.isGa()) {
+      return ['_project_ids'];
+    }  else if(this.isAlexa()) {
+      return ['_project_ids','_project_timestamp','_mapper'];
+    } else if(this.isSlack()) {
+      return ['outToken1', 'outToken2','outToken3'];
+    } else if(this.isRest()) {
+      return [];
+    } else {
+      return [];
+    }
   }
 
   isRest(): boolean {
