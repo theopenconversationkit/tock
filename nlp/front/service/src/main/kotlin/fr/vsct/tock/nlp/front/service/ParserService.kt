@@ -16,11 +16,13 @@
 
 package fr.vsct.tock.nlp.front.service
 
+import fr.vsct.tock.nlp.core.BuildContext
 import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityEvaluationContext
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
+import fr.vsct.tock.nlp.core.ModelCore
 import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
 import fr.vsct.tock.nlp.front.service.selector.IntentSelectorService
@@ -47,6 +49,7 @@ import fr.vsct.tock.nlp.front.shared.value.ValueTransformer
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.namespace
@@ -72,8 +75,29 @@ object ParserService : Parser {
     private val executor: Executor get() = injector.provide()
     private val logDAO: ParseRequestLogDAO get() = injector.provide()
     private val core: NlpCore get() = injector.provide()
+    private val modelCore: ModelCore get() = injector.provide()
 
     private val config: ApplicationConfiguration get() = injector.provide()
+
+    private val started: Boolean
+
+    init {
+        started = if (booleanProperty("tock_nlp_model_fill_cache", false)) {
+            try {
+                config.getApplications()
+                    .forEach { app ->
+                        app.supportedLocales.forEach { locale ->
+                            modelCore.warmupModels(BuildContext(toApplication(app), locale, app.nlpEngineType))
+                        }
+                    }
+            } catch (e: Exception) {
+                logger.error(e)
+            }
+            false
+        } else {
+            true
+        }
+    }
 
     private data class CallMetadata(
         val application: ApplicationDefinition,
@@ -351,6 +375,6 @@ object ParserService : Parser {
                 ?: throw UnknownApplicationException(namespace, applicationName)
 
     override fun healthcheck(): Boolean {
-        return core.healthcheck()
+        return started && core.healthcheck()
     }
 }

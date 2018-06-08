@@ -19,6 +19,7 @@ package fr.vsct.tock.nlp.core.service
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.Application
 import fr.vsct.tock.nlp.core.BuildContext
+import fr.vsct.tock.nlp.core.CallContext
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.Intent
@@ -32,6 +33,7 @@ import fr.vsct.tock.nlp.core.sample.SampleExpression
 import fr.vsct.tock.nlp.model.EntityBuildContext
 import fr.vsct.tock.nlp.model.EntityBuildContextForIntent
 import fr.vsct.tock.nlp.model.EntityBuildContextForSubEntities
+import fr.vsct.tock.nlp.model.EntityCallContextForIntent
 import fr.vsct.tock.nlp.model.IntentContext
 import fr.vsct.tock.nlp.model.NlpClassifier
 import fr.vsct.tock.shared.error
@@ -50,6 +52,22 @@ object ModelCoreService : ModelCore {
 
     private val nlpClassifier: NlpClassifier by injector.instance()
 
+    override fun warmupModels(context: BuildContext) {
+        nlpClassifier.warmupIntentModel(IntentContext(context))
+        context
+            .application
+            .intents
+            .filter { it.entities.isNotEmpty() }
+            .forEach {
+                nlpClassifier.warmupEntityModel(
+                    EntityCallContextForIntent(
+                        CallContext(context.application, context.language, context.engineType),
+                        it
+                    )
+                )
+            }
+    }
+
     override fun updateIntentModel(context: BuildContext, expressions: List<SampleExpression>) {
         val nlpContext = IntentContext(context)
         if (!context.onlyIfNotExists || !nlpClassifier.isIntentModelExist(nlpContext)) {
@@ -57,19 +75,32 @@ object ModelCoreService : ModelCore {
         }
     }
 
-    override fun updateEntityModelForIntent(context: BuildContext, intent: Intent, expressions: List<SampleExpression>) {
+    override fun updateEntityModelForIntent(
+        context: BuildContext,
+        intent: Intent,
+        expressions: List<SampleExpression>
+    ) {
         val nlpContext = EntityBuildContextForIntent(context, intent)
         updateEntityModel(context, nlpContext, expressions)
     }
 
-    override fun updateEntityModelForEntityType(context: BuildContext, entityType: EntityType, expressions: List<SampleExpression>) {
+    override fun updateEntityModelForEntityType(
+        context: BuildContext,
+        entityType: EntityType,
+        expressions: List<SampleExpression>
+    ) {
         val nlpContext = EntityBuildContextForSubEntities(context, entityType)
         updateEntityModel(context, nlpContext, expressions)
     }
 
-    private fun updateEntityModel(context: BuildContext, nlpContext: EntityBuildContext, expressions: List<SampleExpression>) {
+    private fun updateEntityModel(
+        context: BuildContext,
+        nlpContext: EntityBuildContext,
+        expressions: List<SampleExpression>
+    ) {
         if (!context.onlyIfNotExists
-                || !nlpClassifier.isEntityModelExist(nlpContext)) {
+            || !nlpClassifier.isEntityModelExist(nlpContext)
+        ) {
             nlpClassifier.buildAndSaveEntityModel(nlpContext, expressions)
         }
     }
@@ -93,20 +124,21 @@ object ModelCoreService : ModelCore {
         val intentContext = IntentContext(context)
         val intentModel = nlpClassifier.buildIntentModel(intentContext, modelExpressions)
         val entityModels = modelExpressions
-                .groupBy { it.intent }
-                .mapNotNull { (intent, expressions)
-                    ->
-                    try {
-                        intent to nlpClassifier.buildEntityModel(
-                                EntityBuildContextForIntent(context, intent),
-                                expressions)
-                    } catch (e: Exception) {
-                        logger.error { "entity model build fail for $intent " }
-                        logger.error(e)
-                        null
-                    }
+            .groupBy { it.intent }
+            .mapNotNull { (intent, expressions)
+                ->
+                try {
+                    intent to nlpClassifier.buildEntityModel(
+                        EntityBuildContextForIntent(context, intent),
+                        expressions
+                    )
+                } catch (e: Exception) {
+                    logger.error { "entity model build fail for $intent " }
+                    logger.error(e)
+                    null
                 }
-                .toMap()
+            }
+            .toMap()
 
         val buildDuration = Duration.between(startDate, Instant.now())
 
@@ -115,10 +147,10 @@ object ModelCoreService : ModelCore {
 
         testedExpressions.forEach {
             val parseResult = NlpCoreService.parse(
-                    context,
-                    it.text,
-                    intentModel,
-                    entityModels
+                context,
+                it.text,
+                intentModel,
+                entityModels
             )
             if (parseResult.intent != it.intent.name) {
                 intentErrors.add(IntentMatchError(it, parseResult.intent, parseResult.intentProbability))
@@ -130,20 +162,33 @@ object ModelCoreService : ModelCore {
         val testDuration = Duration.between(startDate.plus(buildDuration), Instant.now())
 
         return TestModelReport(
-                expressions,
-                testedExpressions,
-                intentErrors,
-                entityErrors,
-                buildDuration,
-                testDuration,
-                startDate
+            expressions,
+            testedExpressions,
+            intentErrors,
+            entityErrors,
+            buildDuration,
+            testDuration,
+            startDate
         )
     }
 
     private fun hasNotSameEntities(
-            expectedEntities: List<SampleEntity>,
-            entities: List<EntityRecognition>): Boolean {
-        return expectedEntities.any { e -> entities.none { it.role == e.definition.role && it.entityType == e.definition.entityType && it.isSameRange(e) } }
-                || entities.any { expectedEntities.none { e -> it.role == e.definition.role && it.entityType == e.definition.entityType && it.isSameRange(e) } }
+        expectedEntities: List<SampleEntity>,
+        entities: List<EntityRecognition>
+    ): Boolean {
+        return expectedEntities.any { e ->
+            entities.none {
+                it.role == e.definition.role && it.entityType == e.definition.entityType && it.isSameRange(
+                    e
+                )
+            }
+        }
+                || entities.any {
+            expectedEntities.none { e ->
+                it.role == e.definition.role && it.entityType == e.definition.entityType && it.isSameRange(
+                    e
+                )
+            }
+        }
     }
 }

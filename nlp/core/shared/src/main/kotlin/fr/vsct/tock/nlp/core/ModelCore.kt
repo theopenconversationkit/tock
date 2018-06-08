@@ -26,24 +26,35 @@ import fr.vsct.tock.nlp.core.sample.SampleExpression
 interface ModelCore {
 
     /**
+     * Load all models in memory.
+     */
+    fun warmupModels(context: BuildContext)
+
+    /**
      * Update intent model.
      */
-    fun updateIntentModel(context: BuildContext,
-                          expressions: List<SampleExpression>)
+    fun updateIntentModel(
+        context: BuildContext,
+        expressions: List<SampleExpression>
+    )
 
     /**
      * Update entity model.
      */
-    fun updateEntityModelForIntent(context: BuildContext,
-                                   intent: Intent,
-                                   expressions: List<SampleExpression>)
+    fun updateEntityModelForIntent(
+        context: BuildContext,
+        intent: Intent,
+        expressions: List<SampleExpression>
+    )
 
     /**
      * Update entity type model.
      */
-    fun updateEntityModelForEntityType(context: BuildContext,
-                                       entityType: EntityType,
-                                       expressions: List<SampleExpression>)
+    fun updateEntityModelForEntityType(
+        context: BuildContext,
+        entityType: EntityType,
+        expressions: List<SampleExpression>
+    )
 
     /**
      * Remove models that does not match specified applications or intents.
@@ -55,7 +66,8 @@ interface ModelCore {
      * Test a model and returns a report.
      */
     fun testModel(
-            context: TestContext,
-            expressions: List<SampleExpression>): TestModelReport
+        context: TestContext,
+        expressions: List<SampleExpression>
+    ): TestModelReport
 
 }
