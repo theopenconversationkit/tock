@@ -92,7 +92,7 @@ object BotRepository {
     /**
      * Registers a new [ConnectorProvider].
      */
-    fun registerConnectorProvider(connectorProvider: ConnectorProvider) {
+    internal fun registerConnectorProvider(connectorProvider: ConnectorProvider) {
         connectorProviders.add(connectorProvider)
     }
 
