@@ -79,10 +79,8 @@ object ParserService : Parser {
 
     private val config: ApplicationConfiguration get() = injector.provide()
 
-    private val started: Boolean
-
     init {
-        started = if (booleanProperty("tock_nlp_model_fill_cache", false)) {
+        if (booleanProperty("tock_nlp_model_fill_cache", false)) {
             try {
                 config.getApplications()
                     .forEach { app ->
@@ -93,9 +91,6 @@ object ParserService : Parser {
             } catch (e: Exception) {
                 logger.error(e)
             }
-            false
-        } else {
-            true
         }
     }
 
@@ -375,6 +370,6 @@ object ParserService : Parser {
                 ?: throw UnknownApplicationException(namespace, applicationName)
 
     override fun healthcheck(): Boolean {
-        return started && core.healthcheck()
+        return core.healthcheck()
     }
 }

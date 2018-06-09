@@ -39,14 +39,14 @@
 
         <kodein>4.1.0</kodein>
         <kmongo>3.7.0</kmongo>
-        <fongo>2.2.0-RC1</fongo>
+        <fongo>2.2.0-RC2</fongo>
         <jackson>2.9.3</jackson>
         <jackson-module>2.9.3</jackson-module>
-        <klaxon>3.0.2</klaxon>
-        <vertx>3.5.1</vertx>
+        <klaxon>3.0.5</klaxon>
+        <vertx>3.5.2</vertx>
         <retrofit>2.4.0</retrofit>
         <okhttp>3.10.0</okhttp>
-        <guava>25.0-jre</guava>
+        <guava>25.1-jre</guava>
         <google-auth>1.23.0</google-auth>
         <jasypt>1.9.2</jasypt>
         <commons-csv>1.5</commons-csv>
@@ -54,16 +54,16 @@
         <commons-codec>1.11</commons-codec>
         <commons-lang>3.7</commons-lang>
 
-        <junit-platform>1.1.1</junit-platform>
+        <junit-platform>1.2.0</junit-platform>
         <junit-jupiter>5.2.0</junit-jupiter>
-        <mockk>1.7.17</mockk>
+        <mockk>1.8.3</mockk>
 
-        <plugin.surefire>2.19.1</plugin.surefire>
+        <plugin.surefire>2.21.0</plugin.surefire>
         <plugin.source>3.0.1</plugin.source>
         <plugin.release>2.5.3</plugin.release>
         <plugin.gpg>1.6</plugin.gpg>
         <plugin.nexus-staging>1.6.8</plugin.nexus-staging>
-        <plugin.dokka>0.9.16</plugin.dokka>
+        <plugin.dokka>0.9.17</plugin.dokka>
         <plugin.assembly>3.1.0</plugin.assembly>
         <plugin.frontend>1.6</plugin.frontend>
         <plugin.clean>3.1.0</plugin.clean>
