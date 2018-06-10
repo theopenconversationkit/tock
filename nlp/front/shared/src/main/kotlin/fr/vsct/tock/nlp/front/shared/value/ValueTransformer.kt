@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.shared.value
 
 import fr.vsct.tock.nlp.entity.CustomValueWrapper
+import fr.vsct.tock.nlp.entity.StringValue
 import fr.vsct.tock.nlp.entity.Value
 
 /**
@@ -27,6 +28,7 @@ object ValueTransformer {
     fun wrapValue(value: Any): Value {
         return when (value) {
             is Value -> value
+            is String -> StringValue(value)
             else -> CustomValueWrapper(value)
         }
     }

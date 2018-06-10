@@ -35,11 +35,11 @@ data class EntityTypeDefinition(
      */
     val description: String = "",
     /**
-     * The sub entites of this entity.
+     * The sub entities of this entity.
      */
     val subEntities: List<EntityDefinition> = emptyList(),
     /**
-     * The entity predefined values.
+     * The entity predefined values (if any).
      */
     val predefinedValues: List<PredefinedValue> = emptyList(),
     /**

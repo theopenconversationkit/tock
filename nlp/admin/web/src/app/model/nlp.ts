@@ -83,7 +83,8 @@ export class UpdateEntityDefinitionQuery extends ApplicationScopedQuery {
 export class PredefinedValueQuery {
 
   constructor(public entityTypeName: string,
-              public predefinedValue: string) {
+              public predefinedValue: string,
+              public oldPredefinedValue?:string) {
   }
 
 }

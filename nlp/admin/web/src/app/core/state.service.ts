@@ -220,10 +220,11 @@ export class StateService implements AuthListener {
     );
   }
 
-  createPredefinedValueQuery(entityTypeName: string, predefinedValue: string): PredefinedValueQuery {
+  createPredefinedValueQuery(entityTypeName: string, predefinedValue: string, oldPredefinedValue?:string): PredefinedValueQuery {
     return new PredefinedValueQuery(
       entityTypeName,
-      predefinedValue
+      predefinedValue,
+      oldPredefinedValue
     );
   }
 

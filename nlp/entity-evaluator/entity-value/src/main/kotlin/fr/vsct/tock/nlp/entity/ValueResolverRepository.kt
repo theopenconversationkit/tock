@@ -35,21 +35,22 @@ object ValueResolverRepository {
 
     init {
         listOf(
-                DateEntityValue::class,
-                DateIntervalEntityValue::class,
-                NumberValue::class,
-                OrdinalValue::class,
-                DistanceValue::class,
-                TemperatureValue::class,
-                VolumeValue::class,
-                AmountOfMoneyValue::class,
-                EmailValue::class,
-                UrlValue::class,
-                PhoneNumberValue::class,
-                CustomValueWrapper::class,
-                UnknownValue::class
+            DateEntityValue::class,
+            DateIntervalEntityValue::class,
+            NumberValue::class,
+            OrdinalValue::class,
+            DistanceValue::class,
+            TemperatureValue::class,
+            VolumeValue::class,
+            AmountOfMoneyValue::class,
+            EmailValue::class,
+            UrlValue::class,
+            PhoneNumberValue::class,
+            CustomValueWrapper::class,
+            UnknownValue::class,
+            StringValue::class
         )
-                .forEach { registerType(it) }
+            .forEach { registerType(it) }
     }
 
     /**
@@ -60,12 +61,12 @@ object ValueResolverRepository {
      */
     fun <T : Value> registerType(kClass: KClass<T>) {
         kClass.simpleName!!
-                .replace("Value", "")
-                .decapitalize()
-                .apply {
-                    idClassMap.put(this, kClass)
-                    classIdMap.put(kClass, this)
-                }
+            .replace("Value", "")
+            .decapitalize()
+            .apply {
+                idClassMap.put(this, kClass)
+                classIdMap.put(kClass, this)
+            }
     }
 
     internal fun getType(id: String): KClass<out Value> {
@@ -75,12 +76,13 @@ object ValueResolverRepository {
         } catch (e: ClassNotFoundException) {
             val className = ValueResolverRepository::class.qualifiedName
             Logger.getLogger(className).logrb(
-                    Level.FINE,
-                    className,
-                    className,
-                    null as ResourceBundle?,
-                    "${e.message}: Please call ValueResolverRepository#registerType during app initialization for value of type $id",
-                    e)
+                Level.FINE,
+                className,
+                className,
+                null as ResourceBundle?,
+                "${e.message}: Please call ValueResolverRepository#registerType during app initialization for value of type $id",
+                e
+            )
 
             UnknownValue::class
         }

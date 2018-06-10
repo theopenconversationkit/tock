@@ -17,7 +17,7 @@
 package fr.vsct.tock.nlp.core
 
 /**
- *
+ * A type of entity.
  */
 data class EntityType(
     /**
@@ -25,11 +25,11 @@ data class EntityType(
      */
     val name: String,
     /**
-     * The sub entites of this entity.
+     * The sub entities of this entity.
      */
     val subEntities: List<Entity> = emptyList(),
     /**
-     * The entity predefined values.
+     * The entity predefined values if any.
      */
     val predefinedValues: List<PredefinedValue> = emptyList()
 ) {

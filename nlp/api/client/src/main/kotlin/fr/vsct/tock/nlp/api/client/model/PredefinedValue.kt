@@ -16,11 +16,12 @@
 
 package fr.vsct.tock.nlp.api.client.model
 
+import java.util.Locale
+
 /**
- * An entity type, with optional sub entities and predefined values.
+ * Used to deal with entities with predefined values list.
  */
-data class EntityType(
-    val name: String,
-    val subEntities: List<Entity> = emptyList(),
-    val predefinedValues: List<PredefinedValue> = emptyList()
+data class PredefinedValue(
+    val value: String,
+    val synonyms: Map<Locale, List<String>> = emptyMap()
 )

@@ -13,9 +13,10 @@ object PredefinedValuesEntityEvaluator : EntityEvaluator/*, EntityTypeClassifier
 
         val predefinedValues = localizedPredefinedValues(context)
 
-        val predefinedValue = predefinedValueOfSynonym(context.language, predefinedValues, text)
+        val predefinedValue =
+            predefinedValueOfSynonym(context.language, predefinedValues, text)?.value
 
-        return EvaluationResult(true, predefinedValue?.value, 1.0)
+        return EvaluationResult(true, predefinedValue, if (predefinedValue == null) 0.5 else 1.0)
     }
 
     private fun localizedPredefinedValues(context: EntityCallContextForEntity): Map<PredefinedValue, List<String>?> {

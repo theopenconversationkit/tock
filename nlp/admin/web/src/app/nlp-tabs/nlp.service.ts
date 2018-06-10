@@ -122,20 +122,20 @@ export class NlpService implements OnDestroy {
     return this.rest.post(`/sentences/dump/${full ? 'full/' : ''}${application._id}`, query, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
-  createPredefinedValue(query: PredefinedValueQuery): Observable<EntityType> {
+  createOrUpdatePredefinedValue(query: PredefinedValueQuery): Observable<EntityType> {
     return this.rest.post(`/entity-types/predefined-values`, query, EntityType.fromJSON)
   }
 
   deletePredefinedValue(query: PredefinedValueQuery): Observable<boolean> {
-    return this.rest.put(`/entity-types/predefined-values`, query)
+    return this.rest.delete(`/entity-types/predefined-values/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}`)
   }
 
   createSynonym(query: PredefinedSynonymQuery): Observable<EntityType> {
-    return this.rest.post(`/entity-type/predefined-value//synonyms`, query, EntityType.fromJSON)
+    return this.rest.post(`/entity-type/predefined-value/synonyms`, query, EntityType.fromJSON)
   }
 
   deleteSynonym(query: PredefinedSynonymQuery): Observable<boolean> {
-    return this.rest.put(`/entity-type/predefined-value/synonyms`, query)
+    return this.rest.delete(`/entity-type/predefined-value/synonyms/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}/${encodeURIComponent(query.locale)}/${encodeURIComponent(query.synonym)}`)
   }
 
 }

@@ -39,7 +39,6 @@ import fr.vsct.tock.shared.provide
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
-import java.util.Locale
 
 val applicationDAO: ApplicationDefinitionDAO by injector.instance()
 val entityTypeDAO: EntityTypeDefinitionDAO by injector.instance()
@@ -239,7 +238,8 @@ object ApplicationConfigurationService :
         }
 
         //1 create entities where there are not present in the intents
-        val intents = sentences.map { it.classification.intentId }.distinct().filter { it.toString() != UNKNOWN_INTENT_NAME }
+        val intents =
+            sentences.map { it.classification.intentId }.distinct().filter { it.toString() != UNKNOWN_INTENT_NAME }
         intents.forEach {
             val intent = getIntentById(it)
             if (intent != null) {
@@ -269,83 +269,6 @@ object ApplicationConfigurationService :
                         )
                     )
                 }
-        }
-    }
-
-    override fun deletePredefinedValueByName(entityTypeName: String, predefinedValue: String) {
-
-        val entityType = entityTypeDAO.getEntityTypeByName(entityTypeName)
-            ?.run {
-
-                // Find the predefined value to remove
-                val pvToRemove = predefinedValues
-                    .find { pv -> pv.value.toLowerCase() == predefinedValue.toLowerCase() }
-
-                // TODO remove only for current locale
-                // Remove the predefined value
-                val copy = predefinedValues.toMutableList()
-                if (pvToRemove != null) {
-                    copy.remove(pvToRemove)
-                }
-
-                copy(
-                    name,
-                    description,
-                    subEntities,
-                    copy)
-
-            }
-
-
-        return entityTypeDAO.save(entityType!!).apply {
-            FrontRepository.clearEntityTypesCache()
-        }
-    }
-
-    override fun deletePredefinedValueSynonymByName(entityTypeName: String, predefinedValue: String, locale: String, synonym: String) {
-
-        val entityType = entityTypeDAO.getEntityTypeByName(entityTypeName)
-            ?.run {
-
-                // Find the predefined value to remove
-                val pvToReplace = predefinedValues
-                    .find { pv -> pv.value.toLowerCase() == predefinedValue.toLowerCase() }
-                    ?.run {
-
-                        val newSynonymMap = synonyms.toMutableMap()
-
-                        val localizedSynonyms = newSynonymMap.get(Locale.forLanguageTag(locale))
-                        if (localizedSynonyms != null) {
-                            val l = localizedSynonyms.toMutableList()
-                            l.remove(synonym)
-                            newSynonymMap.put(Locale.forLanguageTag(locale), l)
-                        }
-
-                        copy(value, newSynonymMap)
-
-                    }
-
-
-                // TODO remove only for current locale
-                // Remove the predefined value
-                val copy = predefinedValues.toMutableList()
-                if (pvToReplace != null) {
-                    copy.remove(predefinedValues
-                        .find { pv -> pv.value.toLowerCase() == predefinedValue.toLowerCase() })
-                    copy.add(pvToReplace)
-                }
-
-                copy(
-                    name,
-                    description,
-                    subEntities,
-                    copy)
-
-            }
-
-
-        return entityTypeDAO.save(entityType!!).apply {
-            FrontRepository.clearEntityTypesCache()
         }
     }
 

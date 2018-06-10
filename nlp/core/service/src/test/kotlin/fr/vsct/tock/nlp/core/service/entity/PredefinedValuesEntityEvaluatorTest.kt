@@ -46,7 +46,7 @@ class PredefinedValuesEntityEvaluatorTest {
         val evaluationResult = PredefinedValuesEntityEvaluator.evaluate(context, "Week")
 
         assertTrue { evaluationResult.evaluated }
-        assertTrue { evaluationResult.probability == 1.0 }
+        assertTrue { evaluationResult.probability == 0.5 }
         assertTrue { evaluationResult.value == null }
 
     }
@@ -57,7 +57,7 @@ class PredefinedValuesEntityEvaluatorTest {
         val evaluationResult = PredefinedValuesEntityEvaluator.evaluate(context, "Quotidienne")
 
         assertTrue { evaluationResult.evaluated }
-        assertTrue { evaluationResult.probability == 1.0 }
+        assertTrue { evaluationResult.probability == 0.5 }
         assertTrue { evaluationResult.value == null }
 
     }

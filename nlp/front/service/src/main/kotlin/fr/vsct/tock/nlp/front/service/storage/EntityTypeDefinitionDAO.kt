@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.service.storage
 
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
+import java.util.Locale
 
 /**
  *
@@ -30,4 +31,8 @@ interface EntityTypeDefinitionDAO {
     fun getEntityTypes(): List<EntityTypeDefinition>
 
     fun deleteEntityTypeByName(name: String) : Boolean
+
+    fun deletePredefinedValueByName(entityTypeName: String, predefinedValue: String)
+
+    fun deletePredefinedValueSynonymByName(entityTypeName: String, predefinedValue: String, locale: Locale, synonym: String)
 }

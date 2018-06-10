@@ -62,6 +62,7 @@ import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 import java.io.File
+import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -509,7 +510,10 @@ abstract class WebVerticle : AbstractVerticle() {
         this.response().endJson(result)
     }
 
-    fun <T> RoutingContext.pathId(name: String): Id<T> = pathParam(name).toId()
+    fun RoutingContext.path(name: String): String =
+        pathParam(name)!!.let { URLDecoder.decode(it, StandardCharsets.UTF_8.name()) }
+
+    fun <T> RoutingContext.pathId(name: String): Id<T> = path(name).toId()
 
     fun RoutingContext.firstQueryParam(name: String): String? = request().getParam(name)
 

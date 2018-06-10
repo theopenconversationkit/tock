@@ -14,13 +14,9 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.api.client.model
+package fr.vsct.tock.nlp.entity
 
 /**
- * An entity type, with optional sub entities and predefined values.
+ * A value that contains a String.
  */
-data class EntityType(
-    val name: String,
-    val subEntities: List<Entity> = emptyList(),
-    val predefinedValues: List<PredefinedValue> = emptyList()
-)
+data class StringValue(val value: String) : Value
