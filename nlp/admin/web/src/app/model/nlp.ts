@@ -80,11 +80,31 @@ export class UpdateEntityDefinitionQuery extends ApplicationScopedQuery {
   }
 }
 
+export class PredefinedValueQuery {
+
+  constructor(public entityTypeName: string,
+              public predefinedValue: string,
+              public oldPredefinedValue?:string) {
+  }
+
+}
+
+export class PredefinedSynonymQuery {
+
+  constructor(public entityTypeName: string,
+              public predefinedValue: string,
+              public locale: string,
+              public synonym: string) {
+  }
+
+}
+
 export class EntityType {
 
   constructor(public name: string,
               public description: string,
-              public subEntities: EntityDefinition[]) {
+              public subEntities: EntityDefinition[],
+              public predefinedValues?: PredefinedValue[]) {
   }
 
   qualifiedName(user: User): string {
@@ -125,7 +145,8 @@ export class EntityType {
     const value = Object.create(EntityType.prototype);
 
     const result = Object.assign(value, json, {
-      subEntities: EntityDefinition.fromJSONArray(json.subEntities)
+      subEntities: EntityDefinition.fromJSONArray(json.subEntities),
+      predefinedValues : PredefinedValue.fromJSONArray(json.predefinedValues)
     });
 
     return result;
@@ -928,6 +949,32 @@ export class UpdateSentencesReport {
 
     return result;
   }
+}
+
+export class PredefinedValue {
+
+  constructor(public value: string,
+              public synonyms: Map<string, string[]>) {
+  }
+
+  static fromJSON(json?: any): PredefinedValue {
+    if(!json) {
+      return null;
+    }
+
+    const value = Object.create(PredefinedValue.prototype);
+
+    const result = Object.assign(value, json, {
+      synonyms: JsonUtils.jsonToMap(json.synonyms)
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): PredefinedValue[] {
+    return json ? json.map(PredefinedValue.fromJSON) : [];
+  }
+
 }
 
 function hashCode(str: string): number {

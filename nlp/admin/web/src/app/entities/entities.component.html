@@ -26,16 +26,68 @@
 <md-card class="entities">
   <md-card-content>
     <md-card-title>All Entity Types</md-card-title>
-    <md-list>
       <md-chip-list>
         <md-chip *ngFor="let e of state.entityTypes | async"
-                 color="primary"
+                 color="accent"
                  [removable]="e.namespace() === state.currentApplication.namespace"
-                 (remove)="deleteEntityType(e)">
+                 (remove)="deleteEntityType(e)"
+                 (click)="selectEntityType(e)"
+                 [selected]="e === selectedEntityType"
+                 [selectable]="e.namespace() === state.currentApplication.namespace">
           {{e.name}}
-          <md-icon *ngIf="e.namespace() === state.currentApplication.namespace" mdChipRemove>cancel</md-icon>
+          <md-icon *ngIf="e.namespace() === state.currentApplication.namespace && e.predefinedValues?.length === 0"
+                   class="add-predefined-list"
+                   md-tooltip="add predefined values" >playlist_add</md-icon>
+          <md-icon *ngIf="e.namespace() === state.currentApplication.namespace && e.predefinedValues?.length !== 0"
+                   class="predefined-list"
+                   md-tooltip="update predefined values">playlist_add_check</md-icon>
+          <md-icon *ngIf="e.namespace() === state.currentApplication.namespace"
+                   class="remove"
+                   md-tooltip="delete entity type">cancel</md-icon>
         </md-chip>
       </md-chip-list>
-    </md-list>
+  </md-card-content>
+</md-card>
+<md-card class="entities" *ngIf="selectedEntityType != null">
+  <md-card-content>
+    <md-card-title>Predefined values for {{ selectedEntityType.name }}</md-card-title>
+      <div>
+        <md-input-container>
+          <input mdInput placeholder="Add new predefined value" #pv (keyup.enter)="createPredefinedValue(pv.value)">
+        </md-input-container>
+        <button md-icon-button (click)="createPredefinedValue(pv.value)"><md-icon>add</md-icon></button>
+      </div>
+      <table md-table [width]="'100%'">
+        <thead md-head>
+          <th md-column [width]="'20%'">Predefined Value</th>
+          <th md-column [width]="'50%'">Synonyms</th>
+          <th md-column [width]="'30%'">Actions</th>
+        </thead>
+        <tbody md-body>
+          <tr *ngFor="let predefinedValue of selectedEntityType.predefinedValues">
+            <td>
+              <md-input-container>
+                <input mdInput #pv [(value)]="predefinedValue.value" (change)="updatePredefinedValueName(predefinedValue, pv.value)">
+              </md-input-container>
+            </td>
+            <td>
+              <md-chip-list>
+                <md-chip *ngFor="let synonym of predefinedValue.synonyms.get(state.currentLocale)"
+                         [removable]="true">
+                  {{ synonym }}
+                  <md-icon mdChipRemove (click)="deleteSynonym(predefinedValue, synonym)">cancel</md-icon>
+                </md-chip>
+              </md-chip-list>
+            </td>
+            <td style="white-space:nowrap">
+              <md-input-container>
+                <input mdInput placeholder="Add synonym" #syn (keyup.enter)="createSynonym(predefinedValue, syn.value)">
+              </md-input-container>
+              <button md-icon-button (click)="createSynonym(predefinedValue, syn.value)" md-tooltip="Add synonym"><md-icon>add</md-icon></button>
+              <button md-icon-button (click)="deletePredefinedValue(predefinedValue.value)" color="warn" md-tooltip="Delete predefined value"><md-icon>remove</md-icon></button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
   </md-card-content>
 </md-card>

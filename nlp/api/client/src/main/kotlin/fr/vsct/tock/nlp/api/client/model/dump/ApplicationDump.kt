@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.api.client.model.dump
 
 import fr.vsct.tock.nlp.api.client.model.NlpEngineType
+import fr.vsct.tock.nlp.api.client.model.PredefinedValue
 import java.time.Instant
 import java.util.Locale
 
@@ -73,6 +74,7 @@ data class EntityDefinition(val entityTypeName: String,
 data class EntityTypeDefinition(val name: String,
                                 val description: String,
                                 val subEntities: List<EntityDefinition> = emptyList(),
+                                val predefinedValues: List<PredefinedValue> = emptyList(),
                                 val _id: String)
 
 data class IntentDefinition(val name: String,

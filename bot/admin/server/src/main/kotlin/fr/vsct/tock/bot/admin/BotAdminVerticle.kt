@@ -75,7 +75,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonGet("/configuration/bots/:botId", botUser) { context ->
-            BotAdminService.getBotConfigurationsByNamespaceAndBotId(context.organization, context.pathParam("botId"))
+            BotAdminService.getBotConfigurationsByNamespaceAndBotId(context.organization, context.path("botId"))
         }
 
         blockingJsonPost("/configuration/bots", admin) { context, query: ApplicationScopedQuery ->
@@ -212,7 +212,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonGet("/application/:applicationId/plans", botUser) { context ->
-            val applicationId = context.pathParam("applicationId")
+            val applicationId = context.path("applicationId")
             TestPlanService.getTestPlansByApplication(applicationId).filter { it.namespace == context.organization }
         }
 
@@ -241,7 +241,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonDelete("/bot/intent/:intentId", botUser) { context ->
-            BotAdminService.deleteBotIntent(context.organization, context.pathParam("intentId"))
+            BotAdminService.deleteBotIntent(context.organization, context.path("intentId"))
         }
 
         blockingJsonGet("/i18n", botUser) { context ->

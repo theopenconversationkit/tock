@@ -34,32 +34,39 @@ internal object EntityCoreService : EntityCore {
 
     private val logger = KotlinLogging.logger {}
 
-    private val evaluatorProviders: List<EntityEvaluatorProvider>
-            = SupportedEntityEvaluatorsProvider.evaluators()
+    private val evaluatorProviders: List<EntityEvaluatorProvider> = SupportedEntityEvaluatorsProvider.evaluators()
 
-    private val entityTypeProviderMap: Map<String, EntityEvaluatorProvider>
-            = evaluatorProviders
-            .flatMap { provider ->
-                provider.getSupportedEntityTypes().map { it to provider }
-            }
-            .toMap()
+    private val entityTypeProviderMap: Map<String, EntityEvaluatorProvider> = evaluatorProviders
+        .flatMap { provider ->
+            provider.getSupportedEntityTypes().map { it to provider }
+        }
+        .toMap()
 
-    private val entityTypeWithValuesMergeSupport: Set<String>
-            = evaluatorProviders
-            .flatMap { provider ->
-                provider.getEntityTypesWithValuesMergeSupport()
-            }
-            .toSet()
+    private val entityTypeWithValuesMergeSupport: Set<String> = evaluatorProviders
+        .flatMap { provider ->
+            provider.getEntityTypesWithValuesMergeSupport()
+        }
+        .toSet()
 
     override fun getEvaluableEntityTypes(): Set<String> = entityTypeProviderMap.keys
 
     override fun supportValuesMerge(entityType: EntityType) = entityTypeWithValuesMergeSupport.contains(entityType.name)
 
-    private fun getEntityEvaluatorProvider(entityType: EntityType): EntityEvaluatorProvider? {
-        return entityTypeProviderMap[entityType.name]
-    }
+    private fun getEntityEvaluatorProvider(entityType: EntityType): EntityEvaluatorProvider? =
+        entityTypeProviderMap[entityType.name]
 
-    override fun classifyEntityTypes(context: EntityCallContext, text: String, tokens: Array<String>): List<EntityTypeRecognition> {
+    private fun getEntityEvaluator(entityType: EntityType): EntityEvaluator? =
+        if (entityType.predefinedValues.isNotEmpty()) {
+            PredefinedValuesEntityEvaluator
+        } else {
+            getEntityEvaluatorProvider(entityType)?.getEntityEvaluator()
+        }
+
+    override fun classifyEntityTypes(
+        context: EntityCallContext,
+        text: String,
+        tokens: Array<String>
+    ): List<EntityTypeRecognition> {
         return when (context) {
             is EntityCallContextForIntent -> classifyEntityTypesForIntent(context, text, tokens)
             is EntityCallContextForEntity -> TODO()
@@ -67,20 +74,25 @@ internal object EntityCoreService : EntityCore {
         }
     }
 
-    private fun classifyEntityTypesForIntent(context: EntityCallContextForIntent, text: String, tokens: Array<String>): List<EntityTypeRecognition> {
+    private fun classifyEntityTypesForIntent(
+        context: EntityCallContextForIntent,
+        text: String,
+        tokens: Array<String>
+    ): List<EntityTypeRecognition> {
         return context.intent
-                .entities
-                .mapNotNull { getEntityEvaluatorProvider(it.entityType) }
-                .distinct()
-                .mapNotNull { it.getEntityTypeClassifier() }
-                .flatMap { classifyEntities(it, context, text, tokens) }
+            .entities
+            .mapNotNull { getEntityEvaluatorProvider(it.entityType) }
+            .distinct()
+            .mapNotNull { it.getEntityTypeClassifier() }
+            .flatMap { classifyEntities(it, context, text, tokens) }
     }
 
     private fun classifyEntities(
-            classifier: EntityTypeClassifier,
-            context: EntityCallContext,
-            text: String,
-            tokens: Array<String>): List<EntityTypeRecognition> {
+        classifier: EntityTypeClassifier,
+        context: EntityCallContext,
+        text: String,
+        tokens: Array<String>
+    ): List<EntityTypeRecognition> {
         return try {
             classifier.classifyEntities(context, text, tokens)
         } catch (e: Exception) {
@@ -89,34 +101,43 @@ internal object EntityCoreService : EntityCore {
         }
     }
 
-    override fun evaluateEntities(context: CallContext, text: String, entitiesRecognition: List<EntityRecognition>): List<EntityRecognition> {
+    override fun evaluateEntities(
+        context: CallContext,
+        text: String,
+        entitiesRecognition: List<EntityRecognition>
+    ): List<EntityRecognition> {
         val newEvaluatedEntities: Map<EntityRecognition, EvaluationResult> =
-                entitiesRecognition
-                        .filterNot { it.value.evaluated }
-                        .mapNotNull { e ->
-                            getEntityEvaluatorProvider(e.entityType)?.let {
-                                it.getEntityEvaluator()?.let { evaluator ->
-                                    e to evaluate(evaluator, EntityCallContextForEntity(context, e.value.entity), e.value.textValue(text))
-                                }
-                            }
-                        }
-                        .toMap()
+            entitiesRecognition
+                .filterNot { it.value.evaluated }
+                .mapNotNull { e ->
+                    getEntityEvaluator(e.entityType)?.let { evaluator ->
+                        e to evaluate(
+                            evaluator,
+                            EntityCallContextForEntity(context, e.value.entity),
+                            e.value.textValue(text)
+                        )
+                    }
+                }
+                .toMap()
 
         return entitiesRecognition.map {
             if (newEvaluatedEntities.containsKey(it)) {
                 val evaluation = newEvaluatedEntities[it]!!
                 it.copy(
-                        probability = if (evaluation.evaluated) (it.probability + evaluation.probability) / 2 else it.probability,
-                        value = it.value.copy(value = evaluation.value, evaluated = true))
+                    probability = if (evaluation.evaluated) (it.probability + evaluation.probability) / 2 else it.probability,
+                    value = it.value.copy(value = evaluation.value, evaluated = true)
+                )
             } else {
                 it
             }
         }
     }
 
-    fun evaluate(evaluator: EntityEvaluator,
-                 context: EntityCallContextForEntity,
-                 text: String): EvaluationResult {
+    fun evaluate(
+        evaluator: EntityEvaluator,
+        context: EntityCallContextForEntity,
+        text: String
+    ): EvaluationResult {
         return try {
             evaluator.evaluate(context, text)
         } catch (e: Exception) {
@@ -126,7 +147,7 @@ internal object EntityCoreService : EntityCore {
     }
 
     override fun mergeValues(context: EntityCallContextForEntity, values: List<ValueDescriptor>): ValueDescriptor? {
-        return getEntityEvaluatorProvider(context.entityType)?.getEntityEvaluator()?.merge(context, values)
+        return getEntityEvaluator(context.entityType)?.merge(context, values)
     }
 
     override fun healthcheck(): Boolean {

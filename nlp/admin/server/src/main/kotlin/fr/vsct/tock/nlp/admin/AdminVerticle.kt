@@ -27,11 +27,14 @@ import fr.vsct.tock.nlp.admin.model.LogStatsQuery
 import fr.vsct.tock.nlp.admin.model.LogsQuery
 import fr.vsct.tock.nlp.admin.model.PaginatedQuery
 import fr.vsct.tock.nlp.admin.model.ParseQuery
+import fr.vsct.tock.nlp.admin.model.PredefinedSynonymQuery
+import fr.vsct.tock.nlp.admin.model.PredefinedValueQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.admin.model.SentencesReport
 import fr.vsct.tock.nlp.admin.model.UpdateEntityDefinitionQuery
 import fr.vsct.tock.nlp.admin.model.UpdateSentencesQuery
+import fr.vsct.tock.nlp.core.PredefinedValue
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
@@ -113,7 +116,7 @@ open class AdminVerticle : WebVerticle() {
                     id,
                     null,
                     null,
-                    DumpType.parseDumpType(it.pathParam("dumpType"))
+                    DumpType.parseDumpType(it.path("dumpType"))
                 )
             } else {
                 unauthorized()
@@ -128,7 +131,7 @@ open class AdminVerticle : WebVerticle() {
                     null,
                     query.toSentencesQuery(id),
                     DumpType.parseDumpType(
-                        context.pathParam("dumpType")
+                        context.path("dumpType")
                     )
                 )
             } else {
@@ -140,9 +143,9 @@ open class AdminVerticle : WebVerticle() {
             val id: Id<ApplicationDefinition> = it.pathId("applicationId")
             if (it.organization == front.getApplicationById(id)?.namespace) {
                 front.exportSentences(
-                    id, it.pathParam("intent"),
+                    id, it.path("intent"),
                     null,
-                    DumpType.parseDumpType(it.pathParam("dumpType"))
+                    DumpType.parseDumpType(it.path("dumpType"))
                 )
             } else {
                 unauthorized()
@@ -156,7 +159,7 @@ open class AdminVerticle : WebVerticle() {
                     id,
                     null,
                     query.toSentencesQuery(id),
-                    DumpType.parseDumpType(context.pathParam("dumpType"))
+                    DumpType.parseDumpType(context.path("dumpType"))
                 )
             } else {
                 unauthorized()
@@ -209,11 +212,11 @@ open class AdminVerticle : WebVerticle() {
         }
 
         blockingUploadJsonPost("/dump/application/:name", admin) { context, dump: ApplicationDump ->
-            front.import(context.organization, dump, ApplicationImportConfiguration(context.pathParam("name")))
+            front.import(context.organization, dump, ApplicationImportConfiguration(context.path("name")))
         }
 
         blockingUploadJsonPost("/dump/sentences/:name", admin) { context, dump: SentencesDump ->
-            front.importSentences(context.organization, dump.copy(applicationName = context.pathParam("name")))
+            front.importSentences(context.organization, dump.copy(applicationName = context.path("name")))
         }
 
         blockingDelete("/application/:id", admin) {
@@ -238,8 +241,8 @@ open class AdminVerticle : WebVerticle() {
         blockingJsonDelete("/application/:appId/intent/:intentId/entity/:entityType/:role") {
             val app = front.getApplicationById(it.pathId("appId"))
             val intentId: Id<IntentDefinition> = it.pathId("intentId")
-            val entityType = it.pathParam("entityType")
-            val role = it.pathParam("role")
+            val entityType = it.path("entityType")
+            val role = it.path("role")
             val intent = front.getIntentById(intentId)!!
             if (intent.applications.size == 1 && it.organization == app?.namespace && it.organization == intent.namespace) {
                 front.removeEntityFromIntent(app, intent, entityType, role)
@@ -251,7 +254,7 @@ open class AdminVerticle : WebVerticle() {
         blockingJsonDelete("/application/:appId/intent/:intentId/state/:state") {
             val app = front.getApplicationById(it.pathId("appId"))
             val intentId: Id<IntentDefinition> = it.pathId("intentId")
-            val state = it.pathParam("state")
+            val state = it.path("state")
             val intent = front.getIntentById(intentId)!!
             if (intent.applications.size == 1 && it.organization == app?.namespace && it.organization == intent.namespace) {
                 front.save(intent.copy(mandatoryStates = intent.mandatoryStates - state))
@@ -264,7 +267,7 @@ open class AdminVerticle : WebVerticle() {
         blockingJsonDelete("/application/:appId/intent/:intentId/shared/:sharedIntentId") {
             val app = front.getApplicationById(it.pathId("appId"))
             val intentId: Id<IntentDefinition> = it.pathId("intentId")
-            val sharedIntentId = it.pathParam("sharedIntentId")
+            val sharedIntentId = it.path("sharedIntentId")
             val intent = front.getIntentById(intentId)!!
             if (intent.applications.size == 1 && it.organization == app?.namespace && it.organization == intent.namespace) {
                 front.save(intent.copy(sharedIntents = intent.sharedIntents - sharedIntentId.toId()))
@@ -276,8 +279,8 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonDelete("/application/:appId/entity/:entityType/:role") {
             val app = front.getApplicationById(it.pathId("appId"))!!
-            val entityTypeName = it.pathParam("entityType")
-            val role = it.pathParam("role")
+            val entityTypeName = it.path("entityType")
+            val role = it.path("role")
             val entityType = front.getEntityTypeByName(entityTypeName)!!
             if (it.organization == app.namespace && it.organization == entityType.name.namespace()) {
                 front.removeSubEntityFromEntity(app, entityType, role)
@@ -410,7 +413,8 @@ open class AdminVerticle : WebVerticle() {
                     ?.run {
                         copy(
                             description = entityType.description,
-                            subEntities = entityType.subEntities
+                            subEntities = entityType.subEntities,
+                            predefinedValues = entityType.predefinedValues
                         )
                     }
                 if (update != null) {
@@ -425,7 +429,7 @@ open class AdminVerticle : WebVerticle() {
 
         blockingJsonDelete("/entity-type/:name")
         {
-            val entityType = it.pathParam("name")
+            val entityType = it.path("name")
             if (it.organization == entityType.namespace()) {
                 front.deleteEntityTypeByName(entityType)
             } else {
@@ -508,6 +512,82 @@ open class AdminVerticle : WebVerticle() {
                 unauthorized()
             }
         }
+
+        blockingJsonPost("/entity-types/predefined-values")
+        { context, query: PredefinedValueQuery ->
+
+            front.getEntityTypeByName(query.entityTypeName)
+                ?.takeIf { it.name.namespace() == context.organization }
+                ?.run {
+                    val value = query.oldPredefinedValue ?: query.predefinedValue
+                    copy(predefinedValues = predefinedValues.filter { it.value != value } +
+                            (predefinedValues.find { it.value == value }
+                                ?.copy(value = query.predefinedValue)
+                                    ?: PredefinedValue(
+                                        query.predefinedValue,
+                                        emptyMap()
+                                    )
+                                    )
+                    )
+                }
+                ?.also {
+                    front.save(it)
+                }
+                    ?: unauthorized()
+        }
+
+        blockingDelete("/entity-types/predefined-values/:entityType/:value")
+        { context ->
+            val entityType = context.path("entityType")
+            if (context.organization == entityType.namespace()) {
+                front.deletePredefinedValueByName(entityType, context.path("value"))
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonPost("/entity-type/predefined-value/synonyms")
+        { context, query: PredefinedSynonymQuery ->
+
+            front.getEntityTypeByName(query.entityTypeName)
+                ?.takeIf { it.name.namespace() == context.organization }
+                ?.run {
+                    copy(predefinedValues = predefinedValues.filter { it.value != query.predefinedValue } +
+                            (predefinedValues.find { it.value == query.predefinedValue }
+                                ?.run {
+                                    copy(synonyms = synonyms.filter { it.key != query.locale } +
+                                            mapOf(query.locale to ((synonyms[query.locale]?.filter { it != query.synonym }
+                                                    ?: emptyList()) + listOf(query.synonym)).sorted())
+                                    )
+                                }
+                                    ?: PredefinedValue(
+                                        query.predefinedValue,
+                                        mapOf(query.locale to listOf(query.synonym))
+                                    ))
+                    )
+                }
+                ?.also {
+                    front.save(it)
+                }
+                    ?: unauthorized()
+
+        }
+
+        blockingDelete("/entity-type/predefined-value/synonyms/:entityType/:value/:locale/:synonym")
+        { context ->
+            val entityType = context.path("entityType")
+            if (context.organization == entityType.namespace()) {
+                front.deletePredefinedValueSynonymByName(
+                    entityType,
+                    context.path("value"),
+                    Locale.forLanguageTag(context.path("locale")),
+                    context.path("synonym")
+                )
+            } else {
+                unauthorized()
+            }
+        }
+
     }
 
     fun configureStaticHandling() {

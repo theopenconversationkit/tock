@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.front.shared.config
 
+import fr.vsct.tock.nlp.core.PredefinedValue
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
@@ -34,13 +35,15 @@ data class EntityTypeDefinition(
      */
     val description: String = "",
     /**
-     * The sub entites of this entity.
+     * The sub entities of this entity.
      */
     val subEntities: List<EntityDefinition> = emptyList(),
+    /**
+     * The entity predefined values (if any).
+     */
+    val predefinedValues: List<PredefinedValue> = emptyList(),
     /**
      * The unique id of the entity.
      */
     val _id: Id<EntityTypeDefinition> = newId()
-) {
-
-}
+)

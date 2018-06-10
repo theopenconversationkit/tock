@@ -17,10 +17,22 @@
 package fr.vsct.tock.nlp.core
 
 /**
- *
+ * A type of entity.
  */
-data class EntityType(val name: String,
-                      val subEntities: List<Entity> = emptyList()) {
+data class EntityType(
+    /**
+     * The qualified name of the entity (ie namespace:name)
+     */
+    val name: String,
+    /**
+     * The sub entities of this entity.
+     */
+    val subEntities: List<Entity> = emptyList(),
+    /**
+     * The entity predefined values if any.
+     */
+    val predefinedValues: List<PredefinedValue> = emptyList()
+) {
 
     fun hasSubEntities(): Boolean = subEntities.isNotEmpty()
 

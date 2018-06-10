@@ -21,12 +21,18 @@ import com.mongodb.client.model.ReplaceOptions
 import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition_.Companion.Name
+import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition_.Companion.PredefinedValues
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
+import org.litote.kmongo.bson
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
+import org.litote.kmongo.json
+import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.replaceOneWithFilter
+import org.litote.kmongo.updateOne
+import java.util.Locale
 
 /**
  *
@@ -53,5 +59,23 @@ object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
 
     override fun deleteEntityTypeByName(name: String): Boolean {
         return col.deleteOne(Name eq name).deletedCount == 1L
+    }
+
+    override fun deletePredefinedValueByName(entityTypeName: String, predefinedValue: String) {
+        //TODO support of non @Data annotated collections
+        col.updateOne(Name eq entityTypeName, pullByFilter(PredefinedValues, "{value:${predefinedValue.json}}".bson))
+    }
+
+    override fun deletePredefinedValueSynonymByName(
+        entityTypeName: String,
+        predefinedValue: String,
+        locale: Locale,
+        synonym: String
+    ) {
+        //TODO kmongo map & positional projection
+        col.updateOne(
+            "{name:${entityTypeName.json}, predefinedValues:{\$exists:true}}",
+            "{\$pull:{'predefinedValues.\$.synonyms.${locale.toLanguageTag()}':${synonym.json}}}"
+        )
     }
 }

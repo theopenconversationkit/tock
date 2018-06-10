@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 VSCT
+ * Copyright (C) 2018 VSCT
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.api.client.model
+package fr.vsct.tock.nlp.core
+
+import java.util.Locale
 
 /**
- * An entity type, with optional sub entities and predefined values.
+ * Used to deal with entities with predefined values list.
  */
-data class EntityType(
-    val name: String,
-    val subEntities: List<Entity> = emptyList(),
-    val predefinedValues: List<PredefinedValue> = emptyList()
+data class PredefinedValue(
+    val value: String,
+    val synonyms: Map<Locale, List<String>> = emptyMap()
 )

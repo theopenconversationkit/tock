@@ -238,7 +238,8 @@ object ApplicationConfigurationService :
         }
 
         //1 create entities where there are not present in the intents
-        val intents = sentences.map { it.classification.intentId }.distinct().filter { it.toString() != UNKNOWN_INTENT_NAME }
+        val intents =
+            sentences.map { it.classification.intentId }.distinct().filter { it.toString() != UNKNOWN_INTENT_NAME }
         intents.forEach {
             val intent = getIntentById(it)
             if (intent != null) {
@@ -270,4 +271,5 @@ object ApplicationConfigurationService :
                 }
         }
     }
+
 }

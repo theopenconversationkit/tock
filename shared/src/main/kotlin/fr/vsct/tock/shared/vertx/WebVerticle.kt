@@ -41,6 +41,7 @@ import io.vertx.core.http.HttpMethod
 import io.vertx.core.http.HttpMethod.DELETE
 import io.vertx.core.http.HttpMethod.GET
 import io.vertx.core.http.HttpMethod.POST
+import io.vertx.core.http.HttpMethod.PUT
 import io.vertx.core.http.HttpServer
 import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.http.HttpServerResponse
@@ -61,6 +62,7 @@ import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 import java.io.File
+import java.net.URLDecoder
 import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -371,6 +373,14 @@ abstract class WebVerticle : AbstractVerticle() {
         blockingWithBodyJson<I, O>(POST, path, role, handler)
     }
 
+    protected inline fun <reified I : Any, O> blockingJsonPut(
+        path: String,
+        role: TockUserRole? = defaultRole(),
+        crossinline handler: (RoutingContext, I) -> O
+    ) {
+        blockingWithBodyJson<I, O>(PUT, path, role, handler)
+    }
+
     protected fun blockingDelete(path: String, role: TockUserRole? = defaultRole(), handler: (RoutingContext) -> Unit) {
         blocking(DELETE, path, role) { context ->
             handler.invoke(context)
@@ -425,7 +435,7 @@ abstract class WebVerticle : AbstractVerticle() {
     protected fun corsHandler(
         origin: String = "*",
         allowCredentials: Boolean = false,
-        allowedMethods: Set<HttpMethod> = EnumSet.of(GET, POST, DELETE),
+        allowedMethods: Set<HttpMethod> = EnumSet.of(GET, POST, PUT, DELETE),
         allowedHeaders: Set<String> = listOfNotNull(
             "X-Requested-With",
             "Access-Control-Allow-Origin",
@@ -500,7 +510,10 @@ abstract class WebVerticle : AbstractVerticle() {
         this.response().endJson(result)
     }
 
-    fun <T> RoutingContext.pathId(name: String): Id<T> = pathParam(name).toId()
+    fun RoutingContext.path(name: String): String =
+        pathParam(name)!!.let { URLDecoder.decode(it, StandardCharsets.UTF_8.name()) }
+
+    fun <T> RoutingContext.pathId(name: String): Id<T> = path(name).toId()
 
     fun RoutingContext.firstQueryParam(name: String): String? = request().getParam(name)
 
