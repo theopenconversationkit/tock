@@ -18,12 +18,17 @@
   <div class="i18n-label__title">
     <span class="i18n-label__title__label" md-tooltip="key:{{i._id}}">{{i.defaultLocalizedLabel().label.length === 0 ? i._id : i.defaultLocalizedLabel().label}}</span>
 
-    <span class="i18n-label__title__intent" md-tooltip="{{i.statCount ? 'usage:'+i.statCount : ''}}{{i.lastUpdate ? ' lastUsage:'+i.lastUpdate : ''}}">{{intent}}</span>
+    <span class="i18n-label__title__intent">{{intent}}</span>
 
     <button class="i18n-label__title__delete" *ngIf="deleteAllowed" md-button (click)="deleteLabel(i)"
             md-tooltip="Delete Label" color="warn">
       delete
     </button>
+
+    <span class="i18n-label__title__usage">
+      <span *ngIf="i.statCount">used {{ i.statCount }} times,</span>
+      <span *ngIf="i.lastUpdate">last used {{ i.lastUpdate | amTimeAgo }}</span>
+    </span>
   </div>
 
   <div class="i18n-label__entry i18n-label__entry--language-{{l.locale}} i18n-label__entry--mode-{{l.interfaceType}}"
