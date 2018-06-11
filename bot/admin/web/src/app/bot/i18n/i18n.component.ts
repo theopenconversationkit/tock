@@ -142,16 +142,13 @@ export class I18nComponent extends I18nController implements OnInit {
     const hideValidated = this.filterOption == "not_validated";
     const v = value ? value.trim().toLowerCase() : "";
     const notUsedFromDate = Date.now() - 1000 * 60 * 60 * 24 * this.notUsedFrom;
-    console.log(notUsedFromDate);
     this.filteredI18n = this.i18n.filter(i => {
       return (!hideValidated || i.i18n.some(label => !label.validated && label.label.length !== 0))
         && (!hideNotValidated || i.i18n.some(label => label.validated))
         && (v.length === 0 || i.i18n.some(label => label.label.length !== 0 && label.label.toLowerCase().indexOf(v) !== -1))
         && (this.selectedCategory === this.doNotFilterByCategory || i.category === this.selectedCategory)
-        && (this.notUsedFrom === -1 || !i.lastUpdate || Date.parse(i.lastUpdate.toString()) < notUsedFromDate)
+        && (this.notUsedFrom == -1 || !i.lastUpdate || i.lastUpdate.getTime() > notUsedFromDate)
     });
-
-    console.log(this.filteredI18n);
 
     this.setCategoryOnFirstItem(this.filteredI18n);
   }

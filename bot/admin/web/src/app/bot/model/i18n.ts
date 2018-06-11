@@ -55,7 +55,8 @@ export class I18nLabel {
     const value = Object.create(I18nLabel.prototype);
     const result = Object.assign(value, json, {
       i18n: I18nLocalizedLabel.fromJSONArray(json.i18n),
-      unhandledLocaleStats: I18nLabelStat.fromJSONArray(json.unhandledLocaleStats)
+      unhandledLocaleStats: I18nLabelStat.fromJSONArray(json.unhandledLocaleStats),
+      lastUpdate: json.lastUpdate ? new Date(Date.parse(json.lastUpdate)) : null
     });
 
     return result;
@@ -113,7 +114,8 @@ export class I18nLabelStat {
   static fromJSON(json: any): I18nLabelStat {
     const value = Object.create(I18nLabelStat.prototype);
     const result = Object.assign(value, json, {
-      interfaceType: UserInterfaceType[json.interfaceType]
+      interfaceType: UserInterfaceType[json.interfaceType],
+      lastUpdate: json.lastUpdate ? new Date(Date.parse(json.lastUpdate)) : null
     });
 
     return result;
