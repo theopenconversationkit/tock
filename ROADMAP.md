@@ -1,20 +1,25 @@
-- 1.0.0 April 2018
+- 1.0.0 May 2018
     - GA release
 
-- 1.1.0 May 2018
+- 1.1.0 June 2018
     - NLP stats improvements (better error detections)
-    - Complex conversational context support
-    - Entity disambiguation support
+    - I18n stats
+    - predefined values entity
+    - bot configuration live refresh support
 
 - 1.2.0 July 2018
+    - Entity disambiguation 
     - External demo server 
-    - AB Test engine workflow
-    - Spark NLP support
-    - Intent disambiguation support    
-    - Bot API
+    - Intent disambiguation  
     - New design for admin web interface
+    - handover messenger protocol 
+    - Complex conversational context support
+    - Mongo change stream support (perf improvement)
 
 - 2.0.0 September 2018
+    - Bot API
+    - AB Test engine workflow
+    - Spark NLP support
     - Conversational framework: allow to create a bot in the administration interface without IDE
     - NLP model translation support
     - Non-regression tests improvements
