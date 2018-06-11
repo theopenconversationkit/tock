@@ -2,9 +2,9 @@ package fr.vsct.tock.nlp.admin.model
 
 import java.util.Locale
 
-data class PredefinedSynonymQuery(
+data class PredefinedLabelQuery(
     val entityTypeName: String,
     val predefinedValue: String,
     val locale: Locale,
-    val synonym: String
+    val label: String
 )

@@ -157,11 +157,11 @@ interface ApplicationConfiguration {
 
     fun deletePredefinedValueByName(entityTypeName: String, predefinedValue: String)
 
-    fun deletePredefinedValueSynonymByName(
+    fun deletePredefinedValueLabelByName(
         entityTypeName: String,
         predefinedValue: String,
         locale: Locale,
-        synonym: String
+        label: String
     )
 
 }

@@ -34,5 +34,5 @@ interface EntityTypeDefinitionDAO {
 
     fun deletePredefinedValueByName(entityTypeName: String, predefinedValue: String)
 
-    fun deletePredefinedValueSynonymByName(entityTypeName: String, predefinedValue: String, locale: Locale, synonym: String)
+    fun deletePredefinedValueLabelByName(entityTypeName: String, predefinedValue: String, locale: Locale, label: String)
 }

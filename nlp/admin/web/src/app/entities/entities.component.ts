@@ -120,12 +120,12 @@ export class EntitiesComponent implements OnInit {
       error => this.snackBar.open(`Delete Predefined Value '${name}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
   }
 
-  createSynonym(predefinedValue: PredefinedValue, name: string) {
+  createLabel(predefinedValue: PredefinedValue, name: string) {
     if (name.trim() === "") {
-      this.snackBar.open(`Empty Synonym is not allowed`, "Error", {duration: 5000} as MdSnackBarConfig);
+      this.snackBar.open(`Empty Label is not allowed`, "Error", {duration: 5000} as MdSnackBarConfig);
     } else {
-      this.nlp.createSynonym(
-        this.state.createPredefinedSynonymQuery(
+      this.nlp.createLabel(
+        this.state.createPredefinedLabelQuery(
           this.selectedEntityType.name,
           predefinedValue.value,
           this.state.currentLocale,
@@ -134,29 +134,29 @@ export class EntitiesComponent implements OnInit {
           next => {
             this.selectedEntityType = next
           },
-          error => this.snackBar.open(`Create Synonym '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
+          error => this.snackBar.open(`Create Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
     }
   }
 
-  deleteSynonym(predefinedValue: PredefinedValue, name: string) {
-    this.nlp.deleteSynonym(
-      this.state.createPredefinedSynonymQuery(
+  deleteLabel(predefinedValue: PredefinedValue, name: string) {
+    this.nlp.deleteLabel(
+      this.state.createPredefinedLabelQuery(
         this.selectedEntityType.name,
         predefinedValue.value,
         this.state.currentLocale,
         name))
       .subscribe(
         next => {
-          let locale = this.state.currentLocale
+          let locale = this.state.currentLocale;
           this.selectedEntityType.predefinedValues.forEach(function (pv) {
             if (pv.value === predefinedValue.value) {
-              pv.synonyms.set(locale, pv.synonyms.get(locale).filter(s => {
+              pv.labels.set(locale, pv.labels.get(locale).filter(s => {
                 return s !== name
               }));
             }
           })
         },
-        error => this.snackBar.open(`Delete Synonym '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
+        error => this.snackBar.open(`Delete Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
   }
 
 }

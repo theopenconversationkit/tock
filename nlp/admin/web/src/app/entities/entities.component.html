@@ -60,7 +60,7 @@
       <table md-table [width]="'100%'">
         <thead md-head>
           <th md-column [width]="'20%'">Predefined Value</th>
-          <th md-column [width]="'50%'">Synonyms</th>
+          <th md-column [width]="'50%'">Allowed labels</th>
           <th md-column [width]="'30%'">Actions</th>
         </thead>
         <tbody md-body>
@@ -72,18 +72,18 @@
             </td>
             <td>
               <md-chip-list>
-                <md-chip *ngFor="let synonym of predefinedValue.synonyms.get(state.currentLocale)"
+                <md-chip *ngFor="let label of predefinedValue.labels.get(state.currentLocale)"
                          [removable]="true">
-                  {{ synonym }}
-                  <md-icon mdChipRemove (click)="deleteSynonym(predefinedValue, synonym)">cancel</md-icon>
+                  {{ label }}
+                  <md-icon mdChipRemove (click)="deleteLabel(predefinedValue, label)">cancel</md-icon>
                 </md-chip>
               </md-chip-list>
             </td>
             <td style="white-space:nowrap">
               <md-input-container>
-                <input mdInput placeholder="Add synonym" #syn (keyup.enter)="createSynonym(predefinedValue, syn.value)">
+                <input mdInput placeholder="Add label" #l (keyup.enter)="createLabel(predefinedValue, l.value)">
               </md-input-container>
-              <button md-icon-button (click)="createSynonym(predefinedValue, syn.value)" md-tooltip="Add synonym"><md-icon>add</md-icon></button>
+              <button md-icon-button (click)="createLabel(predefinedValue, l.value)" md-tooltip="Add Label"><md-icon>add</md-icon></button>
               <button md-icon-button (click)="deletePredefinedValue(predefinedValue.value)" color="warn" md-tooltip="Delete predefined value"><md-icon>remove</md-icon></button>
             </td>
           </tr>

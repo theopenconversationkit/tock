@@ -66,16 +66,16 @@ object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
         col.updateOne(Name eq entityTypeName, pullByFilter(PredefinedValues, "{value:${predefinedValue.json}}".bson))
     }
 
-    override fun deletePredefinedValueSynonymByName(
+    override fun deletePredefinedValueLabelByName(
         entityTypeName: String,
         predefinedValue: String,
         locale: Locale,
-        synonym: String
+        label: String
     ) {
         //TODO kmongo map & positional projection
         col.updateOne(
-            "{name:${entityTypeName.json}, predefinedValues:{\$exists:true}}",
-            "{\$pull:{'predefinedValues.\$.synonyms.${locale.toLanguageTag()}':${synonym.json}}}"
+            "{name:${entityTypeName.json}, 'predefinedValues.value':${predefinedValue.json}}",
+            "{\$pull:{'predefinedValues.\$.labels.${locale.toLanguageTag()}':${label.json}}}"
         )
     }
 }

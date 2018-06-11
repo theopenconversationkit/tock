@@ -14,7 +14,7 @@ object PredefinedValuesEntityEvaluator : EntityEvaluator/*, EntityTypeClassifier
         val predefinedValues = localizedPredefinedValues(context)
 
         val predefinedValue =
-            predefinedValueOfSynonym(context.language, predefinedValues, text)?.value
+            predefinedValueOfLabel(context.language, predefinedValues, text)?.value
 
         return EvaluationResult(true, predefinedValue, if (predefinedValue == null) 0.5 else 1.0)
     }
@@ -23,17 +23,17 @@ object PredefinedValuesEntityEvaluator : EntityEvaluator/*, EntityTypeClassifier
         return context
             .entityType
             .predefinedValues
-            .associate { predefinedValue -> predefinedValue to predefinedValue.synonyms[context.language] }
+            .associate { predefinedValue -> predefinedValue to predefinedValue.labels[context.language] }
     }
 
-    private fun predefinedValueOfSynonym(
+    private fun predefinedValueOfLabel(
         locale: Locale,
         predefinedValues: Map<PredefinedValue, List<String>?>,
         text: String
     ): PredefinedValue? {
         for (predefinedValue in predefinedValues.keys) {
-            val synonyms = predefinedValues[predefinedValue]
-            if (synonyms != null && synonyms.find { s -> s.toLowerCase(locale) == text.toLowerCase(locale) } != null) {
+            val labels = predefinedValues[predefinedValue]
+            if (labels != null && labels.find { s -> s.toLowerCase(locale) == text.toLowerCase(locale) } != null) {
                 return predefinedValue
             }
         }

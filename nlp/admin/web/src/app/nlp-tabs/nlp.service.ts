@@ -23,7 +23,7 @@ import {
   LogsQuery,
   LogsResult,
   ParseQuery,
-  PredefinedSynonymQuery,
+  PredefinedLabelQuery,
   PredefinedValueQuery,
   SearchQuery,
   Sentence,
@@ -130,12 +130,12 @@ export class NlpService implements OnDestroy {
     return this.rest.delete(`/entity-types/predefined-values/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}`)
   }
 
-  createSynonym(query: PredefinedSynonymQuery): Observable<EntityType> {
-    return this.rest.post(`/entity-type/predefined-value/synonyms`, query, EntityType.fromJSON)
+  createLabel(query: PredefinedLabelQuery): Observable<EntityType> {
+    return this.rest.post(`/entity-type/predefined-value/labels`, query, EntityType.fromJSON)
   }
 
-  deleteSynonym(query: PredefinedSynonymQuery): Observable<boolean> {
-    return this.rest.delete(`/entity-type/predefined-value/synonyms/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}/${encodeURIComponent(query.locale)}/${encodeURIComponent(query.synonym)}`)
+  deleteLabel(query: PredefinedLabelQuery): Observable<boolean> {
+    return this.rest.delete(`/entity-type/predefined-value/labels/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}/${encodeURIComponent(query.locale)}/${encodeURIComponent(query.label)}`)
   }
 
 }

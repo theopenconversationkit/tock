@@ -27,7 +27,7 @@ import {
   EntityType,
   Intent,
   NlpEngineType,
-  PredefinedSynonymQuery,
+  PredefinedLabelQuery,
   PredefinedValueQuery,
   UpdateEntityDefinitionQuery
 } from "../model/nlp";
@@ -223,17 +223,18 @@ export class StateService implements AuthListener {
   createPredefinedValueQuery(entityTypeName: string, predefinedValue: string, oldPredefinedValue?:string): PredefinedValueQuery {
     return new PredefinedValueQuery(
       entityTypeName,
-      predefinedValue,
+      predefinedValue.trim(),
+      this.currentLocale,
       oldPredefinedValue
     );
   }
 
-  createPredefinedSynonymQuery(entityTypeName: string, predefinedValue: string, locale: string, synonym: string): PredefinedSynonymQuery {
-    return new PredefinedSynonymQuery(
+  createPredefinedLabelQuery(entityTypeName: string, predefinedValue: string, locale: string, label: string): PredefinedLabelQuery {
+    return new PredefinedLabelQuery(
       entityTypeName,
-      predefinedValue,
+      predefinedValue.trim(),
       locale,
-      synonym
+      label.trim()
     );
   }
 

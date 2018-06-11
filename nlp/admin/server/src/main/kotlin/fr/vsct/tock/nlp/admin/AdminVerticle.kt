@@ -27,7 +27,7 @@ import fr.vsct.tock.nlp.admin.model.LogStatsQuery
 import fr.vsct.tock.nlp.admin.model.LogsQuery
 import fr.vsct.tock.nlp.admin.model.PaginatedQuery
 import fr.vsct.tock.nlp.admin.model.ParseQuery
-import fr.vsct.tock.nlp.admin.model.PredefinedSynonymQuery
+import fr.vsct.tock.nlp.admin.model.PredefinedLabelQuery
 import fr.vsct.tock.nlp.admin.model.PredefinedValueQuery
 import fr.vsct.tock.nlp.admin.model.SearchQuery
 import fr.vsct.tock.nlp.admin.model.SentenceReport
@@ -525,7 +525,7 @@ open class AdminVerticle : WebVerticle() {
                                 ?.copy(value = query.predefinedValue)
                                     ?: PredefinedValue(
                                         query.predefinedValue,
-                                        emptyMap()
+                                        mapOf(query.locale to listOf(query.predefinedValue))
                                     )
                                     )
                     )
@@ -546,8 +546,8 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonPost("/entity-type/predefined-value/synonyms")
-        { context, query: PredefinedSynonymQuery ->
+        blockingJsonPost("/entity-type/predefined-value/labels")
+        { context, query: PredefinedLabelQuery ->
 
             front.getEntityTypeByName(query.entityTypeName)
                 ?.takeIf { it.name.namespace() == context.organization }
@@ -555,14 +555,14 @@ open class AdminVerticle : WebVerticle() {
                     copy(predefinedValues = predefinedValues.filter { it.value != query.predefinedValue } +
                             (predefinedValues.find { it.value == query.predefinedValue }
                                 ?.run {
-                                    copy(synonyms = synonyms.filter { it.key != query.locale } +
-                                            mapOf(query.locale to ((synonyms[query.locale]?.filter { it != query.synonym }
-                                                    ?: emptyList()) + listOf(query.synonym)).sorted())
+                                    copy(labels = labels.filter { it.key != query.locale } +
+                                            mapOf(query.locale to ((labels[query.locale]?.filter { it != query.label }
+                                                    ?: emptyList()) + listOf(query.label)).sorted())
                                     )
                                 }
                                     ?: PredefinedValue(
                                         query.predefinedValue,
-                                        mapOf(query.locale to listOf(query.synonym))
+                                        mapOf(query.locale to listOf(query.label))
                                     ))
                     )
                 }
@@ -573,15 +573,15 @@ open class AdminVerticle : WebVerticle() {
 
         }
 
-        blockingDelete("/entity-type/predefined-value/synonyms/:entityType/:value/:locale/:synonym")
+        blockingDelete("/entity-type/predefined-value/labels/:entityType/:value/:locale/:label")
         { context ->
             val entityType = context.path("entityType")
             if (context.organization == entityType.namespace()) {
-                front.deletePredefinedValueSynonymByName(
+                front.deletePredefinedValueLabelByName(
                     entityType,
                     context.path("value"),
                     Locale.forLanguageTag(context.path("locale")),
-                    context.path("synonym")
+                    context.path("label")
                 )
             } else {
                 unauthorized()

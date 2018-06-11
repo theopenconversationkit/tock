@@ -84,17 +84,18 @@ export class PredefinedValueQuery {
 
   constructor(public entityTypeName: string,
               public predefinedValue: string,
+              public locale: string,
               public oldPredefinedValue?:string) {
   }
 
 }
 
-export class PredefinedSynonymQuery {
+export class PredefinedLabelQuery {
 
   constructor(public entityTypeName: string,
               public predefinedValue: string,
               public locale: string,
-              public synonym: string) {
+              public label: string) {
   }
 
 }
@@ -954,7 +955,7 @@ export class UpdateSentencesReport {
 export class PredefinedValue {
 
   constructor(public value: string,
-              public synonyms: Map<string, string[]>) {
+              public labels: Map<string, string[]>) {
   }
 
   static fromJSON(json?: any): PredefinedValue {
@@ -965,7 +966,7 @@ export class PredefinedValue {
     const value = Object.create(PredefinedValue.prototype);
 
     const result = Object.assign(value, json, {
-      synonyms: JsonUtils.jsonToMap(json.synonyms)
+      labels: JsonUtils.jsonToMap(json.labels)
     });
 
     return result;
