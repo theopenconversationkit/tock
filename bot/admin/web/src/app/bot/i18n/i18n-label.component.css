@@ -26,6 +26,7 @@
 
 .i18n-label__title {
   display: flex;
+  flex-wrap: wrap;
   align-items: baseline;
   margin-bottom: 20px;
 }
@@ -44,6 +45,19 @@
 
 .i18n-label__title__delete {
   margin-left: auto;
+}
+
+.i18n-label__title__usage {
+  flex-basis: 100%;
+  margin-top: -5px;
+
+  opacity: 0.5;
+
+  font-size: 11px;
+}
+
+.i18n-label__title__usage:first-letter {
+  text-transform: uppercase;
 }
 
 .i18n-label__entry {
