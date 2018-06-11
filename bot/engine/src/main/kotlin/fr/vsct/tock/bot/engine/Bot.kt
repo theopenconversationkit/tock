@@ -30,6 +30,7 @@ import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.nlp.NlpController
 import fr.vsct.tock.bot.engine.user.UserTimeline
+import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
 
@@ -50,6 +51,8 @@ internal class Bot(botDefinitionBase: BotDefinition) {
     }
 
     private val logger = KotlinLogging.logger {}
+
+    private val sendChoiceActivateBot = booleanProperty("tock_bot_send_choice_activate", true)
 
     private val nlp: NlpController by injector.instance()
 
@@ -199,7 +202,7 @@ internal class Bot(botDefinitionBase: BotDefinition) {
         try {
             when (action) {
                 is SendChoice -> {
-                    parseChoice(action, dialog)
+                    parseChoice(userTimeline, action, dialog)
                 }
                 is SendLocation -> {
                     parseLocation(action, dialog)
@@ -237,7 +240,7 @@ internal class Bot(botDefinitionBase: BotDefinition) {
         }
     }
 
-    private fun parseChoice(choice: SendChoice, dialog: Dialog) {
+    private fun parseChoice(userTimeline: UserTimeline, choice: SendChoice, dialog: Dialog) {
         botDefinition.findIntent(choice.intentName).let { intent ->
             //restore state if it's possible (old dialog choice case)
             if (intent != Intent.unknown) {
@@ -261,6 +264,10 @@ internal class Bot(botDefinitionBase: BotDefinition) {
                 }
             }
             dialog.state.currentIntent = intent
+            // send choice always reactivate disable bot (is the intent is not a disabled intent)
+            if (sendChoiceActivateBot && !botDefinition.isBotDisabledIntent(dialog.state.currentIntent)) {
+                userTimeline.userState.botDisabled = false
+            }
         }
     }
 
