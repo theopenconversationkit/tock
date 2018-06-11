@@ -16,7 +16,7 @@
 
 <div class="i18n-label" *ngIf="i.i18n.length !== 0">
   <div class="i18n-label__title">
-    <span class="i18n-label__title__label" md-tooltip="key:{{i._id}}">{{i.defaultLocalizedLabel().label}}</span>
+    <span class="i18n-label__title__label" md-tooltip="key:{{i._id}}">{{i.defaultLocalizedLabel().label.length === 0 ? i._id : i.defaultLocalizedLabel().label}}</span>
 
     <span class="i18n-label__title__intent" md-tooltip="{{i.statCount ? 'usage:'+i.statCount : ''}}{{i.lastUpdate ? ' lastUsage:'+i.lastUpdate : ''}}">{{intent}}</span>
 
