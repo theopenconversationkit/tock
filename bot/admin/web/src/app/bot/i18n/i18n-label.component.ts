@@ -16,10 +16,9 @@
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {Component, Input, OnInit} from "@angular/core";
 import {I18nLabel, I18nLocalizedLabel, userInterfaces} from "../model/i18n";
-import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {BotService} from "../bot-service";
 import {MdSnackBar} from "@angular/material";
-import {ConnectorType, UserInterfaceType} from "../../core/model/configuration";
+import {ConnectorType} from "../../core/model/configuration";
 import {BotSharedService} from "../../shared/bot-shared.service";
 
 @Component({
@@ -33,18 +32,17 @@ export class I18nLabelComponent implements OnInit {
   i: I18nLabel;
 
   @Input()
-  deleteAllowed:boolean = true;
+  deleteAllowed: boolean = true;
 
   @Input()
   i18nController: I18nController;
 
   @Input()
-  intent:string;
+  intent: string;
 
   connectorTypes: ConnectorType[] = [];
 
   constructor(public state: StateService,
-              public config: BotConfigurationService,
               private botService: BotService,
               private snackBar: MdSnackBar,
               private botSharedService: BotSharedService) {

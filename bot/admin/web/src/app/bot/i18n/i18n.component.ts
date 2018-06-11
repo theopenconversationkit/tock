@@ -38,6 +38,7 @@ export class I18nComponent extends I18nController implements OnInit {
   private doNotFilterByCategory = "All";
   selectedCategory: string = this.doNotFilterByCategory;
   allCategories: string[] = [];
+  notUsedFrom: number = -1;
 
   displayImportExport: boolean = false;
   displayUpload: boolean = false;
@@ -128,6 +129,10 @@ export class I18nComponent extends I18nController implements OnInit {
     this.filter(this.filterString);
   }
 
+  onNotUsedFromChange() {
+    this.filter(this.filterString);
+  }
+
   filterValidatedChange() {
     this.filter(this.filterString);
   }
@@ -136,12 +141,17 @@ export class I18nComponent extends I18nController implements OnInit {
     const hideNotValidated = this.filterOption == "validated";
     const hideValidated = this.filterOption == "not_validated";
     const v = value ? value.trim().toLowerCase() : "";
+    const notUsedFromDate = Date.now() - 1000 * 60 * 60 * 24 * this.notUsedFrom;
+    console.log(notUsedFromDate);
     this.filteredI18n = this.i18n.filter(i => {
       return (!hideValidated || i.i18n.some(label => !label.validated && label.label.length !== 0))
         && (!hideNotValidated || i.i18n.some(label => label.validated))
         && (v.length === 0 || i.i18n.some(label => label.label.length !== 0 && label.label.toLowerCase().indexOf(v) !== -1))
         && (this.selectedCategory === this.doNotFilterByCategory || i.category === this.selectedCategory)
+        && (this.notUsedFrom === -1 || !i.lastUpdate || Date.parse(i.lastUpdate.toString()) < notUsedFromDate)
     });
+
+    console.log(this.filteredI18n);
 
     this.setCategoryOnFirstItem(this.filteredI18n);
   }
@@ -198,7 +208,7 @@ export class I18nComponent extends I18nController implements OnInit {
   }
 
   upload() {
-    if(this.uploadType === 'Csv') {
+    if (this.uploadType === 'Csv') {
       this.botService.prepareI18nCsvDumpUploader(this.uploader);
     } else {
       this.botService.prepareI18nJsonDumpUploader(this.uploader);
