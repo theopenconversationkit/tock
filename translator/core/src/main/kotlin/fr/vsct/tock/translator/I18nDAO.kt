@@ -23,16 +23,34 @@ import org.litote.kmongo.Id
  */
 interface I18nDAO {
 
-    fun getLabels(): List<I18nLabel>
+    /**
+     * Gets all labels for the specified namespace.
+     */
+    fun getLabels(namespace: String): List<I18nLabel>
 
+    /**
+     * Gets label by id.
+     */
     fun getLabelById(id: Id<I18nLabel>): I18nLabel?
 
+    /**
+     * Saves label.
+     */
     fun save(i18n: I18nLabel)
 
+    /**
+     * Saves all specified labels.
+     */
     fun save(i18n: List<I18nLabel>)
 
+    /**
+     * Saves all labels that does not exist yet.
+     */
     fun saveIfNotExist(i18n: List<I18nLabel>)
 
+    /**
+     * Delete the label of specified id if and only if it has the specified namespace.
+     */
     fun deleteByNamespaceAndId(namespace: String, id: Id<I18nLabel>)
 
     /**
@@ -46,8 +64,18 @@ interface I18nDAO {
     fun deleteAlternativeIndexes(label: I18nLabel, localized: I18nLocalizedLabel, contextId: String)
 
     /**
-     * Get all current alternative indexes for the given localized label and context identifier.
+     * Gets all current alternative indexes for the given localized label and context identifier.
      */
     fun getAlternativeIndexes(label: I18nLabel, localized: I18nLocalizedLabel, contextId: String): Set<Int>
+
+    /**
+     * Increments [I18nLabelStat] usage.
+     */
+    fun incrementLabelStat(stat: I18nLabelStat)
+
+    /**
+     * Gets all label stats for the specified namespace.
+     */
+    fun getLabelStats(namespace: String): List<I18nLabelStat>
 
 }

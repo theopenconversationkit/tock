@@ -16,21 +16,29 @@
 
 <div class="i18n-label" *ngIf="i.i18n.length !== 0">
   <div class="i18n-label__title">
-    <span class="i18n-label__title__label" title="{{i._id}}">{{i.defaultLocalizedLabel().label}}</span>
+    <span class="i18n-label__title__label" md-tooltip="key:{{i._id}}">{{i.defaultLocalizedLabel().label.length === 0 ? i._id : i.defaultLocalizedLabel().label}}</span>
 
     <span class="i18n-label__title__intent">{{intent}}</span>
 
-    <button class="i18n-label__title__delete" *ngIf="deleteAllowed" md-button (click)="deleteLabel(i)" md-tooltip="Delete Label" color="warn">
+    <button class="i18n-label__title__delete" *ngIf="deleteAllowed" md-button (click)="deleteLabel(i)"
+            md-tooltip="Delete Label" color="warn">
       delete
     </button>
+
+    <span class="i18n-label__title__usage">
+      <span *ngIf="i.statCount">used {{ i.statCount }} times,</span>
+      <span *ngIf="i.lastUpdate">last used {{ i.lastUpdate | amTimeAgo }}</span>
+    </span>
   </div>
 
-  <div class="i18n-label__entry i18n-label__entry--language-{{l.locale}} i18n-label__entry--mode-{{l.interfaceType}}" *ngFor="let l of i.i18n; let isLast = last; let index = index">
-    <div class="i18n-label__entry__locale">{{l.locale}}</div>
+  <div class="i18n-label__entry i18n-label__entry--language-{{l.locale}} i18n-label__entry--mode-{{l.interfaceType}}"
+       *ngFor="let l of i.i18n; let isLast = last; let index = index">
+    <div class="i18n-label__entry__locale" title="{{l.displayStats()}}">{{l.locale}}</div>
 
     <div class="i18n-label__entry__mode">
       <md-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 0" md-list-avatar>chat</md-icon>
-      <md-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 1" md-list-avatar>record_voice_over</md-icon>
+      <md-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 1" md-list-avatar>record_voice_over
+      </md-icon>
     </div>
 
     <div class="i18n-label__entry__connector" *ngIf="l.connectorId">
@@ -41,13 +49,16 @@
     </div>
 
     <div class="i18n-label__entry__input">
-      <textarea class="i18n-label__entry__input__textarea" mdInput [(ngModel)]="l.label" (change)="save(i)"></textarea>
+      <textarea class="i18n-label__entry__input__textarea"
+                mdInput
+                [(ngModel)]="l.label"
+                (change)="save(i)"
+                [title]="l.stats && l.stats.length !== 0 ? ('used '+ l.stats[0].count +' times, last used ' + (l.stats[0].lastUpdate | amTimeAgo)) : 'No stats'"></textarea>
     </div>
 
     <div class="i18n-label__entry__alternative-management">
       <button class="i18n-label__entry__alternatives__button" md-button (click)="addNewAlternative(l)">
         <md-icon>add</md-icon>
-
         Add an alternative
       </button>
     </div>
@@ -57,7 +68,8 @@
     </div>
 
     <div class="i18n-label__entry__delete">
-      <button *ngIf="deleteAllowed" md-button (click)="removeLocalizedLabel(i, l)" md-tooltip="Delete Label" color="warn">
+      <button *ngIf="deleteAllowed" md-button (click)="removeLocalizedLabel(i, l)" md-tooltip="Delete Label"
+              color="warn">
         <md-icon>delete_forever</md-icon>
       </button>
     </div>
@@ -67,7 +79,8 @@
 
       <div class="i18n-label__entry__mode">
         <md-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 0" md-list-avatar>chat</md-icon>
-        <md-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 1" md-list-avatar>record_voice_over</md-icon>
+        <md-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 1" md-list-avatar>record_voice_over
+        </md-icon>
       </div>
 
       <div class="i18n-label__entry__connector" *ngIf="l.connectorId">
@@ -94,10 +107,12 @@
       </div>
     </div>
 
-    <div class="i18n-label__entry__connectors" *ngIf="isLast || i.i18n[index + 1].interfaceType !== l.interfaceType || i.i18n[index + 1].locale !== l.locale">
+    <div class="i18n-label__entry__connectors"
+         *ngIf="isLast || i.i18n[index + 1].interfaceType !== l.interfaceType || i.i18n[index + 1].locale !== l.locale">
       <span *ngFor="let connector of connectorTypes">
           <button *ngIf="!i.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.id)" md-icon-button
-                  (click)="addLocalizedLabelForConnector(i, l, connector.id)" md-tooltip="Clear localized label" color="warn">
+                  (click)="addLocalizedLabelForConnector(i, l, connector.id)" md-tooltip="Clear localized label"
+                  color="warn">
             <img
               src="/assets/images/{{connector.id}}.svg"
               class="connector"

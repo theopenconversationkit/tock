@@ -56,8 +56,7 @@ object I18nCsvCodec {
             "Connector",
             "Alternatives"
         )
-        i18nDAO.getLabels()
-            .filter { it.namespace == namespace }
+        i18nDAO.getLabels(namespace)
             .forEach { l ->
                 l.i18n.forEach { i ->
                     printer.printRecord(

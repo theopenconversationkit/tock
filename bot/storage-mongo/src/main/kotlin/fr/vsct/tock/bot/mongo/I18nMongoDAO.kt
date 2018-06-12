@@ -23,26 +23,33 @@ import fr.vsct.tock.bot.mongo.I18nAlternativeIndex_.Companion.Date
 import fr.vsct.tock.bot.mongo.I18nAlternativeIndex_.Companion.InterfaceType
 import fr.vsct.tock.bot.mongo.I18nAlternativeIndex_.Companion.LabelId
 import fr.vsct.tock.bot.mongo.I18nAlternativeIndex_.Companion.Locale
-import fr.vsct.tock.bot.mongo.I18nAlternativeIndex_.Companion.Namespace
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.I18nLabel
+import fr.vsct.tock.translator.I18nLabelStat
+import fr.vsct.tock.translator.I18nLabelStat_
+import fr.vsct.tock.translator.I18nLabel_
 import fr.vsct.tock.translator.I18nLabel_.Companion._id
 import fr.vsct.tock.translator.I18nLocalizedLabel
 import mu.KotlinLogging
 import org.bson.conversions.Bson
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
+import org.litote.kmongo.combine
+import org.litote.kmongo.currentDate
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
+import org.litote.kmongo.inc
 import org.litote.kmongo.save
+import org.litote.kmongo.set
+import org.litote.kmongo.upsert
 import java.util.concurrent.TimeUnit
 
 /**
@@ -54,7 +61,7 @@ internal object I18nMongoDAO : I18nDAO {
 
     private val col = database.getCollection<I18nLabel>()
     private val alternativeIndexCol = database.getCollection<I18nAlternativeIndex>().apply {
-        ensureIndex(ContextId, LabelId, Namespace, Locale, InterfaceType, ConnectorId)
+        ensureIndex(ContextId, LabelId, I18nAlternativeIndex_.Namespace, Locale, InterfaceType, ConnectorId)
         ensureIndex(
             Date,
             indexOptions = IndexOptions().expireAfter(
@@ -62,6 +69,12 @@ internal object I18nMongoDAO : I18nDAO {
                 TimeUnit.HOURS
             )
         )
+    }
+    private val statCol = database.getCollection<I18nLabelStat>().apply {
+        I18nLabelStat_.apply {
+            ensureUniqueIndex(LabelId, Locale, InterfaceType, ConnectorId)
+            ensureIndex(Namespace)
+        }
     }
 
     private fun sortLabels(list: List<I18nLabel>): List<I18nLabel> =
@@ -73,8 +86,8 @@ internal object I18nMongoDAO : I18nDAO {
     private fun sortLocalizedLabels(label: I18nLabel): I18nLabel =
         label.copy(i18n = sortLocalizedLabels(label.i18n))
 
-    override fun getLabels(): List<I18nLabel> {
-        return sortLabels(col.find().toList())
+    override fun getLabels(namespace: String): List<I18nLabel> {
+        return sortLabels(col.find(I18nLabel_.Namespace eq namespace).toList())
     }
 
     override fun getLabelById(id: Id<I18nLabel>): I18nLabel? {
@@ -90,12 +103,12 @@ internal object I18nMongoDAO : I18nDAO {
     }
 
     override fun saveIfNotExist(i18n: List<I18nLabel>) {
-        val existingIds = getLabels().map { it._id }.toSet()
+        val existingIds = sortLabels(col.find().toList()).map { it._id }.toSet()
         save(i18n.filterNot { existingIds.contains(it._id) })
     }
 
     override fun deleteByNamespaceAndId(namespace: String, id: Id<I18nLabel>) {
-        col.deleteOne(Namespace eq namespace, _id eq id)
+        col.deleteOne(I18nLabel_.Namespace eq namespace, _id eq id)
     }
 
     override fun addAlternativeIndex(
@@ -115,7 +128,7 @@ internal object I18nMongoDAO : I18nDAO {
         return and(
             ContextId eq contextId,
             LabelId eq label._id,
-            Namespace eq label.namespace,
+            label::namespace eq label.namespace,
             Locale eq localized.locale,
             InterfaceType eq localized.interfaceType,
             ConnectorId eq localized.connectorId
@@ -144,4 +157,27 @@ internal object I18nMongoDAO : I18nDAO {
             logger.error(e)
             emptySet()
         }
+
+    override fun incrementLabelStat(stat: I18nLabelStat) {
+        I18nLabelStat_.apply {
+            statCol.updateOne(
+                and(
+                    LabelId eq stat.labelId,
+                    Locale eq stat.locale,
+                    InterfaceType eq stat.interfaceType,
+                    ConnectorId eq stat.connectorId
+                ),
+                combine(
+                    inc(Count, stat.count),
+                    currentDate(LastUpdate),
+                    set(Namespace, stat.namespace)
+                ),
+                upsert()
+            )
+        }
+    }
+
+    override fun getLabelStats(namespace: String): List<I18nLabelStat> {
+        return statCol.find(I18nLabelStat_.Namespace eq namespace).toList()
+    }
 }

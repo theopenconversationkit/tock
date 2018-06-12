@@ -32,6 +32,14 @@
     <md-option value="validated">Only validated</md-option>
   </md-select>
   <span class="fill-remaining-space"></span>
+  <md-select placeholder="Not used since" [(ngModel)]="notUsedFrom"
+             (ngModelChange)="onNotUsedFromChange()">
+    <md-option value="-1"></md-option>
+    <md-option value="1">last day</md-option>
+    <md-option value="7">last week</md-option>
+    <md-option value="30">last month</md-option>
+  </md-select>
+  <span class="fill-remaining-space"></span>
   <button md-button (click)="validateAll()" md-tooltip="Validate all existing labels">Validate all</button>
   <button md-button (click)="complete()">Complete all fields</button>
 

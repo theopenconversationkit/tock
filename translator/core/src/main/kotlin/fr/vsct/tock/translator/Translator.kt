@@ -19,6 +19,7 @@ package fr.vsct.tock.translator
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.util.concurrent.UncheckedExecutionException
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
@@ -31,10 +32,12 @@ import mu.KotlinLogging
 import org.litote.kmongo.toId
 import java.text.ChoiceFormat
 import java.text.MessageFormat
+import java.time.Duration
 import java.util.Formatter
 import java.util.Locale
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.TimeUnit
+import java.util.concurrent.atomic.AtomicInteger
 
 /**
  * The main entry class of translator module.
@@ -52,6 +55,8 @@ object Translator {
     @Volatile
     var enabled: Boolean = booleanProperty("tock_i18n_enabled", false)
 
+    private val statWriteEnabled = booleanProperty("tock_i18n_stat_write_enabled", false)
+
     private val keyLabelRegex = "[^\\p{L}_]+".toRegex()
     private val defaultInterface: UserInterfaceType = textChat
 
@@ -61,6 +66,19 @@ object Translator {
     private val cache: Cache<String, I18nLabel> = CacheBuilder.newBuilder()
         .expireAfterWrite(longProperty("tock_i18n_cache_write_timeout_in_seconds", 10), TimeUnit.SECONDS)
         .build()
+
+    private val statsCache: Cache<I18nLabelStatKey, AtomicInteger> by lazy {
+        val executor: Executor = injector.provide()
+        executor.setPeriodic(Duration.ofMillis(longProperty("tock_i18n_stat_refresh_in_ms", 10000))) {
+            if (statsCache.size() != 0L) {
+                logger.trace { "persist i18n stats" }
+                val stats = HashMap(statsCache.asMap())
+                statsCache.invalidateAll()
+                stats.forEach { i18nDAO.incrementLabelStat(I18nLabelStat(it.key, it.value.get())) }
+            }
+        }
+        CacheBuilder.newBuilder().build<I18nLabelStatKey, AtomicInteger>()
+    }
 
     private val voiceTransformers: MutableList<VoiceTransformer> = CopyOnWriteArrayList()
 
@@ -95,63 +113,77 @@ object Translator {
             }
         }
 
-    fun saveIfNotExists(key: I18nLabelValue): I18nLabel = saveIfNotExists(key, defaultLocale)
+    private fun incrementStat(value: I18nLabelValue, context: I18nContext) {
+        statsCache.get(I18nLabelStatKey(value, context), { AtomicInteger() }).getAndIncrement()
+    }
 
-    fun saveIfNotExists(key: I18nLabelValue, defaultLocale: Locale): I18nLabel = getLabel(key) ?: {
-        val defaultLabelKey = key.defaultLabel.toString()
+    fun saveIfNotExists(value: I18nLabelValue): I18nLabel = saveIfNotExists(value, defaultLocale)
+
+    fun saveIfNotExists(value: I18nLabelValue, defaultLocale: Locale): I18nLabel = getLabel(value) ?: {
+        val defaultLabelKey = value.defaultLabel.toString()
         val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, defaultLabelKey)
         val label =
-            I18nLabel(key.key.toId(), key.namespace, key.category, LinkedHashSet(listOf(defaultLabel)), defaultLabelKey)
+            I18nLabel(
+                value.key.toId(),
+                value.namespace,
+                value.category,
+                LinkedHashSet(listOf(defaultLabel)),
+                defaultLabelKey
+            )
         i18nDAO.save(label)
         label
     }.invoke()
 
-    fun translate(
-        key: I18nLabelValue,
-        context: I18nContext
-    ): TranslatedString {
+    /**
+     * Translates an [I18nLabelValue] for the given [I18nContext].
+     */
+    fun translate(value: I18nLabelValue, context: I18nContext): TranslatedString {
 
         if (!enabled) {
             return TranslatedString(
                 formatMessage(
-                    key.defaultLabel.toString(),
+                    value.defaultLabel.toString(),
                     context,
-                    key.args
+                    value.args
                 )
             )
         }
-        if (key.defaultLabel is TranslatedString) {
-            logger.warn { "already translated string is proposed to translation - skipped: $key" }
-            return key.defaultLabel
+        if (value.defaultLabel is TranslatedString) {
+            logger.warn { "already translated string is proposed to translation - skipped: $value" }
+            return value.defaultLabel
         }
-        if (key.defaultLabel is RawString) {
-            logger.warn { "raw string is proposed to translation - skipped: $key" }
-            return TranslatedString(key.defaultLabel)
+        if (value.defaultLabel is RawString) {
+            logger.warn { "raw string is proposed to translation - skipped: $value" }
+            return TranslatedString(value.defaultLabel)
         }
 
-        val storedLabel = getLabel(key)
+        val storedLabel = getLabel(value)
         val (locale, userInterfaceType, connectorId) = context
 
         val targetDefaultUserInterface = if (userInterfaceType == textAndVoiceAssistant) textChat else userInterfaceType
 
+        if (statWriteEnabled) {
+            incrementStat(value, context.copy(userInterfaceType = targetDefaultUserInterface))
+        }
+
         val label = if (storedLabel != null) {
-            getLabel(storedLabel, key.defaultLabel.toString(), context)
+            getLabel(storedLabel, value.defaultLabel.toString(), context)
         } else {
-            val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, key.defaultLabel.toString())
+            val defaultLabel = I18nLocalizedLabel(defaultLocale, defaultInterface, value.defaultLabel.toString())
             if (locale != defaultLocale) {
                 val localizedLabel = I18nLocalizedLabel(
                     locale,
                     targetDefaultUserInterface,
                     translate(
-                        key.defaultLabel.toString(), defaultLocale, locale
+                        value.defaultLabel.toString(), defaultLocale, locale
                     )
                 )
                 val label = I18nLabel(
-                    key.key.toId(),
-                    key.namespace,
-                    key.category,
+                    value.key.toId(),
+                    value.namespace,
+                    value.category,
                     LinkedHashSet(listOf(defaultLabel, localizedLabel)),
-                    key.defaultLabel.toString()
+                    value.defaultLabel.toString()
                 )
                 i18nDAO.save(label)
                 localizedLabel.label
@@ -161,26 +193,26 @@ object Translator {
                         I18nLocalizedLabel(locale, targetDefaultUserInterface, defaultLabel.label)
                     else null
                 val label = I18nLabel(
-                    key.key.toId(),
-                    key.namespace,
-                    key.category,
+                    value.key.toId(),
+                    value.namespace,
+                    value.category,
                     LinkedHashSet(listOfNotNull(defaultLabel, interfaceLabel)),
-                    key.defaultLabel.toString()
+                    value.defaultLabel.toString()
                 )
                 i18nDAO.save(label)
-                key.defaultLabel
+                value.defaultLabel
             }
         }
 
-        logger.debug { "find label $label for $key, $locale, $userInterfaceType and $connectorId" }
+        logger.debug { "find label $label for $value, $locale, $userInterfaceType and $connectorId" }
 
         return if (label is TextAndVoiceTranslatedString) {
             label.copy(
-                text = formatMessage(label.text.toString(), context.copy(userInterfaceType = textChat), key.args),
+                text = formatMessage(label.text.toString(), context.copy(userInterfaceType = textChat), value.args),
                 voice = formatMessage(
                     label.voice.toString(),
                     context.copy(userInterfaceType = voiceAssistant),
-                    key.args
+                    value.args
                 )
             )
         } else {
@@ -188,7 +220,7 @@ object Translator {
                 formatMessage(
                     label.toString(),
                     context.copy(userInterfaceType = targetDefaultUserInterface),
-                    key.args
+                    value.args
                 )
             )
         }

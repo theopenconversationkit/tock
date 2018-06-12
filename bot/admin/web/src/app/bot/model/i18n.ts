@@ -27,7 +27,10 @@ export class I18nLabel {
   constructor(public _id: string,
               public category: string,
               public i18n: I18nLocalizedLabel[],
-              public defaultLabel?:string) {
+              public defaultLabel?: string,
+              public statCount?: number,
+              public lastUpdate?: Date,
+              public unhandledLocaleStats?: I18nLabelStat[]) {
   }
 
   defaultLocalizedLabel(): I18nLocalizedLabel {
@@ -51,7 +54,9 @@ export class I18nLabel {
   static fromJSON(json: any): I18nLabel {
     const value = Object.create(I18nLabel.prototype);
     const result = Object.assign(value, json, {
-      i18n: I18nLocalizedLabel.fromJSONArray(json.i18n)
+      i18n: I18nLocalizedLabel.fromJSONArray(json.i18n),
+      unhandledLocaleStats: I18nLabelStat.fromJSONArray(json.unhandledLocaleStats),
+      lastUpdate: json.lastUpdate ? new Date(Date.parse(json.lastUpdate)) : null
     });
 
     return result;
@@ -69,14 +74,20 @@ export class I18nLocalizedLabel {
               public label: string,
               public validated: boolean,
               public connectorId: string,
-              public alternatives: string[]) {
+              public alternatives: string[],
+              public stats?: I18nLabelStat[]) {
 
+  }
+
+  displayStats(): string {
+    return this.stats && this.stats.length !== 0 ? this.stats.map(s => s.display()).join(",") : "";
   }
 
   static fromJSON(json: any): I18nLocalizedLabel {
     const value = Object.create(I18nLocalizedLabel.prototype);
     const result = Object.assign(value, json, {
-      interfaceType: UserInterfaceType[json.interfaceType]
+      interfaceType: UserInterfaceType[json.interfaceType],
+      stats: I18nLabelStat.fromJSONArray(json.stats)
     });
 
     return result;
@@ -87,5 +98,30 @@ export class I18nLocalizedLabel {
   }
 }
 
+export class I18nLabelStat {
 
+  constructor(public locale: string,
+              public interfaceType: UserInterfaceType,
+              public connectorId: string,
+              public count: number,
+              public lastUpdate: Date) {
+  }
 
+  display(): string {
+    return `[${this.locale}-${UserInterfaceType[this.interfaceType]}-${this.connectorId ? this.connectorId : ''}:${this.count}-${this.lastUpdate}]`
+  }
+
+  static fromJSON(json: any): I18nLabelStat {
+    const value = Object.create(I18nLabelStat.prototype);
+    const result = Object.assign(value, json, {
+      interfaceType: UserInterfaceType[json.interfaceType],
+      lastUpdate: json.lastUpdate ? new Date(Date.parse(json.lastUpdate)) : null
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): I18nLabelStat[] {
+    return json ? json.map(I18nLabelStat.fromJSON) : [];
+  }
+}
