@@ -30,6 +30,7 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.KFlapdoodleRule.Companion.rule
 import java.time.Duration
 import java.util.concurrent.Callable
+import java.util.concurrent.Executors
 
 private val logger = KotlinLogging.logger {}
 
@@ -99,7 +100,7 @@ private object TestExecutor : Executor {
     }
 
     override fun setPeriodic(initialDelay: Duration, delay: Duration, runnable: () -> Unit): Long {
-        runnable.invoke()
+        Executors.newCachedThreadPool().submit(runnable)
         return 0L
     }
 }

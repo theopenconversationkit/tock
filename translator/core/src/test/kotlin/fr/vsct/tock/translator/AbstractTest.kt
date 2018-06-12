@@ -20,6 +20,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
+import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.shared.tockInternalInjector
 import io.mockk.mockk
 import org.junit.jupiter.api.AfterEach
@@ -44,6 +45,7 @@ abstract class AbstractTest {
     fun initContext() {
         tockInternalInjector = KodeinInjector()
         tockInternalInjector.inject(Kodein {
+            import(sharedTestModule)
             import(baseModule())
         })
         Translator.enabled = true
