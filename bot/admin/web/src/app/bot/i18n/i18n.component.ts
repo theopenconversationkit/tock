@@ -147,7 +147,7 @@ export class I18nComponent extends I18nController implements OnInit {
         && (!hideNotValidated || i.i18n.some(label => label.validated))
         && (v.length === 0 || i.i18n.some(label => label.label.length !== 0 && label.label.toLowerCase().indexOf(v) !== -1))
         && (this.selectedCategory === this.doNotFilterByCategory || i.category === this.selectedCategory)
-        && (this.notUsedFrom == -1 || !i.lastUpdate || i.lastUpdate.getTime() > notUsedFromDate)
+        && (this.notUsedFrom == -1 || !i.lastUpdate || i.lastUpdate.getTime() < notUsedFromDate)
     });
 
     this.setCategoryOnFirstItem(this.filteredI18n);

@@ -83,12 +83,6 @@ export class I18nLocalizedLabel {
     return this.stats && this.stats.length !== 0 ? this.stats.map(s => s.display()).join(",") : "";
   }
 
-  displayPrettyStats(): string {
-    return this.stats && this.stats.length !== 0 ?
-      'Used ' + this.stats[0].count + ' times, last used ' + this.stats[0].lastUpdate :
-      'No stats';
-  }
-
   static fromJSON(json: any): I18nLocalizedLabel {
     const value = Object.create(I18nLocalizedLabel.prototype);
     const result = Object.assign(value, json, {

@@ -53,13 +53,12 @@
                 mdInput
                 [(ngModel)]="l.label"
                 (change)="save(i)"
-                title="{{l.displayPrettyStats()}}"></textarea>
+                [title]="l.stats && l.stats.length !== 0 ? ('used '+ l.stats[0].count +' times, last used ' + (l.stats[0].lastUpdate | amTimeAgo)) : 'No stats'"></textarea>
     </div>
 
     <div class="i18n-label__entry__alternative-management">
       <button class="i18n-label__entry__alternatives__button" md-button (click)="addNewAlternative(l)">
         <md-icon>add</md-icon>
-
         Add an alternative
       </button>
     </div>
