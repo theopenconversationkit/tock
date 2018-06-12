@@ -340,7 +340,7 @@ object BotAdminService {
         return try {
             val restClient = getRestClient(conf)
             val response = restClient.talk(
-                conf.applicationId,
+                conf.path ?: conf.applicationId,
                 request.language,
                 ClientMessageRequest(
                     "test_${conf._id}_${request.language}",

@@ -32,6 +32,7 @@ import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanService
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.ConnectorType.Companion.rest
 import fr.vsct.tock.bot.connector.rest.addRestConnector
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.nlp.admin.AdminVerticle
@@ -115,7 +116,7 @@ open class BotAdminVerticle : AdminVerticle() {
                     }
                 BotAdminService.saveApplicationConfiguration(conf)
                 //add rest connector
-                if(bot._id == null) {
+                if(bot._id == null && bot.connectorType != rest) {
                     addRestConnector(conf).apply {
                         BotAdminService.saveApplicationConfiguration(
                             BotApplicationConfiguration(

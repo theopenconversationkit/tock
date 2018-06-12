@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.ConnectorType.Companion.rest
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.StoryHandlerListener
@@ -242,15 +243,17 @@ object BotRepository {
                         BotConfigurationSynchronizer.monitor(bot)
 
                         //6 generate and install rest connector
-                        adminRestConnectorInstaller.invoke(appConf)
-                            ?.also {
-                                val restConf = refreshBotConfiguration(it, existingBotConfigurationsMap)
-                                saveConfiguration(
-                                    findConnectorProvider(restConf.type).connector(restConf),
-                                    restConf,
-                                    bot
-                                )
-                            }
+                        if (existingBotConfigurations.none { it.name == conf.getName() && it.connectorType == rest }) {
+                            adminRestConnectorInstaller.invoke(appConf)
+                                ?.also {
+                                    val restConf = refreshBotConfiguration(it, existingBotConfigurationsMap)
+                                    saveConfiguration(
+                                        findConnectorProvider(restConf.type).connector(restConf),
+                                        restConf,
+                                        bot
+                                    )
+                                }
+                        }
                     }
             } catch (e: Exception) {
                 logger.error(e) {
@@ -265,7 +268,8 @@ object BotRepository {
             logger.trace { "check configurations" }
             //clone conf list as we may update connectorControllerMap
             val existingConfs = ArrayList(connectorControllerMap.keys)
-            botConfigurationDAO.getConfigurations().forEach { c ->
+            val confs = botConfigurationDAO.getConfigurations()
+            confs.forEach { c ->
                 if (existingConfs.none { c.equalsWithoutId(it) }) {
                     val botDefinition = botProviders.find { it.botId() == c.botId }?.botDefinition()
                     if (botDefinition != null) {
@@ -287,6 +291,16 @@ object BotRepository {
                     }
                 }
             }
+
+            //remove old confs
+            connectorControllerMap.keys.forEach { conf ->
+                if (confs.none { it._id == conf._id }) {
+                    logger.debug { "uninstall $conf" }
+                    connectorControllerMap.remove(conf)?.unregisterServices()
+                }
+            }
+            //register new confs
+            verticle.configure()
         } catch (e: Exception) {
             logger.error(e)
         }

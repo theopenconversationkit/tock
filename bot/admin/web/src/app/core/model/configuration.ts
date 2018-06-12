@@ -53,7 +53,7 @@ export class ConnectorType {
 
   getProperties() : string[] {
     if(this.isMessenger()) {
-      return ['pageId','token','verifyToken','secret'];
+      return ['appId', 'pageId','token','verifyToken','secret'];
     } else if(this.isGa()) {
       return ['_project_ids'];
     }  else if(this.isAlexa()) {

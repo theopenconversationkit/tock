@@ -20,13 +20,13 @@ import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.shared.mapNotNullValues
 
 /**
  *
  */
 internal object MessengerConnectorProvider : ConnectorProvider {
 
+    private const val APP_ID = "appId"
     private const val PAGE_ID = "pageId"
     private const val TOKEN = "token"
     private const val VERIFY_TOKEN = "verifyToken"
@@ -37,7 +37,7 @@ internal object MessengerConnectorProvider : ConnectorProvider {
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
             return MessengerConnector(
-                connectorId,
+                parameters[APP_ID]?.takeIf { it.isNotBlank() } ?: connectorId,
                 path,
                 parameters.getValue(PAGE_ID),
                 parameters.getValue(TOKEN),
@@ -56,37 +56,6 @@ internal object MessengerConnectorProvider : ConnectorProvider {
                         if (parameters[SECRET].isNullOrBlank()) "secret is mandatory" else null
                     )
                 }
-
-    /**
-     * Create a new messenger connector configuration.
-     */
-    fun newConfiguration(
-        pageId: String,
-        pageToken: String,
-        applicationSecret: String,
-        webhookVerifyToken: String? = null,
-        connectorId: String = pageId,
-        path: String = "/messenger",
-        name: String = connectorId,
-        baseUrl: String? = null
-    ): ConnectorConfiguration {
-
-
-        return ConnectorConfiguration(
-            connectorId,
-            path,
-            connectorType,
-            name,
-            baseUrl,
-            null,
-            mapNotNullValues(
-                PAGE_ID to pageId,
-                TOKEN to pageToken,
-                SECRET to applicationSecret,
-                VERIFY_TOKEN to webhookVerifyToken
-            )
-        )
-    }
 }
 
 internal class MessengerConnectorProviderService : ConnectorProvider by MessengerConnectorProvider

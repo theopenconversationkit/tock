@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.admin.model
 
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.shared.tryToFindLocalIp
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
@@ -47,7 +48,7 @@ data class BotConfiguration(
             connectorType,
             ownerConnectorType,
             name,
-            baseUrl,
+            if (baseUrl.isNullOrBlank() && _id == null) "http://${tryToFindLocalIp()}" else baseUrl,
             parameters,
             manuallyModified,
             path,

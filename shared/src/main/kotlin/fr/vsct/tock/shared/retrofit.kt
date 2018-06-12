@@ -36,9 +36,27 @@ import okio.Okio
 import retrofit2.Retrofit
 import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.EOFException
+import java.net.Inet4Address
+import java.net.NetworkInterface
 import java.nio.charset.StandardCharsets.UTF_8
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.MILLISECONDS
+
+/**
+ * Best attempt to guess local ip.
+ */
+fun tryToFindLocalIp(): String {
+    return NetworkInterface.getNetworkInterfaces()
+        .toList()
+        .run {
+            find { it.name.contains("eno") }
+                ?.inetAddresses?.toList()?.filterIsInstance<Inet4Address>()?.firstOrNull()?.hostName
+                    ?: flatMap { it.inetAddresses.toList().filterIsInstance<Inet4Address>() }
+                        .find { it.hostName.startsWith("192.168.0") }
+                        ?.hostName
+                    ?: "localhost"
+        }
+}
 
 
 /**

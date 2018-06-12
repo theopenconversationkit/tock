@@ -38,17 +38,22 @@ internal class BotVerticle : WebVerticle() {
     inner class ServiceInstaller(
         val serviceId: String,
         private val installer: (Router) -> Unit,
-        var routes: MutableList<Route> = CopyOnWriteArrayList()
+        var routes: MutableList<Route> = CopyOnWriteArrayList(),
+        @Volatile
+        var installed: Boolean = false
     ) {
 
         fun install() {
-            try {
-                logger.debug("install $serviceId")
-                val registeredRoutes = router.routes
-                installer.invoke(router)
-                routes.addAll(router.routes.subtract(registeredRoutes))
-            } catch (e: Exception) {
-                logger.error(e)
+            if (!installed) {
+                installed = true
+                try {
+                    logger.debug("install $serviceId")
+                    val registeredRoutes = router.routes
+                    installer.invoke(router)
+                    routes.addAll(router.routes.subtract(registeredRoutes))
+                } catch (e: Exception) {
+                    logger.error(e)
+                }
             }
         }
 
@@ -61,6 +66,8 @@ internal class BotVerticle : WebVerticle() {
 
     private val handlers: MutableMap<String, ServiceInstaller> = ConcurrentHashMap()
     private val secondaryInstallers: MutableSet<ServiceInstaller> = CopyOnWriteArraySet()
+    @Volatile
+    private var initialized: Boolean = false
 
     override fun authProvider(): AuthProvider? = defaultAuthProvider()
 
@@ -102,7 +109,10 @@ internal class BotVerticle : WebVerticle() {
     }
 
     override fun configure() {
-        initEncryptor()
+        if (!initialized) {
+            initEncryptor()
+            initialized = true
+        }
 
         handlers.forEach {
             it.value.install()

@@ -19,11 +19,10 @@ package fr.vsct.tock.bot.admin.bot
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.shared.property
+import fr.vsct.tock.shared.tryToFindLocalIp
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
-import java.net.Inet4Address
-import java.net.NetworkInterface
 
 /**
  * Configuration details for a bot and a connector.
@@ -84,21 +83,8 @@ data class BotApplicationConfiguration(
         val defaultBaseUrl: String =
             property(
                 "tock_configuration_bot_default_base_url",
-                "http://${getLocalhostIP()}:${property("botverticle_port", "8080")}"
+                "http://${tryToFindLocalIp()}:${property("botverticle_port", "8080")}"
             )
-
-        private fun getLocalhostIP(): String {
-            return NetworkInterface.getNetworkInterfaces()
-                .toList()
-                .run {
-                    find { it.name.contains("eno") }
-                        ?.inetAddresses?.toList()?.filterIsInstance<Inet4Address>()?.firstOrNull()?.hostName
-                            ?: flatMap { it.inetAddresses.toList().filterIsInstance<Inet4Address>() }
-                                .find { it.hostName.startsWith("192.168.0") }
-                                ?.hostName
-                            ?: "localhost"
-                }
-        }
     }
 
     /**

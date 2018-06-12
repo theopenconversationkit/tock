@@ -67,6 +67,9 @@
       <mat-panel-description>Parameters</mat-panel-description>
     </md-expansion-panel-header>
     <md-input-container>
+      <input mdInput placeholder="Application Id" [(ngModel)]="configuration.parameters['appId']">
+    </md-input-container>
+    <md-input-container>
       <input mdInput placeholder="Page Id" [(ngModel)]="configuration.parameters['pageId']">
     </md-input-container>
     <md-input-container class="long-text">

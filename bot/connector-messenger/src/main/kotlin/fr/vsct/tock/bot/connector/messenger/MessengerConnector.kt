@@ -100,8 +100,8 @@ class MessengerConnector internal constructor(
     }
 
     init {
-        pageApplicationMap.put(pageId, applicationId)
-        applicationTokenMap.put(applicationId, token)
+        pageApplicationMap[pageId] = applicationId
+        applicationTokenMap[applicationId] = token
         connectors.add(this)
     }
 
