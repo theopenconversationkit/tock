@@ -49,7 +49,11 @@
     </div>
 
     <div class="i18n-label__entry__input">
-      <textarea class="i18n-label__entry__input__textarea" mdInput [(ngModel)]="l.label" (change)="save(i)"></textarea>
+      <textarea class="i18n-label__entry__input__textarea"
+                mdInput
+                [(ngModel)]="l.label"
+                (change)="save(i)"
+                title="{{l.displayPrettyStats()}}"></textarea>
     </div>
 
     <div class="i18n-label__entry__alternative-management">
