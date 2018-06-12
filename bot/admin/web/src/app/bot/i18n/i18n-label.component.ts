@@ -54,7 +54,7 @@ export class I18nLabelComponent implements OnInit {
       .getConnectorTypes()
       .subscribe(
         c => {
-          this.connectorTypes = c;
+          this.connectorTypes = c.filter(conn => !conn.isRest());
         }
       );
 

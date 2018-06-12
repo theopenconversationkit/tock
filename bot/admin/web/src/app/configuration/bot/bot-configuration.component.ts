@@ -47,8 +47,9 @@ export class BotConfigurationComponent implements OnInit {
       .subscribe(
         c => {
           this.connectorTypes = c;
-          this.connectorTypesAndRestType = c.slice(0);
-          this.connectorTypesAndRestType.push(new ConnectorType("rest", UserInterfaceType.textChat));
+          const rest = c.find(conn => conn.isRest());
+          this.connectorTypesAndRestType = c.filter(conn => !conn.isRest());
+          this.connectorTypesAndRestType.push(rest);
           if (!this.configuration._id && c.length > 0) {
             this.configuration.connectorType = c[0];
           }
