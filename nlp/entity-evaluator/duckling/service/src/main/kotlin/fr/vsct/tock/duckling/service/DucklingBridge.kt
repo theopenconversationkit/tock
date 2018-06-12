@@ -44,6 +44,7 @@ internal object DucklingBridge {
     private lateinit var start: Keyword
     private lateinit var grain: Keyword
     private lateinit var second: Keyword
+    @Volatile
     var initialized = false
 
     private fun keyword(name: String): Keyword = RT.keyword(null as String?, name)
