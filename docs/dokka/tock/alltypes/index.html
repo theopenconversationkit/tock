@@ -75,6 +75,13 @@
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.alexa/-alexa-connector-callback/index.html">fr.vsct.tock.bot.connector.alexa.AlexaConnectorCallback</a></td>
+<td>
+<p>The alexa connector callback.</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.alexa/-alexa-handler/index.html">fr.vsct.tock.bot.connector.alexa.AlexaHandler</a></td>
 <td>
 <p>To specify <a href="../fr.vsct.tock.bot.definition/-connector-story-handler/index.html">ConnectorStoryHandler</a> for Alexa connector.
@@ -100,7 +107,8 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 <td>
 <a href="../fr.vsct.tock.bot.connector.alexa/-alexa-tock-mapper/index.html">fr.vsct.tock.bot.connector.alexa.AlexaTockMapper</a></td>
 <td>
-<p>An Alexa model to Tock model mapper. Provided via <a href="#">addAlexaConnector.alexaTockMapper</a> parameter.</p>
+<p>An Alexa model to Tock model mapper.
+Provided via <a href="#">addAlexaConnector.alexaTockMapper</a> parameter.</p>
 </td>
 </tr>
 <tr>
@@ -123,6 +131,20 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 <td>
 <p>A jackson wrapper to store class name with dynamic type value.
 Use with care, as it stores the class name in json.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.engine.event/-app-role/index.html">fr.vsct.tock.bot.engine.event.AppRole</a></td>
+<td>
+<p>An app role.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.handover/-app-roles-webhook/index.html">fr.vsct.tock.bot.connector.messenger.model.handover.AppRolesWebhook</a></td>
+<td>
+<p>See <a href="https//developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#app_roles">https//developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#app_roles</a>.</p>
 </td>
 </tr>
 <tr>
@@ -174,6 +196,12 @@ Use with care, as it stores the class name in json.</p>
 <tr>
 <td>
 <a href="../fr.vsct.tock.bot.connector.messenger.model.send/-attachment-message/index.html">fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.attachment/-attachment-request/index.html">fr.vsct.tock.bot.connector.messenger.model.attachment.AttachmentRequest</a></td>
 <td>
 </td>
 </tr>
@@ -462,13 +490,6 @@ The implementation is loaded at runtime to list all available connectors, using 
 </tr>
 <tr>
 <td>
-<a href="../fr.vsct.tock.bot.engine.dialog/-context-value/index.html">fr.vsct.tock.bot.engine.dialog.ContextValue</a></td>
-<td>
-<p>A (may be not yet evaluated) value linked to an entity stored in the context.</p>
-</td>
-</tr>
-<tr>
-<td>
 <a href="../fr.vsct.tock.bot.connector.messenger.model.send/-custom-event/index.html">fr.vsct.tock.bot.connector.messenger.model.send.CustomEvent</a></td>
 <td>
 </td>
@@ -542,13 +563,14 @@ The dialog has a (current) <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/st
 <td>
 <a href="../fr.vsct.tock.bot.engine.event/-end-conversation-event/index.html">fr.vsct.tock.bot.engine.event.EndConversationEvent</a></td>
 <td>
-<p>Event created when closing a conversation - connector support is not required!</p>
+<p>Event provided when closing a conversation between a user and a bot</p>
 </td>
 </tr>
 <tr>
 <td>
-<a href="../fr.vsct.tock.bot.engine.dialog/fr.vsct.tock.nlp.api.client.model.-entity/index.html">fr.vsct.tock.nlp.api.client.model.Entity</a> (extensions in package fr.vsct.tock.bot.engine.dialog)</td>
+<a href="../fr.vsct.tock.bot.engine.event/-end-session-event/index.html">fr.vsct.tock.bot.engine.event.EndSessionEvent</a></td>
 <td>
+<p>The session is ended. dialog context should be cleared.</p>
 </td>
 </tr>
 <tr>
@@ -556,6 +578,13 @@ The dialog has a (current) <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/st
 <a href="../fr.vsct.tock.bot.engine.dialog/-entity-state-value/index.html">fr.vsct.tock.bot.engine.dialog.EntityStateValue</a></td>
 <td>
 <p>EntityStateValue is the current value of an entity with its history.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.engine.dialog/-entity-value/index.html">fr.vsct.tock.bot.engine.dialog.EntityValue</a></td>
+<td>
+<p>A (may be not yet evaluated) value linked to an entity stored in the context.</p>
 </td>
 </tr>
 <tr>
@@ -1260,6 +1289,13 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.engine.event/-get-app-roles-event/index.html">fr.vsct.tock.bot.engine.event.GetAppRolesEvent</a></td>
+<td>
+<p>To get applications roles.</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.definition/-handler.html">fr.vsct.tock.bot.definition.Handler</a></td>
 <td>
 </td>
@@ -1442,6 +1478,26 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.send/-media-element/index.html">fr.vsct.tock.bot.connector.messenger.model.send.MediaElement</a></td>
+<td>
+<p>See <a href="https//developers.facebook.com/docs/messenger-platform/reference/template/media">https//developers.facebook.com/docs/messenger-platform/reference/template/media</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.send/-media-payload/index.html">fr.vsct.tock.bot.connector.messenger.model.send.MediaPayload</a></td>
+<td>
+<p>A Media payload see <a href="https//developers.facebook.com/docs/messenger-platform/send-messages/template/media">https//developers.facebook.com/docs/messenger-platform/send-messages/template/media</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.send/-media-type/index.html">fr.vsct.tock.bot.connector.messenger.model.send.MediaType</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.messenger.model.send/-message/index.html">fr.vsct.tock.bot.connector.messenger.model.send.Message</a></td>
 <td>
 </td>
@@ -1525,16 +1581,16 @@ See <a href="facebook documentation">https://developers.facebook.com/docs/messen
 </tr>
 <tr>
 <td>
-<a href="../fr.vsct.tock.bot.connector.messenger/-messenger-configuration/index.html">fr.vsct.tock.bot.connector.messenger.MessengerConfiguration</a></td>
+<a href="../fr.vsct.tock.bot.connector.messenger/-messenger-connector/index.html">fr.vsct.tock.bot.connector.messenger.MessengerConnector</a></td>
 <td>
-<p>To handle messenger behaviour.</p>
+<p>Contains built-in checks to ensure that two <a href="../fr.vsct.tock.bot.connector.messenger.model.send/-message-request/index.html">MessageRequest</a> for the same recipient are sent sequentially.</p>
 </td>
 </tr>
 <tr>
 <td>
-<a href="../fr.vsct.tock.bot.connector.messenger/-messenger-connector/index.html">fr.vsct.tock.bot.connector.messenger.MessengerConnector</a></td>
+<a href="../fr.vsct.tock.bot.connector.messenger/-messenger-connector-callback/index.html">fr.vsct.tock.bot.connector.messenger.MessengerConnectorCallback</a></td>
 <td>
-<p>Contains built-in checks to ensure that two <a href="../fr.vsct.tock.bot.connector.messenger.model.send/-message-request/index.html">MessageRequest</a> for the same recipient are sent sequentially.</p>
+<p>The messenger <a href="#">ConnectorCallback</a>.</p>
 </td>
 </tr>
 <tr>
@@ -1657,6 +1713,32 @@ Need to be registered using <a href="../fr.vsct.tock.bot.engine/-bot-repository/
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.handover/-pass-thread-control/index.html">fr.vsct.tock.bot.connector.messenger.model.handover.PassThreadControl</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.engine.event/-pass-thread-control-event/index.html">fr.vsct.tock.bot.engine.event.PassThreadControlEvent</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.handover/-pass-thread-control-request/index.html">fr.vsct.tock.bot.connector.messenger.model.handover.PassThreadControlRequest</a></td>
+<td>
+<p>See <a href="https//developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#pass_thread_control">https//developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#pass_thread_control</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.handover/-pass-thread-control-webhook/index.html">fr.vsct.tock.bot.connector.messenger.model.handover.PassThreadControlWebhook</a></td>
+<td>
+<p>See <a href="https//developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#pass_thread_control">https//developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#pass_thread_control</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.messenger.model.send/-payload/index.html">fr.vsct.tock.bot.connector.messenger.model.send.Payload</a></td>
 <td>
 </td>
@@ -1733,6 +1815,32 @@ Need to be registered using <a href="../fr.vsct.tock.bot.engine/-bot-repository/
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.handover/-request-thread-control/index.html">fr.vsct.tock.bot.connector.messenger.model.handover.RequestThreadControl</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.engine.event/-request-thread-control-event/index.html">fr.vsct.tock.bot.engine.event.RequestThreadControlEvent</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.handover/-request-thread-control-request/index.html">fr.vsct.tock.bot.connector.messenger.model.handover.RequestThreadControlRequest</a></td>
+<td>
+<p>See <a href="https//developers.facebook.com/docs/messenger-platform/reference/handover-protocol#request_thread_control">https//developers.facebook.com/docs/messenger-platform/reference/handover-protocol#request_thread_control</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.handover/-request-thread-control-webhook/index.html">fr.vsct.tock.bot.connector.messenger.model.handover.RequestThreadControlWebhook</a></td>
+<td>
+<p>See <a href="https//developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#request_thread_control">https//developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#request_thread_control</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.engine.monitoring/-request-timer/index.html">fr.vsct.tock.bot.engine.monitoring.RequestTimer</a></td>
 <td>
 <p>To track time for requests received and sent.
@@ -1770,6 +1878,18 @@ Need to be registered using <a href="../fr.vsct.tock.bot.engine/-bot-repository/
 <a href="../fr.vsct.tock.bot.admin.answer/-script-answer-versioned-configuration/index.html">fr.vsct.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration</a></td>
 <td>
 <p>A version of <a href="../fr.vsct.tock.bot.admin.answer/-script-answer-configuration/index.html">ScriptAnswerConfiguration</a></p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.handover/-secondary-receiver-data/index.html">fr.vsct.tock.bot.connector.messenger.model.handover.SecondaryReceiverData</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.handover/-secondary-receiver-response/index.html">fr.vsct.tock.bot.connector.messenger.model.handover.SecondaryReceiverResponse</a></td>
+<td>
 </td>
 </tr>
 <tr>
@@ -1996,7 +2116,14 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 <td>
 <a href="../fr.vsct.tock.bot.engine.event/-start-conversation-event/index.html">fr.vsct.tock.bot.engine.event.StartConversationEvent</a></td>
 <td>
-<p>Event created when starting a conversation - connector support is not required!</p>
+<p>Event provided when starting a conversation a conversation between a user and a bot</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.engine.event/-start-session-event/index.html">fr.vsct.tock.bot.engine.event.StartSessionEvent</a></td>
+<td>
+<p>A new session is started.</p>
 </td>
 </tr>
 <tr>
@@ -2143,6 +2270,32 @@ Used to manage workflow in a <a href="../fr.vsct.tock.bot.definition/-story-hand
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.handover/-take-thread-control/index.html">fr.vsct.tock.bot.connector.messenger.model.handover.TakeThreadControl</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.engine.event/-take-thread-control-event/index.html">fr.vsct.tock.bot.engine.event.TakeThreadControlEvent</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.handover/-take-thread-control-request/index.html">fr.vsct.tock.bot.connector.messenger.model.handover.TakeThreadControlRequest</a></td>
+<td>
+<p>See <a href="https//developers.facebook.com/docs/messenger-platform/reference/handover-protocol#take">https//developers.facebook.com/docs/messenger-platform/reference/handover-protocol#take</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.handover/-take-thread-control-webhook/index.html">fr.vsct.tock.bot.connector.messenger.model.handover.TakeThreadControlWebhook</a></td>
+<td>
+<p>See <a href="https//developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#take_thread_control">https//developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#take_thread_control</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.admin.test/-test-action-report/index.html">fr.vsct.tock.bot.admin.test.TestActionReport</a></td>
 <td>
 </td>
@@ -2209,6 +2362,31 @@ Used to manage workflow in a <a href="../fr.vsct.tock.bot.definition/-story-hand
 <tr>
 <td>
 <a href="../fr.vsct.tock.bot.connector.messenger.model.send/-text-quick-reply/index.html">fr.vsct.tock.bot.connector.messenger.model.send.TextQuickReply</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.handover/-thread-control-request/index.html">fr.vsct.tock.bot.connector.messenger.model.handover.ThreadControlRequest</a></td>
+<td>
+<p>See <a href="https//developers.facebook.com/docs/messenger-platform/reference/handover-protocol">https//developers.facebook.com/docs/messenger-platform/reference/handover-protocol</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.handover/-thread-owner/index.html">fr.vsct.tock.bot.connector.messenger.model.handover.ThreadOwner</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.handover/-thread-owner-data/index.html">fr.vsct.tock.bot.connector.messenger.model.handover.ThreadOwnerData</a></td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.messenger.model.handover/-thread-owner-response/index.html">fr.vsct.tock.bot.connector.messenger.model.handover.ThreadOwnerResponse</a></td>
 <td>
 </td>
 </tr>

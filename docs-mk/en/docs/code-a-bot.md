@@ -14,14 +14,14 @@ With Maven:
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>bot-toolkit</artifactId>
-            <version>1.0.0</version>
+            <version>1.1.0</version>
         </dependency>
 ```
 
 With Gradle:
 
 ```gradle
-      compile 'fr.vsct.tock:bot-toolkit:1.0.0'
+      compile 'fr.vsct.tock:bot-toolkit:1.1.0'
 ```
 
 ## A Bot is a Set of Stories
@@ -315,15 +315,8 @@ registerAndInstallBot(openBot)
 
 where the *openBot* variable is the bot you originally defined.
 
-You need also to specify which connectors are used.
-For example, to connect the bot to Messenger and Google Assistant:
-
-```kotlin
-addMessengerConnector(..)
-addGoogleAssistantConnector(..)
-registerAndInstallBot(openBot)
-
-```
+When the bot is started, you also need to specify which connectors are used
+in the web administration interface: Configuration -> Bot Configurations -> Create a new configuration  
 
 The documentation for each connector is in the README file of the corresponding sub-projects. 
 

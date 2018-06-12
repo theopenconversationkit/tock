@@ -8,27 +8,20 @@ In order to connect your bot with a messenger bot application, you need a Messen
 
 * You need to retrieve from Facebook these values:
 
-    * **pageId** : the Facebook page id.
-    * **pageToken** : a token for the messenger app and the Facebook page.
-    * **applicationSecret** : the messenger application secret key.
-    * **webhookVerifyToken** : a webhook verify token you choose.
+    * **Relative REST path** : the relative rest path of the messenger bot (e.g. /messenger)
+    * **Application id** : The Messenger application id.  
+    * **Page id** : The Facebook page id.
+    * **Call Token** : The token allowing the messenger app to call the Facebook page.
+    * **Webhook token** : A token (choose what you want) used when registering the webhook in the Messenger admin interface.
+    * **Secret** : the messenger application secret key.
 
-* Then add in your code:
-
-```kotlin
-
-addMessengerConnector( 
-    pageId,
-    pageToken,
-    applicationSecret,
-    webhookVerifyToken
-    )
-```
+* Then go to the Configuration -> Bot Configurations menu in the Tock Bot administration interface,
+ and create a new configuration with these parameters 
 
 * Take the ngrok value (ie  https://xxxx.ngrok.io ) and use it in the webhook interface of messenger settings, to specify :
    * the url : https://xxxx.ngrok.io/messenger
-   * the verify token you set in tock_bot_open_data_webhook_verify_token env var
+   * the webhook token you set
 
-* Full documentation is available in [KDoc format](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector.messenger/index.html)
+* Full documentation of the messenger builders is available in [KDoc format](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector.messenger/index.html)
 
 * A Messenger integration sample is available in the [open data Bot](https://github.com/voyages-sncf-technologies/tock-bot-open-data) source code

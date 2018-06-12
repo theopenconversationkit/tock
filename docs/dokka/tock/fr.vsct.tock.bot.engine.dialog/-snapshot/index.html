@@ -18,7 +18,7 @@
 <p><a href="-init-.html">&lt;init&gt;</a></p>
 </td>
 <td>
-<code><span class="identifier">Snapshot</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.Snapshot$<init>(kotlin.String, kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.ContextValue)), java.time.Instant)/intentName">intentName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.Snapshot$<init>(kotlin.String, kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.ContextValue)), java.time.Instant)/entityValues">entityValues</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-context-value/index.html"><span class="identifier">ContextValue</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.Snapshot$<init>(kotlin.String, kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.ContextValue)), java.time.Instant)/date">date</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/8/docs/api/java/time/Instant.html"><span class="identifier">Instant</span></a>&nbsp;<span class="symbol">=</span>&nbsp;now()<span class="symbol">)</span></code>
+<code><span class="identifier">Snapshot</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.Snapshot$<init>(kotlin.String, kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.EntityValue)), java.time.Instant)/intentName">intentName</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.Snapshot$<init>(kotlin.String, kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.EntityValue)), java.time.Instant)/entityValues">entityValues</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-entity-value/index.html"><span class="identifier">EntityValue</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.Snapshot$<init>(kotlin.String, kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.EntityValue)), java.time.Instant)/date">date</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/8/docs/api/java/time/Instant.html"><span class="identifier">Instant</span></a>&nbsp;<span class="symbol">=</span>&nbsp;now()<span class="symbol">)</span></code>
 <p>A "snapshot" is a readonly view of the state in the dialog, usually after a bot reply.</p>
 </td>
 </tr>
@@ -39,7 +39,7 @@
 <p><a href="entity-values.html">entityValues</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">entityValues</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-context-value/index.html"><span class="identifier">ContextValue</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">entityValues</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-entity-value/index.html"><span class="identifier">EntityValue</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
@@ -58,7 +58,7 @@
 <p><a href="get-value.html">getValue</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">getValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.Snapshot$getValue(fr.vsct.tock.nlp.api.client.model.Entity)/entity">entity</span><span class="symbol">:</span>&nbsp;<span class="identifier">Entity</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-context-value/index.html"><span class="identifier">ContextValue</span></a><span class="symbol">?</span></code>
+<code><span class="keyword">fun </span><span class="identifier">getValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.Snapshot$getValue()/entity">entity</span><span class="symbol">:</span>&nbsp;<span class="identifier">&lt;ERROR CLASS&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-entity-value/index.html"><span class="identifier">EntityValue</span></a><span class="symbol">?</span></code>
 <p>Returns the value if it exists.</p>
 </td>
 </tr>
@@ -67,7 +67,7 @@
 <p><a href="has-value.html">hasValue</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">hasValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.Snapshot$hasValue(fr.vsct.tock.nlp.api.client.model.Entity)/entity">entity</span><span class="symbol">:</span>&nbsp;<span class="identifier">Entity</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<code><span class="keyword">fun </span><span class="identifier">hasValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.Snapshot$hasValue()/entity">entity</span><span class="symbol">:</span>&nbsp;<span class="identifier">&lt;ERROR CLASS&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
 <p>Does this value exist in the snapshot?</p>
 </td>
 </tr>

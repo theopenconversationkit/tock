@@ -14,11 +14,29 @@
 <tbody>
 <tr>
 <td>
+<p><a href="-app-role/index.html">AppRole</a></p>
+</td>
+<td>
+<code><span class="keyword">enum</span> <span class="keyword">class </span><span class="identifier">AppRole</span></code>
+<p>An app role.</p>
+</td>
+</tr>
+<tr>
+<td>
 <p><a href="-end-conversation-event/index.html">EndConversationEvent</a></p>
 </td>
 <td>
 <code><span class="keyword">class </span><span class="identifier">EndConversationEvent</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-one-to-one-event/index.html"><span class="identifier">OneToOneEvent</span></a></code>
-<p>Event created when closing a conversation - connector support is not required!</p>
+<p>Event provided when closing a conversation between a user and a bot</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-end-session-event/index.html">EndSessionEvent</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">EndSessionEvent</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-event/index.html"><span class="identifier">Event</span></a></code>
+<p>The session is ended. dialog context should be cleared.</p>
 </td>
 </tr>
 <tr>
@@ -37,6 +55,15 @@
 <td>
 <code><span class="keyword">enum</span> <span class="keyword">class </span><span class="identifier">EventType</span></code>
 <p>Define default event types.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-get-app-roles-event/index.html">GetAppRolesEvent</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">GetAppRolesEvent</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-event/index.html"><span class="identifier">Event</span></a></code>
+<p>To get applications roles.</p>
 </td>
 </tr>
 <tr>
@@ -86,11 +113,34 @@
 </tr>
 <tr>
 <td>
+<p><a href="-pass-thread-control-event/index.html">PassThreadControlEvent</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">PassThreadControlEvent</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="-request-thread-control-event/index.html">RequestThreadControlEvent</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">RequestThreadControlEvent</span></code></td>
+</tr>
+<tr>
+<td>
 <p><a href="-start-conversation-event/index.html">StartConversationEvent</a></p>
 </td>
 <td>
 <code><span class="keyword">class </span><span class="identifier">StartConversationEvent</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-one-to-one-event/index.html"><span class="identifier">OneToOneEvent</span></a></code>
-<p>Event created when starting a conversation - connector support is not required!</p>
+<p>Event provided when starting a conversation a conversation between a user and a bot</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="-start-session-event/index.html">StartSessionEvent</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">StartSessionEvent</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-event/index.html"><span class="identifier">Event</span></a></code>
+<p>A new session is started.</p>
 </td>
 </tr>
 <tr>
@@ -101,6 +151,13 @@
 <code><span class="keyword">class </span><span class="identifier">SubscribingEvent</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-event/index.html"><span class="identifier">Event</span></a></code>
 <p>The "subscribe to application" event.</p>
 </td>
+</tr>
+<tr>
+<td>
+<p><a href="-take-thread-control-event/index.html">TakeThreadControlEvent</a></p>
+</td>
+<td>
+<code><span class="keyword">class </span><span class="identifier">TakeThreadControlEvent</span></code></td>
 </tr>
 <tr>
 <td>

@@ -204,7 +204,7 @@ object BotRepository {
         val bot = Bot(botDefinition)
         val existingBotConfigurations = botConfigurationDAO.getConfigurationsByBotId(botDefinition.botId)
         val allConnectorConfigurations =
-            connectorConfigurations +
+            (connectorConfigurations +
                     existingBotConfigurations
                         .filter {
                             it.connectorType != ConnectorType.rest
@@ -212,7 +212,10 @@ object BotRepository {
                         }
                         .map {
                             ConnectorConfiguration(it)
-                        }
+                        })
+                .takeIf { it.isNotEmpty() }
+                    //mostly a hack ->
+                    ?: listOf(ConnectorConfiguration("test", "/test", ConnectorType.rest, ConnectorType("messenger")))
         val existingBotConfigurationsMap =
             existingBotConfigurations
                 .groupBy { it.applicationId }

@@ -60,7 +60,15 @@ Google Assistant connector response model
 
 # Package fr.vsct.tock.bot.connector.messenger.model
 
-Messenger connector common model	
+Messenger connector common model
+
+# Package fr.vsct.tock.bot.connector.messenger.model.attachment
+
+Messenger connector attachment model
+
+# Package fr.vsct.tock.bot.connector.messenger.model.handover
+
+Messenger connector handover protocol model		
 
 # Package fr.vsct.tock.bot.connector.messenger.model.send
 

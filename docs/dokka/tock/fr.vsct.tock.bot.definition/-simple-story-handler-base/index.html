@@ -98,7 +98,7 @@
 </td>
 <td>
 <code><span class="keyword">fun </span><span class="identifier">handleAndSwitchStory</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$handleAndSwitchStory(fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
-<p>Handles the action and switch the context to the underlying story definition.</p>
+<p>Handles the action and switches the context to the underlying story definition.</p>
 </td>
 </tr>
 <tr>
@@ -126,6 +126,15 @@
 <p>Handles precondition like checking mandatory entities, and create <a href="../-story-handler-definition/index.html">StoryHandlerDefinition</a>.
 If this function returns null, this implied that <a href="../../fr.vsct.tock.bot.engine/-bot-bus/end.html">BotBus.end</a> has been called in this function
 (as the <a href="../-story-handler-definition/handle.html">StoryHandlerDefinition.handle</a> function is not called).</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../-story-handler-base/support.html">support</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">support</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryHandlerBase$support(fr.vsct.tock.bot.engine.BotBus)/bus">bus</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>What is the probability of bot support for the current request?</p>
 </td>
 </tr>
 <tr>

@@ -1,0 +1,124 @@
+<HTML>
+<HEAD>
+<meta charset="UTF-8">
+<title>AppRolesWebhook - tock</title>
+<link rel="stylesheet" href="../../../style.css">
+</HEAD>
+<BODY>
+<a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.connector.messenger.model.handover</a>&nbsp;/&nbsp;<a href="./index.html">AppRolesWebhook</a><br/>
+<br/>
+<h1>AppRolesWebhook</h1>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">AppRolesWebhook</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector.messenger.model.webhook/-webhook/index.html"><span class="identifier">Webhook</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-messenger/src/main/kotlin/fr/vsct/tock/bot/connector/messenger/model/handover/AppRolesWebhook.kt#L27">(source)</a>
+<p>See <a href="https//developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#app_roles">https//developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#app_roles</a>.</p>
+<h3>Constructors</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="-init-.html">&lt;init&gt;</a></p>
+</td>
+<td>
+<code><span class="identifier">AppRolesWebhook</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.model.handover.AppRolesWebhook$<init>(fr.vsct.tock.bot.connector.messenger.model.Recipient, kotlin.Long, kotlin.collections.Map((kotlin.String, kotlin.collections.List(()))))/recipient">recipient</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector.messenger.model/-recipient/index.html"><span class="identifier">Recipient</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.model.handover.AppRolesWebhook$<init>(fr.vsct.tock.bot.connector.messenger.model.Recipient, kotlin.Long, kotlin.collections.Map((kotlin.String, kotlin.collections.List(()))))/timestamp">timestamp</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.model.handover.AppRolesWebhook$<init>(fr.vsct.tock.bot.connector.messenger.model.Recipient, kotlin.Long, kotlin.collections.Map((kotlin.String, kotlin.collections.List(()))))/appRoles">appRoles</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span><span class="symbol">)</span></code>
+<p>See <a href="https//developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#app_roles">https//developers.facebook.com/docs/messenger-platform/reference/webhook-events/messaging_handovers#app_roles</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="app-roles.html">appRoles</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">appRoles</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">,</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span><span class="symbol">&gt;</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="recipient.html">recipient</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">recipient</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector.messenger.model/-recipient/index.html"><span class="identifier">Recipient</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="sender.html">sender</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">sender</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector.messenger.model/-sender/index.html"><span class="identifier">Sender</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="timestamp.html">timestamp</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">timestamp</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Properties</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector.messenger.model.webhook/-webhook/prior-message.html">priorMessage</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">priorMessage</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector.messenger.model.webhook/-prior-message/index.html"><span class="identifier">PriorMessage</span></a><span class="symbol">?</span></code></td>
+</tr>
+</tbody>
+</table>
+<h3>Inherited Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector.messenger.model.webhook/-webhook/player-id.html">playerId</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">playerId</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.model.webhook.Webhook$playerId(fr.vsct.tock.bot.engine.user.PlayerType)/playerType">playerType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-type/index.html"><span class="identifier">PlayerType</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector.messenger.model.webhook/-webhook/recipient-id.html">recipientId</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">recipientId</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger.model.webhook.Webhook$recipientId(fr.vsct.tock.bot.engine.user.PlayerType)/playerType">playerType</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.user/-player-type/index.html"><span class="identifier">PlayerType</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.user/-player-id/index.html"><span class="identifier">PlayerId</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector.messenger.model.webhook/-webhook/to-sentence-element.html">toSentenceElement</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">toSentenceElement</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.message/-sentence-element/index.html"><span class="identifier">SentenceElement</span></a><span class="symbol">?</span></code>
+<p>Transforms this message into a generic <a href="../../fr.vsct.tock.bot.engine.message/-sentence-element/index.html">SentenceElement</a>.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Extension Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector.ga/find-transaction-decision-value-input.html">findTransactionDecisionValueInput</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">.</span><span class="identifier">findTransactionDecisionValueInput</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector.ga.model.request/-g-a-transaction-decision-value/index.html"><span class="identifier">GATransactionDecisionValue</span></a><span class="symbol">?</span></code>
+<p>Return a <a href="../../fr.vsct.tock.bot.connector.ga.model.request/-g-a-transaction-decision-value/index.html">GATransactionDecisionValue</a> if available.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../../fr.vsct.tock.bot.connector.ga/find-transaction-requirements-check-input.html">findTransactionRequirementsCheckInput</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a><span class="symbol">.</span><span class="identifier">findTransactionRequirementsCheckInput</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector.ga.model.request/-g-a-transaction-requirements-check-result/index.html"><span class="identifier">GATransactionRequirementsCheckResult</span></a><span class="symbol">?</span></code>
+<p>Return a <a href="../../fr.vsct.tock.bot.connector.ga.model.request/-g-a-transaction-requirements-check-result/index.html">GATransactionRequirementsCheckResult</a> if available.</p>
+</td>
+</tr>
+</tbody>
+</table>
+</BODY>
+</HTML>

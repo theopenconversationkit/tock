@@ -214,15 +214,6 @@ property "tock_default_zone" with default value UTC is used.</p>
 </tr>
 <tr>
 <td>
-<p><a href="mongo-client.html">mongoClient</a></p>
-</td>
-<td>
-<code><span class="keyword">val </span><span class="identifier">mongoClient</span><span class="symbol">: </span><span class="identifier">MongoClient</span></code>
-<p>The <a href="#">MongoClient</a> of Tock.</p>
-</td>
-</tr>
-<tr>
-<td>
 <p><a href="mongo-jackson-modules.html">mongoJacksonModules</a></p>
 </td>
 <td>
@@ -397,6 +388,15 @@ if the env or system property is not found, use the <a href="get-database.html#f
 <td>
 <code><span class="keyword">fun </span><span class="identifier">retrofitBuilderWithTimeoutAndLogger</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, fr.vsct.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean)/ms">ms</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, fr.vsct.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean)/logger">logger</span><span class="symbol">:</span>&nbsp;<span class="identifier">KLogger</span>&nbsp;<span class="symbol">=</span>&nbsp;KotlinLogging.logger {}<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, fr.vsct.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean)/level">level</span><span class="symbol">:</span>&nbsp;<a href="-level/index.html"><span class="identifier">Level</span></a>&nbsp;<span class="symbol">=</span>&nbsp;Level.BODY<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, fr.vsct.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean)/interceptors">interceptors</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><span class="identifier">Interceptor</span><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyList()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared$retrofitBuilderWithTimeoutAndLogger(kotlin.Long, mu.KLogger, fr.vsct.tock.shared.Level, kotlin.collections.List((okhttp3.Interceptor)), kotlin.Boolean)/requestGZipEncoding">requestGZipEncoding</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a>&nbsp;<span class="symbol">=</span>&nbsp;false<span class="symbol">)</span><span class="symbol">: </span><span class="identifier">Builder</span></code>
 <p>Init a <a href="#">Retrofit.Builder</a> with specified timeout, logger and interceptors.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="try-to-find-local-ip.html">tryToFindLocalIp</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">tryToFindLocalIp</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Best attempt to guess local ip.</p>
 </td>
 </tr>
 </tbody>

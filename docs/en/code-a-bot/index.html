@@ -557,13 +557,13 @@ developed in <a href="https://kotlinlang.org/">Kotlin</a>.</p>
 <div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>fr.vsct.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>bot-toolkit<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>1.0.0<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;version&gt;</span>1.1.0<span class="nt">&lt;/version&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 
 
 <p>With Gradle:</p>
-<div class="codehilite"><pre><span></span>      compile &#39;fr.vsct.tock:bot-toolkit:1.0.0&#39;
+<div class="codehilite"><pre><span></span>      compile &#39;fr.vsct.tock:bot-toolkit:1.1.0&#39;
 </pre></div>
 
 
@@ -810,14 +810,8 @@ each connector is specified in the dedicated classes.</p>
 
 
 <p>where the <em>openBot</em> variable is the bot you originally defined.</p>
-<p>You need also to specify which connectors are used.
-For example, to connect the bot to Messenger and Google Assistant:</p>
-<div class="codehilite"><pre><span></span><span class="n">addMessengerConnector</span><span class="p">(..)</span>
-<span class="n">addGoogleAssistantConnector</span><span class="p">(..)</span>
-<span class="n">registerAndInstallBot</span><span class="p">(</span><span class="n">openBot</span><span class="p">)</span>
-</pre></div>
-
-
+<p>When the bot is started, you also need to specify which connectors are used
+in the web administration interface: Configuration -&gt; Bot Configurations -&gt; Create a new configuration  </p>
 <p>The documentation for each connector is in the README file of the corresponding sub-projects. </p>
 <p>Three are available at the moment:</p>
 <ul>

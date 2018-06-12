@@ -59,8 +59,26 @@
 <p><a href="register-services.html">registerServices</a></p>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">registerServices</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.ConnectorController$registerServices(kotlin.String, kotlin.Function1((io.vertx.ext.web.Router, kotlin.Unit)))/rootPath">rootPath</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.ConnectorController$registerServices(kotlin.String, kotlin.Function1((io.vertx.ext.web.Router, kotlin.Unit)))/installer">installer</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">Router</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">registerServices</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.ConnectorController$registerServices(kotlin.String, kotlin.Function1((io.vertx.ext.web.Router, kotlin.Unit)))/serviceIdentifier">serviceIdentifier</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.ConnectorController$registerServices(kotlin.String, kotlin.Function1((io.vertx.ext.web.Router, kotlin.Unit)))/installer">installer</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">Router</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
 <p>Register services at startup.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="support.html">support</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">support</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.ConnectorController$support(fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.bot.connector.ConnectorData)/action">action</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.ConnectorController$support(fr.vsct.tock.bot.engine.action.Action, fr.vsct.tock.bot.connector.ConnectorData)/data">data</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-data/index.html"><span class="identifier">ConnectorData</span></a>&nbsp;<span class="symbol">=</span>&nbsp;ConnectorData(ConnectorCallbackBase(action.applicationId, connector.connectorType))<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a></code>
+<p>Return a probability of the support by the bot of this action</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="unregister-services.html">unregisterServices</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">unregisterServices</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
+<p>Unregister services when <a href="../../fr.vsct.tock.bot.connector/-connector/index.html">Connector</a> is unregistered.</p>
 </td>
 </tr>
 </tbody>

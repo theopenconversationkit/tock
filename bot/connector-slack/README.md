@@ -16,18 +16,8 @@ slackToken1 is your Slack Workspace id.
 slackToken2 is your Slack Webhook id.
 slackToken3 is the authentication token, and the only token that can be regenerated.
 
-Then you can configure your connector for your bot:
+* Then you can configure your connector for your bot: go to the Configuration -> Bot Configurations menu in the Tock Bot administration interface, and create a new configuration.
 
-
-```kotlin
-
-val bot = bot("bot_test")
-bot.addSlackConnector(
-    "slackToken1",
-    "slackToken2",
-    "slackToken3"
-    )
-```
 
 ### Outgoing webhook:
 
