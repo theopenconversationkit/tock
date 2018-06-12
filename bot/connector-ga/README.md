@@ -11,6 +11,6 @@ In order to connect your bot with a Google Assistant application,
 
 * Then go to the Configuration -> Bot Configurations menu in the Tock Bot administration interface, and create a new configuration
 
-* Full documentation is available in [KDoc format](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector.ga/index.html)
-
 * A Google Assistant integration sample is available in the [open data Bot](https://github.com/voyages-sncf-technologies/tock-bot-open-data) source code
+
+* The documentation of the google assistant builders is available in [KDoc format](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector.ga/index.html)

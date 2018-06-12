@@ -8,7 +8,6 @@ In order to connect your bot with a messenger bot application, you need a Messen
 
 * You need to retrieve from Facebook these values:
 
-    * **Relative REST path** : the relative rest path of the messenger bot (e.g. /messenger)
     * **Application id** : The Messenger application id.  
     * **Page id** : The Facebook page id.
     * **Call Token** : The token allowing the messenger app to call the Facebook page.
@@ -16,12 +15,13 @@ In order to connect your bot with a messenger bot application, you need a Messen
     * **Secret** : the messenger application secret key.
 
 * Then go to the Configuration -> Bot Configurations menu in the Tock Bot administration interface,
- and create a new configuration with these parameters 
+ and create a new configuration with these parameters. Choose also the relative rest path of the messenger bot (e.g. /messenger). 
 
 * Take the ngrok value (ie  https://xxxx.ngrok.io ) and use it in the webhook interface of messenger settings, to specify :
    * the url : https://xxxx.ngrok.io/messenger
    * the webhook token you set
 
-* Full documentation of the messenger builders is available in [KDoc format](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector.messenger/index.html)
-
 * A Messenger integration sample is available in the [open data Bot](https://github.com/voyages-sncf-technologies/tock-bot-open-data) source code
+
+* The documentation of the messenger builders is available in [KDoc format](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector.messenger/index.html)
+
