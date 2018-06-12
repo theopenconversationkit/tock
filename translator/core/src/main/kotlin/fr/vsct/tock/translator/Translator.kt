@@ -55,7 +55,7 @@ object Translator {
     @Volatile
     var enabled: Boolean = booleanProperty("tock_i18n_enabled", false)
 
-    private val statWriteEnabled = booleanProperty("tock_i18n_stat_write_enabled", false)
+    private val statWriteEnabled = booleanProperty("tock_i18n_stat_write_enabled", true)
 
     private val keyLabelRegex = "[^\\p{L}_]+".toRegex()
     private val defaultInterface: UserInterfaceType = textChat
