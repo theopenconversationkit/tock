@@ -21,11 +21,12 @@ import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.module.SimpleModule
+import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.vertx.WebVerticle
 import fr.vsct.tock.shared.vertx.blocking
 import io.vertx.core.Future
 import io.vertx.ext.web.RoutingContext
-import fr.vsct.tock.shared.jackson.mapper
 import mu.KLogger
 import mu.KotlinLogging
 import java.time.ZoneId
@@ -37,11 +38,12 @@ import java.time.ZonedDateTime
 class DucklingVerticle : WebVerticle() {
 
     data class ParseRequest(
-            val language: String,
-            val dimensions: List<String>,
-            val referenceDate: ZonedDateTime,
-            val referenceTimezone: ZoneId,
-            val textToParse: String)
+        val language: String,
+        val dimensions: List<String>,
+        val referenceDate: ZonedDateTime,
+        val referenceTimezone: ZoneId,
+        val textToParse: String
+    )
 
     class KeywordSerializer : JsonSerializer<Keyword>() {
         override fun serialize(keyword: Keyword, gen: JsonGenerator, provider: SerializerProvider) {
@@ -56,8 +58,7 @@ class DucklingVerticle : WebVerticle() {
     override val logger: KLogger = KotlinLogging.logger {}
 
     override fun configure() {
-        blockingJsonPost("/parse") {
-            _, request: ParseRequest ->
+        blockingJsonPost("/parse") { _, request: ParseRequest ->
             with(request) {
                 DucklingBridge.parse(language, textToParse, dimensions, referenceDate, referenceTimezone)
             }
@@ -70,14 +71,23 @@ class DucklingVerticle : WebVerticle() {
 
     override fun startServer(startFuture: Future<Void>) {
         vertx.blocking<Boolean>(
-                {
+            {
+                try {
                     logger.info { "Start duckling initialization" }
                     DucklingBridge.initDuckling()
                     logger.info { "End duckling initialization" }
                     it.complete()
-                },
-                {
+                } catch (e: Exception) {
+                    logger.error(e)
+                    it.fail(e)
+                }
+            },
+            {
+                if (it.succeeded()) {
                     super.startServer(startFuture)
-                })
+                } else {
+                    startFuture.fail(it.cause())
+                }
+            })
     }
 }
