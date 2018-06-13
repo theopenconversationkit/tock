@@ -46,10 +46,10 @@ internal class LogbackConfigurator : ContextAwareBase(), Configurator {
             val appender = if (booleanProperty("tock_logback_file_appender", false)) {
                 RollingFileAppender<ILoggingEvent>().also {
                     it.name = "file"
-                    it.file = "logFile.log"
+                    it.file = "log/logFile.log"
                     it.context = c
                     it.rollingPolicy = TimeBasedRollingPolicy<ILoggingEvent>().apply {
-                        fileNamePattern = "logFile.%d{yyyy-MM-dd}.log"
+                        fileNamePattern = "log/logFile.%d{yyyy-MM-dd}.log"
                         maxHistory = 30
                         context = c
                         setTotalSizeCap(FileSize.valueOf("3GB"))
