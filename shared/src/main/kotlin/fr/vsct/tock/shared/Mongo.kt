@@ -108,7 +108,7 @@ internal val mongoClient: MongoClient by lazy {
     configureKMongo()
     KMongo.createClient(
         MongoClientURI(
-            property("tock_mongo_url", "mongodb://localhost:27017")
+            property("tock_mongo_url", "mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=tock")
         )
     )
 }
