@@ -198,7 +198,7 @@ object TestPlanService {
     private fun getPath(testPlan: TestPlan): String {
         val applicationId = testPlan.applicationId
         return applicationIdPathCache.get(applicationId) {
-            botConfigurationDAO.getConfigurationById(applicationId.toId())?.path ?: applicationId
+            botConfigurationDAO.getConfigurationById(testPlan.botApplicationConfigurationId)?.path ?: applicationId
         }
     }
 
