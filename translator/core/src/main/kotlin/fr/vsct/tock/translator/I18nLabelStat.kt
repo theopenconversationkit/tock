@@ -44,6 +44,11 @@ data class I18nLabelStat(
                 key.connectorId,
                 count
             )
+
+    /**
+     * Does the locale of this stat has the same language than the specified label?
+     */
+    fun hasSameLanguage(label:I18nLocalizedLabel) : Boolean = locale.language == label.locale.language
 }
 
 internal data class I18nLabelStatKey(

@@ -53,7 +53,7 @@
                 mdInput
                 [(ngModel)]="l.label"
                 (change)="save(i)"
-                [title]="l.stats && l.stats.length !== 0 ? ('used '+ l.stats[0].count +' times, last used ' + (l.stats[0].lastUpdate | amTimeAgo)) : 'No stats'"></textarea>
+                [title]="l.stats && l.stats.length !== 0 ? ('used '+ l.mergedStats().count +' times, last used ' + (l.mergedStats().lastUpdate | amTimeAgo)) : 'No stats'"></textarea>
     </div>
 
     <div class="i18n-label__entry__alternative-management">

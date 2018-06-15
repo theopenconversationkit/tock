@@ -52,9 +52,9 @@ data class I18nLocalizedLabel(
         private val logger = KotlinLogging.logger {}
     }
 
-    fun randomAlternativesIndex(): Int =
+    internal fun randomAlternativesIndex(): Int =
         if (alternatives.isEmpty()) 0 else newInt(alternatives.size + 1)
 
-    fun alternative(index:Int) : String = if (index == 0) label else alternatives[index - 1]
+    internal fun alternative(index:Int) : String = if (index == 0) label else alternatives[index - 1]
 
 }

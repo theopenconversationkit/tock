@@ -83,6 +83,23 @@ export class I18nLocalizedLabel {
     return this.stats && this.stats.length !== 0 ? this.stats.map(s => s.display()).join(",") : "";
   }
 
+  mergedStats() : I18nLabelStat {
+    if(this.stats && this.stats.length > 0) {
+      if(this.stats.length === 1) {
+        return this.stats[0]
+      }
+      let sum = this.stats[0].count;
+      let lastUpdate = this.stats[0].lastUpdate;
+      for (let i=1; i<this.stats.length; i++) {
+        sum+=this.stats[i].count;
+        lastUpdate = lastUpdate.getTime() > this.stats[i].lastUpdate.getTime() ? this.stats[i].lastUpdate : lastUpdate;
+      }
+      return new I18nLabelStat(this.locale, this.interfaceType, this.connectorId, sum, lastUpdate);
+    } else {
+      return null;
+    }
+  }
+
   static fromJSON(json: any): I18nLocalizedLabel {
     const value = Object.create(I18nLocalizedLabel.prototype);
     const result = Object.assign(value, json, {

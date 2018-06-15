@@ -114,7 +114,7 @@ object Translator {
         }
 
     private fun incrementStat(value: I18nLabelValue, context: I18nContext) {
-        statsCache.get(I18nLabelStatKey(value, context), { AtomicInteger() }).getAndIncrement()
+        statsCache.get(I18nLabelStatKey(value, context)) { AtomicInteger() }.getAndIncrement()
     }
 
     fun saveIfNotExists(value: I18nLabelValue): I18nLabel = saveIfNotExists(value, defaultLocale)
