@@ -23,6 +23,7 @@ import fr.vsct.tock.bot.connector.messenger.model.UserProfile
 import fr.vsct.tock.bot.connector.messenger.model.attachment.AttachmentRequest
 import fr.vsct.tock.bot.connector.messenger.model.handover.PassThreadControlRequest
 import fr.vsct.tock.bot.connector.messenger.model.handover.RequestThreadControlRequest
+import fr.vsct.tock.bot.connector.messenger.model.handover.SecondaryReceiverData
 import fr.vsct.tock.bot.connector.messenger.model.handover.SecondaryReceiverResponse
 import fr.vsct.tock.bot.connector.messenger.model.handover.TakeThreadControlRequest
 import fr.vsct.tock.bot.connector.messenger.model.handover.ThreadOwnerResponse
@@ -33,6 +34,7 @@ import fr.vsct.tock.bot.connector.messenger.model.send.SendResponse
 import fr.vsct.tock.bot.connector.messenger.model.send.SendResponseErrorContainer
 import fr.vsct.tock.bot.engine.BotRepository.requestTimer
 import fr.vsct.tock.bot.engine.monitoring.logError
+import fr.vsct.tock.shared.Level
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.create
@@ -41,6 +43,7 @@ import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import fr.vsct.tock.shared.warn
 import mu.KotlinLogging
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -68,9 +71,6 @@ internal class MessengerClient(val secretKey: String) {
         @GET("/v2.12/{userId}/")
         fun getUserProfile(@Path("userId") userId: String, @Query("access_token") accessToken: String, @Query("fields") fields: String): Call<UserProfile>
 
-        @POST("/{appId}/activities")
-        fun sendCustomEvent(@Path("appId") appId: String, @Body customEventRequest: CustomEventRequest): Call<SendResponse>
-
         @POST("/v2.12/me/message_attachments")
         fun sendAttachment(@Query("access_token") accessToken: String, @Body attachmentRequest: AttachmentRequest): Call<SendResponse>
 
@@ -88,6 +88,9 @@ internal class MessengerClient(val secretKey: String) {
 
         @GET("/v2.12/me/thread_owner")
         fun threadOwner(@Query("access_token") accessToken: String, @Query("recipient") recipient: String): Call<ThreadOwnerResponse>
+
+        @POST("/{appId}/activities")
+        fun sendCustomEvent(@Path("appId") appId: String, @Body customEventRequest: CustomEventRequest): Call<SendResponse>
 
     }
 
@@ -115,7 +118,8 @@ internal class MessengerClient(val secretKey: String) {
             .create()
         statusApi = retrofitBuilderWithTimeoutAndLogger(
             longProperty("tock_messenger_request_timeout_ms", 5000),
-            logger
+            logger,
+            Level.BASIC
         )
             .baseUrl("https://www.facebook.com")
             .build()
@@ -132,7 +136,7 @@ internal class MessengerClient(val secretKey: String) {
     }
 
     fun sendMessage(token: String, messageRequest: MessageRequest): SendResponse {
-        return send(messageRequest, { graphApi.sendMessage(token, messageRequest).execute() })
+        return send(messageRequest) { graphApi.sendMessage(token, messageRequest).execute() }
     }
 
     fun sendAttachment(token: String, request: AttachmentRequest): SendResponse? {
@@ -141,7 +145,7 @@ internal class MessengerClient(val secretKey: String) {
 
     fun sendAction(token: String, actionRequest: ActionRequest): SendResponse? {
         return try {
-            send(actionRequest, { graphApi.sendAction(token, actionRequest).execute() })
+            send(actionRequest) { graphApi.sendAction(token, actionRequest).execute() }
         } catch (e: Exception) {
             //log and ignore
             logger.error(e)
@@ -150,8 +154,54 @@ internal class MessengerClient(val secretKey: String) {
     }
 
     fun sendCustomEvent(applicationId: String, customEventRequest: CustomEventRequest): SendResponse {
-        return send(customEventRequest, { graphApi.sendCustomEvent(applicationId, customEventRequest).execute() })
+        return send(customEventRequest) { graphApi.sendCustomEvent(applicationId, customEventRequest).execute() }
     }
+
+    fun requestThreadControl(token: String, request: RequestThreadControlRequest): SendResponse? {
+        return try {
+            send(request) { graphApi.requestThreadControl(token, request).execute() }
+        } catch (e: Exception) {
+            //log and ignore
+            logger.error(e)
+            null
+        }
+    }
+
+    fun takeThreadControl(token: String, request: TakeThreadControlRequest): SendResponse? {
+        return try {
+            send(request) { graphApi.takeThreadControl(token, request).execute() }
+        } catch (e: Exception) {
+            //log and ignore
+            logger.error(e)
+            null
+        }
+    }
+
+    fun passThreadControl(token: String, request: PassThreadControlRequest): SendResponse? {
+        return try {
+            send(request) { graphApi.passThreadControl(token, request).execute() }
+        } catch (e: Exception) {
+            //log and ignore
+            logger.error(e)
+            null
+        }
+    }
+
+    fun getThreadOwnerId(token: String, userId: String): String? =
+        try {
+            graphApi.threadOwner(token, userId).execute().body()?.data?.threadOwner?.appId
+        } catch (e: Exception) {
+            logger.warn(e)
+            null
+        }
+
+    fun getSecondaryReceivers(token: String): List<SecondaryReceiverData>? =
+        try {
+            graphApi.secondaryReceivers(token).execute().body()?.data
+        } catch (e: Exception) {
+            logger.warn(e)
+            null
+        }
 
     private fun defaultUserProfile(): UserProfile {
         return UserProfile("", "", null, null, 0, null)

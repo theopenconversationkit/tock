@@ -14,16 +14,17 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
+package fr.vsct.tock.bot.engine.event
 
-import mu.KLogger
-
-/**
- * Log a [Throwable].
- */
-fun KLogger.error(throwable: Throwable) = error(throwable.message ?: "", throwable)
+import fr.vsct.tock.bot.engine.user.PlayerId
 
 /**
- * Log a [Throwable].
+ * A pass thread control event.
  */
-fun KLogger.warn(throwable: Throwable) = warn(throwable.message ?: "", throwable)
+class PassThreadControlEvent(
+    userId: PlayerId,
+    recipientId: PlayerId,
+    applicationId: String,
+    val newOwnerAppId: String,
+    val metadata: String? = null
+) : OneToOneEvent(userId, recipientId, applicationId)

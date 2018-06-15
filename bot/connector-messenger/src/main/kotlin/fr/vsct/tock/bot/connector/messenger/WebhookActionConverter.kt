@@ -16,6 +16,10 @@
 
 package fr.vsct.tock.bot.connector.messenger
 
+import fr.vsct.tock.bot.connector.messenger.model.handover.AppRolesWebhook
+import fr.vsct.tock.bot.connector.messenger.model.handover.PassThreadControlWebhook
+import fr.vsct.tock.bot.connector.messenger.model.handover.RequestThreadControlWebhook
+import fr.vsct.tock.bot.connector.messenger.model.handover.TakeThreadControlWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.AccountLinkingStatus
 import fr.vsct.tock.bot.connector.messenger.model.webhook.AccountLinkingWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Attachment
@@ -30,10 +34,15 @@ import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.event.AppRole
 import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.bot.engine.event.GetAppRolesEvent
 import fr.vsct.tock.bot.engine.event.LoginEvent
 import fr.vsct.tock.bot.engine.event.LogoutEvent
+import fr.vsct.tock.bot.engine.event.PassThreadControlEvent
+import fr.vsct.tock.bot.engine.event.RequestThreadControlEvent
 import fr.vsct.tock.bot.engine.event.SubscribingEvent
+import fr.vsct.tock.bot.engine.event.TakeThreadControlEvent
 import fr.vsct.tock.bot.engine.user.PlayerType
 import mu.KotlinLogging
 import org.litote.kmongo.toId
@@ -111,6 +120,53 @@ internal object WebhookActionConverter {
                     )
                     AccountLinkingStatus.unlinked -> LogoutEvent(message.sender.id, message.recipient.id!!)
                 }
+            }
+            is AppRolesWebhook -> {
+                GetAppRolesEvent(
+                    message.recipient.id!!,
+                    message
+                        .appRoles
+                        .mapValues {
+                            it.value.mapNotNull {
+                                when (it) {
+                                    "primary_receiver" -> AppRole.primaryReceiver
+                                    "secondary_receiver" -> AppRole.secondaryReceiver
+                                    else -> {
+                                        logger.warn { "unknown role $it" }
+                                        null
+                                    }
+                                }
+                            }
+                                .toSet()
+                        }
+                )
+            }
+            is RequestThreadControlWebhook -> {
+                RequestThreadControlEvent(
+                    message.playerId(PlayerType.user),
+                    message.recipientId(PlayerType.bot),
+                    applicationId,
+                    message.requestThreadControl.requestOwnerAppId,
+                    message.requestThreadControl.metadata
+                )
+            }
+            is PassThreadControlWebhook -> {
+                PassThreadControlEvent(
+                    message.playerId(PlayerType.user),
+                    message.recipientId(PlayerType.bot),
+                    applicationId,
+                    message.passThreadControl.newOwnerAppId,
+                    message.passThreadControl.metadata
+                )
+            }
+            is TakeThreadControlWebhook -> {
+                TakeThreadControlEvent(
+                    message.playerId(PlayerType.user),
+                    message.recipientId(PlayerType.bot),
+                    applicationId,
+                    message.takeThreadControl.previousOwnerAppId,
+                    message.takeThreadControl.metadata
+                )
             }
             else -> {
                 logger.error { "unknown message $message" }

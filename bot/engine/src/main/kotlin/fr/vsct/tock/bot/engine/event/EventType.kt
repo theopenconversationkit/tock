@@ -72,6 +72,23 @@ enum class EventType(val action: Boolean = true) {
     /**
      * [EndSessionEvent] event type.
      */
-    endSession(false)
+    endSession(false),
+    /**
+     * [GetAppRolesEvent] event type.
+     */
+    getAppRoles(false),
+    /**
+     * [PassThreadControlEvent] event type.
+     */
+    passThreadControl(false),
+    /**
+     * [RequestThreadControlEvent] event type.
+     */
+    requestThreadControl(false),
+    /**
+     * [TakeThreadControlEvent] event type.
+     */
+    takeThreadControl(false)
+
 
 }

@@ -14,16 +14,25 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.shared
-
-import mu.KLogger
+package fr.vsct.tock.bot.engine.event
 
 /**
- * Log a [Throwable].
+ * An app role.
  */
-fun KLogger.error(throwable: Throwable) = error(throwable.message ?: "", throwable)
+enum class AppRole {
+    primaryReceiver, secondaryReceiver
+}
 
 /**
- * Log a [Throwable].
+ * To get applications roles.
  */
-fun KLogger.warn(throwable: Throwable) = warn(throwable.message ?: "", throwable)
+class GetAppRolesEvent(
+    /**
+     * The current application id.
+     */
+    applicationId: String,
+    /**
+     * appId -> list of roles
+     */
+    val appRoles: Map<String, Set<AppRole>>
+) : Event(applicationId)

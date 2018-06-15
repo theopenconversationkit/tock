@@ -27,6 +27,10 @@ import fr.vsct.tock.bot.connector.messenger.AttachmentCacheService.getAttachment
 import fr.vsct.tock.bot.connector.messenger.AttachmentCacheService.setAttachmentId
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.attachment.AttachmentRequest
+import fr.vsct.tock.bot.connector.messenger.model.handover.PassThreadControlRequest
+import fr.vsct.tock.bot.connector.messenger.model.handover.RequestThreadControlRequest
+import fr.vsct.tock.bot.connector.messenger.model.handover.SecondaryReceiverData
+import fr.vsct.tock.bot.connector.messenger.model.handover.TakeThreadControlRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.ActionRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.Attachment
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
@@ -74,7 +78,7 @@ import javax.crypto.spec.SecretKeySpec
  * Contains built-in checks to ensure that two [MessageRequest] for the same recipient are sent sequentially.
  */
 class MessengerConnector internal constructor(
-    applicationId: String,
+    val applicationId: String,
     val path: String,
     val pageId: String,
     val token: String,
@@ -112,7 +116,7 @@ class MessengerConnector internal constructor(
             .build()
 
     override fun register(controller: ConnectorController) {
-        controller.registerServices(path, { router ->
+        controller.registerServices(path) { router ->
             logger.info("deploy rest messenger connector services for root path $path ")
 
             //see https://developers.facebook.com/docs/graph-api/webhooks
@@ -222,7 +226,7 @@ class MessengerConnector internal constructor(
                     }
                 }
             }
-        })
+        }
     }
 
     /**
@@ -310,24 +314,7 @@ class MessengerConnector internal constructor(
                     null
                 }
             } else {
-                when (event) {
-                    is TypingOnEvent -> client.sendAction(
-                        getToken(event),
-                        transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_on))
-                    )
-                    is TypingOffEvent -> client.sendAction(
-                        getToken(event),
-                        transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_off))
-                    )
-                    is MarkSeenEvent -> client.sendAction(
-                        getToken(event),
-                        transformActionRequest(ActionRequest(Recipient(event.recipientId.id), mark_seen))
-                    )
-                    else -> {
-                        logger.warn { "unsupported event $event" }
-                        null
-                    }
-                }
+                sendEvent(event, transformActionRequest)
             }
         } catch (e: Throwable) {
             logger.error(e)
@@ -358,16 +345,84 @@ class MessengerConnector internal constructor(
     /**
      * Send a custom event to messenger
      *
-     * @param applicationId the Facebook App ID
      * @param customEventRequest an object containing a list of custom events
      */
-    fun sendCustomEvent(applicationId: String, customEventRequest: CustomEventRequest) {
+    fun sendCustomEvent(customEventRequest: CustomEventRequest) {
         try {
             client.sendCustomEvent(applicationId, customEventRequest)
         } catch (e: Throwable) {
             logger.error(e)
         }
     }
+
+    /**
+     * Returns the current thread owner (handover protocol).
+     *
+     * @param userId the user id you would like to known
+     * @return null if the app does may not known the owner, the app id owner either
+     */
+    fun getThreadOwner(userId: PlayerId): String? = client.getThreadOwnerId(getToken(applicationId), userId.id)
+
+    /**
+     * Returns the secondary receivers (handover protocol) if the app is the primary receiver, null either.
+     */
+    fun getSecondaryReceivers(): List<SecondaryReceiverData>? = client.getSecondaryReceivers(getToken(applicationId))
+
+    /**
+     * Sends a request to get thread control.
+     */
+    fun requestThreadControl(userId: PlayerId, metadata: String? = null): SendResponse? =
+        client.requestThreadControl(
+            getToken(applicationId),
+            RequestThreadControlRequest(Recipient(userId.id, metadata))
+        )
+
+    /**
+     * Takes the thread control.
+     */
+    fun takeThreadControl(userId: PlayerId, metadata: String? = null): SendResponse? =
+        client.takeThreadControl(
+            getToken(applicationId),
+            TakeThreadControlRequest(Recipient(userId.id, metadata))
+        )
+
+    /**
+     * Passes thread control.
+     */
+    fun passThreadControl(userId: PlayerId, metadata: String? = null): SendResponse? =
+        client.passThreadControl(
+            getToken(applicationId),
+            PassThreadControlRequest(Recipient(userId.id, metadata))
+        )
+
+    /**
+     * Send a "simple" messenger event.
+     *
+     * @param event the event
+     * @param transformActionRequest method to transform the [ActionRequest] before sending - default is identity
+     */
+    fun sendEvent(
+        event: Event,
+        transformActionRequest: (ActionRequest) -> ActionRequest = { it }
+    ): SendResponse? =
+        when (event) {
+            is TypingOnEvent -> client.sendAction(
+                getToken(event),
+                transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_on))
+            )
+            is TypingOffEvent -> client.sendAction(
+                getToken(event),
+                transformActionRequest(ActionRequest(Recipient(event.recipientId.id), typing_off))
+            )
+            is MarkSeenEvent -> client.sendAction(
+                getToken(event),
+                transformActionRequest(ActionRequest(Recipient(event.recipientId.id), mark_seen))
+            )
+            else -> {
+                logger.warn { "unsupported event $event" }
+                null
+            }
+        }
 
     /**
      * Send the event to messenger asynchronously.
@@ -379,7 +434,7 @@ class MessengerConnector internal constructor(
             val id = event.recipientId.id.intern()
             val action = ActionWithTimestamp(event, System.currentTimeMillis() + delayInMs)
             val queue = messagesByRecipientMap
-                .get(id, { ConcurrentLinkedQueue() })
+                .get(id) { ConcurrentLinkedQueue() }
                 .apply {
                     synchronized(id) {
                         peek().also { existingAction ->
@@ -435,7 +490,7 @@ class MessengerConnector internal constructor(
         )
     }
 
-    fun endTypingAnswer(action: Action) {
+    private fun endTypingAnswer(action: Action) {
         client.sendAction(getToken(action), ActionRequest(Recipient(action.recipientId.id), typing_off))
     }
 
@@ -465,9 +520,9 @@ class MessengerConnector internal constructor(
         return UserPreferences()
     }
 
-    private fun getToken(event: Event): String {
-        return applicationTokenMap.getValue(event.applicationId)
-    }
+    private fun getToken(event: Event): String = getToken(event.applicationId)
+
+    private fun getToken(appId: String): String = applicationTokenMap.getValue(appId)
 
     private fun isSignedByFacebook(payload: String, facebookSignature: String): Boolean {
         return "sha1=${sha1(payload, client.secretKey)}" == facebookSignature

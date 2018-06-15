@@ -24,6 +24,6 @@ import fr.vsct.tock.bot.connector.messenger.model.Recipient
  */
 data class PassThreadControlRequest(
     val recipient: Recipient,
-    @JsonProperty("target_app_id") val targetAppId: String,
+    @JsonProperty("target_app_id") val targetAppId: String? = null,
     val metadata: String? = null
 )
