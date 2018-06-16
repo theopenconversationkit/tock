@@ -20,35 +20,6 @@ import java.util.Collections
 import java.util.Enumeration
 
 /**
- * The Tock namespace.
- */
-const val TOCK_NAMESPACE: String = "tock"
-
-/**
- * Built in entity evaluator namespace (for now only duckling).
- */
-const val BUILTIN_ENTITY_EVALUATOR_NAMESPACE: String = "duckling"
-
-/**
- * The default app namespace.
- */
-const val DEFAULT_APP_NAMESPACE = "app"
-
-/**
- * The internal app namespace - var only for tests.
- * Use property "tock_default_namespace" and as default value [DEFAULT_APP_NAMESPACE].
- */
-@Volatile
-var tockAppDefaultNamespace: String = property("tock_default_namespace", DEFAULT_APP_NAMESPACE)
-
-/**
- * The Tock app namespace.
- */
-val defaultNamespace: String get() = tockAppDefaultNamespace
-
-
-
-/**
  * Return a map with only not null values.
  */
 fun <K, V> mapNotNullValues(vararg pairs: Pair<K, V?>): Map<K, V> =
