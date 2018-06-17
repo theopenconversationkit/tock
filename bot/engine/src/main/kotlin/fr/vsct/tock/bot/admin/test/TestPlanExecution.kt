@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.bot.admin.test
 
-import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.time.Duration
@@ -25,7 +24,6 @@ import java.time.Instant
 /**
  * An execution of a [TestPlan], with its result.
  */
-@Data
 data class TestPlanExecution(
     /**
      * The test plan identifier.

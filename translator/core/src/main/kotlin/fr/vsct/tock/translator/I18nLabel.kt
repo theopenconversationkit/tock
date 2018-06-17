@@ -17,14 +17,12 @@
 package fr.vsct.tock.translator
 
 import fr.vsct.tock.shared.defaultNamespace
-import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import java.util.Locale
 
 /**
  *
  */
-@Data
 data class I18nLabel(
     val _id: Id<I18nLabel>,
     val namespace: String = defaultNamespace,

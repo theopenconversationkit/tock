@@ -19,7 +19,6 @@ package fr.vsct.tock.nlp.front.shared.config
 import fr.vsct.tock.nlp.core.EntitiesRegexp
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.shared.withNamespace
-import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.util.LinkedHashSet
@@ -28,7 +27,6 @@ import java.util.Locale
 /**
  * Definition of an intent.
  */
-@Data
 data class IntentDefinition(
     /**
      * The name of the intent.

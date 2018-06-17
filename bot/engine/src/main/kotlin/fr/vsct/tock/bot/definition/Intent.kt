@@ -17,12 +17,10 @@
 package fr.vsct.tock.bot.definition
 
 import fr.vsct.tock.shared.TOCK_NAMESPACE
-import org.litote.kmongo.Data
 
 /**
  * An intent definition.
  */
-@Data
 data class Intent(
     /**
      * The name of the intent.

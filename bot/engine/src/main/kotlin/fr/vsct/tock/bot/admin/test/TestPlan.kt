@@ -20,7 +20,6 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.shared.defaultLocale
-import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.util.Locale
@@ -28,7 +27,6 @@ import java.util.Locale
 /**
  * A test plan is a set of dialogs to replay.
  */
-@Data
 data class TestPlan(
     /**
      * The dialogs of the test.

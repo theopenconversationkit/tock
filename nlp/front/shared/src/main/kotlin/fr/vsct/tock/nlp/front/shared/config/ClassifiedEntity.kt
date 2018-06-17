@@ -20,12 +20,10 @@ import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityValue
 import fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue
-import org.litote.kmongo.Data
 
 /**
  * A classification for an entity.
  */
-@Data
 data class ClassifiedEntity(
     /**
      * The entity type.

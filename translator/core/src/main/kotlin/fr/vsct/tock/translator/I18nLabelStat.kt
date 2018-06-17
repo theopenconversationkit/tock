@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.translator
 
-import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 import java.time.Instant
@@ -25,7 +24,6 @@ import java.util.Locale
 /**
  * Stats about [I18nLabel] usage.
  */
-@Data
 data class I18nLabelStat(
     val labelId: Id<I18nLabel>,
     val namespace: String,
@@ -48,7 +46,7 @@ data class I18nLabelStat(
     /**
      * Does the locale of this stat has the same language than the specified label?
      */
-    fun hasSameLanguage(label:I18nLocalizedLabel) : Boolean = locale.language == label.locale.language
+    fun hasSameLanguage(label: I18nLocalizedLabel): Boolean = locale.language == label.locale.language
 }
 
 internal data class I18nLabelStatKey(

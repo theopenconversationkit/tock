@@ -21,14 +21,12 @@ import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
 import fr.vsct.tock.bot.admin.answer.ScriptAnswerConfiguration
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
-import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
 /**
  * A [StoryDefinition] defined at runtime.
  */
-@Data
 data class StoryDefinitionConfiguration(
     /**
      * The story definition identifier.

@@ -17,7 +17,6 @@
 package fr.vsct.tock.nlp.front.shared.test
 
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
-import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import java.time.Duration
 import java.time.Instant
@@ -26,7 +25,6 @@ import java.util.Locale
 /**
  * A build used to test the model.
  */
-@Data
 data class TestBuild(
     /**
      * The application id to test.

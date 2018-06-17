@@ -17,13 +17,11 @@
 package fr.vsct.tock.nlp.front.shared.build
 
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
-import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 
 /**
  * Trigger NLP model build.
  */
-@Data
 data class ModelBuildTrigger(
     /**
      * The application id to build

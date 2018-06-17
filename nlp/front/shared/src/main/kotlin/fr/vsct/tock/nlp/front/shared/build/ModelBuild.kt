@@ -18,7 +18,6 @@ package fr.vsct.tock.nlp.front.shared.build
 
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
-import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import java.time.Duration
 import java.time.Instant
@@ -27,7 +26,6 @@ import java.util.Locale
 /**
  * A NLP model build.
  */
-@Data
 data class ModelBuild(
         /**
          * The application id of the model.

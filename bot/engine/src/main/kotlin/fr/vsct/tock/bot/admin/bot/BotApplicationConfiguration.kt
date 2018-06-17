@@ -20,14 +20,12 @@ import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.tryToFindLocalIp
-import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
 /**
  * Configuration details for a bot and a connector.
  */
-@Data
 data class BotApplicationConfiguration(
     /**
      * The application identifier.

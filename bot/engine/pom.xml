@@ -41,10 +41,6 @@
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-translator-core</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.litote.kmongo</groupId>
-            <artifactId>kmongo-data</artifactId>
-        </dependency>
 
         <dependency>
             <groupId>io.vertx</groupId>

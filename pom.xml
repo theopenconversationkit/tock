@@ -38,7 +38,7 @@
         <kotlin-logging>1.5.4</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>3.7.0</kmongo>
+        <kmongo>3.7.1-SNAPSHOT</kmongo>
         <fongo>2.2.0-RC2</fongo>
         <jackson>2.9.3</jackson>
         <jackson-module>2.9.3</jackson-module>
@@ -200,11 +200,6 @@
             <dependency>
                 <groupId>org.litote.kmongo</groupId>
                 <artifactId>kmongo</artifactId>
-                <version>${kmongo}</version>
-            </dependency>
-            <dependency>
-                <groupId>org.litote.kmongo</groupId>
-                <artifactId>kmongo-data</artifactId>
                 <version>${kmongo}</version>
             </dependency>
             <dependency>

@@ -17,14 +17,12 @@
 package fr.vsct.tock.nlp.front.shared.config
 
 import fr.vsct.tock.nlp.core.PredefinedValue
-import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
 /**
  * A type of entity.
  */
-@Data
 data class EntityTypeDefinition(
     /**
      * The qualified name of the entity (ie namespace:name)

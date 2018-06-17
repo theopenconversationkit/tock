@@ -18,7 +18,6 @@ package fr.vsct.tock.nlp.front.shared.config
 
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.shared.withNamespace
-import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.util.Locale
@@ -26,7 +25,6 @@ import java.util.Locale
 /**
  * An NLP application definition.
  */
-@Data
 data class ApplicationDefinition(
     /**
      * The name of the app.

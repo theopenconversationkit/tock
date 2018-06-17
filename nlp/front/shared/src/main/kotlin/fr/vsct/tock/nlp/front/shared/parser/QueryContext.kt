@@ -17,7 +17,6 @@
 package fr.vsct.tock.nlp.front.shared.parser
 
 import fr.vsct.tock.shared.Dice
-import org.litote.kmongo.Data
 import java.time.ZoneId
 import java.time.ZoneOffset.UTC
 import java.time.ZonedDateTime
@@ -27,7 +26,6 @@ import java.util.Locale
 /**
  * The context of a user query.
  */
-@Data
 data class QueryContext(
     /**
      * The language of the query.

@@ -16,13 +16,11 @@
 
 package fr.vsct.tock.nlp.front.shared.parser
 
-import org.litote.kmongo.Data
 import java.util.Locale
 
 /**
  * A NLP parse result.
  */
-@Data
 data class ParseResult(
     /**
      * The intent selected.

@@ -16,8 +16,6 @@
 
 package fr.vsct.tock.bot.engine.user
 
-import org.litote.kmongo.Data
-
 /**
  * The user identifier.
  *
@@ -28,7 +26,6 @@ import org.litote.kmongo.Data
  *
  * A [PlayerId] is equals to another [PlayerId] if both [id] are equals.
  */
-@Data
 data class PlayerId(
     /**
      * The unique identifier of the player.

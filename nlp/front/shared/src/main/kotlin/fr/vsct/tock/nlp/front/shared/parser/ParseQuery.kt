@@ -16,12 +16,10 @@
 
 package fr.vsct.tock.nlp.front.shared.parser
 
-import org.litote.kmongo.Data
 
 /**
  * A NLP parse query.
  */
-@Data
 data class ParseQuery(
     /**
      * A list of queries to parse.
