@@ -52,8 +52,12 @@ internal object EntityCoreService : EntityCore {
 
     override fun supportValuesMerge(entityType: EntityType) = entityTypeWithValuesMergeSupport.contains(entityType.name)
 
-    private fun getEntityEvaluatorProvider(entityType: EntityType): EntityEvaluatorProvider? =
-        entityTypeProviderMap[entityType.name]
+    private fun getEntityEvaluatorProvider(entityType: EntityType): EntityEvaluatorProvider? {
+        if (entityType.predefinedValues.isNotEmpty()) {
+            return PredefinedValueEntityEvaluatorProvider()
+        }
+        return entityTypeProviderMap[entityType.name]
+    }
 
     private fun getEntityEvaluator(entityType: EntityType): EntityEvaluator? =
         if (entityType.predefinedValues.isNotEmpty()) {
