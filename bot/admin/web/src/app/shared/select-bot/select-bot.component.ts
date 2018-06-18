@@ -49,7 +49,7 @@ export class SelectBotComponent implements OnInit {
       .subscribe(conf => {
         setTimeout(_ => {
           if (conf.length !== 0) {
-            this.botNames = Array.from(new Set(conf.map(c => c.name))).sort();
+            this.botNames = Array.from(new Set(conf.map(c => c.botId))).sort();
             if (!this.configurationId) {
               this.configurationId = conf[0]._id;
             }
@@ -63,7 +63,7 @@ export class SelectBotComponent implements OnInit {
   }
 
   private changeConf(conf: BotApplicationConfiguration, configurations: BotApplicationConfiguration[]) {
-    this.currentBotName = conf.name;
+    this.currentBotName = conf.botId;
     this.currentConnectorType = conf.ownerConnectorType;
     this.connectorTypes = configurations.filter(c => c.name === conf.name).map(c => c.ownerConnectorType);
     this.configurationId = conf._id;
@@ -72,13 +72,13 @@ export class SelectBotComponent implements OnInit {
   }
 
   changeBotName(botName: string) {
-    this.changeConf(this.configurations.find(c => c.name === botName), this.configurations)
+    this.changeConf(this.configurations.find(c => c.botId === botName), this.configurations)
   }
 
   changeConnectorType(connectorType: ConnectorType) {
     this.changeConf(
       this.configurations.find(
-        c => c.name === this.currentBotName
+        c => c.botId === this.currentBotName
           && c.ownerConnectorType.id === connectorType.id),
       this.configurations)
   }
