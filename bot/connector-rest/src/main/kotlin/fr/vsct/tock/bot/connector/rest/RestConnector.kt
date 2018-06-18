@@ -47,7 +47,7 @@ class RestConnector(val applicationId: String, val path: String) : ConnectorBase
     override fun register(controller: ConnectorController) {
         if (!disabled) {
             logger.info { "deploy rest connector to $path" }
-            controller.registerServices(path, { router ->
+            controller.registerServices(path) { router ->
                 router.post("$path/:locale").blockingHandler(
                     { context ->
                         try {
@@ -78,7 +78,7 @@ class RestConnector(val applicationId: String, val path: String) : ConnectorBase
                     },
                     false
                 )
-            })
+            }
         }
     }
 
