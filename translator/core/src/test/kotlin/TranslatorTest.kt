@@ -14,6 +14,21 @@
  * limitations under the License.
  */
 
+/*
+ * Copyright (C) 2017 VSCT
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package fr.vsct.tock.translator
 
 import fr.vsct.tock.shared.defaultLocale
@@ -46,7 +61,11 @@ class TranslatorTest : AbstractTest() {
 
     @Test
     fun formatMessage_shouldHandleWell_NullArgValue() {
-        val result = Translator.formatMessage("a {0}", I18nContext(defaultLocale, textChat, null), listOf(null))
+        val result = Translator.formatMessage(
+            "a {0}",
+            I18nContext(defaultLocale, textChat, null),
+            listOf(null)
+        )
         assertEquals("a ", result)
     }
 
@@ -79,7 +98,10 @@ class TranslatorTest : AbstractTest() {
             toTranslate
         )
 
-        val translated = Translator.translate(key, I18nContext(defaultLocale, textChat))
+        val translated = Translator.translate(
+            key,
+            I18nContext(defaultLocale, textChat)
+        )
         assertEquals(target, translated.toString())
 
         val key2 = I18nLabelValue(
@@ -89,7 +111,10 @@ class TranslatorTest : AbstractTest() {
             translated
         )
 
-        val translated2 = Translator.translate(key2, I18nContext(defaultLocale, textChat))
+        val translated2 = Translator.translate(
+            key2,
+            I18nContext(defaultLocale, textChat)
+        )
 
         assertEquals(translated, translated2)
     }
@@ -125,9 +150,19 @@ class TranslatorTest : AbstractTest() {
         )
 
 
-        assertEquals(target, Translator.translate(key, I18nContext(defaultLocale, textChat)).toString())
+        assertEquals(
+            target, Translator.translate(
+                key,
+                I18nContext(defaultLocale, textChat)
+            ).toString()
+        )
 
-        assertEquals(target, Translator.translate(key, I18nContext(defaultLocale, textChat)).toString())
+        assertEquals(
+            target, Translator.translate(
+                key,
+                I18nContext(defaultLocale, textChat)
+            ).toString()
+        )
 
         verify { i18nDAO.getLabelById(id.toId()) }
     }
@@ -147,14 +182,24 @@ class TranslatorTest : AbstractTest() {
 
         every { i18nDAO.getLabelById(id.toId()) }.returns(null)
 
-        assertEquals(toTranslate, Translator.translate(key, I18nContext(defaultLocale, textChat)).toString())
+        assertEquals(
+            toTranslate, Translator.translate(
+                key,
+                I18nContext(defaultLocale, textChat)
+            ).toString()
+        )
 
         verify { i18nDAO.getLabelById(id.toId()) }
     }
 
     @Test
     fun `randomText returns the same label when index specified`() {
-        val label = I18nLocalizedLabel(defaultLocale, defaultUserInterface, "a", listOf("b"))
+        val label = I18nLocalizedLabel(
+            defaultLocale,
+            defaultUserInterface,
+            "a",
+            listOf("b")
+        )
         val l = I18nLabel(
             "".toId(),
             defaultNamespace,
