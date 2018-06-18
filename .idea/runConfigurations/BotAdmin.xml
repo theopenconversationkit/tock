@@ -11,9 +11,6 @@
     <envs>
       <env name="tock_nlp_model_refresh_rate" value="10" />
       <env name="botadminverticle_port" value="7999" />
-      <env name="tock_bot_mongo_db" value="tock_bot" />
-      <env name="tock_front_mongo_db" value="tock_front" />
-      <env name="tock_organizations" value="transilien" />
     </envs>
     <method />
   </configuration>
