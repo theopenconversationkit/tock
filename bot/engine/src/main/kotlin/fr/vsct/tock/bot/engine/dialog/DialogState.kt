@@ -48,6 +48,22 @@ data class DialogState(
         var nextActionState: NextUserActionState? = null) {
 
     /**
+     * Updates persistent context value.
+     * Do not store Collection or Map in the context, only plain objects or typed arrays.
+     */
+    fun setContextValue(name: String, value: Any?) {
+        if (value == null) {
+            context.remove(name)
+        } else {
+            if (value is Collection<*> || value is Map<*, *>) {
+                error("Storing collection or map is dialog context is unsupported, use plain objects or typed arrays")
+            }
+            context[name] = value
+        }
+    }
+
+
+    /**
      * Set a new entity value. Remove previous entity values history.
      *
      * @role the role of the entity

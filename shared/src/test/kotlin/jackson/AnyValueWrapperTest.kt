@@ -18,6 +18,7 @@ package fr.vsct.tock.shared.jackson
 
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.module.kotlin.readValue
+import org.junit.jupiter.api.Assertions
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
@@ -43,6 +44,14 @@ class AnyValueWrapperTest {
         val s = mapper.writeValueAsString(value)
         val newValue = mapper.readValue<AnyValueWrapper>(s)
         assertEquals(value, newValue)
+    }
+
+    @Test
+    fun serializeAndDeserializeTypedArrayValueWrapper_shouldLeftDataInchanged() {
+        val value = AnyValueWrapper(arrayOf(Custom("ok")))
+        val s = mapper.writeValueAsString(value)
+        val newValue = mapper.readValue<AnyValueWrapper>(s)
+        Assertions.assertArrayEquals(value.value as Array<*>, newValue.value as Array<*>)
     }
 
     @Test

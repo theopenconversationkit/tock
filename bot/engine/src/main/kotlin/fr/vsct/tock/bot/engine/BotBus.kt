@@ -313,9 +313,10 @@ interface BotBus : I18nTranslator {
 
     /**
      * Updates persistent context value.
+     * Do not store Collection or Map in the context, only plain objects or typed arrays.
      */
     fun changeContextValue(name: String, value: Any?) {
-        if (value == null) dialog.state.context.remove(name) else dialog.state.context[name] = value
+        dialog.state.setContextValue(name, value)
     }
 
     /**

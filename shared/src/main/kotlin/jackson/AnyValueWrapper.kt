@@ -16,13 +16,17 @@
 
 package fr.vsct.tock.shared.jackson
 
+import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.core.JsonParser
-import com.fasterxml.jackson.core.TreeNode
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.JsonSerializer
+import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+import com.fasterxml.jackson.databind.annotation.JsonSerialize
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.AnyValueWrapper.AnyValueDeserializer
+import fr.vsct.tock.shared.jackson.AnyValueWrapper.AnyValueSerializer
 import mu.KotlinLogging
 import kotlin.reflect.KClass
 
@@ -31,10 +35,22 @@ import kotlin.reflect.KClass
  * Use with care, as it stores the class name in json.
  */
 @JsonDeserialize(using = AnyValueDeserializer::class)
+@JsonSerialize(using = AnyValueSerializer::class)
 data class AnyValueWrapper(val klass: String, val value: Any?) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
+    }
+
+    internal class AnyValueSerializer : JsonSerializer<AnyValueWrapper>() {
+        override fun serialize(value: AnyValueWrapper, gen: JsonGenerator, serializers: SerializerProvider) {
+            gen.writeStartObject()
+            gen.writeFieldName(AnyValueWrapper::klass.name)
+            gen.writeString(value.klass)
+            gen.writeFieldName(AnyValueWrapper::value.name)
+            gen.writeObject(value.value)
+            gen.writeEndObject()
+        }
     }
 
     internal class AnyValueDeserializer : JsonDeserializer<AnyValueWrapper>() {
@@ -43,16 +59,16 @@ data class AnyValueWrapper(val klass: String, val value: Any?) {
             var fieldName = jp.fieldNameWithValueReady()
             if (fieldName != null) {
                 val classValue: Class<*>? =
-                        try {
-                            Class.forName(jp.text)
-                        } catch (e: Exception) {
-                            logger.error(e)
-                            null
-                        }
+                    try {
+                        Class.forName(jp.text)
+                    } catch (e: Exception) {
+                        logger.error(e)
+                        null
+                    }
                 fieldName = jp.fieldNameWithValueReady()
                 if (fieldName != null) {
                     if (classValue == null) {
-                        logger.debug { jp.readValueAsTree<TreeNode>() }
+                        logger.debug { jp.readValueAsTree() }
                         jp.checkEndToken()
                         return null
                     } else {
