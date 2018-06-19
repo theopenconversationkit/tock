@@ -47,8 +47,7 @@ data class AnyValueWrapper(val klass: String, val value: Any?) {
             gen.writeStartObject()
             gen.writeFieldName(AnyValueWrapper::klass.name)
             gen.writeString(value.klass)
-            gen.writeFieldName(AnyValueWrapper::value.name)
-            gen.writeObject(value.value)
+            serializers.defaultSerializeField(AnyValueWrapper::value.name, value.value, gen)
             gen.writeEndObject()
         }
     }

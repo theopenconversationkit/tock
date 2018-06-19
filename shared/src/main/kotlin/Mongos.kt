@@ -50,11 +50,11 @@ internal val collectionBuilder: (KClass<*>) -> String = {
     it.simpleName!!
         .replace("storage", "", true)
         .toCharArray()
-        .fold("", { s, t ->
+        .fold("") { s, t ->
             if (s.isEmpty()) t.toLowerCase().toString()
             else if (t.isUpperCase()) "${s}_${t.toLowerCase()}"
             else "$s$t"
-        })
+        }
 }
 
 /**
