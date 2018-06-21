@@ -106,24 +106,31 @@ internal object WebhookActionConverter {
                     }
             is OptinWebhook ->
                 SubscribingEvent(
-                    message.sender?.id ?: message.optin.userRef,
+                    message.playerId(PlayerType.user),
+                    message.recipientId(PlayerType.bot),
                     message.optin.ref,
-                    // the recipient id is the page id, ie the tock application id
-                    message.recipient.id!!
+                    applicationId
                 )
             is AccountLinkingWebhook -> {
                 when (message.accountLinking.status) {
                     AccountLinkingStatus.linked -> LoginEvent(
-                        message.sender.id,
+                        message.playerId(PlayerType.user),
+                        message.recipientId(PlayerType.bot),
                         message.accountLinking.authorizationCode!!,
-                        message.recipient.id!!
+                        applicationId
                     )
-                    AccountLinkingStatus.unlinked -> LogoutEvent(message.sender.id, message.recipient.id!!)
+                    AccountLinkingStatus.unlinked ->
+                        LogoutEvent(
+                            message.playerId(PlayerType.user),
+                            message.recipientId(PlayerType.bot),
+                            applicationId
+                        )
                 }
             }
             is AppRolesWebhook -> {
                 GetAppRolesEvent(
-                    message.recipient.id!!,
+                    message.recipientId(PlayerType.bot),
+                    applicationId,
                     message
                         .appRoles
                         .mapValues {

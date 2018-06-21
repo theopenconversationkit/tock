@@ -18,12 +18,22 @@ package fr.vsct.tock.bot.connector.messenger.model.webhook
 
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.Sender
+import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.PlayerType
 
 /**
  *
  */
-data class OptinWebhook(override val sender: Sender?,
-                        override val recipient: Recipient,
-                        override val timestamp: Long,
-                        val optin: Optin) : Webhook() {
+data class OptinWebhook(
+    override val sender: Sender?,
+    override val recipient: Recipient,
+    override val timestamp: Long,
+    val optin: Optin
+) : Webhook() {
+
+    override fun playerId(playerType: PlayerType): PlayerId =
+        PlayerId(
+            sender?.id ?: optin.userRef ?: error("null sender field in webhook"),
+            if (playerType == PlayerType.user && sender?.id == null) PlayerType.temporary else playerType
+        )
 }

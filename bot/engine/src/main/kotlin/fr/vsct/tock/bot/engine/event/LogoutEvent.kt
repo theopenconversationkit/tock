@@ -16,7 +16,13 @@
 
 package fr.vsct.tock.bot.engine.event
 
+import fr.vsct.tock.bot.engine.user.PlayerId
+
 /**
  * An event used to cancel a [LoginEvent].
  */
-class LogoutEvent(val userId: String, applicationId: String) : Event(applicationId)
+class LogoutEvent(
+    userId: PlayerId,
+    recipientId: PlayerId,
+    applicationId: String
+) :OneToOneEvent(userId, recipientId, applicationId)

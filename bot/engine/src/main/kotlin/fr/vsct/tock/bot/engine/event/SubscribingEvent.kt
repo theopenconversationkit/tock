@@ -16,15 +16,18 @@
 
 package fr.vsct.tock.bot.engine.event
 
+import fr.vsct.tock.bot.engine.user.PlayerId
+
 /**
  * The "subscribe to application" event.
  */
 class SubscribingEvent(
-        /** usually a temporary id, but can be the real one too */
-        val userId: String,
-        /** an optional payload */
-        val payload: String? = null,
-        /** the application id */
-        applicationId: String
-) : Event(applicationId) {
-}
+    /** usually a temporary id, but can be the real one too */
+    userId: PlayerId,
+    /** the bot id **/
+    recipientId: PlayerId,
+    /** an optional payload */
+    val payload: String? = null,
+    /** the application id */
+    applicationId: String
+) : OneToOneEvent(userId, recipientId, applicationId)

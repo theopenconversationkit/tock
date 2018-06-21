@@ -40,10 +40,10 @@ abstract class Webhook : MessengerConnectorMessage() {
         return null
     }
 
-    fun playerId(playerType: PlayerType): PlayerId =
+    open fun playerId(playerType: PlayerType): PlayerId =
         PlayerId(sender?.id ?: error("null sender field in webhook"), playerType)
 
-    fun recipientId(playerType: PlayerType): PlayerId = PlayerId(
+    open fun recipientId(playerType: PlayerType): PlayerId = PlayerId(
         recipient.id ?: recipient.userRef ?: error("id or userRef must not be null"),
         playerType
     )

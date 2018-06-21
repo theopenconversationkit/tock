@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.engine.event
 
+import fr.vsct.tock.bot.engine.user.PlayerId
+
 /**
  * An app role.
  */
@@ -27,6 +29,10 @@ enum class AppRole {
  * To get applications roles.
  */
 class GetAppRolesEvent(
+    /**
+     * The bot id.
+     */
+    val recipientId: PlayerId,
     /**
      * The current application id.
      */

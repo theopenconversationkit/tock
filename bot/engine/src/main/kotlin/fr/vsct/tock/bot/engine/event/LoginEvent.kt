@@ -16,7 +16,14 @@
 
 package fr.vsct.tock.bot.engine.event
 
+import fr.vsct.tock.bot.engine.user.PlayerId
+
 /**
  * A login event, in order to provide account linking.
  */
-class LoginEvent(val userId: String, val userToken: String, applicationId: String) : Event(applicationId)
+class LoginEvent(
+    userId: PlayerId,
+    recipientId: PlayerId,
+    val userToken: String,
+    applicationId: String) : OneToOneEvent(userId, recipientId, applicationId)
+
