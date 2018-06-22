@@ -29,8 +29,11 @@ import fr.vsct.tock.bot.admin.model.DialogsSearchQuery
 import fr.vsct.tock.bot.admin.model.TestPlanUpdate
 import fr.vsct.tock.bot.admin.model.UpdateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
+import fr.vsct.tock.bot.admin.model.XRayPlanExecutionConfiguration
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanService
+import fr.vsct.tock.bot.admin.test.xray.XrayConfiguration
+import fr.vsct.tock.bot.admin.test.xray.XrayService
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.ConnectorType.Companion.rest
 import fr.vsct.tock.bot.connector.rest.addRestConnector
@@ -116,7 +119,7 @@ open class BotAdminVerticle : AdminVerticle() {
                     }
                 BotAdminService.saveApplicationConfiguration(conf)
                 //add rest connector
-                if(bot._id == null && bot.connectorType != rest) {
+                if (bot._id == null && bot.connectorType != rest) {
                     addRestConnector(conf).apply {
                         BotAdminService.saveApplicationConfiguration(
                             BotApplicationConfiguration(
@@ -297,6 +300,18 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonGet("/connectorTypes", botUser) {
             ConnectorType.connectorTypes
+        }
+
+        blockingJsonGet("/xray/available", botUser) {
+            XrayConfiguration.isXrayAvailable()
+        }
+
+        blockingJsonPost("/xray/execute", botUser) { c, configuration: XRayPlanExecutionConfiguration ->
+            XrayService(
+                listOf(configuration.configurationId),
+                listOf(configuration.testPlanKey),
+                configuration.testedBotId
+            ).executePlans()
         }
 
         configureStaticHandling()

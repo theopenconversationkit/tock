@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from "@angular/core";
-import {TestPlan} from "../model/test";
+import {TestPlan, XRayPlanExecutionConfiguration} from "../model/test";
 import {TestService} from "../test.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {MdSnackBar} from "@angular/material";
@@ -36,6 +36,10 @@ export class TestPlanComponent implements OnInit {
   testBotConfigurationId: string;
 
   executePlan: boolean;
+
+  xray: XRayPlanExecutionConfiguration;
+  xrayBotConfigurationId: string;
+  executeXray: boolean = false;
 
   constructor(private state: StateService,
               private test: TestService,
@@ -58,9 +62,39 @@ export class TestPlanComponent implements OnInit {
               plan.botName = conf.name;
             }
           });
-          this.testPlans = p
-        })
+          this.testPlans = p;
+
+          if (c.length !== 0)
+            this.test.isXrayAvailable().subscribe(r => {
+                if (r.success) {
+                  this.xray = new XRayPlanExecutionConfiguration("", "", "");
+                  this.xrayBotConfigurationId = c[0]._id;
+                }
+              }
+            );
+        });
       });
+  }
+
+  executeXRay() {
+    if (this.xray.testPlanKey.trim().length === 0) {
+      this.snackBar.open(`Please specify a plan key`, "Error", {duration: 2000})
+    } else {
+      this.executeXray = true;
+      this.botConfiguration.restConfigurations.subscribe(c => {
+        const conf = c.find(i => i._id === this.xrayBotConfigurationId);
+        this.xray.configurationId = this.xrayBotConfigurationId;
+        this.xray.testedBotId = conf.botId;
+        this.test.executeXRay(this.xray).subscribe(r => {
+          this.executeXray = false;
+          if (r.success) {
+            this.snackBar.open(`Plan ${this.xray.testPlanKey} executed with success`, "Execution", {duration: 2000})
+          } else {
+            this.snackBar.open(`Plan ${this.xray.testPlanKey} executed with at least one error`, "Execution", {duration: 2000})
+          }
+        });
+      });
+    }
   }
 
   prepareCreateTestPlan() {

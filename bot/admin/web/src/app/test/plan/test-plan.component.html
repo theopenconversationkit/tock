@@ -18,6 +18,24 @@
   <h3>No bot configuration detected.</h3>
 </md-card>
 
+<md-card *ngIf="xray">
+  <md-card-title>Execute XRay plan</md-card-title>
+  <tock-select-bot [(configurationId)]="xrayBotConfigurationId"
+                   (configurationIdChange)="xrayBotConfigurationId=$event"></tock-select-bot>
+
+    <md-input-container class="input-text">
+      <input mdInput
+             placeholder="JIRA Test Plan"
+             [(ngModel)]="xray.testPlanKey"
+             (keyup.enter)="executeXRay()">
+    </md-input-container>
+
+    <button md-button (click)="executeXRay()" color="primary">Create</button>
+  <div *ngIf="executeXray"><br>
+    <img src="/assets/images/loading.gif" width="40px" height="40px"/>
+  </div>
+</md-card>
+
 <md-card *ngIf="(botConfiguration.restConfigurations|async).length !==0">
   <md-card-title>Test Plans</md-card-title>
   <md-card-subtitle>

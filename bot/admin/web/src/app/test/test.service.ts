@@ -15,14 +15,15 @@
  */
 
 import {Injectable} from "@angular/core";
-import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
+import {BooleanResponse, RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {Observable} from "rxjs/Observable";
 import {
   BotDialogRequest,
   BotDialogResponse,
   TestPlan,
-  TestPlanExecution
+  TestPlanExecution,
+  XRayPlanExecutionConfiguration
 } from "./model/test";
 
 @Injectable()
@@ -58,6 +59,14 @@ export class TestService {
 
   removeDialogFromTestPlan(planId: string, dialogId: string): Observable<boolean> {
     return this.rest.post(`/test/plan/${planId}/dialog/delete/${dialogId}`, this.state.createApplicationScopedQuery());
+  }
+
+  isXrayAvailable(): Observable<BooleanResponse> {
+    return this.rest.get("/xray/available", BooleanResponse.fromJSON);
+  }
+
+  executeXRay(conf: XRayPlanExecutionConfiguration): Observable<BooleanResponse> {
+    return this.rest.post(`/xray/execute`, conf, BooleanResponse.fromJSON);
   }
 
 }

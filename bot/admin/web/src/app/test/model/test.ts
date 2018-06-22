@@ -221,3 +221,12 @@ export class TestActionReport {
     return json ? json.map(TestActionReport.fromJSON) : [];
   }
 }
+
+export class XRayPlanExecutionConfiguration {
+
+  constructor(public configurationId: string,
+              public testPlanKey: string,
+              public testedBotId: string) {
+  }
+
+}

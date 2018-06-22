@@ -14,20 +14,22 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.test.xray.model
+package fr.vsct.tock.bot.admin.test.xray
 
-import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
-import fr.vsct.tock.shared.listProperty
-import fr.vsct.tock.shared.property
+import mu.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
 
 /**
  *
  */
-data class XrayExecutionConfiguration(
-        val botConfiguration: BotApplicationConfiguration,
-        val testPlanKeys: List<String> = listProperty("tock_bot_test_xray_test_plan_keys", emptyList()),
-        val environment: String = property("tock_bot_test_xray_test_plan_env", ""),
-        val botUrl:String = property("tock_bot_test_xray_test_plan_bot_url", "")
-) {
-
+fun main(args: Array<String>) {
+    logger.info { "Start tests" }
+    val result = XrayService().executePlans()
+    if (!result) {
+        logger.error { "At least one test fail" }
+        System.exit(1)
+    } else {
+        logger.info { "All tests pass" }
+    }
 }

@@ -174,7 +174,7 @@ abstract class WebVerticle : AbstractVerticle() {
         router.post(authenticatePath).handler { context ->
             val request = mapper.readValue<AuthenticateRequest>(context.bodyAsString)
             val authInfo = JsonObject().put("username", request.email).put("password", request.password)
-            authProvider.authenticate(authInfo, {
+            authProvider.authenticate(authInfo) {
                 if (it.succeeded()) {
                     val user = it.result()
                     context.setUser(user)
@@ -202,7 +202,7 @@ abstract class WebVerticle : AbstractVerticle() {
                 } else {
                     context.endJson(AuthenticateResponse(false))
                 }
-            })
+            }
         }
 
         router.post(logoutPath).handler {
@@ -230,16 +230,17 @@ abstract class WebVerticle : AbstractVerticle() {
     protected open fun startServer(startFuture: Future<Void>) {
         val port = verticleIntProperty("port", 8080)
         server.requestHandler { r -> router.accept(r) }
-            .listen(port,
-                { r ->
-                    if (r.succeeded()) {
-                        logger.info { "$verticleName started on port $port" }
-                        startFuture.complete()
-                    } else {
-                        logger.error { "$verticleName NOT started on port $port" }
-                        startFuture.fail(r.cause())
-                    }
-                })
+            .listen(
+                port
+            ) { r ->
+                if (r.succeeded()) {
+                    logger.info { "$verticleName started on port $port" }
+                    startFuture.complete()
+                } else {
+                    logger.error { "$verticleName NOT started on port $port" }
+                    startFuture.fail(r.cause())
+                }
+            }
     }
 
     private fun verticleProperty(propertyName: String) = "${verticleName.toLowerCase()}_$propertyName"
@@ -315,10 +316,10 @@ abstract class WebVerticle : AbstractVerticle() {
         role: TockUserRole?,
         handler: (RoutingContext) -> O
     ) {
-        blocking(method, path, role, { context ->
+        blocking(method, path, role) { context ->
             val result = handler.invoke(context)
             context.endJson(result)
-        })
+        }
     }
 
     protected fun <O> blockingJsonGet(
@@ -326,10 +327,10 @@ abstract class WebVerticle : AbstractVerticle() {
         role: TockUserRole? = defaultRole(),
         handler: (RoutingContext) -> O
     ) {
-        blocking(GET, path, role, { context ->
+        blocking(GET, path, role) { context ->
             val result = handler.invoke(context)
             context.endJson(result)
-        })
+        }
     }
 
     protected fun blockingPost(path: String, role: TockUserRole? = defaultRole(), handler: (RoutingContext) -> Unit) {
@@ -507,7 +508,11 @@ abstract class WebVerticle : AbstractVerticle() {
     }
 
     fun RoutingContext.endJson(result: Any?) {
-        this.response().endJson(result)
+        if (result is Boolean) {
+            endJson(result)
+        } else {
+            this.response().endJson(result)
+        }
     }
 
     fun RoutingContext.path(name: String): String =

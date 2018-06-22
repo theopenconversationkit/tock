@@ -152,6 +152,11 @@
             </dependency>
             <dependency>
                 <groupId>fr.vsct.tock</groupId>
+                <artifactId>tock-bot-admin-test-xray</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
                 <artifactId>tock-bot-admin-kotlin-compiler-core</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -367,7 +372,7 @@
             </dependency>
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
-                <artifactId>kotlin-test</artifactId>
+                <artifactId>kotlin-test-junit5</artifactId>
                 <version>${kotlin}</version>
                 <scope>test</scope>
             </dependency>

@@ -67,12 +67,14 @@ export class SelectBotComponent implements OnInit {
   }
 
   private changeConf(conf: BotApplicationConfiguration, configurations: BotApplicationConfiguration[]) {
-    this.currentBotName = this.getName(conf);
-    this.currentConnectorType = conf.ownerConnectorType;
-    this.connectorTypes = configurations.filter(c => c.name === conf.name).map(c => c.ownerConnectorType);
-    this.configurationId = conf._id;
-    this.configurations = configurations;
-    this.configurationIdChange.emit(conf._id);
+    if (conf) {
+      this.currentBotName = this.getName(conf);
+      this.currentConnectorType = conf.ownerConnectorType;
+      this.connectorTypes = configurations.filter(c => c.name === conf.name).map(c => c.ownerConnectorType);
+      this.configurationId = conf._id;
+      this.configurations = configurations;
+      this.configurationIdChange.emit(conf._id);
+    }
   }
 
   changeBotName(botName: string) {

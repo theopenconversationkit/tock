@@ -19,7 +19,7 @@
 </div>
 <div *ngIf="configurations && configurations.length !== 0">
   <md-select (change)="changeBotName($event.value)"
-             placeholder="Select a bot"
+             placeholder="Select a configuration"
              [ngModel]="currentBotName"
              class="select-configuration">
     <md-option *ngFor="let n of botNames" [value]="n">{{ n }}</md-option>
