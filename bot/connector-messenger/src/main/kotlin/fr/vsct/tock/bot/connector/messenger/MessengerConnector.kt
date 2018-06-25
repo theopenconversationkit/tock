@@ -314,7 +314,7 @@ class MessengerConnector internal constructor(
                     null
                 }
             } else {
-                sendEvent(event, transformActionRequest)
+                sendSimpleEvent(event, transformActionRequest)
             }
         } catch (e: Throwable) {
             logger.error(e)
@@ -401,7 +401,7 @@ class MessengerConnector internal constructor(
      * @param event the event
      * @param transformActionRequest method to transform the [ActionRequest] before sending - default is identity
      */
-    fun sendEvent(
+    fun sendSimpleEvent(
         event: Event,
         transformActionRequest: (ActionRequest) -> ActionRequest = { it }
     ): SendResponse? =
