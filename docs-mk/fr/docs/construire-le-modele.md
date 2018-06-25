@@ -112,3 +112,12 @@ Si vous activez cette option, vous allez être en mesure de qualifier plusieurs 
 ![schéma Tock](img/subentities.png "Support des sous-entités")
 
 Le nombre de niveaux n'est pas limité, mais il est conseillé de ne pas en spécifier plus de 3 ou 4.
+
+### Utiliser les valeurs prédefinies
+
+Une entité donnée peut avoir des valeurs prédéfinies : pour cela vous devez aller dans l'onglet "Entities", selectionner une entité appartenant à l'organization courante.
+Une petite icône a coté de l'icône de suppression montre les types d'entités que vous pourrez modifier comme le montre l'image ci-dessous.
+
+![schéma Tock](img/predefined-values.png "Support des sous-entités")
+
+Dans l'exemple ci-dessus nous avons deux labels définis pour la valeur de semaine : "Semaine" et "hebdomadaire".

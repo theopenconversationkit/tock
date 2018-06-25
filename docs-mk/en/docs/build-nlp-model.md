@@ -90,3 +90,10 @@ If you enable this option, you will be able to qualify multiple levels of entiti
 ![schéma Tock](img/subentities.png "Sub entities support")
 
 The number of levels is not limited, but it is advisable not to specify more than 3 or 4.
+
+### Use predefined values
+
+An entity can have predefined values : you just have to click on "Entities" tab, and select an entity.
+A small icon next to the delete icon shows the types of entities you can edit as shown in the picture below:
+
+![schéma Tock](img/predefined-values.png "Support des sous-entités")
