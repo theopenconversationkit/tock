@@ -25,9 +25,8 @@ import fr.vsct.tock.shared.cache.TockCache
 import fr.vsct.tock.shared.vertx.VertxProvider
 import io.mockk.mockk
 import mu.KotlinLogging
-import org.bson.Document
 import org.litote.kmongo.Id
-import org.litote.kmongo.KFlapdoodleRule.Companion.rule
+import org.litote.kmongo.KFlapdoodle
 import java.time.Duration
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
@@ -46,7 +45,7 @@ val sharedTestModule = Kodein.Module {
             try {
                 //init kmongo configuration for persistence tests
                 configureKMongo()
-                rule<Document>().mongoClient
+                KFlapdoodle.mongoClient
             } catch (t: Throwable) {
                 logger.trace("error during KMongo configuration", t)
                 mockk<MongoClient>(relaxed = true)
