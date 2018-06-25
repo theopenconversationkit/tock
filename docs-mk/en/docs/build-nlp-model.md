@@ -93,11 +93,7 @@ The number of levels is not limited, but it is advisable not to specify more tha
 
 ### Use predefined values
 
-An entity can have predefined values : to do this you must click on tab "Entities", select an entity belonging to the current organization.
-A small icon next to the delete icon shows the types of entities you can edit as shown in the picture below
-**Case and accents are ignored.**
+An entity can have predefined values : you just have to click on "Entities" tab, and select an entity.
+A small icon next to the delete icon shows the types of entities you can edit as shown in the picture below:
 
 ![schéma Tock](img/predefined-values.png "Support des sous-entités")
-
-In the example above we have two labels defined for the "Semaine" value: "semaine" and "hebdomadaire".
-The nlp engine will evaluate the "frequency" entity with the value "semaine".
