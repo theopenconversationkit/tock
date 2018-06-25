@@ -73,7 +73,6 @@ import org.litote.kmongo.regex
 import org.litote.kmongo.set
 import org.litote.kmongo.sort
 import org.litote.kmongo.sum
-import org.litote.kmongo.toList
 import org.litote.kmongo.year
 import java.time.Instant
 import java.time.LocalDate
