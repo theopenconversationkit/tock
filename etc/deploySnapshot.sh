@@ -1,2 +1,2 @@
 #!/usr/bin/env bash
-mvn clean deploy -Ddeploy
+mvn clean deploy -Ddeploy -U
