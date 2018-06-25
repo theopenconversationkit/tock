@@ -131,19 +131,19 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
     }
 
     override fun importNlpDump(stream: InputStream): Boolean {
-        return nlpService.importNlpDump(createMultipart(stream)).execute().body() ?: false
+        return nlpService.importNlpDump(createMultipart(stream)).execute().body()?.success ?: false
     }
 
     override fun importNlpPlainDump(dump: ApplicationDump): Boolean {
-        return nlpService.importNlpPlainDump(dump).execute().body() ?: false
+        return nlpService.importNlpPlainDump(dump).execute().body()?.success ?: false
     }
 
     override fun importNlpSentencesDump(stream: InputStream): Boolean {
-        return nlpService.importNlpSentencesDump(createMultipart(stream)).execute().body() ?: false
+        return nlpService.importNlpSentencesDump(createMultipart(stream)).execute().body()?.success ?: false
     }
 
     override fun importNlpPlainSentencesDump(dump: SentencesDump): Boolean {
-        return nlpService.importNlpPlainSentencesDump(dump).execute().body() ?: false
+        return nlpService.importNlpPlainSentencesDump(dump).execute().body()?.success ?: false
     }
 
     override fun healthcheck(): Boolean {

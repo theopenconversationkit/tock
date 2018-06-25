@@ -37,6 +37,8 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Query
 
+internal data class BooleanResponse(val success: Boolean = true)
+
 /**
  *
  */
@@ -59,17 +61,17 @@ internal interface NlpService {
 
     @Multipart
     @POST("dump/import")
-    fun importNlpDump(@Part dump: MultipartBody.Part): Call<Boolean>
+    fun importNlpDump(@Part dump: MultipartBody.Part): Call<BooleanResponse>
 
     @POST("dump/import/plain")
-    fun importNlpPlainDump(@Body dump: ApplicationDump): Call<Boolean>
+    fun importNlpPlainDump(@Body dump: ApplicationDump): Call<BooleanResponse>
 
     @Multipart
     @POST("dump/import/sentences")
-    fun importNlpSentencesDump(@Part dump: MultipartBody.Part): Call<Boolean>
+    fun importNlpSentencesDump(@Part dump: MultipartBody.Part): Call<BooleanResponse>
 
     @POST("dump/import/sentences/plain")
-    fun importNlpPlainSentencesDump(@Body dump: SentencesDump): Call<Boolean>
+    fun importNlpPlainSentencesDump(@Body dump: SentencesDump): Call<BooleanResponse>
 
     @GET("healthcheck")
     fun healthcheck(): Call<ResponseBody>
