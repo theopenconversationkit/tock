@@ -68,6 +68,7 @@ import org.apache.commons.lang3.LocaleUtils
 import java.lang.Exception
 import java.time.Duration
 import java.time.ZoneOffset
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.CopyOnWriteArraySet
 import java.util.concurrent.TimeUnit
@@ -90,12 +91,14 @@ class MessengerConnector internal constructor(
 
     companion object {
         private val logger = KotlinLogging.logger {}
-        private val pageApplicationMap: MutableMap<String, String> = mutableMapOf()
-        private val applicationTokenMap: MutableMap<String, String> = mutableMapOf()
+        private val pageApplicationMap: MutableMap<String, String> = ConcurrentHashMap()
+        private val applicationTokenMap: MutableMap<String, String> = ConcurrentHashMap()
         private val connectors: MutableSet<MessengerConnector> = CopyOnWriteArraySet<MessengerConnector>()
 
         fun getConnectorByPageId(pageId: String): MessengerConnector? {
             return connectors.find { it.pageId == pageId }
+            //TODO remove this when backward compatibility is no more assured
+                    ?: (connectors.find { it.applicationId == pageId }?.also { logger.warn { "use appId as pageId $pageId not found" } })
         }
 
         fun healthcheck(): Boolean {
@@ -522,7 +525,14 @@ class MessengerConnector internal constructor(
 
     private fun getToken(event: Event): String = getToken(event.applicationId)
 
-    private fun getToken(appId: String): String = applicationTokenMap.getValue(appId)
+    private fun getToken(appId: String): String =
+        applicationTokenMap[appId]
+        //TODO remove this when backward compatibility is no more assured
+                ?: pageApplicationMap[appId]?.let {
+                    logger.warn { "use pageId as appId for $appId" }
+                    applicationTokenMap[it]
+                }
+                ?: error("$appId not found")
 
     private fun isSignedByFacebook(payload: String, facebookSignature: String): Boolean {
         return "sha1=${sha1(payload, client.secretKey)}" == facebookSignature
