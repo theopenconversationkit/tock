@@ -34,7 +34,7 @@
         <meta name="lang:search.tokenizer" content="[\s\-]+">
       
       <link rel="shortcut icon" href="../assets/images/favicon.png">
-      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.2.2">
+      <meta name="generator" content="mkdocs-0.17.2, mkdocs-material-2.2.1">
     
     
       
@@ -42,7 +42,7 @@
       
     
     
-      <link rel="stylesheet" href="../assets/stylesheets/application.7a4cdee3.css">
+      <link rel="stylesheet" href="../assets/stylesheets/application.41c6761c.css">
       
     
     
@@ -339,6 +339,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#demarrer-et-connecter-le-bot" title="Démarrer et connecter le bot" class="md-nav__link">
+    Démarrer et connecter le bot
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#aller-un-peu-plus-loin" title="Aller un peu plus loin" class="md-nav__link">
     Aller un peu plus loin
   </a>
@@ -374,15 +381,49 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#utiliser-storystep" title="Utiliser StoryStep" class="md-nav__link">
+    Utiliser StoryStep
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplestorystep" title="SimpleStoryStep" class="md-nav__link">
+    SimpleStoryStep
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#les-storystep-avec-comportement" title="Les StoryStep avec comportement" class="md-nav__link">
+    Les StoryStep avec comportement
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#demarrer-et-connecter-le-bot" title="Démarrer et connecter le bot" class="md-nav__link">
-    Démarrer et connecter le bot
+        
+          <li class="md-nav__item">
+  <a href="#postback-buttons-quick-replies" title="Postback buttons &amp; quick replies" class="md-nav__link">
+    Postback buttons &amp; quick replies
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#definir-son-propre-connecteur" title="Définir son propre connecteur" class="md-nav__link">
+    Définir son propre connecteur
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -485,6 +526,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#demarrer-et-connecter-le-bot" title="Démarrer et connecter le bot" class="md-nav__link">
+    Démarrer et connecter le bot
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#aller-un-peu-plus-loin" title="Aller un peu plus loin" class="md-nav__link">
     Aller un peu plus loin
   </a>
@@ -520,15 +568,49 @@
   
 </li>
         
+          <li class="md-nav__item">
+  <a href="#utiliser-storystep" title="Utiliser StoryStep" class="md-nav__link">
+    Utiliser StoryStep
+  </a>
+  
+    <nav class="md-nav">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#simplestorystep" title="SimpleStoryStep" class="md-nav__link">
+    SimpleStoryStep
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#les-storystep-avec-comportement" title="Les StoryStep avec comportement" class="md-nav__link">
+    Les StoryStep avec comportement
+  </a>
+  
+</li>
+        
       </ul>
     </nav>
   
 </li>
-      
-        <li class="md-nav__item">
-  <a href="#demarrer-et-connecter-le-bot" title="Démarrer et connecter le bot" class="md-nav__link">
-    Démarrer et connecter le bot
+        
+          <li class="md-nav__item">
+  <a href="#postback-buttons-quick-replies" title="Postback buttons &amp; quick replies" class="md-nav__link">
+    Postback buttons &amp; quick replies
   </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#definir-son-propre-connecteur" title="Définir son propre connecteur" class="md-nav__link">
+    Définir son propre connecteur
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
   
 </li>
       
@@ -644,6 +726,21 @@ la dernière phrase de sa réponse à l'aide d'un <em>bus.end()</em>.</p>
 <p>les méthodes <em>withMessenger{}</em> et <em>withGoogleAssistant{}</em> qui permettent de définir des réponses spécifiques pour chaque connecteur.
 Ici un texte avec des boutons pour Messenger, et un texte avec des suggestions pour Google Assistant.</p>
 </li>
+</ul>
+<h2 id="demarrer-et-connecter-le-bot">Démarrer et connecter le bot<a class="headerlink" href="#demarrer-et-connecter-le-bot" title="Permanent link">&para;</a></h2>
+<p>Pour démarrer le bot, il suffit de rajouter dans votre <em>main</em> principal l'appel suivant:</p>
+<div class="codehilite"><pre><span></span><span class="n">registerAndInstallBot</span><span class="p">(</span><span class="n">openBot</span><span class="p">)</span>
+</pre></div>
+
+
+<p>où la variable <em>openBot</em> est le bot que vous avez défini au départ.</p>
+<p>Une fois le bot démarré, il est également nécessaire de spécifier quels connecteurs sont utilisés
+dans l'interface d'administration du bot, du menu Configuration -&gt; Bot Configurations -&gt; Create a new configuration.</p>
+<p>La documentation pour chaque connecteur se trouve dans le README des projects correspondants. Trois sont disponibles à l'heure actuelle :</p>
+<ul>
+<li><a href="https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-messenger">Messenger</a></li>
+<li><a href="https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-ga">Google Assistant</a></li>
+<li><a href="https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-slack">Slack</a></li>
 </ul>
 <h2 id="aller-un-peu-plus-loin">Aller un peu plus loin<a class="headerlink" href="#aller-un-peu-plus-loin" title="Permanent link">&para;</a></h2>
 <p>Bien sûr, le <em>Story Handler</em> de <em>greetings</em> ne dépend pas du contexte : la réponse est toujours la même.</p>
@@ -803,21 +900,199 @@ Voici le code de cette classe :</p>
 
 <p>Le code spécifique à chaque connecteur est ainsi correctement découplé. Le code commun à chaque connecteur est présent dans <em>SearchConnector</em> et le comportement spécifique à
 chaque connecteur se trouve dans les classes dédiées.</p>
-<h2 id="demarrer-et-connecter-le-bot">Démarrer et connecter le bot<a class="headerlink" href="#demarrer-et-connecter-le-bot" title="Permanent link">&para;</a></h2>
-<p>Pour démarrer le bot, il suffit de rajouter dans votre <em>main</em> principal l'appel suivant:</p>
-<div class="codehilite"><pre><span></span><span class="n">registerAndInstallBot</span><span class="p">(</span><span class="n">openBot</span><span class="p">)</span>
+<h3 id="utiliser-storystep">Utiliser StoryStep<a class="headerlink" href="#utiliser-storystep" title="Permanent link">&para;</a></h3>
+<p>Parfois il est nécessaire de se souvenir de l'étape à laquelle l'utilisateur se trouve
+dans la story courante. Pour cela Tock met à disposition la notion de <em>StoryStep</em>.</p>
+<p>Il existe deux types de StoryStep.</p>
+<h4 id="simplestorystep">SimpleStoryStep<a class="headerlink" href="#simplestorystep" title="Permanent link">&para;</a></h4>
+<p>A utiliser dans les cas simples, pour lequels on va gérer le comportement induit directement.</p>
+<div class="codehilite"><pre><span></span><span class="k">enum</span> <span class="k">class</span> <span class="nc">MyStep</span> <span class="p">:</span> <span class="n">SimpleStoryStep</span> <span class="p">{</span> <span class="n">a</span><span class="p">,</span> <span class="n">b</span> <span class="p">}</span>
+
+<span class="k">val</span> <span class="py">story</span> <span class="p">=</span> <span class="n">storyWithSteps</span><span class="p">&lt;</span><span class="n">MyStep</span><span class="p">&gt;(</span><span class="s">&quot;intent&quot;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">if</span><span class="p">(</span><span class="n">step</span> <span class="p">==</span> <span class="n">a</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// ...</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">step</span> <span class="p">==</span> <span class="n">b</span><span class="p">)</span> <span class="p">{</span>
+        <span class="c1">// ...</span>
+    <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+        <span class="c1">//default case</span>
+    <span class="p">}</span>
+<span class="p">}</span>
 </pre></div>
 
 
-<p>où la variable <em>openBot</em> est le bot que vous avez défini au départ.</p>
-<p>Une fois le bot démarré, il est également nécessaire de spécifier quels connecteurs sont utilisés
-dans l'interface d'administration du bot, du menu Configuration -&gt; Bot Configurations -&gt; Create a new configuration.</p>
-<p>La documentation pour chaque connecteur se trouve dans le README des projects correspondants. Trois sont disponibles à l'heure actuelle :</p>
+<p>Pour modifier l'étape courante, deux méthodes sont disponibles :</p>
 <ul>
-<li><a href="https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-messenger">Messenger</a></li>
-<li><a href="https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-ga">Google Assistant</a></li>
-<li><a href="https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-slack">Slack</a></li>
+<li>Modifier manuellement la step</li>
 </ul>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">story</span> <span class="p">=</span> <span class="n">storyWithSteps</span><span class="p">&lt;</span><span class="n">MyStep</span><span class="p">&gt;(</span><span class="s">&quot;intent&quot;</span><span class="p">)</span> <span class="p">{</span>
+    <span class="c1">//(...)</span>
+    <span class="n">step</span> <span class="p">=</span> <span class="n">MyStep</span><span class="p">.</span><span class="n">a</span>
+    <span class="c1">// l&#39;étape sera persistée tant que nous resterons dans cette story</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<ul>
+<li>Utiliser les boutons ou autres quick replies</li>
+</ul>
+<p>Plus de détails sur ce sujet <a href="../developper-un-bot/index.html#postback-buttons-quick-replies">ici</a>.</p>
+<h4 id="les-storystep-avec-comportement">Les StoryStep avec comportement<a class="headerlink" href="#les-storystep-avec-comportement" title="Permanent link">&para;</a></h4>
+<p>Dans des cas plus complexes, on souhaite pouvoir définir un comportement pour chaque étape. 
+L'utilisation de <a href="../developper-un-bot/index.html#utiliser-handlerdef">HandlerDef</a> est alors un prérequis.</p>
+<div class="codehilite"><pre><span></span><span class="k">enum</span> <span class="k">class</span> <span class="nc">MySteps</span> <span class="p">:</span> <span class="n">StoryStep</span><span class="p">&lt;</span><span class="n">MyHandlerDef</span><span class="p">&gt;</span> <span class="p">{</span>
+
+    <span class="c1">//pas de comportement spécifique</span>
+    <span class="n">display</span><span class="p">,</span>
+
+    <span class="n">select</span> <span class="p">{</span>
+
+        <span class="c1">// la step &quot;select&quot; sera automatiquement sélectionnée si la sous-intention select est détectée</span>
+        <span class="k">override</span> <span class="k">val</span> <span class="py">intent</span><span class="p">:</span> <span class="n">IntentAware</span><span class="p">?</span> <span class="p">=</span> <span class="n">SecondaryIntent</span><span class="p">.</span><span class="n">select</span>
+        <span class="c1">//dans ce cas la réponse suivante sera apportée</span>
+        <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">MyHandlerDef</span><span class="p">.()</span> <span class="p">-&gt;</span> <span class="n">Any</span><span class="p">?</span> <span class="p">=</span> <span class="p">{</span>
+            <span class="n">end</span><span class="p">(</span><span class="s">&quot;I don&#39;t know yet how to select something&quot;</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">},</span>
+
+    <span class="n">disruption</span> <span class="p">{</span>
+        <span class="c1">//seule la réponse est configurée</span>
+        <span class="k">override</span> <span class="k">fun</span> <span class="nf">answer</span><span class="p">():</span> <span class="n">ScoreboardDef</span><span class="p">.()</span> <span class="p">-&gt;</span> <span class="n">Any</span><span class="p">?</span> <span class="p">=</span> <span class="p">{</span>
+            <span class="n">end</span><span class="p">(</span><span class="s">&quot;some perturbation&quot;</span><span class="p">)</span>
+        <span class="p">}</span>
+    <span class="p">};</span>
+<span class="p">}</span>
+</pre></div>
+
+
+<p>Davantage d'options de configuration sont disponibles. Consultez la description de <a href="https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.definition/-story-step/index.html">StoryStep</a>. </p>
+<h3 id="postback-buttons-quick-replies">Postback buttons &amp; quick replies<a class="headerlink" href="#postback-buttons-quick-replies" title="Permanent link">&para;</a></h3>
+<p>Messenger met à disposition ce type de bouton, et la plupart des connecteurs avec interface graphique font de même.</p>
+<p>Tock permet de définir l'action effectuée suite à un clic sur ces boutons. </p>
+<p>Dans l'exemple suivant, le bouton redirigera vers l'intention "search". </p>
+<div class="codehilite"><pre><span></span><span class="n">buttonsTemplate</span><span class="p">(</span>
+            <span class="s">&quot;The bot is very limited! Only itineraries are supported :)&quot;</span><span class="p">,</span>
+            <span class="n">postbackButton</span><span class="p">(</span><span class="s">&quot;Itineraries&quot;</span><span class="p">,</span> <span class="n">search</span><span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Il est possible de définir également une <em>StoryStep</em> et des paramètres dédiés :</p>
+<div class="codehilite"><pre><span></span><span class="c1">//pour définir des paramètres, la pratique recommandée est d&#39;étendre l&#39;interface ParameterKey</span>
+<span class="k">enum</span> <span class="k">class</span> <span class="nc">ChoiceParameter</span> <span class="p">:</span> <span class="n">ParameterKey</span> <span class="p">{</span>
+    <span class="n">nextResultDate</span><span class="p">,</span> <span class="n">nextResultOrigin</span>
+<span class="p">}</span>
+
+<span class="n">buttonsTemplate</span><span class="p">(</span>
+            <span class="s">&quot;The bot is very limited! Only itineraries are supported :)&quot;</span><span class="p">,</span>
+            <span class="n">postbackButton</span><span class="p">(</span>
+                <span class="s">&quot;Itineraries&quot;</span><span class="p">,</span>
+                <span class="n">intent</span> <span class="p">=</span> <span class="n">search</span><span class="p">,</span> 
+                <span class="c1">//si aucune step n&#39;est indiquée, c&#39;est la step courante qui est utilisée</span>
+                <span class="n">step</span> <span class="p">=</span> <span class="n">MyStep</span><span class="p">.</span><span class="n">a</span><span class="p">,</span> 
+                <span class="n">parameters</span> <span class="p">=</span>  
+                    <span class="c1">//ce paramètre est stocké sous forme de chaîne de caractère (les crochets sont utilisés)</span>
+                    <span class="n">nextResultDate</span><span class="p">[</span><span class="n">nextDate</span><span class="p">]</span> <span class="p">+</span> 
+                    <span class="c1">//ce paramètre est stocké en json (les parenthèses sont utilisées)</span>
+                    <span class="n">nextResultOrigin</span><span class="p">(</span><span class="n">origin</span><span class="p">)</span>
+            <span class="p">)</span>
+<span class="p">)</span>
+</pre></div>
+
+
+<p>Pour récupérer les paramètres du bouton sur lequel on a cliqué :</p>
+<div class="codehilite"><pre><span></span>    <span class="k">val</span> <span class="py">isClick</span> <span class="p">=</span> <span class="n">isChoiceAction</span><span class="p">()</span>
+    <span class="k">val</span> <span class="py">nextDate</span> <span class="p">=</span> <span class="n">choice</span><span class="p">(</span><span class="n">nextResultDate</span><span class="p">)</span>
+    <span class="k">val</span> <span class="py">nextOrigin</span> <span class="p">:</span> <span class="n">Locality</span> <span class="p">=</span> <span class="n">action</span><span class="p">.</span><span class="n">jsonChoice</span><span class="p">(</span><span class="n">nextResultOrigin</span><span class="p">)</span>
+</pre></div>
+
+
+<h3 id="definir-son-propre-connecteur">Définir son propre connecteur<a class="headerlink" href="#definir-son-propre-connecteur" title="Permanent link">&para;</a></h3>
+<p>Il est possible de développer son propre connecteur. </p>
+<p>Pour cela quatres étapes sont nécessaires :</p>
+<p>1) Implémenter l'interface <a href="https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector/index.html">Connector</a> </p>
+<p>Voici un exemple d'implémentation :</p>
+<div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">testConnectorType</span> <span class="p">=</span> <span class="n">ConnectorType</span><span class="p">(</span><span class="s">&quot;test&quot;</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">TestConnector</span><span class="p">(</span><span class="k">val</span> <span class="py">applicationId</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span> <span class="k">val</span> <span class="py">path</span><span class="p">:</span> <span class="n">String</span><span class="p">)</span> <span class="p">:</span> <span class="n">Connector</span> <span class="p">{</span>
+
+    <span class="k">override</span> <span class="k">val</span> <span class="py">connectorType</span><span class="p">:</span> <span class="n">ConnectorType</span> <span class="p">=</span> <span class="n">testConnectorType</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">register</span><span class="p">(</span><span class="n">controller</span><span class="p">:</span> <span class="n">ConnectorController</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">controller</span><span class="p">.</span><span class="n">registerServices</span><span class="p">(</span><span class="n">path</span><span class="p">)</span> <span class="p">{</span> <span class="n">router</span> <span class="p">-&gt;</span>
+            <span class="c1">//main API</span>
+            <span class="n">router</span><span class="p">.</span><span class="n">post</span><span class="p">(</span><span class="s">&quot;$path/message&quot;</span><span class="p">).</span><span class="n">blockingHandler</span> <span class="p">{</span> <span class="n">context</span> <span class="p">-&gt;</span>
+                <span class="c1">//ConnectorRequest est mon objet métier passé par l&#39;appli front</span>
+                <span class="k">val</span> <span class="py">message</span><span class="p">:</span> <span class="n">ConnectorRequest</span> <span class="p">=</span> <span class="n">mapper</span><span class="p">.</span><span class="n">readValue</span><span class="p">(</span><span class="n">context</span><span class="p">.</span><span class="n">bodyAsString</span><span class="p">)</span>
+
+                <span class="c1">//transformation de l&#39;objet métier en Event tock</span>
+                <span class="k">val</span> <span class="py">event</span> <span class="p">=</span> <span class="n">readUserMessage</span><span class="p">(</span><span class="n">message</span><span class="p">)</span>
+                <span class="c1">// on passe l&#39;évènement au framework</span>
+                <span class="k">val</span> <span class="py">callback</span> <span class="p">=</span> <span class="n">TestConnectorCallback</span><span class="p">(</span><span class="n">applicationId</span><span class="p">,</span> <span class="n">message</span><span class="p">.</span><span class="n">userId</span><span class="p">,</span> <span class="n">context</span><span class="p">,</span> <span class="n">controller</span><span class="p">)</span>
+                <span class="n">controller</span><span class="p">.</span><span class="n">handle</span><span class="p">(</span><span class="n">event</span><span class="p">,</span> <span class="n">ConnectorData</span><span class="p">(</span><span class="n">callback</span><span class="p">))</span>
+            <span class="p">}</span>
+
+        <span class="p">}</span>
+
+    <span class="p">}</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">send</span><span class="p">(</span><span class="n">event</span><span class="p">:</span> <span class="n">Event</span><span class="p">,</span> <span class="n">callback</span><span class="p">:</span> <span class="n">ConnectorCallback</span><span class="p">,</span> <span class="n">delayInMs</span><span class="p">:</span> <span class="n">Long</span><span class="p">)</span> <span class="p">{</span>
+        <span class="n">callback</span> <span class="k">as</span> <span class="n">TestConnectorCallback</span>
+        <span class="k">if</span> <span class="p">(</span><span class="n">event</span> <span class="k">is</span> <span class="n">Action</span><span class="p">)</span> <span class="p">{</span>
+            <span class="c1">//on enregistre l&#39;action</span>
+            <span class="n">callback</span><span class="p">.</span><span class="n">actions</span><span class="p">.</span><span class="n">add</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+            <span class="c1">//si c&#39;est la dernière action à envoyer, on envoie la réponse</span>
+            <span class="k">if</span> <span class="p">(</span><span class="n">event</span><span class="p">.</span><span class="n">metadata</span><span class="p">.</span><span class="n">lastAnswer</span><span class="p">)</span> <span class="p">{</span>
+                <span class="n">callback</span><span class="p">.</span><span class="n">sendAnswer</span><span class="p">()</span>
+            <span class="p">}</span>
+        <span class="p">}</span> <span class="k">else</span> <span class="p">{</span>
+            <span class="n">logger</span><span class="p">.</span><span class="n">trace</span> <span class="p">{</span> <span class="s">&quot;unsupported event: $event&quot;</span> <span class="p">}</span>
+        <span class="p">}</span>
+    <span class="p">}</span>    
+<span class="p">}</span>
+
+<span class="c1">// pour récupérer toutes les actions avant envoi</span>
+<span class="k">class</span> <span class="nc">TestConnectorCallback</span><span class="p">(</span>
+        <span class="k">override</span> <span class="k">val</span> <span class="py">applicationId</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+        <span class="k">val</span> <span class="py">userId</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+        <span class="k">val</span> <span class="py">context</span><span class="p">:</span> <span class="n">RoutingContext</span><span class="p">,</span>
+        <span class="k">val</span> <span class="py">controller</span><span class="p">:</span> <span class="n">ConnectorController</span><span class="p">,</span>
+        <span class="k">val</span> <span class="py">actions</span><span class="p">:</span> <span class="n">MutableList</span><span class="p">&lt;</span><span class="n">Action</span><span class="p">&gt;</span> <span class="p">=</span> <span class="n">CopyOnWriteArrayList</span><span class="p">()):</span> <span class="n">ConnectorCallbackBase</span><span class="p">(</span><span class="n">applicationId</span><span class="p">,</span> <span class="n">testConnectorType</span><span class="p">)</span> <span class="p">{</span>
+
+    <span class="k">internal</span> <span class="k">fun</span> <span class="nf">sendAnswer</span><span class="p">()</span> <span class="p">{</span>
+            <span class="c1">//on transforme la liste des réponses Tock en réponse métier</span>
+            <span class="k">val</span> <span class="py">response</span> <span class="p">=</span> <span class="n">mapper</span><span class="p">.</span><span class="n">writeValueAsString</span><span class="p">(</span><span class="n">actions</span><span class="p">.</span><span class="n">map</span><span class="p">{...})</span>
+            <span class="c1">//puis on envoie la réponse</span>
+            <span class="n">context</span><span class="p">.</span><span class="n">response</span><span class="p">().</span><span class="n">end</span><span class="p">(</span><span class="n">response</span><span class="p">)</span>
+    <span class="p">}</span>
+
+<span class="p">}</span>         
+</pre></div>
+
+
+<p>2) Implémenter l'interface <a href="https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector-provider/index.html">ConnectorProvider</a></p>
+<p>Voici un exemple d'implémentation :</p>
+<div class="codehilite"><pre><span></span><span class="k">object</span> <span class="nc">TestConnectorProvider</span> <span class="p">:</span> <span class="n">ConnectorProvider</span> <span class="p">{</span>
+
+    <span class="k">override</span> <span class="k">val</span> <span class="py">connectorType</span><span class="p">:</span> <span class="n">ConnectorType</span> <span class="p">=</span> <span class="n">testConnectorType</span>
+
+    <span class="k">override</span> <span class="k">fun</span> <span class="nf">connector</span><span class="p">(</span><span class="n">connectorConfiguration</span><span class="p">:</span> <span class="n">ConnectorConfiguration</span><span class="p">):</span> <span class="n">Connector</span> <span class="p">{</span>
+        <span class="k">return</span> <span class="n">TestConnector</span><span class="p">(</span>
+                <span class="n">connectorConfiguration</span><span class="p">.</span><span class="n">connectorId</span><span class="p">,</span>
+                <span class="n">connectorConfiguration</span><span class="p">.</span><span class="n">path</span>
+        <span class="p">)</span>
+    <span class="p">}</span>
+<span class="p">}</span>
+
+<span class="k">class</span> <span class="nc">TestConnectorProviderService</span><span class="p">:</span> <span class="n">ConnectorProvider</span> <span class="k">by</span> <span class="n">TestConnectorProvider</span>
+</pre></div>
+
+
+<p>3) Rendre disponible ce connecteur via un Service Loader</p>
+<p>En placant un fichier META-INF/services/fr.vsct.tock.bot.connector.ConnectorProvider
+dans le classpath, contenant le nom de la classe :</p>
+<p>mypackage.TestConnectorProviderService</p>
+<p>4) Rajouter toutes les classes et fichiers créés dans le classpath de l'admin et du bot.</p>
+<p>Le nouveau connecteur doit alors être disponible dans l'interface d'administration "Bot Configurations".</p>
                 
                   
                 

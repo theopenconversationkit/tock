@@ -29,7 +29,9 @@ this step will be automatically selected to be the current step.</p>
 <p><a href="-story-step/name.html">name</a></p>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">name</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">name</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>The name of the step. usually automatically defined by the enum field.</p>
+</td>
 </tr>
 <tr>
 <td>
@@ -71,14 +73,18 @@ it means that the step is not able to answer to the current request.</p>
 <p><a href="-story-step/support-intent.html">supportIntent</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryStep$supportIntent(fr.vsct.tock.bot.definition.Intent)/i">i</span><span class="symbol">:</span>&nbsp;<a href="-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryStep$supportIntent(fr.vsct.tock.bot.definition.Intent)/i">i</span><span class="symbol">:</span>&nbsp;<a href="-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Does this step support this intent?</p>
+</td>
 </tr>
 <tr>
 <td>
 <p><a href="-story-step/support-starter-intent.html">supportStarterIntent</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportStarterIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryStep$supportStarterIntent(fr.vsct.tock.bot.definition.Intent)/i">i</span><span class="symbol">:</span>&nbsp;<a href="-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">supportStarterIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.definition.StoryStep$supportStarterIntent(fr.vsct.tock.bot.definition.Intent)/i">i</span><span class="symbol">:</span>&nbsp;<a href="-intent/index.html"><span class="identifier">Intent</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Does this step support this intent as starter intent?</p>
+</td>
 </tr>
 </tbody>
 </table>

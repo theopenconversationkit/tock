@@ -26,6 +26,9 @@ internal val stepToIntentRepository = ConcurrentHashMap<StoryStep<out StoryHandl
  */
 interface StoryStep<T : StoryHandlerDefinition> {
 
+    /**
+     * The name of the step. usually automatically defined by the enum field.
+     */
     val name: String
 
     /**
@@ -55,8 +58,14 @@ interface StoryStep<T : StoryHandlerDefinition> {
      */
     val secondaryIntents: Set<IntentAware> get() = emptySet()
 
+    /**
+     * Does this step support this intent as starter intent?
+     */
     fun supportStarterIntent(i: Intent): Boolean = intent?.wrap(i) == true || otherStarterIntents.any { it.wrap(i) }
 
+    /**
+     * Does this step support this intent?
+     */
     fun supportIntent(i: Intent): Boolean = supportStarterIntent(i) || secondaryIntents.any { it.wrap(i) }
 
 }

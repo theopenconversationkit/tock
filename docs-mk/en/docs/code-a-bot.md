@@ -109,7 +109,28 @@ Two notions have been added:
 - the *withMessenger{}* and *withGoogleAssistant{}* methods that define specific responses for each connector -
 Here it's a text with buttons for Messenger, and a text with suggestions for Google Assistant.
 
-## Complex Stories
+## Start and Connect the Bot
+
+To start the bot, simply add the following call to your main function:
+
+```kotlin
+registerAndInstallBot(openBot)
+``` 
+
+where the *openBot* variable is the bot you originally defined.
+
+When the bot is started, you also need to specify which connectors are used
+in the web administration interface: Configuration -> Bot Configurations -> Create a new configuration  
+
+The documentation for each connector is in the README file of the corresponding sub-projects. 
+
+Three are available at the moment:
+
+* [Messenger](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-messenger)
+* [Google Assistant](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-ga)
+* [Slack](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-slack)
+
+## Advanced options
 
 Of course, the *StoryHandler* of *greetings* does not depend on the context: the answer is always the same.
 
@@ -218,7 +239,7 @@ A simple rule is then used:
 If there is already in the context an origin and no destination, the new locality is actually the destination.
 Otherwise, it is the origin.
 
-### Use HandlerDef
+### HandlerDef
 
 In the *search* story above, you may have noted the generic *SearchDef* typing.
 Here is the code of this class:
@@ -264,7 +285,7 @@ What would happen there is no connector for Google Assistant for example, and if
 The *connector?.sendFirstJourney(journeys.first())* method call would not send the final response,
 since *connector* would be *null*.
 
-### Use ConnectorDef
+### ConnectorDef
 
 Here is a simplified version of *SearchConnector* :
 
@@ -305,23 +326,220 @@ The code specific to each connector is thus decoupled correctly.
 The code common to each connector is present in *SearchConnector* and the behavior specific to
 each connector is specified in the dedicated classes.
 
-## Start and Connect the Bot
+### StoryStep
 
-To start the bot, simply add the following call to your main function:
+Sometimes you need to remember the stage at which the user is
+in the current story. For this, Tock provides the concept of *StoryStep*.
+
+There are two types of StoryStep.
+
+#### SimpleStoryStep
 
 ```kotlin
-registerAndInstallBot(openBot)
+enum class MyStep : SimpleStoryStep { a, b }
+
+val story = storyWithSteps<MyStep>("intent") {
+    if(step == a) {
+        // ...
+    } else if(step == b) {
+        // ...
+    } else {
+        //default case
+    }
+}
+```
+
+To modify the current step, two methods are available:
+
+* Manually change the step
+
+```kotlin
+val story = storyWithSteps<MyStep>("intent") {
+    //(...)
+    step = MyStep.a
+    // the step will be persisted as long as we stay in this story
+}
+```
+
+* Use buttons or quick replies
+
+More details on this topic [here](./code-a-bot/index.html#postback-buttons-quick-replies).
+
+
+#### StorySteps with complex behavior
+
+In more complex cases, we want to be able to define a behavior for each step.
+
+```kotlin
+enum class MySteps : StoryStep<MyHandlerDef> {
+
+    //no specific behaviour
+    display,
+
+    select {
+
+        // "select" step will be automatically selected if the select sub-intention is detected
+        override val intent: IntentAware? = SecondaryIntent.select
+
+        override fun answer(): MyHandlerDef.() -> Any? = {
+            end("I don't know yet how to select something")
+        }
+    },
+
+    disruption {
+        override fun answer(): ScoreboardDef.() -> Any? = {
+            end("some perturbation")
+        }
+    };
+}
+```
+
+More configuration options are available. Check out the description of [StoryStep](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.definition/-story-step/index.html). 
+
+### Postback buttons & quick replies
+
+Messenger provides this type of button, as most connectors with GUI.
+
+With Tock, you can easily define the action performed after clicking on these buttons. 
+
+In the following example, the button will redirect to the "search" intent:
+
+```kotlin
+buttonsTemplate(
+            "The bot is very limited! Only itineraries are supported :)",
+            postbackButton("Itineraries", search)
+)
+```
+
+It is also possible to define a * StoryStep * and dedicated parameters:
+
+```kotlin
+
+//to define parameters, just extend the ParameterKey interface
+enum class ChoiceParameter : ParameterKey {
+    nextResultDate, nextResultOrigin
+}
+
+buttonsTemplate(
+            "The bot is very limited! Only itineraries are supported :)",
+            postbackButton(
+                "Itineraries",
+                intent = search, 
+                //if no step is specified, the current step is used
+                step = MyStep.a, 
+                parameters =  
+                    //this parameter is stored as a string (hooks are used)
+                    nextResultDate[nextDate] + 
+                    //this parameter is stored in json (parentheses are used)
+                    nextResultOrigin(origin)
+            )
+)
 ``` 
 
-where the *openBot* variable is the bot you originally defined.
+To retrieve the parameters of the button that was clicked:
 
-When the bot is started, you also need to specify which connectors are used
-in the web administration interface: Configuration -> Bot Configurations -> Create a new configuration  
+```kotlin
+    val isClick = isChoiceAction()
+    val nextDate = choice(nextResultDate)
+    val nextOrigin : Locality = action.jsonChoice(nextResultOrigin)
+```
+ 
+### Define your own connector
 
-The documentation for each connector is in the README file of the corresponding sub-projects. 
+It is possible to develop its own connector.
 
-Three are available at the moment:
+1) Implement the interface [Connector](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector/index.html) 
 
-* [Messenger](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-messenger)
-* [Google Assistant](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-ga)
-* [Slack](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-slack)
+Here is an example of implementation:
+
+```kotlin
+
+val testConnectorType = ConnectorType("test")
+
+class TestConnector(val applicationId: String, val path: String) : Connector {
+
+    override val connectorType: ConnectorType = testConnectorType
+
+    override fun register(controller: ConnectorController) {
+        controller.registerServices(path) { router ->
+            //main API
+            router.post("$path/message").blockingHandler { context ->
+                //ConnectorRequest is my business object passed by the front app
+                val message: ConnectorRequest = mapper.readValue(context.bodyAsString)
+                
+                //business object mapped to Tock event
+                val event = readUserMessage(message)
+                //we pass the Tock event to the framework
+                val callback = TestConnectorCallback(applicationId, message.userId, context, controller)
+                controller.handle(event, ConnectorData(callback))
+            }
+            
+        }
+            
+    }
+    
+    override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+        callback as TestConnectorCallback
+        if (event is Action) {
+            //we record the action
+            callback.actions.add(event)
+            //if it's the last action to send, send the answer
+            if (event.metadata.lastAnswer) {
+                callback.sendAnswer()
+            }
+        } else {
+            logger.trace { "unsupported event: $event" }
+        }
+    }    
+}
+
+// to retrieve all actions before sending
+class TestConnectorCallback(
+        override val applicationId: String,
+        val userId: String,
+        val context: RoutingContext,
+        val controller: ConnectorController,
+        val actions: MutableList<Action> = CopyOnWriteArrayList()): ConnectorCallbackBase(applicationId, testConnectorType) {
+    
+    internal fun sendAnswer() {
+            //we transform the list of Tock responses into a business response
+            val response = mapper.writeValueAsString(actions.map{...})
+            //then we send the answer
+            context.response().end(response)
+    }
+    
+}         
+
+```
+
+2) Implement the interface [ConnectorProvider](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector/-connector-provider/index.html)
+
+Here is an example of implementation:
+
+```kotlin
+object TestConnectorProvider : ConnectorProvider {
+
+    override val connectorType: ConnectorType = testConnectorType
+
+    override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
+        return TestConnector(
+                connectorConfiguration.connectorId,
+                connectorConfiguration.path
+        )
+    }
+}
+
+class TestConnectorProviderService: ConnectorProvider by TestConnectorProvider
+
+```
+
+3) Make this connector available via a Service Loader
+
+By placing a file META-INF/services/fr.vsct.tock.bot.connector.ConnectorProvider
+in the classpath, containing the class name :
+
+mypackage.TestConnectorProviderService
+
+4) Add all classes and files created in the admin classpath and bot classpath
+
+The new connector must then be available in the "Bot Configurations" administration interface.
