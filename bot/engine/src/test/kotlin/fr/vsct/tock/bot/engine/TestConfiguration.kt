@@ -58,6 +58,7 @@ enum class TestStoryDefinition(
     test(StoryHandlerTest, secondaryIntents = setOf(secondaryIntent)),
     test2(StoryHandler2Test),
     voice_not_supported(StoryHandlerVoiceNotSupported, unsupportedUserInterface = voiceAssistant),
+    withoutStep(StoryHandlerWithoutStep, stepsArray = emptyArray()),
     unknown(StoryHandlerUnknown);
 
     val registeredBus: BotBus? get() = storyHandler.registeredBus
@@ -68,6 +69,8 @@ object StoryHandlerTest : AbstractStoryHandler()
 object StoryHandler2Test : AbstractStoryHandler()
 
 object StoryHandlerVoiceNotSupported : AbstractStoryHandler()
+
+object StoryHandlerWithoutStep : AbstractStoryHandler()
 
 object StoryHandlerUnknown : AbstractStoryHandler()
 

@@ -476,7 +476,7 @@ interface BotBus : I18nTranslator {
      */
     fun switchStory(storyDefinition: StoryDefinition) {
         val starterIntent = storyDefinition.mainIntent()
-        story = Story(storyDefinition, starterIntent)
+        story = Story(storyDefinition, starterIntent, story.currentStep)
         dialog.state.currentIntent = starterIntent
     }
 

@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.engine
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.TestStoryDefinition.test
 import fr.vsct.tock.bot.engine.TestStoryDefinition.test2
+import fr.vsct.tock.bot.engine.TestStoryDefinition.withoutStep
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionPriority
 import fr.vsct.tock.bot.engine.action.ActionPriority.urgent
@@ -89,5 +90,23 @@ class BotBusTest : BotEngineTest() {
                 any()
             )
         }
+    }
+
+    @Test
+    fun `switchStory switch story and keep the step if relevant`() {
+        bus.switchStory(withoutStep)
+        bus.step = StepTest.s1
+        bus.switchStory(test2)
+        assertEquals(test2, bus.story.definition)
+        assertEquals(StepTest.s1, bus.step)
+    }
+
+    @Test
+    fun `switchStory switch story and does not keep the step if not relevant`() {
+        assertEquals(test, bus.story.definition)
+        bus.step = StepTest.s1
+        bus.switchStory(withoutStep)
+        assertEquals(withoutStep, bus.story.definition)
+        assertNull(bus.step)
     }
 }
