@@ -422,4 +422,13 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     override fun getSnapshots(dialogId: Id<Dialog>): List<Snapshot> {
         return snapshotCol.findOneById(dialogId)?.snapshots ?: emptyList()
     }
+
+    override fun getLastStoryId(playerId: PlayerId): String? {
+        return try {
+            loadLastValidDialogCol(playerId)?.stories?.lastOrNull()?.storyDefinitionId
+        } catch (e: Exception) {
+            logger.error(e)
+            null
+        }
+    }
 }

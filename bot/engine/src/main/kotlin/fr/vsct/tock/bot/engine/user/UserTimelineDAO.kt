@@ -28,20 +28,21 @@ import java.time.Instant
 interface UserTimelineDAO {
 
     /**
-     * Save the timeline.
+     * Saves the timeline.
      */
     fun save(userTimeline: UserTimeline)
 
     /**
-     * Load with last dialog. If no timeline exists, creates a new one.
+     * Loads with last dialog. If no timeline exists, creates a new one.
      */
     fun loadWithLastValidDialog(
         userId: PlayerId,
         priorUserId: PlayerId? = null,
-        storyDefinitionProvider: (String) -> StoryDefinition): UserTimeline
+        storyDefinitionProvider: (String) -> StoryDefinition
+    ): UserTimeline
 
     /**
-     * Load without the dialogs. If no timeline, create a new one.
+     * Loads without the dialogs. If no timeline, create a new one.
      */
     fun loadWithoutDialogs(userId: PlayerId): UserTimeline
 
@@ -58,8 +59,10 @@ interface UserTimelineDAO {
     /**
      * Returns the dialogs of specified client id.
      */
-    fun getClientDialogs(clientId: String,
-                         storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog>
+    fun getClientDialogs(
+        clientId: String,
+        storyDefinitionProvider: (String) -> StoryDefinition
+    ): List<Dialog>
 
     /**
      * Returns all dialogs updated after the specified Instant.
@@ -67,7 +70,12 @@ interface UserTimelineDAO {
     fun getDialogsUpdatedFrom(from: Instant, storyDefinitionProvider: (String) -> StoryDefinition): List<Dialog>
 
     /**
-     * Get the snapshots of a dialog.
+     * Gets the snapshots of a dialog.
      */
     fun getSnapshots(dialogId: Id<Dialog>): List<Snapshot>
+
+    /**
+     * Returns the last story id of the specified user, if any.
+     */
+    fun getLastStoryId(playerId: PlayerId): String?
 }
