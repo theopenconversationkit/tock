@@ -150,7 +150,6 @@ internal object I18nMongoDAO : I18nDAO {
             //TODO use projection
             alternativeIndexCol
                 .find(alternativeIndexesFilter(label, localized, contextId))
-                .toList()
                 .map { it.index }
                 .toSet()
         } catch (e: Exception) {

@@ -319,8 +319,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             val count = userTimelineCol.count(filter)
             if (count > start) {
                 val list = userTimelineCol.find(filter)
-                    .skip(start.toInt()).limit(size).descendingSort(LastUpdateDate).toList()
-                return UserReportQueryResult(count, start, start + size, list.map { it.toUserReport() })
+                    .skip(start.toInt()).limit(size).descendingSort(LastUpdateDate).map { it.toUserReport() }.toList()
+                return UserReportQueryResult(count, start, start + size, list)
             } else {
                 return UserReportQueryResult(0, 0, 0, emptyList())
             }
@@ -338,12 +338,10 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 emptySet()
             } else {
                 if (query.exactMatch) {
-                    dialogTextCol.find(Text eq textKey(query.text!!.trim())).toList().map { it.dialogId }
-                        .toSet()
+                    dialogTextCol.find(Text eq textKey(query.text!!.trim())).map { it.dialogId }.toSet()
                 } else {
                     dialogTextCol
                         .find(Text.regex(textKey(query.text!!.trim()), "i"))
-                        .toList()
                         .map { it.dialogId }
                         .toSet()
                 }
@@ -364,8 +362,12 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             val count = dialogCol.count(filter)
             if (count > start) {
                 val list = dialogCol.find(filter)
-                    .skip(start.toInt()).limit(size).descendingSort(LastUpdateDate).toList()
-                return DialogReportQueryResult(count, start, start + size, list.map { it.toDialogReport() })
+                    .skip(start.toInt())
+                    .limit(size)
+                    .descendingSort(LastUpdateDate)
+                    .map { it.toDialogReport() }
+                    .toList()
+                return DialogReportQueryResult(count, start, start + size, list)
             } else {
                 return DialogReportQueryResult(0, 0, 0, emptyList())
             }

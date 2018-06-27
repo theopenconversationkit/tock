@@ -165,8 +165,8 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 if (language != null) Language eq language else null,
                 if (status != null) Status eq status else null
             )
-            .toList()
             .map { it.toSentence() }
+            .toList()
     }
 
     override fun switchSentencesStatus(sentences: List<ClassifiedSentence>, newStatus: ClassifiedSentenceStatus) {
