@@ -127,7 +127,8 @@ export class NlpService implements OnDestroy {
   }
 
   deletePredefinedValue(query: PredefinedValueQuery): Observable<boolean> {
-    return this.rest.delete(`/entity-types/predefined-values/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}`)
+      // TODO replace POST by DELETE verb because is forbbiden on some network
+    return this.rest.post(`/entity-types/predefined-values/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}`)
   }
 
   createLabel(query: PredefinedLabelQuery): Observable<EntityType> {
@@ -135,7 +136,8 @@ export class NlpService implements OnDestroy {
   }
 
   deleteLabel(query: PredefinedLabelQuery): Observable<boolean> {
-    return this.rest.delete(`/entity-type/predefined-value/labels/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}/${encodeURIComponent(query.locale)}/${encodeURIComponent(query.label)}`)
+    // TODO replace POST by DELETE verb because is forbbiden on some network
+    return this.rest.post(`/entity-type/predefined-value/labels/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}/${encodeURIComponent(query.locale)}/${encodeURIComponent(query.label)}`)
   }
 
 }

@@ -546,6 +546,17 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
+        // TODO duplicated because DELETE verb is forbbiden on some network
+        blockingPost("/entity-types/predefined-values/:entityType/:value")
+        { context ->
+            val entityType = context.path("entityType")
+            if (context.organization == entityType.namespace()) {
+                front.deletePredefinedValueByName(entityType, context.path("value"))
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonPost("/entity-type/predefined-value/labels")
         { context, query: PredefinedLabelQuery ->
 
@@ -571,6 +582,22 @@ open class AdminVerticle : WebVerticle() {
                 }
                     ?: unauthorized()
 
+        }
+
+        // TODO duplicated because DELETE verb is forbbiden on some network
+        blockingPost("/entity-type/predefined-value/labels/:entityType/:value/:locale/:label")
+        { context ->
+            val entityType = context.path("entityType")
+            if (context.organization == entityType.namespace()) {
+                front.deletePredefinedValueLabelByName(
+                    entityType,
+                    context.path("value"),
+                    Locale.forLanguageTag(context.path("locale")),
+                    context.path("label")
+                )
+            } else {
+                unauthorized()
+            }
         }
 
         blockingDelete("/entity-type/predefined-value/labels/:entityType/:value/:locale/:label")
