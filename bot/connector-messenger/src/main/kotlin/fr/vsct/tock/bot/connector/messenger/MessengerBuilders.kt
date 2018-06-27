@@ -676,7 +676,7 @@ fun standaloneMessengerAnswer(
     applicationId: String,
     recipientId: PlayerId,
     text: String,
-    lastAnswer: Boolean = false,
+    lastAnswer: Boolean = true,
     /** Significance deals with the notification level. */
     priority: ActionPriority = ActionPriority.normal,
     /** tag deals with type of message notification. */
@@ -702,7 +702,7 @@ fun standaloneMessengerAnswer(
     playerId: PlayerId,
     applicationId: String,
     recipientId: PlayerId,
-    lastAnswer: Boolean = false,
+    lastAnswer: Boolean = true,
     /** Significance deals with the notification level. */
     priority: ActionPriority = ActionPriority.normal,
     /** tag deals with type of message notification. */
@@ -714,10 +714,37 @@ fun standaloneMessengerAnswer(
         applicationId,
         recipientId,
         null,
-        messages = mutableListOf(messageProvider.invoke()),
+        messages = mutableListOf(messageProvider()),
         metadata = ActionMetadata(
             lastAnswer,
             priority,
             notificationType
         )
     )
+
+/**
+ * Used to generate multiple [MessengerConnectorMessage] events,
+ * usually sent later by [MessengerConnector.send] or [MessengerConnector.sendOptInEvent].
+ */
+fun standaloneMessengerAnswers(
+    playerId: PlayerId,
+    applicationId: String,
+    recipientId: PlayerId,
+    /** Significance deals with the notification level. */
+    priority: ActionPriority = ActionPriority.normal,
+    /** tag deals with type of message notification. */
+    notificationType: ActionNotificationType? = null,
+    messagesProvider: () -> List<MessengerConnectorMessage>
+): List<SendSentence> =
+    messagesProvider().run {
+        mapIndexed { i, m ->
+            standaloneMessengerAnswer(
+                playerId,
+                applicationId,
+                recipientId,
+                i == size - 1,
+                priority,
+                notificationType
+            ) { m }
+        }
+    }
