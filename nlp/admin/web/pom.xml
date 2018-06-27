@@ -52,7 +52,7 @@
               <goal>npm</goal>
             </goals>
             <configuration>
-              <arguments>install</arguments>
+              <arguments>install -d</arguments>
             </configuration>
           </execution>
           <execution>

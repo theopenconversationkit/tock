@@ -71,7 +71,7 @@
 
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>
 
-        <node>v6.11.0</node>
+        <node>v6.12.1</node>
     </properties>
 
     <modules>

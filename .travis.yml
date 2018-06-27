@@ -7,7 +7,12 @@ branches:
 script: mvn test -B -Dskip.npm -Dassembly.skipAssembly=true -U
 cache:
   directories:
-  - "$HOME/.m2/repository"
+  - $HOME/.m2/repository
+  - nlp/admin/web/node_modules
+  - bot/admin/web/node_modules
+before_cache:
+  - rm -rf $HOME/.m2/repository/fr/vsct/tock
+  - rm -rf bot/admin/web/node_modules/tock-nlp-admin
 env:
   global:
     - secure: "TxejqbmKVE22rfI7qUV1hShIssSvzC7Tk1qf3LQZ45dmc4JsWIW5ficjf+zwDvo2ZRYMms4LhAWN5mYoApUUf//GjwIdBibIY6G7tb3Kmlj+5V49i2TCO2Lx080e7XMEe7EgjGHzLblgMpYMqwcWKOWXqUTvO8gZVHt5r8Aadad5fBjNUg4hkmHBtGr/Io78t6JXAcuvVNaaZRGpTx6MW8g6KwIcMhZ+VQWaYdS0nmvZqbn591XNciq4uou3c/o131gBymrzSX0OXS8Slf7i12U5Kp69Ee7FLD82v7ofOQEsMElgmg6ju2iAd2j0bBI6kIV4JeoilsNQR9VHkwG46tG8O+CQNpUC1Jn8xlhEqBAVogbT54wS2UG9wCQO501D1ggDYywsC+8ZmeF5HMXtvKd+n9TfPaQ8UKAvJx5xdLcxDHdM2nn8EjQ95Ge980GO1iy3f0W7qsYqq6R122Kj3pevzVtxUwcPYxbwjvZANhiOjbtm3vLPLC6ilCxZ3ap6bYN8en+eWs84fUdPyrnBzC4tHqV75dT6TeHWnwTdJtgZR0jOIUfLWg/IZ7zDp714WOwthzlt8Zp7Th6+EC8n3Bsmd+2Yps+yHh5iuuDBRpV8FYhtonTkoEDXg7FnzD8dyvxALXw/Wj90iDJMI9Mr3a8iUl40MUn5cSa9DCpZmQM="
