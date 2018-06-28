@@ -213,6 +213,7 @@ internal class MessengerClient(val secretKey: String) {
             graphApi.getUserProfile(recipient.id!!, token, "first_name,last_name,profile_pic,locale,timezone,gender")
                 .execute().body() ?: defaultUserProfile()
         } catch (e: Exception) {
+            logger.warn { recipient }
             logger.logError(e, requestTimerData)
             defaultUserProfile()
         } finally {
@@ -222,6 +223,11 @@ internal class MessengerClient(val secretKey: String) {
 
     private fun <T> send(request: T, call: (T) -> Response<SendResponse>): SendResponse {
         return send(request, call, 0)
+    }
+
+    private fun <T> throwError(request: T, errorMessage: String): Nothing {
+        logger.warn { mapper.writeValueAsString(request) }
+        throw ConnectorException(errorMessage)
     }
 
     private fun <T> send(request: T, call: (T) -> Response<SendResponse>, nbTries: Int): SendResponse {
@@ -249,13 +255,13 @@ internal class MessengerClient(val secretKey: String) {
                         }
                     }
                 }
-                throw ConnectorException(response.message())
+                throwError(request, response.message())
             } else {
-                return response.body() ?: throw ConnectorException("null body")
+                return response.body() ?: throwError(request, "null body")
             }
         } catch (e: Exception) {
             logger.logError(e, requestTimerData)
-            throw ConnectorException(e.message ?: "")
+            throwError(request, e.message ?: "")
         } finally {
             requestTimer.end(requestTimerData)
         }
