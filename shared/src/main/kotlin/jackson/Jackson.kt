@@ -31,6 +31,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import fr.vsct.tock.shared.Loader
+import fr.vsct.tock.shared.error
 import mu.KotlinLogging
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.id.jackson.IdJacksonModule
@@ -40,7 +41,12 @@ import kotlin.reflect.full.createInstance
 private val logger = KotlinLogging.logger {}
 
 internal val jacksonAdditionalModules: List<Module> by lazy {
-    Loader.loadServices<JacksonModuleServiceLoader>().map { it.module() }
+    try {
+        Loader.loadServices<JacksonModuleServiceLoader>().map { it.module() }
+    } catch (e: Exception) {
+        logger.error(e)
+        emptyList<Module>()
+    }
 }
 
 /**
