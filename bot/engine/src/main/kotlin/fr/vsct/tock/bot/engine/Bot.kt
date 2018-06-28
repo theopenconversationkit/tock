@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.engine
 
 import com.github.salomonbrys.kodein.instance
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
@@ -37,7 +38,10 @@ import mu.KotlinLogging
 /**
  *
  */
-internal class Bot(botDefinitionBase: BotDefinition) {
+internal class Bot(
+    botDefinitionBase: BotDefinition,
+    private val configuration: BotApplicationConfiguration
+) {
 
     companion object {
         private val currentBus = ThreadLocal<BotBus>()
@@ -292,5 +296,4 @@ internal class Bot(botDefinitionBase: BotDefinition) {
     override fun toString(): String {
         return "$botDefinition"
     }
-
 }

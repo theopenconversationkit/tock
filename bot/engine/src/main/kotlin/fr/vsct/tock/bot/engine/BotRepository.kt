@@ -119,7 +119,7 @@ object BotRepository {
     }
 
     /**
-     * Returns the current [ConnectorController] for a given bot and application id.
+     * Returns the current [ConnectorController] for a given predicate.
      */
     fun getController(predicate: (BotApplicationConfiguration) -> Boolean): ConnectorController? =
         connectorControllerMap
@@ -201,7 +201,6 @@ object BotRepository {
         connectorConfigurations: List<ConnectorConfiguration>,
         adminRestConnectorInstaller: (BotApplicationConfiguration) -> ConnectorConfiguration?
     ) {
-        val bot = Bot(botDefinition)
         val existingBotConfigurations = botConfigurationDAO.getConfigurationsByBotId(botDefinition.botId)
         val allConnectorConfigurations =
             (connectorConfigurations +
@@ -214,7 +213,7 @@ object BotRepository {
                             ConnectorConfiguration(it)
                         })
                 .takeIf { it.isNotEmpty() }
-                    //mostly a hack ->
+            //mostly a hack ->
                     ?: listOf(ConnectorConfiguration("test", "/test", ConnectorType.rest, ConnectorType("messenger")))
         val existingBotConfigurationsMap =
             existingBotConfigurations
@@ -237,23 +236,20 @@ object BotRepository {
                         val connector = connector(conf)
                         //3 set default namespace to bot namespace if not already set
                         if (tockAppDefaultNamespace == DEFAULT_APP_NAMESPACE) {
-                            tockAppDefaultNamespace = bot.botDefinition.namespace
+                            tockAppDefaultNamespace = botDefinition.namespace
                         }
                         //4 update bot conf
-                        val appConf = saveConfiguration(connector, conf, bot)
-
-                        //5 monitor bot
-                        BotConfigurationSynchronizer.monitor(bot)
+                        val appConf = installBotConfiguration(connector, conf, botDefinition)
 
                         //6 generate and install rest connector
                         if (existingBotConfigurations.none { it.name == conf.getName() && it.connectorType == rest }) {
                             adminRestConnectorInstaller.invoke(appConf)
                                 ?.also {
                                     val restConf = refreshBotConfiguration(it, existingBotConfigurationsMap)
-                                    saveConfiguration(
+                                    installBotConfiguration(
                                         findConnectorProvider(restConf.type).connector(restConf),
                                         restConf,
-                                        bot
+                                        botDefinition
                                     )
                                 }
                         }
@@ -272,23 +268,20 @@ object BotRepository {
             //clone conf list as we may update connectorControllerMap
             val existingConfs = ArrayList(connectorControllerMap.keys)
             val confs = botConfigurationDAO.getConfigurations()
+
             confs.forEach { c ->
                 if (existingConfs.none { c.equalsWithoutId(it) }) {
                     val botDefinition = botProviders.find { it.botId() == c.botId }?.botDefinition()
                     if (botDefinition != null) {
                         logger.debug { "refresh configuration $c" }
-                        val bot = Bot(botDefinition)
-                        val oldConfiguration = connectorControllerMap.keys.find { it._id == c._id }
+                        val oldConfiguration = existingConfs.find { it._id == c._id }
+                        val connector = findConnectorProvider(c.connectorType).connector(ConnectorConfiguration(c))
+
+                        createBot(botDefinition, connector, c)
+
                         if (oldConfiguration != null) {
-                            logger.debug { "uninstall $oldConfiguration" }
-                            connectorControllerMap.remove(oldConfiguration)?.unregisterServices()
+                            removeBot(oldConfiguration)
                         }
-                        val conf = ConnectorConfiguration(c)
-                        val connector = findConnectorProvider(conf.type).connector(conf)
-                        TockConnectorController.register(connector, bot, verticle)
-                            .apply {
-                                connectorControllerMap.put(c, this)
-                            }
                     } else {
                         logger.trace { "unknown bot ${c.botId} - installation skipped" }
                     }
@@ -298,8 +291,7 @@ object BotRepository {
             //remove old confs
             connectorControllerMap.keys.forEach { conf ->
                 if (confs.none { it._id == conf._id }) {
-                    logger.debug { "uninstall $conf" }
-                    connectorControllerMap.remove(conf)?.unregisterServices()
+                    removeBot(conf)
                 }
             }
             //register new confs
@@ -317,13 +309,13 @@ object BotRepository {
             ConnectorConfiguration(configuration, this)
         } ?: configuration
 
-    private fun saveConfiguration(
+    private fun installBotConfiguration(
         connector: Connector,
         configuration: ConnectorConfiguration,
-        bot: Bot
+        botDefinition: BotDefinition
     ): BotApplicationConfiguration {
 
-        return with(bot.botDefinition) {
+        return with(botDefinition) {
             val conf = BotApplicationConfiguration(
                 configuration.connectorId.run { if (isBlank()) botId else this },
                 botId,
@@ -337,12 +329,37 @@ object BotRepository {
                 path = configuration.path
             )
 
-            val controller = TockConnectorController.register(connector, bot, verticle)
+            createBot(botDefinition, connector, conf)
+        }
+    }
 
-            botConfigurationDAO.updateIfNotManuallyModified(conf)
-                .apply {
-                    connectorControllerMap.put(this, controller)
+    private fun createBot(
+        botDefinition: BotDefinition,
+        connector: Connector,
+        conf: BotApplicationConfiguration
+    ): BotApplicationConfiguration {
+
+        val bot = Bot(botDefinition, conf)
+        return botConfigurationDAO.updateIfNotManuallyModified(conf)
+            .apply {
+                if (conf.connectorType != rest) {
+                    val controller = TockConnectorController.register(connector, bot, verticle)
+                    //monitor bot
+                    BotConfigurationSynchronizer.monitor(bot)
+                    //register connector controller map
+                    connectorControllerMap[this] = controller
                 }
+            }
+    }
+
+    private fun removeBot(conf: BotApplicationConfiguration) {
+        logger.debug { "uninstall $conf" }
+        val controller = connectorControllerMap.remove(conf)
+        if (controller != null) {
+            controller.unregisterServices()
+            if (controller is TockConnectorController) {
+                BotConfigurationSynchronizer.unmonitor(controller.bot)
+            }
         }
     }
 

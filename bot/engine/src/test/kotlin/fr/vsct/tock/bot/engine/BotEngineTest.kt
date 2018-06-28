@@ -20,6 +20,7 @@ import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
@@ -63,6 +64,7 @@ abstract class BotEngineTest {
     val botId = PlayerId("bot", PlayerType.bot)
     val botDefinition = BotDefinitionTest()
     val dialog = Dialog(setOf(userId, botId))
+    val botApplicationConfiguration: BotApplicationConfiguration = mockk(relaxed = true)
     val story = Story(botDefinition.stories.first(), test.mainIntent())
     val connectorCallback: ConnectorCallback = mockk(relaxed = true)
     val connectorData = ConnectorData(connectorCallback)
@@ -130,7 +132,7 @@ abstract class BotEngineTest {
 
     internal val bot: Bot by lazy {
         fillTimeline()
-        Bot(botDefinition)
+        Bot(botDefinition, botApplicationConfiguration)
     }
     internal val connectorController: TockConnectorController by lazy {
         TockConnectorController(

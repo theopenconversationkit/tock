@@ -58,20 +58,26 @@ internal object BotConfigurationSynchronizer {
         refresh(bot)
     }
 
+    fun unmonitor(bot: Bot) {
+        botsToMonitor.remove(bot)
+    }
+
     private fun refresh(bot: Bot) {
-        try {
-            val botId = bot.botDefinition.botId
-            val last = storyDAO.getLastUpdateTimestamp(botId)
-            if (last != null && (lastUpdate == null || last > lastUpdate)) {
-                logger.trace { "refresh configured stories for bot $botId" }
-                bot.botDefinition.updateStories(
-                    storyDAO.getStoryDefinitions(bot.botDefinition.botId)
-                        .map { ConfiguredStoryDefinition(it) }
-                )
+        synchronized(bot) {
+            try {
+                val botId = bot.botDefinition.botId
+                val last = storyDAO.getLastUpdateTimestamp(botId)
+                if (last != null && (lastUpdate == null || last > lastUpdate)) {
+                    logger.trace { "refresh configured stories for bot $botId" }
+                    bot.botDefinition.updateStories(
+                        storyDAO.getStoryDefinitions(bot.botDefinition.botId)
+                            .map { ConfiguredStoryDefinition(it) }
+                    )
+                }
+            } catch (e: Exception) {
+                //log & ignore
+                logger.error(e)
             }
-        } catch (e: Exception) {
-            //log & ignore
-            logger.error(e)
         }
     }
 }
