@@ -18,7 +18,6 @@ package fr.vsct.tock.bot.admin.test.xray
 
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jsr310.ser.OffsetDateTimeSerializer
-import fr.vsct.tock.bot.jackson.BotEngineJacksonConfiguration
 import fr.vsct.tock.shared.jackson.addSerializer
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.property
@@ -43,7 +42,6 @@ object XrayConfiguration {
     fun configure() {
         if (!configured) {
             configured = true
-            BotEngineJacksonConfiguration.init()
             mapper.registerModule(
                 SimpleModule()
                     .addSerializer(

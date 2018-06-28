@@ -24,17 +24,24 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.MapperFeature
+import com.fasterxml.jackson.databind.Module
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.SerializationFeature
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
+import fr.vsct.tock.shared.Loader
 import mu.KotlinLogging
+import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.id.jackson.IdJacksonModule
 import kotlin.reflect.KClass
 import kotlin.reflect.full.createInstance
 
 private val logger = KotlinLogging.logger {}
+
+internal val jacksonAdditionalModules: List<Module> by lazy {
+    Loader.loadServices<JacksonModuleServiceLoader>().map { it.module() }
+}
 
 /**
  * The Tock jackson mapper.
@@ -46,6 +53,9 @@ val mapper: ObjectMapper by lazy {
         //force java time module
         .registerModule(JavaTimeModule())
         .registerModule(IdJacksonModule())
+        .apply {
+            jacksonAdditionalModules.forEach { registerModule(it) }
+        }
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         .setSerializationInclusion(JsonInclude.Include.NON_NULL)
         .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)

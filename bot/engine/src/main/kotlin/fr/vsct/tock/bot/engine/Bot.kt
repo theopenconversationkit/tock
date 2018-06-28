@@ -294,6 +294,6 @@ internal class Bot(
     }
 
     override fun toString(): String {
-        return "$botDefinition"
+        return "$botDefinition - ${configuration.name}"
     }
 }

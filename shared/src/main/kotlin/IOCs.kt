@@ -28,6 +28,9 @@ import fr.vsct.tock.shared.cache.mongo.MongoCache
 import fr.vsct.tock.shared.vertx.TockVertxProvider
 import fr.vsct.tock.shared.vertx.VertxProvider
 import fr.vsct.tock.shared.vertx.vertxExecutor
+import mu.KotlinLogging
+
+private val logger = KotlinLogging.logger {}
 
 /**
  * Internal injector - reset only for tests.
@@ -64,5 +67,14 @@ val sharedModule = Kodein.Module {
     bind<Executor>() with provider { vertxExecutor() }
     bind<TockCache>() with provider { MongoCache }
     bind<VertxProvider>() with provider { TockVertxProvider }
-    bind<MongoClient>() with singleton { mongoClient }
+    try {
+        bind<MongoClient>() with singleton { mongoClient }
+    } catch (e: Exception) {
+        logger.warn { e.message }
+    }
+    try {
+        bind<com.mongodb.async.client.MongoClient>() with singleton { asyncMongoClient }
+    } catch (e: Exception) {
+        logger.warn { e.message }
+    }
 }

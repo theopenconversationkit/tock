@@ -32,7 +32,7 @@
     <dependencies>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-engine</artifactId>
+            <artifactId>tock-bot-engine-jackson</artifactId>
         </dependency>
         <dependency>
             <groupId>com.google.guava</groupId>

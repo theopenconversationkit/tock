@@ -23,6 +23,11 @@ import java.time.Instant
  */
 interface StoryDefinitionConfigurationDAO {
 
+    /**
+     * Listen changes on story definitions.
+     */
+    fun listenChanges(listener: () -> Unit)
+
     fun getStoryDefinitionById(id: String): StoryDefinitionConfiguration?
 
     /**

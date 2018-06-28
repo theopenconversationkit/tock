@@ -105,6 +105,11 @@
             <scope>provided</scope>
         </dependency>
         <dependency>
+            <groupId>org.litote.kmongo</groupId>
+            <artifactId>kmongo-async</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>com.squareup.retrofit2</groupId>
             <artifactId>retrofit</artifactId>
             <scope>provided</scope>

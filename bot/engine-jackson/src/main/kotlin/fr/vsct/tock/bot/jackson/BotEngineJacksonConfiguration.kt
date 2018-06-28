@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.jackson
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.fasterxml.jackson.databind.BeanDescription
 import com.fasterxml.jackson.databind.DeserializationConfig
+import com.fasterxml.jackson.databind.Module
 import com.fasterxml.jackson.databind.SerializationConfig
 import com.fasterxml.jackson.databind.deser.BeanDeserializerModifier
 import com.fasterxml.jackson.databind.introspect.BeanPropertyDefinition
@@ -39,35 +40,30 @@ import fr.vsct.tock.bot.engine.message.Choice
 import fr.vsct.tock.bot.engine.message.Location
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.message.Sentence
-import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.mongoJacksonModules
+import org.litote.jackson.JacksonModuleServiceLoader
 
 /**
  *
  */
-object BotEngineJacksonConfiguration {
+private object BotEngineJacksonConfiguration {
 
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "eventType"
     )
-    private interface MixinMessage
+    interface MixinMessage
 
     @JsonTypeInfo(
         use = JsonTypeInfo.Id.NAME,
         include = JsonTypeInfo.As.EXISTING_PROPERTY,
         property = "answerType"
     )
-    private interface MixinAnswerConfiguration
+    interface MixinAnswerConfiguration
 
-    @Volatile
-    private var module: SimpleModule? = null
-
-    fun init() {
-        if (module == null) {
+    val module: SimpleModule
+        get() {
             val module = SimpleModule()
-            this.module = module
             with(module) {
                 setMixInAnnotation(Message::class.java, MixinMessage::class.java)
                 registerSubtypes(NamedType(Attachment::class.java, EventType.attachment.name))
@@ -122,9 +118,13 @@ object BotEngineJacksonConfiguration {
                     }
                 })
 
-                mapper.registerModule(this)
             }
-            mongoJacksonModules.add(module)
+            return module
         }
-    }
+
+}
+
+class BotTockEngineKMongoJacksonModuleServiceLoader : JacksonModuleServiceLoader {
+
+    override fun module(): Module = BotEngineJacksonConfiguration.module
 }

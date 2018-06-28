@@ -20,17 +20,12 @@ import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.jackson.BotEngineJacksonConfiguration
 
 
 /**
  * The [RestConnector] provider.
  */
 internal object RestConnectorProvider : ConnectorProvider {
-
-    init {
-        BotEngineJacksonConfiguration.init()
-    }
 
     override val connectorType: ConnectorType get() = ConnectorType.rest
 

@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.admin.test.TestPlanDAO
 import fr.vsct.tock.bot.admin.user.UserReportDAO
 import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
+import fr.vsct.tock.shared.getAsyncDatabase
 import fr.vsct.tock.shared.getDatabase
 import fr.vsct.tock.translator.I18nDAO
 
@@ -34,6 +35,7 @@ internal const val MONGO_DATABASE: String = "tock_bot_mongo_db"
 
 val botMongoModule = Kodein.Module {
     bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
+    bind<com.mongodb.async.client.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
     bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
     bind<StoryDefinitionConfigurationDAO>() with provider { StoryDefinitionConfigurationMongoDAO }
     bind<I18nDAO>() with provider { I18nMongoDAO }

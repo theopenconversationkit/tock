@@ -26,7 +26,7 @@ import fr.vsct.tock.bot.connector.ConnectorType.Companion.rest
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.StoryHandlerListener
-import fr.vsct.tock.bot.engine.config.BotConfigurationSynchronizer
+import fr.vsct.tock.bot.engine.config.StoryConfigurationMonitor
 import fr.vsct.tock.bot.engine.monitoring.RequestTimer
 import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener
 import fr.vsct.tock.bot.engine.nlp.NlpListener
@@ -342,13 +342,11 @@ object BotRepository {
         val bot = Bot(botDefinition, conf)
         return botConfigurationDAO.updateIfNotManuallyModified(conf)
             .apply {
-                if (conf.connectorType != rest) {
-                    val controller = TockConnectorController.register(connector, bot, verticle)
-                    //monitor bot
-                    BotConfigurationSynchronizer.monitor(bot)
-                    //register connector controller map
-                    connectorControllerMap[this] = controller
-                }
+                val controller = TockConnectorController.register(connector, bot, verticle)
+                //monitor bot
+                StoryConfigurationMonitor.monitor(bot)
+                //register connector controller map
+                connectorControllerMap[this] = controller
             }
     }
 
@@ -358,7 +356,7 @@ object BotRepository {
         if (controller != null) {
             controller.unregisterServices()
             if (controller is TockConnectorController) {
-                BotConfigurationSynchronizer.unmonitor(controller.bot)
+                StoryConfigurationMonitor.unmonitor(controller.bot)
             }
         }
     }

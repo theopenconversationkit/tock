@@ -209,12 +209,22 @@
             </dependency>
             <dependency>
                 <groupId>org.litote.kmongo</groupId>
+                <artifactId>kmongo-async</artifactId>
+                <version>${kmongo}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.litote.kmongo</groupId>
                 <artifactId>kmongo-id</artifactId>
                 <version>${kmongo}</version>
             </dependency>
             <dependency>
                 <groupId>org.litote.kmongo</groupId>
                 <artifactId>kmongo-id-jackson</artifactId>
+                <version>${kmongo}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.litote.kmongo</groupId>
+                <artifactId>kmongo-jackson-modules-service-loader</artifactId>
                 <version>${kmongo}</version>
             </dependency>
             <dependency>

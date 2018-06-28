@@ -19,7 +19,6 @@ package fr.vsct.tock.bot
 import botModule
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.Kodein.Module
-import fr.vsct.tock.bot.jackson.BotEngineJacksonConfiguration
 import fr.vsct.tock.bot.mongo.botMongoModule
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.sharedModule
@@ -37,7 +36,7 @@ object BotIoc {
      * The core modules of the bot.
      */
     val coreModules: List<Module> =
-            listOf(sharedModule, botModule, botMongoModule, noOpTranslatorModule)
+        listOf(sharedModule, botModule, botMongoModule, noOpTranslatorModule)
 
     /**
      * Start the bot with the specified additional [modules].
@@ -50,8 +49,6 @@ object BotIoc {
      * Start the bot with the specified additional [modules].
      */
     fun setup(modules: List<Module>) {
-        //init jackson
-        BotEngineJacksonConfiguration.init()
         logger.debug { "Start bot injection" }
         injector.inject(Kodein {
             coreModules.forEach { import(it) }

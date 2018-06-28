@@ -22,6 +22,7 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.mongodb.client.MongoDatabase
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import fr.vsct.tock.shared.getAsyncDatabase
 import fr.vsct.tock.shared.getDatabase
 import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.shared.tockInternalInjector
@@ -46,6 +47,7 @@ abstract class AbstractTest {
         tockInternalInjector.inject(Kodein {
             import(sharedTestModule)
             bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
+            bind<com.mongodb.async.client.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
             bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
         }
         )

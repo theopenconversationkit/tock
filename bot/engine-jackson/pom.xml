@@ -34,6 +34,10 @@
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-engine</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.litote.kmongo</groupId>
+            <artifactId>kmongo-jackson-modules-service-loader</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
@@ -50,6 +54,7 @@
             <artifactId>junit-jupiter-api</artifactId>
             <scope>test</scope>
         </dependency>
+        
     </dependencies>
 
 </project>

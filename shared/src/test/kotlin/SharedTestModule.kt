@@ -27,6 +27,7 @@ import io.mockk.mockk
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.KFlapdoodle
+import org.litote.kmongo.async.KFlapdoodleAsync
 import java.time.Duration
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
@@ -44,7 +45,7 @@ val sharedTestModule = Kodein.Module {
         bind<MongoClient>() with singleton {
             try {
                 //init kmongo configuration for persistence tests
-                configureKMongo()
+                TockKMongoConfiguration.configure()
                 KFlapdoodle.mongoClient
             } catch (t: Throwable) {
                 logger.trace("error during KMongo configuration", t)
@@ -52,7 +53,21 @@ val sharedTestModule = Kodein.Module {
             }
         }
     } catch (t: Throwable) {
-        logger.trace("mongo driver is not present in classpath")
+        logger.trace("sync mongo driver is not present in classpath")
+    }
+    try {
+        bind<com.mongodb.async.client.MongoClient>() with singleton {
+            try {
+                //init kmongo configuration for persistence tests
+                TockKMongoConfiguration.configure()
+                KFlapdoodleAsync.mongoClient
+            } catch (t: Throwable) {
+                logger.trace("error during KMongo configuration", t)
+                mockk<com.mongodb.async.client.MongoClient>(relaxed = true)
+            }
+        }
+    } catch (t: Throwable) {
+        logger.trace("async mongo driver is not present in classpath")
     }
 }
 

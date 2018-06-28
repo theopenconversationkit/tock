@@ -19,18 +19,22 @@ package fr.vsct.tock.bot.mongo
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration_.Companion.BotId
+import fr.vsct.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Conf
 import fr.vsct.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Date
+import fr.vsct.tock.shared.error
 import mu.KotlinLogging
 import org.bson.Document
 import org.litote.kmongo.Data
 import org.litote.kmongo.ascendingSort
+import org.litote.kmongo.async.getCollectionOfName
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
+import org.litote.kmongo.getCollectionOfName
 import org.litote.kmongo.path
 import org.litote.kmongo.projection
 import org.litote.kmongo.save
@@ -51,7 +55,8 @@ object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurationDAO {
         val date: Instant = Instant.now()
     )
 
-    private val col = database.getCollection<StoryDefinitionConfiguration>("story_configuration")
+    private val col = database.getCollectionOfName<StoryDefinitionConfiguration>("story_configuration")
+    private val asyncCol = asyncDatabase.getCollectionOfName<StoryDefinitionConfiguration>("story_configuration")
     private val historyCol =
         database.getCollection<StoryDefinitionConfigurationHistoryCol>("story_configuration_history")
 
@@ -59,6 +64,23 @@ object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurationDAO {
         col.ensureIndex(BotId)
         historyCol.ensureIndex(Conf.botId)
         historyCol.ensureIndex(Date)
+    }
+
+    override fun listenChanges(listener: () -> Unit) {
+        try {
+            asyncCol.watch().forEach({
+                listener()
+            })
+            { _, t ->
+                if (t != null) {
+                    logger.error(t)
+                } else {
+                    logger.warn { "story definition change stream has ended" }
+                }
+            }
+        } catch (e: Exception) {
+            logger.error(e)
+        }
     }
 
     override fun getStoryDefinitionById(id: String): StoryDefinitionConfiguration? {

@@ -38,10 +38,6 @@ class MessageSerializationTest {
         val message: Message
     )
 
-    init {
-        BotEngineJacksonConfiguration.init()
-    }
-
     @Test
     fun serializingAndDeserializingMessageRequestContainingSentence_shouldSucceed() {
         val request = MessageRequest("a", "bot", Sentence("text"))

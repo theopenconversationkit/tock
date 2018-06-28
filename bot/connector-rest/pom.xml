@@ -32,10 +32,6 @@
     <dependencies>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-engine</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-engine-jackson</artifactId>
         </dependency>
         <dependency>
