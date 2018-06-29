@@ -21,11 +21,13 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.mongodb.client.MongoDatabase
 import fr.vsct.tock.nlp.model.service.storage.NlpEngineModelIO
+import fr.vsct.tock.shared.getAsyncDatabase
 import fr.vsct.tock.shared.getDatabase
 
 internal const val MONGO_DATABASE: String = "tock_model_mongo_db"
 
 val modelMongoModule = Kodein.Module {
     bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
+    bind<com.mongodb.async.client.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
     bind<NlpEngineModelIO>() with provider { NlpEngineMongoModelIO }
 }

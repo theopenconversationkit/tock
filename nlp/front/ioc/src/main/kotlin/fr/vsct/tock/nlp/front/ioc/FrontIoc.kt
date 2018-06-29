@@ -37,15 +37,15 @@ object FrontIoc {
     private val logger = KotlinLogging.logger {}
 
     val coreModules: List<Module> =
-            listOf(
-                    sharedModule,
-                    coreModule,
-                    modelMongoModule,
-                    modelModule,
-                    frontMongoModule,
-                    frontModule,
-                    ducklingModule
-            )
+        listOf(
+            sharedModule,
+            coreModule,
+            modelMongoModule,
+            modelModule,
+            frontMongoModule,
+            frontModule,
+            ducklingModule
+        )
 
     fun setup(vararg modules: Module) {
         setup(modules.toList())
@@ -63,6 +63,6 @@ object FrontIoc {
                 }
             }
         })
-        FrontClient.initData()
+        FrontClient.initializeConfiguration()
     }
 }

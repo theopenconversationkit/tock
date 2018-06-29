@@ -19,7 +19,6 @@ package fr.vsct.tock.bot.engine.config
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.engine.Bot
-import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
 import java.util.concurrent.CopyOnWriteArraySet
@@ -55,15 +54,10 @@ internal object StoryConfigurationMonitor {
     }
 
     private fun refresh(bot: Bot) {
-        try {
-            bot.botDefinition.updateStories(
-                storyDAO.getStoryDefinitions(bot.botDefinition.botId)
-                    .map { ConfiguredStoryDefinition(it) }
-            )
-        } catch (e: Exception) {
-            //log & ignore
-            logger.error(e)
-        }
+        bot.botDefinition.updateStories(
+            storyDAO.getStoryDefinitions(bot.botDefinition.botId)
+                .map { ConfiguredStoryDefinition(it) }
+        )
     }
 
 }

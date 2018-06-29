@@ -25,6 +25,11 @@ import org.litote.kmongo.Id
  */
 interface IntentDefinitionDAO {
 
+    /**
+     * Listen changes on entity type definitions.
+     */
+    fun listenIntentDefinitionChanges(listener: () -> Unit)
+
     fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition>
 
     fun getIntentByNamespaceAndName(namespace:String, name:String): IntentDefinition?

@@ -23,9 +23,11 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.BotId
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Namespace
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.NlpModel
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.watchSafely
 import mu.KotlinLogging
 import org.bson.types.ObjectId
 import org.litote.kmongo.Id
+import org.litote.kmongo.async.getCollectionOfName
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureUniqueIndex
@@ -45,9 +47,16 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
     private val logger = KotlinLogging.logger {}
 
     private val col = MongoBotConfiguration.database.getCollection<BotApplicationConfiguration>("bot_configuration")
+    private val asyncCol =
+        MongoBotConfiguration.asyncDatabase.getCollectionOfName<BotApplicationConfiguration>("bot_configuration")
+
 
     init {
         col.ensureUniqueIndex(ApplicationId, BotId)
+    }
+
+    override fun listenChanges(listener: () -> Unit) {
+        asyncCol.watchSafely { listener() }
     }
 
     override fun getConfigurationById(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration? {

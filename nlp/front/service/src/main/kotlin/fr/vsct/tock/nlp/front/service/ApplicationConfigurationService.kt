@@ -16,12 +16,11 @@
 
 package fr.vsct.tock.nlp.front.service
 
-import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
 import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.core.NlpEngineType
-import fr.vsct.tock.nlp.front.service.FrontRepository.addNewEntityType
+import fr.vsct.tock.nlp.front.service.ConfigurationRepository.addNewEntityType
 import fr.vsct.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import fr.vsct.tock.nlp.front.service.storage.ClassifiedSentenceDAO
 import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
@@ -40,10 +39,10 @@ import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.toId
 
-val applicationDAO: ApplicationDefinitionDAO by injector.instance()
-val entityTypeDAO: EntityTypeDefinitionDAO by injector.instance()
-val intentDAO: IntentDefinitionDAO by injector.instance()
-val sentenceDAO: ClassifiedSentenceDAO by injector.instance()
+val applicationDAO: ApplicationDefinitionDAO get() = injector.provide()
+val entityTypeDAO: EntityTypeDefinitionDAO get() = injector.provide()
+val intentDAO: IntentDefinitionDAO get() = injector.provide()
+val sentenceDAO: ClassifiedSentenceDAO get() = injector.provide()
 
 /**
  *
@@ -167,12 +166,8 @@ object ApplicationConfigurationService :
         }
 
         return entityTypeDAO.deleteEntityTypeByName(name).apply {
-            FrontRepository.clearEntityTypesCache()
+            ConfigurationRepository.refreshEntityTypes()
         }
-    }
-
-    override fun initData() {
-        FrontRepository.registerBuiltInEntities()
     }
 
     fun toIntent(intentId: Id<IntentDefinition>, cache: MutableMap<Id<IntentDefinition>, Intent>? = null): Intent {
@@ -188,7 +183,7 @@ object ApplicationConfigurationService :
     fun toIntent(intent: IntentDefinition): Intent {
         return Intent(
             intent.qualifiedName,
-            intent.entities.mapNotNull { FrontRepository.toEntity(it.entityTypeName, it.role) },
+            intent.entities.mapNotNull { ConfigurationRepository.toEntity(it.entityTypeName, it.role) },
             intent.entitiesRegexp
         )
     }
@@ -204,7 +199,7 @@ object ApplicationConfigurationService :
         //1 collect entities
         val entities = s
             .flatMap {
-                it.classification.entities.mapNotNull { it.toEntity(FrontRepository::toEntity) }
+                it.classification.entities.mapNotNull { it.toEntity(ConfigurationRepository::toEntity) }
             }
             .distinct()
 
@@ -272,4 +267,7 @@ object ApplicationConfigurationService :
         }
     }
 
+    override fun initializeConfiguration() {
+        ConfigurationRepository.initRepository()
+    }
 }

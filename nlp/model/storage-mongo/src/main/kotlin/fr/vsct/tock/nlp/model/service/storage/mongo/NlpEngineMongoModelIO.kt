@@ -27,12 +27,14 @@ import com.mongodb.client.model.Filters
 import com.mongodb.client.model.Filters.and
 import com.mongodb.client.model.Filters.eq
 import com.mongodb.client.model.Filters.ne
+import com.mongodb.client.model.changestream.FullDocument
 import fr.vsct.tock.nlp.model.ClassifierContextKey
 import fr.vsct.tock.nlp.model.EntityContextKey
 import fr.vsct.tock.nlp.model.IntentContext.IntentContextKey
 import fr.vsct.tock.nlp.model.service.storage.NlpEngineModelIO
 import fr.vsct.tock.nlp.model.service.storage.NlpModelStream
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.watchSafely
 import mu.KotlinLogging
 import org.litote.kmongo.ensureIndex
 import java.io.InputStream
@@ -46,6 +48,8 @@ object NlpEngineMongoModelIO : NlpEngineModelIO {
     private val logger = KotlinLogging.logger {}
 
     private val database: MongoDatabase by injector.instance(MONGO_DATABASE)
+    private val asyncDatabase: com.mongodb.async.client.MongoDatabase by injector.instance(MONGO_DATABASE)
+
     private val entityBucket: GridFSBucket  by lazy {
         GridFSBuckets.create(database, "fs_entity")
             .apply {
@@ -58,6 +62,10 @@ object NlpEngineMongoModelIO : NlpEngineModelIO {
                 database.getCollection("fs_intent.files").ensureIndex("{filename:1}")
             }
     }
+
+    private val asyncEntityCol = asyncDatabase.getCollection("fs_entity.files")
+
+    private val asyncIntentCol = asyncDatabase.getCollection("fs_intent.files")
 
     private fun getGridFSFile(bucket: GridFSBucket, key: ClassifierContextKey): GridFSFile? {
         return try {
@@ -150,5 +158,23 @@ object NlpEngineMongoModelIO : NlpEngineModelIO {
 
     override fun deleteIntentModel(key: IntentContextKey) {
         deleteModel(intentBucket, key)
+    }
+
+    override fun listenEntityModelChanges(listener: (String) -> Unit) {
+        asyncEntityCol.watchSafely({ it.fullDocument(FullDocument.UPDATE_LOOKUP) }) {
+            val id = it.fullDocument?.get("filename") as? String
+            if(id != null) {
+                listener.invoke(id)
+            }
+        }
+    }
+
+    override fun listenIntentModelChanges(listener: (String) -> Unit) {
+        asyncIntentCol.watchSafely({ it.fullDocument(FullDocument.UPDATE_LOOKUP) }) {
+            val id = it.fullDocument?.get("filename") as? String
+            if(id != null) {
+                listener.invoke(id)
+            }
+        }
     }
 }

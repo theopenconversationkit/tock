@@ -22,7 +22,10 @@ import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition_.Companion.Name
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition_.Companion.PredefinedValues
+import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.asyncDatabase
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
+import fr.vsct.tock.shared.watchSafely
+import org.litote.kmongo.async.getCollection
 import org.litote.kmongo.bson
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
@@ -43,6 +46,13 @@ object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
         val c = database.getCollection<EntityTypeDefinition>()
         c.ensureUniqueIndex(Name)
         c
+    }
+    private val asyncCol by lazy {
+        asyncDatabase.getCollection<EntityTypeDefinition>()
+    }
+
+    override fun listenEntityTypeChanges(listener: () -> Unit) {
+        asyncCol.watchSafely { listener() }
     }
 
     override fun save(entityType: EntityTypeDefinition) {

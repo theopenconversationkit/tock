@@ -31,11 +31,19 @@ interface NlpEngineModelIO {
     fun getEntityModelLastUpdate(key: EntityContextKey): Instant?
     fun removeEntityModelsNotIn(keys: List<EntityContextKey>)
     fun deleteEntityModel(key: EntityContextKey)
+    /**
+     * Listen changes on entity model.
+     */
+    fun listenEntityModelChanges(listener: (String) -> Unit)
 
     fun getIntentModelInputStream(key: IntentContextKey): NlpModelStream?
     fun saveIntentModel(key: IntentContextKey, stream: InputStream)
     fun getIntentModelLastUpdate(key: IntentContextKey): Instant?
     fun removeIntentModelsNotIn(keys: List<IntentContextKey>)
     fun deleteIntentModel(key: IntentContextKey)
+    /**
+     * Listen changes on intent model.
+     */
+    fun listenIntentModelChanges(listener: (String) -> Unit)
 
 }

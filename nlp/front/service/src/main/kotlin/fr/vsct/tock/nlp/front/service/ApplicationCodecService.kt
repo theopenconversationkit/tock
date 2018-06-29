@@ -18,7 +18,7 @@ package fr.vsct.tock.nlp.front.service
 
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
-import fr.vsct.tock.nlp.front.service.FrontRepository.entityTypeExists
+import fr.vsct.tock.nlp.front.service.ConfigurationRepository.entityTypeExists
 import fr.vsct.tock.nlp.front.service.ModelUpdaterService.triggerBuild
 import fr.vsct.tock.nlp.front.shared.ApplicationCodec
 import fr.vsct.tock.nlp.front.shared.ApplicationConfiguration

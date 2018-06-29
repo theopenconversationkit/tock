@@ -21,8 +21,11 @@ import fr.vsct.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition_.Companion.Name
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition_.Companion.Namespace
+import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.asyncDatabase
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
+import fr.vsct.tock.shared.watchSafely
 import org.litote.kmongo.Id
+import org.litote.kmongo.async.getCollection
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
@@ -40,6 +43,13 @@ object ApplicationDefinitionMongoDAO : ApplicationDefinitionDAO {
         val c = database.getCollection<ApplicationDefinition>()
         c.ensureUniqueIndex(Name, Namespace)
         c
+    }
+    private val asyncCol by lazy {
+        asyncDatabase.getCollection<ApplicationDefinition>()
+    }
+
+    override fun listenApplicationDefinitionChanges(listener: () -> Unit) {
+        asyncCol.watchSafely { listener() }
     }
 
     override fun deleteApplicationById(id: Id<ApplicationDefinition>) {

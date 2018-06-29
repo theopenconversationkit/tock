@@ -23,7 +23,7 @@ import fr.vsct.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Conf
 import fr.vsct.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Date
-import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.watchSafely
 import mu.KotlinLogging
 import org.bson.Document
 import org.litote.kmongo.Data
@@ -67,20 +67,7 @@ object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurationDAO {
     }
 
     override fun listenChanges(listener: () -> Unit) {
-        try {
-            asyncCol.watch().forEach({
-                listener()
-            })
-            { _, t ->
-                if (t != null) {
-                    logger.error(t)
-                } else {
-                    logger.warn { "story definition change stream has ended" }
-                }
-            }
-        } catch (e: Exception) {
-            logger.error(e)
-        }
+        asyncCol.watchSafely { listener() }
     }
 
     override fun getStoryDefinitionById(id: String): StoryDefinitionConfiguration? {

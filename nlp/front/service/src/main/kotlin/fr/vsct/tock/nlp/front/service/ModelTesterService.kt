@@ -21,8 +21,8 @@ import fr.vsct.tock.nlp.core.EntityEvaluationContext
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.ModelCore
 import fr.vsct.tock.nlp.core.quality.TestContext
-import fr.vsct.tock.nlp.front.service.FrontRepository.entityTypeByName
-import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
+import fr.vsct.tock.nlp.front.service.ConfigurationRepository.entityTypeByName
+import fr.vsct.tock.nlp.front.service.ConfigurationRepository.toApplication
 import fr.vsct.tock.nlp.front.service.storage.TestModelDAO
 import fr.vsct.tock.nlp.front.shared.ModelTester
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition

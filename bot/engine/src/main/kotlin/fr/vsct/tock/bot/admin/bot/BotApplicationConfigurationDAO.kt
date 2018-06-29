@@ -23,6 +23,11 @@ import org.litote.kmongo.Id
  */
 interface BotApplicationConfigurationDAO {
 
+    /**
+     * Listen changes on application configurations.
+     */
+    fun listenChanges(listener: () -> Unit)
+
     fun save(conf: BotApplicationConfiguration): BotApplicationConfiguration
 
     fun updateIfNotManuallyModified(conf: BotApplicationConfiguration): BotApplicationConfiguration

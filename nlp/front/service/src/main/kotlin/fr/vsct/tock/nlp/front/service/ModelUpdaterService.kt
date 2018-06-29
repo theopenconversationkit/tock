@@ -21,8 +21,8 @@ import fr.vsct.tock.nlp.core.BuildContext
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.ModelCore
 import fr.vsct.tock.nlp.core.NlpEngineType
-import fr.vsct.tock.nlp.front.service.FrontRepository.entityTypeByName
-import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
+import fr.vsct.tock.nlp.front.service.ConfigurationRepository.entityTypeByName
+import fr.vsct.tock.nlp.front.service.ConfigurationRepository.toApplication
 import fr.vsct.tock.nlp.front.service.storage.ModelBuildTriggerDAO
 import fr.vsct.tock.nlp.front.shared.ModelUpdater
 import fr.vsct.tock.nlp.front.shared.build.ModelBuild
@@ -208,7 +208,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
                     toApplication(it) to config.getIntentsByApplicationId(it._id).map { config.toIntent(it) }.toSet()
                 }
                 .toMap(),
-            config.getEntityTypes().mapNotNull { FrontRepository.toEntityType(it) }
+            config.getEntityTypes().mapNotNull { ConfigurationRepository.toEntityType(it) }
         )
     }
 

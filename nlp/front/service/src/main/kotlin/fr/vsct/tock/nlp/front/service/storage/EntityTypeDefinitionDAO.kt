@@ -24,13 +24,18 @@ import java.util.Locale
  */
 interface EntityTypeDefinitionDAO {
 
+    /**
+     * Listen changes on entity type definitions.
+     */
+    fun listenEntityTypeChanges(listener: () -> Unit)
+
     fun save(entityType: EntityTypeDefinition)
 
     fun getEntityTypeByName(name: String): EntityTypeDefinition?
 
     fun getEntityTypes(): List<EntityTypeDefinition>
 
-    fun deleteEntityTypeByName(name: String) : Boolean
+    fun deleteEntityTypeByName(name: String): Boolean
 
     fun deletePredefinedValueByName(entityTypeName: String, predefinedValue: String)
 

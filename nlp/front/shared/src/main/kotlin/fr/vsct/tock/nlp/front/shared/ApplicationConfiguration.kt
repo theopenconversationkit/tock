@@ -150,11 +150,6 @@ interface ApplicationConfiguration {
      */
     fun getSupportedNlpEngineTypes(): Set<NlpEngineType>
 
-    /**
-     * Load data in storage engine at startup.
-     */
-    fun initData()
-
     fun deletePredefinedValueByName(entityTypeName: String, predefinedValue: String)
 
     fun deletePredefinedValueLabelByName(
@@ -163,5 +158,10 @@ interface ApplicationConfiguration {
         locale: Locale,
         label: String
     )
+
+    /**
+     * Load the configuration cache.
+     */
+    fun initializeConfiguration()
 
 }

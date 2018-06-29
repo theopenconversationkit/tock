@@ -37,4 +37,14 @@ class EncryptorTest {
         assertEquals(s, decrypt(encrypted2))
         assertNotEquals(encrypted1, encrypted2)
     }
+
+    @Test
+    fun testEncryptAndDecryptForEmptyString() {
+        val s = ""
+        val encrypted1 = encrypt(s)
+        assertEquals(s, decrypt(encrypted1))
+        val encrypted2 = encrypt(s)
+        assertEquals(s, decrypt(encrypted2))
+        assertNotEquals(encrypted1, encrypted2)
+    }
 }

@@ -29,7 +29,10 @@ import com.fasterxml.jackson.datatype.jsr310.ser.DurationSerializer
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientSettings
+import com.mongodb.async.client.ChangeStreamIterable
+import com.mongodb.async.client.MongoCollection
 import com.mongodb.client.MongoDatabase
+import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.connection.netty.NettyStreamFactoryFactory
 import de.undercouch.bson4jackson.types.Decimal128
 import fr.vsct.tock.shared.jackson.addDeserializer
@@ -130,7 +133,7 @@ internal val asyncMongoClient: com.mongodb.async.client.MongoClient by lazy {
         MongoClientSettings.builder()
             .applyConnectionString(mongoUrl)
             .apply {
-                if(mongoUrl.sslEnabled == true) {
+                if (mongoUrl.sslEnabled == true) {
                     streamFactoryFactory(NettyStreamFactoryFactory.builder().build())
                 }
             }
@@ -156,6 +159,36 @@ fun getAsyncDatabase(databaseNameProperty: String): com.mongodb.async.client.Mon
     val databaseName = formatDatabase(databaseNameProperty)
     logger.info("get database $databaseName")
     return injector.provide<com.mongodb.async.client.MongoClient>().getDatabase(databaseName)
+}
+
+/**
+ * Watch collection changes without throwing an exception.
+ *
+ * @param listener the listener
+ * @param options to add option to [ChangeStreamIterable].
+ */
+fun <T> MongoCollection<T>.watchSafely(
+    optionsProvider: (ChangeStreamIterable<T>) -> ChangeStreamIterable<T> = { it },
+    listener: (ChangeStreamDocument<T>) -> Unit
+) {
+    try {
+        optionsProvider(watch()).forEach({
+            try {
+                listener(it)
+            } catch (e: Exception) {
+                logger.error(e)
+            }
+        })
+        { _, t ->
+            if (t != null) {
+                logger.error(t)
+            } else {
+                logger.warn { "story definition change stream has ended" }
+            }
+        }
+    } catch (e: Exception) {
+        logger.error(e)
+    }
 }
 
 private fun formatDatabase(databaseNameProperty: String): String =

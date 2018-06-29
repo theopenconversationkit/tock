@@ -29,15 +29,12 @@ import fr.vsct.tock.nlp.model.TokenizerContext
 import fr.vsct.tock.nlp.model.service.storage.NlpEngineModelIO
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.booleanProperty
-import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.longProperty
 import mu.KotlinLogging
 import java.io.InputStream
 import java.io.OutputStream
 import java.io.PipedInputStream
 import java.io.PipedOutputStream
-import java.time.Duration
 import java.time.Instant
 import java.time.Instant.now
 import java.util.concurrent.CountDownLatch
@@ -57,44 +54,46 @@ internal object NlpModelRepository {
 
     private val executor: Executor by injector.instance()
 
-    private val intentModelsCache: Cache<IntentContextKey, TimeStampedModel>
-            = CacheBuilder.newBuilder().softValues().build()
+    private val intentModelsCache: Cache<IntentContextKey, TimeStampedModel> =
+        CacheBuilder.newBuilder().softValues().build()
 
-    private val entityModelsCache: Cache<EntityContextKey, TimeStampedModel>
-            = CacheBuilder.newBuilder().softValues().build()
+    private val entityModelsCache: Cache<EntityContextKey, TimeStampedModel> =
+        CacheBuilder.newBuilder().softValues().build()
 
     init {
         if (booleanProperty("tock_nlp_model_refresh", true)) {
-            logger.info { "start refresh model thread" }
-            //10 minutes by default
-            executor.setPeriodic(Duration.ofSeconds(longProperty("tock_nlp_model_refresh_rate", 10 * 60))) {
-                try {
-                    logger.debug { "start refresh model process" }
-                    intentModelsCache.asMap().forEach { key, value ->
-                        logger.trace { "check intent model $key" }
-                        if (modelIO.getIntentModelLastUpdate(key) != value.lastUpdate) {
-                            logger.info { "refresh intent model for $key" }
-                            intentModelsCache.put(key,
-                                    loadIntentModel(
-                                            key,
-                                            NlpEngineRepository.getProvider(key.nlpEngineType))
+            modelIO.listenIntentModelChanges { key ->
+                intentModelsCache
+                    .asMap()
+                    .keys
+                    .find { it.id() == key }
+                    ?.also {
+                        logger.info { "refresh intent model for $key" }
+                        intentModelsCache.put(
+                            it,
+                            loadIntentModel(
+                                it,
+                                NlpEngineRepository.getProvider(it.nlpEngineType)
                             )
-                        }
+                        )
                     }
-                    entityModelsCache.asMap().forEach { key, value ->
-                        logger.trace { "check entity model $key" }
-                        if (modelIO.getEntityModelLastUpdate(key) != value.lastUpdate) {
-                            logger.info { "refresh entity model for $key" }
-                            entityModelsCache.put(key,
-                                    loadEntityModel(
-                                            key,
-                                            NlpEngineRepository.getProvider(key.nlpEngineType))
+
+            }
+            modelIO.listenEntityModelChanges { key ->
+                entityModelsCache
+                    .asMap()
+                    .keys
+                    .find { it.id() == key }
+                    ?.also {
+                        logger.info { "refresh entity model for $key" }
+                        entityModelsCache.put(
+                            it,
+                            loadEntityModel(
+                                it,
+                                NlpEngineRepository.getProvider(it.nlpEngineType)
                             )
-                        }
+                        )
                     }
-                } catch (t: Throwable) {
-                    logger.error(t)
-                }
             }
         } else {
             logger.info { "refresh model is disabled" }
@@ -107,18 +106,19 @@ internal object NlpModelRepository {
 
     fun getIntentModelHolder(context: IntentContext, provider: NlpEngineProvider): IntentModelHolder {
         return context
-                .key()
-                .let { key ->
-                    intentModelsCache.get(key) {
-                        loadIntentModel(key, provider)
-                    }
+            .key()
+            .let { key ->
+                intentModelsCache.get(key) {
+                    loadIntentModel(key, provider)
                 }
-                .let { IntentModelHolder(context.application, it.nativeModel!!, it.lastUpdate) }
+            }
+            .let { IntentModelHolder(context.application, it.nativeModel!!, it.lastUpdate) }
     }
 
     private fun loadIntentModel(
-            contextKey: IntentContextKey,
-            provider: NlpEngineProvider): TimeStampedModel {
+        contextKey: IntentContextKey,
+        provider: NlpEngineProvider
+    ): TimeStampedModel {
         val inputStream = modelIO.getIntentModelInputStream(contextKey)
         if (inputStream != null) {
             logger.debug { "load intent model for $contextKey" }
@@ -131,22 +131,22 @@ internal object NlpModelRepository {
 
     fun getEntityModelHolder(context: EntityCallContext, provider: NlpEngineProvider): EntityModelHolder? {
         return context
-                .key()
-                .let {
-                    entityModelsCache.get(it) { loadEntityModel(it, provider) }
-                }
-                .let { (nativeModel, lastUpdate) ->
-                    if (nativeModel == null) null else EntityModelHolder(nativeModel, lastUpdate)
-                }
+            .key()
+            .let {
+                entityModelsCache.get(it) { loadEntityModel(it, provider) }
+            }
+            .let { (nativeModel, lastUpdate) ->
+                if (nativeModel == null) null else EntityModelHolder(nativeModel, lastUpdate)
+            }
     }
 
     private fun loadEntityModel(contextKey: EntityContextKey, provider: NlpEngineProvider): TimeStampedModel {
         return modelIO.getEntityModelInputStream(contextKey)
-                ?.let { inputStream ->
-                    logger.debug { "load entity model for $contextKey" }
-                    val model = provider.getModelIo().loadEntityModel(inputStream)
-                    return TimeStampedModel(model, inputStream.updatedDate)
-                } ?: TimeStampedModel(null, now())
+            ?.let { inputStream ->
+                logger.debug { "load entity model for $contextKey" }
+                val model = provider.getModelIo().loadEntityModel(inputStream)
+                return TimeStampedModel(model, inputStream.updatedDate)
+            } ?: TimeStampedModel(null, now())
     }
 
 
@@ -181,21 +181,25 @@ internal object NlpModelRepository {
         }
     }
 
-    fun saveIntentModel(intentContextKey: IntentContextKey,
-                        model: IntentModelHolder,
-                        modelIo: NlpEngineModelIo) {
+    fun saveIntentModel(
+        intentContextKey: IntentContextKey,
+        model: IntentModelHolder,
+        modelIo: NlpEngineModelIo
+    ) {
         saveModel(
-                { modelIo.copyIntentModel(model.nativeModel, it) },
-                { modelIO.saveIntentModel(intentContextKey, it) }
+            { modelIo.copyIntentModel(model.nativeModel, it) },
+            { modelIO.saveIntentModel(intentContextKey, it) }
         )
     }
 
-    fun saveEntityModel(entityContextKey: EntityContextKey,
-                        model: EntityModelHolder,
-                        modelIo: NlpEngineModelIo) {
+    fun saveEntityModel(
+        entityContextKey: EntityContextKey,
+        model: EntityModelHolder,
+        modelIo: NlpEngineModelIo
+    ) {
         saveModel(
-                { modelIo.copyEntityModel(model.nativeModel, it) },
-                { modelIO.saveEntityModel(entityContextKey, it) }
+            { modelIo.copyEntityModel(model.nativeModel, it) },
+            { modelIO.saveEntityModel(entityContextKey, it) }
         )
     }
 

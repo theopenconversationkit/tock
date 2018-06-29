@@ -24,6 +24,11 @@ import org.litote.kmongo.Id
  */
 interface ApplicationDefinitionDAO {
 
+    /**
+     * Listen changes on entity type definitions.
+     */
+    fun listenApplicationDefinitionChanges(listener: () -> Unit)
+
     fun save(application: ApplicationDefinition): ApplicationDefinition
 
     fun deleteApplicationById(id: Id<ApplicationDefinition>)

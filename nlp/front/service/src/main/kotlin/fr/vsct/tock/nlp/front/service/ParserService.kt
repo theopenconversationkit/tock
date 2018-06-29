@@ -24,7 +24,7 @@ import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
 import fr.vsct.tock.nlp.core.ModelCore
 import fr.vsct.tock.nlp.core.NlpCore
-import fr.vsct.tock.nlp.front.service.FrontRepository.toApplication
+import fr.vsct.tock.nlp.front.service.ConfigurationRepository.toApplication
 import fr.vsct.tock.nlp.front.service.selector.IntentSelectorService
 import fr.vsct.tock.nlp.front.service.selector.IntentSelectorService.isValidClassifiedSentence
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
@@ -160,6 +160,7 @@ object ParserService : Parser {
         referenceDate: ZonedDateTime
     ): Map<Entity, ZonedDateTime>? = intents
         .flatMap { it.entities }
+        .asSequence()
         .distinct()
         .filter { it.atStartOfDay == true }
         .mapNotNull { it.toEntity() }
@@ -200,7 +201,7 @@ object ParserService : Parser {
                 .sentences
                 .firstOrNull()
 
-            val intents = config.getIntentsByApplicationId(application._id)
+            val intents = ConfigurationRepository.getIntentsByApplicationId(application._id)
 
             val callContext = CallContext(
                 toApplication(application),
@@ -226,9 +227,9 @@ object ParserService : Parser {
                     q,
                     validatedSentence!!.classification
                         .entities
-                        .mapNotNull { it.toEntityRecognition(FrontRepository::toEntity) }
+                        .mapNotNull { it.toEntityRecognition(ConfigurationRepository::toEntity) }
                 )
-                val intent = config.getIntentById(validatedSentence.classification.intentId)
+                val intent = ConfigurationRepository.getIntentById(validatedSentence.classification.intentId)
                 return ParseResult(
                     intent?.name ?: Intent.UNKNOWN_INTENT_NAME.name(),
                     intent?.namespace ?: Intent.UNKNOWN_INTENT_NAME.namespace(),
@@ -321,7 +322,7 @@ object ParserService : Parser {
                 EntityEvaluationContext(
                     referenceDate,
                     referenceDateByEntityMap = getReferenceDateByEntityMap(
-                        config.getIntentsByApplicationId(application._id),
+                        ConfigurationRepository.getIntentsByApplicationId(application._id),
                         referenceDate
                     )
                 )
@@ -353,7 +354,7 @@ object ParserService : Parser {
                 EntityEvaluationContext(
                     referenceDate,
                     referenceDateByEntityMap = getReferenceDateByEntityMap(
-                        config.getIntentsByApplicationId(application._id),
+                        ConfigurationRepository.getIntentsByApplicationId(application._id),
                         referenceDate
                     )
                 )
@@ -366,7 +367,7 @@ object ParserService : Parser {
     }
 
     private fun loadApplication(namespace: String, applicationName: String): ApplicationDefinition =
-        config.getApplicationByNamespaceAndName(namespace, applicationName)
+        ConfigurationRepository.getApplicationByNamespaceAndName(namespace, applicationName)
                 ?: throw UnknownApplicationException(namespace, applicationName)
 
     override fun healthcheck(): Boolean {

@@ -36,14 +36,12 @@ import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.provide
 import fr.vsct.tock.shared.tockAppDefaultNamespace
 import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
-import java.time.Duration
 import java.util.ServiceLoader
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArraySet
@@ -181,12 +179,8 @@ object BotRepository {
         //deploy verticle
         vertx.deployVerticle(verticle)
 
-        executor.setPeriodic(
-            Duration.ofMillis(longProperty("tock_bot_connector_refresh_initial_delay", 5000)),
-            Duration.ofMillis(longProperty("tock_bot_connector_refresh", 5000))
-        ) {
-            checkBotConfigurations()
-        }
+        //listen future changes
+        botConfigurationDAO.listenChanges { checkBotConfigurations() }
     }
 
     /**
@@ -263,42 +257,38 @@ object BotRepository {
     }
 
     private fun checkBotConfigurations() {
-        try {
-            logger.trace { "check configurations" }
-            //clone conf list as we may update connectorControllerMap
-            val existingConfs = ArrayList(connectorControllerMap.keys)
-            val confs = botConfigurationDAO.getConfigurations()
+        logger.trace { "check configurations" }
+        //clone conf list as we may update connectorControllerMap
+        val existingConfs = ArrayList(connectorControllerMap.keys)
+        val confs = botConfigurationDAO.getConfigurations()
 
-            confs.forEach { c ->
-                if (existingConfs.none { c.equalsWithoutId(it) }) {
-                    val botDefinition = botProviders.find { it.botId() == c.botId }?.botDefinition()
-                    if (botDefinition != null) {
-                        logger.debug { "refresh configuration $c" }
-                        val oldConfiguration = existingConfs.find { it._id == c._id }
-                        val connector = findConnectorProvider(c.connectorType).connector(ConnectorConfiguration(c))
+        confs.forEach { c ->
+            if (existingConfs.none { c.equalsWithoutId(it) }) {
+                val botDefinition = botProviders.find { it.botId() == c.botId }?.botDefinition()
+                if (botDefinition != null) {
+                    logger.debug { "refresh configuration $c" }
+                    val oldConfiguration = existingConfs.find { it._id == c._id }
+                    val connector = findConnectorProvider(c.connectorType).connector(ConnectorConfiguration(c))
 
-                        createBot(botDefinition, connector, c)
+                    createBot(botDefinition, connector, c)
 
-                        if (oldConfiguration != null) {
-                            removeBot(oldConfiguration)
-                        }
-                    } else {
-                        logger.trace { "unknown bot ${c.botId} - installation skipped" }
+                    if (oldConfiguration != null) {
+                        removeBot(oldConfiguration)
                     }
+                } else {
+                    logger.trace { "unknown bot ${c.botId} - installation skipped" }
                 }
             }
-
-            //remove old confs
-            connectorControllerMap.keys.forEach { conf ->
-                if (confs.none { it._id == conf._id }) {
-                    removeBot(conf)
-                }
-            }
-            //register new confs
-            verticle.configure()
-        } catch (e: Exception) {
-            logger.error(e)
         }
+
+        //remove old confs
+        connectorControllerMap.keys.forEach { conf ->
+            if (confs.none { it._id == conf._id }) {
+                removeBot(conf)
+            }
+        }
+        //register new confs
+        verticle.configure()
     }
 
     private fun refreshBotConfiguration(

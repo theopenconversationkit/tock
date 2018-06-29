@@ -23,5 +23,5 @@ import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
  *
  */
 internal fun EntityDefinition.toEntity(): Entity? {
-    return FrontRepository.toEntity(this.entityTypeName, this.role)
+    return ConfigurationRepository.toEntity(this.entityTypeName, this.role)
 }

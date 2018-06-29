@@ -24,8 +24,11 @@ import fr.vsct.tock.nlp.front.shared.config.IntentDefinition_.Companion.Applicat
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition_.Companion.Entities
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition_.Companion.Name
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition_.Companion.Namespace
+import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.asyncDatabase
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
+import fr.vsct.tock.shared.watchSafely
 import org.litote.kmongo.Id
+import org.litote.kmongo.async.getCollection
 import org.litote.kmongo.contains
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
@@ -46,6 +49,14 @@ object IntentDefinitionMongoDAO : IntentDefinitionDAO {
         c.ensureIndex(Applications)
         c.ensureUniqueIndex(Namespace, Name)
         c
+    }
+
+    private val asyncCol by lazy {
+        asyncDatabase.getCollection<IntentDefinition>()
+    }
+
+    override fun listenIntentDefinitionChanges(listener: () -> Unit) {
+        asyncCol.watchSafely { listener() }
     }
 
     override fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition> {

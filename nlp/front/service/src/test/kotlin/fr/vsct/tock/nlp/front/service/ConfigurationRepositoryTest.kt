@@ -29,45 +29,46 @@ import kotlin.test.assertTrue
 /**
  *
  */
-class FrontRepositoryTest : AbstractTest() {
+class ConfigurationRepositoryTest : AbstractTest() {
 
     val entityTypes = mutableListOf(EntityTypeDefinition("present"))
 
     @BeforeEach
     fun before() {
-        every { context.config.getEntityTypes() } returns entityTypes
+        every { context.entityTypeDefinitionDAO.getEntityTypes() } returns entityTypes
+        ConfigurationRepository.initRepository()
     }
 
     @AfterEach
     fun after() {
-        FrontRepository.clearEntityTypesCache()
+        ConfigurationRepository.refreshEntityTypes()
     }
 
     @Test
     fun entityTypeByName_shouldReloadBeforeFailing_whenNoEntityTypeIsFound() {
         with(context) {
-            assertTrue(FrontRepository.entityTypeExists("present"))
-            assertFalse(FrontRepository.entityTypeExists("notPresent"))
+            assertTrue(ConfigurationRepository.entityTypeExists("present"))
+            assertFalse(ConfigurationRepository.entityTypeExists("notPresent"))
 
             entityTypes += EntityTypeDefinition("notPresent")
 
-            assertEquals("notPresent", FrontRepository.entityTypeByName("notPresent")?.name)
+            assertEquals("notPresent", ConfigurationRepository.entityTypeByName("notPresent")?.name)
         }
     }
 
     @Test
     fun entityTypeByName_shouldNotFail_whenNoEntityTypeIsFound() {
         with(context) {
-            assertTrue(FrontRepository.entityTypeExists("present"))
-            assertFalse(FrontRepository.entityTypeExists("notPresent"))
+            assertTrue(ConfigurationRepository.entityTypeExists("present"))
+            assertFalse(ConfigurationRepository.entityTypeExists("notPresent"))
 
-            assertEquals("present", FrontRepository.entityTypeByName("present")?.name)
+            assertEquals("present", ConfigurationRepository.entityTypeByName("present")?.name)
 
-            assertTrue(FrontRepository.entityTypeExists("present"))
-            assertFalse(FrontRepository.entityTypeExists("notPresent"))
+            assertTrue(ConfigurationRepository.entityTypeExists("present"))
+            assertFalse(ConfigurationRepository.entityTypeExists("notPresent"))
 
             //should return null
-            assertNull(FrontRepository.entityTypeByName("notPresent"))
+            assertNull(ConfigurationRepository.entityTypeByName("notPresent"))
         }
     }
 }
