@@ -308,7 +308,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/xray/execute", botUser) { c, configuration: XRayPlanExecutionConfiguration ->
             XrayService(
-                listOf(configuration.configurationId),
+                listOfNotNull(configuration.configurationId),
                 listOf(configuration.testPlanKey),
                 configuration.testedBotId
             ).executePlans()

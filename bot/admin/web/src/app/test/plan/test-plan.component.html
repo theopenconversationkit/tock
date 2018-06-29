@@ -21,7 +21,8 @@
 <md-card *ngIf="xray">
   <md-card-title>Execute XRay plan</md-card-title>
   <tock-select-bot [(configurationId)]="xrayBotConfigurationId"
-                   (configurationIdChange)="xrayBotConfigurationId=$event"></tock-select-bot>
+                   (configurationIdChange)="xrayBotConfigurationId=$event"
+                    [allowNoSelection]="true"></tock-select-bot>
 
     <md-input-container class="input-text">
       <input mdInput

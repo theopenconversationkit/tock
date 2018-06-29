@@ -68,7 +68,6 @@ export class TestPlanComponent implements OnInit {
             this.test.isXrayAvailable().subscribe(r => {
                 if (r.success) {
                   this.xray = new XRayPlanExecutionConfiguration("", "", "");
-                  this.xrayBotConfigurationId = c[0]._id;
                 }
               }
             );
@@ -84,13 +83,15 @@ export class TestPlanComponent implements OnInit {
       this.botConfiguration.restConfigurations.subscribe(c => {
         const conf = c.find(i => i._id === this.xrayBotConfigurationId);
         this.xray.configurationId = this.xrayBotConfigurationId;
-        this.xray.testedBotId = conf.botId;
+        this.xray.testedBotId = conf ? conf.botId : c[0].botId;
         this.test.executeXRay(this.xray).subscribe(r => {
           this.executeXray = false;
-          if (r.success) {
-            this.snackBar.open(`Plan ${this.xray.testPlanKey} executed with success`, "Execution", {duration: 2000})
+          if (r.total === 0) {
+            this.snackBar.open(`No tests executed for Plan ${this.xray.testPlanKey}`, "Execution", {duration: 2000})
+          } else if (r.total === r.success) {
+            this.snackBar.open(`${r.total} tests for Plan ${this.xray.testPlanKey} executed with success`, "Execution", {duration: 2000})
           } else {
-            this.snackBar.open(`Plan ${this.xray.testPlanKey} executed with at least one error`, "Execution", {duration: 2000})
+            this.snackBar.open(`Plan ${this.xray.testPlanKey} executed with ${r.success} successful tests / ${r.total}`, "Execution", {duration: 2000})
           }
         });
       });

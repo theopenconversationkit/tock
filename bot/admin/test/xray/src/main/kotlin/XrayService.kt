@@ -94,7 +94,7 @@ class XrayService(
         XrayConfiguration.configure()
     }
 
-    fun executePlans(): Boolean {
+    fun executePlans(): XRayPlanExecutionResult {
         return try {
             TockTestClient.getBotConfigurations(testedBotId)
                 .filter { it.connectorType == ConnectorType.rest }
@@ -110,14 +110,14 @@ class XrayService(
                 }
         } catch (t: Throwable) {
             logger.error(t)
-            false
+            XRayPlanExecutionResult(0, 0)
         }
     }
 
-    private fun sendToXray(reports: List<TestPlanExecutionReport>): Boolean =
+    private fun sendToXray(reports: List<TestPlanExecutionReport>): XRayPlanExecutionResult {
         reports
             .groupBy { it.planKey }
-            .map { (planKey, plans) ->
+            .forEach { planKey, plans ->
                 //if it is a multi-connector test plan
                 if (plans.map { it.testPlan.dialogs.map { it.id } }
                         //no duplicate
@@ -150,7 +150,12 @@ class XrayService(
                     }
                 }
             }
-            .all { it }
+
+        return XRayPlanExecutionResult(
+            reports.sumBy { it.execution.dialogs.filter { !it.error }.size },
+            reports.sumBy { it.execution.dialogs.size }
+        )
+    }
 
 
     private fun sendXrayExecution(

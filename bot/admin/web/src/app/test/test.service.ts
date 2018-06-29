@@ -23,7 +23,8 @@ import {
   BotDialogResponse,
   TestPlan,
   TestPlanExecution,
-  XRayPlanExecutionConfiguration
+  XRayPlanExecutionConfiguration,
+  XRayPlanExecutionResult
 } from "./model/test";
 
 @Injectable()
@@ -65,8 +66,8 @@ export class TestService {
     return this.rest.get("/xray/available", BooleanResponse.fromJSON);
   }
 
-  executeXRay(conf: XRayPlanExecutionConfiguration): Observable<BooleanResponse> {
-    return this.rest.post(`/xray/execute`, conf, BooleanResponse.fromJSON);
+  executeXRay(conf: XRayPlanExecutionConfiguration): Observable<XRayPlanExecutionResult> {
+    return this.rest.post(`/xray/execute`, conf, XRayPlanExecutionResult.fromJSON);
   }
 
 }

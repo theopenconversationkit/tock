@@ -22,9 +22,10 @@
              placeholder="Select a configuration"
              [ngModel]="currentBotName"
              class="select-configuration">
+    <md-option *ngIf="allowNoSelection" value="None">No configuration</md-option>
     <md-option *ngFor="let n of botNames" [value]="n">{{ n }}</md-option>
   </md-select>
-  <md-select *ngIf="displayConnectorChoice"
+  <md-select *ngIf="displayConnectorChoice && currentBotName !== 'None'"
              (change)="changeConnectorType($event.value)"
              placeholder="Select a connector"
              [ngModel]="currentConnectorType"

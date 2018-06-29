@@ -20,7 +20,7 @@ package fr.vsct.tock.bot.admin.model
  *
  */
 data class XRayPlanExecutionConfiguration(
-    val configurationId: String,
+    val configurationId: String?,
     val testPlanKey: String,
     val testedBotId: String
 )

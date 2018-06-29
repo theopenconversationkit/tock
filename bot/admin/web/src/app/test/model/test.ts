@@ -230,3 +230,20 @@ export class XRayPlanExecutionConfiguration {
   }
 
 }
+
+export class XRayPlanExecutionResult {
+
+  constructor(public success: number,
+              public total: number) {
+  }
+
+  static fromJSON(json?: any): XRayPlanExecutionResult {
+    const value = Object.create(XRayPlanExecutionResult.prototype);
+
+    const result = Object.assign(value, json, {
+    });
+
+    return result;
+  }
+
+}

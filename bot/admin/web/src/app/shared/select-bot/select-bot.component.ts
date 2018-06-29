@@ -31,6 +31,9 @@ export class SelectBotComponent implements OnInit {
   @Input()
   displayConnectorChoice: boolean = true;
 
+  @Input()
+  allowNoSelection: boolean = false;
+
   @Output()
   private configurationIdChange = new EventEmitter<string>();
 
@@ -54,10 +57,15 @@ export class SelectBotComponent implements OnInit {
         setTimeout(_ => {
           if (conf.length !== 0) {
             this.botNames = Array.from(new Set(conf.map(c => this.getName(c)))).sort();
-            if (!this.configurationId) {
+            if (!this.allowNoSelection && !this.configurationId) {
               this.configurationId = conf[0]._id;
             }
-            this.changeConf(conf.find(c => c._id === this.configurationId), conf);
+            if (this.configurationId) {
+              this.changeConf(conf.find(c => c._id === this.configurationId), conf);
+            } else {
+              this.currentBotName = 'None';
+              this.configurations = conf;
+            }
           } else {
             this.configurations = [];
           }
@@ -74,6 +82,9 @@ export class SelectBotComponent implements OnInit {
       this.configurationId = conf._id;
       this.configurations = configurations;
       this.configurationIdChange.emit(conf._id);
+    } else {
+      this.currentBotName = 'None';
+      this.configurationIdChange.emit(null)
     }
   }
 
