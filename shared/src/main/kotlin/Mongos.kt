@@ -28,7 +28,9 @@ import com.fasterxml.jackson.datatype.jsr310.deser.JSR310StringParsableDeseriali
 import com.fasterxml.jackson.datatype.jsr310.ser.DurationSerializer
 import com.mongodb.ConnectionString
 import com.mongodb.MongoClient
+import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoDatabase
+import com.mongodb.connection.netty.NettyStreamFactoryFactory
 import de.undercouch.bson4jackson.types.Decimal128
 import fr.vsct.tock.shared.jackson.addDeserializer
 import fr.vsct.tock.shared.jackson.addSerializer
@@ -124,7 +126,16 @@ internal val mongoClient: MongoClient by lazy {
  */
 internal val asyncMongoClient: com.mongodb.async.client.MongoClient by lazy {
     TockKMongoConfiguration.configure()
-    org.litote.kmongo.async.KMongo.createClient(mongoUrl)
+    org.litote.kmongo.async.KMongo.createClient(
+        MongoClientSettings.builder()
+            .applyConnectionString(mongoUrl)
+            .apply {
+                if(mongoUrl.sslEnabled == true) {
+                    streamFactoryFactory(NettyStreamFactoryFactory.builder().build())
+                }
+            }
+            .build()
+    )
 }
 
 /**
