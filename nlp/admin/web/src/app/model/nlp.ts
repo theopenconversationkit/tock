@@ -18,7 +18,6 @@ import {ApplicationScopedQuery, Entry, JsonUtils, PaginatedQuery, SearchMark} fr
 import {User} from "./auth";
 import {isNullOrUndefined} from "util";
 import {StateService} from "../core/state.service";
-import {Sort} from "@angular/material/sort";
 
 export class EntityDefinition {
 
@@ -85,7 +84,7 @@ export class PredefinedValueQuery {
   constructor(public entityTypeName: string,
               public predefinedValue: string,
               public locale: string,
-              public oldPredefinedValue?:string) {
+              public oldPredefinedValue?: string) {
   }
 
 }
@@ -147,7 +146,8 @@ export class EntityType {
 
     const result = Object.assign(value, json, {
       subEntities: EntityDefinition.fromJSONArray(json.subEntities),
-      predefinedValues : PredefinedValue.fromJSONArray(json.predefinedValues)
+      predefinedValues: PredefinedValue.fromJSONArray(json.predefinedValues)
+        .sort((a, b) => a.value.localeCompare(b.value))
     });
 
     return result;
@@ -658,7 +658,7 @@ export class SearchQuery extends PaginatedQuery {
               public entityType?: string,
               public entityRole?: string,
               public modifiedAfter?: Date,
-              public sort? : Entry<string,boolean>[]) {
+              public sort?: Entry<string, boolean>[]) {
     super(namespace, applicationName, language, start, size, searchMark, sort)
   }
 }
@@ -952,14 +952,14 @@ export class UpdateSentencesReport {
   }
 }
 
-export class PredefinedValue {
+export class PredefinedValue {
 
   constructor(public value: string,
               public labels: Map<string, string[]>) {
   }
 
   static fromJSON(json?: any): PredefinedValue {
-    if(!json) {
+    if (!json) {
       return null;
     }
 
