@@ -17,9 +17,11 @@
 package fr.vsct.tock.bot.admin.test.xray
 
 import fr.vsct.tock.bot.admin.dialog.DialogReport
+import fr.vsct.tock.bot.admin.test.DialogExecutionReport
 import fr.vsct.tock.bot.admin.test.TestActionReport
 import fr.vsct.tock.bot.admin.test.TestDialogReport
 import fr.vsct.tock.bot.admin.test.TestPlan
+import fr.vsct.tock.bot.admin.test.TestPlanExecution
 import fr.vsct.tock.bot.admin.test.xray.model.JiraTest
 import fr.vsct.tock.bot.admin.test.xray.model.XrayAttachment
 import fr.vsct.tock.bot.admin.test.xray.model.XrayBuildStepAttachment
@@ -50,6 +52,8 @@ import mu.KotlinLogging
 import org.litote.kmongo.toId
 import java.time.Instant
 import java.time.OffsetDateTime
+import java.time.OffsetDateTime.ofInstant
+import java.time.temporal.ChronoUnit
 import java.util.Base64
 import java.util.Locale
 
@@ -61,6 +65,13 @@ class XrayService(
     private val testPlanKeys: List<String> = listProperty("tock_bot_test_xray_test_plan_keys", emptyList()),
     private val testedBotId: String = property("tock_bot_test_botId", "please set a bot id to test")
 ) {
+
+    private class TestPlanExecutionReport(
+        val configuration: XrayExecutionConfiguration,
+        val planKey: String,
+        val testPlan: TestPlan,
+        val execution: TestPlanExecution
+    )
 
     private val logger = KotlinLogging.logger {}
 
@@ -87,18 +98,140 @@ class XrayService(
         return try {
             TockTestClient.getBotConfigurations(testedBotId)
                 .filter { it.connectorType == ConnectorType.rest }
-                .filter { configurationIds.contains(it._id.toString()) || configurationNames.contains(it.name) }
-                .map {
+                .filter {
+                    configurationIds.contains(it._id.toString())
+                            || (configurationIds.isEmpty() && configurationNames.contains(it.name))
+                }
+                .flatMap {
                     exec(XrayExecutionConfiguration(it, testPlanKeys))
                 }
-                .all { it }
+                .let {
+                    sendToXray(it)
+                }
         } catch (t: Throwable) {
             logger.error(t)
             false
         }
     }
 
-    private fun exec(configuration: XrayExecutionConfiguration): Boolean {
+    private fun sendToXray(reports: List<TestPlanExecutionReport>): Boolean =
+        reports
+            .groupBy { it.planKey }
+            .map { (planKey, plans) ->
+                //if it is a multi-connector test plan
+                if (plans.map { it.testPlan.dialogs.map { it.id } }
+                        //no duplicate
+                        .run { toSet().size == size }) {
+                    val firstExecution = plans.map { it.execution.date }.min()!!
+                    sendXrayExecution(
+                        planKey,
+                        ofInstant(firstExecution, defaultZoneId),
+                        ofInstant(
+                            firstExecution.plus(
+                                plans.map { it.execution.duration.toMillis() }.sum(),
+                                ChronoUnit.MILLIS
+                            ), defaultZoneId
+                        ),
+                        plans.map { it.configuration }.distinctBy { it.botConfiguration.name },
+                        plans.flatMap { it.testPlan.dialogs },
+                        plans.flatMap { it.execution.dialogs }
+                    )
+
+                } else {
+                    plans.all {
+                        sendXrayExecution(
+                            planKey,
+                            ofInstant(it.execution.date, defaultZoneId),
+                            ofInstant(it.execution.date.plus(it.execution.duration), defaultZoneId),
+                            listOf(it.configuration),
+                            it.testPlan.dialogs,
+                            it.execution.dialogs
+                        )
+                    }
+                }
+            }
+            .all { it }
+
+
+    private fun sendXrayExecution(
+        planKey: String,
+        start: OffsetDateTime,
+        end: OffsetDateTime,
+        configurations: List<XrayExecutionConfiguration>,
+        dialogs: List<TestDialogReport>,
+        executionDialogs: List<DialogExecutionReport>
+    ): Boolean {
+        val xrayExecution = XrayTestExecution(
+            XrayTestExecutionInfo(
+                "$planKey - ${configurations.map { it.botConfiguration.name }.toSortedSet().joinToString()}",
+                "Automatized Test Execution",
+                start,
+                end,
+                planKey,
+                configurations.map { it.environment }.toSortedSet().toList()
+
+            ),
+            executionDialogs
+                .sortedBy { it.dialogReportId.toString() }
+                .map { dialogReport ->
+                    val dialog = dialogs.firstOrNull {
+                        it.id == dialogReport.dialogReportId
+                    }
+                    var stepViewed = false
+                    XrayTestExecutionReport(
+                        dialogReport.dialogReportId.toString(),
+                        ofInstant(dialogReport.date, defaultZoneId),
+                        ofInstant(dialogReport.date, defaultZoneId).plus(dialogReport.duration),
+                        if (dialogReport.error) "Failed execution ${dialogReport.errorMessage
+                                ?: ""}" else "Successful execution",
+                        if (dialogReport.error) FAIL else PASS,
+                        if (dialog == null) {
+                            emptyList()
+                        } else {
+                            dialog.actions.filter {
+                                it.playerId.type == bot
+                            }.map {
+                                val status = if (!dialogReport.error) {
+                                    PASS
+                                } else if (stepViewed) {
+                                    TODO
+                                } else if (dialogReport.errorActionId == it.id) {
+                                    stepViewed = true
+                                    FAIL
+                                } else {
+                                    PASS
+                                }
+                                XrayTestExecutionStepReport(
+                                    when (status) {
+                                        PASS -> "Test successful"
+                                        TODO -> "Skipped"
+                                        FAIL ->
+                                            if (dialogReport.returnedMessage != null) {
+                                                "TestFailed : ${dialogReport.returnedMessage?.toPrettyString()}"
+                                            } else if (dialogReport.errorMessage != null) {
+                                                "TestFailed : ${dialogReport.errorMessage}"
+                                            } else {
+                                                "Test failed"
+                                            }
+                                    },
+                                    status
+                                )
+                            }
+                        }
+                    )
+                }
+        )
+        return if (
+            XrayClient.sendTestExecution(xrayExecution).isSuccessful
+            && executionDialogs.none { it.error }
+        ) {
+            xrayExecution.tests.all { it.status == PASS }
+        } else {
+            false
+        }
+    }
+
+    private fun exec(configuration: XrayExecutionConfiguration): List<TestPlanExecutionReport> {
         return configuration
             .testPlanKeys
             .mapNotNull { planKey ->
@@ -106,7 +239,7 @@ class XrayService(
                 try {
                     val testPlan = getTestPlan(configuration, planKey)
                     if (testPlan.dialogs.isNotEmpty()) {
-                        executePlan(configuration, testPlan)
+                        executePlan(configuration, planKey, testPlan)
                     } else {
                         logger.info { "empty test plan for $configuration - skipped" }
                         null
@@ -115,85 +248,22 @@ class XrayService(
                     logger.info { "plan $planKey executed" }
                 }
             }
-            .all { it }
     }
 
     private fun executePlan(
         configuration: XrayExecutionConfiguration,
+        jiraKey: String,
         testPlan: TestPlan
-    ): Boolean {
-        val now = OffsetDateTime.now()
+    ): TestPlanExecutionReport {
         logger.debug { "execute test plan $testPlan" }
         val execution = TockTestClient.executeTestPlan(testPlan)
         logger.debug { "Test plan execution $execution" }
-        val end = OffsetDateTime.now()
-
-        val xrayExecution = XrayTestExecution(
-            XrayTestExecutionInfo(
-                "${testPlan.name} - ${configuration.botConfiguration.name}",
-                "Automatized Test Execution",
-                now,
-                end,
-                testPlan.name,
-                listOf(configuration.environment)
-
-            ),
-            execution.dialogs.map { dialogReport ->
-                val dialog = testPlan.dialogs.firstOrNull {
-                    it.id == dialogReport.dialogReportId
-                }
-                var stepViewed = false
-                XrayTestExecutionReport(
-                    dialogReport.dialogReportId.toString(),
-                    OffsetDateTime.ofInstant(dialogReport.date, defaultZoneId),
-                    OffsetDateTime.ofInstant(dialogReport.date, defaultZoneId).plus(dialogReport.duration),
-                    if (dialogReport.error) "Failed execution ${dialogReport.errorMessage
-                            ?: ""}" else "Successful execution",
-                    if (dialogReport.error) FAIL else PASS,
-                    if (dialog == null) {
-                        emptyList()
-                    } else {
-                        dialog.actions.filter {
-                            it.playerId.type == bot
-                        }.map {
-                            val status = if (!dialogReport.error) {
-                                PASS
-                            } else if (stepViewed) {
-                                TODO
-                            } else if (dialogReport.errorActionId == it.id) {
-                                stepViewed = true
-                                FAIL
-                            } else {
-                                PASS
-                            }
-                            XrayTestExecutionStepReport(
-                                when (status) {
-                                    PASS -> "Test successful"
-                                    TODO -> "Skipped"
-                                    FAIL ->
-                                        if (dialogReport.returnedMessage != null) {
-                                            "TestFailed : ${dialogReport.returnedMessage?.toPrettyString()}"
-                                        } else if (dialogReport.errorMessage != null) {
-                                            "TestFailed : ${dialogReport.errorMessage}"
-                                        } else {
-                                            "Test failed"
-                                        }
-                                },
-                                status
-                            )
-                        }
-                    }
-                )
-            }
+        return TestPlanExecutionReport(
+            configuration,
+            jiraKey,
+            testPlan,
+            execution
         )
-        return if (
-            XrayClient.sendTestExecution(xrayExecution).isSuccessful
-            && execution.nbErrors == 0
-        ) {
-            xrayExecution.tests.all { it.status == PASS }
-        } else {
-            false
-        }
     }
 
     private fun getTestPlan(configuration: XrayExecutionConfiguration, planKey: String): TestPlan {
