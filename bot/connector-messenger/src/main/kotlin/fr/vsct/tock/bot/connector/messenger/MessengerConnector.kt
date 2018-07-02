@@ -350,6 +350,20 @@ class MessengerConnector internal constructor(
      *
      * @param customEventRequest an object containing a list of custom events
      */
+    @Deprecated("To be removed in next release - app id is already known")
+    fun sendCustomEvent(applicationId:String, customEventRequest: CustomEventRequest) {
+        try {
+            client.sendCustomEvent(applicationId, customEventRequest)
+        } catch (e: Throwable) {
+            logger.error(e)
+        }
+    }
+
+    /**
+     * Send a custom event to messenger
+     *
+     * @param customEventRequest an object containing a list of custom events
+     */
     fun sendCustomEvent(customEventRequest: CustomEventRequest) {
         try {
             client.sendCustomEvent(applicationId, customEventRequest)
