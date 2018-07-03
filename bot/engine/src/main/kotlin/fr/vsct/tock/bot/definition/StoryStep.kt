@@ -18,7 +18,17 @@ package fr.vsct.tock.bot.definition
 
 import java.util.concurrent.ConcurrentHashMap
 
+/**
+ * step -> intent default behaviour.
+ */
 internal val stepToIntentRepository = ConcurrentHashMap<StoryStep<out StoryHandlerDefinition>, IntentAware>()
+
+/**
+ * Use this step when you want to set a null [StoryStep].
+ */
+val noStep = object : SimpleStoryStep {
+    override val name: String = "_NO_STEP_"
+}
 
 /**
  * A step (the implementation is usually an enum) is a part of a [StoryDefinition].
@@ -41,11 +51,16 @@ interface StoryStep<T : StoryHandlerDefinition> {
     fun answer(): T.() -> Any? = { null }
 
     /**
+     * Returns [intent] or the [StoryDefinition.mainIntent] if [intent] is null.
+     */
+    val baseIntent: IntentAware get() = intent ?: stepToIntentRepository[this] ?: error("no intent for $this")
+
+    /**
      * The main intent of the step.
      * If not null and if the current intent is equals to [intent],
      * this step will be automatically selected to be the current step.
      */
-    val intent: IntentAware? get() = stepToIntentRepository[this]
+    val intent: IntentAware? get() = null
 
     /**
      * Same behaviour than [intent] in the rare case when the step handle more than one intent.
@@ -61,7 +76,8 @@ interface StoryStep<T : StoryHandlerDefinition> {
     /**
      * Does this step support this intent as starter intent?
      */
-    fun supportStarterIntent(i: Intent): Boolean = intent?.wrap(i) == true || otherStarterIntents.any { it.wrap(i) }
+    fun supportStarterIntent(i: Intent): Boolean =
+        intent?.wrap(i) == true || otherStarterIntents.any { it.wrap(i) }
 
     /**
      * Does this step support this intent?

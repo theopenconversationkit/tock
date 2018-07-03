@@ -18,10 +18,16 @@ package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.engine.TestStoryDefinition.test
 import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.message.Choice
+import fr.vsct.tock.bot.engine.message.Sentence
+import io.mockk.every
+import io.mockk.slot
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 /**
  *
@@ -51,5 +57,23 @@ class BotTest : BotEngineTest() {
         assertEquals(story.definition.id, dialog.currentStory()!!.definition.id)
         assertEquals(test.mainIntent(), dialog.currentStory()!!.starterIntent)
         assertEquals(secondaryIntent, dialog.state.currentIntent)
+    }
+
+    @Test
+    fun `handle new story with steps does not select a step if there is no step that support this intent`() {
+        val sentence = action(Sentence("other"))
+
+        val sendSentence = slot<SendSentence>()
+        val capturedDialog = slot<Dialog>()
+
+        every { nlp.parseSentence(capture(sendSentence), any(), capture(capturedDialog), any(), any()) } answers {
+            sendSentence.captured.state.intent = otherStory.name
+            capturedDialog.captured.state.currentIntent = otherStory.mainIntent()
+        }
+
+        bot.handle(sentence, userTimeline, connectorController, connectorData)
+
+        assertEquals(otherStory, dialog.currentStory()?.definition)
+        assertNull(dialog.currentStory()?.currentStep)
     }
 }

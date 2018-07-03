@@ -272,6 +272,51 @@ inline fun <reified T : StoryHandlerDefinition> storyDef(
     )
 
 /**
+ * Creates a new story.
+ */
+inline fun <reified T : StoryHandlerDefinition, reified S> storyDefWithSteps(
+    /**
+     * The [StoryDefinition.mainIntent] name.
+     */
+    intentName: String,
+    /**
+     * The optionals other [StoryDefinition.starterIntents].
+     */
+    otherStarterIntents: Set<IntentAware> = emptySet(),
+    /**
+     * The others [StoryDefinition.intents] - ie the "secondary" intents.
+     */
+    secondaryIntents: Set<IntentAware> = emptySet(),
+    /**
+     * Is this story unsupported for a [UserInterfaceType]?
+     */
+    unsupportedUserInterface: UserInterfaceType? = null,
+    /**
+     * The [HandlerDef] instantiator. Define [StoryHandlerBase.newHandlerDefinition].
+     */
+    crossinline handlerDefInstantiator: (BotBus) -> T = { T::class.primaryConstructor!!.call(it) },
+    /**
+     * Check preconditions. if [BotBus.end] is called in this function,
+     * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
+     */
+    noinline preconditionsChecker: BotBus.() -> Unit
+): StoryDefinitionBase where S : Enum<S>, S : StoryStep<out StoryHandlerDefinition> =
+    StoryDefinitionBase(
+        intentName,
+        object : StoryHandlerBase<T>(intentName) {
+
+            override fun newHandlerDefinition(bus: BotBus): T = handlerDefInstantiator.invoke(bus)
+
+            override fun checkPreconditions(): BotBus.() -> Unit = preconditionsChecker
+
+        },
+        otherStarterIntents,
+        secondaryIntents,
+        enumValues<S>().toList(),
+        unsupportedUserInterface
+    )
+
+/**
  * Creates a new story from a [StoryHandler].
  */
 fun story(

@@ -91,6 +91,12 @@ internal class LogbackConfigurator : ContextAwareBase(), Configurator {
                 addAppender(appender)
             }
 
+            loggerContext.getLogger("io.mockk").apply {
+                level = Level.INFO
+                isAdditive = false
+                addAppender(appender)
+            }
+
             loggerContext.getLogger(Logger.ROOT_LOGGER_NAME).apply {
                 level = Level.DEBUG
                 addAppender(appender)

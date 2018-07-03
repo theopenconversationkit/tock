@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.SimpleStoryHandlerBase
 import fr.vsct.tock.bot.definition.SimpleStoryStep
 import fr.vsct.tock.bot.definition.StoryDefinitionExtended
+import fr.vsct.tock.bot.definition.storyWithSteps
 import fr.vsct.tock.translator.UserInterfaceType
 import fr.vsct.tock.translator.UserInterfaceType.voiceAssistant
 import fr.vsct.tock.translator.raw
@@ -32,7 +33,7 @@ class BotDefinitionTest
     : BotDefinitionBase(
         "test",
         "namespace",
-        stories = enumValues<TestStoryDefinition>().toList(),
+        stories = enumValues<TestStoryDefinition>().toList() + otherStory,
         unknownStory = TestStoryDefinition.unknown
 )
 
@@ -74,3 +75,6 @@ object StoryHandlerWithoutStep : AbstractStoryHandler()
 
 object StoryHandlerUnknown : AbstractStoryHandler()
 
+val otherStory = storyWithSteps<StepTest>("other") {
+    end("other")
+}

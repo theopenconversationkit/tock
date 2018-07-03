@@ -29,12 +29,12 @@ class DefinitionBuildersTest {
     }
 
     @Test
-    fun `story with steps set the right intent for steps`() {
+    fun `story with steps set the right base intent for steps`() {
         val yeh = storyWithSteps<Step>("yeh") {
             end("yeh")
         }
-        assertEquals("yeh", yeh.steps.first().intent?.wrappedIntent()?.name)
-        assertEquals("yeh", yeh.steps.last().intent?.wrappedIntent()?.name)
+        assertEquals("yeh", yeh.steps.first().baseIntent.wrappedIntent().name)
+        assertEquals("yeh", yeh.steps.last().baseIntent.wrappedIntent().name)
         assertEquals(Step.a, yeh.steps.first())
         assertEquals(Step.b, yeh.steps.last())
     }

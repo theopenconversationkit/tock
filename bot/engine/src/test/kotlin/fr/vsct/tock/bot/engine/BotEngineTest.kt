@@ -49,6 +49,7 @@ import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.shared.tockInternalInjector
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.TranslatorEngine
+import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
@@ -93,7 +94,7 @@ abstract class BotEngineTest {
     )
 
     val nlpClient: NlpClient = mockk(relaxed = true)
-    internal val nlp: NlpController = mockk(relaxed = true)
+    val nlp: NlpController = mockk(relaxed = true)
     val connector: Connector = mockk(relaxed = true)
     val userTimeline = UserTimeline(userId)
 
@@ -119,6 +120,8 @@ abstract class BotEngineTest {
         injector.inject(Kodein {
             import(baseModule())
         })
+
+        every {connector.loadProfile(any(), any())} returns null
     }
 
     @AfterEach
