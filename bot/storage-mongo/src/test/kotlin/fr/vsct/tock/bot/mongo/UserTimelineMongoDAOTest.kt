@@ -53,4 +53,25 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
             )
         )
     }
+
+    @Test
+    fun `updatePlayerId update timeline and dialog player id`() {
+        val id = PlayerId("id", PlayerType.user)
+        val u = UserTimeline(id, dialogs = mutableListOf(Dialog(setOf(id))))
+        UserTimelineMongoDAO.save(u)
+        println(UserTimelineMongoDAO.loadWithLastValidDialog(id, null) { error("no story provided") })
+
+        val newId = PlayerId("id", PlayerType.user, "a")
+        UserTimelineMongoDAO.updatePlayerId(id, newId)
+        println(UserTimelineMongoDAO.loadWithLastValidDialog(newId, null) { error("no story provided") })
+        assertEquals(
+            u.dialogs.map { it.copy(playerIds = setOf(newId)) },
+            UserTimelineMongoDAO.getClientDialogs(newId.clientId!!) { error("no story provided") }
+        )
+        assertEquals(
+            newId,
+            UserTimelineMongoDAO.loadWithoutDialogs(newId).playerId
+        )
+
+    }
 }

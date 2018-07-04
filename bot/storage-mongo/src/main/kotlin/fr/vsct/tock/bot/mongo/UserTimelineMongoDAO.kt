@@ -60,9 +60,11 @@ import org.litote.kmongo.MongoOperator.or
 import org.litote.kmongo.MongoOperator.type
 import org.litote.kmongo.`in`
 import org.litote.kmongo.addEachToSet
+import org.litote.kmongo.addToSet
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.and
 import org.litote.kmongo.bson
+import org.litote.kmongo.contains
 import org.litote.kmongo.descending
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.ensureIndex
@@ -75,9 +77,11 @@ import org.litote.kmongo.json
 import org.litote.kmongo.limit
 import org.litote.kmongo.lt
 import org.litote.kmongo.match
+import org.litote.kmongo.pull
 import org.litote.kmongo.regex
 import org.litote.kmongo.replaceOneWithFilter
 import org.litote.kmongo.save
+import org.litote.kmongo.set
 import org.litote.kmongo.sort
 import org.litote.kmongo.toId
 import org.litote.kmongo.updateOneById
@@ -86,6 +90,7 @@ import java.lang.Exception
 import java.time.Instant
 import java.time.Instant.now
 import java.util.concurrent.TimeUnit.DAYS
+import kotlin.reflect.KProperty
 
 /**
  *
@@ -192,6 +197,30 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             }
         }
         logger.debug { "end saving timeline $userTimeline" }
+    }
+
+    override fun updatePlayerId(oldPlayerId: PlayerId, newPlayerId: PlayerId) {
+        userTimelineCol.updateOneById(oldPlayerId.id, set(UserTimelineCol_.PlayerId, newPlayerId))
+        dialogCol.updateMany(
+            DialogCol_.PlayerIds contains oldPlayerId,
+            addToSet(DialogCol_.PlayerIds, newPlayerId)
+        )
+        dialogCol.updateMany(
+            DialogCol_.PlayerIds contains newPlayerId,
+            //TODO kmongo cast
+            pull(DialogCol_.PlayerIds as KProperty<Collection<PlayerId>>, oldPlayerId)
+        )
+        if (newPlayerId.clientId != null) {
+            clientIdCol.updateOneById(
+                newPlayerId.clientId!!,
+                addToSet(
+                    UserIds,
+                    newPlayerId.id
+                ),
+                upsert()
+            )
+        }
+
     }
 
     private fun saveConnectorMessage(actionId: Id<Action>, dialogId: Id<Dialog>, messages: List<ConnectorMessage>) {

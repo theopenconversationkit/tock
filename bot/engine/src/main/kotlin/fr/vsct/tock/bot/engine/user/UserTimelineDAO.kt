@@ -33,6 +33,11 @@ interface UserTimelineDAO {
     fun save(userTimeline: UserTimeline)
 
     /**
+     * Update playerId for dialog and user timelines.
+     */
+    fun updatePlayerId(oldPlayerId: PlayerId, newPlayerId: PlayerId)
+
+    /**
      * Loads with last dialog. If no timeline exists, creates a new one.
      */
     fun loadWithLastValidDialog(
