@@ -46,7 +46,7 @@ export class BotAdminAppComponent implements OnInit, OnDestroy {
 
   ngOnInit(): void {
     this.errorUnsuscriber = this.rest.errorEmitter.subscribe(e =>
-      this.snackBar.open(`Server error : ${e}`, "Error", {duration: 5000})
+      this.snackBar.open(e, "Error", {duration: 5000})
     )
   }
 

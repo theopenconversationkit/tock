@@ -123,11 +123,13 @@ export class RestService {
     console.error(error);
     let errMsg: string;
     if (error instanceof Response) {
-      if (error.status == 403) {
+      if (error.status === 403) {
         rest.router.navigateByUrl("/login");
         return;
       }
-      errMsg = `${error.status} - ${error.statusText || ''}`;
+      errMsg = error.status === 400
+        ? error.statusText || ''
+        : `Server error : ${error.status} - ${error.statusText || ''}`;
     } else {
       errMsg = error.message ? error.message : error.toString();
     }
