@@ -106,8 +106,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     private val botConfiguration: BotApplicationConfigurationDAO by injector.instance()
     private val executor: Executor by injector.instance()
 
-    private val userTimelineCol = database.getCollection<UserTimelineCol>("user_timeline")
-    private val dialogCol = database.getCollection<DialogCol>("dialog")
+    val userTimelineCol = database.getCollection<UserTimelineCol>("user_timeline")
+    val dialogCol = database.getCollection<DialogCol>("dialog")
     private val dialogTextCol = database.getCollection<DialogTextCol>("dialog_text")
     private val clientIdCol = database.getCollection<ClientIdCol>("client_id")
     private val connectorMessageCol = database.getCollection<ConnectorMessageCol>("connector_message")
