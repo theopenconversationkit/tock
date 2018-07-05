@@ -31,14 +31,14 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.2.50</kotlin>
+        <kotlin>1.2.51</kotlin>
 
         <slf4j>1.7.25</slf4j>
         <logback>1.2.3</logback>
         <kotlin-logging>1.5.4</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>3.8.0</kmongo>
+        <kmongo>3.8.1-SNAPSHOT</kmongo>
         <fongo>2.2.0-RC2</fongo>
         <jackson>2.9.3</jackson>
         <jackson-module>2.9.3</jackson-module>

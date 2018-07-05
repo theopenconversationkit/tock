@@ -8,12 +8,21 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.definition</a>&nbsp;/&nbsp;<a href="./index.html">StoryStep</a><br/>
 <br/>
 <h1>StoryStep</h1>
-<code><span class="keyword">interface </span><span class="identifier">StoryStep</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/definition/StoryStep.kt#L27">(source)</a>
+<code><span class="keyword">interface </span><span class="identifier">StoryStep</span><span class="symbol">&lt;</span><span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/definition/StoryStep.kt#L37">(source)</a>
 <p>A step (the implementation is usually an enum) is a part of a <a href="../-story-definition/index.html">StoryDefinition</a>.
 Used to manage workflow in a <a href="../-story-handler/index.html">StoryHandler</a>.</p>
 <h3>Properties</h3>
 <table>
 <tbody>
+<tr>
+<td>
+<p><a href="base-intent.html">baseIntent</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">baseIntent</span><span class="symbol">: </span><a href="../-intent-aware/index.html"><span class="identifier">IntentAware</span></a></code>
+<p>Returns <a href="intent.html">intent</a> or the <a href="../-story-definition/main-intent.html">StoryDefinition.mainIntent</a> if <a href="intent.html">intent</a> is null.</p>
+</td>
+</tr>
 <tr>
 <td>
 <p><a href="intent.html">intent</a></p>

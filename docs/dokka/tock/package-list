@@ -1,7 +1,5 @@
 $dokka.format:html
 $dokka.linkExtension:html
-$dokka.location:fr.vsct.tock.bot.engine.dialog$setTo(fr.vsct.tock.nlp.api.client.model.Entity, fr.vsct.tock.nlp.entity.Value)fr.vsct.tock.bot.engine.dialog/fr.vsct.tock.nlp.api.client.model.-entity/set-to.html
-$dokka.location:fr.vsct.tock.bot.engine.dialog$setTo(fr.vsct.tock.nlp.api.client.model.Entity, kotlin.String)fr.vsct.tock.bot.engine.dialog/fr.vsct.tock.nlp.api.client.model.-entity/set-to.html
 $dokka.location:fr.vsct.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.String, fr.vsct.tock.bot.engine.monitoring.RequestTimerData)fr.vsct.tock.bot.engine.monitoring/mu.-k-logger/log-error.html
 $dokka.location:fr.vsct.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.Throwable, fr.vsct.tock.bot.engine.monitoring.RequestTimerData)fr.vsct.tock.bot.engine.monitoring/mu.-k-logger/log-error.html
 $dokka.location:fr.vsct.tock.shared$addJacksonConverter(retrofit2.Retrofit.Builder, com.fasterxml.jackson.databind.ObjectMapper)fr.vsct.tock.shared/retrofit2.-retrofit.-builder/add-jackson-converter.html
