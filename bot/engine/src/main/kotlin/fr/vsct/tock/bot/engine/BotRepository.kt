@@ -63,7 +63,11 @@ object BotRepository {
     private val executor: Executor get() = injector.provide()
 
     internal val connectorProviders: MutableSet<ConnectorProvider> = CopyOnWriteArraySet(
-        ServiceLoader.load(ConnectorProvider::class.java).map { it }
+        ServiceLoader.load(ConnectorProvider::class.java).map { it }.apply {
+            forEach {
+                logger.info { "Connector ${it.connectorType} loaded" }
+            }
+        }
     )
 
     private val connectorControllerMap: MutableMap<BotApplicationConfiguration, ConnectorController> =
