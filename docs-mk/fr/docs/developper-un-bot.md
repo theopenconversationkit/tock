@@ -25,7 +25,7 @@ Avec Maven :
 ou Gradle :
 
 ```gradle
-      compile 'fr.vsct.tock:bot-toolkit:1.1.0'
+      compile 'fr.vsct.tock:bot-toolkit:1.1.1'
 ```
 
 ## Un bot est un ensemble de Stories
