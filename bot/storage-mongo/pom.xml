@@ -97,7 +97,6 @@
                                 <sourceDir>src/main/kotlin</sourceDir>
                                 <sourceDir>../engine/src/main/kotlin</sourceDir>
                                 <sourceDir>../../translator/core/src/main/kotlin</sourceDir>
-                                <sourceDir>../../shared/src/main/kotlin</sourceDir>
                             </sourceDirs>
                             <annotationProcessorPaths>
                                 <annotationProcessorPath>

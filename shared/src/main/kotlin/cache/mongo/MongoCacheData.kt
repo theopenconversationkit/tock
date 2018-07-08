@@ -17,20 +17,25 @@
 package fr.vsct.tock.shared.cache.mongo
 
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
+import org.litote.kmongo.JacksonData
 import org.litote.kmongo.newId
 import java.time.Instant
 
 /**
  *
  */
+@Data(internal = true)
+@JacksonData(internal = true)
 internal class MongoCacheData(
-        val id: Id<out Any?> = newId(),
-        val type: String,
-        val s: String? = null,
-        val b: ByteArray? = null,
-        val a: AnyValueWrapper? = null,
-        val date: Instant = Instant.now()) {
+    val id: Id<out Any?> = newId(),
+    val type: String,
+    val s: String? = null,
+    val b: ByteArray? = null,
+    val a: AnyValueWrapper? = null,
+    val date: Instant = Instant.now()
+) {
 
     companion object {
         fun <T : Any> fromValue(id: Id<T>, type: String, v: T): MongoCacheData {

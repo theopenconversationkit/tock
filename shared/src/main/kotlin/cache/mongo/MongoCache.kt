@@ -18,20 +18,20 @@ package fr.vsct.tock.shared.cache.mongo
 
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.MongoDatabase
-import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.ReplaceOptions
 import fr.vsct.tock.shared.cache.TockCache
+import fr.vsct.tock.shared.cache.mongo.MongoCacheData_.Companion.Type
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.getDatabase
 import mu.KotlinLogging
 import org.litote.kmongo.Id
+import org.litote.kmongo.and
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.ensureIndex
-import org.litote.kmongo.find
+import org.litote.kmongo.ensureUniqueIndex
+import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
-import org.litote.kmongo.json
-import org.litote.kmongo.replaceOne
 
 /**
  *
@@ -45,25 +45,26 @@ internal object MongoCache : TockCache {
     private val col: MongoCollection<MongoCacheData> by lazy {
         val database: MongoDatabase = getDatabase(MONGO_DATABASE)
         val c = database.getCollection<MongoCacheData>("cache")
-        c.ensureIndex("{'id':1,'type':1}", IndexOptions().unique(true))
-        c.ensureIndex("{'type':1}")
+        c.ensureUniqueIndex(MongoCacheData_.Id, Type)
+        c.ensureIndex(Type)
         c
     }
 
+
     override fun <T> getAll(type: String): Map<Id<T>, Any> {
+        @Suppress("UNCHECKED_CAST")
         return col
-            .find("{'type':${type.json}}")
-            .map {
-                @Suppress("UNCHECKED_CAST")
-                it.id as Id<T> to it.toValue()
-            }
-            .toMap()
+            .find(Type eq type)
+            .asSequence()
+            .associateBy { it.id }
+            .mapValues { it.value.toValue() }
+                as Map<Id<T>, Any>
     }
 
     override fun <T> get(id: Id<T>, type: String): T? {
         @Suppress("UNCHECKED_CAST")
         return try {
-            col.findOne("{'id':${id.json},'type':${type.json}}")?.toValue() as T?
+            col.findOne(MongoCacheData_.Id eq id, Type eq type)?.toValue() as T?
         } catch (e: Exception) {
             logger.error(e)
             remove(id, type)
@@ -73,13 +74,13 @@ internal object MongoCache : TockCache {
 
     override fun <T : Any> put(id: Id<T>, type: String, data: T) {
         col.replaceOne(
-            "{id:${id.json}, type:${type.json}}",
+            and(MongoCacheData_.Id eq id, Type eq type),
             MongoCacheData.fromValue(id, type, data),
             ReplaceOptions().upsert(true)
         )
     }
 
     override fun <T> remove(id: Id<T>, type: String) {
-        col.deleteOne("{'id':${id.json},'type':${type.json}}")
+        col.deleteOne(MongoCacheData_.Id eq id, Type eq type)
     }
 }

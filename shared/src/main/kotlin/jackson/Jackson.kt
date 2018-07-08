@@ -59,9 +59,7 @@ val mapper: ObjectMapper by lazy {
         //force java time module
         .registerModule(JavaTimeModule())
         .registerModule(IdJacksonModule())
-        .apply {
-            jacksonAdditionalModules.forEach { registerModule(it) }
-        }
+        .registerModules(jacksonAdditionalModules)
         .configure(DeserializationFeature.FAIL_ON_UNKNOWN_PROPERTIES, false)
         .setSerializationInclusion(JsonInclude.Include.NON_NULL)
         .configure(SerializationFeature.WRITE_DATES_AS_TIMESTAMPS, false)
