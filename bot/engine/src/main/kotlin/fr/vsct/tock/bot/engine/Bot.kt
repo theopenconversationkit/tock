@@ -293,6 +293,10 @@ internal class Bot(
         }
     }
 
+    fun markAsUnknown(sendSentence: SendSentence, userTimeline: UserTimeline) {
+        nlp.markAsUnknown(sendSentence, userTimeline, botDefinition)
+    }
+
     override fun toString(): String {
         return "$botDefinition - ${configuration.name}"
     }

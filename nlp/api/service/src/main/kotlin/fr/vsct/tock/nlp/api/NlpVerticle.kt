@@ -26,6 +26,7 @@ import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
+import fr.vsct.tock.nlp.front.shared.monitoring.MarkAsUnknownQuery
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.injector
@@ -85,6 +86,14 @@ class NlpVerticle : WebVerticle() {
                 unauthorized()
             } else {
                 front.mergeValues(query)
+            }
+        }
+
+        blockingJsonPost("/unknown") { context, query: MarkAsUnknownQuery ->
+            if (protectPath && context.organization != query.namespace) {
+                unauthorized()
+            } else {
+                front.incrementUnknown(query)
             }
         }
 

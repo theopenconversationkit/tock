@@ -43,7 +43,11 @@ data class ClassificationReport(
     /**
      * The total number of uses of this sentence.
      */
-    val usageCount: Long = 0
+    val usageCount: Long = 0,
+    /**
+     * The total number of unknown count of this sentence.
+     */
+    val unknownCount: Long = 0
 ) {
 
     constructor(query: ParseResult, intentId: Id<IntentDefinition>?) : this(
@@ -61,7 +65,8 @@ data class ClassificationReport(
         sentence.lastEntityProbability,
         emptyMap(),
         sentence.lastUsage,
-        sentence.usageCount
+        sentence.usageCount,
+        sentence.unknownCount
     )
 
     constructor(error: IntentTestError) : this(

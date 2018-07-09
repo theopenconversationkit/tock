@@ -496,6 +496,11 @@ interface BotBus : I18nTranslator {
         connectorData.skipAnswer = true
     }
 
+    /**
+     * Marks the current as not understood in the nlp model.
+     */
+    fun markAsUnknown()
+
     //i18n provider implementation
     override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue =
         i18nProvider.i18n(defaultLabel, args)

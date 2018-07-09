@@ -27,6 +27,7 @@ import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationResult
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
+import fr.vsct.tock.nlp.api.client.model.monitoring.MarkAsUnknownQuery
 import okhttp3.MultipartBody
 import okhttp3.ResponseBody
 import retrofit2.Call
@@ -52,6 +53,9 @@ internal interface NlpService {
 
     @POST("merge")
     fun mergeValues(@Body query: ValuesMergeQuery): Call<ValuesMergeResult>
+
+    @POST("unknown")
+    fun markAsUnknown(@Body query: MarkAsUnknownQuery): Call<ResponseBody>
 
     @GET("intents")
     fun getIntentsByNamespaceAndName(@Query("namespace") namespace: String, @Query("name") name: String): Call<List<IntentDefinition>>

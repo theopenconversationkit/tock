@@ -40,6 +40,7 @@ import fr.vsct.tock.nlp.front.shared.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.front.shared.evaluation.EntityEvaluationResult
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.front.shared.merge.ValuesMergeResult
+import fr.vsct.tock.nlp.front.shared.monitoring.MarkAsUnknownQuery
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLog
 import fr.vsct.tock.nlp.front.shared.parser.IntentQualifier
 import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
@@ -363,6 +364,16 @@ object ParserService : Parser {
             val result = core.mergeValues(callContext, entity, values.map { it.toValueDescriptor() })
 
             return ValuesMergeResult(ValueTransformer.wrapNullableValue(result?.value), result?.content)
+        }
+    }
+
+    override fun incrementUnknown(query: MarkAsUnknownQuery) {
+        with(query) {
+            val application = loadApplication(namespace, applicationName)
+
+            val language = findLanguage(application, language)
+
+            sentenceDAO.incrementUnknownStat(application._id, language, text)
         }
     }
 

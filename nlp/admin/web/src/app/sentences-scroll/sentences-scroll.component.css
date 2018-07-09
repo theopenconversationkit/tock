@@ -64,6 +64,9 @@
 .mat-column-usageCount {
   max-width: 48px;
 }
+.mat-column-unknownCount {
+  max-width: 48px;
+}
 .mat-column-lastUpdate {
   max-width: 128px;
 }

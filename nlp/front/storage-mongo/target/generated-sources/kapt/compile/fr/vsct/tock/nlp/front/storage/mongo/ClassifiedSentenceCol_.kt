@@ -49,6 +49,9 @@ class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, property: KPrope
 
     val usageCount: KProperty1<T, Long?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::usageCount)
+
+    val unknownCount: KProperty1<T, Long?>
+        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::unknownCount)
     companion object {
         val Text: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
             get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::text
@@ -73,7 +76,9 @@ class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, property: KPrope
         val LastUsage: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, Instant?>
             get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastUsage
         val UsageCount: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, Long?>
-            get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::usageCount}
+            get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::usageCount
+        val UnknownCount: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, Long?>
+            get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::unknownCount}
 }
 
 class ClassifiedSentenceCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>?>) : KPropertyPath<T, Collection<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>?>(previous,property) {
@@ -112,4 +117,7 @@ class ClassifiedSentenceCol_Col<T>(previous: KPropertyPath<T, *>?, property: KPr
 
     val usageCount: KProperty1<T, Long?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::usageCount)
+
+    val unknownCount: KProperty1<T, Long?>
+        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::unknownCount)
 }

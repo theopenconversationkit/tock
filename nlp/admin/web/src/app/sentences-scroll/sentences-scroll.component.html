@@ -129,13 +129,18 @@
       </ng-container>
 
       <ng-container mdColumnDef="lastUsage" *ngIf="advancedView">
-        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Last usage</md-header-cell>
+        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Last use</md-header-cell>
         <md-cell *mdCellDef="let row"><span style="color:green">{{row.classification.lastUsage| date:'yyyy-MM-dd HH:mm'}}</span></md-cell>
       </ng-container>
 
       <ng-container mdColumnDef="usageCount" *ngIf="advancedView">
-        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Usages</md-header-cell>
+        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Uses</md-header-cell>
         <md-cell *mdCellDef="let row"><span style="color:green">{{row.classification.usageCount}}</span></md-cell>
+      </ng-container>
+
+      <ng-container mdColumnDef="unknownCount" *ngIf="advancedView">
+        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Unknown</md-header-cell>
+        <md-cell *mdCellDef="let row"><span style="color:green">{{row.classification.unknownCount}}</span></md-cell>
       </ng-container>
 
       <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>

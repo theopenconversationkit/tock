@@ -62,6 +62,7 @@ open class BotDefinitionBase(
                 "tock_unknown_story",
                 object : SimpleStoryHandlerBase() {
                     override fun action(bus: BotBus) {
+                        bus.markAsUnknown()
                         bus.end(bus.botDefinition.defaultUnknownAnswer)
                     }
                 },

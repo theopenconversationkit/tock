@@ -72,13 +72,13 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   private initColumns() {
     if (this.displayStatus) {
       if (this.advancedView) {
-        this.displayedColumns = ['select', 'text', 'currentIntent', 'status', 'lastUpdate', 'intentProbability', 'entitiesProbability', 'lastUsage', 'usageCount'];
+        this.displayedColumns = ['select', 'text', 'currentIntent', 'status', 'lastUpdate', 'intentProbability', 'entitiesProbability', 'lastUsage', 'usageCount', 'unknownCount'];
       } else {
         this.displayedColumns = ['select', 'text', 'currentIntent', 'status'];
       }
     } else {
       if (this.advancedView) {
-        this.displayedColumns = ['select', 'text', 'currentIntent', 'lastUpdate', 'intentProbability', 'entitiesProbability', 'lastUsage', 'usageCount'];
+        this.displayedColumns = ['select', 'text', 'currentIntent', 'lastUpdate', 'intentProbability', 'entitiesProbability', 'lastUsage', 'usageCount', 'unknownCount'];
       } else {
         this.displayedColumns = ['select', 'text', 'currentIntent'];
       }

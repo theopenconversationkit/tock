@@ -148,4 +148,10 @@ internal class TockBotBus(
             userPreferences.fillWith(UserPreferences())
         }
     }
+
+    override fun markAsUnknown() {
+        if (action is SendSentence) {
+            bot.markAsUnknown(action, userTimeline)
+        }
+    }
 }

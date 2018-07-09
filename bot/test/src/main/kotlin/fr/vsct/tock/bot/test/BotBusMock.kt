@@ -28,9 +28,9 @@ import fr.vsct.tock.bot.engine.action.ActionNotificationType
 import fr.vsct.tock.bot.engine.action.ActionPriority
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
+import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
 import fr.vsct.tock.bot.engine.dialog.Snapshot
 import fr.vsct.tock.bot.engine.dialog.Story
@@ -364,4 +364,8 @@ open class BotBusMock(
             ),
             key.args
         )
+
+    override fun markAsUnknown() {
+        //do nothing
+    }
 }

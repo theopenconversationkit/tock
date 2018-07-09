@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.front.service.storage
 
+
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
@@ -69,4 +70,23 @@ interface ClassifiedSentenceDAO {
     )
 
     fun removeSubEntityFromSentences(applicationId: Id<ApplicationDefinition>, entityType: String, role: String)
+
+    /**
+     * Increment unknown stat.
+     */
+    fun incrementUnknownStat(
+        /**
+         * The application id.
+         */
+        applicationId: Id<ApplicationDefinition>,
+        /**
+         * The locale.
+         */
+        language: Locale,
+        /**
+         * The text of the sentence.
+         */
+        text: String
+    )
 }
+

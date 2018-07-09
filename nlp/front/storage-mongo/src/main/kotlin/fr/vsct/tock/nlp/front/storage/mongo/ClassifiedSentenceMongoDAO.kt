@@ -40,6 +40,7 @@ import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Las
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.LastUsage
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Status
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Text
+import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UnknownCount
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UpdateDate
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UsageCount
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogMongoDAO.ParseRequestLogStatCol
@@ -60,6 +61,7 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.find
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.gt
+import org.litote.kmongo.inc
 import org.litote.kmongo.json
 import org.litote.kmongo.lte
 import org.litote.kmongo.ne
@@ -101,7 +103,8 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         val lastIntentProbability: Double? = null,
         val lastEntityProbability: Double? = null,
         val lastUsage: Instant? = null,
-        val usageCount: Long? = null
+        val usageCount: Long? = null,
+        val unknownCount: Long? = null
     ) {
 
         constructor(sentence: ClassifiedSentence) :
@@ -117,7 +120,8 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     sentence.lastIntentProbability,
                     sentence.lastEntityProbability,
                     sentence.lastUsage,
-                    if (sentence.usageCount == 0L) null else sentence.usageCount
+                    if (sentence.usageCount == 0L) null else sentence.usageCount,
+                    if (sentence.unknownCount == 0L) null else sentence.unknownCount
                 )
 
         fun toSentence(): ClassifiedSentence =
@@ -132,7 +136,8 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 lastIntentProbability,
                 lastEntityProbability,
                 lastUsage,
-                usageCount ?: 0
+                usageCount ?: 0,
+                unknownCount ?: 0
             )
     }
 
@@ -144,6 +149,10 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         c.ensureIndex(UpdateDate)
         c.ensureIndex(
             UsageCount,
+            indexOptions = IndexOptions().background(true).sparse(true)
+        )
+        c.ensureIndex(
+            UnknownCount,
             indexOptions = IndexOptions().background(true).sparse(true)
         )
         c.ensureIndex(Language, Status, Classification_.intentId)
@@ -236,6 +245,7 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                                             "lastUpdate" -> UpdateDate
                                             "lastUsage" -> LastUsage
                                             "usageCount" -> UsageCount
+                                            "unknownCount" -> UnknownCount
                                             else -> UpdateDate
                                         } to it.second
                                     }.toMap() as Map<KProperty<*>, Boolean>
@@ -389,6 +399,20 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 )
             )
         )
+    }
 
+    override fun incrementUnknownStat(
+        applicationId: Id<ApplicationDefinition>,
+        language: Locale,
+        text: String
+    ) {
+        col.updateOne(
+            and(
+                Language eq language,
+                ApplicationId eq applicationId,
+                Text eq text
+            ),
+            inc(UnknownCount, 1)
+        )
     }
 }

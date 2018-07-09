@@ -27,21 +27,32 @@ import fr.vsct.tock.nlp.api.client.model.dump.SentencesDump
 import java.io.InputStream
 
 /**
- * Send NLP requests.
+ * Sends NLP requests.
  */
 interface NlpController {
 
     /**
-     * Parse a sentence and set intent and entities in context.
+     * Parses a sentence and set intent and entities in context.
      */
-    fun parseSentence(sentence: SendSentence,
-                      userTimeline: UserTimeline,
-                      dialog: Dialog,
-                      connector: ConnectorController,
-                      botDefinition: BotDefinition)
+    fun parseSentence(
+        sentence: SendSentence,
+        userTimeline: UserTimeline,
+        dialog: Dialog,
+        connector: ConnectorController,
+        botDefinition: BotDefinition
+    )
 
     /**
-     * Export list of IntentDefinition
+     * Marks the sentence as not understood in the nlp model.
+     */
+    fun markAsUnknown(
+        sentence: SendSentence,
+        userTimeline: UserTimeline,
+        botDefinition: BotDefinition
+    )
+
+    /**
+     * Exports list of IntentDefinition
      *
      * @namespace Application Namespace
      * @name Application Name
@@ -51,14 +62,14 @@ interface NlpController {
     fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>?
 
     /**
-     * Import a NLP dump (configuration and sentences of NLP model).
+     * Imports a NLP dump (configuration and sentences of NLP model).
      *
      * @return true if NLP model is modified, false either
      */
     fun importNlpDump(stream: InputStream): Boolean
 
     /**
-     * Import a NLP dump (configuration and sentences of NLP model).
+     * Imports a NLP dump (configuration and sentences of NLP model).
      *
      * @param dump the dump to import
      * @return true if NLP model is modified, false either
@@ -66,7 +77,7 @@ interface NlpController {
     fun importNlpPlainDump(dump: ApplicationDump): Boolean
 
     /**
-     * Import a NLP sentences dump (only validated sentences) - format is simpler than [ApplicationDump].
+     * Imports a NLP sentences dump (only validated sentences) - format is simpler than [ApplicationDump].
      *
      * @param dump the dump to import
      * @return true if NLP model is modified, false either
@@ -74,7 +85,7 @@ interface NlpController {
     fun importNlpPlainSentencesDump(dump: SentencesDump): Boolean
 
     /**
-     * Import a NLP sentences dump (only validated sentences) - format is simpler than [ApplicationDump].
+     * Imports a NLP sentences dump (only validated sentences) - format is simpler than [ApplicationDump].
      *
      * @return true if NLP model is modified, false either
      */

@@ -26,6 +26,7 @@ import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationResult
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
+import fr.vsct.tock.nlp.api.client.model.monitoring.MarkAsUnknownQuery
 import java.io.InputStream
 import java.util.Locale
 
@@ -35,19 +36,24 @@ import java.util.Locale
 interface NlpClient {
 
     /**
-     * Analyse a sentence and returns the result.
+     * Analyses a sentence and returns the result.
      */
     fun parse(query: NlpQuery): NlpResult?
 
     /**
-     * Evaluate entities.
+     * Evaluates entities.
      */
     fun evaluateEntities(query: EntityEvaluationQuery): EntityEvaluationResult?
 
     /**
-     * Merge values and returns the result if found.
+     * Merges values and returns the result if found.
      */
     fun mergeValues(query: ValuesMergeQuery): ValuesMergeResult?
+
+    /**
+     * Informs the nlp model that a sentence has not been understood.
+     */
+    fun markAsUnknown(query: MarkAsUnknownQuery)
 
     /**
      * Export list of IntentDefinition
@@ -60,20 +66,20 @@ interface NlpClient {
     fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>?
 
     /**
-     * Create an application if it does not exists.
+     * Creates an application if it does not exists.
      * @return the new application, null if it already exists.
      */
     fun createApplication(namespace: String, name: String, locale: Locale): ApplicationDefinition?
 
     /**
-     * Import a NLP dump (configuration and sentences of the NLP model).
+     * Imports a NLP dump (configuration and sentences of the NLP model).
      *
      * @return true if NLP model is modified, false either
      */
     fun importNlpDump(stream: InputStream): Boolean
 
     /**
-     * Import a NLP dump (configuration and sentences of the NLP model).
+     * Imports a NLP dump (configuration and sentences of the NLP model).
      *
      * @param dump the dump to import
      * @return true if NLP model is modified, false either
@@ -81,14 +87,14 @@ interface NlpClient {
     fun importNlpPlainDump(dump: ApplicationDump): Boolean
 
     /**
-     * Import a NLP sentences dump (only validated sentences) - format is simpler than [ApplicationDump].
+     * Imports a NLP sentences dump (only validated sentences) - format is simpler than [ApplicationDump].
      *
      * @return true if NLP model is modified, false either
      */
     fun importNlpSentencesDump(stream: InputStream): Boolean
 
     /**
-     * Import a NLP sentences dump (only validated sentences) - format is simpler than [ApplicationDump].
+     * Imports a NLP sentences dump (only validated sentences) - format is simpler than [ApplicationDump].
      *
      * @param dump the dump to import
      * @return true if NLP model is modified, false either
@@ -96,7 +102,7 @@ interface NlpClient {
     fun importNlpPlainSentencesDump(dump: SentencesDump): Boolean
 
     /**
-     * Check the server is up.
+     * Checks the server is up.
      */
     fun healthcheck(): Boolean
 }

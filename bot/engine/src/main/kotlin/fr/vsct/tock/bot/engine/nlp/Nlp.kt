@@ -45,10 +45,13 @@ import fr.vsct.tock.nlp.api.client.model.evaluation.EntityToEvaluate
 import fr.vsct.tock.nlp.api.client.model.merge.ValueToMerge
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
+import fr.vsct.tock.nlp.api.client.model.monitoring.MarkAsUnknownQuery
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultZoneId
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.name
+import fr.vsct.tock.shared.provide
 import fr.vsct.tock.shared.withNamespace
 import mu.KotlinLogging
 import java.io.InputStream
@@ -64,6 +67,7 @@ internal class Nlp : NlpController {
     }
 
     private val nlpClient: NlpClient by injector.instance()
+    private val executor: Executor get() = injector.provide()
 
     private class SentenceParser(
         val nlpClient: NlpClient,
@@ -355,6 +359,25 @@ internal class Nlp : NlpController {
             connector as TockConnectorController,
             botDefinition
         ).parse()
+    }
+
+    override fun markAsUnknown(
+        sentence: SendSentence,
+        userTimeline: UserTimeline,
+        botDefinition: BotDefinition
+    ) {
+        if (sentence.stringText != null) {
+            executor.executeBlocking {
+                nlpClient.markAsUnknown(
+                    MarkAsUnknownQuery(
+                        botDefinition.namespace,
+                        botDefinition.nlpModelName,
+                        userTimeline.userPreferences.locale,
+                        sentence.stringText
+                    )
+                )
+            }
+        }
     }
 
     override fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>? =

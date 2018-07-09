@@ -33,6 +33,7 @@ import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationResult
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
+import fr.vsct.tock.nlp.api.client.model.monitoring.MarkAsUnknownQuery
 import mu.KotlinLogging
 import okhttp3.MultipartBody
 import okhttp3.OkHttpClient
@@ -102,6 +103,10 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
 
     override fun mergeValues(query: ValuesMergeQuery): ValuesMergeResult? {
         return nlpService.mergeValues(query).execute().parseAndReturns()
+    }
+
+    override fun markAsUnknown(query: MarkAsUnknownQuery) {
+        nlpService.markAsUnknown(query).execute()
     }
 
     override fun createApplication(namespace: String, name: String, locale: Locale): ApplicationDefinition? {
