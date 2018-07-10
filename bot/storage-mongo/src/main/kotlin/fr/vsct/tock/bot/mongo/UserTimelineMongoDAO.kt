@@ -77,6 +77,7 @@ import org.litote.kmongo.json
 import org.litote.kmongo.limit
 import org.litote.kmongo.lt
 import org.litote.kmongo.match
+import org.litote.kmongo.orderBy
 import org.litote.kmongo.pull
 import org.litote.kmongo.regex
 import org.litote.kmongo.replaceOneWithFilter
@@ -122,6 +123,15 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             DialogCol_.LastUpdateDate,
             indexOptions = IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
         )
+        dialogCol.ensureIndex(
+            orderBy(
+                mapOf(
+                    DialogCol_.PlayerIds.id to true,
+                    LastUpdateDate to false
+                )
+            )
+        )
+
         dialogTextCol.ensureIndex(Text)
         dialogTextCol.ensureUniqueIndex(Text, DialogId)
         dialogTextCol.ensureIndex(

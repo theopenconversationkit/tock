@@ -53,7 +53,9 @@ import org.litote.kmongo.MongoOperator.elemMatch
 import org.litote.kmongo.MongoOperator.pull
 import org.litote.kmongo.`in`
 import org.litote.kmongo.and
+import org.litote.kmongo.ascending
 import org.litote.kmongo.combine
+import org.litote.kmongo.descending
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
@@ -147,14 +149,9 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         c.ensureIndex(Language, ApplicationId, Status)
         c.ensureIndex(Status)
         c.ensureIndex(UpdateDate)
-        c.ensureIndex(
-            UsageCount,
-            indexOptions = IndexOptions().background(true).sparse(true)
-        )
-        c.ensureIndex(
-            UnknownCount,
-            indexOptions = IndexOptions().background(true).sparse(true)
-        )
+        c.ensureIndex(orderBy(mapOf(ApplicationId to true,Language to true, UpdateDate to false)))
+        c.ensureIndex(Language, ApplicationId, UsageCount)
+        c.ensureIndex(Language, ApplicationId, UnknownCount)
         c.ensureIndex(Language, Status, Classification_.intentId)
         c
     }
