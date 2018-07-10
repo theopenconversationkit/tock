@@ -18,7 +18,6 @@ package fr.vsct.tock.nlp.front.storage.mongo
 
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Collation
-import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.ReplaceOptions
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.front.service.storage.ClassifiedSentenceDAO
@@ -53,9 +52,7 @@ import org.litote.kmongo.MongoOperator.elemMatch
 import org.litote.kmongo.MongoOperator.pull
 import org.litote.kmongo.`in`
 import org.litote.kmongo.and
-import org.litote.kmongo.ascending
 import org.litote.kmongo.combine
-import org.litote.kmongo.descending
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
@@ -105,8 +102,8 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         val lastIntentProbability: Double? = null,
         val lastEntityProbability: Double? = null,
         val lastUsage: Instant? = null,
-        val usageCount: Long? = null,
-        val unknownCount: Long? = null
+        val usageCount: Long? = 0,
+        val unknownCount: Long? = 0
     ) {
 
         constructor(sentence: ClassifiedSentence) :
@@ -122,8 +119,8 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     sentence.lastIntentProbability,
                     sentence.lastEntityProbability,
                     sentence.lastUsage,
-                    if (sentence.usageCount == 0L) null else sentence.usageCount,
-                    if (sentence.unknownCount == 0L) null else sentence.unknownCount
+                    sentence.usageCount,
+                    sentence.unknownCount
                 )
 
         fun toSentence(): ClassifiedSentence =
@@ -149,7 +146,7 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         c.ensureIndex(Language, ApplicationId, Status)
         c.ensureIndex(Status)
         c.ensureIndex(UpdateDate)
-        c.ensureIndex(orderBy(mapOf(ApplicationId to true,Language to true, UpdateDate to false)))
+        c.ensureIndex(orderBy(mapOf(ApplicationId to true, Language to true, UpdateDate to false)))
         c.ensureIndex(Language, ApplicationId, UsageCount)
         c.ensureIndex(Language, ApplicationId, UnknownCount)
         c.ensureIndex(Language, Status, Classification_.intentId)
