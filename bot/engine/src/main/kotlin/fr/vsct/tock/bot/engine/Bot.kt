@@ -184,7 +184,9 @@ internal class Bot(
         }
 
         //reset the step if applicable
-        if (!forced && newIntent != null && step?.supportIntent(newIntent) != true) {
+        if (!forced && newIntent != null
+            && (step?.intent != null && !step.supportIntent(newIntent))
+        ) {
             story.currentStep = null
         }
 
