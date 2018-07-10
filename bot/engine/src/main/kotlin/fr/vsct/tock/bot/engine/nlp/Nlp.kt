@@ -19,7 +19,6 @@ package fr.vsct.tock.bot.engine.nlp
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.definition.IntentContext
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.TockConnectorController
@@ -95,11 +94,9 @@ internal class Nlp : NlpController {
                     }
 
                     result?.let { nlpResult ->
+
                         listenNlpSuccessCall(query, nlpResult)
-                        val intent = botDefinition.findIntentForBot(
-                            nlpResult.intent,
-                            IntentContext(userTimeline, dialog, sentence)
-                        )
+                        val intent = findIntent(userTimeline, dialog, nlpResult)
 
                         val customEntityEvaluations = BotRepository.nlpListeners.flatMap {
                             it.evaluateEntities(userTimeline, dialog, nlpResult)
@@ -113,6 +110,7 @@ internal class Nlp : NlpController {
 
                         sentence.nlpStats = NlpCallStats(
                             intent,
+                            nlpResult.intent,
                             nlpResult.intentProbability,
                             nlpResult.entitiesProbability,
                             nlpResult.otherIntentsProbabilities
@@ -134,6 +132,17 @@ internal class Nlp : NlpController {
                     listenNlpErrorCall(query, t)
                 }
             }
+        }
+
+        private fun findIntent(userTimeline: UserTimeline, dialog: Dialog, nlpResult: NlpResult): Intent {
+            for (l in BotRepository.nlpListeners) {
+                val i = l.findIntent(userTimeline, dialog, nlpResult)
+                if (i != null) {
+                    return i.wrappedIntent()
+                }
+            }
+
+            return botDefinition.findIntent(nlpResult.intent)
         }
 
         private fun evaluateEntitiesForPrecomputedNlp(nlpQuery: NlpQuery, nlpResult: NlpResult): NlpResult {

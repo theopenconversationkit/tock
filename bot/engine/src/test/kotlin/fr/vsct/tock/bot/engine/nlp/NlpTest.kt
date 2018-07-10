@@ -16,8 +16,11 @@
 
 package fr.vsct.tock.bot.engine.nlp
 
+import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.engine.BotEngineTest
 import fr.vsct.tock.bot.engine.BotRepository
+import fr.vsct.tock.bot.engine.TestStoryDefinition.test
+import fr.vsct.tock.bot.engine.TestStoryDefinition.test2
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityValue
@@ -119,5 +122,24 @@ class NlpTest : BotEngineTest() {
         assertTrue(userAction.state.entityValues.contains(customValue))
         assertTrue(userAction.state.entityValues.contains(EntityValue(nlpResult, entityAValue)))
         assertTrue(userAction.state.entityValues.contains(EntityValue(nlpResult, entityCValue)))
+    }
+
+    @Test
+    fun `parseSentence uses NlpListener#findIntent when available`() {
+
+        every { nlpClient.parse(any()) } returns nlpResult
+        every { nlpClient.parse(match { it.intentsSubset.isNotEmpty() }) } returns nlpResult
+
+        val nlpListener = object : NlpListener {
+            override fun findIntent(userTimeline: UserTimeline, dialog: Dialog, nlpResult: NlpResult): IntentAware? {
+                return test2
+            }
+        }
+        BotRepository.nlpListeners.add(nlpListener)
+        Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
+
+        assertEquals(test2.wrappedIntent(), dialog.state.currentIntent)
+        assertEquals(test2.wrappedIntent(), (userAction as SendSentence).nlpStats?.intent)
+        assertEquals(test.wrappedIntent().name, (userAction as SendSentence).nlpStats?.firstIntent)
     }
 }

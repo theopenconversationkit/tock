@@ -21,7 +21,6 @@ import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.Intent.Companion.unknown
 import fr.vsct.tock.bot.definition.IntentAware
-import fr.vsct.tock.bot.definition.IntentContext
 import fr.vsct.tock.bot.definition.StoryDefinition
 
 /**
@@ -37,8 +36,8 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
         allStories =
                 (botDefinition.stories.groupBy { it.id }
                         + configuredStories.filter { it.answerType != builtin }.groupBy { it.id })
-                        .values
-                        .flatMap { it }
+                    .values
+                    .flatMap { it }
     }
 
     override val stories: List<StoryDefinition>
@@ -49,17 +48,18 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
         return if (i == unknown) BotDefinition.findIntent(stories, intent) else i
     }
 
-    override fun findIntentForBot(intent: String, context: IntentContext): Intent {
-        return findIntent(intent)
-    }
-
     override fun findStoryDefinition(intent: IntentAware?): StoryDefinition {
         return findStoryDefinition(intent?.wrappedIntent()?.name)
     }
 
     override fun findStoryDefinition(intent: String?): StoryDefinition {
         val s = super.findStoryDefinition(intent)
-        return if (s == unknownStory) BotDefinition.findStoryDefinition(stories, intent, unknownStory, keywordStory) else s
+        return if (s == unknownStory) BotDefinition.findStoryDefinition(
+            stories,
+            intent,
+            unknownStory,
+            keywordStory
+        ) else s
     }
 
     override fun toString(): String {

@@ -24,6 +24,7 @@ import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
  * Stats about nlp call.
  */
 data class NlpCallStats(val intent: Intent = Intent.unknown,
+                        val firstIntent:String? = null,
                         val intentProbability: Double?,
                         val entitiesProbability: Double?,
                         val otherIntentsProbabilities: List<NlpIntentStat>,
