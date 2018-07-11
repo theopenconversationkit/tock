@@ -20,6 +20,7 @@ import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityValue
+import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
@@ -45,13 +46,17 @@ interface NlpListener {
      *
      * Default returns null.
      */
-    fun findIntent(userTimeline: UserTimeline, dialog: Dialog, nlpResult: NlpResult): IntentAware? = null
+    fun findIntent(userTimeline: UserTimeline, dialog: Dialog, event: Event, nlpResult: NlpResult): IntentAware? = null
 
     /**
      * Allow custom entity evaluation - default returns empty list.
      */
-    fun evaluateEntities(userTimeline: UserTimeline, dialog: Dialog, nlpResult: NlpResult): List<EntityValue> =
-        emptyList()
+    fun evaluateEntities(
+        userTimeline: UserTimeline,
+        dialog: Dialog,
+        event: Event,
+        nlpResult: NlpResult
+    ): List<EntityValue> = emptyList()
 
     /**
      * Called when nlp request is successful.

@@ -25,6 +25,7 @@ import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
+import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
@@ -110,6 +111,7 @@ class NlpTest : BotEngineTest() {
             override fun evaluateEntities(
                 userTimeline: UserTimeline,
                 dialog: Dialog,
+                event: Event,
                 nlpResult: NlpResult
             ): List<EntityValue> {
                 return listOf(customValue)
@@ -131,7 +133,12 @@ class NlpTest : BotEngineTest() {
         every { nlpClient.parse(match { it.intentsSubset.isNotEmpty() }) } returns nlpResult
 
         val nlpListener = object : NlpListener {
-            override fun findIntent(userTimeline: UserTimeline, dialog: Dialog, nlpResult: NlpResult): IntentAware? {
+            override fun findIntent(
+                userTimeline: UserTimeline,
+                dialog: Dialog,
+                event: Event,
+                nlpResult: NlpResult
+            ): IntentAware? {
                 return test2
             }
         }

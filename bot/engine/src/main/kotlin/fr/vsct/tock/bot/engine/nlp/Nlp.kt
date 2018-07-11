@@ -96,10 +96,10 @@ internal class Nlp : NlpController {
                     result?.let { nlpResult ->
 
                         listenNlpSuccessCall(query, nlpResult)
-                        val intent = findIntent(userTimeline, dialog, nlpResult)
+                        val intent = findIntent(userTimeline, dialog, sentence, nlpResult)
 
                         val customEntityEvaluations = BotRepository.nlpListeners.flatMap {
-                            it.evaluateEntities(userTimeline, dialog, nlpResult)
+                            it.evaluateEntities(userTimeline, dialog, sentence, nlpResult)
                         }
                         sentence.state.entityValues.addAll(
                             customEntityEvaluations +
@@ -134,9 +134,14 @@ internal class Nlp : NlpController {
             }
         }
 
-        private fun findIntent(userTimeline: UserTimeline, dialog: Dialog, nlpResult: NlpResult): Intent {
+        private fun findIntent(
+            userTimeline: UserTimeline,
+            dialog: Dialog,
+            sentence: SendSentence,
+            nlpResult: NlpResult
+        ): Intent {
             for (l in BotRepository.nlpListeners) {
-                val i = l.findIntent(userTimeline, dialog, nlpResult)
+                val i = l.findIntent(userTimeline, dialog, sentence, nlpResult)
                 if (i != null) {
                     return i.wrappedIntent()
                 }
