@@ -99,7 +99,12 @@ internal class Nlp : NlpController {
                         val intent = findIntent(userTimeline, dialog, sentence, nlpResult)
 
                         val customEntityEvaluations = BotRepository.nlpListeners.flatMap {
-                            it.evaluateEntities(userTimeline, dialog, sentence, nlpResult)
+                            try {
+                                it.evaluateEntities(userTimeline, dialog, sentence, nlpResult)
+                            } catch (e: Exception) {
+                                logger.error(e)
+                                emptyList<EntityValue>()
+                            }
                         }
                         sentence.state.entityValues.addAll(
                             customEntityEvaluations +
@@ -140,8 +145,15 @@ internal class Nlp : NlpController {
             sentence: SendSentence,
             nlpResult: NlpResult
         ): Intent {
+
             for (l in BotRepository.nlpListeners) {
-                val i = l.findIntent(userTimeline, dialog, sentence, nlpResult)
+                val i =
+                    try {
+                        l.findIntent(userTimeline, dialog, sentence, nlpResult)
+                    } catch (e: Exception) {
+                        logger.error(e)
+                        null
+                    }
                 if (i != null) {
                     return i.wrappedIntent()
                 }
