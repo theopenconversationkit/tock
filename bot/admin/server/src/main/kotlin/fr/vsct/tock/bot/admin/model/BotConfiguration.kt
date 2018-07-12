@@ -35,7 +35,6 @@ data class BotConfiguration(
     val name: String = applicationId,
     val baseUrl: String? = BotApplicationConfiguration.defaultBaseUrl,
     val parameters: Map<String, String> = emptyMap(),
-    val manuallyModified: Boolean = false,
     val path: String? = null,
     val _id: Id<BotApplicationConfiguration>? = null
 ) {
@@ -50,7 +49,6 @@ data class BotConfiguration(
             name,
             if (baseUrl.isNullOrBlank() && _id == null) "http://${tryToFindLocalIp()}" else baseUrl,
             parameters,
-            manuallyModified,
             path,
             _id ?: newId()
         )

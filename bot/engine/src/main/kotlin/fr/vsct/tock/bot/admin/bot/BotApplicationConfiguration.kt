@@ -64,10 +64,6 @@ data class BotApplicationConfiguration(
      */
     val parameters: Map<String, String> = emptyMap(),
     /**
-     * Has this connector been manualy modified?
-     */
-    val manuallyModified: Boolean = false,
-    /**
      * The relative path of the connector. If null, the default path is used.
      */
     val path: String? = null,

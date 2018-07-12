@@ -95,21 +95,6 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
         col.deleteOneById(ObjectId(conf._id.toString()))
     }
 
-    override fun updateIfNotManuallyModified(conf: BotApplicationConfiguration): BotApplicationConfiguration {
-        return col.findOne(ApplicationId eq conf.applicationId, BotId eq conf.botId).let {
-            if (it == null) {
-                col.save(conf)
-                conf
-            } else {
-                if (!it.manuallyModified) {
-                    conf.copy(_id = it._id).apply { save(this) }
-                } else {
-                    it
-                }
-            }
-        }
-    }
-
     override fun getConfigurationsByNamespaceAndNlpModel(
         namespace: String,
         nlpModel: String

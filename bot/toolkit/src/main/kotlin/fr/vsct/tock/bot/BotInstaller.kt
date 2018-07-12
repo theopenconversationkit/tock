@@ -19,14 +19,11 @@ package fr.vsct.tock.bot
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.instance
-import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.rest.addRestConnector
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.BotProviderBase
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.nlp.NlpController
-import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
 import fr.vsct.tock.nlp.api.client.model.dump.IntentDefinition
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
@@ -65,20 +62,14 @@ fun registerAndInstallBot(botProvider: BotProvider) {
 /**
  * Install the bot(s) with the specified additional router handlers and additional Tock Modules
  */
-fun installBots(vararg routerHandlers: (Router) -> Unit, additionalModules:List<Kodein.Module> = emptyList()) {
-    install(routerHandlers.toList(), true, additionalModules)
+fun installBots(vararg routerHandlers: (Router) -> Unit, additionalModules: List<Kodein.Module> = emptyList()) {
+    install(routerHandlers.toList(), additionalModules)
 }
 
-private fun install(routerHandlers: List<(Router) -> Unit>, installRestConnectors: Boolean, additionalModules:List<Kodein.Module> = emptyList()) {
+private fun install(routerHandlers: List<(Router) -> Unit>, additionalModules: List<Kodein.Module> = emptyList()) {
     BotIoc.setup(additionalModules)
 
-    BotRepository.installBots(routerHandlers.toList()) { conf ->
-        if (installRestConnectors && conf.connectorType != ConnectorType.rest) {
-            addRestConnector(conf)
-        } else {
-            null
-        }
-    }
+    BotRepository.installBots(routerHandlers.toList())
 }
 
 /**

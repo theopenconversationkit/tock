@@ -153,7 +153,7 @@ object BotAdminService {
     }
 
     fun saveApplicationConfiguration(conf: BotApplicationConfiguration) {
-        applicationConfigurationDAO.save(conf.copy(manuallyModified = true))
+        applicationConfigurationDAO.save(conf)
     }
 
     fun loadBotIntents(request: BotIntentSearchRequest): List<BotIntent> {

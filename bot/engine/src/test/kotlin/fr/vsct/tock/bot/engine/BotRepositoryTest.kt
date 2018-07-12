@@ -25,14 +25,12 @@ import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.engine.BotRepository.botProviders
 import fr.vsct.tock.bot.engine.BotRepository.connectorProviders
-import fr.vsct.tock.bot.engine.ConnectorConfigurationRepository.addConfiguration
 import fr.vsct.tock.shared.defaultLocale
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
-import org.junit.jupiter.api.assertThrows
 
 /**
  *
@@ -41,66 +39,12 @@ class BotRepositoryTest : BotEngineTest() {
 
     @BeforeEach
     fun beforeTest() {
-        ConnectorConfigurationRepository.cleanup()
         botProviders.clear()
         connectorProviders.clear()
     }
 
     @Test
-    fun `installBots with two configurations of the same id throws error`() {
-        assertThrows<IllegalStateException> {
-            addConfiguration(
-                ConnectorConfiguration(
-                    "id",
-                    "",
-                    ConnectorType.none,
-                    ConnectorType.none
-                )
-            )
-            addConfiguration(
-                ConnectorConfiguration(
-                    "id",
-                    "",
-                    ConnectorType.none,
-                    ConnectorType.none
-                )
-            )
-            BotRepository.installBots(emptyList())
-        }
-    }
-
-    @Test
-    fun `installBots with two configurations of different id should be ok`() {
-        addConfiguration(
-            ConnectorConfiguration(
-                "id1",
-                "",
-                ConnectorType.none,
-                ConnectorType.none
-            )
-        )
-        addConfiguration(
-            ConnectorConfiguration(
-                "id2",
-                "",
-                ConnectorType.none,
-                ConnectorType.none
-            )
-        )
-        BotRepository.installBots(emptyList())
-        //no exception
-    }
-
-    @Test
     fun `installBots calls nlpClient#createApplication`() {
-        addConfiguration(
-            ConnectorConfiguration(
-                "id3",
-                "",
-                ConnectorType.none,
-                ConnectorType.none
-            )
-        )
         BotRepository.registerBotProvider(object : BotProvider {
             override fun botDefinition(): BotDefinition = botDefinition
         })
@@ -132,17 +76,14 @@ class BotRepositoryTest : BotEngineTest() {
                 return mockk(relaxed = true)
             }
         }
-        ConnectorConfigurationRepository.addConfiguration(
-            ConnectorConfiguration(connectorType.id, "", connectorType)
-        )
         BotRepository.registerConnectorProvider(connectorProvider)
         BotRepository.registerBotProvider(object : BotProvider {
             override fun botDefinition(): BotDefinition = botDefinition
         })
 
-        every { botConfDAO.getConfigurationsByBotId(any()) } returns botConfs
+        every { botConfDAO.getConfigurations() } returns botConfs
         BotRepository.installBots(emptyList())
-        verify { botConfDAO.updateIfNotManuallyModified(match { it.parameters.containsKey("test") }) }
+        verify { botConfDAO.save(match { it.parameters.containsKey("test") }) }
     }
 
     @Test
@@ -169,7 +110,7 @@ class BotRepositoryTest : BotEngineTest() {
             override fun botDefinition(): BotDefinition = botDefinition
         })
 
-        every { botConfDAO.getConfigurationsByBotId(any()) } returns botConfs
+        every { botConfDAO.getConfigurations() } returns botConfs
         BotRepository.installBots(emptyList())
         verify { connector.register(any()) }
     }
@@ -208,8 +149,7 @@ class BotRepositoryTest : BotEngineTest() {
         BotRepository.registerBotProvider(object : BotProvider {
             override fun botDefinition(): BotDefinition = botDefinition
         })
-
-        every { botConfDAO.getConfigurationsByBotId(any()) } returns botConfs
+        every { botConfDAO.getConfigurations() } returns botConfs
         BotRepository.installBots(emptyList())
         verify(exactly = 0) { connector.register(any()) }
     }

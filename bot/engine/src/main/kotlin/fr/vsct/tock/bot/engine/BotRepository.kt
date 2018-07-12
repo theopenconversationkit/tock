@@ -22,7 +22,6 @@ import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.ConnectorType.Companion.rest
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.StoryHandlerListener
@@ -31,13 +30,11 @@ import fr.vsct.tock.bot.engine.monitoring.RequestTimer
 import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener
 import fr.vsct.tock.bot.engine.nlp.NlpListener
 import fr.vsct.tock.nlp.api.client.NlpClient
-import fr.vsct.tock.shared.DEFAULT_APP_NAMESPACE
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.provide
-import fr.vsct.tock.shared.tockAppDefaultNamespace
 import fr.vsct.tock.shared.vertx.vertx
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
@@ -135,29 +132,9 @@ object BotRepository {
      * Installs the bot(s).
      *
      * @param routerHandlers the additional router handlers
-     * @param adminRestConnectorInstaller the (optional) linked [fr.vsct.tock.bot.connector.rest.RestConnector] installer.
      */
-    fun installBots(
-        routerHandlers: List<(Router) -> Unit>,
-        adminRestConnectorInstaller: (BotApplicationConfiguration) -> ConnectorConfiguration? = { null }
-    ) {
-        val connectorConfigurations = ConnectorConfigurationRepository.getConfigurations()
-
-        //check connector id integrity
-        connectorConfigurations
-            .groupBy { it.connectorId }
-            .values
-            .firstOrNull { it.size != 1 }
-            ?.apply {
-                error("A least two configurations have the same connectorId: ${this}")
-            }
-
+    fun installBots(routerHandlers: List<(Router) -> Unit>) {
         val bots = botProviders.map { it.botDefinition() }
-
-        //install each bot
-        bots.forEach {
-            installBot(it, connectorConfigurations, adminRestConnectorInstaller)
-        }
 
         //check that nlp applications exist
         bots.distinctBy { it.namespace to it.nlpModelName }
@@ -174,6 +151,13 @@ object BotRepository {
                     logger.error(e)
                 }
             }
+
+        //load configurations
+        try {
+            checkBotConfigurations(true)
+        } catch (e: Exception) {
+            logger.error(e)
+        }
 
         //register services
         routerHandlers.forEachIndexed { index, handler ->
@@ -194,73 +178,7 @@ object BotRepository {
         return connectorProviders.first { it.connectorType == connectorType }
     }
 
-    private fun installBot(
-        botDefinition: BotDefinition,
-        connectorConfigurations: List<ConnectorConfiguration>,
-        adminRestConnectorInstaller: (BotApplicationConfiguration) -> ConnectorConfiguration?
-    ) {
-        val existingBotConfigurations = botConfigurationDAO.getConfigurationsByBotId(botDefinition.botId)
-        val allConnectorConfigurations =
-            (connectorConfigurations +
-                    existingBotConfigurations
-                        .filter {
-                            it.connectorType != ConnectorType.rest
-                                    && connectorConfigurations.none { c -> it.applicationId == c.connectorId }
-                        }
-                        .map {
-                            ConnectorConfiguration(it)
-                        })
-                .takeIf { it.isNotEmpty() }
-            //mostly a hack ->
-                    ?: listOf(ConnectorConfiguration("test", "/test", ConnectorType.rest, ConnectorType("messenger")))
-        val existingBotConfigurationsMap =
-            existingBotConfigurations
-                .groupBy { it.applicationId }
-                .map { (key, value) ->
-                    if (value.size > 1) {
-                        logger.warn { "more than one configuration in database: $value" }
-                    }
-                    key to value.first()
-                }
-                .toMap()
-
-        allConnectorConfigurations.forEach { baseConf ->
-            try {
-                findConnectorProvider(baseConf.type)
-                    .apply {
-                        //1 refresh connector conf
-                        val conf = refreshBotConfiguration(baseConf, existingBotConfigurationsMap)
-                        //2 create and install connector
-                        val connector = connector(conf)
-                        //3 set default namespace to bot namespace if not already set
-                        if (tockAppDefaultNamespace == DEFAULT_APP_NAMESPACE) {
-                            tockAppDefaultNamespace = botDefinition.namespace
-                        }
-                        //4 update bot conf
-                        val appConf = installBotConfiguration(connector, conf, botDefinition)
-
-                        //6 generate and install rest connector
-                        if (existingBotConfigurations.none { it.name == conf.getName() && it.connectorType == rest }) {
-                            adminRestConnectorInstaller.invoke(appConf)
-                                ?.also {
-                                    val restConf = refreshBotConfiguration(it, existingBotConfigurationsMap)
-                                    installBotConfiguration(
-                                        findConnectorProvider(restConf.type).connector(restConf),
-                                        restConf,
-                                        botDefinition
-                                    )
-                                }
-                        }
-                    }
-            } catch (e: Exception) {
-                logger.error(e) {
-                    "unable to install connector $baseConf"
-                }
-            }
-        }
-    }
-
-    private fun checkBotConfigurations() {
+    private fun checkBotConfigurations(startup: Boolean = false) {
         logger.trace { "check configurations" }
         //clone conf list as we may update connectorControllerMap
         val existingConfs = ArrayList(connectorControllerMap.keys)
@@ -291,39 +209,9 @@ object BotRepository {
                 removeBot(conf)
             }
         }
-        //register new confs
-        verticle.configure()
-    }
-
-    private fun refreshBotConfiguration(
-        configuration: ConnectorConfiguration,
-        existingBotConfigurations: Map<String, BotApplicationConfiguration>
-    ): ConnectorConfiguration =
-        existingBotConfigurations[configuration.connectorId]?.run {
-            ConnectorConfiguration(configuration, this)
-        } ?: configuration
-
-    private fun installBotConfiguration(
-        connector: Connector,
-        configuration: ConnectorConfiguration,
-        botDefinition: BotDefinition
-    ): BotApplicationConfiguration {
-
-        return with(botDefinition) {
-            val conf = BotApplicationConfiguration(
-                configuration.connectorId.run { if (isBlank()) botId else this },
-                botId,
-                namespace,
-                nlpModelName,
-                configuration.type,
-                configuration.ownerConnectorType,
-                configuration.getName().run { if (isBlank()) botId else this },
-                configuration.getBaseUrl(),
-                configuration.parametersWithoutDefaultKeys(),
-                path = configuration.path
-            )
-
-            createBot(botDefinition, connector, conf)
+        if (!startup) {
+            //register new confs
+            verticle.configure()
         }
     }
 
@@ -334,7 +222,7 @@ object BotRepository {
     ): BotApplicationConfiguration {
 
         val bot = Bot(botDefinition, conf)
-        return botConfigurationDAO.updateIfNotManuallyModified(conf)
+        return botConfigurationDAO.save(conf)
             .apply {
                 val controller = TockConnectorController.register(connector, bot, verticle)
                 //monitor bot

@@ -1,7 +1,6 @@
 package fr.vsct.tock.bot.admin.bot
 
 import fr.vsct.tock.bot.connector.ConnectorType
-import kotlin.Boolean
 import kotlin.String
 import kotlin.collections.Collection
 import kotlin.collections.Map
@@ -37,9 +36,6 @@ class BotApplicationConfiguration_<T>(previous: KPropertyPath<T, *>?, property: 
     val parameters_: KProperty1<T, Map<String, String>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,BotApplicationConfiguration::parameters)
 
-    val manuallyModified: KProperty1<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,BotApplicationConfiguration::manuallyModified)
-
     val path_: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,BotApplicationConfiguration::path)
 
@@ -64,8 +60,6 @@ class BotApplicationConfiguration_<T>(previous: KPropertyPath<T, *>?, property: 
             get() = BotApplicationConfiguration::baseUrl
         val Parameters: KProperty1<BotApplicationConfiguration, Map<String, String>?>
             get() = BotApplicationConfiguration::parameters
-        val ManuallyModified: KProperty1<BotApplicationConfiguration, Boolean?>
-            get() = BotApplicationConfiguration::manuallyModified
         val Path: KProperty1<BotApplicationConfiguration, String?>
             get() = BotApplicationConfiguration::path
         val _id: KProperty1<BotApplicationConfiguration, Id<BotApplicationConfiguration>?>
@@ -99,9 +93,6 @@ class BotApplicationConfiguration_Col<T>(previous: KPropertyPath<T, *>?, propert
 
     val parameters_: KProperty1<T, Map<String, String>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,BotApplicationConfiguration::parameters)
-
-    val manuallyModified: KProperty1<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,BotApplicationConfiguration::manuallyModified)
 
     val path_: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,BotApplicationConfiguration::path)
