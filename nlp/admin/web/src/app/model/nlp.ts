@@ -311,6 +311,10 @@ export class Sentence extends EntityContainer {
     super()
   }
 
+  notRetainedEntitiesContainer() : NotRetainedEntities {
+    return new NotRetainedEntities(this.text, this.classification.notRetainedEntities)
+  }
+
   getIntentLabel(state: StateService): string {
     if (!this.intentLabel) {
       const intent = state.findIntentById(this.classification.intentId);
@@ -478,6 +482,39 @@ export class EntityWithSubEntities extends EntityContainer {
 
 }
 
+export class NotRetainedEntities extends EntityContainer {
+
+  private withSubEntities: EntityWithSubEntities[];
+  private intentLabel: string;
+
+  constructor(public text: string,
+              public notRetainedEntities: ClassifiedEntity[]) {
+    super()
+  }
+
+  getText(): string {
+    return this.text;
+  }
+
+  getEntities(): ClassifiedEntity[] {
+    return this.notRetainedEntities;
+  }
+
+  addEntity(e: ClassifiedEntity) {
+    //do nothing
+  }
+
+  removeEntity(e: ClassifiedEntity) {
+    //do nothing
+  }
+
+  clone(): NotRetainedEntities {
+    return new NotRetainedEntities(
+      this.text,
+      this.notRetainedEntities);
+  }
+}
+
 export class DateEntityValue {
   constructor(public date: Date, public grain: string) {
 
@@ -516,6 +553,7 @@ export class Classification {
               public intentProbability: number,
               public entitiesProbability: number,
               public otherIntentsProbabilities: Map<string, number>,
+              public notRetainedEntities: ClassifiedEntity[],
               /**
                * The last usage date (for a real user) if any.
                */
@@ -545,6 +583,7 @@ export class Classification {
       this.intentProbability,
       this.entitiesProbability,
       this.otherIntentsProbabilities,
+      this.notRetainedEntities,
       this.lastUsage,
       this.usageCount,
       this.unknownCount);
@@ -554,6 +593,7 @@ export class Classification {
     const value = Object.create(Classification.prototype);
     const result = Object.assign(value, json, {
       entities: ClassifiedEntity.fromJSONArray(json.entities),
+      notRetainedEntities: ClassifiedEntity.fromJSONArray(json.notRetainedEntities),
       otherIntentsProbabilities: JsonUtils.jsonToMap(json.otherIntentsProbabilities)
     });
 

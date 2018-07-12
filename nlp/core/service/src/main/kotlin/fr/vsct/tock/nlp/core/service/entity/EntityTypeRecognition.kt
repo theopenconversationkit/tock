@@ -31,15 +31,16 @@ data class EntityTypeRecognition(val value: EntityTypeValue, val probability: Do
     val entityType: EntityType = value.entityType
 
     fun toEntityRecognition(role: String): EntityRecognition =
-            EntityRecognition(
-                    EntityValue(
-                            value.start,
-                            value.end,
-                            Entity(value.entityType, role),
-                            value.value,
-                            //TODO evaluation of merge entities not yet supported
-                            emptyList(),
-                            value.evaluated),
-                    probability
-            )
+        EntityRecognition(
+            EntityValue(
+                value.start,
+                value.end,
+                Entity(value.entityType, role),
+                value.value,
+                //TODO evaluation of sub entities not yet supported
+                emptyList(),
+                value.evaluated
+            ),
+            probability
+        )
 }

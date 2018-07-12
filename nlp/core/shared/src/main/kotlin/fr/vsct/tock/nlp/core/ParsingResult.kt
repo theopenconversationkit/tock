@@ -19,8 +19,10 @@ package fr.vsct.tock.nlp.core
 /**
  *
  */
-data class ParsingResult(val intent: String,
-                         val entities: List<EntityRecognition>,
-                         val intentProbability: Double,
-                         val entitiesProbability: Double) {
-}
+data class ParsingResult(
+    val intent: String,
+    val entities: List<EntityRecognition>,
+    val notRetainedEntities: List<EntityRecognition>,
+    val intentProbability: Double,
+    val entitiesProbability: Double
+)

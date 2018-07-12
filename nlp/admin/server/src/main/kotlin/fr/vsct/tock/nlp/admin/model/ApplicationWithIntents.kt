@@ -26,36 +26,43 @@ import java.util.Locale
 /**
  *
  */
-data class ApplicationWithIntents(val name: String,
-                                  val namespace: String,
-                                  val intents: List<IntentDefinition>,
-                                  val supportedLocales: Set<Locale>,
-                                  val nlpEngineType: NlpEngineType,
-                                  val mergeEngineTypes: Boolean = true,
-                                  val supportSubEntities: Boolean = false,
-                                  val _id: Id<ApplicationDefinition>?) {
+data class ApplicationWithIntents(
+    val name: String,
+    val namespace: String,
+    val intents: List<IntentDefinition>,
+    val supportedLocales: Set<Locale>,
+    val nlpEngineType: NlpEngineType,
+    val mergeEngineTypes: Boolean = true,
+    val useEntityModels: Boolean = true,
+    val supportSubEntities: Boolean = false,
+    val _id: Id<ApplicationDefinition>?
+) {
 
     constructor(application: ApplicationDefinition, intents: List<IntentDefinition>) :
-            this(application.name,
-                    application.namespace,
-                    intents.sortedBy { it.name },
-                    application.supportedLocales,
-                    application.nlpEngineType,
-                    application.mergeEngineTypes,
-                    application.supportSubEntities,
-                    application._id)
+            this(
+                application.name,
+                application.namespace,
+                intents.sortedBy { it.name },
+                application.supportedLocales,
+                application.nlpEngineType,
+                application.mergeEngineTypes,
+                application.useEntityModels,
+                application.supportSubEntities,
+                application._id
+            )
 
     fun toApplication(): ApplicationDefinition {
         return ApplicationDefinition(
-                name,
-                namespace,
-                intents.map { it._id }.toSet(),
-                supportedLocales,
-                emptyMap(),
-                nlpEngineType,
-                mergeEngineTypes,
-                supportSubEntities,
-                _id ?: newId()
+            name,
+            namespace,
+            intents.map { it._id }.toSet(),
+            supportedLocales,
+            emptyMap(),
+            nlpEngineType,
+            mergeEngineTypes,
+            useEntityModels,
+            supportSubEntities,
+            _id ?: newId()
         )
     }
 

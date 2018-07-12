@@ -51,9 +51,13 @@ data class ApplicationDefinition(
      */
     val nlpEngineType: NlpEngineType = NlpEngineType.opennlp,
     /**
-     * Is entity merge applied?
+     * Is intent entity model and "standalone" entity models are used to find the better values?
      */
     val mergeEngineTypes: Boolean = true,
+    /**
+     * Is "standalone" entity models used? Useful for entity disambiguation.
+     */
+    val useEntityModels: Boolean = true,
     /**
      * Does this app support sub entities?
      */

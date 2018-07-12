@@ -22,6 +22,9 @@ class ParseResult_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Pa
     val entities: KProperty1<T, List<ParsedEntityValue>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseResult::entities)
 
+    val notRetainedEntities: KProperty1<T, List<ParsedEntityValue>?>
+        get() = org.litote.kmongo.property.KPropertyPath(this,ParseResult::notRetainedEntities)
+
     val intentProbability: KProperty1<T, Double?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseResult::intentProbability)
 
@@ -42,6 +45,8 @@ class ParseResult_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Pa
             get() = ParseResult::language
         val Entities: KProperty1<ParseResult, List<ParsedEntityValue>?>
             get() = ParseResult::entities
+        val NotRetainedEntities: KProperty1<ParseResult, List<ParsedEntityValue>?>
+            get() = ParseResult::notRetainedEntities
         val IntentProbability: KProperty1<ParseResult, Double?>
             get() = ParseResult::intentProbability
         val EntitiesProbability: KProperty1<ParseResult, Double?>
@@ -64,6 +69,9 @@ class ParseResult_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
 
     val entities: KProperty1<T, List<ParsedEntityValue>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseResult::entities)
+
+    val notRetainedEntities: KProperty1<T, List<ParsedEntityValue>?>
+        get() = org.litote.kmongo.property.KPropertyPath(this,ParseResult::notRetainedEntities)
 
     val intentProbability: KProperty1<T, Double?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseResult::intentProbability)

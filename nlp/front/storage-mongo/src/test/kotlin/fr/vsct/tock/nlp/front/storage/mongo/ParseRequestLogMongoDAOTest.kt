@@ -54,6 +54,7 @@ class ParseRequestLogMongoDAOTest : AbstractTest() {
                     NumberValue(1)
                 )
             ),
+            emptyList(),
             1.0,
             1.0,
             "sentence",

@@ -38,8 +38,9 @@
         {{sentence.statusDisplayed()}}
       </span>
       <span *ngIf="displayProbabilities" class="probability">
-        <span *ngIf="displayProbabilities && sentence.classification.intentId && sentence.classification.hasIntentProbability()"
-              md-tooltip="intent probability">
+        <span
+          *ngIf="displayProbabilities && sentence.classification.intentId && sentence.classification.hasIntentProbability()"
+          md-tooltip="intent probability">
            intent : {{sentence.classification.intentProbability | percent:'1.0-2'}}
         </span>
         <span *ngIf="displayProbabilities && displayEntities
@@ -47,11 +48,27 @@
               md-tooltip="entities probability">
            , entities : {{sentence.classification.entitiesProbability | percent:'1.0-2'}}
         </span>
+        <span *ngIf="displayProbabilities && (sentence.classification.notRetainedEntities?.length !== 0 || sentence.classification.otherIntentsProbabilities?.size !== 0)">
+                <button *ngIf="!sentence.classification.displayOtherIntents"
+                          (click)="sentence.classification.displayOtherIntents=true"
+                          md-icon-button
+                          md-tooltip="Display probability for other intents & entities"><md-icon>expand_more</md-icon></button>
+                <button
+                  *ngIf="sentence.classification.displayOtherIntents"
+                  md-icon-button
+                  (click)="sentence.classification.displayOtherIntents=false"
+                  md-tooltip="Hide probabilities"><md-icon>expand_less</md-icon></button>
+        </span>
+        <span *ngIf="displayProbabilities && sentence.classification.notRetainedEntities?.length !== 0">
+          <div *ngIf="sentence.classification.displayOtherIntents" class="otherEntities">
+            <span style="float:left">Other entities:</span><br>
+            <tock-edit-entities [container]="sentence.notRetainedEntitiesContainer()"
+                              [displayProbabilities]="displayProbabilities"
+                              [readOnly]="true">
+            </tock-edit-entities>
+          </div>
+        </span>
         <span *ngIf="displayProbabilities && sentence.classification.otherIntentsProbabilities?.size !== 0">
-           <button *ngIf="!sentence.classification.displayOtherIntents"
-                   (click)="sentence.classification.displayOtherIntents=true"
-                   md-icon-button
-                   md-tooltip="Display probability for other intents"><md-icon>expand_more</md-icon></button>
            <div *ngIf="sentence.classification.displayOtherIntents" class="otherIntents">
                   Probability for other intents:
                   <ol style="overflow:auto">
@@ -59,9 +76,6 @@
                       <div style="float:left">{{i.key}}&nbsp;&nbsp;</div><div style="float:right">&nbsp;{{i.value | percent:'1.0-2'}}</div>
                     </li>
                   </ol>
-                  <button md-icon-button
-                          (click)="sentence.classification.displayOtherIntents=false"
-                          md-tooltip="Hide probabilities"><md-icon>expand_less</md-icon></button>
            </div>
         </span>
       </span>
@@ -72,12 +86,13 @@
     </div>
   </md-card-content>
   <md-card-actions class="sentence-analysis-content">
-      <button md-raised-button color="warn" (click)="onDelete()">Delete</button>
-      <button md-raised-button color="accent" (click)="onArchive()" *ngIf="displayArchiveButton">Archive</button>
-      <button md-raised-button color="primary" (click)="onValidate()">Validate</button>
-      <button md-button *ngIf="config.displayDialogUrl"
-              color="primary"
-              (click)="displayDialogs()"
-              md-tooltip="Display conversations using this sentence">Conversations</button>
+    <button md-raised-button color="warn" (click)="onDelete()">Delete</button>
+    <button md-raised-button color="accent" (click)="onArchive()" *ngIf="displayArchiveButton">Archive</button>
+    <button md-raised-button color="primary" (click)="onValidate()">Validate</button>
+    <button md-button *ngIf="config.displayDialogUrl"
+            color="primary"
+            (click)="displayDialogs()"
+            md-tooltip="Display conversations using this sentence">Conversations
+    </button>
   </md-card-actions>
 </md-card>

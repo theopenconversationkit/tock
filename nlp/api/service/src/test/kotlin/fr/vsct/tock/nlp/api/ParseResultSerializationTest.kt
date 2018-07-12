@@ -63,6 +63,7 @@ class ParseResultSerializationTest {
                     DateEntityValue(ZonedDateTime.of(2017, 4, 1, 0, 0, 0, 0, ZoneId.of("UTC")), DateEntityGrain.day)
                 )
             ),
+            emptyList(),
             1.0,
             1.0,
             "sentence",
@@ -70,7 +71,7 @@ class ParseResultSerializationTest {
         )
         val s = mapper.writeValueAsString(parseResult)
         assertEquals(
-            """{"intent":"test","intentNamespace":"namespace","language":"$defaultLocale","entities":[{"start":0,"end":1,"entity":{"entityType":{"name":"type","subEntities":[],"predefinedValues":[]},"role":"role"},"value":{"@type":"dateEntity","date":"2017-04-01T00:00:00Z[UTC]","grain":"day"},"evaluated":false,"subEntities":[],"probability":1.0,"mergeSupport":false}],"intentProbability":1.0,"entitiesProbability":1.0,"retainedQuery":"sentence","otherIntentsProbabilities":{"test2":2.0}}""",
+            """{"intent":"test","intentNamespace":"namespace","language":"$defaultLocale","entities":[{"start":0,"end":1,"entity":{"entityType":{"name":"type","subEntities":[],"predefinedValues":[]},"role":"role"},"value":{"@type":"dateEntity","date":"2017-04-01T00:00:00Z[UTC]","grain":"day"},"evaluated":false,"subEntities":[],"probability":1.0,"mergeSupport":false}],"notRetainedEntities":[],"intentProbability":1.0,"entitiesProbability":1.0,"retainedQuery":"sentence","otherIntentsProbabilities":{"test2":2.0}}""",
             s
         )
 

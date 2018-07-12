@@ -27,7 +27,7 @@ data class ParseResult(
      */
     val intent: String,
     /**
-     * the namesapce of the selected intent.
+     * the namespace of the selected intent.
      */
     val intentNamespace: String,
     /**
@@ -35,9 +35,13 @@ data class ParseResult(
      */
     val language: Locale,
     /**
-     * The entities found.
+     * The selected entities.
      */
     val entities: List<ParsedEntityValue>,
+    /**
+     * The entities found but not retained.
+     */
+    val notRetainedEntities: List<ParsedEntityValue> = emptyList(),
     /**
      * The intent evaluated probability.
      */

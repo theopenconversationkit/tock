@@ -108,6 +108,7 @@ class ParserServiceTest : AbstractTest() {
                 ParsingResult(
                     defaultIntentName,
                     emptyList(),
+                    emptyList(),
                     1.0,
                     1.0
                 )

@@ -87,6 +87,7 @@ abstract class BotEngineTest {
         "test",
         defaultLocale,
         listOf(entityAValue, entityBValue, entityCValue),
+        emptyList(),
         1.0,
         1.0,
         "a b c",

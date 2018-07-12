@@ -26,7 +26,8 @@ export class EditEntitiesComponent {
 
   @Input() container: EntityContainer;
   @Input() displayProbabilities: boolean = false;
-  @Input() paddingLeft:number=0;
+  @Input() paddingLeft: number = 0;
+  @Input() readOnly: boolean = false;
 
   @Output() containerChange = new EventEmitter();
 

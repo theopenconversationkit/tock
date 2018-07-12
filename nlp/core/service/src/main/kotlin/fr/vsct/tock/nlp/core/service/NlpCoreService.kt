@@ -22,6 +22,7 @@ import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.Intent
+import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
 import fr.vsct.tock.nlp.core.IntentClassification
 import fr.vsct.tock.nlp.core.IntentSelector
 import fr.vsct.tock.nlp.core.NlpCore
@@ -49,48 +50,61 @@ object NlpCoreService : NlpCore {
 
     private val logger = KotlinLogging.logger {}
 
-    private val unknownResult = ParsingResult(Intent.Companion.UNKNOWN_INTENT_NAME, emptyList(), 1.0, 1.0)
+    private val unknownResult = ParsingResult(UNKNOWN_INTENT_NAME, emptyList(), emptyList(), 1.0, 1.0)
 
     private val entityCore: EntityCore by injector.instance()
     private val entityMerge: EntityMerge by injector.instance()
     private val nlpClassifier: NlpClassifier by injector.instance()
 
-    override fun parse(context: CallContext,
-                       text: String,
-                       intentSelector: IntentSelector): ParsingResult {
+    override fun parse(
+        context: CallContext,
+        text: String,
+        intentSelector: IntentSelector
+    ): ParsingResult {
         return parse(
-                context,
-                text,
-                { tokens -> nlpClassifier.classifyIntent(IntentContext(context), text, tokens) },
-                { intent, tokens -> nlpClassifier.classifyEntities(EntityCallContextForIntent(context, intent), text, tokens) },
-                intentSelector
+            context,
+            text,
+            { tokens -> nlpClassifier.classifyIntent(IntentContext(context), text, tokens) },
+            { intent, tokens ->
+                nlpClassifier.classifyEntities(
+                    EntityCallContextForIntent(context, intent),
+                    text,
+                    tokens
+                )
+            },
+            intentSelector
         )
     }
 
-    internal fun parse(context: TestContext,
-                       text: String,
-                       intentModelHolder: ModelHolder,
-                       entityModelHolders: Map<Intent, ModelHolder?>): ParsingResult {
+    internal fun parse(
+        context: TestContext,
+        text: String,
+        intentModelHolder: ModelHolder,
+        entityModelHolders: Map<Intent, ModelHolder?>
+    ): ParsingResult {
         return parse(
-                context.callContext,
-                text,
-                { tokens -> nlpClassifier.classifyIntent(IntentContext(context), intentModelHolder, text, tokens) },
-                { intent, tokens ->
-                    nlpClassifier.classifyEntities(
-                            EntityCallContextForIntent(context, intent),
-                            entityModelHolders[intent],
-                            text,
-                            tokens)
-                },
-                IntentSelector.defaultIntentSelector
+            context.callContext,
+            text,
+            { tokens -> nlpClassifier.classifyIntent(IntentContext(context), intentModelHolder, text, tokens) },
+            { intent, tokens ->
+                nlpClassifier.classifyEntities(
+                    EntityCallContextForIntent(context, intent),
+                    entityModelHolders[intent],
+                    text,
+                    tokens
+                )
+            },
+            IntentSelector.defaultIntentSelector
         )
     }
 
-    private fun parse(callContext: CallContext,
-                      text: String,
-                      intentClassifier: (Array<String>) -> IntentClassification,
-                      entityClassifier: (Intent, Array<String>) -> List<EntityRecognition>,
-                      intentSelector: IntentSelector): ParsingResult {
+    private fun parse(
+        callContext: CallContext,
+        text: String,
+        intentClassifier: (Array<String>) -> IntentClassification,
+        entityClassifier: (Intent, Array<String>) -> List<EntityRecognition>,
+        intentSelector: IntentSelector
+    ): ParsingResult {
         try {
             val tokens = nlpClassifier.tokenize(TokenizerContext(callContext), text)
             val intents = intentClassifier.invoke(tokens)
@@ -100,13 +114,21 @@ object NlpCoreService : NlpCore {
                 return unknownResult
             }
 
-            val evaluatedEntities = classifyAndEvaluate(callContext, intent, entityClassifier, text, tokens)
+            val (evaluatedEntities, notRetainedEntities) = classifyAndEvaluate(
+                callContext,
+                intent,
+                entityClassifier,
+                text,
+                tokens
+            )
 
             return ParsingResult(
-                    intent.name,
-                    evaluatedEntities,
-                    probability,
-                    if (evaluatedEntities.isEmpty()) 1.0 else evaluatedEntities.map { it.probability }.average())
+                intent.name,
+                evaluatedEntities,
+                notRetainedEntities,
+                probability,
+                if (evaluatedEntities.isEmpty()) 1.0 else evaluatedEntities.map { it.probability }.average()
+            )
         } catch (e: ModelNotInitializedException) {
             logger.warn { "model not initialized : ${e.message}" }
             return unknownResult
@@ -117,35 +139,46 @@ object NlpCoreService : NlpCore {
     }
 
     private fun classifyAndEvaluate(
-            context: CallContext,
-            intent: Intent,
-            entityClassifier: (Intent, Array<String>) -> List<EntityRecognition>,
-            text: String,
-            tokens: Array<String>): List<EntityRecognition> {
+        context: CallContext,
+        intent: Intent,
+        entityClassifier: (Intent, Array<String>) -> List<EntityRecognition>,
+        text: String,
+        tokens: Array<String>
+    ): Pair<List<EntityRecognition>, List<EntityRecognition>> {
         return try {
             //TODO regexp
-
             //evaluate entities from intent entity model & dedicated entity models
             val intentContext = EntityCallContextForIntent(context, intent)
             val entities = entityClassifier.invoke(intent, tokens)
             val evaluatedEntities = evaluateEntities(context, text, entities)
 
-            return if (context.evaluationContext.mergeEntityTypes) {
+            if (context.evaluationContext.mergeEntityTypes || context.evaluationContext.classifyEntityTypes) {
                 val classifiedEntityTypes = entityCore.classifyEntityTypes(intentContext, text, tokens)
-                entityMerge.mergeEntityTypes(context, text, intent, evaluatedEntities, classifiedEntityTypes)
+                if (context.evaluationContext.mergeEntityTypes) {
+                    val result =
+                        entityMerge.mergeEntityTypes(context, text, intent, evaluatedEntities, classifiedEntityTypes)
+                    result to
+                            (evaluatedEntities + classifiedEntityTypes.map { it.toEntityRecognition(it.entityType.name) })
+                                .subtract(result).toList()
+                } else {
+                    evaluatedEntities to
+                            classifiedEntityTypes.map { it.toEntityRecognition(it.entityType.name) }
+                                .subtract(evaluatedEntities).toList()
+                }
             } else {
-                evaluatedEntities
+                evaluatedEntities to emptyList()
             }
         } catch (e: Exception) {
             logger.error(e)
-            emptyList()
+            Pair(emptyList(), emptyList())
         }
     }
 
     override fun evaluateEntities(
-            context: CallContext,
-            text: String,
-            entities: List<EntityRecognition>): List<EntityRecognition> {
+        context: CallContext,
+        text: String,
+        entities: List<EntityRecognition>
+    ): List<EntityRecognition> {
         return entityCore.evaluateEntities(context, text, entities)
     }
 

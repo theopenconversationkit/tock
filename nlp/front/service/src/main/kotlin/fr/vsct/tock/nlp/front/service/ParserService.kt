@@ -182,6 +182,7 @@ object ParserService : Parser {
                     application.namespace,
                     query.context.language,
                     emptyList(),
+                    emptyList(),
                     0.0,
                     0.0,
                     q,
@@ -206,10 +207,12 @@ object ParserService : Parser {
 
             val callContext = CallContext(
                 toApplication(application),
-                language, application.nlpEngineType,
+                language,
+                application.nlpEngineType,
                 EntityEvaluationContext(
                     referenceDate,
                     application.mergeEngineTypes,
+                    application.useEntityModels,
                     getReferenceDateByEntityMap(intents, referenceDate)
                 )
             )
@@ -236,6 +239,7 @@ object ParserService : Parser {
                     intent?.namespace ?: Intent.UNKNOWN_INTENT_NAME.namespace(),
                     language,
                     entityValues.map { ParsedEntityValue(it.value, 1.0, core.supportValuesMerge(it.entityType)) },
+                    emptyList(),
                     1.0,
                     1.0,
                     q,
@@ -251,6 +255,13 @@ object ParserService : Parser {
                         intent.namespace(),
                         language,
                         entities.map {
+                            ParsedEntityValue(
+                                it.value,
+                                it.probability,
+                                core.supportValuesMerge(it.entityType)
+                            )
+                        },
+                        notRetainedEntities.map {
                             ParsedEntityValue(
                                 it.value,
                                 it.probability,

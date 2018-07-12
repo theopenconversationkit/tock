@@ -33,6 +33,9 @@ class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KPrope
     val mergeEngineTypes: KProperty1<T, Boolean?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::mergeEngineTypes)
 
+    val useEntityModels: KProperty1<T, Boolean?>
+        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::useEntityModels)
+
     val supportSubEntities: KProperty1<T, Boolean?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::supportSubEntities)
 
@@ -53,6 +56,8 @@ class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KPrope
             get() = ApplicationDefinition::nlpEngineType
         val MergeEngineTypes: KProperty1<ApplicationDefinition, Boolean?>
             get() = ApplicationDefinition::mergeEngineTypes
+        val UseEntityModels: KProperty1<ApplicationDefinition, Boolean?>
+            get() = ApplicationDefinition::useEntityModels
         val SupportSubEntities: KProperty1<ApplicationDefinition, Boolean?>
             get() = ApplicationDefinition::supportSubEntities
         val _id: KProperty1<ApplicationDefinition, Id<ApplicationDefinition>?>
@@ -80,6 +85,9 @@ class ApplicationDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KPr
 
     val mergeEngineTypes: KProperty1<T, Boolean?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::mergeEngineTypes)
+
+    val useEntityModels: KProperty1<T, Boolean?>
+        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::useEntityModels)
 
     val supportSubEntities: KProperty1<T, Boolean?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::supportSubEntities)

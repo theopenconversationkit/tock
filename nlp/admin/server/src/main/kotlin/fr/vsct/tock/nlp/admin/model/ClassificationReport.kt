@@ -33,6 +33,10 @@ import java.time.Instant
 data class ClassificationReport(
     val intentId: Id<IntentDefinition>?,
     val entities: List<ClassifiedEntityReport>,
+    /**
+     * The entities found but not retained.
+     */
+    val notRetainedEntities: List<ClassifiedEntityReport> = emptyList(),
     val intentProbability: Double?,
     val entitiesProbability: Double?,
     val otherIntentsProbabilities: Map<String, Double>,
@@ -50,17 +54,19 @@ data class ClassificationReport(
     val unknownCount: Long = 0
 ) {
 
-    constructor(query: ParseResult, intentId: Id<IntentDefinition>?) : this(
+    constructor(result: ParseResult, intentId: Id<IntentDefinition>?) : this(
         intentId,
-        query.entities.map { ClassifiedEntityReport(it) },
-        query.intentProbability,
-        query.entitiesProbability,
-        query.otherIntentsProbabilities
+        result.entities.map { ClassifiedEntityReport(it) },
+        result.notRetainedEntities.map { ClassifiedEntityReport(it) },
+        result.intentProbability,
+        result.entitiesProbability,
+        result.otherIntentsProbabilities
     )
 
     constructor(sentence: ClassifiedSentence) : this(
         sentence.classification.intentId,
         sentence.classification.entities.map { ClassifiedEntityReport(it) },
+        emptyList(),
         sentence.lastIntentProbability,
         sentence.lastEntityProbability,
         emptyMap(),
@@ -72,6 +78,7 @@ data class ClassificationReport(
     constructor(error: IntentTestError) : this(
         null,
         emptyList(),
+        emptyList(),
         error.averageErrorProbability,
         1.0,
         emptyMap()
@@ -80,6 +87,7 @@ data class ClassificationReport(
     constructor(error: EntityTestError) : this(
         error.intentId,
         error.lastAnalyse.map { ClassifiedEntityReport(it) },
+        emptyList(),
         1.0,
         error.averageErrorProbability,
         emptyMap()

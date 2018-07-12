@@ -135,6 +135,7 @@ open class AlexaTockMapper(val applicationId: String) {
             namespace,
             Locale(request.locale.language),
             entityValues,
+            emptyList(),
             1.0,
             1.0,
             slots.joinToString(" ") { it.value!! }

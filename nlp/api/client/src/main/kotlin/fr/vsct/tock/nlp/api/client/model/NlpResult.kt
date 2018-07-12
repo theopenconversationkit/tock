@@ -22,14 +22,44 @@ import java.util.Locale
 /**
  * The result of the [NlpQuery].
  */
-data class NlpResult(val intent: String,
-                     val intentNamespace: String,
-                     val language: Locale,
-                     val entities: List<NlpEntityValue>,
-                     val intentProbability: Double,
-                     val entitiesProbability: Double,
-                     val retainedQuery: String,
-                     val otherIntentsProbabilities: Map<String, Double> = emptyMap()) {
+data class NlpResult(
+    /**
+     * The intent selected.
+     */
+    val intent: String,
+    /**
+     * the namespace of the selected intent.
+     */
+    val intentNamespace: String,
+    /**
+     * The language selected.
+     */
+    val language: Locale,
+    /**
+     * The selected entities.
+     */
+    val entities: List<NlpEntityValue>,
+    /**
+     * The entities found but not retained.
+     */
+    val notRetainedEntities: List<NlpEntityValue> = emptyList(),
+    /**
+     * The intent evaluated probability.
+     */
+    val intentProbability: Double,
+    /**
+     * The average entity evaluation probability.
+     */
+    val entitiesProbability: Double,
+    /**
+     * The analysed query.
+     */
+    val retainedQuery: String,
+    /**
+     * Other intents with significant probabilities.
+     */
+    val otherIntentsProbabilities: Map<String, Double> = emptyMap()
+) {
 
     fun firstValue(role: String): NlpEntityValue? = entities.firstOrNull { it.entity.role == role }
 

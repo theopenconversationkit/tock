@@ -24,8 +24,8 @@
         {{entity.role}}
       </md-chip>
     </md-chip-list>
-    <span class="value">
-    {{container.entityValue(entity)}}
+    <span *ngIf="!readOnly" class="value">
+      {{container.entityValue(entity)}}
     <span *ngIf="displayProbabilities && entity.hasProbability()"
           class="probability"
           md-tooltip="Probability of entity recognition">
@@ -35,6 +35,18 @@
       <md-icon>delete</md-icon>
     </button>
     </span>
+
+    <span *ngIf="readOnly" class="read-only">
+    {{entity.value ? container.entityText(entity) : ""}}
+    {{container.entityValue(entity)}}
+
+    <span *ngIf="displayProbabilities && entity.hasProbability()"
+          class="probability"
+          md-tooltip="Probability of entity recognition">
+               {{entity.probability | percent:'1.0-2'}}
+          </span>
+    </span>
+
     <tock-edit-entities *ngIf="container.findEditedSubEntities(entity)"
                         [container]="container.findEditedSubEntities(entity)"
                         (containerChange)="onContainerChange()"

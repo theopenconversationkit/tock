@@ -18,3 +18,7 @@
   position: relative;
   top: -4px;
 }
+
+.read-only {
+  line-height:36px;
+}
