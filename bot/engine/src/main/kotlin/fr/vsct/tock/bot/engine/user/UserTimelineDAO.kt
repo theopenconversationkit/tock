@@ -52,6 +52,11 @@ interface UserTimelineDAO {
     fun loadWithoutDialogs(userId: PlayerId): UserTimeline
 
     /**
+     * Loads without the dialogs.
+     */
+    fun loadByTemporaryIdsWithoutDialogs(temporaryIds: List<String>): List<UserTimeline>
+
+    /**
      * Remove the timeline and the associated dialogs.
      */
     fun remove(playerId: PlayerId)

@@ -55,6 +55,17 @@ internal class UserTimelineMongoDAOTest : AbstractTest() {
     }
 
     @Test
+    fun `get userTimeLine with temporaryIds `() {
+        val id = PlayerId("id", PlayerType.user, "clientId")
+        val u = UserTimeline(id, dialogs = mutableListOf(Dialog(setOf(id))),temporaryIds = mutableSetOf("123456879", "1477854545"))
+        UserTimelineMongoDAO.save(u)
+        assertEquals(
+            u.toString(),
+            UserTimelineMongoDAO.loadByTemporaryIdsWithoutDialogs(listOf("123456879","99999999")).firstOrNull()?.toString()
+        )
+    }
+
+    @Test
     fun `updatePlayerId update timeline and dialog player id`() {
         val id = PlayerId("id", PlayerType.user)
         val u = UserTimeline(id, dialogs = mutableListOf(Dialog(setOf(id))))

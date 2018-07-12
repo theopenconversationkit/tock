@@ -47,6 +47,7 @@ import fr.vsct.tock.bot.mongo.DialogTextCol_.Companion.Text
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.bot.mongo.UserTimelineCol_.Companion.ApplicationIds
 import fr.vsct.tock.bot.mongo.UserTimelineCol_.Companion.LastUpdateDate
+import fr.vsct.tock.bot.mongo.UserTimelineCol_.Companion.TemporaryIds
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
@@ -70,6 +71,7 @@ import org.litote.kmongo.descendingSort
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
+import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.gt
@@ -117,6 +119,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     init {
         userTimelineCol.ensureUniqueIndex(UserTimelineCol_.PlayerId.id)
         userTimelineCol.ensureIndex(LastUpdateDate)
+        userTimelineCol.ensureIndex(TemporaryIds)
         dialogCol.ensureIndex(DialogCol_.PlayerIds.id)
         dialogCol.ensureIndex(DialogCol_.PlayerIds.clientId)
         dialogCol.ensureIndex(
@@ -308,6 +311,11 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             timeline.toUserTimeline()
         }
     }
+
+    override fun loadByTemporaryIdsWithoutDialogs(temporaryIds: List<String>): List<UserTimeline> {
+        return userTimelineCol.find(TemporaryIds `in` (temporaryIds)).map { it.toUserTimeline() }.toList()
+    }
+
 
     private fun loadLastValidDialogCol(userId: PlayerId): DialogCol? {
         return dialogCol.aggregate<DialogCol>(
