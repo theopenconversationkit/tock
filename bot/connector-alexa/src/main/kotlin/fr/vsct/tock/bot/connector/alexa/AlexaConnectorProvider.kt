@@ -20,13 +20,15 @@ import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
-import kotlin.reflect.KClass
+import mu.KotlinLogging
 import kotlin.reflect.full.primaryConstructor
 
 /**
  * [ConnectorProvider] for [AlexaConnector].
  */
 internal object AlexaConnectorProvider : ConnectorProvider {
+
+    private val logger = KotlinLogging.logger {}
 
     private const val PROJECT_IDS = "_project_ids"
     private const val PROJECT_TIMESTAMP = "_project_timestamp"
@@ -39,10 +41,20 @@ internal object AlexaConnectorProvider : ConnectorProvider {
 
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector =
         with(connectorConfiguration) {
+            val mapper = parameters[ALEXA_MAPPER]
             AlexaConnector(
                 connectorId,
                 path,
-                Class.forName(parameters[ALEXA_MAPPER]).kotlin.primaryConstructor!!.call(connectorId) as AlexaTockMapper,
+                try {
+                    if (mapper.isNullOrBlank()) {
+                        AlexaTockMapper(connectorId)
+                    } else {
+                        Class.forName(mapper).kotlin.primaryConstructor!!.call(connectorId) as AlexaTockMapper
+                    }
+                } catch (e: Exception) {
+                    logger.error("not found Alexa Mapper $mapper, fallback to default", e)
+                    AlexaTockMapper(connectorId)
+                },
                 parameters[PROJECT_IDS]
                     ?.split(PROJECT_ID_SEPARATOR)
                     ?.filter { it.isNotBlank() }
@@ -52,32 +64,6 @@ internal object AlexaConnectorProvider : ConnectorProvider {
             )
         }
 
-    /**
-     * Create a new messenger connector configuration.
-     */
-    fun newConfiguration(
-        applicationId: String,
-        path: String,
-        applicationName: String,
-        alexaTockMapper: KClass<out AlexaTockMapper>,
-        allowedProjectIds: Set<String> = emptySet(),
-        timestampMs: Long = DEFAULT_TIMESTAMP
-    ): ConnectorConfiguration {
-
-        return ConnectorConfiguration(
-            applicationId,
-            path,
-            connectorType,
-            applicationName,
-            null,
-            parameters =
-            mapOf(
-                PROJECT_IDS to allowedProjectIds.joinToString(PROJECT_ID_SEPARATOR),
-                ALEXA_MAPPER to alexaTockMapper.qualifiedName!!,
-                PROJECT_TIMESTAMP to timestampMs.toString()
-            )
-        )
-    }
 }
 
 internal class AlexaConnectorProviderService : ConnectorProvider by AlexaConnectorProvider
