@@ -34,8 +34,8 @@ internal class BotDefinitionWrapper(val botDefinition: BotDefinition) : BotDefin
     fun updateStories(configuredStories: List<ConfiguredStoryDefinition>) {
         //configured stories can override built-in
         allStories =
-                (botDefinition.stories.groupBy { it.id }
-                        + configuredStories.filter { it.answerType != builtin }.groupBy { it.id })
+                (configuredStories.filter { it.answerType != builtin }.groupBy { it.id }
+                        + botDefinition.stories.groupBy { it.id })
                     .values
                     .flatMap { it }
     }

@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.bot.admin.bot
 
-import java.time.Instant
+import org.litote.kmongo.Id
 
 /**
  * Manage [StoryDefinitionConfiguration] persistence.
@@ -28,16 +28,11 @@ interface StoryDefinitionConfigurationDAO {
      */
     fun listenChanges(listener: () -> Unit)
 
-    fun getStoryDefinitionById(id: String): StoryDefinitionConfiguration?
+    fun getStoryDefinitionById(id: Id<StoryDefinitionConfiguration>): StoryDefinitionConfiguration?
 
-    /**
-     * Returns the timestamp of the last configured answers update for this bot.
-     *
-     * @return null if there is no configuration at all
-     */
-    fun getLastUpdateTimestamp(botId: String): Instant?
+    fun getStoryDefinitionByBotIdAndIntent(botId: String, intent:String): StoryDefinitionConfiguration?
 
-    fun getStoryDefinitions(botId: String): List<StoryDefinitionConfiguration>
+    fun getStoryDefinitionsByBotId(botId: String): List<StoryDefinitionConfiguration>
 
     fun save(story: StoryDefinitionConfiguration)
 

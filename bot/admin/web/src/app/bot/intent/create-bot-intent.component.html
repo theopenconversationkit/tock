@@ -18,18 +18,29 @@
   <md-card-content>
     <tock-select-bot [(configurationId)]="botConfigurationId" [displayConnectorChoice]="false">
       <br>
-      <md-form-field class="sentence-input" #newSentenceContainer>
+      <md-form-field [ngClass]="{'sentence-input' : !intentMode, 'sentence-input-hidden': intentMode}" #newSentenceContainer>
         <input mdInput
                [(ngModel)]="text"
-               placeholder="Enter a sentence"
+               placeholder="Enter a sentence sample"
                #newSentence
                (keyup.enter)="onSentence(newSentence.value)">
       </md-form-field>
-      <button *ngIf="!sentence" md-button (click)="onSentence(newSentence.value)">New Sentence</button>
+      <button [ngClass]="{'sentence-input-hidden': intentMode || sentenceMode}" color="primary" md-button (click)="onSentence(newSentence.value)">Add</button>
       <br>
-      <span *ngIf="sentence">
+      <md-select *ngIf="!sentenceMode"
+                 class="select-intent"
+                 placeholder="Or select an existing intent"
+                 [ngModel]="intentId"
+                 (change)="onIntentChange($event.value)">
+        <md-option [value]="">None</md-option>
+        <md-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
+          {{intent.name}}
+        </md-option>
+      </md-select>
+      <div *ngIf="sentenceMode || intentMode" class="separator"></div>
+      <div *ngIf="sentenceMode || intentMode">
        <md-radio-group id="types" [(ngModel)]="configType">
-        <md-radio-button *ngFor="let type of supportedConfigTypes" [value]="type">
+        <md-radio-button *ngFor="let type of supportedConfigTypes" [value]="type" class="answer-type">
           {{getTypeLabel(type)}}
         </md-radio-button>
         </md-radio-group>
@@ -40,31 +51,32 @@
         <input mdInput [(ngModel)]="reply" placeholder="And add a reply" #newReply (keyup.enter)="onReply()">
       </md-form-field>
       <button (click)="onReply()" md-raised-button color="primary">Reply</button>
+      <button (click)="resetState()" md-button>Cancel</button>
       </div>
 
       <div *ngIf="isScriptAnswer()">
       <md-input-container class="input text-area-container">
-      <textarea mdInput [(ngModel)]="script" cols="200" rows="20" class="text-area"></textarea>
+        <textarea mdInput [(ngModel)]="script" cols="200" rows="20" class="text-area"></textarea>
       </md-input-container>
       <br>
       <button (click)="onReply()" md-raised-button color="primary">Register the script</button>
       </div>
 
       <br>
-      <md-form-field class="sentence-intent" #intentContainer>
+      <md-form-field *ngIf="sentenceMode" class="sentence-intent" #intentContainer>
         <input mdInput [(ngModel)]="intent" placeholder="Set the intent name" #newIntent (keyup.enter)="onReply()">
       </md-form-field>
-    </span>
+    </div>
     </tock-select-bot>
   </md-card-content>
 </md-card>
 <br>
-<span *ngIf="sentence" class="current-analysis">
+<span *ngIf="sentenceMode" class="current-analysis">
   <br><br>
   <hr>
   (or qualify)
   <br><br></span>
-<tock-sentence-analysis *ngIf="sentence"
+<tock-sentence-analysis *ngIf="sentence && sentenceMode"
                         [(sentence)]="sentence"
                         (closed)="onClose()"
                         [displayProbabilities]="true">

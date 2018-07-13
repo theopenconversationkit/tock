@@ -73,6 +73,14 @@ import java.util.EnumSet
  */
 abstract class WebVerticle : AbstractVerticle() {
 
+    companion object {
+        fun unauthorized(): Nothing = throw UnauthorizedException()
+
+        fun notFound(): Nothing = throw NotFoundException()
+
+        fun badRequest(message: String): Nothing = throw BadRequestException(message)
+    }
+
     open protected val logger: KLogger = KotlinLogging.logger {}
 
     private data class AuthenticateRequest(val email: String, val password: String)
@@ -539,10 +547,4 @@ abstract class WebVerticle : AbstractVerticle() {
             end(output)
         }
     }
-
-    fun unauthorized(): Nothing = throw UnauthorizedException()
-
-    fun notFound(): Nothing = throw NotFoundException()
-
-    fun badRequest(message: String): Nothing = throw BadRequestException(message)
 }

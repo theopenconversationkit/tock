@@ -32,13 +32,16 @@ import {ActivatedRoute} from "@angular/router";
 export class CreateBotIntentComponent implements OnInit {
 
   sentence: Sentence;
-
   text: string;
   reply: string;
   script: string;
   intent: string;
+  intentId: string;
   supportedConfigTypes = [AnswerConfigurationType.simple, AnswerConfigurationType.script];
   configType: AnswerConfigurationType = AnswerConfigurationType.simple;
+
+  sentenceMode: boolean;
+  intentMode: boolean;
 
   botConfigurationId: string;
 
@@ -59,6 +62,7 @@ export class CreateBotIntentComponent implements OnInit {
       if (this.text) {
         this.onSentence(this.text);
       }
+      window.setTimeout(() => this.newSentence.nativeElement.focus(), 500);
     });
   }
 
@@ -80,12 +84,21 @@ export class CreateBotIntentComponent implements OnInit {
     if (v.length == 0) {
       this.snackBar.open(`Please enter a non-empty sentence`, "ERROR", {duration: 2000});
     } else {
+      this.intentMode = false;
+      this.sentenceMode = true;
       this.nlp.parse(new ParseQuery(app.namespace, app.name, language, v, true)).subscribe(sentence => {
         this.sentence = sentence;
         this.initIntentName(v);
         //setTimeout(_ => this.newReply.nativeElement.focus(), 100);
       });
     }
+  }
+
+  resetState() {
+    this.sentenceMode = false;
+    this.intentMode = false;
+    this.sentence = null;
+    this.intentId = null;
   }
 
   initIntentName(value: string) {
@@ -115,9 +128,24 @@ export class CreateBotIntentComponent implements OnInit {
     return this.configType === AnswerConfigurationType.script;
   }
 
+  onIntentChange(e:string) {
+    if(e) {
+      this.intentMode = true;
+      this.sentenceMode = false;
+      this.intentId = e;
+    } else {
+      this.resetState();
+    }
+  }
+
   onReply() {
-    if (this.state.intentExists(this.intent)) {
+    if (this.sentenceMode && this.state.intentExists(this.intent)) {
       this.snackBar.open(`Intent ${this.intent} already exists`, "Error", {duration: 5000});
+      return;
+    }
+    const answer = this.isScriptAnswer() ? this.script : this.reply;
+    if (!answer || answer.trim().length === 0) {
+      this.snackBar.open(`Please set a non empty reply`, "Error", {duration: 5000});
       return;
     }
     this.bot.newBotIntent(
@@ -125,20 +153,22 @@ export class CreateBotIntentComponent implements OnInit {
         this.botConfigurationId,
         this.intent,
         this.state.currentLocale,
-        [this.text.trim()],
+        this.text ? [this.text.trim()] : [],
         this.configType,
-        this.isScriptAnswer() ? this.script : this.reply
+        answer,
+        this.intentId
       )
     ).subscribe(intent => {
       this.state.currentApplication.intents.push(intent);
       this.snackBar.open(`New answer saved for language ${this.state.currentLocale}`, "Answer Saved", {duration: 3000});
       this.onClose();
+
       this.newSentence.nativeElement.focus();
     });
   }
 
   onClose() {
-    this.sentence = null;
+    this.resetState();
     this.reply = null;
     this.intent = null;
     this.text = null;

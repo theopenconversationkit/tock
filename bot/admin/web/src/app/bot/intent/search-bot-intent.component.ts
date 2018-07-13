@@ -53,7 +53,6 @@ export class SearchBotIntentComponent implements OnInit {
   delete(intent: BotIntent) {
     this.bot.deleteBotIntent(intent.storyDefinition._id)
       .subscribe(_ => {
-        this.state.currentApplication.removeIntentByNamespaceAndName(this.state.currentApplication.namespace, intent.storyDefinition.intent.name);
         this.ngOnInit();
         this.snackBar.open(`Answer deleted`, "Delete", {duration: 2000})
       });

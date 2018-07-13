@@ -17,16 +17,17 @@
 <span *ngIf="intents">
   <md-card class="intent" *ngFor="let intent of intents">
   <md-card-content>
-    <h2>For
-      <span *ngIf="intent.firstSentences.length === 1">this sentence:</span>
-      <span *ngIf="intent.firstSentences.length !== 1">these sentences:</span>
-    </h2>
+    <h2><span class="intent-mention">intent :</span> {{intent.storyDefinition.intent.name}}</h2>
+    <h4 *ngIf="intent.firstSentences.length !== 0">Sentence
+      <span *ngIf="intent.firstSentences.length === 1">sample:</span>
+      <span *ngIf="intent.firstSentences.length !== 1">samples:</span>
+    </h4>
     <ul>
       <li *ngFor="let s of intent.firstSentences">
         {{s.text}}
       </li>
     </ul>
-    <h2>The configured answer is:</h2>
+    <br>
     <div *ngIf="intent.storyDefinition.isSimpleAnswer()">
     <md-list dense>
         <tock-i18n-label [i]="intent.storyDefinition.simpleAnswer().answers[0].label"
@@ -38,8 +39,6 @@
       <textarea mdInput [(ngModel)]="intent.storyDefinition.textAnswer" cols="200" rows="20"></textarea>
       </md-input-container>
     </div>
-
-    <div class="intent-mention">(intent : {{intent.storyDefinition.intent.name}})</div>
   </md-card-content>
   <md-card-actions>
     <button md-button (click)="delete(intent)" color="warn">Delete</button>

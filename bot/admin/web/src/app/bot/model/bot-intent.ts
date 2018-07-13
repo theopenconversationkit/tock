@@ -25,7 +25,8 @@ export class CreateBotIntentRequest {
               public language: string,
               public firstSentences: string[],
               public type: AnswerConfigurationType,
-              public reply: string) {
+              public reply: string,
+              public intentId: string) {
   }
 
 }

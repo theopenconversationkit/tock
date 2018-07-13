@@ -1,5 +1,5 @@
 .intent {
-  width:800px;
+  width:820px;
   overflow-x: auto;
   margin-left: auto;
   margin-right: auto;
@@ -7,7 +7,6 @@
 }
 
 .intent-mention {
-  font-style: italic;
   font-size: small;
 }
 

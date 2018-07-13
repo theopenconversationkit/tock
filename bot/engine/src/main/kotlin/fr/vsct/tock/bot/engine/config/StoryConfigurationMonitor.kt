@@ -55,7 +55,7 @@ internal object StoryConfigurationMonitor {
 
     private fun refresh(bot: Bot) {
         bot.botDefinition.updateStories(
-            storyDAO.getStoryDefinitions(bot.botDefinition.botId)
+            storyDAO.getStoryDefinitionsByBotId(bot.botDefinition.botId)
                 .map { ConfiguredStoryDefinition(it) }
         )
     }

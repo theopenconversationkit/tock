@@ -71,12 +71,12 @@ interface BotDefinition : I18nKeyProvider {
     }
 
     /**
-     * The main bot id. Have to be different for each bot.
+     * The main bot id. Must be different for each bot.
      */
     val botId: String
 
     /**
-     * The namespace of the bot. Have to be the same namespace than the NLP models.
+     * The namespace of the bot. It has to be the same namespace than the NLP models.
      */
     val namespace: String
 

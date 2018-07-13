@@ -63,10 +63,12 @@ import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.vertx.UnauthorizedException
+import fr.vsct.tock.shared.vertx.WebVerticle.Companion.badRequest
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.Translator
 import mu.KotlinLogging
 import org.litote.kmongo.Id
+import org.litote.kmongo.toId
 import java.time.Instant
 import java.util.Locale
 import java.util.concurrent.ConcurrentHashMap
@@ -163,7 +165,7 @@ object BotAdminService {
             emptyList()
         } else {
             storyDefinitionDAO
-                .getStoryDefinitions(botConf.botId)
+                .getStoryDefinitionsByBotId(botConf.botId)
                 .mapNotNull {
                     val nlpApplication = front.getApplicationByNamespaceAndName(request.namespace, botConf.nlpModel)
                     val intent = front.getIntentByNamespaceAndName(request.namespace, it.intent.name)
@@ -190,15 +192,10 @@ object BotAdminService {
     }
 
     fun deleteBotIntent(namespace: String, storyDefinitionId: String): Boolean {
-        val story = storyDefinitionDAO.getStoryDefinitionById(storyDefinitionId)
+        val story = storyDefinitionDAO.getStoryDefinitionById(storyDefinitionId.toId())
         if (story != null) {
             val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()
             if (botConf != null) {
-                val nlpApplication = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)
-                val intent = front.getIntentByNamespaceAndName(namespace, story.intent.name)
-                if (intent != null) {
-                    front.removeIntentFromApplication(nlpApplication!!, intent._id)
-                }
                 storyDefinitionDAO.delete(story)
             }
         }
@@ -213,23 +210,34 @@ object BotAdminService {
         val botConf =
             getBotConfigurationsByNamespaceAndBotConfigurationId(namespace, request.botConfigurationId).firstOrNull()
         return if (botConf != null) {
-            val nlpApplication = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)
-            val intentDefinition = AdminService.createOrUpdateIntent(
-                namespace,
-                IntentDefinition(
-                    request.intent,
+            val nlpApplication = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)!!
+            val intentDefinition = if (request.intentId != null) {
+                front.getIntentById(request.intentId.toId())
+            } else {
+                AdminService.createOrUpdateIntent(
                     namespace,
-                    setOf(nlpApplication!!._id),
-                    emptySet()
+                    IntentDefinition(
+                        request.intent!!,
+                        namespace,
+                        setOf(nlpApplication._id),
+                        emptySet()
+                    )
                 )
-            )
+            }
             if (intentDefinition != null) {
+                if (storyDefinitionDAO.getStoryDefinitionByBotIdAndIntent(
+                        botConf.botId,
+                        intentDefinition.name
+                    ) != null
+                ) {
+                    badRequest("Answer already exists for this intent")
+                }
                 //create the story
                 storyDefinitionDAO.save(
                     StoryDefinitionConfiguration(
-                        request.intent,
+                        intentDefinition.name,
                         botConf.botId,
-                        Intent(request.intent),
+                        Intent(intentDefinition.name),
                         request.type,
                         listOf(
                             when (request.type) {
@@ -240,7 +248,7 @@ object BotAdminService {
                         )
                     )
                 )
-                request.firstSentences.forEach {
+                request.firstSentences.filter { it.isNotBlank() }.forEach {
                     front.save(
                         ClassifiedSentence(
                             it,
@@ -315,7 +323,7 @@ object BotAdminService {
         request: UpdateBotIntentRequest
     ): IntentDefinition? {
 
-        val storyDefinition = storyDefinitionDAO.getStoryDefinitionById(request.storyDefinitionId)
+        val storyDefinition = storyDefinitionDAO.getStoryDefinitionById(request.storyDefinitionId.toId())
         val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, storyDefinition!!.botId).firstOrNull()
         return if (botConf != null) {
             storyDefinitionDAO.save(

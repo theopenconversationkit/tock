@@ -19,26 +19,25 @@ package fr.vsct.tock.bot.mongo
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration_.Companion.BotId
+import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration_.Companion.Intent
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Conf
 import fr.vsct.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Date
 import fr.vsct.tock.shared.watchSafely
 import mu.KotlinLogging
-import org.bson.Document
 import org.litote.kmongo.Data
-import org.litote.kmongo.ascendingSort
+import org.litote.kmongo.Id
 import org.litote.kmongo.async.getCollectionOfName
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
+import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
+import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.getCollectionOfName
-import org.litote.kmongo.path
-import org.litote.kmongo.projection
 import org.litote.kmongo.save
-import org.litote.kmongo.withDocumentClass
 import java.time.Instant
 
 /**
@@ -62,6 +61,7 @@ object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurationDAO {
 
     init {
         col.ensureIndex(BotId)
+        col.ensureUniqueIndex(BotId, Intent.name_)
         historyCol.ensureIndex(Conf.botId)
         historyCol.ensureIndex(Date)
     }
@@ -70,22 +70,15 @@ object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurationDAO {
         asyncCol.watchSafely { listener() }
     }
 
-    override fun getStoryDefinitionById(id: String): StoryDefinitionConfiguration? {
+    override fun getStoryDefinitionById(id: Id<StoryDefinitionConfiguration>): StoryDefinitionConfiguration? {
         return col.findOneById(id)
     }
 
-    override fun getLastUpdateTimestamp(botId: String): Instant? =
-        historyCol
-            .withDocumentClass<Document>()
-            .find(Conf.botId eq botId)
-            .ascendingSort(Date)
-            .projection(Date)
-            .limit(1)
-            .firstOrNull()
-            ?.getDate(Date.path())
-            ?.toInstant()
+    override fun getStoryDefinitionByBotIdAndIntent(botId: String, intent: String): StoryDefinitionConfiguration? {
+        return col.findOne(BotId eq botId, Intent.name_ eq intent)
+    }
 
-    override fun getStoryDefinitions(botId: String): List<StoryDefinitionConfiguration> {
+    override fun getStoryDefinitionsByBotId(botId: String): List<StoryDefinitionConfiguration> {
         return col.find(BotId eq botId).toList()
     }
 

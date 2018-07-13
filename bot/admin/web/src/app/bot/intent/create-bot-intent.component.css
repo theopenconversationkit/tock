@@ -23,7 +23,11 @@
 
 .sentence-input {
   width:80%;
-  font-size: xx-large;
+  font-size: x-large;
+}
+
+.sentence-input-hidden {
+  display: none;
 }
 
 .current-analysis {
@@ -42,4 +46,17 @@
 .text-area {
   padding:5px 5px 5px 5px;
   border: inset;
+}
+
+.separator {
+  margin-top: 40px;
+  margin-bottom: 20px;
+}
+
+.select-intent {
+  width:80%;
+}
+
+.answer-type {
+  margin-right: 10px;
 }

@@ -25,10 +25,11 @@ import java.util.Locale
  *
  */
 data class CreateBotIntentRequest(
-        val botConfigurationId: Id<BotApplicationConfiguration>,
-        val intent: String,
-        val language: Locale,
-        val firstSentences: List<String>,
-        val type: AnswerConfigurationType,
-        val reply: String) {
-}
+    val botConfigurationId: Id<BotApplicationConfiguration>,
+    val intent: String?,
+    val language: Locale,
+    val firstSentences: List<String>,
+    val type: AnswerConfigurationType,
+    val reply: String,
+    val intentId: String?
+)
