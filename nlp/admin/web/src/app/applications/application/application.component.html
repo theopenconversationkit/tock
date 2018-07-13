@@ -25,6 +25,7 @@
                (keyup.enter)="saveApplication()">
       </md-input-container>
       <md-checkbox [(ngModel)]="application.mergeEngineTypes" md-tooltip="If selected, this option uses built-in entity models (like dates) in conjunction with standard NER">Use entity models</md-checkbox>
+      <md-checkbox *ngIf="!application.mergeEngineTypes" [(ngModel)]="application.useEntityModels" md-tooltip="If selected, built-in entity models results are provided only for info and potential entity disambiguation">Entity disambiguation only</md-checkbox>
       <md-checkbox [(ngModel)]="application.supportSubEntities" md-tooltip="If selected, you can use subentities in your nlp models">Allow subentities</md-checkbox>
     </md-card>
     <md-card *ngIf="state.locales" class="locales">

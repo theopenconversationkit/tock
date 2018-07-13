@@ -54,7 +54,7 @@ export class ApplicationComponent implements OnInit {
           }
         } else {
           this.newApplication = true;
-          this.application = new Application("", this.state.user.organization, [], [], StateService.DEFAULT_ENGINE, true, false);
+          this.application = new Application("", this.state.user.organization, [], [], StateService.DEFAULT_ENGINE, true, true, false);
         }
         this.nlpEngineType = this.application.nlpEngineType.name;
       }
@@ -62,7 +62,7 @@ export class ApplicationComponent implements OnInit {
   }
 
   saveApplication() {
-    if(this.application.name.trim().length === 0) {
+    if (this.application.name.trim().length === 0) {
       this.snackBar.open(`Please choose an application name`, "ERROR", {duration: 5000});
     } else if (this.application.supportedLocales.length === 0) {
       this.snackBar.open(`Please choose at least one locale`, "ERROR", {duration: 5000});
