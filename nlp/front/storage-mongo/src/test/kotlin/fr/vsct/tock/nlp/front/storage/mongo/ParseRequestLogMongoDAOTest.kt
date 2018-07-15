@@ -32,6 +32,10 @@ import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.litote.kmongo.findOne
 import org.litote.kmongo.toId
+import java.time.Instant
+import java.time.ZoneOffset.UTC
+import java.time.ZonedDateTime
+import java.time.temporal.ChronoUnit
 import kotlin.test.assertEquals
 
 /**
@@ -41,7 +45,11 @@ class ParseRequestLogMongoDAOTest : AbstractTest() {
 
     private val log = ParseRequestLog(
         "a".toId(),
-        ParseQuery(listOf("1"), "namespace", "appName", QueryContext(defaultLocale, Dice.newId())),
+        ParseQuery(listOf("1"), "namespace", "appName",
+            QueryContext(
+                defaultLocale,
+                Dice.newId(),
+                referenceDate = ZonedDateTime.now(UTC).truncatedTo(ChronoUnit.MILLIS))),
         ParseResult(
             "test",
             "namespace",
@@ -60,7 +68,8 @@ class ParseRequestLogMongoDAOTest : AbstractTest() {
             "sentence",
             mapOf("test2" to 2.0)
         ),
-        2
+        2,
+        date = Instant.now().truncatedTo(ChronoUnit.MILLIS)
     )
 
     val col: MongoCollection<ParseRequestLogMongoDAO.ParseRequestLogCol> by lazy { ParseRequestLogMongoDAO.col }
