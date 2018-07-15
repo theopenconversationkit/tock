@@ -23,9 +23,9 @@ import fr.vsct.tock.bot.engine.message.Message
  *
  */
 internal data class MessageRequest(
-        val userId: String,
-        val recipientId: String,
-        val message: Message,
-        val targetConnectorType: ConnectorType,
-        val test: Boolean = false) {
-}
+    val userId: String,
+    val recipientId: String,
+    val message: Message,
+    val targetConnectorType: ConnectorType,
+    val test: Boolean = false
+)

@@ -24,8 +24,8 @@ import org.litote.kmongo.Id
 import java.time.Instant
 import java.util.Locale
 
-@Data
-data class I18nAlternativeIndex(
+@Data(internal = true)
+internal data class I18nAlternativeIndex(
     val labelId: Id<I18nLabel>,
     val namespace: String,
     val locale: Locale,

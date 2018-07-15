@@ -7,7 +7,7 @@ import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KPropertyPath
 
-class ClientIdCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ClientIdCol?>) : KPropertyPath<T, ClientIdCol?>(previous,property) {
+internal class ClientIdCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ClientIdCol?>) : KPropertyPath<T, ClientIdCol?>(previous,property) {
     val userIds: KProperty1<T, Set<String>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ClientIdCol::userIds)
 
@@ -20,7 +20,7 @@ class ClientIdCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Cl
             get() = ClientIdCol::_id}
 }
 
-class ClientIdCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ClientIdCol>?>) : KPropertyPath<T, Collection<ClientIdCol>?>(previous,property) {
+internal class ClientIdCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ClientIdCol>?>) : KPropertyPath<T, Collection<ClientIdCol>?>(previous,property) {
     val userIds: KProperty1<T, Set<String>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ClientIdCol::userIds)
 

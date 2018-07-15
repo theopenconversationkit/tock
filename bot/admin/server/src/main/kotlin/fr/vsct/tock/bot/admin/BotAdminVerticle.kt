@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.admin
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
+import fr.vsct.tock.bot.admin.BotAdminService.dialogReportDAO
 import fr.vsct.tock.bot.admin.BotAdminService.getBotConfigurationByApplicationIdAndBotId
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.model.BotConfiguration
@@ -159,6 +160,10 @@ open class BotAdminVerticle : AdminVerticle() {
             } else {
                 unauthorized()
             }
+        }
+
+        blockingJsonGet("/action/nlp-stats/:actionId", botUser) { context ->
+            dialogReportDAO.getNlpCallStats(context.pathId("actionId"), context.organization)
         }
 
         blockingJsonGet("/test/plans", botUser) { context ->

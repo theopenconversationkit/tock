@@ -11,7 +11,7 @@ import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KPropertyPath
 
-class I18nAlternativeIndex_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18nAlternativeIndex?>) : KPropertyPath<T, I18nAlternativeIndex?>(previous,property) {
+internal class I18nAlternativeIndex_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18nAlternativeIndex?>) : KPropertyPath<T, I18nAlternativeIndex?>(previous,property) {
     val labelId: KProperty1<T, Id<I18nLabel>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,I18nAlternativeIndex::labelId)
 
@@ -54,7 +54,7 @@ class I18nAlternativeIndex_<T>(previous: KPropertyPath<T, *>?, property: KProper
             get() = I18nAlternativeIndex::date}
 }
 
-class I18nAlternativeIndex_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<I18nAlternativeIndex>?>) : KPropertyPath<T, Collection<I18nAlternativeIndex>?>(previous,property) {
+internal class I18nAlternativeIndex_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<I18nAlternativeIndex>?>) : KPropertyPath<T, Collection<I18nAlternativeIndex>?>(previous,property) {
     val labelId: KProperty1<T, Id<I18nLabel>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,I18nAlternativeIndex::labelId)
 

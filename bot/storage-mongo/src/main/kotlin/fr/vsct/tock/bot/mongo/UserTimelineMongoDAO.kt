@@ -33,6 +33,7 @@ import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.Snapshot
+import fr.vsct.tock.bot.engine.nlp.NlpCallStats
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserTimeline
@@ -45,6 +46,7 @@ import fr.vsct.tock.bot.mongo.DialogTextCol_.Companion.Date
 import fr.vsct.tock.bot.mongo.DialogTextCol_.Companion.DialogId
 import fr.vsct.tock.bot.mongo.DialogTextCol_.Companion.Text
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
+import fr.vsct.tock.bot.mongo.NlpStatsCol_.Companion.AppNamespace
 import fr.vsct.tock.bot.mongo.UserTimelineCol_.Companion.ApplicationIds
 import fr.vsct.tock.bot.mongo.UserTimelineCol_.Companion.LastUpdateDate
 import fr.vsct.tock.bot.mongo.UserTimelineCol_.Companion.TemporaryIds
@@ -114,6 +116,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     private val dialogTextCol = database.getCollection<DialogTextCol>("dialog_text")
     private val clientIdCol = database.getCollection<ClientIdCol>("client_id")
     private val connectorMessageCol = database.getCollection<ConnectorMessageCol>("connector_message")
+    private val nlpStatsCol = database.getCollection<NlpStatsCol>("action_nlp_stats")
     private val snapshotCol = database.getCollection<SnapshotCol>("dialog_snapshot")
 
     init {
@@ -146,6 +149,11 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
         )
         connectorMessageCol.ensureIndex("{'_id.dialogId':1}")
+        nlpStatsCol.ensureIndex(
+            Date,
+            indexOptions = IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
+        )
+        nlpStatsCol.ensureIndex(NlpStatsCol_._id.actionId, AppNamespace)
         snapshotCol.ensureIndex(
             SnapshotCol_.LastUpdateDate,
             indexOptions = IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
@@ -183,13 +191,24 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
                 dialog.allActions().forEach {
                     when (it) {
-                        is SendSentenceWithNotLoadedMessage -> if (it.loaded && it.messages.isNotEmpty()) {
-                            saveConnectorMessage(it.toActionId(), dialog.id, it.messages)
+                        is SendSentenceWithNotLoadedMessage -> {
+                            if (it.messageLoaded && it.messages.isNotEmpty()) {
+                                saveConnectorMessage(it.toActionId(), dialog.id, it.messages)
+                            }
+                            if (it.nlpStatsLoaded && it.nlpStats != null) {
+                                saveNlpStats(it.toActionId(), dialog.id, it.nlpStats!!)
+                            }
                         }
-                        is SendSentence -> if (it.messages.isNotEmpty()) {
-                            saveConnectorMessage(it.toActionId(), dialog.id, it.messages)
+                        is SendSentence -> {
+                            if (it.messages.isNotEmpty()) {
+                                saveConnectorMessage(it.toActionId(), dialog.id, it.messages)
+                            }
+                            if (it.nlpStats != null) {
+                                saveNlpStats(it.toActionId(), dialog.id, it.nlpStats!!)
+                            }
                         }
-                        else -> {/*do nothing*/
+                        else -> {
+                            /*do nothing*/
                         }
                     }
                 }
@@ -253,6 +272,34 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         } catch (e: Exception) {
             logger.error(e)
             emptyList()
+        }
+    }
+
+    private fun saveNlpStats(actionId: Id<Action>, dialogId: Id<Dialog>, nlpCallStats: NlpCallStats) {
+        nlpStatsCol.save(
+            NlpStatsCol(
+                NlpStatsColId(actionId, dialogId),
+                nlpCallStats,
+                nlpCallStats.nlpQuery.namespace
+            )
+        )
+    }
+
+    internal fun loadNlpStats(actionId: Id<Action>, dialogId: Id<Dialog>): NlpCallStats? {
+        return try {
+            nlpStatsCol.findOneById(NlpStatsColId(actionId, dialogId))?.stats
+        } catch (e: Exception) {
+            logger.error(e)
+            null
+        }
+    }
+
+    override fun getNlpCallStats(actionId: Id<Action>, namespace: String): NlpCallStats? {
+        return try {
+            nlpStatsCol.findOne(NlpStatsCol_._id.actionId eq actionId, AppNamespace eq namespace)?.stats
+        } catch (e: Exception) {
+            logger.error(e)
+            null
         }
     }
 

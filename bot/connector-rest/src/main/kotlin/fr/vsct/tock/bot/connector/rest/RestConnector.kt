@@ -67,7 +67,8 @@ class RestConnector(val applicationId: String, val path: String) : ConnectorBase
                                         message.targetConnectorType,
                                         context,
                                         if (message.test) controller.botDefinition.testBehaviour else null,
-                                        locale
+                                        locale,
+                                        action
                                     )
                                 )
                             )

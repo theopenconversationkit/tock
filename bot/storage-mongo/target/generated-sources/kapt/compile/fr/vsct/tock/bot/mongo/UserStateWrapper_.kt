@@ -7,7 +7,7 @@ import kotlin.collections.Map
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.property.KPropertyPath
 
-class UserStateWrapper_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, UserTimelineCol.UserStateWrapper?>) : KPropertyPath<T, UserTimelineCol.UserStateWrapper?>(previous,property) {
+internal class UserStateWrapper_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, UserTimelineCol.UserStateWrapper?>) : KPropertyPath<T, UserTimelineCol.UserStateWrapper?>(previous,property) {
     val creationDate: KProperty1<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath(this,UserTimelineCol.UserStateWrapper::creationDate)
 
@@ -25,7 +25,7 @@ class UserStateWrapper_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
             get() = UserTimelineCol.UserStateWrapper::flags}
 }
 
-class UserStateWrapper_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<UserTimelineCol.UserStateWrapper>?>) : KPropertyPath<T, Collection<UserTimelineCol.UserStateWrapper>?>(previous,property) {
+internal class UserStateWrapper_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<UserTimelineCol.UserStateWrapper>?>) : KPropertyPath<T, Collection<UserTimelineCol.UserStateWrapper>?>(previous,property) {
     val creationDate: KProperty1<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath(this,UserTimelineCol.UserStateWrapper::creationDate)
 

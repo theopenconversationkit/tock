@@ -103,7 +103,7 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
         if (bus.story.definition == bus.botDefinition.unknownStory) {
             0.0
         } else {
-            (bus.action as? SendSentence)?.nlpStats?.intentProbability ?: 1.0
+            (bus.action as? SendSentence)?.nlpStats?.nlpResult?.intentProbability ?: 1.0
         }
 
     /**

@@ -9,7 +9,7 @@ import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KPropertyPath
 
-class UserTimelineCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, UserTimelineCol?>) : KPropertyPath<T, UserTimelineCol?>(previous,property) {
+internal class UserTimelineCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, UserTimelineCol?>) : KPropertyPath<T, UserTimelineCol?>(previous,property) {
     val _id: KProperty1<T, Id<UserTimelineCol>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,UserTimelineCol::_id)
 
@@ -57,7 +57,7 @@ class UserTimelineCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*
             get() = UserTimelineCol::lastUserActionDate}
 }
 
-class UserTimelineCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<UserTimelineCol>?>) : KPropertyPath<T, Collection<UserTimelineCol>?>(previous,property) {
+internal class UserTimelineCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<UserTimelineCol>?>) : KPropertyPath<T, Collection<UserTimelineCol>?>(previous,property) {
     val _id: KProperty1<T, Id<UserTimelineCol>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,UserTimelineCol::_id)
 

@@ -66,7 +66,7 @@ class NlpTest : BotEngineTest() {
         every { nlpClient.parse(any()) } returns nlpResult
         val sentence = userAction as SendSentence
         Nlp().parseSentence(sentence, userTimeline, dialog, connectorController, botDefinition)
-        assertEquals("test2", sentence.nlpStats?.intent?.name)
+        assertEquals("test2", sentence.nlpStats?.intentResult?.name)
     }
 
     @Test
@@ -146,7 +146,7 @@ class NlpTest : BotEngineTest() {
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
 
         assertEquals(test2.wrappedIntent(), dialog.state.currentIntent)
-        assertEquals(test2.wrappedIntent(), (userAction as SendSentence).nlpStats?.intent)
-        assertEquals(test.wrappedIntent().name, (userAction as SendSentence).nlpStats?.firstIntent)
+        assertEquals(test2.wrappedIntent(), (userAction as SendSentence).nlpStats?.intentResult)
+        assertEquals(test.wrappedIntent().name, (userAction as SendSentence).nlpStats?.nlpResult?.intent)
     }
 }

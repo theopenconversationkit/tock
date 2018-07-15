@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
-import {Component, OnDestroy, OnInit} from "@angular/core";
+import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
 import {TestService} from "../test.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
 import {BotDialogRequest, TestMessage} from "../model/test";
 import {BotMessage, Sentence} from "../../shared/model/dialog-data";
-import {MdSnackBar} from "@angular/material";
+import {MD_DIALOG_DATA, MdDialog, MdDialogRef, MdSnackBar} from "@angular/material";
+import {BotSharedService} from "../../shared/bot-shared.service";
 
 @Component({
   selector: 'tock-bot-dialog',
@@ -41,7 +42,9 @@ export class BotDialogComponent implements OnInit, OnDestroy {
   constructor(public state: StateService,
               private test: TestService,
               private rest: RestService,
-              private snackBar: MdSnackBar) {
+              private shared:BotSharedService,
+              private snackBar: MdSnackBar,
+              private dialog: MdDialog) {
   }
 
   ngOnInit() {
@@ -75,7 +78,8 @@ export class BotDialogComponent implements OnInit, OnDestroy {
   }
 
   private talk(message: BotMessage) {
-    this.messages.push(new TestMessage(false, message));
+    const userAction = new TestMessage(false, message);
+    this.messages.push(userAction);
     this.userMessage = "";
     this.loading = true;
     this.test
@@ -88,18 +92,57 @@ export class BotDialogComponent implements OnInit, OnDestroy {
           this.state.currentLocale))
       .subscribe(r => {
         this.loading = false;
+        userAction.locale = r.userLocale;
+        userAction.hasNlpStats = r.hasNlpStats;
+        userAction.actionId = r.userActionId;
         r.messages.forEach(m => {
           this.messages.push(new TestMessage(true, m));
         });
       });
   }
 
+  displayNlpStats(m: TestMessage) {
+    this.shared.getNlpDialogStats(m.actionId).subscribe(r => {
+      this.dialog.open(DisplayNlpStatsComponent, {
+        data: {
+          request: r.nlpQueryAsJson(),
+          response: r.nlpResultAsJson()
+        }
+      })
+    });
+
+  }
+
   clear() {
-       this.messages = [];
+    this.messages = [];
   }
 
   ngOnDestroy() {
     this.errorUnsuscriber.unsubscribe();
   }
+
+}
+
+
+@Component({
+  selector: 'tock-display-nlp-stats',
+  template: `<h1 md-dialog-title>Nlp Stats</h1>
+  <div md-dialog-content>
+    Request:
+    <pre>{{data.request}}</pre>
+    Response:
+    <pre>{{data.response}}</pre>
+  </div>
+  <div md-dialog-actions>
+    <button md-raised-button md-dialog-close color="primary">Close</button>
+  </div>`
+})
+export class DisplayNlpStatsComponent {
+
+  constructor(public dialogRef: MdDialogRef<DisplayNlpStatsComponent>,
+              @Inject(MD_DIALOG_DATA) public data: any) {
+
+  }
+
 
 }

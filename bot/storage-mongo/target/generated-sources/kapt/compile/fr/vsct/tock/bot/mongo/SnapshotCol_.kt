@@ -9,7 +9,7 @@ import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KPropertyPath
 
-class SnapshotCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, SnapshotCol?>) : KPropertyPath<T, SnapshotCol?>(previous,property) {
+internal class SnapshotCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, SnapshotCol?>) : KPropertyPath<T, SnapshotCol?>(previous,property) {
     val _id: KProperty1<T, Id<Dialog>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,SnapshotCol::_id)
 
@@ -27,7 +27,7 @@ class SnapshotCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Sn
             get() = SnapshotCol::lastUpdateDate}
 }
 
-class SnapshotCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<SnapshotCol>?>) : KPropertyPath<T, Collection<SnapshotCol>?>(previous,property) {
+internal class SnapshotCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<SnapshotCol>?>) : KPropertyPath<T, Collection<SnapshotCol>?>(previous,property) {
     val _id: KProperty1<T, Id<Dialog>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,SnapshotCol::_id)
 

@@ -32,32 +32,50 @@ import java.time.Instant
 /**
  *
  */
-internal class SendSentenceWithNotLoadedMessage(val dialogId: Id<Dialog>,
-                                                playerId: PlayerId,
-                                                applicationId: String,
-                                                recipientId: PlayerId,
-                                                text: CharSequence?,
-                                                id: Id<Action> = newId(),
-                                                date: Instant = Instant.now(),
-                                                state: EventState = EventState(),
-                                                metadata: ActionMetadata = ActionMetadata(),
-                                                nlpStats: NlpCallStats? = null) :
-        SendSentence(playerId, applicationId, recipientId, text, mutableListOf(), id, date, state, metadata, nlpStats) {
+internal class SendSentenceWithNotLoadedMessage(
+    val dialogId: Id<Dialog>,
+    playerId: PlayerId,
+    applicationId: String,
+    recipientId: PlayerId,
+    text: CharSequence?,
+    id: Id<Action> = newId(),
+    date: Instant = Instant.now(),
+    state: EventState = EventState(),
+    metadata: ActionMetadata = ActionMetadata()
+) :
+    SendSentence(playerId, applicationId, recipientId, text, mutableListOf(), id, date, state, metadata, null) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    internal var loaded = false
+    internal var messageLoaded = false
     private var loadedMessage: MutableList<ConnectorMessage> = mutableListOf()
 
     override val messages: MutableList<ConnectorMessage>
         get() {
-            if (!loaded) {
+            if (!messageLoaded) {
                 logger.debug { "load message for $id" }
-                loaded = true
+                messageLoaded = true
                 loadedMessage.addAll(UserTimelineMongoDAO.loadConnectorMessage(toActionId(), dialogId))
             }
             return loadedMessage
+        }
+
+    internal var nlpStatsLoaded = false
+    private var loadedNlpStats: NlpCallStats? = null
+
+    override var nlpStats: NlpCallStats?
+        get() {
+            if (!nlpStatsLoaded) {
+                logger.debug { "load nlpStats for $id" }
+                nlpStatsLoaded = true
+                loadedNlpStats = UserTimelineMongoDAO.loadNlpStats(toActionId(), dialogId)
+            }
+            return loadedNlpStats
+        }
+        set(value) {
+            this.loadedNlpStats = value
+            nlpStatsLoaded = true
         }
 }

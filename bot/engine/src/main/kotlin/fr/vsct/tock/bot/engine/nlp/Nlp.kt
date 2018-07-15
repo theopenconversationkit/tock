@@ -49,7 +49,6 @@ import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultZoneId
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.provide
 import fr.vsct.tock.shared.withNamespace
 import mu.KotlinLogging
@@ -106,30 +105,25 @@ internal class Nlp : NlpController {
                                 emptyList<EntityValue>()
                             }
                         }
-                        sentence.state.entityValues.addAll(
-                            customEntityEvaluations +
-                                    nlpResult.entities
-                                        .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
-                                        .map { EntityValue(nlpResult, it) }
-                        )
+                        val entityEvaluations = customEntityEvaluations +
+                                nlpResult.entities
+                                    .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
+                                    .map { EntityValue(nlpResult, it) }
+                        sentence.state.entityValues.addAll(entityEvaluations)
 
-                        sentence.nlpStats = NlpCallStats(
-                            intent,
-                            nlpResult.intent,
-                            nlpResult.intentProbability,
-                            nlpResult.entitiesProbability,
-                            nlpResult.otherIntentsProbabilities
-                                .map {
-                                    NlpIntentStat(
-                                        botDefinition.findIntent(it.key.name()),
-                                        it.value
-                                    )
-                                },
-                            dialog.state.nextActionState?.intentsQualifiers
-                        )
                         dialog.apply {
                             state.currentIntent = intent
-                            state.mergeEntityValuesFromAction(sentence)
+
+                            val finalEntityValues = state.mergeEntityValuesFromAction(sentence)
+
+                            sentence.nlpStats = NlpCallStats(
+                                userTimeline.userPreferences.locale,
+                                intent,
+                                entityEvaluations,
+                                finalEntityValues.values.mapNotNull { it.value },
+                                query,
+                                nlpResult
+                            )
                         }
                     } ?: listenNlpErrorCall(query, null)
                 } catch (t: Throwable) {
@@ -266,7 +260,7 @@ internal class Nlp : NlpController {
             oldValue: EntityStateValue? = null
         ): EntityStateValue {
             val entity = newValues.first().entity
-            val defaultNewValue = newValues.filter { it.value != null }.firstOrNull() ?: newValues.first()
+            val defaultNewValue = newValues.firstOrNull { it.value != null } ?: newValues.first()
             val eligibleToMergeValues = newValues.filter { it.mergeSupport && it.value != null }
             return if (oldValue == null) {
                 if (eligibleToMergeValues.size < 2) {
@@ -318,21 +312,20 @@ internal class Nlp : NlpController {
                     )
                 )
             )
-            return if (result == null || result.value == null) {
+            return if (result?.value == null) {
                 defaultNewValue
             } else {
                 EntityValue(entity, result.value, result.content)
             }
         }
 
-        private fun DialogState.mergeEntityValuesFromAction(action: Action) {
-            entityValues.putAll(
-                action.state.entityValues
-                    .groupBy { it.entity.role }
-                    .mapValues {
-                        mergeEntityValues(action, it.value, entityValues.get(it.key))
-                    }
-            )
+        private fun DialogState.mergeEntityValuesFromAction(action: Action): Map<String, EntityStateValue> {
+            return action.state.entityValues
+                .groupBy { it.entity.role }
+                .mapValues {
+                    mergeEntityValues(action, it.value, entityValues[it.key])
+                }
+                .also { entityValues.putAll(it) }
         }
 
         private fun parse(request: NlpQuery): NlpResult? {

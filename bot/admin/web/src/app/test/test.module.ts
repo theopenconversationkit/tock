@@ -20,7 +20,7 @@ import {SharedModule} from "tock-nlp-admin/src/app/shared/shared.module";
 import {AuthGuard} from "tock-nlp-admin/src/app/core/auth/auth.guard";
 import {TestTabsComponent} from "./test-tabs.component";
 import {ApplicationResolver} from "tock-nlp-admin/src/app/core/application.resolver";
-import {BotDialogComponent} from "./dialog/bot-dialog.component";
+import {BotDialogComponent, DisplayNlpStatsComponent} from "./dialog/bot-dialog.component";
 import {CommonModule} from "@angular/common";
 import {TestService} from "./test.service";
 import {BotSharedModule} from "../shared/bot-shared.module";
@@ -69,13 +69,14 @@ export class BotTestRoutingModule {
   declarations: [
     TestTabsComponent,
     BotDialogComponent,
-    TestPlanComponent
+    TestPlanComponent,
+    DisplayNlpStatsComponent
   ],
   exports: [],
   providers: [
     TestService
   ],
-  entryComponents: []
+  entryComponents: [DisplayNlpStatsComponent]
 })
 export class BotTestModule {
 }

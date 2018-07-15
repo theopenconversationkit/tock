@@ -359,14 +359,17 @@ object BotAdminService {
             )
 
             if (response.isSuccessful) {
-                BotDialogResponse(response.body()?.messages ?: emptyList())
+                response.body()?.run {
+                    BotDialogResponse(messages, userLocale, userActionId, hasNlpStats)
+                } ?: BotDialogResponse(emptyList())
+
             } else {
                 logger.error { response.errorBody()?.string() }
-                BotDialogResponse(listOf(ClientSentence("technical error :(")))
+                BotDialogResponse(listOf(ClientSentence("technical error :( ${response.errorBody()?.string()}]")))
             }
         } catch (throwable: Throwable) {
             logger.error(throwable)
-            BotDialogResponse(listOf(ClientSentence("technical error :(")))
+            BotDialogResponse(listOf(ClientSentence("technical error :( ${throwable.message}")))
         }
     }
 }

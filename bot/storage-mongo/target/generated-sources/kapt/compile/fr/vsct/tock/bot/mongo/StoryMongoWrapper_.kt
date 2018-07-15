@@ -7,7 +7,7 @@ import kotlin.collections.List
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.property.KPropertyPath
 
-class StoryMongoWrapper_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, DialogCol.StoryMongoWrapper?>) : KPropertyPath<T, DialogCol.StoryMongoWrapper?>(previous,property) {
+internal class StoryMongoWrapper_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, DialogCol.StoryMongoWrapper?>) : KPropertyPath<T, DialogCol.StoryMongoWrapper?>(previous,property) {
     val storyDefinitionId: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,DialogCol.StoryMongoWrapper::storyDefinitionId)
 
@@ -30,7 +30,7 @@ class StoryMongoWrapper_<T>(previous: KPropertyPath<T, *>?, property: KProperty1
             get() = DialogCol.StoryMongoWrapper::actions}
 }
 
-class StoryMongoWrapper_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<DialogCol.StoryMongoWrapper>?>) : KPropertyPath<T, Collection<DialogCol.StoryMongoWrapper>?>(previous,property) {
+internal class StoryMongoWrapper_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<DialogCol.StoryMongoWrapper>?>) : KPropertyPath<T, Collection<DialogCol.StoryMongoWrapper>?>(previous,property) {
     val storyDefinitionId: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,DialogCol.StoryMongoWrapper::storyDefinitionId)
 

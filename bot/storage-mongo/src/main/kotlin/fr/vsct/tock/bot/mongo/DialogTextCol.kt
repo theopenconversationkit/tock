@@ -24,9 +24,8 @@ import java.time.Instant
 /**
  * To index dialog text
  */
-@Data
-data class DialogTextCol(
+@Data(internal = true)
+internal data class DialogTextCol(
         val text: String,
         val dialogId: Id<Dialog>,
-        val date: Instant = Instant.now()) {
-}
+        val date: Instant = Instant.now())

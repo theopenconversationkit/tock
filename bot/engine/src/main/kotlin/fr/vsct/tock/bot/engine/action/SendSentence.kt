@@ -45,7 +45,7 @@ open class SendSentence(
         date: Instant = Instant.now(),
         state: EventState = EventState(),
         metadata: ActionMetadata = ActionMetadata(),
-        var nlpStats: NlpCallStats? = null,
+        open var nlpStats: NlpCallStats? = null,
         /**
          * Used by analysed nlp (ie Alexa).
          */

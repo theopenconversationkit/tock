@@ -10,7 +10,7 @@ import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KPropertyPath
 
-class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, DialogCol?>) : KPropertyPath<T, DialogCol?>(previous,property) {
+internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, DialogCol?>) : KPropertyPath<T, DialogCol?>(previous,property) {
     val playerIds: PlayerId_Col<T>
         get() = PlayerId_Col(this,DialogCol::playerIds)
 
@@ -43,7 +43,7 @@ class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Dial
             get() = DialogCol::lastUpdateDate}
 }
 
-class DialogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<DialogCol>?>) : KPropertyPath<T, Collection<DialogCol>?>(previous,property) {
+internal class DialogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<DialogCol>?>) : KPropertyPath<T, Collection<DialogCol>?>(previous,property) {
     val playerIds: PlayerId_Col<T>
         get() = PlayerId_Col(this,DialogCol::playerIds)
 

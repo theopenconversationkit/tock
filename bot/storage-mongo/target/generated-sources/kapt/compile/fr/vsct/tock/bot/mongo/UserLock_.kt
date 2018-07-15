@@ -7,7 +7,7 @@ import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KPropertyPath
 
-class UserLock_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, MongoUserLock.UserLock?>) : KPropertyPath<T, MongoUserLock.UserLock?>(previous,property) {
+internal class UserLock_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, MongoUserLock.UserLock?>) : KPropertyPath<T, MongoUserLock.UserLock?>(previous,property) {
     val _id: KProperty1<T, Id<MongoUserLock.UserLock>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,MongoUserLock.UserLock::_id)
 
@@ -25,7 +25,7 @@ class UserLock_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Mongo
             get() = MongoUserLock.UserLock::date}
 }
 
-class UserLock_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<MongoUserLock.UserLock>?>) : KPropertyPath<T, Collection<MongoUserLock.UserLock>?>(previous,property) {
+internal class UserLock_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<MongoUserLock.UserLock>?>) : KPropertyPath<T, Collection<MongoUserLock.UserLock>?>(previous,property) {
     val _id: KProperty1<T, Id<MongoUserLock.UserLock>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,MongoUserLock.UserLock::_id)
 

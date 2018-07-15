@@ -8,7 +8,7 @@ import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.property.KPropertyPath
 
-class UserPreferencesWrapper_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, UserTimelineCol.UserPreferencesWrapper?>) : KPropertyPath<T, UserTimelineCol.UserPreferencesWrapper?>(previous,property) {
+internal class UserPreferencesWrapper_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, UserTimelineCol.UserPreferencesWrapper?>) : KPropertyPath<T, UserTimelineCol.UserPreferencesWrapper?>(previous,property) {
     val firstName: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,UserTimelineCol.UserPreferencesWrapper::firstName)
 
@@ -56,7 +56,7 @@ class UserPreferencesWrapper_<T>(previous: KPropertyPath<T, *>?, property: KProp
             get() = UserTimelineCol.UserPreferencesWrapper::encrypted}
 }
 
-class UserPreferencesWrapper_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<UserTimelineCol.UserPreferencesWrapper>?>) : KPropertyPath<T, Collection<UserTimelineCol.UserPreferencesWrapper>?>(previous,property) {
+internal class UserPreferencesWrapper_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<UserTimelineCol.UserPreferencesWrapper>?>) : KPropertyPath<T, Collection<UserTimelineCol.UserPreferencesWrapper>?>(previous,property) {
     val firstName: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,UserTimelineCol.UserPreferencesWrapper::firstName)
 

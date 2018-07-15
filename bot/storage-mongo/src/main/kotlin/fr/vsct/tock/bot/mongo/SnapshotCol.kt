@@ -26,8 +26,8 @@ import java.time.Instant.now
 /**
  *
  */
-@Data
-data class SnapshotCol(
+@Data(internal = true)
+internal data class SnapshotCol(
         val _id: Id<Dialog>,
         val snapshots: List<Snapshot>,
         val lastUpdateDate: Instant = now()

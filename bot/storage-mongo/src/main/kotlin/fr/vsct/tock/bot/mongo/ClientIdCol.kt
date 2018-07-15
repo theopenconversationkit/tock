@@ -23,8 +23,8 @@ import org.litote.kmongo.newId
 /**
  *
  */
-@Data
-data class ClientIdCol(
+@Data(internal = true)
+internal data class ClientIdCol(
         val userIds: Set<String>,
         val _id: Id<ClientIdCol> = newId()
 )

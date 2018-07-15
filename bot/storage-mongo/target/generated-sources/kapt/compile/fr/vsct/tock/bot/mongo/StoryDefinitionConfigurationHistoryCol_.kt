@@ -7,7 +7,7 @@ import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.property.KPropertyPath
 
-class StoryDefinitionConfigurationHistoryCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol?>) : KPropertyPath<T, StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol?>(previous,property) {
+internal class StoryDefinitionConfigurationHistoryCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol?>) : KPropertyPath<T, StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol?>(previous,property) {
     val conf: StoryDefinitionConfiguration_<T>
         get() = StoryDefinitionConfiguration_(this,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::conf)
 
@@ -25,7 +25,7 @@ class StoryDefinitionConfigurationHistoryCol_<T>(previous: KPropertyPath<T, *>?,
             get() = StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::date}
 }
 
-class StoryDefinitionConfigurationHistoryCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>?>) : KPropertyPath<T, Collection<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>?>(previous,property) {
+internal class StoryDefinitionConfigurationHistoryCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>?>) : KPropertyPath<T, Collection<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>?>(previous,property) {
     val conf: StoryDefinitionConfiguration_<T>
         get() = StoryDefinitionConfiguration_(this,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::conf)
 

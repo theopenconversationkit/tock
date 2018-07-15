@@ -43,11 +43,11 @@ import java.time.Instant
 /**
  *
  */
-object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurationDAO {
+internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurationDAO {
 
     private val logger = KotlinLogging.logger {}
 
-    @Data
+    @Data(internal = true)
     data class StoryDefinitionConfigurationHistoryCol(
         val conf: StoryDefinitionConfiguration,
         val deleted: Boolean = false,

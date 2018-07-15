@@ -47,8 +47,8 @@ import java.time.Instant
 import java.time.ZoneId
 import java.util.Locale
 
-@Data
-data class UserTimelineCol(
+@Data(internal = true)
+internal data class UserTimelineCol(
     val _id: Id<UserTimelineCol>,
     val playerId: PlayerId,
     val userPreferences: UserPreferencesWrapper,
@@ -109,7 +109,7 @@ data class UserTimelineCol(
         )
     }
 
-    @Data
+    @Data(internal = true)
     data class UserPreferencesWrapper(
         var firstName: String? = null,
         var lastName: String? = null,
@@ -152,7 +152,7 @@ data class UserTimelineCol(
 
     }
 
-    @Data
+    @Data(internal = true)
     class UserStateWrapper(
         val creationDate: Instant = Instant.now(),
         val lastUpdateDate: Instant = creationDate,

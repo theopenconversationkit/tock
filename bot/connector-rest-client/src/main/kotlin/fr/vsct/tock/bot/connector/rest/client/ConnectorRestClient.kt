@@ -38,7 +38,9 @@ import java.util.concurrent.TimeUnit
 /**
  *
  */
-class ConnectorRestClient(private val baseUrl: String = System.getenv("tock_bot_rest_url") ?: "http://localhost:8888") {
+class ConnectorRestClient(
+    private val baseUrl: String = System.getenv("tock_bot_rest_url") ?: "http://localhost:8888"
+) {
 
     private fun longProperty(name: String, defaultValue: Long): Long = System.getenv(name)?.toLong() ?: defaultValue
 

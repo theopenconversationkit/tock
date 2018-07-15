@@ -16,24 +16,23 @@
 
 package fr.vsct.tock.bot.mongo
 
-import fr.vsct.tock.bot.engine.event.EventType
-import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.engine.nlp.NlpCallStats
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import java.time.Instant
+
+@Data(internal = true)
+internal data class NlpStatsColId(val actionId: Id<Action>, val dialogId: Id<Dialog>)
 
 /**
  *
  */
-data class DialogStatCol(
-        val userId: PlayerId,
-        val applicationId: String,
-        val dialogId: String,
-        val handled: Boolean,
-        val date: Instant,
-        val eventType: EventType,
-        val message: String?,
-        val story: String?,
-        val intent: String?,
-        val step: String?,
-        val _id: Id<DialogStatCol>) {
-}
+@Data(internal = true)
+internal data class NlpStatsCol(
+    val _id: NlpStatsColId,
+    val stats: NlpCallStats,
+    val appNamespace:String,
+    val date: Instant = Instant.now()
+)

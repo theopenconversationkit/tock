@@ -17,19 +17,19 @@
 package fr.vsct.tock.bot.engine.nlp
 
 import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.definition.IntentAware
-import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
+import fr.vsct.tock.bot.engine.dialog.EntityValue
+import fr.vsct.tock.nlp.api.client.model.NlpQuery
+import fr.vsct.tock.nlp.api.client.model.NlpResult
+import java.util.Locale
 
 /**
  * Stats about nlp call.
  */
-data class NlpCallStats(val intent: Intent = Intent.unknown,
-                        val firstIntent:String? = null,
-                        val intentProbability: Double?,
-                        val entitiesProbability: Double?,
-                        val otherIntentsProbabilities: List<NlpIntentStat>,
-                        var intentsQualifiers: List<NlpIntentQualifier>? = null) {
-
-    fun hasIntent(intent: IntentAware, minProbability: Double = 0.0): Boolean
-            = otherIntentsProbabilities.any { intent.wrap(it.intent) && it.probability > minProbability }
-}
+data class NlpCallStats(
+    val locale: Locale,
+    val intentResult: Intent = Intent.unknown,
+    val entityResult: List<EntityValue> = emptyList(),
+    val entityResultAfterMerge: List<EntityValue> = emptyList(),
+    val nlpQuery: NlpQuery,
+    val nlpResult: NlpResult
+)

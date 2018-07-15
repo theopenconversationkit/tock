@@ -16,8 +16,15 @@
 
 package fr.vsct.tock.bot.connector.rest.client.model
 
+import java.util.Locale
+
 /**
  *
  */
-data class ClientMessageResponse(val messages: List<ClientMessage>) {
-}
+data class ClientMessageResponse(
+    val messages: List<ClientMessage>,
+    val applicationId: String? = null,
+    val userActionId: String? = null,
+    val userLocale: Locale? = null,
+    val hasNlpStats:Boolean = false
+)

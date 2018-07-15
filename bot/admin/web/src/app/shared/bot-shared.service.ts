@@ -19,6 +19,7 @@ import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {Observable} from "rxjs/Observable";
 import {ConnectorType} from "../core/model/configuration";
+import {NlpCallStats} from "./model/dialog-data";
 
 @Injectable()
 export class BotSharedService implements OnDestroy {
@@ -32,6 +33,10 @@ export class BotSharedService implements OnDestroy {
 
   getConnectorTypes(): Observable<ConnectorType[]> {
     return this.rest.get(`/connectorTypes`, ConnectorType.fromJSONArray);
+  }
+
+  getNlpDialogStats(actionId: string): Observable<NlpCallStats> {
+    return this.rest.get(`/action/nlp-stats/${actionId}`, NlpCallStats.fromJSON)
   }
 
 }

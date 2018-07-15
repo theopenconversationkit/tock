@@ -8,7 +8,7 @@ import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KPropertyPath
 
-class DialogTextCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, DialogTextCol?>) : KPropertyPath<T, DialogTextCol?>(previous,property) {
+internal class DialogTextCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, DialogTextCol?>) : KPropertyPath<T, DialogTextCol?>(previous,property) {
     val text: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,DialogTextCol::text)
 
@@ -26,7 +26,7 @@ class DialogTextCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, 
             get() = DialogTextCol::date}
 }
 
-class DialogTextCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<DialogTextCol>?>) : KPropertyPath<T, Collection<DialogTextCol>?>(previous,property) {
+internal class DialogTextCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<DialogTextCol>?>) : KPropertyPath<T, Collection<DialogTextCol>?>(previous,property) {
     val text: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,DialogTextCol::text)
 

@@ -21,6 +21,7 @@ import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.rest.model.MessageResponse
 import fr.vsct.tock.bot.definition.TestBehaviour
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.shared.jackson.mapper
 import io.vertx.ext.web.RoutingContext
@@ -32,12 +33,13 @@ import java.util.concurrent.CopyOnWriteArrayList
  * [ConnectorCallback] for [RestConnector].
  */
 internal class RestConnectorCallback(
-        applicationId: String,
-        connectorType: ConnectorType,
-        val context: RoutingContext,
-        val testContext: TestBehaviour?,
-        val locale: Locale,
-        val actions: MutableList<Action> = CopyOnWriteArrayList()
+    applicationId: String,
+    connectorType: ConnectorType,
+    val context: RoutingContext,
+    val testContext: TestBehaviour?,
+    val locale: Locale,
+    val userAction: Action,
+    val actions: MutableList<Action> = CopyOnWriteArrayList()
 ) : ConnectorCallbackBase(applicationId, connectorType) {
 
     companion object {
@@ -60,9 +62,17 @@ internal class RestConnectorCallback(
     }
 
     private fun sendAnswer() {
-        val r = mapper.writeValueAsString(MessageResponse(
-                actions.map { it.toMessage() }
-        ))
+
+        val nlpStats = (userAction as? SendSentence)?.nlpStats
+        val r = mapper.writeValueAsString(
+            MessageResponse(
+                actions.map { it.toMessage() },
+                applicationId,
+                userAction.id.toString(),
+                nlpStats?.locale,
+                nlpStats != null
+            )
+        )
         logger.debug { "response : $r" }
         context.response().end(r)
     }

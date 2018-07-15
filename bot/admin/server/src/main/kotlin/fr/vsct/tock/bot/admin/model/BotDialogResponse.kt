@@ -17,10 +17,14 @@
 package fr.vsct.tock.bot.admin.model
 
 import fr.vsct.tock.bot.connector.rest.client.model.ClientMessage
+import java.util.Locale
 
 /**
  *
  */
 data class BotDialogResponse(
-        val messages: List<ClientMessage>) {
-}
+    val messages: List<ClientMessage>,
+    val userLocale: Locale? = null,
+    val userActionId:String? = null,
+    val hasNlpStats:Boolean = false
+)

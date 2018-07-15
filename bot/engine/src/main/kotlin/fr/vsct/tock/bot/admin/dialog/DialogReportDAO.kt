@@ -16,7 +16,10 @@
 
 package fr.vsct.tock.bot.admin.dialog
 
+import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.engine.nlp.NlpCallStats
+import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDefinition
 import org.litote.kmongo.Id
 
 /**
@@ -27,4 +30,6 @@ interface DialogReportDAO {
     fun search(query: DialogReportQuery): DialogReportQueryResult
 
     fun getDialog(id: Id<Dialog>): DialogReport?
+
+    fun getNlpCallStats(actionId: Id<Action>, namespace: String) : NlpCallStats?
 }

@@ -16,6 +16,8 @@
 
 import {AttachmentType, ConnectorType, EventType} from "../../core/model/configuration";
 import {JsonUtils} from "tock-nlp-admin/src/app/model/commons";
+import {ClassifiedEntity} from "tock-nlp-admin/src/app/model/nlp";
+import {IntentName} from "../../bot/model/bot-intent";
 
 export class DialogReport {
 
@@ -46,7 +48,7 @@ export class ActionReport {
               public date: Date,
               public message: BotMessage,
               public id: String,
-              public test:boolean,
+              public test: boolean,
               public connectorType?: ConnectorType) {
   }
 
@@ -60,7 +62,7 @@ export class ActionReport {
     const result = Object.assign(value, json, {
       playerId: PlayerId.fromJSON(json.playerId),
       message: BotMessage.fromJSON(json.message),
-      connectorType:ConnectorType.fromJSON(json.connectorType)
+      connectorType: ConnectorType.fromJSON(json.connectorType)
     });
 
     return result;
@@ -318,3 +320,34 @@ export enum PlayerType {
   user, bot
 }
 
+export class NlpCallStats {
+
+  constructor(public locale: string,
+              public intentResult: IntentName,
+              public entityResult: ClassifiedEntity[],
+              public entityResultAfterMerge: ClassifiedEntity[],
+              public nlpQuery: any,
+              public nlpResult: any) {
+  }
+
+  nlpQueryAsJson(): string {
+    return JSON.stringify(this.nlpQuery, null, 2);
+  }
+
+  nlpResultAsJson(): string {
+    return this.nlpResult ? JSON.stringify(this.nlpResult, null, 2) : "none";
+  }
+
+  static fromJSON(json?: any): NlpCallStats {
+    const value = Object.create(NlpCallStats.prototype);
+
+    const result = Object.assign(value, json, {
+      intentResult: IntentName.fromJSON(value.intentResult),
+      entityResult: ClassifiedEntity.fromJSONArray(value.entityResult),
+      entityResultAfterMerge: ClassifiedEntity.fromJSONArray(value.entityResultAfterMerge)
+    });
+
+    return result;
+  }
+
+}

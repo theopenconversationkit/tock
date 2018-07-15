@@ -35,9 +35,9 @@ import java.time.Instant.now
 /**
  *
  */
-object MongoUserLock : UserLock {
+internal object MongoUserLock : UserLock {
 
-    @Data
+    @Data(internal = true)
     data class UserLock(val _id: Id<UserLock>, val locked: Boolean = true, val date: Instant = now())
 
     private val logger = KotlinLogging.logger {}
