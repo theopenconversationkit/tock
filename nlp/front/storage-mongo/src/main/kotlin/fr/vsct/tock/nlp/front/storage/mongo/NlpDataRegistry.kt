@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.front.storage.mongo
 
+import fr.vsct.tock.nlp.core.PredefinedValue
 import fr.vsct.tock.nlp.front.shared.build.ModelBuild
 import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
@@ -50,7 +51,8 @@ import org.litote.kmongo.DataRegistry
         ParseResult::class,
         QueryContext::class,
         IntentTestError::class,
-        TestBuild::class
+        TestBuild::class,
+        PredefinedValue::class
     ]
 )
 internal object NlpDataRegistry

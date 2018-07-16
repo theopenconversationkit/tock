@@ -13,7 +13,7 @@ import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KPropertyPath
 
-class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?>) : KPropertyPath<T, ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?>(previous,property) {
+internal class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?>) : KPropertyPath<T, ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?>(previous,property) {
     val text: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::text)
 
@@ -81,7 +81,7 @@ class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, property: KPrope
             get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::unknownCount}
 }
 
-class ClassifiedSentenceCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>?>) : KPropertyPath<T, Collection<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>?>(previous,property) {
+internal class ClassifiedSentenceCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>?>) : KPropertyPath<T, Collection<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>?>(previous,property) {
     val text: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::text)
 

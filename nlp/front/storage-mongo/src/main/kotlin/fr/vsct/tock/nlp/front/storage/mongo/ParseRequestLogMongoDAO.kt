@@ -82,9 +82,9 @@ import java.util.concurrent.TimeUnit
 /**
  *
  */
-object ParseRequestLogMongoDAO : ParseRequestLogDAO {
+internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
 
-    @Data
+    @Data(internal = true)
     data class ParseRequestLogCol(
         val text: String,
         val applicationId: Id<ApplicationDefinition>,
@@ -117,7 +117,7 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
             )
     }
 
-    @Data
+    @Data(internal = true)
     data class ParseRequestLogStatCol(
         val text: String,
         val applicationId: Id<ApplicationDefinition>,
@@ -139,10 +139,10 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                 )
     }
 
-    @Data
+    @Data(internal = true)
     data class DayAndYear(val dayOfYear: Int, val year: Int)
 
-    @Data
+    @Data(internal = true)
     data class ParseRequestLogStatResult(
         val _id: DayAndYear,
         val error: Int,
@@ -185,7 +185,7 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
             result = log.result?.copy(retainedQuery = obfuscate(log.result?.retainedQuery) ?: "")
         )
         col.insertOne(ParseRequestLogCol(savedLog))
-        if(log.query.context.increaseQueryCounter) {
+        if (log.query.context.increaseQueryCounter) {
             val stat = ParseRequestLogStatCol(log)
             val updatedStat = statsCol.findOneAndUpdate(
                 and(
@@ -203,7 +203,9 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                 ),
                 FindOneAndUpdateOptions().upsert(true).returnDocument(AFTER)
             )
-            ClassifiedSentenceMongoDAO.updateSentenceState(updatedStat)
+            if(updatedStat != null) {
+                ClassifiedSentenceMongoDAO.updateSentenceState(updatedStat)
+            }
         }
     }
 
@@ -221,7 +223,7 @@ object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                     if (clientDevice.isNullOrBlank()) null else Query.context.clientDevice eq clientDevice,
                     if (clientId.isNullOrBlank()) null else Query.context.clientId eq clientId
                 )
-            val count = col.count(baseFilter)
+            val count = col.countDocuments(baseFilter)
             if (count > start) {
                 val list = col.find(baseFilter)
                     .descendingSort(Date)

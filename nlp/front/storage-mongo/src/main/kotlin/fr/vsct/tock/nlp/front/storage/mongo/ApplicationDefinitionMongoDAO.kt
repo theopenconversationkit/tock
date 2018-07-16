@@ -37,7 +37,7 @@ import org.litote.kmongo.save
 /**
  *
  */
-object ApplicationDefinitionMongoDAO : ApplicationDefinitionDAO {
+internal object ApplicationDefinitionMongoDAO : ApplicationDefinitionDAO {
 
     private val col: MongoCollection<ApplicationDefinition> by lazy {
         val c = database.getCollection<ApplicationDefinition>()

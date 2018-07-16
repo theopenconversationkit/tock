@@ -6,7 +6,7 @@ import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.property.KPropertyPath
 
-class ParseRequestLogStatResult_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ParseRequestLogMongoDAO.ParseRequestLogStatResult?>) : KPropertyPath<T, ParseRequestLogMongoDAO.ParseRequestLogStatResult?>(previous,property) {
+internal class ParseRequestLogStatResult_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ParseRequestLogMongoDAO.ParseRequestLogStatResult?>) : KPropertyPath<T, ParseRequestLogMongoDAO.ParseRequestLogStatResult?>(previous,property) {
     val _id: DayAndYear_<T>
         get() = DayAndYear_(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::_id)
 
@@ -39,7 +39,7 @@ class ParseRequestLogStatResult_<T>(previous: KPropertyPath<T, *>?, property: KP
             get() = ParseRequestLogMongoDAO.ParseRequestLogStatResult::entitiesProbability}
 }
 
-class ParseRequestLogStatResult_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ParseRequestLogMongoDAO.ParseRequestLogStatResult>?>) : KPropertyPath<T, Collection<ParseRequestLogMongoDAO.ParseRequestLogStatResult>?>(previous,property) {
+internal class ParseRequestLogStatResult_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ParseRequestLogMongoDAO.ParseRequestLogStatResult>?>) : KPropertyPath<T, Collection<ParseRequestLogMongoDAO.ParseRequestLogStatResult>?>(previous,property) {
     val _id: DayAndYear_<T>
         get() = DayAndYear_(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::_id)
 

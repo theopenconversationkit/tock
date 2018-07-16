@@ -42,7 +42,7 @@ import org.litote.kmongo.save
 /**
  *
  */
-object IntentDefinitionMongoDAO : IntentDefinitionDAO {
+internal object IntentDefinitionMongoDAO : IntentDefinitionDAO {
 
     private val col: MongoCollection<IntentDefinition> by lazy {
         val c = database.getCollection<IntentDefinition>()

@@ -12,7 +12,7 @@ import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KPropertyPath
 
-class ParseRequestLogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ParseRequestLogMongoDAO.ParseRequestLogCol?>) : KPropertyPath<T, ParseRequestLogMongoDAO.ParseRequestLogCol?>(previous,property) {
+internal class ParseRequestLogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ParseRequestLogMongoDAO.ParseRequestLogCol?>) : KPropertyPath<T, ParseRequestLogMongoDAO.ParseRequestLogCol?>(previous,property) {
     val text: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogCol::text)
 
@@ -50,7 +50,7 @@ class ParseRequestLogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty
             get() = ParseRequestLogMongoDAO.ParseRequestLogCol::date}
 }
 
-class ParseRequestLogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ParseRequestLogMongoDAO.ParseRequestLogCol>?>) : KPropertyPath<T, Collection<ParseRequestLogMongoDAO.ParseRequestLogCol>?>(previous,property) {
+internal class ParseRequestLogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ParseRequestLogMongoDAO.ParseRequestLogCol>?>) : KPropertyPath<T, Collection<ParseRequestLogMongoDAO.ParseRequestLogCol>?>(previous,property) {
     val text: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogCol::text)
 

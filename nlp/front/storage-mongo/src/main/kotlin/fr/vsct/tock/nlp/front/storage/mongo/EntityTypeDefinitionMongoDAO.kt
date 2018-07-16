@@ -18,6 +18,7 @@ package fr.vsct.tock.nlp.front.storage.mongo
 
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.ReplaceOptions
+import fr.vsct.tock.nlp.core.PredefinedValue_.Companion.Value
 import fr.vsct.tock.nlp.front.service.storage.EntityTypeDefinitionDAO
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition_.Companion.Name
@@ -25,8 +26,8 @@ import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition_.Companion.Pred
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.asyncDatabase
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import fr.vsct.tock.shared.watchSafely
+import org.litote.kmongo.and
 import org.litote.kmongo.async.getCollection
-import org.litote.kmongo.bson
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
@@ -40,7 +41,7 @@ import java.util.Locale
 /**
  *
  */
-object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
+internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
 
     private val col: MongoCollection<EntityTypeDefinition> by lazy {
         val c = database.getCollection<EntityTypeDefinition>()
@@ -72,8 +73,7 @@ object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
     }
 
     override fun deletePredefinedValueByName(entityTypeName: String, predefinedValue: String) {
-        //TODO support of non @Data annotated collections
-        col.updateOne(Name eq entityTypeName, pullByFilter(PredefinedValues, "{value:${predefinedValue.json}}".bson))
+        col.updateOne(Name eq entityTypeName, pullByFilter(PredefinedValues, Value eq predefinedValue))
     }
 
     override fun deletePredefinedValueLabelByName(
@@ -84,7 +84,7 @@ object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
     ) {
         //TODO kmongo map & positional projection
         col.updateOne(
-            "{name:${entityTypeName.json}, 'predefinedValues.value':${predefinedValue.json}}",
+            and(Name eq entityTypeName, PredefinedValues.value eq predefinedValue),
             "{\$pull:{'predefinedValues.\$.labels.${locale.toLanguageTag()}':${label.json}}}"
         )
     }

@@ -41,7 +41,7 @@ import kotlin.test.assertEquals
 /**
  *
  */
-class ParseRequestLogMongoDAOTest : AbstractTest() {
+internal class ParseRequestLogMongoDAOTest : AbstractTest() {
 
     private val log = ParseRequestLog(
         "a".toId(),
@@ -94,7 +94,7 @@ class ParseRequestLogMongoDAOTest : AbstractTest() {
         assertEquals(log, col.findOne()?.toRequest())
         assertEquals(ParseRequestLogStatCol(log), statsCol.findOne())
         ParseRequestLogMongoDAO.save(log)
-        assertEquals(1, statsCol.count())
+        assertEquals(1, statsCol.countDocuments())
         assertEquals(ParseRequestLogStatCol(log).copy(count = 2), statsCol.findOne())
     }
 }

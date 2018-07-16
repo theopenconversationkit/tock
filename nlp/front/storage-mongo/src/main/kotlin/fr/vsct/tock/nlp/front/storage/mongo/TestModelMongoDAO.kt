@@ -47,7 +47,7 @@ import java.util.Locale
 /**
  *
  */
-object TestModelMongoDAO : TestModelDAO {
+internal object TestModelMongoDAO : TestModelDAO {
 
     private val buildCol: MongoCollection<TestBuild> by lazy {
         val c = MongoFrontConfiguration.database.getCollection<TestBuild>()
@@ -80,7 +80,7 @@ object TestModelMongoDAO : TestModelDAO {
 
     override fun searchTestIntentErrors(query: TestErrorQuery): IntentTestErrorQueryResult {
         val filter = and(Language eq query.language, ApplicationId eq query.applicationId)
-        val count = intentErrorCol.count(filter).toInt()
+        val count = intentErrorCol.countDocuments(filter).toInt()
         return if (count == 0) {
             IntentTestErrorQueryResult(0, emptyList())
         } else {
@@ -131,7 +131,7 @@ object TestModelMongoDAO : TestModelDAO {
 
     override fun searchTestEntityErrors(query: TestErrorQuery): EntityTestErrorQueryResult {
         val filter = and(Language eq query.language, ApplicationId eq query.applicationId)
-        val count = entityErrorCol.count(filter).toInt()
+        val count = entityErrorCol.countDocuments(filter).toInt()
         return if (count == 0) {
             EntityTestErrorQueryResult(0, emptyList())
         } else {

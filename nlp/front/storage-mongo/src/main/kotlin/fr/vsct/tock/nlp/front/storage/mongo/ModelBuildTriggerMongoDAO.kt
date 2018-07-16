@@ -38,7 +38,7 @@ import java.util.Locale
 /**
  *
  */
-object ModelBuildTriggerMongoDAO : ModelBuildTriggerDAO {
+internal object ModelBuildTriggerMongoDAO : ModelBuildTriggerDAO {
 
     private val col: MongoCollection<ModelBuildTrigger> by lazy {
         val c = MongoFrontConfiguration.database.getCollection<ModelBuildTrigger>()
@@ -84,7 +84,7 @@ object ModelBuildTriggerMongoDAO : ModelBuildTriggerDAO {
         )
 
         return ModelBuildQueryResult(
-            modelCol.count(filter),
+            modelCol.countDocuments(filter),
             modelCol
                 .find(filter)
                 .descendingSort(ModelBuild_.Date)

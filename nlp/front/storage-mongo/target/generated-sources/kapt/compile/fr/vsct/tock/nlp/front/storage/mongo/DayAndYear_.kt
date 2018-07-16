@@ -5,7 +5,7 @@ import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.property.KPropertyPath
 
-class DayAndYear_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ParseRequestLogMongoDAO.DayAndYear?>) : KPropertyPath<T, ParseRequestLogMongoDAO.DayAndYear?>(previous,property) {
+internal class DayAndYear_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ParseRequestLogMongoDAO.DayAndYear?>) : KPropertyPath<T, ParseRequestLogMongoDAO.DayAndYear?>(previous,property) {
     val dayOfYear: KProperty1<T, Int?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.DayAndYear::dayOfYear)
 
@@ -18,7 +18,7 @@ class DayAndYear_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Par
             get() = ParseRequestLogMongoDAO.DayAndYear::year}
 }
 
-class DayAndYear_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ParseRequestLogMongoDAO.DayAndYear>?>) : KPropertyPath<T, Collection<ParseRequestLogMongoDAO.DayAndYear>?>(previous,property) {
+internal class DayAndYear_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ParseRequestLogMongoDAO.DayAndYear>?>) : KPropertyPath<T, Collection<ParseRequestLogMongoDAO.DayAndYear>?>(previous,property) {
     val dayOfYear: KProperty1<T, Int?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.DayAndYear::dayOfYear)
 

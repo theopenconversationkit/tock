@@ -43,7 +43,6 @@ import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Unk
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UpdateDate
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UsageCount
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogMongoDAO.ParseRequestLogStatCol
-import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.defaultLocale
 import mu.KotlinLogging
 import org.litote.kmongo.Data
@@ -73,23 +72,19 @@ import org.litote.kmongo.setTo
 import org.litote.kmongo.updateMany
 import java.time.Instant
 import java.util.Locale
-import kotlin.reflect.KProperty
 
 
 /**
  *
  */
-object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
+internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private val logger = KotlinLogging.logger {}
 
     //alias
     private val Classification_ = ClassifiedSentenceCol_.Classification
 
-    //TODO remove in 1.1
-    private val collationSupport = booleanProperty("tock_mongo_collation_support", true)
-
-    @Data
+    @Data(internal = true)
     data class ClassifiedSentenceCol(
         val text: String,
         val fullText: String = text,
@@ -218,7 +213,7 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 )
 
             logger.debug { filterBase.json }
-            val count = col.count(filterBase)
+            val count = col.countDocuments(filterBase)
             logger.debug { "count : $count" }
             if (count > start) {
                 val list = col
@@ -227,7 +222,6 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                         if (query.sort.isEmpty()) {
                             descendingSort(UpdateDate)
                         } else {
-                            @Suppress("UNCHECKED_CAST")
                             sort(
                                 orderBy(
                                     query.sort.map {
@@ -242,13 +236,13 @@ object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                                             "unknownCount" -> UnknownCount
                                             else -> UpdateDate
                                         } to it.second
-                                    }.toMap() as Map<KProperty<*>, Boolean>
+                                    }.toMap()
                                 )
                             )
                         }
                     }
                     .run {
-                        if (query.sort.isNotEmpty() && collationSupport) {
+                        if (query.sort.isNotEmpty()) {
                             collation(
                                 Collation
                                     .builder()
