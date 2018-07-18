@@ -4,9 +4,11 @@ import java.time.Instant
 import java.util.Locale
 import kotlin.Int
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class I18nLabelStat_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18nLabelStat?>) : KPropertyPath<T, I18nLabelStat?>(previous,property) {
@@ -47,7 +49,15 @@ class I18nLabelStat_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, 
             get() = I18nLabelStat::lastUpdate}
 }
 
-class I18nLabelStat_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<I18nLabelStat>?>) : KPropertyPath<T, Collection<I18nLabelStat>?>(previous,property) {
+class I18nLabelStat_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<I18nLabelStat>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, I18nLabelStat?>(previous,property,additionalPath) {
+    override val arrayProjection: I18nLabelStat_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = I18nLabelStat_Col(null, this as KProperty1<*, Collection<I18nLabelStat>?>, "$")
+
     val labelId: KProperty1<T, Id<I18nLabel>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,I18nLabelStat::labelId)
 

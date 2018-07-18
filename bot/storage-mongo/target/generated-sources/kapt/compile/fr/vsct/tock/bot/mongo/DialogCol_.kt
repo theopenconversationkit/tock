@@ -4,10 +4,12 @@ import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.user.PlayerId_Col
 import java.time.Instant
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.collections.Set
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, DialogCol?>) : KPropertyPath<T, DialogCol?>(previous,property) {
@@ -43,7 +45,15 @@ internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty
             get() = DialogCol::lastUpdateDate}
 }
 
-internal class DialogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<DialogCol>?>) : KPropertyPath<T, Collection<DialogCol>?>(previous,property) {
+internal class DialogCol_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<DialogCol>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, DialogCol?>(previous,property,additionalPath) {
+    override val arrayProjection: DialogCol_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = DialogCol_Col(null, this as KProperty1<*, Collection<DialogCol>?>, "$")
+
     val playerIds: PlayerId_Col<T>
         get() = PlayerId_Col(this,DialogCol::playerIds)
 

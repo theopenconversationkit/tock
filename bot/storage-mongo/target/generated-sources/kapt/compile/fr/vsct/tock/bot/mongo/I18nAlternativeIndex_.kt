@@ -6,9 +6,11 @@ import java.time.Instant
 import java.util.Locale
 import kotlin.Int
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 internal class I18nAlternativeIndex_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18nAlternativeIndex?>) : KPropertyPath<T, I18nAlternativeIndex?>(previous,property) {
@@ -54,7 +56,15 @@ internal class I18nAlternativeIndex_<T>(previous: KPropertyPath<T, *>?, property
             get() = I18nAlternativeIndex::date}
 }
 
-internal class I18nAlternativeIndex_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<I18nAlternativeIndex>?>) : KPropertyPath<T, Collection<I18nAlternativeIndex>?>(previous,property) {
+internal class I18nAlternativeIndex_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<I18nAlternativeIndex>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, I18nAlternativeIndex?>(previous,property,additionalPath) {
+    override val arrayProjection: I18nAlternativeIndex_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = I18nAlternativeIndex_Col(null, this as KProperty1<*, Collection<I18nAlternativeIndex>?>, "$")
+
     val labelId: KProperty1<T, Id<I18nLabel>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,I18nAlternativeIndex::labelId)
 

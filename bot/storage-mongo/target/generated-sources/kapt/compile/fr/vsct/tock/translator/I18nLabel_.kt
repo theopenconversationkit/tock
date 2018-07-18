@@ -2,9 +2,11 @@ package fr.vsct.tock.translator
 
 import java.util.LinkedHashSet
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class I18nLabel_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18nLabel?>) : KPropertyPath<T, I18nLabel?>(previous,property) {
@@ -35,7 +37,15 @@ class I18nLabel_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18n
             get() = I18nLabel::defaultLabel}
 }
 
-class I18nLabel_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<I18nLabel>?>) : KPropertyPath<T, Collection<I18nLabel>?>(previous,property) {
+class I18nLabel_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<I18nLabel>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, I18nLabel?>(previous,property,additionalPath) {
+    override val arrayProjection: I18nLabel_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = I18nLabel_Col(null, this as KProperty1<*, Collection<I18nLabel>?>, "$")
+
     val _id: KProperty1<T, Id<I18nLabel>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,I18nLabel::_id)
 

@@ -3,8 +3,10 @@ package fr.vsct.tock.bot.mongo
 import fr.vsct.tock.bot.engine.nlp.NlpCallStats
 import java.time.Instant
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 internal class NlpStatsCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, NlpStatsCol?>) : KPropertyPath<T, NlpStatsCol?>(previous,property) {
@@ -30,7 +32,15 @@ internal class NlpStatsCol_<T>(previous: KPropertyPath<T, *>?, property: KProper
             get() = NlpStatsCol::date}
 }
 
-internal class NlpStatsCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<NlpStatsCol>?>) : KPropertyPath<T, Collection<NlpStatsCol>?>(previous,property) {
+internal class NlpStatsCol_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<NlpStatsCol>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, NlpStatsCol?>(previous,property,additionalPath) {
+    override val arrayProjection: NlpStatsCol_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = NlpStatsCol_Col(null, this as KProperty1<*, Collection<NlpStatsCol>?>, "$")
+
     val _id: NlpStatsColId_<T>
         get() = NlpStatsColId_(this,NlpStatsCol::_id)
 

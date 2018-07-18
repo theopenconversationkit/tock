@@ -6,9 +6,11 @@ import java.util.Locale
 import kotlin.Double
 import kotlin.Int
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class IntentTestError_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, IntentTestError?>) : KPropertyPath<T, IntentTestError?>(previous,property) {
@@ -59,7 +61,15 @@ class IntentTestError_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*
             get() = IntentTestError::firstDetectionDate}
 }
 
-class IntentTestError_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<IntentTestError>?>) : KPropertyPath<T, Collection<IntentTestError>?>(previous,property) {
+class IntentTestError_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<IntentTestError>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, IntentTestError?>(previous,property,additionalPath) {
+    override val arrayProjection: IntentTestError_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = IntentTestError_Col(null, this as KProperty1<*, Collection<IntentTestError>?>, "$")
+
     val applicationId: KProperty1<T, Id<ApplicationDefinition>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,IntentTestError::applicationId)
 

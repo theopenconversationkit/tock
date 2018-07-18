@@ -2,8 +2,11 @@ package fr.vsct.tock.nlp.front.storage.mongo
 
 import kotlin.Double
 import kotlin.Int
+import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 internal class ParseRequestLogStatResult_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ParseRequestLogMongoDAO.ParseRequestLogStatResult?>) : KPropertyPath<T, ParseRequestLogMongoDAO.ParseRequestLogStatResult?>(previous,property) {
@@ -39,7 +42,15 @@ internal class ParseRequestLogStatResult_<T>(previous: KPropertyPath<T, *>?, pro
             get() = ParseRequestLogMongoDAO.ParseRequestLogStatResult::entitiesProbability}
 }
 
-internal class ParseRequestLogStatResult_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ParseRequestLogMongoDAO.ParseRequestLogStatResult>?>) : KPropertyPath<T, Collection<ParseRequestLogMongoDAO.ParseRequestLogStatResult>?>(previous,property) {
+internal class ParseRequestLogStatResult_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<ParseRequestLogMongoDAO.ParseRequestLogStatResult>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, ParseRequestLogMongoDAO.ParseRequestLogStatResult?>(previous,property,additionalPath) {
+    override val arrayProjection: ParseRequestLogStatResult_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = ParseRequestLogStatResult_Col(null, this as KProperty1<*, Collection<ParseRequestLogMongoDAO.ParseRequestLogStatResult>?>, "$")
+
     val _id: DayAndYear_<T>
         get() = DayAndYear_(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::_id)
 

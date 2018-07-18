@@ -4,11 +4,13 @@ import fr.vsct.tock.nlp.core.EntitiesRegexp
 import java.util.LinkedHashSet
 import java.util.Locale
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.collections.Map
 import kotlin.collections.Set
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class IntentDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, IntentDefinition?>) : KPropertyPath<T, IntentDefinition?>(previous,property) {
@@ -54,7 +56,15 @@ class IntentDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
             get() = IntentDefinition::_id}
 }
 
-class IntentDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<IntentDefinition>?>) : KPropertyPath<T, Collection<IntentDefinition>?>(previous,property) {
+class IntentDefinition_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<IntentDefinition>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, IntentDefinition?>(previous,property,additionalPath) {
+    override val arrayProjection: IntentDefinition_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = IntentDefinition_Col(null, this as KProperty1<*, Collection<IntentDefinition>?>, "$")
+
     val name_: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,IntentDefinition::name)
 

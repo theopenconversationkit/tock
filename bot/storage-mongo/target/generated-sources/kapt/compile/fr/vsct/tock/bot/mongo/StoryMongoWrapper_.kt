@@ -2,9 +2,11 @@ package fr.vsct.tock.bot.mongo
 
 import fr.vsct.tock.bot.definition.Intent_
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.collections.List
 import kotlin.reflect.KProperty1
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 internal class StoryMongoWrapper_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, DialogCol.StoryMongoWrapper?>) : KPropertyPath<T, DialogCol.StoryMongoWrapper?>(previous,property) {
@@ -30,7 +32,15 @@ internal class StoryMongoWrapper_<T>(previous: KPropertyPath<T, *>?, property: K
             get() = DialogCol.StoryMongoWrapper::actions}
 }
 
-internal class StoryMongoWrapper_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<DialogCol.StoryMongoWrapper>?>) : KPropertyPath<T, Collection<DialogCol.StoryMongoWrapper>?>(previous,property) {
+internal class StoryMongoWrapper_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<DialogCol.StoryMongoWrapper>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, DialogCol.StoryMongoWrapper?>(previous,property,additionalPath) {
+    override val arrayProjection: StoryMongoWrapper_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = StoryMongoWrapper_Col(null, this as KProperty1<*, Collection<DialogCol.StoryMongoWrapper>?>, "$")
+
     val storyDefinitionId: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,DialogCol.StoryMongoWrapper::storyDefinitionId)
 

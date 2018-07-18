@@ -8,9 +8,11 @@ import java.util.Locale
 import kotlin.Boolean
 import kotlin.Int
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class ModelBuild_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ModelBuild?>) : KPropertyPath<T, ModelBuild?>(previous,property) {
@@ -66,7 +68,15 @@ class ModelBuild_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Mod
             get() = ModelBuild::date}
 }
 
-class ModelBuild_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ModelBuild>?>) : KPropertyPath<T, Collection<ModelBuild>?>(previous,property) {
+class ModelBuild_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<ModelBuild>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, ModelBuild?>(previous,property,additionalPath) {
+    override val arrayProjection: ModelBuild_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = ModelBuild_Col(null, this as KProperty1<*, Collection<ModelBuild>?>, "$")
+
     val applicationId: KProperty1<T, Id<ApplicationDefinition>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ModelBuild::applicationId)
 

@@ -3,10 +3,13 @@ package fr.vsct.tock.bot.admin.test
 import java.time.Duration
 import java.time.Instant
 import kotlin.Int
+import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.collections.List
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class TestPlanExecution_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, TestPlanExecution?>) : KPropertyPath<T, TestPlanExecution?>(previous,property) {
@@ -42,7 +45,15 @@ class TestPlanExecution_<T>(previous: KPropertyPath<T, *>?, property: KProperty1
             get() = TestPlanExecution::_id}
 }
 
-class TestPlanExecution_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<TestPlanExecution>?>) : KPropertyPath<T, Collection<TestPlanExecution>?>(previous,property) {
+class TestPlanExecution_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<TestPlanExecution>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, TestPlanExecution?>(previous,property,additionalPath) {
+    override val arrayProjection: TestPlanExecution_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = TestPlanExecution_Col(null, this as KProperty1<*, Collection<TestPlanExecution>?>, "$")
+
     val testPlanId: KProperty1<T, Id<TestPlan>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,TestPlanExecution::testPlanId)
 

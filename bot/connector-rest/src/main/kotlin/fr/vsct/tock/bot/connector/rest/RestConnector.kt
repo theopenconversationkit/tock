@@ -29,8 +29,8 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.booleanProperty
-import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.vertx.blocking
 import mu.KotlinLogging
 import java.util.Locale
 
@@ -48,37 +48,29 @@ class RestConnector(val applicationId: String, val path: String) : ConnectorBase
         if (!disabled) {
             logger.info { "deploy rest connector to $path" }
             controller.registerServices(path) { router ->
-                router.post("$path/:locale").blockingHandler(
-                    { context ->
-                        try {
-                            val message: MessageRequest = mapper.readValue(context.bodyAsString)
-                            val action = message.message.toAction(
-                                PlayerId(message.userId, PlayerType.user),
+                router.post("$path/:locale").blocking { context ->
+                    val message: MessageRequest = mapper.readValue(context.bodyAsString)
+                    val action = message.message.toAction(
+                        PlayerId(message.userId, PlayerType.user),
+                        applicationId,
+                        PlayerId(message.recipientId, PlayerType.bot)
+                    )
+                    val locale = Locale.forLanguageTag(context.pathParam("locale"))
+                    action.state.targetConnectorType = message.targetConnectorType
+                    controller.handle(
+                        action,
+                        ConnectorData(
+                            RestConnectorCallback(
                                 applicationId,
-                                PlayerId(message.recipientId, PlayerType.bot)
+                                message.targetConnectorType,
+                                context,
+                                if (message.test) controller.botDefinition.testBehaviour else null,
+                                locale,
+                                action
                             )
-                            val locale = Locale.forLanguageTag(context.pathParam("locale"))
-                            action.state.targetConnectorType = message.targetConnectorType
-                            controller.handle(
-                                action,
-                                ConnectorData(
-                                    RestConnectorCallback(
-                                        applicationId,
-                                        message.targetConnectorType,
-                                        context,
-                                        if (message.test) controller.botDefinition.testBehaviour else null,
-                                        locale,
-                                        action
-                                    )
-                                )
-                            )
-                        } catch (t: Throwable) {
-                            logger.error(t)
-                            context.fail(t)
-                        }
-                    },
-                    false
-                )
+                        )
+                    )
+                }
             }
         }
     }

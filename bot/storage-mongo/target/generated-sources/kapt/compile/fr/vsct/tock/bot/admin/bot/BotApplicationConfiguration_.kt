@@ -2,10 +2,12 @@ package fr.vsct.tock.bot.admin.bot
 
 import fr.vsct.tock.bot.connector.ConnectorType
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.collections.Map
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class BotApplicationConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, BotApplicationConfiguration?>) : KPropertyPath<T, BotApplicationConfiguration?>(previous,property) {
@@ -66,7 +68,15 @@ class BotApplicationConfiguration_<T>(previous: KPropertyPath<T, *>?, property: 
             get() = BotApplicationConfiguration::_id}
 }
 
-class BotApplicationConfiguration_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<BotApplicationConfiguration>?>) : KPropertyPath<T, Collection<BotApplicationConfiguration>?>(previous,property) {
+class BotApplicationConfiguration_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<BotApplicationConfiguration>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, BotApplicationConfiguration?>(previous,property,additionalPath) {
+    override val arrayProjection: BotApplicationConfiguration_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = BotApplicationConfiguration_Col(null, this as KProperty1<*, Collection<BotApplicationConfiguration>?>, "$")
+
     val applicationId: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,BotApplicationConfiguration::applicationId)
 

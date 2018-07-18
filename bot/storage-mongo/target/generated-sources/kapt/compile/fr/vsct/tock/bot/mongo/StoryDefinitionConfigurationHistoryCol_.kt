@@ -3,8 +3,11 @@ package fr.vsct.tock.bot.mongo
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration_
 import java.time.Instant
 import kotlin.Boolean
+import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 internal class StoryDefinitionConfigurationHistoryCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol?>) : KPropertyPath<T, StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol?>(previous,property) {
@@ -25,7 +28,15 @@ internal class StoryDefinitionConfigurationHistoryCol_<T>(previous: KPropertyPat
             get() = StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::date}
 }
 
-internal class StoryDefinitionConfigurationHistoryCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>?>) : KPropertyPath<T, Collection<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>?>(previous,property) {
+internal class StoryDefinitionConfigurationHistoryCol_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol?>(previous,property,additionalPath) {
+    override val arrayProjection: StoryDefinitionConfigurationHistoryCol_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = StoryDefinitionConfigurationHistoryCol_Col(null, this as KProperty1<*, Collection<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>?>, "$")
+
     val conf: StoryDefinitionConfiguration_<T>
         get() = StoryDefinitionConfiguration_(this,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::conf)
 

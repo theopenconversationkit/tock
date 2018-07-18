@@ -19,11 +19,21 @@ package fr.vsct.tock.shared
 import mu.KLogger
 
 /**
- * Log a [Throwable].
+ * Logs a [Throwable].
  */
 fun KLogger.error(throwable: Throwable) = error(throwable.message ?: "", throwable)
 
 /**
- * Log a [Throwable].
+ * Logs a [Throwable].
+ */
+fun KLogger.debug(throwable: Throwable) = debug(throwable.message ?: "", throwable)
+
+/**
+ * Logs a [Throwable].
+ */
+fun KLogger.info(throwable: Throwable) = info(throwable.message ?: "", throwable)
+
+/**
+ * Logs a [Throwable].
  */
 fun KLogger.warn(throwable: Throwable) = warn(throwable.message ?: "", throwable)

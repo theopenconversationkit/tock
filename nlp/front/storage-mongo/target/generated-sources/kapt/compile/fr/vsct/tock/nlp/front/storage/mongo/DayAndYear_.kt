@@ -1,8 +1,11 @@
 package fr.vsct.tock.nlp.front.storage.mongo
 
 import kotlin.Int
+import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 internal class DayAndYear_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ParseRequestLogMongoDAO.DayAndYear?>) : KPropertyPath<T, ParseRequestLogMongoDAO.DayAndYear?>(previous,property) {
@@ -18,7 +21,15 @@ internal class DayAndYear_<T>(previous: KPropertyPath<T, *>?, property: KPropert
             get() = ParseRequestLogMongoDAO.DayAndYear::year}
 }
 
-internal class DayAndYear_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ParseRequestLogMongoDAO.DayAndYear>?>) : KPropertyPath<T, Collection<ParseRequestLogMongoDAO.DayAndYear>?>(previous,property) {
+internal class DayAndYear_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<ParseRequestLogMongoDAO.DayAndYear>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, ParseRequestLogMongoDAO.DayAndYear?>(previous,property,additionalPath) {
+    override val arrayProjection: DayAndYear_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = DayAndYear_Col(null, this as KProperty1<*, Collection<ParseRequestLogMongoDAO.DayAndYear>?>, "$")
+
     val dayOfYear: KProperty1<T, Int?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.DayAndYear::dayOfYear)
 

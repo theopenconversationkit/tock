@@ -4,9 +4,11 @@ import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import java.time.Instant
 import kotlin.ByteArray
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 internal class MongoCacheData_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, MongoCacheData?>) : KPropertyPath<T, MongoCacheData?>(previous,property) {
@@ -42,7 +44,15 @@ internal class MongoCacheData_<T>(previous: KPropertyPath<T, *>?, property: KPro
             get() = MongoCacheData::date}
 }
 
-internal class MongoCacheData_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<MongoCacheData>?>) : KPropertyPath<T, Collection<MongoCacheData>?>(previous,property) {
+internal class MongoCacheData_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<MongoCacheData>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, MongoCacheData?>(previous,property,additionalPath) {
+    override val arrayProjection: MongoCacheData_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = MongoCacheData_Col(null, this as KProperty1<*, Collection<MongoCacheData>?>, "$")
+
     val id: KProperty1<T, Id<*>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,MongoCacheData::id)
 

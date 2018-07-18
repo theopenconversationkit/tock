@@ -1,10 +1,12 @@
 package fr.vsct.tock.nlp.front.shared.parser
 
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.collections.List
 import kotlin.collections.Set
 import kotlin.reflect.KProperty1
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class ParseQuery_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ParseQuery?>) : KPropertyPath<T, ParseQuery?>(previous,property) {
@@ -40,7 +42,15 @@ class ParseQuery_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Par
             get() = ParseQuery::intentsSubset}
 }
 
-class ParseQuery_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ParseQuery>?>) : KPropertyPath<T, Collection<ParseQuery>?>(previous,property) {
+class ParseQuery_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<ParseQuery>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, ParseQuery?>(previous,property,additionalPath) {
+    override val arrayProjection: ParseQuery_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = ParseQuery_Col(null, this as KProperty1<*, Collection<ParseQuery>?>, "$")
+
     val queries: KProperty1<T, List<String>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseQuery::queries)
 

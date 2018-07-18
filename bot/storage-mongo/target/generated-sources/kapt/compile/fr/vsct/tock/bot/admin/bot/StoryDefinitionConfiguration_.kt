@@ -5,10 +5,12 @@ import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
 import fr.vsct.tock.bot.definition.Intent_
 import kotlin.Int
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.collections.List
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, StoryDefinitionConfiguration?>) : KPropertyPath<T, StoryDefinitionConfiguration?>(previous,property) {
@@ -49,7 +51,15 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
             get() = StoryDefinitionConfiguration::_id}
 }
 
-class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<StoryDefinitionConfiguration>?>) : KPropertyPath<T, Collection<StoryDefinitionConfiguration>?>(previous,property) {
+class StoryDefinitionConfiguration_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<StoryDefinitionConfiguration>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, StoryDefinitionConfiguration?>(previous,property,additionalPath) {
+    override val arrayProjection: StoryDefinitionConfiguration_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = StoryDefinitionConfiguration_Col(null, this as KProperty1<*, Collection<StoryDefinitionConfiguration>?>, "$")
+
     val storyId: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,StoryDefinitionConfiguration::storyId)
 

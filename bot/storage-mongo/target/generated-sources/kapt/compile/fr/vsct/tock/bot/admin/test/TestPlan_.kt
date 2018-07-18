@@ -5,10 +5,12 @@ import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.message.Message
 import java.util.Locale
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.collections.List
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class TestPlan_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, TestPlan?>) : KPropertyPath<T, TestPlan?>(previous,property) {
@@ -64,7 +66,15 @@ class TestPlan_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, TestP
             get() = TestPlan::_id}
 }
 
-class TestPlan_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<TestPlan>?>) : KPropertyPath<T, Collection<TestPlan>?>(previous,property) {
+class TestPlan_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<TestPlan>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, TestPlan?>(previous,property,additionalPath) {
+    override val arrayProjection: TestPlan_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = TestPlan_Col(null, this as KProperty1<*, Collection<TestPlan>?>, "$")
+
     val dialogs: KProperty1<T, List<TestDialogReport>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,TestPlan::dialogs)
 

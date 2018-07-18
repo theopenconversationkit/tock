@@ -2,9 +2,11 @@ package fr.vsct.tock.nlp.front.shared.config
 
 import fr.vsct.tock.nlp.core.PredefinedValue_Col
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class EntityTypeDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, EntityTypeDefinition?>) : KPropertyPath<T, EntityTypeDefinition?>(previous,property) {
@@ -35,7 +37,15 @@ class EntityTypeDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProper
             get() = EntityTypeDefinition::_id}
 }
 
-class EntityTypeDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<EntityTypeDefinition>?>) : KPropertyPath<T, Collection<EntityTypeDefinition>?>(previous,property) {
+class EntityTypeDefinition_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<EntityTypeDefinition>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, EntityTypeDefinition?>(previous,property,additionalPath) {
+    override val arrayProjection: EntityTypeDefinition_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = EntityTypeDefinition_Col(null, this as KProperty1<*, Collection<EntityTypeDefinition>?>, "$")
+
     val name_: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,EntityTypeDefinition::name)
 

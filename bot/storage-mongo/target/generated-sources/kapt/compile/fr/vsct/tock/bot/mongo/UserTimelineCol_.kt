@@ -3,10 +3,12 @@ package fr.vsct.tock.bot.mongo
 import fr.vsct.tock.bot.engine.user.PlayerId_
 import java.time.Instant
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.collections.Set
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 internal class UserTimelineCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, UserTimelineCol?>) : KPropertyPath<T, UserTimelineCol?>(previous,property) {
@@ -57,7 +59,15 @@ internal class UserTimelineCol_<T>(previous: KPropertyPath<T, *>?, property: KPr
             get() = UserTimelineCol::lastUserActionDate}
 }
 
-internal class UserTimelineCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<UserTimelineCol>?>) : KPropertyPath<T, Collection<UserTimelineCol>?>(previous,property) {
+internal class UserTimelineCol_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<UserTimelineCol>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, UserTimelineCol?>(previous,property,additionalPath) {
+    override val arrayProjection: UserTimelineCol_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = UserTimelineCol_Col(null, this as KProperty1<*, Collection<UserTimelineCol>?>, "$")
+
     val _id: KProperty1<T, Id<UserTimelineCol>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,UserTimelineCol::_id)
 

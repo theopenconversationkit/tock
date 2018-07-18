@@ -4,11 +4,13 @@ import fr.vsct.tock.nlp.core.NlpEngineType
 import java.util.Locale
 import kotlin.Boolean
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.collections.Map
 import kotlin.collections.Set
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ApplicationDefinition?>) : KPropertyPath<T, ApplicationDefinition?>(previous,property) {
@@ -64,7 +66,15 @@ class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KPrope
             get() = ApplicationDefinition::_id}
 }
 
-class ApplicationDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ApplicationDefinition>?>) : KPropertyPath<T, Collection<ApplicationDefinition>?>(previous,property) {
+class ApplicationDefinition_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<ApplicationDefinition>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, ApplicationDefinition?>(previous,property,additionalPath) {
+    override val arrayProjection: ApplicationDefinition_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = ApplicationDefinition_Col(null, this as KProperty1<*, Collection<ApplicationDefinition>?>, "$")
+
     val name_: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::name)
 

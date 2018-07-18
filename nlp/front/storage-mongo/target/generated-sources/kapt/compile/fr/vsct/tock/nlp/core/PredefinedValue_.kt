@@ -2,10 +2,12 @@ package fr.vsct.tock.nlp.core
 
 import java.util.Locale
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.collections.List
 import kotlin.collections.Map
 import kotlin.reflect.KProperty1
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class PredefinedValue_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, PredefinedValue?>) : KPropertyPath<T, PredefinedValue?>(previous,property) {
@@ -21,7 +23,15 @@ class PredefinedValue_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*
             get() = PredefinedValue::labels}
 }
 
-class PredefinedValue_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<PredefinedValue>?>) : KPropertyPath<T, Collection<PredefinedValue>?>(previous,property) {
+class PredefinedValue_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<PredefinedValue>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, PredefinedValue?>(previous,property,additionalPath) {
+    override val arrayProjection: PredefinedValue_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = PredefinedValue_Col(null, this as KProperty1<*, Collection<PredefinedValue>?>, "$")
+
     val value: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,PredefinedValue::value)
 

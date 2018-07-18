@@ -1,8 +1,10 @@
 package fr.vsct.tock.bot.engine.user
 
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class PlayerId_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, PlayerId?>) : KPropertyPath<T, PlayerId?>(previous,property) {
@@ -23,7 +25,15 @@ class PlayerId_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Playe
             get() = PlayerId::clientId}
 }
 
-class PlayerId_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<PlayerId>?>) : KPropertyPath<T, Collection<PlayerId>?>(previous,property) {
+class PlayerId_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<PlayerId>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, PlayerId?>(previous,property,additionalPath) {
+    override val arrayProjection: PlayerId_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = PlayerId_Col(null, this as KProperty1<*, Collection<PlayerId>?>, "$")
+
     val id: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,PlayerId::id)
 

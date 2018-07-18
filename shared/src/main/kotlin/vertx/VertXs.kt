@@ -17,6 +17,7 @@
 package fr.vsct.tock.shared.vertx
 
 import fr.vsct.tock.shared.Executor
+import fr.vsct.tock.shared.debug
 import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
@@ -25,6 +26,8 @@ import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Vertx
 import io.vertx.core.VertxOptions
+import io.vertx.ext.web.Route
+import io.vertx.ext.web.RoutingContext
 import mu.KotlinLogging
 import java.time.Duration
 import java.util.concurrent.Callable
@@ -82,6 +85,23 @@ fun <T> Vertx.blocking(blockingHandler: (Future<T>) -> Unit, resultHandler: (Asy
             }
         })
 }
+
+/**
+ * Execute a blocking handler on route (with ordered false).
+ */
+fun Route.blocking(handler: (RoutingContext) -> Unit): Route =
+    blockingHandler({
+        try {
+            handler(it)
+        } catch (t: Throwable) {
+            try {
+                logger.error(t)
+                it.fail(t)
+            } catch (e: Throwable) {
+                logger.debug(e)
+            }
+        }
+    }, false)
 
 internal fun vertxExecutor(): Executor {
     return object : Executor {

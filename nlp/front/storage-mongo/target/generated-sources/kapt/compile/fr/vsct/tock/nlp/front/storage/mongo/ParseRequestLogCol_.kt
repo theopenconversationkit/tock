@@ -7,9 +7,11 @@ import java.time.Instant
 import kotlin.Boolean
 import kotlin.Long
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 internal class ParseRequestLogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ParseRequestLogMongoDAO.ParseRequestLogCol?>) : KPropertyPath<T, ParseRequestLogMongoDAO.ParseRequestLogCol?>(previous,property) {
@@ -50,7 +52,15 @@ internal class ParseRequestLogCol_<T>(previous: KPropertyPath<T, *>?, property: 
             get() = ParseRequestLogMongoDAO.ParseRequestLogCol::date}
 }
 
-internal class ParseRequestLogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ParseRequestLogMongoDAO.ParseRequestLogCol>?>) : KPropertyPath<T, Collection<ParseRequestLogMongoDAO.ParseRequestLogCol>?>(previous,property) {
+internal class ParseRequestLogCol_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<ParseRequestLogMongoDAO.ParseRequestLogCol>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, ParseRequestLogMongoDAO.ParseRequestLogCol?>(previous,property,additionalPath) {
+    override val arrayProjection: ParseRequestLogCol_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = ParseRequestLogCol_Col(null, this as KProperty1<*, Collection<ParseRequestLogMongoDAO.ParseRequestLogCol>?>, "$")
+
     val text: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogCol::text)
 

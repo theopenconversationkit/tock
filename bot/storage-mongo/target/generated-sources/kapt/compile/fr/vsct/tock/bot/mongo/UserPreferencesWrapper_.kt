@@ -4,8 +4,10 @@ import java.time.ZoneId
 import java.util.Locale
 import kotlin.Boolean
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 internal class UserPreferencesWrapper_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, UserTimelineCol.UserPreferencesWrapper?>) : KPropertyPath<T, UserTimelineCol.UserPreferencesWrapper?>(previous,property) {
@@ -56,7 +58,15 @@ internal class UserPreferencesWrapper_<T>(previous: KPropertyPath<T, *>?, proper
             get() = UserTimelineCol.UserPreferencesWrapper::encrypted}
 }
 
-internal class UserPreferencesWrapper_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<UserTimelineCol.UserPreferencesWrapper>?>) : KPropertyPath<T, Collection<UserTimelineCol.UserPreferencesWrapper>?>(previous,property) {
+internal class UserPreferencesWrapper_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<UserTimelineCol.UserPreferencesWrapper>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, UserTimelineCol.UserPreferencesWrapper?>(previous,property,additionalPath) {
+    override val arrayProjection: UserPreferencesWrapper_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = UserPreferencesWrapper_Col(null, this as KProperty1<*, Collection<UserTimelineCol.UserPreferencesWrapper>?>, "$")
+
     val firstName: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,UserTimelineCol.UserPreferencesWrapper::firstName)
 

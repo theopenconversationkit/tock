@@ -5,9 +5,12 @@ import java.time.Duration
 import java.time.Instant
 import java.util.Locale
 import kotlin.Int
+import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class TestBuild_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, TestBuild?>) : KPropertyPath<T, TestBuild?>(previous,property) {
@@ -53,7 +56,15 @@ class TestBuild_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Test
             get() = TestBuild::nbErrors}
 }
 
-class TestBuild_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<TestBuild>?>) : KPropertyPath<T, Collection<TestBuild>?>(previous,property) {
+class TestBuild_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<TestBuild>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, TestBuild?>(previous,property,additionalPath) {
+    override val arrayProjection: TestBuild_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = TestBuild_Col(null, this as KProperty1<*, Collection<TestBuild>?>, "$")
+
     val applicationId: KProperty1<T, Id<ApplicationDefinition>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::applicationId)
 

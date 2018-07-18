@@ -5,8 +5,10 @@ import java.time.ZonedDateTime
 import java.util.Locale
 import kotlin.Boolean
 import kotlin.String
+import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.reflect.KProperty1
+import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class QueryContext_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, QueryContext?>) : KPropertyPath<T, QueryContext?>(previous,property) {
@@ -62,7 +64,15 @@ class QueryContext_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Q
             get() = QueryContext::increaseQueryCounter}
 }
 
-class QueryContext_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<QueryContext>?>) : KPropertyPath<T, Collection<QueryContext>?>(previous,property) {
+class QueryContext_Col<T>(
+        previous: KPropertyPath<T, *>?,
+        property: KProperty1<*, Collection<QueryContext>?>,
+        additionalPath: String? = null
+) : KCollectionPropertyPath<T, QueryContext?>(previous,property,additionalPath) {
+    override val arrayProjection: QueryContext_Col<T>
+        @Suppress("UNCHECKED_CAST")
+        get() = QueryContext_Col(null, this as KProperty1<*, Collection<QueryContext>?>, "$")
+
     val language: KProperty1<T, Locale?>
         get() = org.litote.kmongo.property.KPropertyPath(this,QueryContext::language)
 

@@ -25,5 +25,6 @@ import fr.vsct.tock.translator.Translator
  */
 data class BotSimpleAnswer(val label: I18nLabel, val delay: Long) {
 
-    constructor(answer: SimpleAnswer) : this(Translator.saveIfNotExists(answer.key), answer.delay)
+    constructor(answer: SimpleAnswer)
+            : this(Translator.saveIfNotExists(answer.key), answer.delay)
 }
