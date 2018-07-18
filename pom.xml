@@ -43,9 +43,9 @@
         <jackson>2.9.3</jackson>
         <jackson-module>2.9.3</jackson-module>
         <klaxon>3.0.6</klaxon>
-        <vertx>3.5.2</vertx>
+        <vertx>3.5.3</vertx>
         <retrofit>2.4.0</retrofit>
-        <okhttp>3.10.0</okhttp>
+        <okhttp>3.11.0</okhttp>
         <guava>25.1-jre</guava>
         <google-auth>1.23.0</google-auth>
         <jasypt>1.9.2</jasypt>
