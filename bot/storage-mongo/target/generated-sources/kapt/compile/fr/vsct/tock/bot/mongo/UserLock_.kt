@@ -28,15 +28,7 @@ internal class UserLock_<T>(previous: KPropertyPath<T, *>?, property: KProperty1
             get() = MongoUserLock.UserLock::date}
 }
 
-internal class UserLock_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<MongoUserLock.UserLock>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, MongoUserLock.UserLock?>(previous,property,additionalPath) {
-    override val arrayProjection: UserLock_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = UserLock_Col(null, this as KProperty1<*, Collection<MongoUserLock.UserLock>?>, "$")
-
+internal class UserLock_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<MongoUserLock.UserLock>?>) : KCollectionPropertyPath<T, MongoUserLock.UserLock?, UserLock_<T>>(previous,property) {
     val _id: KProperty1<T, Id<MongoUserLock.UserLock>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,MongoUserLock.UserLock::_id)
 
@@ -45,4 +37,6 @@ internal class UserLock_Col<T>(
 
     val date: KProperty1<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath(this,MongoUserLock.UserLock::date)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): UserLock_<T> = UserLock_(this, customProperty(this, additionalPath))}

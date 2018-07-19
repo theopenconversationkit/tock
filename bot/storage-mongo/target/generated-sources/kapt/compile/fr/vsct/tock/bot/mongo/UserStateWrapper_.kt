@@ -27,15 +27,7 @@ internal class UserStateWrapper_<T>(previous: KPropertyPath<T, *>?, property: KP
             get() = UserTimelineCol.UserStateWrapper::flags}
 }
 
-internal class UserStateWrapper_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<UserTimelineCol.UserStateWrapper>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, UserTimelineCol.UserStateWrapper?>(previous,property,additionalPath) {
-    override val arrayProjection: UserStateWrapper_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = UserStateWrapper_Col(null, this as KProperty1<*, Collection<UserTimelineCol.UserStateWrapper>?>, "$")
-
+internal class UserStateWrapper_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<UserTimelineCol.UserStateWrapper>?>) : KCollectionPropertyPath<T, UserTimelineCol.UserStateWrapper?, UserStateWrapper_<T>>(previous,property) {
     val creationDate: KProperty1<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath(this,UserTimelineCol.UserStateWrapper::creationDate)
 
@@ -44,4 +36,6 @@ internal class UserStateWrapper_Col<T>(
 
     val flags: KProperty1<T, Map<String, UserTimelineCol.TimeBoxedFlagWrapper>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,UserTimelineCol.UserStateWrapper::flags)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): UserStateWrapper_<T> = UserStateWrapper_(this, customProperty(this, additionalPath))}

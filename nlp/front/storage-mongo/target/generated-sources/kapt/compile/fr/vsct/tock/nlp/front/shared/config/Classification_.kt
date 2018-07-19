@@ -21,18 +21,12 @@ class Classification_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
             get() = ClassifiedEntity_Col<Classification>(null,Classification::entities)}
 }
 
-class Classification_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<Classification>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, Classification?>(previous,property,additionalPath) {
-    override val arrayProjection: Classification_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = Classification_Col(null, this as KProperty1<*, Collection<Classification>?>, "$")
-
+class Classification_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<Classification>?>) : KCollectionPropertyPath<T, Classification?, Classification_<T>>(previous,property) {
     val intentId: KProperty1<T, Id<IntentDefinition>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,Classification::intentId)
 
     val entities: ClassifiedEntity_Col<T>
         get() = ClassifiedEntity_Col(this,Classification::entities)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): Classification_<T> = Classification_(this, customProperty(this, additionalPath))}

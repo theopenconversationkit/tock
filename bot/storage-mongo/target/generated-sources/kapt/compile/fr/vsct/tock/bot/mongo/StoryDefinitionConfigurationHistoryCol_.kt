@@ -28,15 +28,7 @@ internal class StoryDefinitionConfigurationHistoryCol_<T>(previous: KPropertyPat
             get() = StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::date}
 }
 
-internal class StoryDefinitionConfigurationHistoryCol_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol?>(previous,property,additionalPath) {
-    override val arrayProjection: StoryDefinitionConfigurationHistoryCol_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = StoryDefinitionConfigurationHistoryCol_Col(null, this as KProperty1<*, Collection<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>?>, "$")
-
+internal class StoryDefinitionConfigurationHistoryCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>?>) : KCollectionPropertyPath<T, StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol?, StoryDefinitionConfigurationHistoryCol_<T>>(previous,property) {
     val conf: StoryDefinitionConfiguration_<T>
         get() = StoryDefinitionConfiguration_(this,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::conf)
 
@@ -45,4 +37,6 @@ internal class StoryDefinitionConfigurationHistoryCol_Col<T>(
 
     val date: KProperty1<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath(this,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::date)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): StoryDefinitionConfigurationHistoryCol_<T> = StoryDefinitionConfigurationHistoryCol_(this, customProperty(this, additionalPath))}

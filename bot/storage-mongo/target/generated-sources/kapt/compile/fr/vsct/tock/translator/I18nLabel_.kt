@@ -37,15 +37,7 @@ class I18nLabel_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18n
             get() = I18nLabel::defaultLabel}
 }
 
-class I18nLabel_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<I18nLabel>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, I18nLabel?>(previous,property,additionalPath) {
-    override val arrayProjection: I18nLabel_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = I18nLabel_Col(null, this as KProperty1<*, Collection<I18nLabel>?>, "$")
-
+class I18nLabel_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<I18nLabel>?>) : KCollectionPropertyPath<T, I18nLabel?, I18nLabel_<T>>(previous,property) {
     val _id: KProperty1<T, Id<I18nLabel>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,I18nLabel::_id)
 
@@ -60,4 +52,6 @@ class I18nLabel_Col<T>(
 
     val defaultLabel: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,I18nLabel::defaultLabel)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): I18nLabel_<T> = I18nLabel_(this, customProperty(this, additionalPath))}

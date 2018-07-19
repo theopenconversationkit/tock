@@ -32,15 +32,7 @@ internal class NlpStatsCol_<T>(previous: KPropertyPath<T, *>?, property: KProper
             get() = NlpStatsCol::date}
 }
 
-internal class NlpStatsCol_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<NlpStatsCol>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, NlpStatsCol?>(previous,property,additionalPath) {
-    override val arrayProjection: NlpStatsCol_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = NlpStatsCol_Col(null, this as KProperty1<*, Collection<NlpStatsCol>?>, "$")
-
+internal class NlpStatsCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<NlpStatsCol>?>) : KCollectionPropertyPath<T, NlpStatsCol?, NlpStatsCol_<T>>(previous,property) {
     val _id: NlpStatsColId_<T>
         get() = NlpStatsColId_(this,NlpStatsCol::_id)
 
@@ -52,4 +44,6 @@ internal class NlpStatsCol_Col<T>(
 
     val date: KProperty1<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath(this,NlpStatsCol::date)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): NlpStatsCol_<T> = NlpStatsCol_(this, customProperty(this, additionalPath))}

@@ -28,15 +28,7 @@ internal class DialogTextCol_<T>(previous: KPropertyPath<T, *>?, property: KProp
             get() = DialogTextCol::date}
 }
 
-internal class DialogTextCol_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<DialogTextCol>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, DialogTextCol?>(previous,property,additionalPath) {
-    override val arrayProjection: DialogTextCol_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = DialogTextCol_Col(null, this as KProperty1<*, Collection<DialogTextCol>?>, "$")
-
+internal class DialogTextCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<DialogTextCol>?>) : KCollectionPropertyPath<T, DialogTextCol?, DialogTextCol_<T>>(previous,property) {
     val text: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,DialogTextCol::text)
 
@@ -45,4 +37,6 @@ internal class DialogTextCol_Col<T>(
 
     val date: KProperty1<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath(this,DialogTextCol::date)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): DialogTextCol_<T> = DialogTextCol_(this, customProperty(this, additionalPath))}

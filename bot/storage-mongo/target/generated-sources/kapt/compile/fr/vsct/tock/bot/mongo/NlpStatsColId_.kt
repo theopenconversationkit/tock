@@ -23,18 +23,12 @@ internal class NlpStatsColId_<T>(previous: KPropertyPath<T, *>?, property: KProp
             get() = NlpStatsColId::dialogId}
 }
 
-internal class NlpStatsColId_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<NlpStatsColId>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, NlpStatsColId?>(previous,property,additionalPath) {
-    override val arrayProjection: NlpStatsColId_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = NlpStatsColId_Col(null, this as KProperty1<*, Collection<NlpStatsColId>?>, "$")
-
+internal class NlpStatsColId_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<NlpStatsColId>?>) : KCollectionPropertyPath<T, NlpStatsColId?, NlpStatsColId_<T>>(previous,property) {
     val actionId: KProperty1<T, Id<Action>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,NlpStatsColId::actionId)
 
     val dialogId: KProperty1<T, Id<Dialog>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,NlpStatsColId::dialogId)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): NlpStatsColId_<T> = NlpStatsColId_(this, customProperty(this, additionalPath))}

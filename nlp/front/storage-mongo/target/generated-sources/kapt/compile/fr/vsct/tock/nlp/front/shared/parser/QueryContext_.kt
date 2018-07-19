@@ -64,15 +64,7 @@ class QueryContext_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Q
             get() = QueryContext::increaseQueryCounter}
 }
 
-class QueryContext_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<QueryContext>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, QueryContext?>(previous,property,additionalPath) {
-    override val arrayProjection: QueryContext_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = QueryContext_Col(null, this as KProperty1<*, Collection<QueryContext>?>, "$")
-
+class QueryContext_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<QueryContext>?>) : KCollectionPropertyPath<T, QueryContext?, QueryContext_<T>>(previous,property) {
     val language: KProperty1<T, Locale?>
         get() = org.litote.kmongo.property.KPropertyPath(this,QueryContext::language)
 
@@ -102,4 +94,6 @@ class QueryContext_Col<T>(
 
     val increaseQueryCounter: KProperty1<T, Boolean?>
         get() = org.litote.kmongo.property.KPropertyPath(this,QueryContext::increaseQueryCounter)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): QueryContext_<T> = QueryContext_(this, customProperty(this, additionalPath))}

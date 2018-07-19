@@ -58,15 +58,7 @@ internal class UserPreferencesWrapper_<T>(previous: KPropertyPath<T, *>?, proper
             get() = UserTimelineCol.UserPreferencesWrapper::encrypted}
 }
 
-internal class UserPreferencesWrapper_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<UserTimelineCol.UserPreferencesWrapper>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, UserTimelineCol.UserPreferencesWrapper?>(previous,property,additionalPath) {
-    override val arrayProjection: UserPreferencesWrapper_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = UserPreferencesWrapper_Col(null, this as KProperty1<*, Collection<UserTimelineCol.UserPreferencesWrapper>?>, "$")
-
+internal class UserPreferencesWrapper_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<UserTimelineCol.UserPreferencesWrapper>?>) : KCollectionPropertyPath<T, UserTimelineCol.UserPreferencesWrapper?, UserPreferencesWrapper_<T>>(previous,property) {
     val firstName: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,UserTimelineCol.UserPreferencesWrapper::firstName)
 
@@ -93,4 +85,6 @@ internal class UserPreferencesWrapper_Col<T>(
 
     val encrypted: KProperty1<T, Boolean?>
         get() = org.litote.kmongo.property.KPropertyPath(this,UserTimelineCol.UserPreferencesWrapper::encrypted)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): UserPreferencesWrapper_<T> = UserPreferencesWrapper_(this, customProperty(this, additionalPath))}

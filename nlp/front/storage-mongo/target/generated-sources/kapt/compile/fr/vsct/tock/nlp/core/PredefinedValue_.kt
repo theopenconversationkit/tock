@@ -23,18 +23,12 @@ class PredefinedValue_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*
             get() = PredefinedValue::labels}
 }
 
-class PredefinedValue_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<PredefinedValue>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, PredefinedValue?>(previous,property,additionalPath) {
-    override val arrayProjection: PredefinedValue_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = PredefinedValue_Col(null, this as KProperty1<*, Collection<PredefinedValue>?>, "$")
-
+class PredefinedValue_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<PredefinedValue>?>) : KCollectionPropertyPath<T, PredefinedValue?, PredefinedValue_<T>>(previous,property) {
     val value: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,PredefinedValue::value)
 
     val labels: KProperty1<T, Map<Locale, List<String>>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,PredefinedValue::labels)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): PredefinedValue_<T> = PredefinedValue_(this, customProperty(this, additionalPath))}

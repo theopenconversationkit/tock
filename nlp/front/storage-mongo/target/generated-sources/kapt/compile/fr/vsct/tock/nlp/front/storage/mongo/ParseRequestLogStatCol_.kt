@@ -51,15 +51,7 @@ internal class ParseRequestLogStatCol_<T>(previous: KPropertyPath<T, *>?, proper
             get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::count}
 }
 
-internal class ParseRequestLogStatCol_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<ParseRequestLogMongoDAO.ParseRequestLogStatCol>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, ParseRequestLogMongoDAO.ParseRequestLogStatCol?>(previous,property,additionalPath) {
-    override val arrayProjection: ParseRequestLogStatCol_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = ParseRequestLogStatCol_Col(null, this as KProperty1<*, Collection<ParseRequestLogMongoDAO.ParseRequestLogStatCol>?>, "$")
-
+internal class ParseRequestLogStatCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ParseRequestLogMongoDAO.ParseRequestLogStatCol>?>) : KCollectionPropertyPath<T, ParseRequestLogMongoDAO.ParseRequestLogStatCol?, ParseRequestLogStatCol_<T>>(previous,property) {
     val text: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::text)
 
@@ -80,4 +72,6 @@ internal class ParseRequestLogStatCol_Col<T>(
 
     val count: KProperty1<T, Long?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::count)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogStatCol_<T> = ParseRequestLogStatCol_(this, customProperty(this, additionalPath))}

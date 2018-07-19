@@ -68,15 +68,7 @@ class ModelBuild_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Mod
             get() = ModelBuild::date}
 }
 
-class ModelBuild_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<ModelBuild>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, ModelBuild?>(previous,property,additionalPath) {
-    override val arrayProjection: ModelBuild_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = ModelBuild_Col(null, this as KProperty1<*, Collection<ModelBuild>?>, "$")
-
+class ModelBuild_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ModelBuild>?>) : KCollectionPropertyPath<T, ModelBuild?, ModelBuild_<T>>(previous,property) {
     val applicationId: KProperty1<T, Id<ApplicationDefinition>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ModelBuild::applicationId)
 
@@ -106,4 +98,6 @@ class ModelBuild_Col<T>(
 
     val date: KProperty1<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ModelBuild::date)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): ModelBuild_<T> = ModelBuild_(this, customProperty(this, additionalPath))}

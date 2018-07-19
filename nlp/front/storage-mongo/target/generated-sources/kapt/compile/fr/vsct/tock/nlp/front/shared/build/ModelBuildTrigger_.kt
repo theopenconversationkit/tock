@@ -28,15 +28,7 @@ class ModelBuildTrigger_<T>(previous: KPropertyPath<T, *>?, property: KProperty1
             get() = ModelBuildTrigger::onlyIfModelNotExists}
 }
 
-class ModelBuildTrigger_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<ModelBuildTrigger>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, ModelBuildTrigger?>(previous,property,additionalPath) {
-    override val arrayProjection: ModelBuildTrigger_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = ModelBuildTrigger_Col(null, this as KProperty1<*, Collection<ModelBuildTrigger>?>, "$")
-
+class ModelBuildTrigger_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ModelBuildTrigger>?>) : KCollectionPropertyPath<T, ModelBuildTrigger?, ModelBuildTrigger_<T>>(previous,property) {
     val applicationId: KProperty1<T, Id<ApplicationDefinition>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ModelBuildTrigger::applicationId)
 
@@ -45,4 +37,6 @@ class ModelBuildTrigger_Col<T>(
 
     val onlyIfModelNotExists: KProperty1<T, Boolean?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ModelBuildTrigger::onlyIfModelNotExists)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): ModelBuildTrigger_<T> = ModelBuildTrigger_(this, customProperty(this, additionalPath))}

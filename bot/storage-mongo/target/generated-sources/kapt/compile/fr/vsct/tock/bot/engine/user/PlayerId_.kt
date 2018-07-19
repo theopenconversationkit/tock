@@ -25,15 +25,7 @@ class PlayerId_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Playe
             get() = PlayerId::clientId}
 }
 
-class PlayerId_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<PlayerId>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, PlayerId?>(previous,property,additionalPath) {
-    override val arrayProjection: PlayerId_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = PlayerId_Col(null, this as KProperty1<*, Collection<PlayerId>?>, "$")
-
+class PlayerId_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<PlayerId>?>) : KCollectionPropertyPath<T, PlayerId?, PlayerId_<T>>(previous,property) {
     val id: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,PlayerId::id)
 
@@ -42,4 +34,6 @@ class PlayerId_Col<T>(
 
     val clientId: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,PlayerId::clientId)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): PlayerId_<T> = PlayerId_(this, customProperty(this, additionalPath))}

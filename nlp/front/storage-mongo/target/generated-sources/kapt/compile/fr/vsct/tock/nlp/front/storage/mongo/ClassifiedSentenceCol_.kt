@@ -83,15 +83,7 @@ internal class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, propert
             get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::unknownCount}
 }
 
-internal class ClassifiedSentenceCol_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?>(previous,property,additionalPath) {
-    override val arrayProjection: ClassifiedSentenceCol_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = ClassifiedSentenceCol_Col(null, this as KProperty1<*, Collection<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>?>, "$")
-
+internal class ClassifiedSentenceCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>?>) : KCollectionPropertyPath<T, ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?, ClassifiedSentenceCol_<T>>(previous,property) {
     val text: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::text)
 
@@ -130,4 +122,6 @@ internal class ClassifiedSentenceCol_Col<T>(
 
     val unknownCount: KProperty1<T, Long?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::unknownCount)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): ClassifiedSentenceCol_<T> = ClassifiedSentenceCol_(this, customProperty(this, additionalPath))}

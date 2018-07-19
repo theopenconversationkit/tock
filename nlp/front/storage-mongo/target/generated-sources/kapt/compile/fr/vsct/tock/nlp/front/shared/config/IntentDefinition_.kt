@@ -56,15 +56,7 @@ class IntentDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
             get() = IntentDefinition::_id}
 }
 
-class IntentDefinition_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<IntentDefinition>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, IntentDefinition?>(previous,property,additionalPath) {
-    override val arrayProjection: IntentDefinition_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = IntentDefinition_Col(null, this as KProperty1<*, Collection<IntentDefinition>?>, "$")
-
+class IntentDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<IntentDefinition>?>) : KCollectionPropertyPath<T, IntentDefinition?, IntentDefinition_<T>>(previous,property) {
     val name_: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,IntentDefinition::name)
 
@@ -88,4 +80,6 @@ class IntentDefinition_Col<T>(
 
     val _id: KProperty1<T, Id<IntentDefinition>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,IntentDefinition::_id)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): IntentDefinition_<T> = IntentDefinition_(this, customProperty(this, additionalPath))}

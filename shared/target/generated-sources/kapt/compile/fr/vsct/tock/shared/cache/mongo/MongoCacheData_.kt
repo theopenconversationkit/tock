@@ -44,15 +44,7 @@ internal class MongoCacheData_<T>(previous: KPropertyPath<T, *>?, property: KPro
             get() = MongoCacheData::date}
 }
 
-internal class MongoCacheData_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<MongoCacheData>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, MongoCacheData?>(previous,property,additionalPath) {
-    override val arrayProjection: MongoCacheData_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = MongoCacheData_Col(null, this as KProperty1<*, Collection<MongoCacheData>?>, "$")
-
+internal class MongoCacheData_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<MongoCacheData>?>) : KCollectionPropertyPath<T, MongoCacheData?, MongoCacheData_<T>>(previous,property) {
     val id: KProperty1<T, Id<*>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,MongoCacheData::id)
 
@@ -70,4 +62,6 @@ internal class MongoCacheData_Col<T>(
 
     val date: KProperty1<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath(this,MongoCacheData::date)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): MongoCacheData_<T> = MongoCacheData_(this, customProperty(this, additionalPath))}

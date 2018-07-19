@@ -56,15 +56,7 @@ class TestBuild_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Test
             get() = TestBuild::nbErrors}
 }
 
-class TestBuild_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<TestBuild>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, TestBuild?>(previous,property,additionalPath) {
-    override val arrayProjection: TestBuild_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = TestBuild_Col(null, this as KProperty1<*, Collection<TestBuild>?>, "$")
-
+class TestBuild_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<TestBuild>?>) : KCollectionPropertyPath<T, TestBuild?, TestBuild_<T>>(previous,property) {
     val applicationId: KProperty1<T, Id<ApplicationDefinition>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::applicationId)
 
@@ -88,4 +80,6 @@ class TestBuild_Col<T>(
 
     val nbErrors: KProperty1<T, Int?>
         get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::nbErrors)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): TestBuild_<T> = TestBuild_(this, customProperty(this, additionalPath))}

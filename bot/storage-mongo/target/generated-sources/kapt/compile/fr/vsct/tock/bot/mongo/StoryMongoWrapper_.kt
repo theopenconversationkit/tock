@@ -32,15 +32,7 @@ internal class StoryMongoWrapper_<T>(previous: KPropertyPath<T, *>?, property: K
             get() = DialogCol.StoryMongoWrapper::actions}
 }
 
-internal class StoryMongoWrapper_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<DialogCol.StoryMongoWrapper>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, DialogCol.StoryMongoWrapper?>(previous,property,additionalPath) {
-    override val arrayProjection: StoryMongoWrapper_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = StoryMongoWrapper_Col(null, this as KProperty1<*, Collection<DialogCol.StoryMongoWrapper>?>, "$")
-
+internal class StoryMongoWrapper_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<DialogCol.StoryMongoWrapper>?>) : KCollectionPropertyPath<T, DialogCol.StoryMongoWrapper?, StoryMongoWrapper_<T>>(previous,property) {
     val storyDefinitionId: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,DialogCol.StoryMongoWrapper::storyDefinitionId)
 
@@ -52,4 +44,6 @@ internal class StoryMongoWrapper_Col<T>(
 
     val actions: KProperty1<T, List<DialogCol.ActionMongoWrapper>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,DialogCol.StoryMongoWrapper::actions)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): StoryMongoWrapper_<T> = StoryMongoWrapper_(this, customProperty(this, additionalPath))}

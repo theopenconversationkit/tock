@@ -59,15 +59,7 @@ internal class UserTimelineCol_<T>(previous: KPropertyPath<T, *>?, property: KPr
             get() = UserTimelineCol::lastUserActionDate}
 }
 
-internal class UserTimelineCol_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<UserTimelineCol>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, UserTimelineCol?>(previous,property,additionalPath) {
-    override val arrayProjection: UserTimelineCol_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = UserTimelineCol_Col(null, this as KProperty1<*, Collection<UserTimelineCol>?>, "$")
-
+internal class UserTimelineCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<UserTimelineCol>?>) : KCollectionPropertyPath<T, UserTimelineCol?, UserTimelineCol_<T>>(previous,property) {
     val _id: KProperty1<T, Id<UserTimelineCol>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,UserTimelineCol::_id)
 
@@ -94,4 +86,6 @@ internal class UserTimelineCol_Col<T>(
 
     val lastUserActionDate: KProperty1<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath(this,UserTimelineCol::lastUserActionDate)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): UserTimelineCol_<T> = UserTimelineCol_(this, customProperty(this, additionalPath))}

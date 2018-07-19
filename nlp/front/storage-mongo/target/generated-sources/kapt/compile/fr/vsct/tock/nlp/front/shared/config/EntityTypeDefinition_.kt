@@ -37,15 +37,7 @@ class EntityTypeDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProper
             get() = EntityTypeDefinition::_id}
 }
 
-class EntityTypeDefinition_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<EntityTypeDefinition>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, EntityTypeDefinition?>(previous,property,additionalPath) {
-    override val arrayProjection: EntityTypeDefinition_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = EntityTypeDefinition_Col(null, this as KProperty1<*, Collection<EntityTypeDefinition>?>, "$")
-
+class EntityTypeDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<EntityTypeDefinition>?>) : KCollectionPropertyPath<T, EntityTypeDefinition?, EntityTypeDefinition_<T>>(previous,property) {
     val name_: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,EntityTypeDefinition::name)
 
@@ -60,4 +52,6 @@ class EntityTypeDefinition_Col<T>(
 
     val _id: KProperty1<T, Id<EntityTypeDefinition>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,EntityTypeDefinition::_id)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): EntityTypeDefinition_<T> = EntityTypeDefinition_(this, customProperty(this, additionalPath))}

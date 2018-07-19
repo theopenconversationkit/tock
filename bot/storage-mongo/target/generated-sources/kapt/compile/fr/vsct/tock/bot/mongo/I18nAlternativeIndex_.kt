@@ -56,15 +56,7 @@ internal class I18nAlternativeIndex_<T>(previous: KPropertyPath<T, *>?, property
             get() = I18nAlternativeIndex::date}
 }
 
-internal class I18nAlternativeIndex_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<I18nAlternativeIndex>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, I18nAlternativeIndex?>(previous,property,additionalPath) {
-    override val arrayProjection: I18nAlternativeIndex_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = I18nAlternativeIndex_Col(null, this as KProperty1<*, Collection<I18nAlternativeIndex>?>, "$")
-
+internal class I18nAlternativeIndex_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<I18nAlternativeIndex>?>) : KCollectionPropertyPath<T, I18nAlternativeIndex?, I18nAlternativeIndex_<T>>(previous,property) {
     val labelId: KProperty1<T, Id<I18nLabel>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,I18nAlternativeIndex::labelId)
 
@@ -88,4 +80,6 @@ internal class I18nAlternativeIndex_Col<T>(
 
     val date: KProperty1<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath(this,I18nAlternativeIndex::date)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): I18nAlternativeIndex_<T> = I18nAlternativeIndex_(this, customProperty(this, additionalPath))}

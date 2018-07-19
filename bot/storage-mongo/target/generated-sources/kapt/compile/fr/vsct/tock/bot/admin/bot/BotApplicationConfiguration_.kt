@@ -68,15 +68,7 @@ class BotApplicationConfiguration_<T>(previous: KPropertyPath<T, *>?, property: 
             get() = BotApplicationConfiguration::_id}
 }
 
-class BotApplicationConfiguration_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<BotApplicationConfiguration>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, BotApplicationConfiguration?>(previous,property,additionalPath) {
-    override val arrayProjection: BotApplicationConfiguration_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = BotApplicationConfiguration_Col(null, this as KProperty1<*, Collection<BotApplicationConfiguration>?>, "$")
-
+class BotApplicationConfiguration_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<BotApplicationConfiguration>?>) : KCollectionPropertyPath<T, BotApplicationConfiguration?, BotApplicationConfiguration_<T>>(previous,property) {
     val applicationId: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,BotApplicationConfiguration::applicationId)
 
@@ -109,4 +101,6 @@ class BotApplicationConfiguration_Col<T>(
 
     val _id: KProperty1<T, Id<BotApplicationConfiguration>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,BotApplicationConfiguration::_id)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): BotApplicationConfiguration_<T> = BotApplicationConfiguration_(this, customProperty(this, additionalPath))}

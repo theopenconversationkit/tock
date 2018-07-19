@@ -30,15 +30,7 @@ internal class SnapshotCol_<T>(previous: KPropertyPath<T, *>?, property: KProper
             get() = SnapshotCol::lastUpdateDate}
 }
 
-internal class SnapshotCol_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<SnapshotCol>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, SnapshotCol?>(previous,property,additionalPath) {
-    override val arrayProjection: SnapshotCol_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = SnapshotCol_Col(null, this as KProperty1<*, Collection<SnapshotCol>?>, "$")
-
+internal class SnapshotCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<SnapshotCol>?>) : KCollectionPropertyPath<T, SnapshotCol?, SnapshotCol_<T>>(previous,property) {
     val _id: KProperty1<T, Id<Dialog>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,SnapshotCol::_id)
 
@@ -47,4 +39,6 @@ internal class SnapshotCol_Col<T>(
 
     val lastUpdateDate: KProperty1<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath(this,SnapshotCol::lastUpdateDate)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): SnapshotCol_<T> = SnapshotCol_(this, customProperty(this, additionalPath))}

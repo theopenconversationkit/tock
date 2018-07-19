@@ -51,15 +51,7 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
             get() = StoryDefinitionConfiguration::_id}
 }
 
-class StoryDefinitionConfiguration_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<StoryDefinitionConfiguration>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, StoryDefinitionConfiguration?>(previous,property,additionalPath) {
-    override val arrayProjection: StoryDefinitionConfiguration_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = StoryDefinitionConfiguration_Col(null, this as KProperty1<*, Collection<StoryDefinitionConfiguration>?>, "$")
-
+class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<StoryDefinitionConfiguration>?>) : KCollectionPropertyPath<T, StoryDefinitionConfiguration?, StoryDefinitionConfiguration_<T>>(previous,property) {
     val storyId: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,StoryDefinitionConfiguration::storyId)
 
@@ -80,4 +72,6 @@ class StoryDefinitionConfiguration_Col<T>(
 
     val _id: KProperty1<T, Id<StoryDefinitionConfiguration>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,StoryDefinitionConfiguration::_id)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): StoryDefinitionConfiguration_<T> = StoryDefinitionConfiguration_(this, customProperty(this, additionalPath))}

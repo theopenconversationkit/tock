@@ -66,15 +66,7 @@ class TestPlan_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, TestP
             get() = TestPlan::_id}
 }
 
-class TestPlan_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<TestPlan>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, TestPlan?>(previous,property,additionalPath) {
-    override val arrayProjection: TestPlan_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = TestPlan_Col(null, this as KProperty1<*, Collection<TestPlan>?>, "$")
-
+class TestPlan_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<TestPlan>?>) : KCollectionPropertyPath<T, TestPlan?, TestPlan_<T>>(previous,property) {
     val dialogs: KProperty1<T, List<TestDialogReport>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,TestPlan::dialogs)
 
@@ -104,4 +96,6 @@ class TestPlan_Col<T>(
 
     val _id: KProperty1<T, Id<TestPlan>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,TestPlan::_id)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): TestPlan_<T> = TestPlan_(this, customProperty(this, additionalPath))}

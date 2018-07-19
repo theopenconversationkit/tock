@@ -66,15 +66,7 @@ class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KPrope
             get() = ApplicationDefinition::_id}
 }
 
-class ApplicationDefinition_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<ApplicationDefinition>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, ApplicationDefinition?>(previous,property,additionalPath) {
-    override val arrayProjection: ApplicationDefinition_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = ApplicationDefinition_Col(null, this as KProperty1<*, Collection<ApplicationDefinition>?>, "$")
-
+class ApplicationDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ApplicationDefinition>?>) : KCollectionPropertyPath<T, ApplicationDefinition?, ApplicationDefinition_<T>>(previous,property) {
     val name_: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::name)
 
@@ -104,4 +96,6 @@ class ApplicationDefinition_Col<T>(
 
     val _id: KProperty1<T, Id<ApplicationDefinition>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::_id)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): ApplicationDefinition_<T> = ApplicationDefinition_(this, customProperty(this, additionalPath))}

@@ -61,15 +61,7 @@ class IntentTestError_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*
             get() = IntentTestError::firstDetectionDate}
 }
 
-class IntentTestError_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<IntentTestError>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, IntentTestError?>(previous,property,additionalPath) {
-    override val arrayProjection: IntentTestError_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = IntentTestError_Col(null, this as KProperty1<*, Collection<IntentTestError>?>, "$")
-
+class IntentTestError_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<IntentTestError>?>) : KCollectionPropertyPath<T, IntentTestError?, IntentTestError_<T>>(previous,property) {
     val applicationId: KProperty1<T, Id<ApplicationDefinition>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,IntentTestError::applicationId)
 
@@ -96,4 +88,6 @@ class IntentTestError_Col<T>(
 
     val firstDetectionDate: KProperty1<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath(this,IntentTestError::firstDetectionDate)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): IntentTestError_<T> = IntentTestError_(this, customProperty(this, additionalPath))}

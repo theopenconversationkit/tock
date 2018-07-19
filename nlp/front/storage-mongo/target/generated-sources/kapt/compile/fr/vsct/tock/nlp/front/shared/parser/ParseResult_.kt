@@ -59,15 +59,7 @@ class ParseResult_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Pa
             get() = ParseResult::otherIntentsProbabilities}
 }
 
-class ParseResult_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<ParseResult>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, ParseResult?>(previous,property,additionalPath) {
-    override val arrayProjection: ParseResult_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = ParseResult_Col(null, this as KProperty1<*, Collection<ParseResult>?>, "$")
-
+class ParseResult_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ParseResult>?>) : KCollectionPropertyPath<T, ParseResult?, ParseResult_<T>>(previous,property) {
     val intent: KProperty1<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseResult::intent)
 
@@ -94,4 +86,6 @@ class ParseResult_Col<T>(
 
     val otherIntentsProbabilities: KProperty1<T, Map<String, Double>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseResult::otherIntentsProbabilities)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): ParseResult_<T> = ParseResult_(this, customProperty(this, additionalPath))}

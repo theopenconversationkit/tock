@@ -63,15 +63,7 @@ class EntityTestError_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*
             get() = EntityTestError::firstDetectionDate}
 }
 
-class EntityTestError_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<EntityTestError>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, EntityTestError?>(previous,property,additionalPath) {
-    override val arrayProjection: EntityTestError_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = EntityTestError_Col(null, this as KProperty1<*, Collection<EntityTestError>?>, "$")
-
+class EntityTestError_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<EntityTestError>?>) : KCollectionPropertyPath<T, EntityTestError?, EntityTestError_<T>>(previous,property) {
     val applicationId: KProperty1<T, Id<ApplicationDefinition>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,EntityTestError::applicationId)
 
@@ -98,4 +90,6 @@ class EntityTestError_Col<T>(
 
     val firstDetectionDate: KProperty1<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath(this,EntityTestError::firstDetectionDate)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): EntityTestError_<T> = EntityTestError_(this, customProperty(this, additionalPath))}

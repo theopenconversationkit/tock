@@ -42,15 +42,7 @@ class ParseQuery_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Par
             get() = ParseQuery::intentsSubset}
 }
 
-class ParseQuery_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<ParseQuery>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, ParseQuery?>(previous,property,additionalPath) {
-    override val arrayProjection: ParseQuery_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = ParseQuery_Col(null, this as KProperty1<*, Collection<ParseQuery>?>, "$")
-
+class ParseQuery_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ParseQuery>?>) : KCollectionPropertyPath<T, ParseQuery?, ParseQuery_<T>>(previous,property) {
     val queries: KProperty1<T, List<String>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseQuery::queries)
 
@@ -68,4 +60,6 @@ class ParseQuery_Col<T>(
 
     val intentsSubset: KProperty1<T, Set<IntentQualifier>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseQuery::intentsSubset)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): ParseQuery_<T> = ParseQuery_(this, customProperty(this, additionalPath))}

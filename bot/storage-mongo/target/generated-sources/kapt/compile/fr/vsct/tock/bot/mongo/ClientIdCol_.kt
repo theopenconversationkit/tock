@@ -22,18 +22,12 @@ internal class ClientIdCol_<T>(previous: KPropertyPath<T, *>?, property: KProper
             get() = ClientIdCol::_id}
 }
 
-internal class ClientIdCol_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<ClientIdCol>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, ClientIdCol?>(previous,property,additionalPath) {
-    override val arrayProjection: ClientIdCol_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = ClientIdCol_Col(null, this as KProperty1<*, Collection<ClientIdCol>?>, "$")
-
+internal class ClientIdCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ClientIdCol>?>) : KCollectionPropertyPath<T, ClientIdCol?, ClientIdCol_<T>>(previous,property) {
     val userIds: KProperty1<T, Set<String>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ClientIdCol::userIds)
 
     val _id: KProperty1<T, Id<ClientIdCol>?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ClientIdCol::_id)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): ClientIdCol_<T> = ClientIdCol_(this, customProperty(this, additionalPath))}

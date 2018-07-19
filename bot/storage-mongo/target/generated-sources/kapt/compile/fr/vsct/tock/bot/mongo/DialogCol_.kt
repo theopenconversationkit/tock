@@ -45,15 +45,7 @@ internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty
             get() = DialogCol::lastUpdateDate}
 }
 
-internal class DialogCol_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<DialogCol>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, DialogCol?>(previous,property,additionalPath) {
-    override val arrayProjection: DialogCol_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = DialogCol_Col(null, this as KProperty1<*, Collection<DialogCol>?>, "$")
-
+internal class DialogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<DialogCol>?>) : KCollectionPropertyPath<T, DialogCol?, DialogCol_<T>>(previous,property) {
     val playerIds: PlayerId_Col<T>
         get() = PlayerId_Col(this,DialogCol::playerIds)
 
@@ -71,4 +63,6 @@ internal class DialogCol_Col<T>(
 
     val lastUpdateDate: KProperty1<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath(this,DialogCol::lastUpdateDate)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): DialogCol_<T> = DialogCol_(this, customProperty(this, additionalPath))}

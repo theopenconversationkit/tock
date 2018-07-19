@@ -42,15 +42,7 @@ internal class ParseRequestLogStatResult_<T>(previous: KPropertyPath<T, *>?, pro
             get() = ParseRequestLogMongoDAO.ParseRequestLogStatResult::entitiesProbability}
 }
 
-internal class ParseRequestLogStatResult_Col<T>(
-        previous: KPropertyPath<T, *>?,
-        property: KProperty1<*, Collection<ParseRequestLogMongoDAO.ParseRequestLogStatResult>?>,
-        additionalPath: String? = null
-) : KCollectionPropertyPath<T, ParseRequestLogMongoDAO.ParseRequestLogStatResult?>(previous,property,additionalPath) {
-    override val arrayProjection: ParseRequestLogStatResult_Col<T>
-        @Suppress("UNCHECKED_CAST")
-        get() = ParseRequestLogStatResult_Col(null, this as KProperty1<*, Collection<ParseRequestLogMongoDAO.ParseRequestLogStatResult>?>, "$")
-
+internal class ParseRequestLogStatResult_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ParseRequestLogMongoDAO.ParseRequestLogStatResult>?>) : KCollectionPropertyPath<T, ParseRequestLogMongoDAO.ParseRequestLogStatResult?, ParseRequestLogStatResult_<T>>(previous,property) {
     val _id: DayAndYear_<T>
         get() = DayAndYear_(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::_id)
 
@@ -68,4 +60,6 @@ internal class ParseRequestLogStatResult_Col<T>(
 
     val entitiesProbability: KProperty1<T, Double?>
         get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::entitiesProbability)
-}
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogStatResult_<T> = ParseRequestLogStatResult_(this, customProperty(this, additionalPath))}

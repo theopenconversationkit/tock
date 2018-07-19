@@ -38,7 +38,7 @@
         <kotlin-logging>1.5.4</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>3.8.1-SNAPSHOT</kmongo>
+        <kmongo>3.8.1</kmongo>
         <fongo>2.2.0-RC2</fongo>
         <jackson>2.9.3</jackson>
         <jackson-module>2.9.3</jackson-module>
@@ -56,7 +56,8 @@
 
         <junit-platform>1.2.0</junit-platform>
         <junit-jupiter>5.2.0</junit-jupiter>
-        <mockk>1.8.3</mockk>
+        
+        <mockk>1.8.5</mockk>
 
         <plugin.surefire>2.22.0</plugin.surefire>
         <plugin.source>3.0.1</plugin.source>
