@@ -100,7 +100,7 @@
 
       <ng-container mdColumnDef="text">
         <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Text</md-header-cell>
-        <md-cell *mdCellDef="let row"> <tock-highlight [sentence]="row" [readOnly]="true"></tock-highlight></md-cell>
+        <md-cell *mdCellDef="let row"> <tock-highlight [sentence]="row" [readOnly]="true" [displayActions]="false"></tock-highlight></md-cell>
       </ng-container>
 
       <ng-container mdColumnDef="currentIntent">
