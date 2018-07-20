@@ -52,7 +52,8 @@ export class SelectBotComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.botConfiguration.restConfigurations
+    (this.displayConnectorChoice
+      ? this.botConfiguration.restConfigurations : this.botConfiguration.configurations)
       .subscribe(conf => {
         setTimeout(_ => {
           if (conf.length !== 0) {
