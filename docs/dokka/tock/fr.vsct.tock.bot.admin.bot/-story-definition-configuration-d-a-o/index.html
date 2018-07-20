@@ -22,26 +22,24 @@
 </tr>
 <tr>
 <td>
-<p><a href="get-last-update-timestamp.html">getLastUpdateTimestamp</a></p>
+<p><a href="get-story-definition-by-bot-id-and-intent.html">getStoryDefinitionByBotIdAndIntent</a></p>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getLastUpdateTimestamp</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO$getLastUpdateTimestamp(kotlin.String)/botId">botId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="http://docs.oracle.com/javase/8/docs/api/java/time/Instant.html"><span class="identifier">Instant</span></a><span class="symbol">?</span></code>
-<p>Returns the timestamp of the last configured answers update for this bot.</p>
-</td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getStoryDefinitionByBotIdAndIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO$getStoryDefinitionByBotIdAndIntent(kotlin.String, kotlin.String)/botId">botId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO$getStoryDefinitionByBotIdAndIntent(kotlin.String, kotlin.String)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition-configuration/index.html"><span class="identifier">StoryDefinitionConfiguration</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
 <p><a href="get-story-definition-by-id.html">getStoryDefinitionById</a></p>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getStoryDefinitionById</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO$getStoryDefinitionById(kotlin.String)/id">id</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition-configuration/index.html"><span class="identifier">StoryDefinitionConfiguration</span></a><span class="symbol">?</span></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getStoryDefinitionById</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO$getStoryDefinitionById(org.litote.kmongo.Id((fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration)))/id">id</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="../-story-definition-configuration/index.html"><span class="identifier">StoryDefinitionConfiguration</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-story-definition-configuration/index.html"><span class="identifier">StoryDefinitionConfiguration</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="get-story-definitions.html">getStoryDefinitions</a></p>
+<p><a href="get-story-definitions-by-bot-id.html">getStoryDefinitionsByBotId</a></p>
 </td>
 <td>
-<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getStoryDefinitions</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO$getStoryDefinitions(kotlin.String)/botId">botId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-story-definition-configuration/index.html"><span class="identifier">StoryDefinitionConfiguration</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getStoryDefinitionsByBotId</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO$getStoryDefinitionsByBotId(kotlin.String)/botId">botId</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-story-definition-configuration/index.html"><span class="identifier">StoryDefinitionConfiguration</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>

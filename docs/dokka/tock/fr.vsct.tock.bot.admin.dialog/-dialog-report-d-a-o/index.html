@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.admin.dialog</a>&nbsp;/&nbsp;<a href="./index.html">DialogReportDAO</a><br/>
 <br/>
 <h1>DialogReportDAO</h1>
-<code><span class="keyword">interface </span><span class="identifier">DialogReportDAO</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/admin/dialog/DialogReportDAO.kt#L25">(source)</a>
+<code><span class="keyword">interface </span><span class="identifier">DialogReportDAO</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/admin/dialog/DialogReportDAO.kt#L28">(source)</a>
 <h3>Functions</h3>
 <table>
 <tbody>
@@ -18,6 +18,13 @@
 </td>
 <td>
 <code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getDialog</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.dialog.DialogReportDAO$getDialog(org.litote.kmongo.Id((fr.vsct.tock.bot.engine.dialog.Dialog)))/id">id</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="../../fr.vsct.tock.bot.engine.dialog/-dialog/index.html"><span class="identifier">Dialog</span></a><span class="symbol">&gt;</span><span class="symbol">)</span><span class="symbol">: </span><a href="../-dialog-report/index.html"><span class="identifier">DialogReport</span></a><span class="symbol">?</span></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="get-nlp-call-stats.html">getNlpCallStats</a></p>
+</td>
+<td>
+<code><span class="keyword">abstract</span> <span class="keyword">fun </span><span class="identifier">getNlpCallStats</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.admin.dialog.DialogReportDAO$getNlpCallStats(org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), kotlin.String)/actionId">actionId</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="../../fr.vsct.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.admin.dialog.DialogReportDAO$getNlpCallStats(org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), kotlin.String)/namespace">namespace</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.engine.nlp/-nlp-call-stats/index.html"><span class="identifier">NlpCallStats</span></a><span class="symbol">?</span></code></td>
 </tr>
 <tr>
 <td>

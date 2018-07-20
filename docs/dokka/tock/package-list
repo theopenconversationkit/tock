@@ -4,7 +4,9 @@ $dokka.location:fr.vsct.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.S
 $dokka.location:fr.vsct.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.Throwable, fr.vsct.tock.bot.engine.monitoring.RequestTimerData)fr.vsct.tock.bot.engine.monitoring/mu.-k-logger/log-error.html
 $dokka.location:fr.vsct.tock.shared$addJacksonConverter(retrofit2.Retrofit.Builder, com.fasterxml.jackson.databind.ObjectMapper)fr.vsct.tock.shared/retrofit2.-retrofit.-builder/add-jackson-converter.html
 $dokka.location:fr.vsct.tock.shared$create(retrofit2.Retrofit)fr.vsct.tock.shared/retrofit2.-retrofit/create.html
+$dokka.location:fr.vsct.tock.shared$debug(mu.KLogger, kotlin.Throwable)fr.vsct.tock.shared/mu.-k-logger/debug.html
 $dokka.location:fr.vsct.tock.shared$error(mu.KLogger, kotlin.Throwable)fr.vsct.tock.shared/mu.-k-logger/error.html
+$dokka.location:fr.vsct.tock.shared$info(mu.KLogger, kotlin.Throwable)fr.vsct.tock.shared/mu.-k-logger/info.html
 $dokka.location:fr.vsct.tock.shared$mapNotNullValues(kotlin.collections.Iterable((fr.vsct.tock.shared.mapNotNullValues.T)), kotlin.Function1((fr.vsct.tock.shared.mapNotNullValues.T, kotlin.Pair((fr.vsct.tock.shared.mapNotNullValues.K, fr.vsct.tock.shared.mapNotNullValues.V)))))fr.vsct.tock.shared/kotlin.collections.-iterable/map-not-null-values.html
 $dokka.location:fr.vsct.tock.shared$name(kotlin.String)fr.vsct.tock.shared/kotlin.-string/name.html
 $dokka.location:fr.vsct.tock.shared$namespace(kotlin.String)fr.vsct.tock.shared/kotlin.-string/namespace.html
@@ -23,6 +25,7 @@ $dokka.location:fr.vsct.tock.shared.jackson$read(com.fasterxml.jackson.core.Json
 $dokka.location:fr.vsct.tock.shared.jackson$readListValues(com.fasterxml.jackson.core.JsonParser)fr.vsct.tock.shared.jackson/com.fasterxml.jackson.core.-json-parser/read-list-values.html
 $dokka.location:fr.vsct.tock.shared.jackson$readValue(com.fasterxml.jackson.core.JsonParser)fr.vsct.tock.shared.jackson/com.fasterxml.jackson.core.-json-parser/read-value.html
 $dokka.location:fr.vsct.tock.shared.vertx$blocking(io.vertx.core.Vertx, kotlin.Function1((io.vertx.core.Future((fr.vsct.tock.shared.vertx.blocking.T)), kotlin.Unit)), kotlin.Function1((io.vertx.core.AsyncResult((fr.vsct.tock.shared.vertx.blocking.T)), kotlin.Unit)))fr.vsct.tock.shared.vertx/io.vertx.core.-vertx/blocking.html
+$dokka.location:fr.vsct.tock.shared.vertx$blocking(io.vertx.ext.web.Route, kotlin.Function1((io.vertx.ext.web.RoutingContext, kotlin.Unit)))fr.vsct.tock.shared.vertx/io.vertx.ext.web.-route/blocking.html
 fr.vsct.tock.bot
 fr.vsct.tock.bot.admin.answer
 fr.vsct.tock.bot.admin.bot

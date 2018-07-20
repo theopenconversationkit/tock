@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine.nlp</a>&nbsp;/&nbsp;<a href="./index.html">NlpCallStats</a><br/>
 <br/>
 <h1>NlpCallStats</h1>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">NlpCallStats</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/nlp/NlpCallStats.kt#L26">(source)</a>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">NlpCallStats</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/nlp/NlpCallStats.kt#L28">(source)</a>
 <p>Stats about nlp call.</p>
 <h3>Constructors</h3>
 <table>
@@ -18,7 +18,7 @@
 <p><a href="-init-.html">&lt;init&gt;</a></p>
 </td>
 <td>
-<code><span class="identifier">NlpCallStats</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpCallStats$<init>(fr.vsct.tock.bot.definition.Intent, kotlin.Double, kotlin.Double, kotlin.collections.List((fr.vsct.tock.bot.engine.nlp.NlpIntentStat)), kotlin.collections.List((fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier)))/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-intent/index.html"><span class="identifier">Intent</span></a>&nbsp;<span class="symbol">=</span>&nbsp;Intent.unknown<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpCallStats$<init>(fr.vsct.tock.bot.definition.Intent, kotlin.Double, kotlin.Double, kotlin.collections.List((fr.vsct.tock.bot.engine.nlp.NlpIntentStat)), kotlin.collections.List((fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier)))/intentProbability">intentProbability</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpCallStats$<init>(fr.vsct.tock.bot.definition.Intent, kotlin.Double, kotlin.Double, kotlin.collections.List((fr.vsct.tock.bot.engine.nlp.NlpIntentStat)), kotlin.collections.List((fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier)))/entitiesProbability">entitiesProbability</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpCallStats$<init>(fr.vsct.tock.bot.definition.Intent, kotlin.Double, kotlin.Double, kotlin.collections.List((fr.vsct.tock.bot.engine.nlp.NlpIntentStat)), kotlin.collections.List((fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier)))/otherIntentsProbabilities">otherIntentsProbabilities</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-nlp-intent-stat/index.html"><span class="identifier">NlpIntentStat</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpCallStats$<init>(fr.vsct.tock.bot.definition.Intent, kotlin.Double, kotlin.Double, kotlin.collections.List((fr.vsct.tock.bot.engine.nlp.NlpIntentStat)), kotlin.collections.List((fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier)))/intentsQualifiers">intentsQualifiers</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><span class="identifier">NlpIntentQualifier</span><span class="symbol">&gt;</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span></code>
+<code><span class="identifier">NlpCallStats</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpCallStats$<init>(java.util.Locale, fr.vsct.tock.bot.definition.Intent, kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.EntityValue)), kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.EntityValue)), fr.vsct.tock.nlp.api.client.model.NlpQuery, fr.vsct.tock.nlp.api.client.model.NlpResult)/locale">locale</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/8/docs/api/java/util/Locale.html"><span class="identifier">Locale</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpCallStats$<init>(java.util.Locale, fr.vsct.tock.bot.definition.Intent, kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.EntityValue)), kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.EntityValue)), fr.vsct.tock.nlp.api.client.model.NlpQuery, fr.vsct.tock.nlp.api.client.model.NlpResult)/intentResult">intentResult</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-intent/index.html"><span class="identifier">Intent</span></a>&nbsp;<span class="symbol">=</span>&nbsp;Intent.unknown<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpCallStats$<init>(java.util.Locale, fr.vsct.tock.bot.definition.Intent, kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.EntityValue)), kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.EntityValue)), fr.vsct.tock.nlp.api.client.model.NlpQuery, fr.vsct.tock.nlp.api.client.model.NlpResult)/entityResult">entityResult</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../fr.vsct.tock.bot.engine.dialog/-entity-value/index.html"><span class="identifier">EntityValue</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyList()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpCallStats$<init>(java.util.Locale, fr.vsct.tock.bot.definition.Intent, kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.EntityValue)), kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.EntityValue)), fr.vsct.tock.nlp.api.client.model.NlpQuery, fr.vsct.tock.nlp.api.client.model.NlpResult)/entityResultAfterMerge">entityResultAfterMerge</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../fr.vsct.tock.bot.engine.dialog/-entity-value/index.html"><span class="identifier">EntityValue</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyList()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpCallStats$<init>(java.util.Locale, fr.vsct.tock.bot.definition.Intent, kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.EntityValue)), kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.EntityValue)), fr.vsct.tock.nlp.api.client.model.NlpQuery, fr.vsct.tock.nlp.api.client.model.NlpResult)/nlpQuery">nlpQuery</span><span class="symbol">:</span>&nbsp;<span class="identifier">NlpQuery</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpCallStats$<init>(java.util.Locale, fr.vsct.tock.bot.definition.Intent, kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.EntityValue)), kotlin.collections.List((fr.vsct.tock.bot.engine.dialog.EntityValue)), fr.vsct.tock.nlp.api.client.model.NlpQuery, fr.vsct.tock.nlp.api.client.model.NlpResult)/nlpResult">nlpResult</span><span class="symbol">:</span>&nbsp;<span class="identifier">NlpResult</span><span class="symbol">)</span></code>
 <p>Stats about nlp call.</p>
 </td>
 </tr>
@@ -29,50 +29,45 @@
 <tbody>
 <tr>
 <td>
-<p><a href="entities-probability.html">entitiesProbability</a></p>
+<p><a href="entity-result.html">entityResult</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">entitiesProbability</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">?</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">entityResult</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../fr.vsct.tock.bot.engine.dialog/-entity-value/index.html"><span class="identifier">EntityValue</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="intent.html">intent</a></p>
+<p><a href="entity-result-after-merge.html">entityResultAfterMerge</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">intent</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.definition/-intent/index.html"><span class="identifier">Intent</span></a></code></td>
+<code><span class="keyword">val </span><span class="identifier">entityResultAfterMerge</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../fr.vsct.tock.bot.engine.dialog/-entity-value/index.html"><span class="identifier">EntityValue</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="intent-probability.html">intentProbability</a></p>
+<p><a href="intent-result.html">intentResult</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">intentProbability</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a><span class="symbol">?</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">intentResult</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.definition/-intent/index.html"><span class="identifier">Intent</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="intents-qualifiers.html">intentsQualifiers</a></p>
+<p><a href="locale.html">locale</a></p>
 </td>
 <td>
-<code><span class="keyword">var </span><span class="identifier">intentsQualifiers</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><span class="identifier">NlpIntentQualifier</span><span class="symbol">&gt;</span><span class="symbol">?</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">locale</span><span class="symbol">: </span><a href="http://docs.oracle.com/javase/8/docs/api/java/util/Locale.html"><span class="identifier">Locale</span></a></code></td>
 </tr>
 <tr>
 <td>
-<p><a href="other-intents-probabilities.html">otherIntentsProbabilities</a></p>
+<p><a href="nlp-query.html">nlpQuery</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">otherIntentsProbabilities</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-nlp-intent-stat/index.html"><span class="identifier">NlpIntentStat</span></a><span class="symbol">&gt;</span></code></td>
+<code><span class="keyword">val </span><span class="identifier">nlpQuery</span><span class="symbol">: </span><span class="identifier">NlpQuery</span></code></td>
 </tr>
-</tbody>
-</table>
-<h3>Functions</h3>
-<table>
-<tbody>
 <tr>
 <td>
-<p><a href="has-intent.html">hasIntent</a></p>
+<p><a href="nlp-result.html">nlpResult</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">hasIntent</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpCallStats$hasIntent(fr.vsct.tock.bot.definition.IntentAware, kotlin.Double)/intent">intent</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.definition/-intent-aware/index.html"><span class="identifier">IntentAware</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.nlp.NlpCallStats$hasIntent(fr.vsct.tock.bot.definition.IntentAware, kotlin.Double)/minProbability">minProbability</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-double/index.html"><span class="identifier">Double</span></a>&nbsp;<span class="symbol">=</span>&nbsp;0.0<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code></td>
+<code><span class="keyword">val </span><span class="identifier">nlpResult</span><span class="symbol">: </span><span class="identifier">NlpResult</span></code></td>
 </tr>
 </tbody>
 </table>
