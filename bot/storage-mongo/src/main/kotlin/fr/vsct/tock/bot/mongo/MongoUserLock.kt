@@ -20,6 +20,9 @@ import com.mongodb.MongoWriteException
 import com.mongodb.client.model.UpdateOptions
 import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
+import fr.vsct.tock.bot.mongo.UserLock_.Companion.Date
+import fr.vsct.tock.bot.mongo.UserLock_.Companion.Locked
+import fr.vsct.tock.bot.mongo.UserLock_.Companion._id
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.longProperty
 import mu.KotlinLogging
@@ -49,20 +52,15 @@ internal object MongoUserLock : UserLock {
         // This query finds unlocked UserLock objects, either because
         // their locked property is false or because their lock date
         // is too old
-        val query = """
-            {
-                _id: "${lock._id}",
-                ${MongoOperator.or}: [
-                    { locked: false },
-                    { date: { ${MongoOperator.lt} : ISODate("${validLockDatesLimit}") } }
-                ]
-            }
-        """
+        val query = and(
+            _id eq lock._id,
+            or(
+                Locked eq false,
+                Date lt validLockDatesLimit
+            )
+        )
 
         try {
-            // Try to find existing user lock (for logging purpose only)
-            val existingLock = col.findOneById(userId)
-
             // Atomically take lock if it's unlocked
             //
             // upsert option will ensure we create the lock document if it doesn't
@@ -72,10 +70,14 @@ internal object MongoUserLock : UserLock {
             col.updateOne(query, lock, UpdateOptions().upsert(true))
 
             // at this point, lock has been acquired. A bit of logging.
-            logger.debug { "lock user : $userId" }
-            if (existingLock != null) {
-                if (existingLock.locked == true && existingLock.date.isBefore(validLockDatesLimit)) {
-                    logger.debug { "(previous lock date was too old" }
+            if(logger.isDebugEnabled) {
+                // Try to find existing user lock (for logging purpose only)
+                val existingLock = col.findOneById(userId)
+                logger.debug { "lock user : $userId" }
+                if (existingLock != null) {
+                    if (existingLock.locked && existingLock.date.isBefore(validLockDatesLimit)) {
+                        logger.debug { "previous lock date was too old" }
+                    }
                 }
             }
 
