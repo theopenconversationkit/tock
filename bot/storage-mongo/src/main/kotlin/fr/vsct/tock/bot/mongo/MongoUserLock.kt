@@ -16,18 +16,17 @@
 
 package fr.vsct.tock.bot.mongo
 
+import com.mongodb.MongoWriteException
+import com.mongodb.client.model.UpdateOptions
 import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
+import fr.vsct.tock.bot.mongo.UserLock_.Companion.Date
+import fr.vsct.tock.bot.mongo.UserLock_.Companion.Locked
+import fr.vsct.tock.bot.mongo.UserLock_.Companion._id
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.longProperty
 import mu.KotlinLogging
-import org.litote.kmongo.Data
-import org.litote.kmongo.Id
-import org.litote.kmongo.deleteOneById
-import org.litote.kmongo.findOneById
-import org.litote.kmongo.getCollection
-import org.litote.kmongo.toId
-import org.litote.kmongo.updateOneById
+import org.litote.kmongo.*
 import java.lang.Exception
 import java.time.Instant
 import java.time.Instant.now
@@ -47,33 +46,54 @@ internal object MongoUserLock : UserLock {
     private val lockTimeout = longProperty("tock_bot_lock_timeout_in_ms", 5000)
 
     override fun lock(userId: String): Boolean {
+        val lock = UserLock(userId.toId())
+        val validLockDatesLimit = now().minusMillis(lockTimeout)
+
+        // This query finds unlocked UserLock objects, either because
+        // their locked property is false or because their lock date
+        // is too old
+        val query = and(
+            _id eq lock._id,
+            or(
+                Locked eq false,
+                Date lt validLockDatesLimit
+            )
+        )
+
         try {
-            var lock = col.findOneById(userId)
-            return if (lock == null) {
-                lock = UserLock(userId.toId())
-                col.insertOne(lock)
+            // Atomically take lock if it's unlocked
+            //
+            // upsert option will ensure we create the lock document if it doesn't
+            // already exist. It will also trigger a duplicate key exception that
+            // we'll capture to indicate lock is already taken
+            // (without it we would check update result)
+            col.updateOne(query, lock, UpdateOptions().upsert(true))
+
+            // at this point, lock has been acquired. A bit of logging.
+            if(logger.isDebugEnabled) {
+                // Try to find existing user lock (for logging purpose only)
+                val existingLock = col.findOneById(userId)
                 logger.debug { "lock user : $userId" }
-                true
-            } else {
-                if (!lock.locked) {
-                    logger.debug { "lock user : $userId" }
-                    col.updateOneById(lock._id, UserLock(userId.toId(), true))
-                    true
-                } else {
-                    if (lock.date.plusMillis(lockTimeout).isBefore(now())) {
-                        logger.warn { "lock user : $userId because lock date is too old" }
-                        col.updateOneById(lock._id, UserLock(userId.toId(), true))
-                        true
-                    } else {
-                        false
+                if (existingLock != null) {
+                    if (existingLock.locked && existingLock.date.isBefore(validLockDatesLimit)) {
+                        logger.debug { "previous lock date was too old" }
                     }
                 }
             }
+
+            return true
         } catch (e: Exception) {
-            logger.error(e)
+            // lock could not be acquired
+            if (e is MongoWriteException && e.code == 11000) {
+                // duplicate key exception triggered by upsert
+                logger.debug { "lock for user $userId already taken" }
+            } else {
+                logger.error(e)
+            }
             return false
         }
     }
+
 
     override fun releaseLock(userId: String) {
         try {
