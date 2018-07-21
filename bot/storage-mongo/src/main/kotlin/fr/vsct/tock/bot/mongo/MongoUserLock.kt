@@ -17,7 +17,6 @@
 package fr.vsct.tock.bot.mongo
 
 import com.mongodb.MongoWriteException
-import com.mongodb.client.model.UpdateOptions
 import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.bot.mongo.UserLock_.Companion.Date
@@ -26,7 +25,20 @@ import fr.vsct.tock.bot.mongo.UserLock_.Companion._id
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.longProperty
 import mu.KotlinLogging
-import org.litote.kmongo.*
+import org.litote.kmongo.Data
+import org.litote.kmongo.Id
+import org.litote.kmongo.and
+import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.eq
+import org.litote.kmongo.findOneById
+import org.litote.kmongo.getCollection
+import org.litote.kmongo.lt
+import org.litote.kmongo.or
+import org.litote.kmongo.set
+import org.litote.kmongo.toId
+import org.litote.kmongo.updateOne
+import org.litote.kmongo.updateOneById
+import org.litote.kmongo.upsert
 import java.lang.Exception
 import java.time.Instant
 import java.time.Instant.now
@@ -49,37 +61,34 @@ internal object MongoUserLock : UserLock {
         val lock = UserLock(userId.toId())
         val validLockDatesLimit = now().minusMillis(lockTimeout)
 
-        // This query finds unlocked UserLock objects, either because
-        // their locked property is false or because their lock date
-        // is too old
-        val query = and(
-            _id eq lock._id,
-            or(
-                Locked eq false,
-                Date lt validLockDatesLimit
-            )
-        )
-
         try {
+            // Only for logging.
+            if (logger.isDebugEnabled) {
+                // Try to find existing user lock (for logging purpose only)
+                val existingLock = col.findOneById(userId)
+                logger.debug("lock user : $userId")
+                if (existingLock != null && existingLock.locked && existingLock.date.isBefore(validLockDatesLimit)) {
+                    logger.debug("previous lock date is too old")
+                }
+            }
+
+            // This query finds unlocked UserLock objects, either because
+            // their locked property is false or because their lock date
+            // is too old
+            val query = and(
+                _id eq lock._id,
+                or(
+                    Locked eq false,
+                    Date lt validLockDatesLimit
+                )
+            )
+
             // Atomically take lock if it's unlocked
             //
             // upsert option will ensure we create the lock document if it doesn't
             // already exist. It will also trigger a duplicate key exception that
             // we'll capture to indicate lock is already taken
-            // (without it we would check update result)
-            col.updateOne(query, lock, UpdateOptions().upsert(true))
-
-            // at this point, lock has been acquired. A bit of logging.
-            if(logger.isDebugEnabled) {
-                // Try to find existing user lock (for logging purpose only)
-                val existingLock = col.findOneById(userId)
-                logger.debug { "lock user : $userId" }
-                if (existingLock != null) {
-                    if (existingLock.locked && existingLock.date.isBefore(validLockDatesLimit)) {
-                        logger.debug { "previous lock date was too old" }
-                    }
-                }
-            }
+            col.updateOne(query, lock, upsert())
 
             return true
         } catch (e: Exception) {
@@ -98,10 +107,8 @@ internal object MongoUserLock : UserLock {
     override fun releaseLock(userId: String) {
         try {
             logger.debug { "release lock for user : $userId" }
-            val lock = col.findOneById(userId)
-            if (lock != null && lock.locked) {
-                col.updateOneById(userId, UserLock(userId.toId(), false))
-            } else {
+            val r = col.updateOneById(userId, set(Locked, false))
+            if (r.modifiedCount == 0L) {
                 logger.warn { "lock deleted or updated??? : $userId" }
             }
         } catch (e: Exception) {
