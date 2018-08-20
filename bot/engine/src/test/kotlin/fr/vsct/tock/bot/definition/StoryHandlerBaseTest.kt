@@ -18,14 +18,12 @@ package fr.vsct.tock.bot.definition
 
 
 import fr.vsct.tock.bot.engine.BotBus
-import fr.vsct.tock.bot.engine.BotDefinitionTest
 import fr.vsct.tock.bot.engine.BotEngineTest
 import fr.vsct.tock.bot.engine.StoryHandler2Test
 import fr.vsct.tock.bot.engine.StoryHandlerUnknown
 import fr.vsct.tock.bot.engine.StoryHandlerVoiceNotSupported
 import fr.vsct.tock.bot.engine.TestStoryDefinition.test
 import fr.vsct.tock.bot.engine.TestStoryDefinition.test2
-import fr.vsct.tock.bot.engine.TockBotBus
 import fr.vsct.tock.translator.UserInterfaceType
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -35,11 +33,6 @@ import kotlin.test.assertNotEquals
  *
  */
 class StoryHandlerBaseTest : BotEngineTest() {
-
-    val bus: BotBus by lazy {
-        fillTimeline()
-        TockBotBus(connectorController, userTimeline, dialog, userAction, connectorData, BotDefinitionTest())
-    }
 
     @Test
     fun handleAndSwitchStory_shouldCreateANewStory_IfStoryHandlerFound() {

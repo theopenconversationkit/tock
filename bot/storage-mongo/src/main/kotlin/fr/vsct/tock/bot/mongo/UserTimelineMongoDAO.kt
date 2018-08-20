@@ -95,7 +95,6 @@ import java.lang.Exception
 import java.time.Instant
 import java.time.Instant.now
 import java.util.concurrent.TimeUnit.DAYS
-import kotlin.reflect.KProperty
 
 /**
  *
@@ -239,8 +238,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         )
         dialogCol.updateMany(
             DialogCol_.PlayerIds contains newPlayerId,
-            //TODO kmongo cast
-            pull(DialogCol_.PlayerIds as KProperty<Collection<PlayerId>>, oldPlayerId)
+            pull(DialogCol_.PlayerIds, oldPlayerId)
         )
         if (newPlayerId.clientId != null) {
             clientIdCol.updateOneById(
@@ -410,13 +408,13 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     }.joinToString(",", "{$and:[", "]}").bson
                 )
             logger.debug("user search query: $filter")
-            val count = userTimelineCol.count(filter)
-            if (count > start) {
+            val count = userTimelineCol.countDocuments(filter)
+            return if (count > start) {
                 val list = userTimelineCol.find(filter)
                     .skip(start.toInt()).limit(size).descendingSort(LastUpdateDate).map { it.toUserReport() }.toList()
-                return UserReportQueryResult(count, start, start + size, list)
+                UserReportQueryResult(count, start, start + size, list)
             } else {
-                return UserReportQueryResult(0, 0, 0, emptyList())
+                UserReportQueryResult(0, 0, 0, emptyList())
             }
         }
     }
@@ -453,17 +451,17 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName
             )
             logger.debug("dialog search query: $filter")
-            val count = dialogCol.count(filter)
-            if (count > start) {
+            val count = dialogCol.countDocuments(filter)
+            return if (count > start) {
                 val list = dialogCol.find(filter)
                     .skip(start.toInt())
                     .limit(size)
                     .descendingSort(LastUpdateDate)
                     .map { it.toDialogReport() }
                     .toList()
-                return DialogReportQueryResult(count, start, start + size, list)
+                DialogReportQueryResult(count, start, start + size, list)
             } else {
-                return DialogReportQueryResult(0, 0, 0, emptyList())
+                DialogReportQueryResult(0, 0, 0, emptyList())
             }
         }
     }

@@ -27,7 +27,7 @@ import fr.vsct.tock.shared.getDatabase
 import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.shared.tockInternalInjector
 import org.junit.jupiter.api.BeforeEach
-import org.litote.kmongo.EMPTY_BSON
+import org.litote.kmongo.deleteMany
 
 /**
  *
@@ -53,8 +53,8 @@ abstract class AbstractTest {
             bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
         }
         )
-        UserTimelineMongoDAO.dialogCol.deleteMany(EMPTY_BSON)
-        UserTimelineMongoDAO.userTimelineCol.deleteMany(EMPTY_BSON)
+        UserTimelineMongoDAO.dialogCol.deleteMany()
+        UserTimelineMongoDAO.userTimelineCol.deleteMany()
     }
 
 }

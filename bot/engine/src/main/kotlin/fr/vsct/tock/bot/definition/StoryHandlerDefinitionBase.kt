@@ -41,14 +41,14 @@ abstract class StoryHandlerDefinitionBase<T : ConnectorStoryHandlerBase<*>>(
         private val connectorHandlerMap: MutableMap<KClass<*>, Map<String, KClass<*>>> = ConcurrentHashMap()
 
         private fun getHandlerMap(kclass: KClass<*>): Map<String, KClass<*>> {
-            return connectorHandlerMap.getOrPut(kclass, {
+            return connectorHandlerMap.getOrPut(kclass) {
                 getAllAnnotations(kclass)
-                        .filter { it.annotationClass.findAnnotation<ConnectorHandler>() != null }
-                        .mapNotNullValues { a: Annotation ->
-                            a.annotationClass.findAnnotation<ConnectorHandler>()!!.connectorTypeId to (a.annotationClass.java.getDeclaredMethod("value").invoke(a) as? Class<*>?)?.kotlin
-                        }
-                        .toMap()
-            })
+                    .filter { it.annotationClass.findAnnotation<ConnectorHandler>() != null }
+                    .mapNotNullValues { a: Annotation ->
+                        a.annotationClass.findAnnotation<ConnectorHandler>()!!.connectorTypeId to (a.annotationClass.java.getDeclaredMethod("value").invoke(a) as? Class<*>?)?.kotlin
+                    }
+                    .toMap()
+            }
         }
 
         private fun getAllAnnotations(kClass: KClass<*>, alreadyFound: MutableSet<KClass<*>> = mutableSetOf()): List<Annotation> {

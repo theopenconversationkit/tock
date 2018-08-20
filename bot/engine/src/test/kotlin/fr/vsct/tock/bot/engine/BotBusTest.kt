@@ -38,11 +38,6 @@ import kotlin.test.assertNull
  */
 class BotBusTest : BotEngineTest() {
 
-    val bus: BotBus by lazy {
-        fillTimeline()
-        TockBotBus(connectorController, userTimeline, dialog, userAction, connectorData, BotDefinitionTest())
-    }
-
     @Test
     fun withSignificance_hasToUpdateActionSignificance() {
         bus.withPriority(ActionPriority.urgent).end()

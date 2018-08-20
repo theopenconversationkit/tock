@@ -26,6 +26,7 @@ import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
+import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.TestStoryDefinition.test
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.dialog.Dialog
@@ -63,10 +64,10 @@ abstract class BotEngineTest {
     val userTimelineDAO: UserTimelineDAO = mockk(relaxed = true)
     val userId = PlayerId("id")
     val botId = PlayerId("bot", PlayerType.bot)
-    val botDefinition = BotDefinitionTest()
+    open val botDefinition: BotDefinition = BotDefinitionTest()
     val dialog = Dialog(setOf(userId, botId))
     val botApplicationConfiguration: BotApplicationConfiguration = mockk(relaxed = true)
-    val story = Story(botDefinition.stories.first(), test.mainIntent())
+    val story get() = Story(botDefinition.stories.first(), test.mainIntent())
     val connectorCallback: ConnectorCallback = mockk(relaxed = true)
     val connectorData = ConnectorData(connectorCallback)
 
@@ -101,6 +102,11 @@ abstract class BotEngineTest {
 
     var userAction = action(Sentence("ok computer"))
 
+    val bus: BotBus by lazy {
+        fillTimeline()
+        TockBotBus(connectorController, userTimeline, dialog, userAction, connectorData, botDefinition)
+    }
+
     open fun baseModule(): Kodein.Module {
         return Kodein.Module {
             import(sharedTestModule)
@@ -122,7 +128,7 @@ abstract class BotEngineTest {
             import(baseModule())
         })
 
-        every {connector.loadProfile(any(), any())} returns null
+        every { connector.loadProfile(any(), any()) } returns null
     }
 
     @AfterEach

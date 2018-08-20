@@ -16,17 +16,30 @@
 
 package fr.vsct.tock.bot.definition
 
+import fr.vsct.tock.bot.engine.BotEngineTest
+import fr.vsct.tock.bot.engine.TestStoryDefinition
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
 /**
  *
  */
-class DefinitionBuildersTest {
+class DefinitionBuildersTest : BotEngineTest() {
 
     enum class Step : StoryStep<StoryHandlerDefinition> {
         a, b
     }
+
+    val unknownStory = storyWithSteps<Step>("unknown") {
+        end("I said unknown")
+    }
+
+    override val botDefinition: BotDefinition = object : BotDefinitionBase(
+        "test",
+        "namespace",
+        stories = enumValues<TestStoryDefinition>().toList(),
+        unknownStory = unknownStory
+    ) {}
 
     @Test
     fun `story with steps set the right base intent for steps`() {
@@ -37,5 +50,11 @@ class DefinitionBuildersTest {
         assertEquals("yeh", yeh.steps.last().baseIntent.wrappedIntent().name)
         assertEquals(Step.a, yeh.steps.first())
         assertEquals(Step.b, yeh.steps.last())
+    }
+
+    @Test
+    fun `unknown story can be a story with steps`() {
+        bus.step = Step.a
+        unknownStory.handle(bus)
     }
 }

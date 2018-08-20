@@ -155,7 +155,7 @@ internal object KotlinCompiler {
         val analyzeExhaust = analyzeFileForJvm(files, project).getFirst()
         return GenerationState.Builder(
             project,
-            ClassBuilderFactories.binaries(false),
+            ClassBuilderFactories.BINARIES,
             analyzeExhaust.moduleDescriptor,
             analyzeExhaust.bindingContext,
             files,
