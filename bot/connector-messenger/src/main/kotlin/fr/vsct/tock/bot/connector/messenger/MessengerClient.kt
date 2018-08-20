@@ -62,31 +62,31 @@ internal class MessengerClient(val secretKey: String) {
 
     interface GraphApi {
 
-        @POST("/v2.12/me/messages")
+        @POST("/v3.1/me/messages")
         fun sendMessage(@Query("access_token") accessToken: String, @Body messageRequest: MessageRequest): Call<SendResponse>
 
-        @POST("/v2.12/me/messages")
+        @POST("/v3.1/me/messages")
         fun sendAction(@Query("access_token") accessToken: String, @Body actionRequest: ActionRequest): Call<SendResponse>
 
-        @GET("/v2.12/{userId}/")
+        @GET("/v3.1/{userId}/")
         fun getUserProfile(@Path("userId") userId: String, @Query("access_token") accessToken: String, @Query("fields") fields: String): Call<UserProfile>
 
-        @POST("/v2.12/me/message_attachments")
+        @POST("/v3.1/me/message_attachments")
         fun sendAttachment(@Query("access_token") accessToken: String, @Body attachmentRequest: AttachmentRequest): Call<SendResponse>
 
-        @POST("/v2.12/me/pass_thread_control")
+        @POST("/v3.1/me/pass_thread_control")
         fun passThreadControl(@Query("access_token") accessToken: String, @Body request: PassThreadControlRequest): Call<SendResponse>
 
-        @POST("/v2.12/me/take_thread_control")
+        @POST("/v3.1/me/take_thread_control")
         fun takeThreadControl(@Query("access_token") accessToken: String, @Body request: TakeThreadControlRequest): Call<SendResponse>
 
-        @POST("/v2.12/me/request_thread_control")
+        @POST("/v3.1/me/request_thread_control")
         fun requestThreadControl(@Query("access_token") accessToken: String, @Body request: RequestThreadControlRequest): Call<SendResponse>
 
-        @GET("/v2.12/me/secondary_receivers")
+        @GET("/v3.1/me/secondary_receivers")
         fun secondaryReceivers(@Query("access_token") accessToken: String, @Query("fields") recipient: String = "id,name"): Call<SecondaryReceiverResponse>
 
-        @GET("/v2.12/me/thread_owner")
+        @GET("/v3.1/me/thread_owner")
         fun threadOwner(@Query("access_token") accessToken: String, @Query("recipient") recipient: String): Call<ThreadOwnerResponse>
 
         @POST("/{appId}/activities")
