@@ -42,7 +42,7 @@
   </md-card-content>
   <md-card-actions>
     <button md-button (click)="delete(intent)" color="warn">Delete</button>
-    <button md-raised-button (click)="update(intent)" color="primary">Update</button>
+    <button *ngIf="!intent.storyDefinition.isSimpleAnswer()" md-raised-button (click)="update(intent)" color="primary">Update</button>
   </md-card-actions>
 </md-card>
 </span>

@@ -241,7 +241,7 @@ object BotAdminService {
                         request.type,
                         listOf(
                             when (request.type) {
-                                simple -> createSimpleAnswer(namespace, request.language, request.reply)
+                                simple -> createSimpleAnswer(namespace, intentDefinition.name, request.language, request.reply)
                                 script -> createScriptAnswer(botConf.botId, request.reply)
                                 else -> error("unsupported type $request")
                             }
@@ -272,12 +272,13 @@ object BotAdminService {
 
     private fun createSimpleAnswer(
         namespace: String,
+        intent:String,
         language: Locale?,
         reply: String
     ): SimpleAnswerConfiguration {
         val labelKey =
             I18nKeyProvider
-                .simpleKeyProvider(namespace, "simple")
+                .simpleKeyProvider(namespace, intent)
                 .i18n(reply)
         //save the label
         if (language != null) {
@@ -330,7 +331,7 @@ object BotAdminService {
                 storyDefinition.copy(
                     answers = listOf(
                         when (storyDefinition.currentType) {
-                            simple -> createSimpleAnswer(namespace, null, request.reply)
+                            simple -> createSimpleAnswer(namespace, storyDefinition.intent.name, null, request.reply)
                             script -> createScriptAnswer(botConf.botId, request.reply)
                             else -> error("unsupported type $request")
                         }
