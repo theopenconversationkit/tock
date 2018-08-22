@@ -151,6 +151,11 @@ interface BotBus : I18nTranslator {
         }
 
     /**
+     * The current answer index of the bot for this action.
+     */
+    val currentAnswerIndex: Int
+
+    /**
      * To know if the current intent is owned by the [IntentAware].
      */
     fun isIntent(intentOwner: IntentAware): Boolean = intentOwner.wrap(intent?.wrappedIntent())
@@ -356,14 +361,14 @@ interface BotBus : I18nTranslator {
     /**
      * Send previously registered [ConnectorMessage] as last bot answer.
      */
-    fun end(delay: Long = 0): BotBus {
+    fun end(delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus {
         return endRawText(null, delay)
     }
 
     /**
      * Sends i18nText as last bot answer.
      */
-    fun end(i18nText: CharSequence, delay: Long = 0, vararg i18nArgs: Any?): BotBus {
+    fun end(i18nText: CharSequence, delay: Long = botDefinition.defaultDelay(currentAnswerIndex), vararg i18nArgs: Any?): BotBus {
         return endRawText(translate(i18nText, *i18nArgs), delay)
     }
 
@@ -377,26 +382,26 @@ interface BotBus : I18nTranslator {
     /**
      * Sends text that should not be translated as last bot answer.
      */
-    fun endRawText(plainText: CharSequence?, delay: Long = 0): BotBus {
+    fun endRawText(plainText: CharSequence?, delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus {
         return end(SendSentence(botId, applicationId, userId, plainText), delay)
     }
 
     /**
      * Sends [Message] as last bot answer.
      */
-    fun end(message: Message, delay: Long = 0): BotBus {
+    fun end(message: Message, delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus {
         return end(message.toAction(this), delay)
     }
 
     /**
      * Sends [Action] as last bot answer.
      */
-    fun end(action: Action, delay: Long = 0): BotBus
+    fun end(action: Action, delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus
 
     /**
      * Sends [MessagesList] as last bot answer.
      */
-    fun end(messages: MessagesList, initialDelay: Long = 0): BotBus {
+    fun end(messages: MessagesList, initialDelay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus {
         messages.messages.forEachIndexed { i, m ->
             val wait = initialDelay + m.delay
             if (messages.messages.size - 1 == i) {
@@ -411,7 +416,7 @@ interface BotBus : I18nTranslator {
     /**
      * Sends i18nText.
      */
-    fun send(i18nText: CharSequence, delay: Long = 0, vararg i18nArgs: Any?): BotBus {
+    fun send(i18nText: CharSequence, delay: Long = botDefinition.defaultDelay(currentAnswerIndex), vararg i18nArgs: Any?): BotBus {
         return sendRawText(translate(i18nText, *i18nArgs), delay)
     }
 
@@ -425,26 +430,26 @@ interface BotBus : I18nTranslator {
     /**
      * Sends previously registered [ConnectorMessage].
      */
-    fun send(delay: Long = 0): BotBus {
+    fun send(delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus {
         return sendRawText(null, delay)
     }
 
     /**
      * Send text that should not be translated.
      */
-    fun sendRawText(plainText: CharSequence?, delay: Long = 0): BotBus
+    fun sendRawText(plainText: CharSequence?, delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus
 
     /**
      * Sends [Message].
      */
-    fun send(message: Message, delay: Long = 0): BotBus {
+    fun send(message: Message, delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus {
         return send(message.toAction(this), delay)
     }
 
     /**
      * Sends [Action].
      */
-    fun send(action: Action, delay: Long = 0): BotBus
+    fun send(action: Action, delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus
 
     /**
      * Adds the specified [ActionPriority] to the bus context.

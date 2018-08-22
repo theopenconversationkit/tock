@@ -115,6 +115,9 @@ open class BotBusMock(
 
     private var endCalled: Boolean = false
 
+    private var _currentAnswerIndex: Int = 0
+    override val currentAnswerIndex: Int get() = _currentAnswerIndex
+
     /**
      * Run the [StoryHandler] of the current [story].
      */
@@ -278,6 +281,7 @@ open class BotBusMock(
         story.actions.add(action)
 
         endCalled = action.metadata.lastAnswer
+        _currentAnswerIndex++
 
         if (endCalled) {
             addSnapshot()

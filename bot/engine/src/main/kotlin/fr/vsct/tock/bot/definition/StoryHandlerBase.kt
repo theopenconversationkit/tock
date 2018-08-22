@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.definition
 
+import fr.vsct.tock.bot.definition.BotDefinition.Companion.DEFAULT_BREATH
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.shared.defaultNamespace
@@ -40,9 +41,9 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     @Volatile
     internal var i18nNamespace: String = defaultNamespace,
     /**
-     * Convenient value to wait before next answer sentence. 1s by default.
+     * Convenient value to wait before next answer sentence.
      */
-    val breath: Long = 1000L
+    val breath: Long = DEFAULT_BREATH
 ) : StoryHandler, I18nKeyProvider, IntentAware {
 
     private val logger = KotlinLogging.logger {}

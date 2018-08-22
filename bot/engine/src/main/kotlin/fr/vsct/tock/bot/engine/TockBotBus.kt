@@ -77,6 +77,9 @@ internal class TockBotBus(
             currentDialog.state.nextActionState = value
         }
 
+    private var _currentAnswerIndex: Int = 0
+    override val currentAnswerIndex: Int get() = _currentAnswerIndex
+
     /**
      * Returns the non persistent current context value.
      */
@@ -103,6 +106,8 @@ internal class TockBotBus(
         }
         context.clear()
         a.state.testEvent = userPreferences.test
+
+        _currentAnswerIndex++
 
         story.actions.add(a)
         connector.send(connectorData, action, a, context.currentDelay)
@@ -154,4 +159,5 @@ internal class TockBotBus(
             bot.markAsUnknown(action, userTimeline)
         }
     }
+
 }
