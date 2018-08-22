@@ -32,10 +32,9 @@ import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
-import org.litote.kmongo.json
+import org.litote.kmongo.pull
 import org.litote.kmongo.pullByFilter
 import org.litote.kmongo.replaceOneWithFilter
-import org.litote.kmongo.updateOne
 import java.util.Locale
 
 /**
@@ -82,10 +81,9 @@ internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
         locale: Locale,
         label: String
     ) {
-        //TODO kmongo map & positional projection
         col.updateOne(
             and(Name eq entityTypeName, PredefinedValues.value eq predefinedValue),
-            "{\$pull:{'predefinedValues.\$.labels.${locale.toLanguageTag()}':${label.json}}}"
+            pull(PredefinedValues.posOp.labels.keyProjection(locale), label)
         )
     }
 }

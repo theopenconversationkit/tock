@@ -5,28 +5,30 @@ import kotlin.Int
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Collection
+import kotlin.collections.Map
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.property.KCollectionPropertyPath
+import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 internal class ParseRequestLogStatResult_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ParseRequestLogMongoDAO.ParseRequestLogStatResult?>) : KPropertyPath<T, ParseRequestLogMongoDAO.ParseRequestLogStatResult?>(previous,property) {
     val _id: DayAndYear_<T>
         get() = DayAndYear_(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::_id)
 
-    val error: KProperty1<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::error)
+    val error: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::error)
 
-    val count: KProperty1<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::count)
+    val count: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::count)
 
-    val duration: KProperty1<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::duration)
+    val duration: KPropertyPath<T, Double?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::duration)
 
-    val intentProbability: KProperty1<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::intentProbability)
+    val intentProbability: KPropertyPath<T, Double?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::intentProbability)
 
-    val entitiesProbability: KProperty1<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::entitiesProbability)
+    val entitiesProbability: KPropertyPath<T, Double?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::entitiesProbability)
     companion object {
         val _id: DayAndYear_<ParseRequestLogMongoDAO.ParseRequestLogStatResult>
             get() = DayAndYear_<ParseRequestLogMongoDAO.ParseRequestLogStatResult>(null,ParseRequestLogMongoDAO.ParseRequestLogStatResult::_id)
@@ -46,20 +48,42 @@ internal class ParseRequestLogStatResult_Col<T>(previous: KPropertyPath<T, *>?, 
     val _id: DayAndYear_<T>
         get() = DayAndYear_(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::_id)
 
-    val error: KProperty1<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::error)
+    val error: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::error)
 
-    val count: KProperty1<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::count)
+    val count: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::count)
 
-    val duration: KProperty1<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::duration)
+    val duration: KPropertyPath<T, Double?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::duration)
 
-    val intentProbability: KProperty1<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::intentProbability)
+    val intentProbability: KPropertyPath<T, Double?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::intentProbability)
 
-    val entitiesProbability: KProperty1<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::entitiesProbability)
+    val entitiesProbability: KPropertyPath<T, Double?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::entitiesProbability)
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogStatResult_<T> = ParseRequestLogStatResult_(this, customProperty(this, additionalPath))}
+
+internal class ParseRequestLogStatResult_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, ParseRequestLogMongoDAO.ParseRequestLogStatResult>?>) : KMapPropertyPath<T, K, ParseRequestLogMongoDAO.ParseRequestLogStatResult?, ParseRequestLogStatResult_<T>>(previous,property) {
+    val _id: DayAndYear_<T>
+        get() = DayAndYear_(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::_id)
+
+    val error: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::error)
+
+    val count: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::count)
+
+    val duration: KPropertyPath<T, Double?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::duration)
+
+    val intentProbability: KPropertyPath<T, Double?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::intentProbability)
+
+    val entitiesProbability: KPropertyPath<T, Double?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatResult::entitiesProbability)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogStatResult_<T> = ParseRequestLogStatResult_(this, customProperty(this, additionalPath))}

@@ -10,50 +10,52 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Collection
+import kotlin.collections.Map
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KCollectionPropertyPath
+import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 internal class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?>) : KPropertyPath<T, ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?>(previous,property) {
-    val text: KProperty1<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::text)
+    val text: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::text)
 
-    val fullText: KProperty1<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::fullText)
+    val fullText: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::fullText)
 
-    val language: KProperty1<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::language)
+    val language: KPropertyPath<T, Locale?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::language)
 
-    val applicationId: KProperty1<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::applicationId)
+    val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::applicationId)
 
-    val creationDate: KProperty1<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::creationDate)
+    val creationDate: KPropertyPath<T, Instant?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::creationDate)
 
-    val updateDate: KProperty1<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::updateDate)
+    val updateDate: KPropertyPath<T, Instant?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::updateDate)
 
-    val status: KProperty1<T, ClassifiedSentenceStatus?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::status)
+    val status: KPropertyPath<T, ClassifiedSentenceStatus?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::status)
 
     val classification: Classification_<T>
         get() = Classification_(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::classification)
 
-    val lastIntentProbability: KProperty1<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastIntentProbability)
+    val lastIntentProbability: KPropertyPath<T, Double?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastIntentProbability)
 
-    val lastEntityProbability: KProperty1<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastEntityProbability)
+    val lastEntityProbability: KPropertyPath<T, Double?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastEntityProbability)
 
-    val lastUsage: KProperty1<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastUsage)
+    val lastUsage: KPropertyPath<T, Instant?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastUsage)
 
-    val usageCount: KProperty1<T, Long?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::usageCount)
+    val usageCount: KPropertyPath<T, Long?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Long?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::usageCount)
 
-    val unknownCount: KProperty1<T, Long?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::unknownCount)
+    val unknownCount: KPropertyPath<T, Long?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Long?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::unknownCount)
     companion object {
         val Text: KProperty1<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol, String?>
             get() = ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::text
@@ -84,44 +86,87 @@ internal class ClassifiedSentenceCol_<T>(previous: KPropertyPath<T, *>?, propert
 }
 
 internal class ClassifiedSentenceCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>?>) : KCollectionPropertyPath<T, ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?, ClassifiedSentenceCol_<T>>(previous,property) {
-    val text: KProperty1<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::text)
+    val text: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::text)
 
-    val fullText: KProperty1<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::fullText)
+    val fullText: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::fullText)
 
-    val language: KProperty1<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::language)
+    val language: KPropertyPath<T, Locale?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::language)
 
-    val applicationId: KProperty1<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::applicationId)
+    val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::applicationId)
 
-    val creationDate: KProperty1<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::creationDate)
+    val creationDate: KPropertyPath<T, Instant?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::creationDate)
 
-    val updateDate: KProperty1<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::updateDate)
+    val updateDate: KPropertyPath<T, Instant?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::updateDate)
 
-    val status: KProperty1<T, ClassifiedSentenceStatus?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::status)
+    val status: KPropertyPath<T, ClassifiedSentenceStatus?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::status)
 
     val classification: Classification_<T>
         get() = Classification_(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::classification)
 
-    val lastIntentProbability: KProperty1<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastIntentProbability)
+    val lastIntentProbability: KPropertyPath<T, Double?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastIntentProbability)
 
-    val lastEntityProbability: KProperty1<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastEntityProbability)
+    val lastEntityProbability: KPropertyPath<T, Double?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastEntityProbability)
 
-    val lastUsage: KProperty1<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastUsage)
+    val lastUsage: KPropertyPath<T, Instant?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastUsage)
 
-    val usageCount: KProperty1<T, Long?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::usageCount)
+    val usageCount: KPropertyPath<T, Long?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Long?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::usageCount)
 
-    val unknownCount: KProperty1<T, Long?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::unknownCount)
+    val unknownCount: KPropertyPath<T, Long?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Long?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::unknownCount)
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): ClassifiedSentenceCol_<T> = ClassifiedSentenceCol_(this, customProperty(this, additionalPath))}
+
+internal class ClassifiedSentenceCol_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>?>) : KMapPropertyPath<T, K, ClassifiedSentenceMongoDAO.ClassifiedSentenceCol?, ClassifiedSentenceCol_<T>>(previous,property) {
+    val text: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::text)
+
+    val fullText: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::fullText)
+
+    val language: KPropertyPath<T, Locale?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::language)
+
+    val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::applicationId)
+
+    val creationDate: KPropertyPath<T, Instant?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::creationDate)
+
+    val updateDate: KPropertyPath<T, Instant?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::updateDate)
+
+    val status: KPropertyPath<T, ClassifiedSentenceStatus?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::status)
+
+    val classification: Classification_<T>
+        get() = Classification_(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::classification)
+
+    val lastIntentProbability: KPropertyPath<T, Double?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastIntentProbability)
+
+    val lastEntityProbability: KPropertyPath<T, Double?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastEntityProbability)
+
+    val lastUsage: KPropertyPath<T, Instant?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::lastUsage)
+
+    val usageCount: KPropertyPath<T, Long?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Long?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::usageCount)
+
+    val unknownCount: KPropertyPath<T, Long?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Long?>(this,ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::unknownCount)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ClassifiedSentenceCol_<T> = ClassifiedSentenceCol_(this, customProperty(this, additionalPath))}

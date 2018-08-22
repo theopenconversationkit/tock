@@ -9,17 +9,19 @@ import kotlin.Long
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Collection
+import kotlin.collections.Map
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KCollectionPropertyPath
+import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 internal class ParseRequestLogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ParseRequestLogMongoDAO.ParseRequestLogCol?>) : KPropertyPath<T, ParseRequestLogMongoDAO.ParseRequestLogCol?>(previous,property) {
-    val text: KProperty1<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogCol::text)
+    val text: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ParseRequestLogMongoDAO.ParseRequestLogCol::text)
 
-    val applicationId: KProperty1<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogCol::applicationId)
+    val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,ParseRequestLogMongoDAO.ParseRequestLogCol::applicationId)
 
     val query: ParseQuery_<T>
         get() = ParseQuery_(this,ParseRequestLogMongoDAO.ParseRequestLogCol::query)
@@ -27,14 +29,14 @@ internal class ParseRequestLogCol_<T>(previous: KPropertyPath<T, *>?, property: 
     val result: ParseResult_<T>
         get() = ParseResult_(this,ParseRequestLogMongoDAO.ParseRequestLogCol::result)
 
-    val durationInMS: KProperty1<T, Long?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogCol::durationInMS)
+    val durationInMS: KPropertyPath<T, Long?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Long?>(this,ParseRequestLogMongoDAO.ParseRequestLogCol::durationInMS)
 
-    val error: KProperty1<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogCol::error)
+    val error: KPropertyPath<T, Boolean?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Boolean?>(this,ParseRequestLogMongoDAO.ParseRequestLogCol::error)
 
-    val date: KProperty1<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogCol::date)
+    val date: KPropertyPath<T, Instant?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,ParseRequestLogMongoDAO.ParseRequestLogCol::date)
     companion object {
         val Text: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogCol, String?>
             get() = ParseRequestLogMongoDAO.ParseRequestLogCol::text
@@ -53,11 +55,11 @@ internal class ParseRequestLogCol_<T>(previous: KPropertyPath<T, *>?, property: 
 }
 
 internal class ParseRequestLogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ParseRequestLogMongoDAO.ParseRequestLogCol>?>) : KCollectionPropertyPath<T, ParseRequestLogMongoDAO.ParseRequestLogCol?, ParseRequestLogCol_<T>>(previous,property) {
-    val text: KProperty1<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogCol::text)
+    val text: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ParseRequestLogMongoDAO.ParseRequestLogCol::text)
 
-    val applicationId: KProperty1<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogCol::applicationId)
+    val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,ParseRequestLogMongoDAO.ParseRequestLogCol::applicationId)
 
     val query: ParseQuery_<T>
         get() = ParseQuery_(this,ParseRequestLogMongoDAO.ParseRequestLogCol::query)
@@ -65,14 +67,39 @@ internal class ParseRequestLogCol_Col<T>(previous: KPropertyPath<T, *>?, propert
     val result: ParseResult_<T>
         get() = ParseResult_(this,ParseRequestLogMongoDAO.ParseRequestLogCol::result)
 
-    val durationInMS: KProperty1<T, Long?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogCol::durationInMS)
+    val durationInMS: KPropertyPath<T, Long?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Long?>(this,ParseRequestLogMongoDAO.ParseRequestLogCol::durationInMS)
 
-    val error: KProperty1<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogCol::error)
+    val error: KPropertyPath<T, Boolean?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Boolean?>(this,ParseRequestLogMongoDAO.ParseRequestLogCol::error)
 
-    val date: KProperty1<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ParseRequestLogMongoDAO.ParseRequestLogCol::date)
+    val date: KPropertyPath<T, Instant?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,ParseRequestLogMongoDAO.ParseRequestLogCol::date)
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogCol_<T> = ParseRequestLogCol_(this, customProperty(this, additionalPath))}
+
+internal class ParseRequestLogCol_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, ParseRequestLogMongoDAO.ParseRequestLogCol>?>) : KMapPropertyPath<T, K, ParseRequestLogMongoDAO.ParseRequestLogCol?, ParseRequestLogCol_<T>>(previous,property) {
+    val text: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ParseRequestLogMongoDAO.ParseRequestLogCol::text)
+
+    val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,ParseRequestLogMongoDAO.ParseRequestLogCol::applicationId)
+
+    val query: ParseQuery_<T>
+        get() = ParseQuery_(this,ParseRequestLogMongoDAO.ParseRequestLogCol::query)
+
+    val result: ParseResult_<T>
+        get() = ParseResult_(this,ParseRequestLogMongoDAO.ParseRequestLogCol::result)
+
+    val durationInMS: KPropertyPath<T, Long?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Long?>(this,ParseRequestLogMongoDAO.ParseRequestLogCol::durationInMS)
+
+    val error: KPropertyPath<T, Boolean?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Boolean?>(this,ParseRequestLogMongoDAO.ParseRequestLogCol::error)
+
+    val date: KPropertyPath<T, Instant?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,ParseRequestLogMongoDAO.ParseRequestLogCol::date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogCol_<T> = ParseRequestLogCol_(this, customProperty(this, additionalPath))}

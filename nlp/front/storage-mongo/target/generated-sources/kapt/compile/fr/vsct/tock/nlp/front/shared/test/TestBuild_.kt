@@ -8,35 +8,37 @@ import kotlin.Int
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Collection
+import kotlin.collections.Map
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KCollectionPropertyPath
+import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class TestBuild_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, TestBuild?>) : KPropertyPath<T, TestBuild?>(previous,property) {
-    val applicationId: KProperty1<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::applicationId)
+    val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,TestBuild::applicationId)
 
-    val language: KProperty1<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::language)
+    val language: KPropertyPath<T, Locale?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,TestBuild::language)
 
-    val startDate: KProperty1<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::startDate)
+    val startDate: KPropertyPath<T, Instant?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,TestBuild::startDate)
 
-    val buildModelDuration: KProperty1<T, Duration?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::buildModelDuration)
+    val buildModelDuration: KPropertyPath<T, Duration?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Duration?>(this,TestBuild::buildModelDuration)
 
-    val testSentencesDuration: KProperty1<T, Duration?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::testSentencesDuration)
+    val testSentencesDuration: KPropertyPath<T, Duration?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Duration?>(this,TestBuild::testSentencesDuration)
 
-    val nbSentencesInModel: KProperty1<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::nbSentencesInModel)
+    val nbSentencesInModel: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,TestBuild::nbSentencesInModel)
 
-    val nbSentencesTested: KProperty1<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::nbSentencesTested)
+    val nbSentencesTested: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,TestBuild::nbSentencesTested)
 
-    val nbErrors: KProperty1<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::nbErrors)
+    val nbErrors: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,TestBuild::nbErrors)
     companion object {
         val ApplicationId: KProperty1<TestBuild, Id<ApplicationDefinition>?>
             get() = TestBuild::applicationId
@@ -57,29 +59,57 @@ class TestBuild_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Test
 }
 
 class TestBuild_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<TestBuild>?>) : KCollectionPropertyPath<T, TestBuild?, TestBuild_<T>>(previous,property) {
-    val applicationId: KProperty1<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::applicationId)
+    val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,TestBuild::applicationId)
 
-    val language: KProperty1<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::language)
+    val language: KPropertyPath<T, Locale?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,TestBuild::language)
 
-    val startDate: KProperty1<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::startDate)
+    val startDate: KPropertyPath<T, Instant?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,TestBuild::startDate)
 
-    val buildModelDuration: KProperty1<T, Duration?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::buildModelDuration)
+    val buildModelDuration: KPropertyPath<T, Duration?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Duration?>(this,TestBuild::buildModelDuration)
 
-    val testSentencesDuration: KProperty1<T, Duration?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::testSentencesDuration)
+    val testSentencesDuration: KPropertyPath<T, Duration?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Duration?>(this,TestBuild::testSentencesDuration)
 
-    val nbSentencesInModel: KProperty1<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::nbSentencesInModel)
+    val nbSentencesInModel: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,TestBuild::nbSentencesInModel)
 
-    val nbSentencesTested: KProperty1<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::nbSentencesTested)
+    val nbSentencesTested: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,TestBuild::nbSentencesTested)
 
-    val nbErrors: KProperty1<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,TestBuild::nbErrors)
+    val nbErrors: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,TestBuild::nbErrors)
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): TestBuild_<T> = TestBuild_(this, customProperty(this, additionalPath))}
+
+class TestBuild_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, TestBuild>?>) : KMapPropertyPath<T, K, TestBuild?, TestBuild_<T>>(previous,property) {
+    val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,TestBuild::applicationId)
+
+    val language: KPropertyPath<T, Locale?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,TestBuild::language)
+
+    val startDate: KPropertyPath<T, Instant?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,TestBuild::startDate)
+
+    val buildModelDuration: KPropertyPath<T, Duration?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Duration?>(this,TestBuild::buildModelDuration)
+
+    val testSentencesDuration: KPropertyPath<T, Duration?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Duration?>(this,TestBuild::testSentencesDuration)
+
+    val nbSentencesInModel: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,TestBuild::nbSentencesInModel)
+
+    val nbSentencesTested: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,TestBuild::nbSentencesTested)
+
+    val nbErrors: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,TestBuild::nbErrors)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): TestBuild_<T> = TestBuild_(this, customProperty(this, additionalPath))}

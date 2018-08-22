@@ -11,49 +11,52 @@ import kotlin.collections.Set
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KCollectionPropertyPath
+import org.litote.kmongo.property.KCollectionSimplePropertyPath
+import org.litote.kmongo.property.KMapPropertyPath
+import org.litote.kmongo.property.KMapSimplePropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ApplicationDefinition?>) : KPropertyPath<T, ApplicationDefinition?>(previous,property) {
-    val name_: KProperty1<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::name)
+    val name_: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ApplicationDefinition::name)
 
-    val namespace: KProperty1<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::namespace)
+    val namespace: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ApplicationDefinition::namespace)
 
-    val intents: KProperty1<T, Set<Id<IntentDefinition>>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::intents)
+    val intents: KCollectionSimplePropertyPath<T, Id<IntentDefinition>?>
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,ApplicationDefinition::intents)
 
-    val supportedLocales: KProperty1<T, Set<Locale>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::supportedLocales)
+    val supportedLocales: KCollectionSimplePropertyPath<T, Locale?>
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, java.util.Locale?>(this,ApplicationDefinition::supportedLocales)
 
-    val intentStatesMap: KProperty1<T, Map<Id<IntentDefinition>, Set<String>>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::intentStatesMap)
+    val intentStatesMap: KMapSimplePropertyPath<T, Id<IntentDefinition>?, Set<String>?>
+        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?, kotlin.collections.Set<kotlin.String>?>(this,ApplicationDefinition::intentStatesMap)
 
-    val nlpEngineType: KProperty1<T, NlpEngineType?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::nlpEngineType)
+    val nlpEngineType: KPropertyPath<T, NlpEngineType?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.nlp.core.NlpEngineType?>(this,ApplicationDefinition::nlpEngineType)
 
-    val mergeEngineTypes: KProperty1<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::mergeEngineTypes)
+    val mergeEngineTypes: KPropertyPath<T, Boolean?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Boolean?>(this,ApplicationDefinition::mergeEngineTypes)
 
-    val useEntityModels: KProperty1<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::useEntityModels)
+    val useEntityModels: KPropertyPath<T, Boolean?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Boolean?>(this,ApplicationDefinition::useEntityModels)
 
-    val supportSubEntities: KProperty1<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::supportSubEntities)
+    val supportSubEntities: KPropertyPath<T, Boolean?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Boolean?>(this,ApplicationDefinition::supportSubEntities)
 
-    val _id: KProperty1<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::_id)
+    val _id: KPropertyPath<T, Id<ApplicationDefinition>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,ApplicationDefinition::_id)
     companion object {
         val Name: KProperty1<ApplicationDefinition, String?>
             get() = ApplicationDefinition::name
         val Namespace: KProperty1<ApplicationDefinition, String?>
             get() = ApplicationDefinition::namespace
-        val Intents: KProperty1<ApplicationDefinition, Set<Id<IntentDefinition>>?>
-            get() = ApplicationDefinition::intents
-        val SupportedLocales: KProperty1<ApplicationDefinition, Set<Locale>?>
-            get() = ApplicationDefinition::supportedLocales
-        val IntentStatesMap: KProperty1<ApplicationDefinition, Map<Id<IntentDefinition>, Set<String>>?>
-            get() = ApplicationDefinition::intentStatesMap
+        val Intents: KCollectionSimplePropertyPath<ApplicationDefinition, Id<IntentDefinition>?>
+            get() = KCollectionSimplePropertyPath(null, ApplicationDefinition::intents)
+        val SupportedLocales: KCollectionSimplePropertyPath<ApplicationDefinition, Locale?>
+            get() = KCollectionSimplePropertyPath(null, ApplicationDefinition::supportedLocales)
+        val IntentStatesMap: KMapSimplePropertyPath<ApplicationDefinition, Id<IntentDefinition>?, Set<String>?>
+            get() = KMapSimplePropertyPath(null, ApplicationDefinition::intentStatesMap)
         val NlpEngineType: KProperty1<ApplicationDefinition, NlpEngineType?>
             get() = ApplicationDefinition::nlpEngineType
         val MergeEngineTypes: KProperty1<ApplicationDefinition, Boolean?>
@@ -67,35 +70,69 @@ class ApplicationDefinition_<T>(previous: KPropertyPath<T, *>?, property: KPrope
 }
 
 class ApplicationDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ApplicationDefinition>?>) : KCollectionPropertyPath<T, ApplicationDefinition?, ApplicationDefinition_<T>>(previous,property) {
-    val name_: KProperty1<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::name)
+    val name_: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ApplicationDefinition::name)
 
-    val namespace: KProperty1<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::namespace)
+    val namespace: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ApplicationDefinition::namespace)
 
-    val intents: KProperty1<T, Set<Id<IntentDefinition>>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::intents)
+    val intents: KCollectionSimplePropertyPath<T, Id<IntentDefinition>?>
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,ApplicationDefinition::intents)
 
-    val supportedLocales: KProperty1<T, Set<Locale>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::supportedLocales)
+    val supportedLocales: KCollectionSimplePropertyPath<T, Locale?>
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, java.util.Locale?>(this,ApplicationDefinition::supportedLocales)
 
-    val intentStatesMap: KProperty1<T, Map<Id<IntentDefinition>, Set<String>>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::intentStatesMap)
+    val intentStatesMap: KMapSimplePropertyPath<T, Id<IntentDefinition>?, Set<String>?>
+        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?, kotlin.collections.Set<kotlin.String>?>(this,ApplicationDefinition::intentStatesMap)
 
-    val nlpEngineType: KProperty1<T, NlpEngineType?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::nlpEngineType)
+    val nlpEngineType: KPropertyPath<T, NlpEngineType?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.nlp.core.NlpEngineType?>(this,ApplicationDefinition::nlpEngineType)
 
-    val mergeEngineTypes: KProperty1<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::mergeEngineTypes)
+    val mergeEngineTypes: KPropertyPath<T, Boolean?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Boolean?>(this,ApplicationDefinition::mergeEngineTypes)
 
-    val useEntityModels: KProperty1<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::useEntityModels)
+    val useEntityModels: KPropertyPath<T, Boolean?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Boolean?>(this,ApplicationDefinition::useEntityModels)
 
-    val supportSubEntities: KProperty1<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::supportSubEntities)
+    val supportSubEntities: KPropertyPath<T, Boolean?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Boolean?>(this,ApplicationDefinition::supportSubEntities)
 
-    val _id: KProperty1<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,ApplicationDefinition::_id)
+    val _id: KPropertyPath<T, Id<ApplicationDefinition>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,ApplicationDefinition::_id)
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): ApplicationDefinition_<T> = ApplicationDefinition_(this, customProperty(this, additionalPath))}
+
+class ApplicationDefinition_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, ApplicationDefinition>?>) : KMapPropertyPath<T, K, ApplicationDefinition?, ApplicationDefinition_<T>>(previous,property) {
+    val name_: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ApplicationDefinition::name)
+
+    val namespace: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ApplicationDefinition::namespace)
+
+    val intents: KCollectionSimplePropertyPath<T, Id<IntentDefinition>?>
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,ApplicationDefinition::intents)
+
+    val supportedLocales: KCollectionSimplePropertyPath<T, Locale?>
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, java.util.Locale?>(this,ApplicationDefinition::supportedLocales)
+
+    val intentStatesMap: KMapSimplePropertyPath<T, Id<IntentDefinition>?, Set<String>?>
+        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?, kotlin.collections.Set<kotlin.String>?>(this,ApplicationDefinition::intentStatesMap)
+
+    val nlpEngineType: KPropertyPath<T, NlpEngineType?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.nlp.core.NlpEngineType?>(this,ApplicationDefinition::nlpEngineType)
+
+    val mergeEngineTypes: KPropertyPath<T, Boolean?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Boolean?>(this,ApplicationDefinition::mergeEngineTypes)
+
+    val useEntityModels: KPropertyPath<T, Boolean?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Boolean?>(this,ApplicationDefinition::useEntityModels)
+
+    val supportSubEntities: KPropertyPath<T, Boolean?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Boolean?>(this,ApplicationDefinition::supportSubEntities)
+
+    val _id: KPropertyPath<T, Id<ApplicationDefinition>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,ApplicationDefinition::_id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ApplicationDefinition_<T> = ApplicationDefinition_(this, customProperty(this, additionalPath))}

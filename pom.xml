@@ -31,7 +31,7 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.2.60</kotlin>
+        <kotlin>1.2.61</kotlin>
 
         <slf4j>1.7.25</slf4j>
         <logback>1.2.3</logback>
@@ -46,13 +46,13 @@
         <vertx>3.5.3</vertx>
         <retrofit>2.4.0</retrofit>
         <okhttp>3.11.0</okhttp>
-        <guava>25.1-jre</guava>
-        <google-auth>1.23.0</google-auth>
+        <guava>26.0-jre</guava>
+        <google-auth>1.24.1</google-auth>
         <jasypt>1.9.2</jasypt>
         <commons-csv>1.5</commons-csv>
         <emoji>5.0</emoji>
         <commons-codec>1.11</commons-codec>
-        <commons-lang>3.7</commons-lang>
+        <commons-lang>3.8</commons-lang>
 
         <junit-platform>1.2.0</junit-platform>
         <junit-jupiter>5.2.0</junit-jupiter>
