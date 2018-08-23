@@ -13,17 +13,21 @@
     - handover messenger protocol 
     - Complex conversational context support
     - Mongo change stream support (perf improvement)
+    
+- 1.3.0 September 2018    
+    - Agnostic web platform integration sample      
+    - Cleanup and upgrade admin web interface    
 
-- 2.0.0 September 2018
-    - New design for admin web interface
-    - External demo server 
-    - AB Test engine workflow
+- 2.0.0 November 2018
+    - External demo server
     - Conversational framework: allow to create a bot in the administration interface without IDE
+    - add code editor admin interface
     - Non-regression tests improvements
-    - Agnostic web platform integration sample  
-
-- 3.0.0 January 2019
     - Bot API
+
+- 3.0.0 February 2019  
+    - AB Test engine workflow
     - Spark NLP support 
     - NLP model translation support       
     - Conversational framework: support for other languages than Kotlin (using APIs & multi-platform Kotlin feature)
+    - nodejs support sample    
