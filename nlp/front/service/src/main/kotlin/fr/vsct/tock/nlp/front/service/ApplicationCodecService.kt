@@ -137,7 +137,8 @@ object ApplicationCodecService : ApplicationCodec {
 
                 //save new intents
                 intentsToCreate.forEach { intent ->
-                    val newIntent = intent.copy(sharedIntents = intent.sharedIntents.mapNotNull { intentsIdsMap[it] }.toSet())
+                    val newIntent =
+                        intent.copy(sharedIntents = intent.sharedIntents.mapNotNull { intentsIdsMap[it] }.toSet())
                     config.save(newIntent)
                     report.add(newIntent)
                     logger.debug { "Import intent $newIntent" }
@@ -251,9 +252,8 @@ object ApplicationCodecService : ApplicationCodec {
                                         config.getSentences(setOf(i._id))
                                             .forEach { sentence ->
                                                 sentencesMap.compute(
-                                                    sentence.text,
-                                                    { _, v -> (v ?: emptyList()) + sentence }
-                                                )
+                                                    sentence.text
+                                                ) { _, v -> (v ?: emptyList()) + sentence }
                                             }
                                         i
                                     } else {
@@ -316,6 +316,9 @@ object ApplicationCodecService : ApplicationCodec {
                     report.sentencesImported++
                 }
             }
+
+            //update application with intents
+            config.save(app.copy(intents = app.intents + intentsByNameMap.values.map { it._id }))
 
             //trigger build
             if (report.modified) {

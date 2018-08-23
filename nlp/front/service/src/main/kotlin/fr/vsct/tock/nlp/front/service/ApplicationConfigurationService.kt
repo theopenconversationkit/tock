@@ -155,8 +155,8 @@ object ApplicationConfigurationService :
 
     override fun deleteEntityTypeByName(name: String): Boolean {
         getIntentsUsingEntity(name).forEach { intent ->
-            intent.applications.forEach {
-                val app = getApplicationById(it)
+            intent.applications.forEach { id ->
+                val app = getApplicationById(id)
                 if (app != null) {
                     intent.entities.filter { it.entityTypeName == name }.forEach {
                         removeEntityFromIntent(app, intent, name, it.role, false)
@@ -198,8 +198,8 @@ object ApplicationConfigurationService :
 
         //1 collect entities
         val entities = s
-            .flatMap {
-                it.classification.entities.mapNotNull { it.toEntity(ConfigurationRepository::toEntity) }
+            .flatMap { sentence ->
+                sentence.classification.entities.mapNotNull { it.toEntity(ConfigurationRepository::toEntity) }
             }
             .distinct()
 

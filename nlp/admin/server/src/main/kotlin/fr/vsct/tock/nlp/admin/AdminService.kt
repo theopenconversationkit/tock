@@ -97,8 +97,8 @@ object AdminService {
             val intentId = front.getIntentIdByQualifiedName(intent.qualifiedName)
             if (intentId == null) {
                 front.save(intent)
-                intent.applications.forEach {
-                    front.save(front.getApplicationById(it)!!.let { it.copy(intents = it.intents + intent._id) })
+                intent.applications.forEach { appId ->
+                    front.save(front.getApplicationById(appId)!!.let { it.copy(intents = it.intents + intent._id) })
                 }
                 intent
             } else {
