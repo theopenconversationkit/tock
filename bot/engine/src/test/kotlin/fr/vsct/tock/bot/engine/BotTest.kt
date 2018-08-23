@@ -54,8 +54,8 @@ class BotTest : BotEngineTest() {
         dialog.stories.clear()
         bot.handle(choice, userTimeline, connectorController, connectorData)
 
-        assertEquals(story.definition.id, dialog.currentStory()!!.definition.id)
-        assertEquals(test.mainIntent(), dialog.currentStory()!!.starterIntent)
+        assertEquals(story.definition.id, dialog.currentStory!!.definition.id)
+        assertEquals(test.mainIntent(), dialog.currentStory!!.starterIntent)
         assertEquals(secondaryIntent, dialog.state.currentIntent)
     }
 
@@ -73,7 +73,7 @@ class BotTest : BotEngineTest() {
 
         bot.handle(sentence, userTimeline, connectorController, connectorData)
 
-        assertEquals(otherStory, dialog.currentStory()?.definition)
-        assertNull(dialog.currentStory()?.currentStep)
+        assertEquals(otherStory, dialog.currentStory?.definition)
+        assertNull(dialog.currentStory?.currentStep)
     }
 }

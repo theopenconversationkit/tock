@@ -212,7 +212,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     }
                 }
             }
-            val dialog = userTimeline.currentDialog()
+            val dialog = userTimeline.currentDialog
             if (dialog != null) {
                 dialog.allActions().lastOrNull { it.playerId.type == PlayerType.user }
                     ?.let { action ->

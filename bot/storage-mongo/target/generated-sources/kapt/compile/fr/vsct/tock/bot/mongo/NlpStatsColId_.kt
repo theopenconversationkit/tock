@@ -5,17 +5,19 @@ import fr.vsct.tock.bot.engine.dialog.Dialog
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Collection
+import kotlin.collections.Map
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KCollectionPropertyPath
+import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
 internal class NlpStatsColId_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, NlpStatsColId?>) : KPropertyPath<T, NlpStatsColId?>(previous,property) {
-    val actionId: KProperty1<T, Id<Action>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,NlpStatsColId::actionId)
+    val actionId: KPropertyPath<T, Id<Action>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.engine.action.Action>?>(this,NlpStatsColId::actionId)
 
-    val dialogId: KProperty1<T, Id<Dialog>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,NlpStatsColId::dialogId)
+    val dialogId: KPropertyPath<T, Id<Dialog>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,NlpStatsColId::dialogId)
     companion object {
         val ActionId: KProperty1<NlpStatsColId, Id<Action>?>
             get() = NlpStatsColId::actionId
@@ -24,11 +26,21 @@ internal class NlpStatsColId_<T>(previous: KPropertyPath<T, *>?, property: KProp
 }
 
 internal class NlpStatsColId_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<NlpStatsColId>?>) : KCollectionPropertyPath<T, NlpStatsColId?, NlpStatsColId_<T>>(previous,property) {
-    val actionId: KProperty1<T, Id<Action>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,NlpStatsColId::actionId)
+    val actionId: KPropertyPath<T, Id<Action>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.engine.action.Action>?>(this,NlpStatsColId::actionId)
 
-    val dialogId: KProperty1<T, Id<Dialog>?>
-        get() = org.litote.kmongo.property.KPropertyPath(this,NlpStatsColId::dialogId)
+    val dialogId: KPropertyPath<T, Id<Dialog>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,NlpStatsColId::dialogId)
+
+    @Suppress("UNCHECKED_CAST")
+    override fun memberWithAdditionalPath(additionalPath: String): NlpStatsColId_<T> = NlpStatsColId_(this, customProperty(this, additionalPath))}
+
+internal class NlpStatsColId_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, NlpStatsColId>?>) : KMapPropertyPath<T, K, NlpStatsColId?, NlpStatsColId_<T>>(previous,property) {
+    val actionId: KPropertyPath<T, Id<Action>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.engine.action.Action>?>(this,NlpStatsColId::actionId)
+
+    val dialogId: KPropertyPath<T, Id<Dialog>?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,NlpStatsColId::dialogId)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): NlpStatsColId_<T> = NlpStatsColId_(this, customProperty(this, additionalPath))}

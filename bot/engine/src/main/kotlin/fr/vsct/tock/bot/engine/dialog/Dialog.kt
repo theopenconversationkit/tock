@@ -23,24 +23,32 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.provide
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
+import java.time.Instant
 
 /**
  * A dialog is a conversation between users and bots.
  * Conversation history is split into a list of [stories].
  * The dialog has a (current) [state].
  */
-data class Dialog(val playerIds: Set<PlayerId>,
-                  var id: Id<Dialog> = newId(),
-                  val state: DialogState = DialogState(),
-                  val stories: MutableList<Story> = mutableListOf()) {
+data class Dialog(
+    val playerIds: Set<PlayerId>,
+    var id: Id<Dialog> = newId(),
+    val state: DialogState = DialogState(),
+    val stories: MutableList<Story> = mutableListOf()
+) {
 
     /**
-     * The current story.
+     * The last update date
      */
-    fun currentStory(): Story? = stories.lastOrNull()
+    val lastDateUpdate: Instant get() = stories.lastOrNull()?.lastAction?.date ?: Instant.now()
 
     /**
-     * All past actions.
+     * The current story if any.
+     */
+    val currentStory: Story? get() = stories.lastOrNull()
+
+    /**
+     * All old actions.
      */
     fun allActions(): List<Action> = stories.flatMap { it.actions }
 

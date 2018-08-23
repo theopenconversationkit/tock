@@ -68,7 +68,7 @@ internal data class UserTimelineCol(
         newTimeline.temporaryIds
     ) {
         //register last action
-        newTimeline.dialogs.lastOrNull()?.currentStory()?.actions?.lastOrNull { it.playerId.type == PlayerType.user }
+        newTimeline.dialogs.lastOrNull()?.currentStory?.actions?.lastOrNull { it.playerId.type == PlayerType.user }
             ?.let {
                 lastUserActionDate = it.date
                 lastActionText = when (it) {
@@ -83,7 +83,7 @@ internal data class UserTimelineCol(
         oldTimeline?.let {
             applicationIds.addAll(it.applicationIds)
         }
-        newTimeline.dialogs.lastOrNull()?.currentStory()?.actions?.forEach {
+        newTimeline.dialogs.lastOrNull()?.currentStory?.actions?.forEach {
             applicationIds.add(it.applicationId)
         }
     }

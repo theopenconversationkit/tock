@@ -132,7 +132,7 @@ internal class Bot(
     }
 
     private fun getDialog(action: Action, userTimeline: UserTimeline): Dialog {
-        return userTimeline.currentDialog() ?: createDialog(action, userTimeline)
+        return userTimeline.currentDialog ?: createDialog(action, userTimeline)
     }
 
     private fun createDialog(action: Action, userTimeline: UserTimeline): Dialog {
@@ -143,7 +143,7 @@ internal class Bot(
 
     private fun getStory(action: Action, dialog: Dialog): Story {
         val newIntent = dialog.state.currentIntent
-        val previousStory = dialog.currentStory()
+        val previousStory = dialog.currentStory
 
         val story =
             if (previousStory == null
@@ -258,7 +258,7 @@ internal class Bot(
                         val storyDefinition = botDefinition.findStoryDefinition(choice.intentName)
                         if (storyDefinition == botDefinition.unknownStory) {
                             //the new intent is a secondary intent, may be we need to create a intermediate story
-                            val currentStory = dialog.currentStory()
+                            val currentStory = dialog.currentStory
                             if (currentStory == null
                                 || !currentStory.definition.supportIntent(intent)
                                 || !currentStory.definition.supportIntent(botDefinition.findIntent(previousIntentName))

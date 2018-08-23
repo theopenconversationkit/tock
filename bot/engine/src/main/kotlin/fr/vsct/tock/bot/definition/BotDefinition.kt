@@ -44,7 +44,8 @@ interface BotDefinition : I18nKeyProvider {
         /**
          * Convenient default value in ms to wait before next answer sentence. 1s by default.
          */
-        const val DEFAULT_BREATH: Long = 1000L
+        @Volatile
+        var defaultBreath: Long = 1000L
 
         /**
          * Finds an intent from an intent name and a list of [StoryDefinition].
@@ -249,5 +250,5 @@ interface BotDefinition : I18nKeyProvider {
      * Get the default delay between two answers.
      */
     fun defaultDelay(answerIndex: Int): Long =
-        if (answerIndex == 0) 0 else DEFAULT_BREATH
+        if (answerIndex == 0) 0 else defaultBreath
 }

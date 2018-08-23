@@ -48,12 +48,12 @@ class UserTimeline(
     /**
      * Returns the current dialog.
      */
-    fun currentDialog(): Dialog? = dialogs.lastOrNull()
+    val currentDialog: Dialog? get() = dialogs.lastOrNull()
 
     /**
      * Returns the current story.
      */
-    fun currentStory(): Story? = currentDialog()?.currentStory()
+    val currentStory: Story? get() = currentDialog?.currentStory
 
     /**
      * Does this timeline has at least one answer of a bot?

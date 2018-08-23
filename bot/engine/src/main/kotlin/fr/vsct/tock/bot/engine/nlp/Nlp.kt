@@ -249,7 +249,7 @@ internal class Nlp : NlpController {
                 toQueryContext(),
                 NlpQueryState(
                     dialog.state.nextActionState?.states
-                            ?: listOfNotNull(dialog.currentStory()?.definition?.mainIntent()?.name).toSet()
+                            ?: listOfNotNull(dialog.currentStory?.definition?.mainIntent()?.name).toSet()
                 )
             )
         }
