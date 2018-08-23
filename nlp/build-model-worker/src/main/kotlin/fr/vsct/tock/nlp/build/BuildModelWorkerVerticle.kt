@@ -24,7 +24,6 @@ import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.deleted
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
-import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
@@ -51,11 +50,11 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
         private val completeModelEnabled = booleanProperty("tock_complete_model_enabled", true)
         private val testModelEnabled = booleanProperty("tock_test_model_enabled", true)
         private val testModelTimeframe =
-                listProperty("tock_test_model_timeframe", listOf("0", "5"))
-                        .let { t ->
-                            logger.info { "test timeframe: $t" }
-                            listOf(t[0].toInt(), t[1].toInt())
-                        }
+            listProperty("tock_test_model_timeframe", listOf("0", "5"))
+                .let { t ->
+                    logger.info { "test timeframe: $t" }
+                    listOf(t[0].toInt(), t[1].toInt())
+                }
 
         val front = FrontClient
 
@@ -64,45 +63,52 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
         }
 
         private fun updateApplicationModels(app: ApplicationDefinition, onlyIfNotExists: Boolean = false) {
-            logger.debug { "Rebuild all models for application ${app.name} and nlp engine ${app.nlpEngineType.name}" }
+            logger.info { "Rebuild all models for application ${app.name} and nlp engine ${app.nlpEngineType.name}" }
             app.supportedLocales.forEach { locale ->
-                updateModel(
-                        ModelRefreshKey(app._id, locale),
-                        FrontClient.search(SentencesQuery(app._id, locale, 0, Integer.MAX_VALUE, status = setOf(model))).sentences,
-                        onlyIfNotExists)
+                front.updateIntentsModelForApplication(emptyList(), app, locale, app.nlpEngineType, onlyIfNotExists)
+                app.intents.forEach { intentId ->
+                    logger.info { "start model update for ${app.name}, intent ${intentId} and $locale" }
+                    front.updateEntityModelForIntent(
+                        emptyList(),
+                        app,
+                        intentId,
+                        locale,
+                        app.nlpEngineType,
+                        onlyIfNotExists
+                    )
+                }
+                updateEntityModels(app, locale, emptyList(), onlyIfNotExists)
             }
         }
 
-        private fun updateModel(key: ModelRefreshKey, sentences: List<ClassifiedSentence>, onlyIfNotExists: Boolean = false) {
+        private fun updateModel(
+            key: ModelRefreshKey,
+            sentences: List<ClassifiedSentence>,
+            onlyIfNotExists: Boolean = false
+        ) {
             try {
                 val app = front.getApplicationById(key.applicationId)
                 if (app == null) {
                     logger.warn { "Unknown application : $key" }
                     return
                 }
-                logger.info { "start model update for ${app.name} and ${key.language}" }
-                logger.trace { "Sentences : ${sentences.map { it.text }}" }
+                logger.info { "Start model update for ${app.name} and ${key.language}" }
+                logger.trace { "New sentences : ${sentences.map { it.text }}" }
 
                 front.updateIntentsModelForApplication(sentences, app, key.language, app.nlpEngineType, onlyIfNotExists)
                 sentences.groupBy { it.classification.intentId }.forEach { intentId, intentSentences ->
                     logger.info { "start model update for ${app.name}, intent ${intentId} and ${key.language}" }
-                    front.updateEntityModelForIntent(intentSentences, app, intentId, key.language, app.nlpEngineType, onlyIfNotExists)
+                    front.updateEntityModelForIntent(
+                        intentSentences,
+                        app,
+                        intentId,
+                        key.language,
+                        app.nlpEngineType,
+                        onlyIfNotExists
+                    )
                 }
 
-
-                front.getEntityTypes()
-                        .filter { it.subEntities.isNotEmpty() }
-                        .forEach { entityType ->
-                            logger.info { "start model update for ${app.name}, entity type $entityType and ${key.language}" }
-                            front.updateEntityModelForEntityType(
-                                    sentences.filter { it.classification.entities.any { it.type == entityType.name } },
-                                    app,
-                                    entityType,
-                                    key.language,
-                                    app.nlpEngineType,
-                                    onlyIfNotExists
-                            )
-                        }
+                updateEntityModels(app, key.language, sentences, onlyIfNotExists)
 
                 logger.info { "Model updated for ${app.name} and ${key.language}" }
             } catch (e: Throwable) {
@@ -112,6 +118,28 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                 front.switchSentencesStatus(sentences, model)
             }
         }
+
+        private fun updateEntityModels(
+            app: ApplicationDefinition,
+            locale: Locale,
+            sentences: List<ClassifiedSentence>,
+            onlyIfNotExists: Boolean = false
+        ) {
+            front.getEntityTypes()
+                .filter { it.subEntities.isNotEmpty() }
+                .forEach { entityType ->
+                    logger.info { "start model update for ${app.name}, entity type $entityType and $locale" }
+                    front.updateEntityModelForEntityType(
+                        sentences.filter { s -> s.classification.entities.any { it.type == entityType.name } },
+                        app,
+                        entityType,
+                        locale,
+                        app.nlpEngineType,
+                        onlyIfNotExists
+                    )
+                }
+
+        }
     }
 
     private val executor: Executor by injector.instance()
@@ -119,7 +147,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
     internal val canAnalyse = AtomicBoolean(true)
 
     override fun start() {
-        executor.setPeriodic(ofSeconds(1), {
+        executor.setPeriodic(ofSeconds(1)) {
             if (canAnalyse.get()) {
                 try {
                     canAnalyse.set(false)
@@ -128,7 +156,8 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                     if (validatedSentences.isNotEmpty()) {
                         logger.debug { "Sentences to update : ${validatedSentences.map { it.text }}" }
 
-                        val refreshKeyMap = validatedSentences.groupBy { ModelRefreshKey(it.applicationId, it.language) }
+                        val refreshKeyMap =
+                            validatedSentences.groupBy { ModelRefreshKey(it.applicationId, it.language) }
                         logger.info { "Model refresh keys : ${refreshKeyMap.keys}" }
                         refreshKeyMap.forEach {
                             updateModel(it.key, it.value)
@@ -137,7 +166,8 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                     } else if (deletedSentences.isNotEmpty()) {
                         logger.debug { "Sentences to remove from model : ${deletedSentences.map { it.text }}" }
 
-                        val refreshKeyMap = deletedSentences.map { ModelRefreshKey(it.applicationId, it.language) }.distinct()
+                        val refreshKeyMap =
+                            deletedSentences.map { ModelRefreshKey(it.applicationId, it.language) }.distinct()
                         logger.info { "Model refresh keys : $refreshKeyMap" }
                         refreshKeyMap.forEach {
                             updateModel(it, emptyList())
@@ -160,12 +190,13 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                         } else {
                             //test model each 10 minutes if it's in the time frame
                             if (testModelEnabled
-                                    && LocalTime.now()
+                                && LocalTime.now()
                                     .run {
                                         hour >= testModelTimeframe[0]
                                                 && hour <= testModelTimeframe[1]
                                                 && minute % 10 == 0
-                                    }) {
+                                    }
+                            ) {
                                 logger.info { "Start testing models" }
                                 front.testModels()
                             } else {
@@ -179,7 +210,7 @@ class BuildModelWorkerVerticle : AbstractVerticle() {
                     canAnalyse.set(true)
                 }
             }
-        })
+        }
 
         if (completeModelEnabled) {
             executor.setPeriodic(ofHours(1), {

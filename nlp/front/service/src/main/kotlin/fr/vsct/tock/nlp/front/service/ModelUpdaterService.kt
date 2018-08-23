@@ -103,8 +103,8 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
         logBuild(application, language, ModelBuildType.intent, null, null) {
             val intentCache = mutableMapOf<Id<IntentDefinition>, Intent>()
             val modelSentences = config.getSentences(application.intents, language, ClassifiedSentenceStatus.model)
-            val samples = (modelSentences + validatedSentences).map {
-                it.toSampleExpression({ config.toIntent(it, intentCache) },
+            val samples = (modelSentences + validatedSentences).map { s ->
+                s.toSampleExpression({ config.toIntent(it, intentCache) },
                     { entityTypeByName(it) })
             }
             model.updateIntentModel(
@@ -129,8 +129,8 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
             val sharedSentences = getSharedIntentSentences(application, language, intentId)
             val samples =
                 (modelSentences + validatedSentences + sharedSentences)
-                    .map {
-                        it.toSampleExpression({ i }, { entityTypeByName(it) })
+                    .map { sentence ->
+                        sentence.toSampleExpression({ i }, { entityTypeByName(it) })
                     }
             model.updateEntityModelForIntent(
                 BuildContext(
@@ -163,7 +163,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
                     )
                 )
                 .sentences
-                .filter { it.classification.entities.all { intentDefinition.hasEntity(it)} }
+                .filter { s -> s.classification.entities.all { intentDefinition.hasEntity(it) } }
         } ?: emptyList()
     }
 
@@ -187,8 +187,8 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
                         entityType = entityTypeDefinition.name
                     )
                 )
-                val samples = (modelSentences.sentences + validatedSentences).map {
-                    it.toSampleExpression({ config.toIntent(it) }, { entityType })
+                val samples = (modelSentences.sentences + validatedSentences).map { s ->
+                    s.toSampleExpression({ config.toIntent(it) }, { entityType })
                 }
                 model.updateEntityModelForEntityType(
                     BuildContext(toApplication(application), language, engineType, onlyIfNotExists),
@@ -205,7 +205,7 @@ object ModelUpdaterService : ModelUpdater, ModelBuildTriggerDAO by triggerDAO {
         model.deleteOrphans(
             config.getApplications()
                 .map {
-                    toApplication(it) to config.getIntentsByApplicationId(it._id).map { config.toIntent(it) }.toSet()
+                    toApplication(it) to config.getIntentsByApplicationId(it._id).map { i -> config.toIntent(i) }.toSet()
                 }
                 .toMap(),
             config.getEntityTypes().mapNotNull { ConfigurationRepository.toEntityType(it) }
