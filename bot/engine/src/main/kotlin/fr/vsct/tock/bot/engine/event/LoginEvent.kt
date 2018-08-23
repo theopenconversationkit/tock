@@ -20,10 +20,13 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 
 /**
  * A login event, in order to provide account linking.
+ * @param checkLogin this param is for revoke token
  */
 class LoginEvent(
     userId: PlayerId,
     recipientId: PlayerId,
     val userToken: String,
-    applicationId: String) : OneToOneEvent(userId, recipientId, applicationId)
+    applicationId: String,
+    var checkLogin: Boolean = false
+) : OneToOneEvent(userId, recipientId, applicationId)
 

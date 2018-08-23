@@ -19,17 +19,21 @@ package fr.vsct.tock.bot.connector.ga
 import com.google.common.io.Resources
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.engine.ConnectorController
+import fr.vsct.tock.bot.engine.event.LoginEvent
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.resource
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
+import io.mockk.verify
 import io.vertx.core.http.HttpServerResponse
 import io.vertx.ext.web.RoutingContext
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
  *
@@ -68,6 +72,21 @@ class GAConnectorTest {
 
         assertEquals("Pierre", userPreferences.firstName)
         assertEquals("Totor", userPreferences.lastName)
+    }
+
+    @Test
+    fun handleRequest_should_send_loginEvent_to_revoke_token() {
+        every { controller.connector } returns connector
+
+        connector.handleRequest(
+            controller,
+            context,
+            Resources.toString(resource("/request-with-ACCESS-TOKEN.json"), Charsets.UTF_8)
+        )
+
+        val slotLoginEvent = slot<LoginEvent>()
+        verify { controller.handle(capture(slotLoginEvent), any()) }
+        assertTrue { slotLoginEvent.captured.checkLogin }
     }
 
 }
