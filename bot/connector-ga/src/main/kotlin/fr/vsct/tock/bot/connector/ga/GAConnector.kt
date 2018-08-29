@@ -23,13 +23,16 @@ import com.google.api.client.auth.openidconnect.IdTokenVerifier
 import com.google.api.client.json.jackson2.JacksonFactory
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
+import fr.vsct.tock.bot.connector.ConnectorCallbackBase
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ga.model.request.GARequest
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.bot.engine.event.LoginEvent
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.injector
@@ -44,10 +47,10 @@ import kotlin.LazyThreadSafetyMode.PUBLICATION
  *
  */
 class GAConnector internal constructor(
-        val applicationId: String,
-        val path: String,
-        val allowedProjectIds: Set<String>)
-    : ConnectorBase(GAConnectorProvider.connectorType) {
+    val applicationId: String,
+    val path: String,
+    val allowedProjectIds: Set<String>
+) : ConnectorBase(GAConnectorProvider.connectorType) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -78,9 +81,11 @@ class GAConnector internal constructor(
     }
 
     //internal for tests
-    internal fun handleRequest(controller: ConnectorController,
-                               context: RoutingContext,
-                               body: String) {
+    internal fun handleRequest(
+        controller: ConnectorController,
+        context: RoutingContext,
+        body: String
+    ) {
         val timerData = BotRepository.requestTimer.start("ga_webhook")
         try {
             logger.debug { "Google Assistant request input : $body" }
@@ -88,7 +93,35 @@ class GAConnector internal constructor(
             val callback = GAConnectorCallback(applicationId, controller, context, request)
             try {
                 val event = WebhookActionConverter.toEvent(request, applicationId)
-                controller.handle(event, ConnectorData(callback))
+                fun sendRequest() {
+                    controller.handle(event, ConnectorData(callback))
+                }
+
+                if (request.user.accessToken != null && event !is LoginEvent) {
+                    controller.handle(
+                        LoginEvent(
+                            PlayerId(request.user.userId, PlayerType.user),
+                            PlayerId(applicationId, PlayerType.bot),
+                            request.user.accessToken,
+                            applicationId,
+                            true
+                        ),
+                        ConnectorData(object : ConnectorCallbackBase(applicationId, gaConnectorType) {
+
+                            // send 401 for revoke token and logout google assistant user
+                            override fun eventSkipped(event: Event) {
+                                context.fail(401)
+                            }
+
+                            override fun eventAnswered(event: Event) {
+                                sendRequest()
+                            }
+                        })
+                    )
+                } else {
+                    sendRequest()
+                }
+
             } catch (t: Throwable) {
                 BotRepository.requestTimer.throwable(t, timerData)
                 callback.sendTechnicalError(t, body, request)
@@ -119,11 +152,11 @@ class GAConnector internal constructor(
 
 
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
-        callback as GAConnectorCallback
-        callback.addAction(event, delayInMs)
+        val c = callback as? GAConnectorCallback
+        c?.addAction(event, delayInMs)
         if (event is Action) {
             if (event.metadata.lastAnswer) {
-                callback.sendResponse()
+                c?.sendResponse()
             }
         } else {
             logger.trace { "unsupported event: $event" }
@@ -132,8 +165,8 @@ class GAConnector internal constructor(
 
 
     override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? {
-        callback as GAConnectorCallback
-        return callback.request.user.profile?.run {
+        val c = callback as? GAConnectorCallback
+        return c?.request?.user?.profile?.run {
             if (givenName != null) {
                 UserPreferences(givenName, familyName)
             } else {

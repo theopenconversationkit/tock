@@ -20,11 +20,15 @@ import fr.vsct.tock.bot.connector.ga.model.GAIntent
 import fr.vsct.tock.bot.connector.ga.model.request.GAArgumentBuiltInName
 import fr.vsct.tock.bot.connector.ga.model.request.GAInputType.VOICE
 import fr.vsct.tock.bot.connector.ga.model.request.GARequest
+import fr.vsct.tock.bot.connector.ga.model.request.GASignInStatus
+import fr.vsct.tock.bot.connector.ga.model.request.GASignInValue
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.EndConversationEvent
 import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.bot.engine.event.LoginEvent
+import fr.vsct.tock.bot.engine.event.LogoutEvent
 import fr.vsct.tock.bot.engine.event.NoInputEvent
 import fr.vsct.tock.bot.engine.event.StartConversationEvent
 import fr.vsct.tock.bot.engine.stt.SttService
@@ -40,8 +44,10 @@ internal object WebhookActionConverter {
 
     private val logger = KotlinLogging.logger {}
 
-    fun toEvent(message: GARequest,
-                applicationId: String): Event {
+    fun toEvent(
+        message: GARequest,
+        applicationId: String
+    ): Event {
         val playerId = PlayerId(message.user.userId, PlayerType.user)
         val botId = PlayerId(applicationId, PlayerType.bot)
 
@@ -50,28 +56,30 @@ internal object WebhookActionConverter {
             if (input.arguments?.all { it.builtInArg == GAArgumentBuiltInName.PERMISSION && message.device?.location?.coordinates?.latitude != null } == true) {
                 return with(message.device!!.location!!.coordinates!!) {
                     SendLocation(
-                            playerId,
-                            applicationId,
-                            botId,
-                            UserLocation(
-                                    latitude,
-                                    longitude
-                            ))
+                        playerId,
+                        applicationId,
+                        botId,
+                        UserLocation(
+                            latitude,
+                            longitude
+                        )
+                    )
                 }
             } else if (input.arguments?.all { it.builtInArg == GAArgumentBuiltInName.OPTION } == true) {
                 val params = SendChoice.decodeChoiceId(
-                        input.arguments.first { it.builtInArg == GAArgumentBuiltInName.OPTION }.textValue ?: error("no text value")
+                    input.arguments.first { it.builtInArg == GAArgumentBuiltInName.OPTION }.textValue
+                            ?: error("no text value")
                 )
                 //Google assistant makes an somewhat erroneous nlp selection sometimes
                 //to avoid that, double check the label
                 if (input.rawInputs.firstOrNull()?.query?.let { query -> params.second[SendChoice.TITLE_PARAMETER] == query } != false) {
                     return SendChoice(
-                            playerId,
-                            applicationId,
-                            botId,
-                            params.first,
-                            params.second,
-                            state = message.getEventState()
+                        playerId,
+                        applicationId,
+                        botId,
+                        params.first,
+                        params.second,
+                        state = message.getEventState()
                     )
                 }
             }
@@ -85,6 +93,12 @@ internal object WebhookActionConverter {
                 GAIntent.main -> StartConversationEvent(playerId, botId, applicationId).setEventState()
                 GAIntent.cancel -> EndConversationEvent(playerId, botId, applicationId).setEventState()
                 GAIntent.noInput -> NoInputEvent(playerId, botId, applicationId).setEventState()
+                GAIntent.signIn -> {
+                    when ((input.arguments?.first { it.builtInArg == GAArgumentBuiltInName.SIGN_IN }?.extension as GASignInValue).status) {
+                        GASignInStatus.OK -> LoginEvent(playerId, botId, message.user.accessToken ?: "", applicationId)
+                        else -> LogoutEvent(playerId, botId, applicationId)
+                    }
+                }
                 else -> {
                     val rawInput = input.rawInputs.firstOrNull()
                     var text = rawInput?.query
@@ -93,12 +107,12 @@ internal object WebhookActionConverter {
                     }
 
                     SendSentence(
-                            playerId,
-                            applicationId,
-                            botId,
-                            text,
-                            mutableListOf(GARequestConnectorMessage(message)),
-                            state = message.getEventState()
+                        playerId,
+                        applicationId,
+                        botId,
+                        text,
+                        mutableListOf(GARequestConnectorMessage(message)),
+                        state = message.getEventState()
                     )
                 }
             }
