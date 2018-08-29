@@ -14,33 +14,34 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-class TabLink {
-  constructor(public link: string, public label: string) {
+.feature {
+  width: 100%;
+  display: block;
+  max-width: 800px;
+  margin-bottom: 20px;
+  padding: 0 20px;
 
-  }
+  font-family: Roboto,"Helvetica Neue",sans-serif;
 }
 
-const tabs = [
-  new TabLink("intent-create", "Add new Answer"),
-  new TabLink("intent-search", "Search Answers"),
-  new TabLink("i18n", "i18n"),
-  new TabLink("feature-flipping", "Feature Flipping")
-];
-
-@Component({
-  selector: 'tock-bot-tabs',
-  templateUrl: './bot-tabs.component.html',
-  styleUrls: ['./bot-tabs.component.css']
-})
-export class BotTabsComponent implements OnInit {
-
-  botTabLinks = tabs;
-
-  constructor() {
-  }
-
-  ngOnInit() {
-  }
-
+.name {
+  float: left;
+  width:150px;
+  line-height: 36px;
 }
+
+.category {
+  float: left;
+  width:300px;
+  font-size: smaller;
+  line-height: 36px;
+}
+
+.toggle {
+  line-height: 36px;
+}
+
+.i18n-label__title__delete {
+  margin-left: auto;
+}
+

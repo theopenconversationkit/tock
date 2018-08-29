@@ -22,6 +22,7 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import com.mongodb.client.MongoDatabase
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
+import fr.vsct.tock.bot.engine.feature.FeatureDAO
 import fr.vsct.tock.shared.getAsyncDatabase
 import fr.vsct.tock.shared.getDatabase
 import fr.vsct.tock.shared.sharedTestModule
@@ -51,6 +52,7 @@ abstract class AbstractTest {
             bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
             bind<com.mongodb.async.client.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
             bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
+            bind<FeatureDAO>() with provider { FeatureMongoDAO }
         }
         )
         UserTimelineMongoDAO.dialogCol.deleteMany()

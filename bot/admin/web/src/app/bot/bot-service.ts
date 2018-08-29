@@ -22,6 +22,7 @@ import {Intent} from "tock-nlp-admin/src/app/model/nlp";
 import {Observable} from "rxjs/Observable";
 import {I18nLabel} from "./model/i18n";
 import {FileUploader} from "ng2-file-upload";
+import {Feature} from "./model/feature";
 
 @Injectable()
 export class BotService {
@@ -67,11 +68,11 @@ export class BotService {
   }
 
   downloadI18nLabelsCsv(): Observable<Blob> {
-    return this.rest.get("/i18n/export/csv", (r => new Blob([r], {type: 'text/csv'}) ))
+    return this.rest.get("/i18n/export/csv", (r => new Blob([r], {type: 'text/csv'})))
   }
 
   downloadI18nLabelsJson(): Observable<Blob> {
-    return this.rest.get("/i18n/export/json", (r => new Blob([r], {type: 'application/json'}) ))
+    return this.rest.get("/i18n/export/json", (r => new Blob([r], {type: 'application/json'})))
   }
 
   prepareI18nCsvDumpUploader(uploader: FileUploader) {
@@ -80,6 +81,22 @@ export class BotService {
 
   prepareI18nJsonDumpUploader(uploader: FileUploader) {
     this.rest.setFileUploaderOptions(uploader, "/i18n/import/json");
+  }
+
+  getFeatures(botId: string): Observable<Feature[]> {
+    return this.rest.get(`/feature/${botId}`, Feature.fromJSONArray);
+  }
+
+  toggleFeature(botId: string, category: string, name: string): Observable<boolean> {
+    return this.rest.post(`/feature/${botId}/toggle/${category}/${name}`);
+  }
+
+  addFeature(botId: string, enabled: boolean, category: string, name: string): Observable<boolean> {
+    return this.rest.post(`/feature/${botId}/add/${category}/${name}/${enabled}`);
+  }
+
+  deleteFeature(botId: string, category: string, name: string): Observable<boolean> {
+    return this.rest.delete(`/feature/${botId}/${category}/${name}`);
   }
 
 }

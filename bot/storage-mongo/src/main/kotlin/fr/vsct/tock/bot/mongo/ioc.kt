@@ -25,6 +25,7 @@ import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.admin.test.TestPlanDAO
 import fr.vsct.tock.bot.admin.user.UserReportDAO
+import fr.vsct.tock.bot.engine.feature.FeatureDAO
 import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.shared.getAsyncDatabase
@@ -44,4 +45,5 @@ val botMongoModule = Kodein.Module {
     bind<DialogReportDAO>() with provider { UserTimelineMongoDAO }
     bind<TestPlanDAO>() with provider { TestPlanMongoDAO }
     bind<UserLock>() with provider { MongoUserLock }
+    bind<FeatureDAO>() with provider { FeatureMongoDAO }
 }

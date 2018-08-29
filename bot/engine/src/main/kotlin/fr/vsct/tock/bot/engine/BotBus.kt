@@ -36,6 +36,8 @@ import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
 import fr.vsct.tock.bot.engine.dialog.Story
+import fr.vsct.tock.bot.engine.feature.FeatureDAO
+import fr.vsct.tock.bot.engine.feature.FeatureType
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.message.MessagesList
 import fr.vsct.tock.bot.engine.nlp.NlpCallStats
@@ -44,6 +46,8 @@ import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
+import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.provide
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.I18nLabelValue
 import fr.vsct.tock.translator.UserInterfaceType
@@ -368,7 +372,11 @@ interface BotBus : I18nTranslator {
     /**
      * Sends i18nText as last bot answer.
      */
-    fun end(i18nText: CharSequence, delay: Long = botDefinition.defaultDelay(currentAnswerIndex), vararg i18nArgs: Any?): BotBus {
+    fun end(
+        i18nText: CharSequence,
+        delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
+        vararg i18nArgs: Any?
+    ): BotBus {
         return endRawText(translate(i18nText, *i18nArgs), delay)
     }
 
@@ -416,7 +424,11 @@ interface BotBus : I18nTranslator {
     /**
      * Sends i18nText.
      */
-    fun send(i18nText: CharSequence, delay: Long = botDefinition.defaultDelay(currentAnswerIndex), vararg i18nArgs: Any?): BotBus {
+    fun send(
+        i18nText: CharSequence,
+        delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
+        vararg i18nArgs: Any?
+    ): BotBus {
         return sendRawText(translate(i18nText, *i18nArgs), delay)
     }
 
@@ -500,6 +512,15 @@ interface BotBus : I18nTranslator {
     fun skipAnswer() {
         connectorData.skipAnswer = true
     }
+
+    /**
+     * Is the feature enabled?
+     *
+     * @param feature the feature to check
+     * @param default the default value if the feature state is unknown
+     */
+    fun isFeatureEnabled(feature: FeatureType, default: Boolean = false) =
+        injector.provide<FeatureDAO>().isEnabled(botDefinition.botId, botDefinition.namespace, feature, default)
 
     /**
      * Marks the current as not understood in the nlp model.

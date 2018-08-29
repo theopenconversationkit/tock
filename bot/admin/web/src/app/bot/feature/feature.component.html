@@ -1,0 +1,61 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<md-card>
+  <md-card-title>
+    Features
+    <button md-button (click)="refresh()" md-tooltip="Refresh">
+      <md-icon>refresh</md-icon>
+    </button>
+  </md-card-title>
+  <md-card-subtitle *ngIf="!create">
+    <button md-button (click)="prepareCreate()" color="primary">
+      <md-icon>add_box</md-icon>
+      Add a new Feature
+    </button>
+  </md-card-subtitle>
+  <md-card-content>
+    <div *ngIf="create">
+      <md-input-container>
+        <input mdInput placeholder="Category" [(ngModel)]="feature.category">
+      </md-input-container>
+      <md-input-container>
+        <input mdInput placeholder="Name" [(ngModel)]="feature.name">
+      </md-input-container>
+      <md-slide-toggle color="primary" [checked]="feature.enabled" (change)="toggleNew()">Status</md-slide-toggle>
+    </div>
+
+    <div *ngIf="!create">
+      <div *ngFor="let f of features" class="feature">
+        <span class="category">{{f.category}}</span>
+        <span class="name">{{f.name}}</span>
+        <span class="toggle">
+          <md-slide-toggle color="primary" [checked]="f.enabled" (change)="toggle(f)">Status</md-slide-toggle>
+        </span>
+        <span>
+          <button md-button (click)="deleteFeature(f)" md-tooltip="Delete"
+                  color="warn">
+            <md-icon>delete_forever</md-icon>
+          </button>
+        </span>
+      </div>
+    </div>
+  </md-card-content>
+  <md-card-actions *ngIf="create">
+    <button md-button color="warn" (click)="cancelCreate()">Cancel</button>
+    <button md-raised-button color="primary" (click)="addFeature()">Add</button>
+  </md-card-actions>
+</md-card>

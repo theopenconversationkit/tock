@@ -295,7 +295,7 @@ abstract class WebVerticle : AbstractVerticle() {
         role: TockUserRole? = defaultRole(),
         handler: (RoutingContext) -> Unit
     ) {
-        register(method, path, role, { it.executeBlocking(handler) })
+        register(method, path, role) { it.executeBlocking(handler) }
     }
 
     protected fun RoutingContext.isAuthorized(

@@ -14,33 +14,15 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-class TabLink {
-  constructor(public link: string, public label: string) {
+package fr.vsct.tock.bot.engine.feature
 
-  }
-}
+/**
+ * A feature with a name and a category.
+ * Usually implemented by an enum.
+ */
+interface FeatureType {
 
-const tabs = [
-  new TabLink("intent-create", "Add new Answer"),
-  new TabLink("intent-search", "Search Answers"),
-  new TabLink("i18n", "i18n"),
-  new TabLink("feature-flipping", "Feature Flipping")
-];
+    val name: String
 
-@Component({
-  selector: 'tock-bot-tabs',
-  templateUrl: './bot-tabs.component.html',
-  styleUrls: ['./bot-tabs.component.css']
-})
-export class BotTabsComponent implements OnInit {
-
-  botTabLinks = tabs;
-
-  constructor() {
-  }
-
-  ngOnInit() {
-  }
-
+    val category: String get() = javaClass.name
 }

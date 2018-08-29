@@ -14,33 +14,22 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-class TabLink {
-  constructor(public link: string, public label: string) {
+export class Feature {
 
-  }
-}
-
-const tabs = [
-  new TabLink("intent-create", "Add new Answer"),
-  new TabLink("intent-search", "Search Answers"),
-  new TabLink("i18n", "i18n"),
-  new TabLink("feature-flipping", "Feature Flipping")
-];
-
-@Component({
-  selector: 'tock-bot-tabs',
-  templateUrl: './bot-tabs.component.html',
-  styleUrls: ['./bot-tabs.component.css']
-})
-export class BotTabsComponent implements OnInit {
-
-  botTabLinks = tabs;
-
-  constructor() {
+  constructor(public category: string,
+              public name: string,
+              public enabled: boolean) {
   }
 
-  ngOnInit() {
+  static fromJSON(json: any): Feature {
+    const value = Object.create(Feature.prototype);
+    const result = Object.assign(value, json, {});
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): Feature[] {
+    return json ? json.map(Feature.fromJSON) : [];
   }
 
 }

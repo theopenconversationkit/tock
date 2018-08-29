@@ -221,6 +221,33 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
+        blockingJsonGet("/feature/:applicationId", botUser) { context ->
+            val applicationId = context.path("applicationId")
+            BotAdminService.getFeatures(applicationId, context.organization)
+        }
+
+        blockingPost("/feature/:applicationId/toggle/:category/:name", botUser) { context ->
+            val applicationId = context.path("applicationId")
+            val category = context.path("category")
+            val name = context.path("name")
+            BotAdminService.toggleFeature(applicationId, context.organization, category, name)
+        }
+
+        blockingPost("/feature/:applicationId/add/:category/:name/:enabled", botUser) { context ->
+            val applicationId = context.path("applicationId")
+            val category = context.path("category")
+            val name = context.path("name")
+            val enabled = context.path("enabled") == "true"
+            BotAdminService.addFeature(applicationId, context.organization, enabled, category, name)
+        }
+
+        blockingDelete("/feature/:applicationId/:category/:name", botUser) { context ->
+            val applicationId = context.path("applicationId")
+            val category = context.path("category")
+            val name = context.path("name")
+            BotAdminService.deleteFeature(applicationId, context.organization, category, name)
+        }
+
         blockingJsonGet("/application/:applicationId/plans", botUser) { context ->
             val applicationId = context.path("applicationId")
             TestPlanService.getTestPlansByApplication(applicationId).filter { it.namespace == context.organization }
@@ -311,7 +338,7 @@ open class BotAdminVerticle : AdminVerticle() {
             XrayConfiguration.isXrayAvailable()
         }
 
-        blockingJsonPost("/xray/execute", botUser) { c, configuration: XRayPlanExecutionConfiguration ->
+        blockingJsonPost("/xray/execute", botUser) { _, configuration: XRayPlanExecutionConfiguration ->
             XrayService(
                 listOfNotNull(configuration.configurationId),
                 listOf(configuration.testPlanKey),

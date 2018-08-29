@@ -31,6 +31,7 @@ import {ApplicationResolver} from "tock-nlp-admin/src/app/core/application.resol
 import {I18nComponent} from "./i18n/i18n.component";
 import {FileUploadModule} from "ng2-file-upload";
 import {I18nLabelComponent} from "./i18n/i18n-label.component";
+import {FeatureComponent} from "./feature/feature.component";
 
 const routes: Routes = [
   {
@@ -56,6 +57,10 @@ const routes: Routes = [
       {
         path: 'i18n',
         component: I18nComponent
+      },
+      {
+        path: 'feature-flipping',
+        component: FeatureComponent
       }
     ]
   }
@@ -84,7 +89,8 @@ export class BotRoutingModule {
     CreateBotIntentComponent,
     SearchBotIntentComponent,
     I18nComponent,
-    I18nLabelComponent
+    I18nLabelComponent,
+    FeatureComponent
   ],
   exports: [],
   providers: [

@@ -49,6 +49,8 @@ import fr.vsct.tock.bot.connector.rest.client.ConnectorRestClient
 import fr.vsct.tock.bot.connector.rest.client.model.ClientMessageRequest
 import fr.vsct.tock.bot.connector.rest.client.model.ClientSentence
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.engine.feature.FeatureDAO
+import fr.vsct.tock.bot.engine.feature.FeatureState
 import fr.vsct.tock.nlp.admin.AdminService
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.front.client.FrontClient
@@ -80,13 +82,15 @@ object BotAdminService {
 
     private val logger = KotlinLogging.logger {}
 
-    val defaultRestConnectorBaseUrl = property("tock_bot_admin_rest_default_base_url", "please set base url of the bot")
-    val userReportDAO: UserReportDAO  by injector.instance()
-    val dialogReportDAO: DialogReportDAO  by injector.instance()
-    val applicationConfigurationDAO: BotApplicationConfigurationDAO  by injector.instance()
-    val storyDefinitionDAO: StoryDefinitionConfigurationDAO by injector.instance()
-    val restConnectorClientCache: MutableMap<String, ConnectorRestClient> = ConcurrentHashMap()
-    val front = FrontClient
+    private val defaultRestConnectorBaseUrl =
+        property("tock_bot_admin_rest_default_base_url", "please set base url of the bot")
+    private val userReportDAO: UserReportDAO  by injector.instance()
+    internal val dialogReportDAO: DialogReportDAO  by injector.instance()
+    private val applicationConfigurationDAO: BotApplicationConfigurationDAO  by injector.instance()
+    private val storyDefinitionDAO: StoryDefinitionConfigurationDAO by injector.instance()
+    private val featureDAO: FeatureDAO by injector.instance()
+    private val restConnectorClientCache: MutableMap<String, ConnectorRestClient> = ConcurrentHashMap()
+    private val front = FrontClient
 
     fun getRestClient(conf: BotApplicationConfiguration): ConnectorRestClient {
         val baseUrl = conf.baseUrl?.let { if (it.isBlank()) null else it } ?: defaultRestConnectorBaseUrl
@@ -179,8 +183,8 @@ object BotAdminService {
                         val sentences =
                             front.search(query)
                                 .sentences
-                                .map {
-                                    SentenceReport(it)
+                                .map { s ->
+                                    SentenceReport(s)
                                 }
                         BotIntent(BotStoryDefinitionConfiguration(it), sentences)
                     } else {
@@ -241,7 +245,12 @@ object BotAdminService {
                         request.type,
                         listOf(
                             when (request.type) {
-                                simple -> createSimpleAnswer(namespace, intentDefinition.name, request.language, request.reply)
+                                simple -> createSimpleAnswer(
+                                    namespace,
+                                    intentDefinition.name,
+                                    request.language,
+                                    request.reply
+                                )
                                 script -> createScriptAnswer(botConf.botId, request.reply)
                                 else -> error("unsupported type $request")
                             }
@@ -272,7 +281,7 @@ object BotAdminService {
 
     private fun createSimpleAnswer(
         namespace: String,
-        intent:String,
+        intent: String,
         language: Locale?,
         reply: String
     ): SimpleAnswerConfiguration {
@@ -372,5 +381,25 @@ object BotAdminService {
             logger.error(throwable)
             BotDialogResponse(listOf(ClientSentence("technical error :( ${throwable.message}")))
         }
+    }
+
+    fun getFeatures(botId: String, namespace: String): List<FeatureState> {
+        return featureDAO.getFeatures(botId, namespace)
+    }
+
+    fun toggleFeature(botId: String, namespace: String, category: String, name: String) {
+        if (featureDAO.isEnabled(botId, namespace, category, name)) {
+            featureDAO.disable(botId, namespace, category, name)
+        } else {
+            featureDAO.enable(botId, namespace, category, name)
+        }
+    }
+
+    fun addFeature(botId: String, namespace: String, enabled: Boolean, category: String, name: String) {
+        featureDAO.addFeature(botId, namespace, enabled, category, name)
+    }
+
+    fun deleteFeature(botId: String, namespace: String, category: String, name: String) {
+        featureDAO.deleteFeature(botId, namespace, category, name)
     }
 }

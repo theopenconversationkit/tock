@@ -14,33 +14,21 @@
  * limitations under the License.
  */
 
-import {Component, OnInit} from "@angular/core";
-class TabLink {
-  constructor(public link: string, public label: string) {
+package fr.vsct.tock.bot.engine.feature
 
-  }
-}
+import kotlin.test.assertEquals
 
-const tabs = [
-  new TabLink("intent-create", "Add new Answer"),
-  new TabLink("intent-search", "Search Answers"),
-  new TabLink("i18n", "i18n"),
-  new TabLink("feature-flipping", "Feature Flipping")
-];
+/**
+ *
+ */
+class FeatureTypeTest {
 
-@Component({
-  selector: 'tock-bot-tabs',
-  templateUrl: './bot-tabs.component.html',
-  styleUrls: ['./bot-tabs.component.css']
-})
-export class BotTabsComponent implements OnInit {
+    enum class Test : FeatureType {
+        a
+    }
 
-  botTabLinks = tabs;
-
-  constructor() {
-  }
-
-  ngOnInit() {
-  }
-
+    @kotlin.test.Test
+    fun `default feature type category is enum class name`() {
+        assertEquals("fr.vsct.tock.bot.engine.feature.FeatureTypeTest\$Test", Test.a.category)
+    }
 }

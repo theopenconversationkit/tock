@@ -38,7 +38,7 @@ data class Dialog(
 ) {
 
     /**
-     * The last update date
+     * The last update date.
      */
     val lastDateUpdate: Instant get() = stories.lastOrNull()?.lastAction?.date ?: Instant.now()
 
