@@ -111,4 +111,57 @@ class OpenNlpEntityClassifierTest {
             ), result
         )
     }
+
+    @Test
+    fun `classify does not throw AIOOBE even if the whole sentence is an entity`() {
+        val sentence = "Je cherche un train de Lille à Paris demain"
+        val tokens = arrayOf("Je", "cherche", "un", "train", "de", "Lille", "à", "Paris", "demain")
+        val model: NameFinderME = mockk()
+        every { model.find(eq(tokens)) } answers {
+            arrayOf(
+                Span(0, 1, "location", 0.55),
+                Span(1, 2, "location", 0.55),
+                Span(2, 3, "location", 0.55),
+                Span(3, 4, "location", 0.55),
+                Span(4, 5, "location", 0.55),
+                Span(5, 6, "location", 0.55),
+                Span(6, 7, "location", 0.55),
+                Span(7, 8, "location", 0.55),
+                Span(8, 9, "location", 0.55)
+            )
+        }
+
+        val classifier = OpenNlpEntityClassifier(EntityModelHolder(model))
+
+        val entity = Entity(EntityType("location:location"), "location")
+        val context = EntityCallContextForIntent(
+            "test",
+            Intent("test", listOf(entity)),
+            defaultLocale,
+            NlpEngineType.opennlp,
+            ZonedDateTime.now()
+        )
+
+        val result = classifier.classifyEntities(context, sentence, tokens)
+
+        assertEquals(
+            listOf(
+                EntityRecognition(
+                    value = EntityValue(
+                        start = 0,
+                        end = 43,
+                        entity = Entity(
+                            entityType = EntityType(
+                                name = "location:location",
+                                subEntities = emptyList(),
+                                predefinedValues = emptyList()
+                            ),
+                            role = "location"
+                        ), value = null, subEntities = emptyList(), evaluated = false
+                    ), probability = 0.5499999999999999
+                )
+            ),
+            result
+        )
+    }
 }
