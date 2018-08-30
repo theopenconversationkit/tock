@@ -71,7 +71,7 @@ internal class OpenNlpEntityClassifier(model: EntityModelHolder) : NlpEntityClas
                     //reunify text
                     var t = text
                     var start = 0
-                    val tokenStart = span.start - (0 until nbEntitySpans - 1).sumBy { spans[it].length() }
+                    val tokenStart = span.start - (0 until nbEntitySpans - 1).sumBy { spans[index - it - 1].length() }
                     for (i in 0 until tokenStart) {
                         val nextTokenIndex = tokens[i].length + t.indexOf(tokens[i])
                         start += nextTokenIndex
