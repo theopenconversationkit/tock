@@ -631,7 +631,7 @@
                 
                 <h1 id="tocks-conversationnal-language">Tock's Conversationnal Language<a class="headerlink" href="#tocks-conversationnal-language" title="Permanent link">&para;</a></h1>
 <p>To develop a bot or an assistant with Tock,
-you can use its conversationnal DSL (Domain Specific Language) 
+you can use its conversational DSL (Domain Specific Language) 
 developed in <a href="https://kotlinlang.org/">Kotlin</a>.</p>
 <h2 id="add-the-bot-toolkit-dependency">Add the bot-toolkit Dependency<a class="headerlink" href="#add-the-bot-toolkit-dependency" title="Permanent link">&para;</a></h2>
 <p>The bot-toolkit dependency is required:</p>
@@ -1087,7 +1087,10 @@ in the current story. For this, Tock provides the concept of <em>StoryStep</em>.
 <p>3) Make this connector available via a Service Loader</p>
 <p>By placing a file META-INF/services/fr.vsct.tock.bot.connector.ConnectorProvider
 in the classpath, containing the class name :</p>
-<p>mypackage.TestConnectorProviderService</p>
+<div class="codehilite"><pre><span></span><span class="n">mypackage</span><span class="p">.</span><span class="n">TestConnectorProviderService</span>
+</pre></div>
+
+
 <p>4) Add all classes and files created in the admin classpath and bot classpath</p>
 <p>The new connector must then be available in the "Bot Configurations" administration interface.</p>
                 

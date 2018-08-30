@@ -506,6 +506,8 @@ utilisés pour démarrer l'ensemble de la boite à outils <em>Tock</em> sont dis
 <h3 id="demarrer-linterface-dadministration">Démarrer l'interface d'administration<a class="headerlink" href="#demarrer-linterface-dadministration" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span>    <span class="c1">#get the last docker-compose file</span>
     curl -o docker-compose.yml https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/docker-compose.yml
+    <span class="c1">#get the script to start mongo in replicaset mode</span>
+    mkdir -p scripts <span class="o">&amp;&amp;</span> curl -o scripts/setup.sh https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/scripts/setup.sh <span class="o">&amp;&amp;</span> chmod +x scripts/setup.sh
     <span class="c1">#get the last tag</span>
     curl -o .env https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/.env
     <span class="c1">#launch the stack</span>

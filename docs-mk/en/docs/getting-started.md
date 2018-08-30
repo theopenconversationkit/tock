@@ -21,6 +21,8 @@ The source code used to build these images, as well as the docker-compose files 
 ```sh 
     #get the last docker-compose file
     curl -o docker-compose.yml https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/docker-compose.yml
+    #get the script to start mongo in replicaset mode
+    mkdir -p scripts && curl -o scripts/setup.sh https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/scripts/setup.sh && chmod +x scripts/setup.sh
     #get the last tag
     curl -o .env https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/.env
     #launch the stack

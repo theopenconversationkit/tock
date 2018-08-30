@@ -1,7 +1,7 @@
 # Tock's Conversationnal Language
 
 To develop a bot or an assistant with Tock,
-you can use its conversationnal DSL (Domain Specific Language) 
+you can use its conversational DSL (Domain Specific Language) 
 developed in [Kotlin](https://kotlinlang.org/).
 
 ## Add the bot-toolkit Dependency
@@ -538,7 +538,9 @@ class TestConnectorProviderService: ConnectorProvider by TestConnectorProvider
 By placing a file META-INF/services/fr.vsct.tock.bot.connector.ConnectorProvider
 in the classpath, containing the class name :
 
+```kotlin
 mypackage.TestConnectorProviderService
+```
 
 4) Add all classes and files created in the admin classpath and bot classpath
 

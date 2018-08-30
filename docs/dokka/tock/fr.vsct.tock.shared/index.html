@@ -76,6 +76,13 @@
 </tr>
 <tr>
 <td>
+<p><a href="com.mongodb.async.client.-mongo-collection/index.html">com.mongodb.async.client.MongoCollection</a></p>
+</td>
+<td>
+</td>
+</tr>
+<tr>
+<td>
 <p><a href="java.util.-enumeration/index.html">java.util.Enumeration</a></p>
 </td>
 <td>
@@ -277,7 +284,7 @@ Use property "tock_default_namespace" and as default value <a href="-d-e-f-a-u-l
 <p><a href="get-async-database.html">getAsyncDatabase</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">getAsyncDatabase</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared$getAsyncDatabase(kotlin.String)/databaseNameProperty">databaseNameProperty</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">&lt;ERROR CLASS&gt;</span></code>
+<code><span class="keyword">fun </span><span class="identifier">getAsyncDatabase</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared$getAsyncDatabase(kotlin.String)/databaseNameProperty">databaseNameProperty</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">MongoDatabase</span></code>
 <p>Return the async database specified in the <a href="get-async-database.html#fr.vsct.tock.shared$getAsyncDatabase(kotlin.String)/databaseNameProperty">databaseNameProperty</a>.
 if the env or system property is not found, use the <a href="get-async-database.html#fr.vsct.tock.shared$getAsyncDatabase(kotlin.String)/databaseNameProperty">databaseNameProperty</a> as database name (remove "_mongo_db" string is present).</p>
 </td>
@@ -398,15 +405,6 @@ if the env or system property is not found, use the <a href="get-database.html#f
 <td>
 <code><span class="keyword">fun </span><span class="identifier">tryToFindLocalIp</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
 <p>Best attempt to guess local ip.</p>
-</td>
-</tr>
-<tr>
-<td>
-<p><a href="watch-safely.html">watchSafely</a></p>
-</td>
-<td>
-<code><span class="keyword">fun </span><span class="symbol">&lt;</span><span class="identifier">T</span><span class="symbol">&gt;</span> <span class="identifier">&lt;ERROR CLASS&gt;</span><span class="symbol">&lt;</span><a href="watch-safely.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">.</span><span class="identifier">watchSafely</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared$watchSafely(((fr.vsct.tock.shared.watchSafely.T)), kotlin.Function1((((fr.vsct.tock.shared.watchSafely.T)), (()))), kotlin.Function1((com.mongodb.client.model.changestream.ChangeStreamDocument((fr.vsct.tock.shared.watchSafely.T)), kotlin.Unit)))/optionsProvider">optionsProvider</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">&lt;ERROR CLASS&gt;</span><span class="symbol">&lt;</span><a href="watch-safely.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<span class="identifier">&lt;ERROR CLASS&gt;</span><span class="symbol">&lt;</span><a href="watch-safely.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;{ it }<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared$watchSafely(((fr.vsct.tock.shared.watchSafely.T)), kotlin.Function1((((fr.vsct.tock.shared.watchSafely.T)), (()))), kotlin.Function1((com.mongodb.client.model.changestream.ChangeStreamDocument((fr.vsct.tock.shared.watchSafely.T)), kotlin.Unit)))/listener">listener</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="identifier">ChangeStreamDocument</span><span class="symbol">&lt;</span><a href="watch-safely.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code>
-<p>Watch collection changes without throwing an exception.</p>
 </td>
 </tr>
 </tbody>

@@ -503,6 +503,8 @@ Of course, as the model is not big, the quality of the bot is low, but still it'
 <h3 id="start-the-nlp-stack">Start the NLP stack<a class="headerlink" href="#start-the-nlp-stack" title="Permanent link">&para;</a></h3>
 <div class="codehilite"><pre><span></span>    <span class="c1">#get the last docker-compose file</span>
     curl -o docker-compose.yml https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/docker-compose.yml
+    <span class="c1">#get the script to start mongo in replicaset mode</span>
+    mkdir -p scripts <span class="o">&amp;&amp;</span> curl -o scripts/setup.sh https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/scripts/setup.sh <span class="o">&amp;&amp;</span> chmod +x scripts/setup.sh
     <span class="c1">#get the last tag</span>
     curl -o .env https://raw.githubusercontent.com/voyages-sncf-technologies/tock-docker/master/.env
     <span class="c1">#launch the stack</span>

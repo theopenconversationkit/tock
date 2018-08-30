@@ -1,5 +1,7 @@
 $dokka.format:html
 $dokka.linkExtension:html
+$dokka.location:fr.vsct.tock.bot.engine.dialog$setTo(fr.vsct.tock.nlp.api.client.model.Entity, fr.vsct.tock.nlp.entity.Value)fr.vsct.tock.bot.engine.dialog/fr.vsct.tock.nlp.api.client.model.-entity/set-to.html
+$dokka.location:fr.vsct.tock.bot.engine.dialog$setTo(fr.vsct.tock.nlp.api.client.model.Entity, kotlin.String)fr.vsct.tock.bot.engine.dialog/fr.vsct.tock.nlp.api.client.model.-entity/set-to.html
 $dokka.location:fr.vsct.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.String, fr.vsct.tock.bot.engine.monitoring.RequestTimerData)fr.vsct.tock.bot.engine.monitoring/mu.-k-logger/log-error.html
 $dokka.location:fr.vsct.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.Throwable, fr.vsct.tock.bot.engine.monitoring.RequestTimerData)fr.vsct.tock.bot.engine.monitoring/mu.-k-logger/log-error.html
 $dokka.location:fr.vsct.tock.shared$addJacksonConverter(retrofit2.Retrofit.Builder, com.fasterxml.jackson.databind.ObjectMapper)fr.vsct.tock.shared/retrofit2.-retrofit.-builder/add-jackson-converter.html
@@ -16,6 +18,7 @@ $dokka.location:fr.vsct.tock.shared$provideOrDefault(com.github.salomonbrys.kode
 $dokka.location:fr.vsct.tock.shared$toList(kotlin.collections.Iterator((fr.vsct.tock.shared.toList.T)))fr.vsct.tock.shared/kotlin.collections.-iterator/to-list.html
 $dokka.location:fr.vsct.tock.shared$toSet(java.util.Enumeration((fr.vsct.tock.shared.toSet.T)))fr.vsct.tock.shared/java.util.-enumeration/to-set.html
 $dokka.location:fr.vsct.tock.shared$warn(mu.KLogger, kotlin.Throwable)fr.vsct.tock.shared/mu.-k-logger/warn.html
+$dokka.location:fr.vsct.tock.shared$watchSafely(com.mongodb.async.client.MongoCollection((fr.vsct.tock.shared.watchSafely.T)), kotlin.Function1((com.mongodb.async.client.ChangeStreamIterable((fr.vsct.tock.shared.watchSafely.T)), )), kotlin.Function1((com.mongodb.client.model.changestream.ChangeStreamDocument((fr.vsct.tock.shared.watchSafely.T)), kotlin.Unit)))fr.vsct.tock.shared/com.mongodb.async.client.-mongo-collection/watch-safely.html
 $dokka.location:fr.vsct.tock.shared$withNamespace(kotlin.String, kotlin.String)fr.vsct.tock.shared/kotlin.-string/with-namespace.html
 $dokka.location:fr.vsct.tock.shared$withoutNamespace(kotlin.String, kotlin.String)fr.vsct.tock.shared/kotlin.-string/without-namespace.html
 $dokka.location:fr.vsct.tock.shared.jackson$addDeserializer(com.fasterxml.jackson.databind.module.SimpleModule, kotlin.reflect.KClass((fr.vsct.tock.shared.jackson.addDeserializer.T)), com.fasterxml.jackson.databind.JsonDeserializer((fr.vsct.tock.shared.jackson.addDeserializer.T)))fr.vsct.tock.shared.jackson/com.fasterxml.jackson.databind.module.-simple-module/add-deserializer.html
@@ -52,6 +55,7 @@ fr.vsct.tock.bot.engine
 fr.vsct.tock.bot.engine.action
 fr.vsct.tock.bot.engine.dialog
 fr.vsct.tock.bot.engine.event
+fr.vsct.tock.bot.engine.feature
 fr.vsct.tock.bot.engine.message
 fr.vsct.tock.bot.engine.message.parser
 fr.vsct.tock.bot.engine.monitoring
