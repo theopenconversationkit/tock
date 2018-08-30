@@ -83,8 +83,9 @@ internal class TockBotBus(
     /**
      * Returns the non persistent current context value.
      */
-    override fun getBusContextValue(name: String): Any? {
-        return context.contextMap[name]
+    override fun <T> getBusContextValue(name: String): T? {
+        @Suppress("UNCHECKED_CAST")
+        return context.contextMap[name] as T
     }
 
     /**

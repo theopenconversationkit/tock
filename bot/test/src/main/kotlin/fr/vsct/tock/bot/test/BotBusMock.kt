@@ -303,8 +303,9 @@ open class BotBusMock(
     /**
      * Returns the non persistent current value.
      */
-    override fun getBusContextValue(name: String): Any? {
-        return mockData.contextMap[name]
+    override fun <T> getBusContextValue(name: String): T? {
+        @Suppress("UNCHECKED_CAST")
+        return mockData.contextMap[name] as T
     }
 
     /**

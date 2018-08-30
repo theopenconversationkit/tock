@@ -30,6 +30,7 @@ import fr.vsct.tock.bot.engine.user.UserPreferences
 import io.mockk.every
 import io.mockk.verify
 import org.junit.jupiter.api.Test
+import java.util.Locale
 import kotlin.test.assertEquals
 import kotlin.test.assertNull
 
@@ -113,5 +114,12 @@ class BotBusTest : BotEngineTest() {
         bus.send("test2")
         bus.end("test3")
         assertEquals(listOf(0L, 1000L, 2000L), actionsList)
+    }
+
+    @Test
+    fun `bus context value is automatically casted`() {
+        bus.setBusContextValue("a", Locale.CANADA)
+        val v : Locale? = bus.getBusContextValue("a")
+        assertEquals(Locale.CANADA, v)
     }
 }

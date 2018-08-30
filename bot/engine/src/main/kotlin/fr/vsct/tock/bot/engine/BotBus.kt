@@ -342,13 +342,13 @@ interface BotBus : I18nTranslator {
      * Returns the non persistent current context value.
      * Bus context values are useful to store a temporary (ie request scoped) state.
      */
-    fun getBusContextValue(name: String): Any?
+    fun <T> getBusContextValue(name: String): T?
 
     /**
      * Returns the non persistent current context value.
      * Bus context values are useful to store a temporary (ie request scoped) state.
      */
-    fun getBusContextValue(key: ParameterKey): Any? = getBusContextValue(key.keyName)
+    fun <T> getBusContextValue(key: ParameterKey): T? = getBusContextValue(key.keyName)
 
     /**
      * Updates the non persistent current context value.
