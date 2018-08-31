@@ -39,7 +39,6 @@ open class ConfigurableStoryHandler<out T : StoryHandlerDefinition>(
     private val preconditionsChecker: BotBus.() -> Unit,
     /**
      * The namespace for [I18nKeyProvider] implementation.
-     * Will be modified when bot owner is known.
      */
     i18nNamespace: String = defaultNamespace,
     /**

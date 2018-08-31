@@ -22,7 +22,7 @@ import fr.vsct.tock.translator.UserInterfaceType
 /**
  * Default [StoryDefinition] implementation.
  */
-class StoryDefinitionBase(
+open class StoryDefinitionBase(
     val name: String,
     override val storyHandler: StoryHandler = {} as SimpleStoryHandlerBase,
     otherStarterIntents: Set<IntentAware> = emptySet(),
@@ -48,5 +48,5 @@ class StoryDefinitionBase(
     override val intents: Set<Intent> =
         setOf(Intent(name)) + (otherStarterIntents + secondaryIntents).map { it.wrappedIntent() }.toSet()
 
-    fun handle(bus: BotBus) = storyHandler.handle(bus)
+    open fun handle(bus: BotBus) = storyHandler.handle(bus)
 }
