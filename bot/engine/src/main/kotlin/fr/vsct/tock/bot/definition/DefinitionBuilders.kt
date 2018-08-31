@@ -247,9 +247,9 @@ inline fun <reified T : StoryHandlerDefinition> storyDef(
      */
     unsupportedUserInterface: UserInterfaceType? = null,
     /**
-     * The [HandlerDef] instantiator. Define [StoryHandlerBase.newHandlerDefinition].
+     * The [HandlerDef] instantiator. Defines [StoryHandlerBase.newHandlerDefinition].
      */
-    crossinline handlerDefInstantiator: (BotBus) -> T = { T::class.primaryConstructor!!.call(it) },
+    noinline handlerDefInstantiator: (BotBus) -> T = { T::class.primaryConstructor!!.call(it) },
     /**
      * Check preconditions. if [BotBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
@@ -258,13 +258,7 @@ inline fun <reified T : StoryHandlerDefinition> storyDef(
 ): StoryDefinitionBase =
     StoryDefinitionBase(
         intentName,
-        object : StoryHandlerBase<T>(intentName) {
-
-            override fun newHandlerDefinition(bus: BotBus): T = handlerDefInstantiator.invoke(bus)
-
-            override fun checkPreconditions(): BotBus.() -> Unit = preconditionsChecker
-
-        },
+        ConfigurableStoryHandler(intentName, handlerDefInstantiator, preconditionsChecker),
         otherStarterIntents,
         secondaryIntents,
         steps,
@@ -292,9 +286,9 @@ inline fun <reified T : StoryHandlerDefinition, reified S> storyDefWithSteps(
      */
     unsupportedUserInterface: UserInterfaceType? = null,
     /**
-     * The [HandlerDef] instantiator. Define [StoryHandlerBase.newHandlerDefinition].
+     * The [HandlerDef] instantiator. Defines [StoryHandlerBase.newHandlerDefinition].
      */
-    crossinline handlerDefInstantiator: (BotBus) -> T = { T::class.primaryConstructor!!.call(it) },
+    noinline handlerDefInstantiator: (BotBus) -> T = { T::class.primaryConstructor!!.call(it) },
     /**
      * Check preconditions. if [BotBus.end] is called in this function,
      * [StoryHandlerDefinition.handle] is not called and the handling of bot answer is over.
@@ -303,13 +297,7 @@ inline fun <reified T : StoryHandlerDefinition, reified S> storyDefWithSteps(
 ): StoryDefinitionBase where S : Enum<S>, S : StoryStep<out StoryHandlerDefinition> =
     StoryDefinitionBase(
         intentName,
-        object : StoryHandlerBase<T>(intentName) {
-
-            override fun newHandlerDefinition(bus: BotBus): T = handlerDefInstantiator.invoke(bus)
-
-            override fun checkPreconditions(): BotBus.() -> Unit = preconditionsChecker
-
-        },
+        ConfigurableStoryHandler(intentName, handlerDefInstantiator, preconditionsChecker),
         otherStarterIntents,
         secondaryIntents,
         enumValues<S>().toList(),

@@ -20,7 +20,7 @@ import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.translator.UserInterfaceType
 
 /**
- *
+ * Default [StoryDefinition] implementation.
  */
 class StoryDefinitionBase(
     val name: String,

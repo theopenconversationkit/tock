@@ -36,7 +36,6 @@ abstract class StoryHandlerBase<out T : StoryHandlerDefinition>(
     private val mainIntentName: String? = null,
     /**
      * The namespace for [I18nKeyProvider] implementation.
-     * Will be modified when bot owner is known.
      */
     @Volatile
     internal var i18nNamespace: String = defaultNamespace,
