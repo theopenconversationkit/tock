@@ -24,6 +24,7 @@ import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
 import fr.vsct.tock.nlp.api.client.model.dump.IntentDefinition
 import fr.vsct.tock.nlp.api.client.model.dump.SentencesDump
+import fr.vsct.tock.shared.longProperty
 import java.io.InputStream
 
 /**
@@ -91,5 +92,8 @@ interface NlpController {
      */
     fun importNlpSentencesDump(stream: InputStream): Boolean
 
-
+    /**
+     * Tries to check nlp server, waiting 200 response or [timeToWaitInMs] before returning.
+     */
+    fun waitAvailability(timeToWaitInMs: Long = longProperty("tock_bot_wait_nlp_availability_in_ms", 5000L))
 }

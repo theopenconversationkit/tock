@@ -82,6 +82,7 @@ private fun install(routerHandlers: List<(Router) -> Unit>, additionalModules: L
  */
 fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>? {
     val nlp: NlpController by injector.instance()
+    nlp.waitAvailability()
     return nlp.getIntentsByNamespaceAndName(namespace, name)
 }
 
@@ -91,6 +92,7 @@ fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDe
  */
 fun importNlpDump(path: String) {
     val nlp: NlpController by injector.instance()
+    nlp.waitAvailability()
     nlp.importNlpDump(resourceAsStream(path))
 }
 
@@ -100,6 +102,7 @@ fun importNlpDump(path: String) {
  */
 fun importNlpSentencesDump(path: String) {
     val nlp: NlpController by injector.instance()
+    nlp.waitAvailability()
     nlp.importNlpSentencesDump(resourceAsStream(path))
 }
 

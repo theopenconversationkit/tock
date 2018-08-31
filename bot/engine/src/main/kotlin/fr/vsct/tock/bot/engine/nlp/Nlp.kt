@@ -414,4 +414,9 @@ internal class Nlp : NlpController {
     override fun importNlpSentencesDump(stream: InputStream): Boolean =
         nlpClient.importNlpSentencesDump(stream)
 
+    override fun waitAvailability(timeToWaitInMs: Long) {
+        val s = System.currentTimeMillis()
+        while (!nlpClient.healthcheck() && System.currentTimeMillis() - s < timeToWaitInMs) {
+        }
+    }
 }
