@@ -94,7 +94,8 @@ internal object FeatureMongoDAO : FeatureDAO {
         name: String,
         default: Boolean
     ): Boolean =
-        features[calculateId(botId, namespace, category, name)] ?: default
+        features[calculateId(botId, namespace, category, name)]
+                ?: (default.also { addFeature(botId, namespace, default, category, name) } )
 
     override fun enable(botId: String, namespace: String, category: String, name: String) {
         val id = calculateId(botId, namespace, category, name)
@@ -140,7 +141,9 @@ internal object FeatureMongoDAO : FeatureDAO {
             }
 
     override fun addFeature(botId: String, namespace: String, enabled: Boolean, category: String, name: String) {
-        col.save(Feature(calculateId(botId, namespace, category, name), "$category,$name", enabled, botId, namespace))
+        val id = calculateId(botId, namespace, category, name)
+        features[id] = enabled
+        col.save(Feature(id, "$category,$name", enabled, botId, namespace))
     }
 
     override fun deleteFeature(botId: String, namespace: String, category: String, name: String) {
