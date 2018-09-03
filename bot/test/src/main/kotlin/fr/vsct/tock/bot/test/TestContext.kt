@@ -29,6 +29,7 @@ import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.messenger.messengerConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.StoryDefinition
+import fr.vsct.tock.bot.definition.StoryHandlerListener
 import fr.vsct.tock.bot.engine.nlp.NlpController
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLock
@@ -125,6 +126,11 @@ open class TestContext {
             }
 
     /**
+     * The story handler listeners to apply.
+     */
+    val storyHandlerListeners: MutableList<StoryHandlerListener> = mutableListOf()
+
+    /**
      * Default mocked Tock Ioc.
      */
     open fun importModule(): Kodein.Builder.() -> Unit = {
@@ -163,7 +169,7 @@ open class TestContext {
         return newTestInjector
     }
 
-    internal fun isInitialized() : Boolean = ::botBusMockContext.isInitialized
+    internal fun isInitialized(): Boolean = ::botBusMockContext.isInitialized
 
     /**
      * Default [StoryDefinition] if none is provided.

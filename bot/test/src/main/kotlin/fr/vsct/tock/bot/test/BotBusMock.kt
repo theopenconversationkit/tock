@@ -122,7 +122,18 @@ open class BotBusMock(
      * Run the [StoryHandler] of the current [story].
      */
     fun run(): BotBusMock {
+        context.testContext.storyHandlerListeners.forEach {
+            if (!it.startAction(this, story.definition.storyHandler)) {
+                return this
+            }
+        }
+
         story.definition.storyHandler.handle(this)
+
+        context.testContext.storyHandlerListeners.forEach {
+            it.endAction(this, story.definition.storyHandler)
+        }
+
         return this
     }
 
@@ -324,7 +335,8 @@ open class BotBusMock(
         return answer(action, delay)
     }
 
-    fun createBotSentence(plainText: CharSequence?): SendSentence = SendSentence(botId, applicationId, userId, plainText)
+    fun createBotSentence(plainText: CharSequence?): SendSentence =
+        SendSentence(botId, applicationId, userId, plainText)
 
     override fun sendRawText(plainText: CharSequence?, delay: Long): BotBus {
         return answer(createBotSentence(plainText), delay)

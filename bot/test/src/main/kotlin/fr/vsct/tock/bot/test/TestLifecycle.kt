@@ -23,7 +23,7 @@ import io.mockk.every
 /**
  *
  */
-open class TestLifecycle<out T: TestContext>(val testContext: T) {
+open class TestLifecycle<out T : TestContext>(val testContext: T) {
 
     open fun resetInjectors() {
         tockInternalInjector = KodeinInjector()
