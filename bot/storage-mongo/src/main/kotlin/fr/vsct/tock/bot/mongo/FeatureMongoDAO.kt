@@ -31,6 +31,7 @@ import fr.vsct.tock.shared.watchSafely
 import mu.KotlinLogging
 import org.bson.BsonString
 import org.litote.kmongo.Data
+import org.litote.kmongo.JacksonData
 import org.litote.kmongo.async.getCollection
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
@@ -41,6 +42,7 @@ import org.litote.kmongo.save
 import java.util.concurrent.ConcurrentHashMap
 
 @Data(internal = true)
+@JacksonData(internal = true)
 internal data class Feature(
     val _id: String,
     val key: String,

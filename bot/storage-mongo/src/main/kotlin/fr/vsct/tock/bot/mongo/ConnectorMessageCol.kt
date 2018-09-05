@@ -19,17 +19,23 @@ package fr.vsct.tock.bot.mongo
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
+import org.litote.kmongo.Data
 import org.litote.kmongo.Id
+import org.litote.kmongo.JacksonData
 import java.time.Instant
 import java.time.Instant.now
 
+@Data(internal = true)
+@JacksonData(internal = true)
 internal data class ConnectorMessageColId(val actionId: Id<Action>, val dialogId: Id<Dialog>)
 
 /**
- * TODO annotate with @Data
+ *
  */
+@Data(internal = true)
+@JacksonData(internal = true)
 internal data class ConnectorMessageCol(
-        val _id: ConnectorMessageColId,
-        val messages: List<AnyValueWrapper?>,
-        val date: Instant = now()) {
-}
+    val _id: ConnectorMessageColId,
+    val messages: List<AnyValueWrapper?>,
+    val date: Instant = now()
+)

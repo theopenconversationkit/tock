@@ -27,6 +27,7 @@ import fr.vsct.tock.shared.longProperty
 import mu.KotlinLogging
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
+import org.litote.kmongo.JacksonData
 import org.litote.kmongo.and
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
@@ -49,6 +50,7 @@ import java.time.Instant.now
 internal object MongoUserLock : UserLock {
 
     @Data(internal = true)
+    @JacksonData(internal = true)
     data class UserLock(val _id: Id<UserLock>, val locked: Boolean = true, val date: Instant = now())
 
     private val logger = KotlinLogging.logger {}

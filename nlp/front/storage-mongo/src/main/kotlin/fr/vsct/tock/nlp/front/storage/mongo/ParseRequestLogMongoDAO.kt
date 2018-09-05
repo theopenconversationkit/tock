@@ -50,6 +50,7 @@ import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
+import org.litote.kmongo.JacksonData
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.and
 import org.litote.kmongo.ascending
@@ -85,6 +86,7 @@ import java.util.concurrent.TimeUnit
 internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
 
     @Data(internal = true)
+    @JacksonData(internal = true)
     data class ParseRequestLogCol(
         val text: String,
         val applicationId: Id<ApplicationDefinition>,
@@ -118,6 +120,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
     }
 
     @Data(internal = true)
+    @JacksonData(internal = true)
     data class ParseRequestLogStatCol(
         val text: String,
         val applicationId: Id<ApplicationDefinition>,
@@ -140,9 +143,11 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
     }
 
     @Data(internal = true)
+    @JacksonData(internal = true)
     data class DayAndYear(val dayOfYear: Int, val year: Int)
 
     @Data(internal = true)
+    @JacksonData(internal = true)
     data class ParseRequestLogStatResult(
         val _id: DayAndYear,
         val error: Int,

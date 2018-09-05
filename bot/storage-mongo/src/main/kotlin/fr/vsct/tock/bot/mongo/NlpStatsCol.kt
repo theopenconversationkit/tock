@@ -21,18 +21,21 @@ import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.nlp.NlpCallStats
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
+import org.litote.kmongo.JacksonData
 import java.time.Instant
 
 @Data(internal = true)
+@JacksonData(internal = true)
 internal data class NlpStatsColId(val actionId: Id<Action>, val dialogId: Id<Dialog>)
 
 /**
  *
  */
 @Data(internal = true)
+@JacksonData(internal = true)
 internal data class NlpStatsCol(
     val _id: NlpStatsColId,
     val stats: NlpCallStats,
-    val appNamespace:String,
+    val appNamespace: String,
     val date: Instant = Instant.now()
 )

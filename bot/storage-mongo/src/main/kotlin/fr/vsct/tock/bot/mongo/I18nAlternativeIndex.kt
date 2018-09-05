@@ -21,10 +21,12 @@ import fr.vsct.tock.translator.I18nLocalizedLabel
 import fr.vsct.tock.translator.UserInterfaceType
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
+import org.litote.kmongo.JacksonData
 import java.time.Instant
 import java.util.Locale
 
 @Data(internal = true)
+@JacksonData(internal = true)
 internal data class I18nAlternativeIndex(
     val labelId: Id<I18nLabel>,
     val namespace: String,

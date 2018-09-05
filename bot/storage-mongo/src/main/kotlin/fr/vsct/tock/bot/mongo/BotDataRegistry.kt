@@ -25,11 +25,24 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.I18nLabelStat
 import org.litote.kmongo.DataRegistry
+import org.litote.kmongo.JacksonDataRegistry
 
 /**
  *
  */
 @DataRegistry(
+    [
+        I18nLabel::class,
+        I18nLabelStat::class,
+        BotApplicationConfiguration::class,
+        StoryDefinitionConfiguration::class,
+        TestPlan::class,
+        TestPlanExecution::class,
+        Intent::class,
+        PlayerId::class
+    ]
+)
+@JacksonDataRegistry(
     [
         I18nLabel::class,
         I18nLabelStat::class,

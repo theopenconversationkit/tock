@@ -45,6 +45,7 @@ import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 import fr.vsct.tock.translator.UserInterfaceType.textChat
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
+import org.litote.kmongo.JacksonData
 import java.time.Instant
 import java.time.Instant.now
 
@@ -52,6 +53,7 @@ import java.time.Instant.now
  *
  */
 @Data(internal = true)
+@JacksonData(internal = true)
 internal data class DialogCol(
     val playerIds: Set<PlayerId>,
     var _id: Id<Dialog>,
@@ -82,12 +84,12 @@ internal data class DialogCol(
     )
 
     fun toDialog(storyDefinitionProvider: (String) -> StoryDefinition): Dialog {
-        return stories.map { it.toStory(_id, storyDefinitionProvider) }.let {
+        return stories.map { it.toStory(_id, storyDefinitionProvider) }.let { stories ->
             Dialog(
                 playerIds,
                 _id,
-                state.toState(it.flatMap { it.actions }.map { it.toActionId() to it }.toMap()),
-                it.toMutableList()
+                state.toState(stories.flatMap { it.actions }.map { it.toActionId() to it }.toMap()),
+                stories.toMutableList()
             )
         }
     }

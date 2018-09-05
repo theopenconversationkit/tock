@@ -28,6 +28,7 @@ import fr.vsct.tock.shared.watchSafely
 import mu.KotlinLogging
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
+import org.litote.kmongo.JacksonData
 import org.litote.kmongo.async.getCollectionOfName
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
@@ -48,6 +49,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
     private val logger = KotlinLogging.logger {}
 
     @Data(internal = true)
+    @JacksonData(internal = true)
     data class StoryDefinitionConfigurationHistoryCol(
         val conf: StoryDefinitionConfiguration,
         val deleted: Boolean = false,

@@ -47,6 +47,7 @@ import fr.vsct.tock.shared.defaultLocale
 import mu.KotlinLogging
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
+import org.litote.kmongo.JacksonData
 import org.litote.kmongo.MongoOperator.elemMatch
 import org.litote.kmongo.MongoOperator.pull
 import org.litote.kmongo.`in`
@@ -85,6 +86,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     private val Classification_ = ClassifiedSentenceCol_.Classification
 
     @Data(internal = true)
+    @JacksonData(internal = true)
     data class ClassifiedSentenceCol(
         val text: String,
         val fullText: String = text,
