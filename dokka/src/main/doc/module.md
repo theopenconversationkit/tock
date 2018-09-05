@@ -106,6 +106,10 @@ Contains runtime conversation related classes, ie [Dialog] and [Story] classes.
 
 The [Event]s supported by Tock	
 
+# Package fr.vsct.tock.bot.engine.feature
+
+Built-in feature flipping
+
 # Package fr.vsct.tock.bot.engine.message
 
 The generic format for actions, used by monitoring and automated integration tests

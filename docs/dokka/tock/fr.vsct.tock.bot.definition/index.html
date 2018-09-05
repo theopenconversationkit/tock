@@ -51,6 +51,15 @@ Custom provider should usually not directly extend this class, but instead exten
 </tr>
 <tr>
 <td>
+<p><a href="-configurable-story-handler/index.html">ConfigurableStoryHandler</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">ConfigurableStoryHandler</span><span class="symbol">&lt;</span><span class="keyword">out</span>&nbsp;<span class="identifier">T</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-story-handler-definition/index.html"><span class="identifier">StoryHandlerDefinition</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-story-handler-base/index.html"><span class="identifier">StoryHandlerBase</span></a><span class="symbol">&lt;</span><a href="-configurable-story-handler/index.html#T"><span class="identifier">T</span></a><span class="symbol">&gt;</span></code>
+<p>A story handler that can be fully configured. Advanced usage only.</p>
+</td>
+</tr>
+<tr>
+<td>
 <p><a href="-connector-story-handler/index.html">ConnectorStoryHandler</a></p>
 </td>
 <td>
@@ -183,7 +192,9 @@ When theses intents are detected, The story is started.</p>
 <p><a href="-story-definition-base/index.html">StoryDefinitionBase</a></p>
 </td>
 <td>
-<code><span class="keyword">class </span><span class="identifier">StoryDefinitionBase</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">class </span><span class="identifier">StoryDefinitionBase</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="-story-definition/index.html"><span class="identifier">StoryDefinition</span></a></code>
+<p>Default <a href="-story-definition/index.html">StoryDefinition</a> implementation.</p>
+</td>
 </tr>
 <tr>
 <td>
