@@ -54,11 +54,19 @@ internal class FeatureMongoDAOTest : AbstractTest() {
     }
 
     @Test
-    fun `isEnabled persists default feature state WHEN the feature is not present`() {
-        assertFalse(isEnabled(botId, namespace, a))
+    fun `isEnabled persists default feature state WHEN the feature is not present and feature is enabled`() {
+        assertFalse(isEnabled(botId, namespace, a, false))
 
         //default state is not used anymore
         assertFalse(isEnabled(botId, namespace, a, true))
+    }
+
+    @Test
+    fun `isEnabled persists default feature state WHEN the feature is not present and feature id disabled`() {
+        assertTrue(isEnabled(botId, namespace, a, true))
+
+        //default state is not used anymore
+        assertTrue(isEnabled(botId, namespace, a, false))
     }
 
     @Test

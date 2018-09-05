@@ -17,12 +17,8 @@
 package fr.vsct.tock.bot.mongo
 
 import com.mongodb.client.model.ReplaceOptions
+import com.mongodb.client.model.changestream.ChangeStreamDocument
 import com.mongodb.client.model.changestream.FullDocument.UPDATE_LOOKUP
-import com.mongodb.client.model.changestream.OperationType.DELETE
-import com.mongodb.client.model.changestream.OperationType.INSERT
-import com.mongodb.client.model.changestream.OperationType.INVALIDATE
-import com.mongodb.client.model.changestream.OperationType.REPLACE
-import com.mongodb.client.model.changestream.OperationType.UPDATE
 import fr.vsct.tock.bot.engine.feature.FeatureDAO
 import fr.vsct.tock.bot.engine.feature.FeatureState
 import fr.vsct.tock.bot.mongo.Feature_.Companion.BotId
@@ -39,6 +35,7 @@ import org.litote.kmongo.async.getCollection
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
+import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.save
 import java.util.concurrent.ConcurrentHashMap
@@ -62,28 +59,26 @@ internal object FeatureMongoDAO : FeatureDAO {
     private val asyncCol = asyncDatabase.getCollection<Feature>()
     private val features = ConcurrentHashMap<String, Boolean>()
 
+    /**
+     * Watch listener.
+     */
+    private val listener: (ChangeStreamDocument<Feature>) -> Unit = { c ->
+        //cleanup cache
+        (c.documentKey[_id.name] as? BsonString)?.value?.also { features.remove(it) }
+    }
+
     init {
         try {
             asyncCol.find().forEach({
                 features[it._id] = it.enabled
             }) { _, t -> if (t != null) logger.error(t) }
-            asyncCol.watchSafely({ it.fullDocument(UPDATE_LOOKUP) }) {
-                println(it)
-                when (it.operationType) {
-                    DELETE, INVALIDATE -> (it.documentKey[_id.name] as? BsonString)?.value?.also {
-                        features.remove(
-                            it
-                        )
-                    }
-                    REPLACE, UPDATE, INSERT -> it.fullDocument?.also { features[it._id] = it.enabled }
-                }
-            }
+            asyncCol.watchSafely({ it.fullDocument(UPDATE_LOOKUP) }, listener)
         } catch (e: Exception) {
             logger.error(e)
         }
     }
 
-    private fun calculateId(botId: String, namespace: String, category: String, name: String) =
+    fun calculateId(botId: String, namespace: String, category: String, name: String) =
         "$botId,$namespace,$category,$name"
 
 
@@ -93,37 +88,41 @@ internal object FeatureMongoDAO : FeatureDAO {
         category: String,
         name: String,
         default: Boolean
-    ): Boolean =
-        features[calculateId(botId, namespace, category, name)]
-                ?: (default.also { addFeature(botId, namespace, default, category, name) } )
+    ): Boolean {
+        val id = calculateId(botId, namespace, category, name)
+        return features[id]
+                ?: (col.findOne(_id eq id)
+                    .let { f ->
+                        if (f == null) {
+                            default.also {
+                                addFeature(botId, namespace, default, category, name)
+                            }
+                        } else {
+                            features[id] = f.enabled
+                            f.enabled
+                        }
+                    })
+    }
 
     override fun enable(botId: String, namespace: String, category: String, name: String) {
         val id = calculateId(botId, namespace, category, name)
         features[id] = true
 
-        asyncCol.replaceOne(
+        col.replaceOne(
             _id eq id,
             Feature(id, "$category,$name", true, botId, namespace),
             ReplaceOptions().upsert(true)
-        ) { _, t ->
-            if(t != null) {
-                logger.error(t)
-            }
-        }
+        )
     }
 
     override fun disable(botId: String, namespace: String, category: String, name: String) {
         val id = calculateId(botId, namespace, category, name)
         features[id] = false
-        asyncCol.replaceOne(
+        col.replaceOne(
             _id eq id,
             Feature(id, "$category,$name", false, botId, namespace),
             ReplaceOptions().upsert(true)
-        ) { _, t ->
-            if(t != null) {
-                logger.error(t)
-            }
-        }
+        )
     }
 
     override fun getFeatures(botId: String, namespace: String): List<FeatureState> =
