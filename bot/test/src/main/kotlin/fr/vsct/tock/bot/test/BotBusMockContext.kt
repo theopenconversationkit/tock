@@ -111,7 +111,7 @@ data class BotBusMockContext(
     val userId get() = firstAction.playerId
     val userPreferences: UserPreferences get() = userTimeline.userPreferences
     val initialUserPreferences: UserPreferences = userPreferences.copy()
-    internal val logsRepository: List<BotBusMockLog> = mutableListOf()
+    internal val logsRepository: MutableList<BotBusMockLog> = mutableListOf()
 
     /**
      * The list of all bot answers recorded.

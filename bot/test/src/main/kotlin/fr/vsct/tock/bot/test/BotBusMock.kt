@@ -61,7 +61,7 @@ open class BotBusMock(
 
     private val logger = KotlinLogging.logger {}
 
-    private val logsRepository: List<BotBusMockLog> = mutableListOf()
+    private val logsRepository: MutableList<BotBusMockLog> = mutableListOf()
 
     /**
      * The list of all bot answers recorded.
@@ -276,8 +276,8 @@ open class BotBusMock(
 
 
     open fun sendAction(action: Action, delay: Long) {
-        (logsRepository as MutableList).add(BotBusMockLog(action, delay))
-        (context.logsRepository as MutableList).add(BotBusMockLog(action, delay))
+        logsRepository.add(BotBusMockLog(action, delay))
+        context.logsRepository.add(BotBusMockLog(action, delay))
     }
 
     private fun answer(action: Action, delay: Long = 0): BotBus {
