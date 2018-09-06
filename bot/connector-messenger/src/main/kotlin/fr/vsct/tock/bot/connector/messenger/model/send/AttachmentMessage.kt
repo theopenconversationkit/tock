@@ -28,24 +28,26 @@ import fr.vsct.tock.shared.security.StringObfuscatorMode
 /**
  *
  */
-class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickReply>? = null) : Message(quickReplies?.run { if (isEmpty()) null else this }) {
+class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickReply>? = null) :
+    Message(quickReplies?.run { if (isEmpty()) null else this }) {
 
     override fun toSentenceElement(): SentenceElement? {
         return when (attachment.type) {
             audio, file, image, video -> SentenceElement(
-                    this,
-                    attachments = listOf(
-                            fr.vsct.tock.bot.engine.message.Attachment(
-                                    (attachment.payload as UrlPayload).url ?: "",
-                                    attachment.type.toTockAttachmentType()
-                            ))
+                this,
+                attachments = listOf(
+                    fr.vsct.tock.bot.engine.message.Attachment(
+                        (attachment.payload as UrlPayload).url ?: "",
+                        attachment.type.toTockAttachmentType()
+                    )
+                )
             )
             template -> attachment.payload.toSentenceElement()
         }?.run {
             if (quickReplies?.isNotEmpty() == true) {
                 copy(
-                        choices = choices + quickReplies.mapNotNull { it.toChoice() },
-                        locations = locations + quickReplies.mapNotNull { it.toLocation() })
+                    choices = choices + quickReplies.mapNotNull { it.toChoice() },
+                    locations = locations + quickReplies.mapNotNull { it.toLocation() })
             } else {
                 this
             }
@@ -55,12 +57,21 @@ class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickRepl
     override fun obfuscate(mode: StringObfuscatorMode): ConnectorMessage {
         return when (attachment.type) {
             template -> AttachmentMessage(
-                    attachment.copy(payload = attachment.payload.obfuscate(mode)),
-                    quickReplies
+                attachment.copy(payload = attachment.payload.obfuscate(mode)),
+                quickReplies
             )
             else -> this
         }
     }
+
+    override fun findElements(): List<Element> =
+        with(attachment.payload) {
+            when (this) {
+                is GenericPayload -> elements
+                is ListPayload -> elements
+                else -> emptyList()
+            }
+        }
 
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

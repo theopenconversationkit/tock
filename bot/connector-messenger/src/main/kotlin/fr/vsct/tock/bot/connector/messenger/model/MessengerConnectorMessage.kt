@@ -20,6 +20,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.messenger.MessengerConnectorProvider
+import fr.vsct.tock.bot.connector.messenger.model.send.Element
 
 /**
  *
@@ -28,4 +29,8 @@ abstract class MessengerConnectorMessage : ConnectorMessage {
 
     override val connectorType: ConnectorType @JsonIgnore get() = MessengerConnectorProvider.connectorType
 
+    /**
+     * Find [Element]s if any.
+     */
+    open fun findElements(): List<Element> = emptyList()
 }

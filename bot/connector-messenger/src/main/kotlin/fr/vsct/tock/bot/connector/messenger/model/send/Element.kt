@@ -23,6 +23,9 @@ import fr.vsct.tock.shared.mapNotNullValues
 import fr.vsct.tock.shared.security.StringObfuscatorMode
 import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
 
+/**
+ * List or generic template elements.
+ */
 data class Element(val title: String,
                    @JsonProperty("image_url") val imageUrl: String? = null,
                    val subtitle: String? = null,
