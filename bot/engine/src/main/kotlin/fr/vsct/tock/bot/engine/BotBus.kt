@@ -24,6 +24,7 @@ import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.ParameterKey
 import fr.vsct.tock.bot.definition.StoryDefinition
+import fr.vsct.tock.bot.definition.StoryHandlerBase
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.action.Action
@@ -530,6 +531,25 @@ interface BotBus : I18nTranslator {
     //i18n provider implementation
     override fun i18n(defaultLabel: CharSequence, args: List<Any?>): I18nLabelValue =
         i18nProvider.i18n(defaultLabel, args)
+
+    /**
+     * Gets I18nKey with specified key.
+     */
+    fun i18nKey(key: String, defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue =
+        story.definition.storyHandler.let {
+            if (it is StoryHandlerBase<*>) {
+                it.i18nKey(key, defaultLabel, *args)
+            } else {
+                I18nLabelValue(
+                    key,
+                    botDefinition.namespace,
+                    botDefinition.botId,
+                    defaultLabel,
+                    args.toList()
+                )
+            }
+        }
+
 
     //I18nTranslator implementation
     override val contextId: String? get() = dialog.id.toString()

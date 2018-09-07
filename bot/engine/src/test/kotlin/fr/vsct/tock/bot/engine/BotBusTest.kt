@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.message.Choice
 import fr.vsct.tock.bot.engine.user.UserPreferences
+import fr.vsct.tock.translator.I18nLabelValue
 import io.mockk.every
 import io.mockk.verify
 import org.junit.jupiter.api.Test
@@ -119,7 +120,21 @@ class BotBusTest : BotEngineTest() {
     @Test
     fun `bus context value is automatically casted`() {
         bus.setBusContextValue("a", Locale.CANADA)
-        val v : Locale? = bus.getBusContextValue("a")
+        val v: Locale? = bus.getBusContextValue("a")
         assertEquals(Locale.CANADA, v)
+    }
+
+    @Test
+    fun `i18nKey returns a I18nLabelValue with the right key and category`() {
+        val v = bus.i18nKey("a", "b")
+        assertEquals(
+            I18nLabelValue(
+                "a",
+                "app",
+                "test",
+                "b"
+            ),
+            v
+        )
     }
 }

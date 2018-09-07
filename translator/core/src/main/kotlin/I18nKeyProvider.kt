@@ -68,4 +68,5 @@ interface I18nKeyProvider {
      * Shortcut method of [i18n] with varargs.
      */
     fun i18n(defaultLabel: CharSequence, vararg args: Any?): I18nLabelValue = i18n(defaultLabel, args.toList())
+
 }
