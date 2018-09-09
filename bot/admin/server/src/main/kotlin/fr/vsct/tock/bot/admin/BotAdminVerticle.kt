@@ -24,6 +24,7 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.model.BotConfiguration
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotI18nLabel
+import fr.vsct.tock.bot.admin.model.BotI18nLabels
 import fr.vsct.tock.bot.admin.model.BotIntentSearchRequest
 import fr.vsct.tock.bot.admin.model.CreateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.DialogsSearchQuery
@@ -283,14 +284,14 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonGet("/i18n", botUser) { context ->
             val stats = i18n.getLabelStats(context.organization).groupBy { it.labelId }
-            i18n
+            BotI18nLabels(i18n
                 .getLabels(context.organization)
                 .map {
                     BotI18nLabel(
                         it,
                         stats[it._id] ?: emptyList()
                     )
-                }
+                })
         }
 
         blockingJsonPost("/i18n/complete", botUser) { context, labels: List<I18nLabel> ->

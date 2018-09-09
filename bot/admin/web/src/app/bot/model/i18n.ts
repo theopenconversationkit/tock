@@ -21,6 +21,23 @@ import {environment} from "../../../environments/environment";
 
 export const userInterfaces = [UserInterfaceType.textChat, UserInterfaceType.voiceAssistant];
 
+export class I18nLabels {
+
+  constructor(public labels: I18nLabel[],
+              public localeBase: string) {
+
+  }
+
+  static fromJSON(json: any): I18nLabels {
+    const value = Object.create(I18nLabels.prototype);
+    const result = Object.assign(value, json, {
+      labels: I18nLabel.fromJSONArray(json.labels)
+    });
+
+    return result;
+  }
+}
+
 export class I18nLabel {
 
   firstCategory: boolean;
@@ -88,15 +105,15 @@ export class I18nLocalizedLabel {
     return this.stats && this.stats.length !== 0 ? this.stats.map(s => s.display()).join(",") : "";
   }
 
-  mergedStats() : I18nLabelStat {
-    if(this.stats && this.stats.length > 0) {
-      if(this.stats.length === 1) {
+  mergedStats(): I18nLabelStat {
+    if (this.stats && this.stats.length > 0) {
+      if (this.stats.length === 1) {
         return this.stats[0]
       }
       let sum = this.stats[0].count;
       let lastUpdate = this.stats[0].lastUpdate;
-      for (let i=1; i<this.stats.length; i++) {
-        sum+=this.stats[i].count;
+      for (let i = 1; i < this.stats.length; i++) {
+        sum += this.stats[i].count;
         lastUpdate = lastUpdate.getTime() > this.stats[i].lastUpdate.getTime() ? this.stats[i].lastUpdate : lastUpdate;
       }
       return new I18nLabelStat(this.locale, this.interfaceType, this.connectorId, sum, lastUpdate);

@@ -43,6 +43,13 @@
   opacity: 0.5;
 }
 
+.i18n-label__title__original_label {
+  margin-left: 10px;
+  font-size: 11px;
+
+  opacity: 0.5;
+}
+
 .i18n-label__title__delete {
   margin-left: auto;
 }

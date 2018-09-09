@@ -29,6 +29,9 @@ import {BotSharedService} from "../../shared/bot-shared.service";
 export class I18nLabelComponent implements OnInit {
 
   @Input()
+  localeBase: string = null;
+
+  @Input()
   i: I18nLabel;
 
   @Input()
@@ -59,7 +62,7 @@ export class I18nLabelComponent implements OnInit {
       );
 
     if (!this.i18nController) {
-      this.i18nController = new I18nController(this.state, [this.i]);
+      this.i18nController = new I18nController(this.state, [this.i], this.localeBase);
       this.i18nController.sortLabels();
     }
   }
@@ -116,7 +119,7 @@ export class I18nLabelComponent implements OnInit {
 
 export class I18nController {
 
-  constructor(public state: StateService, public i18n: I18nLabel[]) {
+  constructor(public state: StateService, public i18n: I18nLabel[], public localeBase: string) {
   }
 
   deleteLabel(label: I18nLabel) {
@@ -143,7 +146,7 @@ export class I18nController {
                 return a.interfaceType - b.interfaceType;
               }
             }
-            else return b.locale < a.locale ? 1 : -1;
+            else return a.locale === this.localeBase ? -1 : (b.locale === this.localeBase ? 1 : (b.locale < a.locale ? 1 : -1));
           }
         );
       }

@@ -52,7 +52,7 @@ export class I18nComponent extends I18nController implements OnInit {
   constructor(public state: StateService,
               private botService: BotService,
               private snackBar: MdSnackBar) {
-    super(state, []);
+    super(state, [], null);
   }
 
   ngOnInit() {
@@ -86,7 +86,8 @@ export class I18nComponent extends I18nController implements OnInit {
     this.loading = true;
     this.botService.i18nLabels().subscribe(r => {
       this.loading = false;
-      this.i18n = r;
+      this.localeBase = r.localeBase;
+      this.i18n = r.labels;
       this.initCategories(this.i18n);
       this.sortLabels();
 

@@ -89,7 +89,7 @@
 
 <md-list dense *ngIf="!loading">
   <div *ngFor="let i of pagedItems()">
-    <tock-i18n-label [i]="i" [i18nController]="controller()" [intent]="i.category"></tock-i18n-label>
+    <tock-i18n-label [i]="i" [i18nController]="controller()" [intent]="i.category" [localeBase]="localeBase"></tock-i18n-label>
   </div>
 </md-list>
 

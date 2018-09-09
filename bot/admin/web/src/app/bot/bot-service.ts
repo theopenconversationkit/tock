@@ -20,7 +20,7 @@ import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {BotIntent, BotIntentSearchQuery, CreateBotIntentRequest, UpdateBotIntentRequest} from "./model/bot-intent";
 import {Intent} from "tock-nlp-admin/src/app/model/nlp";
 import {Observable} from "rxjs/Observable";
-import {I18nLabel} from "./model/i18n";
+import {I18nLabel, I18nLabels} from "./model/i18n";
 import {FileUploader} from "ng2-file-upload";
 import {Feature} from "./model/feature";
 
@@ -47,8 +47,8 @@ export class BotService {
     return this.rest.delete(`/bot/intent/${storyDefinitionId}`);
   }
 
-  i18nLabels(): Observable<I18nLabel[]> {
-    return this.rest.get("/i18n", I18nLabel.fromJSONArray);
+  i18nLabels(): Observable<I18nLabels> {
+    return this.rest.get("/i18n", I18nLabels.fromJSON);
   }
 
   completeI18nLabels(labels: I18nLabel[]): Observable<boolean> {

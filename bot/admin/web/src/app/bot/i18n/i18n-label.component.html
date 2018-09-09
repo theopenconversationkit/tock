@@ -20,6 +20,8 @@
 
     <span class="i18n-label__title__intent">{{intent}}</span>
 
+    <span class="i18n-label__title__original_label" md-tooltip="Original Label">{{i.defaultLabel}}</span>
+
     <button class="i18n-label__title__delete" *ngIf="deleteAllowed" md-button (click)="deleteLabel(i)"
             md-tooltip="Delete Label" color="warn">
       delete
