@@ -43,7 +43,7 @@
 
     <div class="i18n-label__entry__connector" *ngIf="l.connectorId">
       <img *ngIf="l.connectorId"
-           src="/assets/images/{{l.connectorId}}.svg"
+           src="{{l.iconUrl()}}"
            class="i18n-label__entry__connector__img"
            [md-tooltip]="l.connectorId"/>
     </div>
@@ -85,7 +85,7 @@
 
       <div class="i18n-label__entry__connector" *ngIf="l.connectorId">
         <img *ngIf="l.connectorId"
-             src="/assets/images/{{l.connectorId}}.svg"
+             src="{{l.iconUrl()}}"
              class="i18n-label__entry__connector__img"
              [md-tooltip]="l.connectorId"/>
       </div>
@@ -110,13 +110,14 @@
     <div class="i18n-label__entry__connectors"
          *ngIf="isLast || i.i18n[index + 1].interfaceType !== l.interfaceType || i.i18n[index + 1].locale !== l.locale">
       <span *ngFor="let connector of connectorTypes">
-          <button *ngIf="!i.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.id)" md-icon-button
-                  (click)="addLocalizedLabelForConnector(i, l, connector.id)" md-tooltip="Clear localized label"
+          <button *ngIf="!i.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.connectorType.id)" md-icon-button
+                  (click)="addLocalizedLabelForConnector(i, l, connector.connectorType.id)" md-tooltip="Clear localized label"
                   color="warn">
             <img
-              src="/assets/images/{{connector.id}}.svg"
+              src="{{connector.connectorType.iconUrl()}}"
               class="connector"
-              md-tooltip="Add specific label for connector {{connector.id}}"/>
+              md-tooltip="Add specific label for connector {{connector.connectorType.id}}"/>
+
           </button>
       </span>
     </div>

@@ -61,64 +61,13 @@
   <md-input-container>
     <input mdInput placeholder="Nlp model" [(ngModel)]="configuration.nlpModel" [disabled]="true">
   </md-input-container>
-  <md-expansion-panel *ngIf="configuration.connectorType.isMessenger()">
+  <md-expansion-panel *ngIf="botSharedService.findConnectorConfiguration(configuration.connectorType).fields.length !== 0">
     <md-expansion-panel-header>
-      <mat-panel-title>Messenger config</mat-panel-title>
+      <mat-panel-title>Connector Custom Configuration</mat-panel-title>
       <mat-panel-description>Parameters</mat-panel-description>
     </md-expansion-panel-header>
-    <md-input-container>
-      <input mdInput placeholder="Application Id" [(ngModel)]="configuration.parameters['appId']">
-    </md-input-container>
-    <md-input-container>
-      <input mdInput placeholder="Page Id" [(ngModel)]="configuration.parameters['pageId']">
-    </md-input-container>
-    <md-input-container class="long-text">
-      <input mdInput placeholder="Call Token" [(ngModel)]="configuration.parameters['token']" >
-    </md-input-container>
-    <md-input-container>
-      <input mdInput placeholder="Webhook token" [(ngModel)]="configuration.parameters['verifyToken']">
-    </md-input-container>
-    <md-input-container class="long-text">
-      <input mdInput placeholder="Secret" [(ngModel)]="configuration.parameters['secret']">
-    </md-input-container>
-  </md-expansion-panel>
-  <md-expansion-panel *ngIf="configuration.connectorType.isGa()">
-    <md-expansion-panel-header>
-      <mat-panel-title>Google Assistant config</mat-panel-title>
-      <mat-panel-description>Parameters</mat-panel-description>
-    </md-expansion-panel-header>
-    <md-input-container class="long-text">
-      <input mdInput placeholder="Restricted project ids" [(ngModel)]="configuration.parameters['_project_ids']">
-    </md-input-container>
-  </md-expansion-panel>
-  <md-expansion-panel *ngIf="configuration.connectorType.isSlack()">
-    <md-expansion-panel-header>
-      <mat-panel-title>Slack config</mat-panel-title>
-      <mat-panel-description>Parameters</mat-panel-description>
-    </md-expansion-panel-header>
-    <md-input-container class="long-text">
-      <input mdInput placeholder="Token 1" [(ngModel)]="configuration.parameters['outToken1']">
-    </md-input-container>
-    <md-input-container class="long-text">
-      <input mdInput placeholder="Token 2" [(ngModel)]="configuration.parameters['outToken2']">
-    </md-input-container>
-    <md-input-container class="long-text">
-      <input mdInput placeholder="Token 3" [(ngModel)]="configuration.parameters['outToken3']">
-    </md-input-container>
-  </md-expansion-panel>
-  <md-expansion-panel *ngIf="configuration.connectorType.isAlexa()">
-    <md-expansion-panel-header>
-      <mat-panel-title>Alexa config</mat-panel-title>
-      <mat-panel-description>Parameters</mat-panel-description>
-    </md-expansion-panel-header>
-    <md-input-container class="long-text">
-      <input mdInput placeholder="Project ids" [(ngModel)]="configuration.parameters['_project_ids']">
-    </md-input-container>
-    <md-input-container class="long-text">
-      <input mdInput placeholder="Request timestamp (in ms)" [(ngModel)]="configuration.parameters['_project_timestamp']">
-    </md-input-container>
-    <md-input-container class="long-text">
-      <input mdInput placeholder="Alexa mapper class" [(ngModel)]="configuration.parameters['_mapper']">
+    <md-input-container class="long-text" *ngFor="let f of botSharedService.findConnectorConfiguration(configuration.connectorType).fields">
+      <input mdInput [placeholder]="f.label" [(ngModel)]="configuration.parameters[f.key]">
     </md-input-container>
   </md-expansion-panel>
   <md-card-actions>

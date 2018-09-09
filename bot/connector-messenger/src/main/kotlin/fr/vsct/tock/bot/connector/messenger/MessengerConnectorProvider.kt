@@ -20,6 +20,9 @@ import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.ConnectorTypeConfiguration
+import fr.vsct.tock.bot.connector.ConnectorTypeConfigurationField
+import fr.vsct.tock.shared.resourceAsString
 
 /**
  *
@@ -56,6 +59,39 @@ internal object MessengerConnectorProvider : ConnectorProvider {
                         if (parameters[SECRET].isNullOrBlank()) "secret is mandatory" else null
                     )
                 }
+
+    override fun configuration(): ConnectorTypeConfiguration =
+        ConnectorTypeConfiguration(
+            messengerConnectorType,
+            listOf(
+                ConnectorTypeConfigurationField(
+                    "Application Id",
+                    "appId",
+                    true
+                ),
+                ConnectorTypeConfigurationField(
+                    "Page Id",
+                    "pageId",
+                    true
+                ),
+                ConnectorTypeConfigurationField(
+                    "Call Token",
+                    "token",
+                    true
+                ),
+                ConnectorTypeConfigurationField(
+                    "Webhook token",
+                    "verifyToken",
+                    false
+                ),
+                ConnectorTypeConfigurationField(
+                    "Secret",
+                    "secret",
+                    true
+                )
+            ),
+            resourceAsString("/messenger.svg")
+        )
 }
 
 internal class MessengerConnectorProviderService : ConnectorProvider by MessengerConnectorProvider

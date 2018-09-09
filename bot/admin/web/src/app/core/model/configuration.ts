@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+import {environment} from '../../../environments/environment';
+
 export class BotApplicationConfiguration {
 
   constructor(public applicationId: string,
@@ -51,20 +53,24 @@ export class ConnectorType {
               public userInterfaceType: UserInterfaceType) {
   }
 
-  getProperties() : string[] {
-    if(this.isMessenger()) {
-      return ['appId', 'pageId','token','verifyToken','secret'];
-    } else if(this.isGa()) {
+  getProperties(): string[] {
+    if (this.isMessenger()) {
+      return ['appId', 'pageId', 'token', 'verifyToken', 'secret'];
+    } else if (this.isGa()) {
       return ['_project_ids'];
-    }  else if(this.isAlexa()) {
-      return ['_project_ids','_project_timestamp','_mapper'];
-    } else if(this.isSlack()) {
-      return ['outToken1', 'outToken2','outToken3'];
-    } else if(this.isRest()) {
+    } else if (this.isAlexa()) {
+      return ['_project_ids', '_project_timestamp', '_mapper'];
+    } else if (this.isSlack()) {
+      return ['outToken1', 'outToken2', 'outToken3'];
+    } else if (this.isRest()) {
       return [];
     } else {
       return [];
     }
+  }
+
+  iconUrl(): string {
+    return environment.serverUrl + "/connectorIcon/" + this.id + "/icon.svg";
   }
 
   isRest(): boolean {
@@ -103,6 +109,58 @@ export class ConnectorType {
   static fromJSONArray(json?: Array<any>): ConnectorType[] {
     return json ? json.map(ConnectorType.fromJSON) : [];
   }
+}
+
+export class ConnectorTypeConfiguration {
+
+  constructor(public connectorType: ConnectorType,
+              public fields: ConnectorTypeConfigurationField[],
+              public svgIcon: string) {
+  }
+
+  static fromJSON(json?: any): ConnectorTypeConfiguration {
+    if (!json) {
+      return null;
+    }
+    const value = Object.create(ConnectorTypeConfiguration.prototype);
+
+    const result = Object.assign(value, json, {
+      connectorType: ConnectorType.fromJSON(json.connectorType),
+      fields: ConnectorTypeConfigurationField.fromJSONArray(json.fields)
+    });
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): ConnectorTypeConfiguration[] {
+    return json ? json.map(ConnectorTypeConfiguration.fromJSON) : [];
+  }
+
+}
+
+export class ConnectorTypeConfigurationField {
+
+  constructor(
+    public label: string,
+    public key: string,
+    public mandatory: boolean) {
+  }
+
+  static fromJSON(json?: any): ConnectorTypeConfigurationField {
+    if (!json) {
+      return null;
+    }
+    const value = Object.create(ConnectorTypeConfigurationField.prototype);
+
+    const result = Object.assign(value, json, {});
+
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): ConnectorTypeConfigurationField[] {
+    return json ? json.map(ConnectorTypeConfigurationField.fromJSON) : [];
+  }
+
 }
 
 export enum UserInterfaceType {

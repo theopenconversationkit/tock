@@ -23,7 +23,7 @@
           <td style="min-width:200px;"><span class="userAction" *ngIf="!action.isBot()"
                                              [md-tooltip]="action.date | amDateFormat: 'YYYY-MM-DD HH:mm:ss SSS'">
             <img *ngIf="action.connectorType"
-                 src="/assets/images/{{action.connectorType.id}}.svg"
+                 src="{{action.connectorType.iconUrl()}}"
                  class="connector"
                  [md-tooltip]="action.connectorType.id"/>
             <img *ngIf="action.test"

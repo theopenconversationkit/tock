@@ -35,8 +35,8 @@ import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanService
 import fr.vsct.tock.bot.admin.test.xray.XrayConfiguration
 import fr.vsct.tock.bot.admin.test.xray.XrayService
-import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.ConnectorType.Companion.rest
+import fr.vsct.tock.bot.connector.ConnectorTypeConfiguration
 import fr.vsct.tock.bot.connector.rest.addRestConnector
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.nlp.admin.AdminVerticle
@@ -331,7 +331,15 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonGet("/connectorTypes", botUser) {
-            ConnectorType.connectorTypes
+            ConnectorTypeConfiguration.connectorConfigurations
+        }
+
+        blockingGet("/connectorIcon/:connectorType/icon.svg", null, basePath) { context ->
+            val connectorType = context.path("connectorType")
+            context.response().putHeader("Content-Type", "image/svg+xml")
+            context.response().putHeader("Cache-Control", "max-age=84600, public")
+            ConnectorTypeConfiguration.connectorConfigurations.first { it.connectorType.id == connectorType }.svgIcon
+                    ?: ""
         }
 
         blockingJsonGet("/xray/available", botUser) {

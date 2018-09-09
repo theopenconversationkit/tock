@@ -20,6 +20,9 @@ import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.ConnectorTypeConfiguration
+import fr.vsct.tock.bot.connector.ConnectorTypeConfigurationField
+import fr.vsct.tock.shared.resourceAsString
 import mu.KotlinLogging
 import kotlin.reflect.full.primaryConstructor
 
@@ -63,6 +66,28 @@ internal object AlexaConnectorProvider : ConnectorProvider {
                 parameters[PROJECT_TIMESTAMP]?.toLong() ?: DEFAULT_TIMESTAMP
             )
         }
+
+    override fun configuration(): ConnectorTypeConfiguration =
+        ConnectorTypeConfiguration(
+            alexaConnectorType,
+            listOf(
+                ConnectorTypeConfigurationField(
+                    "Project ids",
+                    "_project_ids",
+                    true
+                ),
+                ConnectorTypeConfigurationField(
+                    "Request timestamp (in ms)",
+                    "_project_timestamp",
+                    false
+                ), ConnectorTypeConfigurationField(
+                    "Alexa mapper class",
+                    "_mapper",
+                    false
+                )
+            ),
+            resourceAsString("/alexa.svg")
+        )
 
 }
 

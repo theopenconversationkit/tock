@@ -15,8 +15,10 @@
  */
 package fr.vsct.tock.shared
 
+import com.google.common.io.Resources
 import java.io.InputStream
 import java.net.URL
+import java.nio.charset.StandardCharsets
 
 /**
  * Get a resource url from the classpath.
@@ -27,3 +29,8 @@ fun resource(path: String): URL = Loader::class.java.getResource(path)
  * Get a resource [InputStream] from the classpath.
  */
 fun resourceAsStream(path: String): InputStream = Loader::class.java.getResourceAsStream(path)
+
+/**
+ * Get a text content of a resource from the classpath.
+ */
+fun resourceAsString(path: String): String = Resources.toString(resource(path), StandardCharsets.UTF_8)

@@ -41,14 +41,19 @@ interface ConnectorProvider {
     fun check(connectorConfiguration: ConnectorConfiguration): List<String> {
         val list = mutableListOf<String>()
         with(connectorConfiguration) {
-            if(connectorId.isBlank()) {
+            if (connectorId.isBlank()) {
                 list.add("connector id may not be empty")
             }
-            if(path.isBlank() || !path.trim().startsWith("/")) {
+            if (path.isBlank() || !path.trim().startsWith("/")) {
                 list.add("path may not be empty and must start with /")
             }
         }
         return list
     }
+
+    /**
+     * Describes the configuration parameters of the [connectorType].
+     */
+    fun configuration(): ConnectorTypeConfiguration = ConnectorTypeConfiguration(connectorType)
 
 }

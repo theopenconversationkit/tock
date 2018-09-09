@@ -20,6 +20,9 @@ import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.ConnectorTypeConfiguration
+import fr.vsct.tock.bot.connector.ConnectorTypeConfigurationField
+import fr.vsct.tock.shared.resourceAsString
 
 /**
  *
@@ -44,27 +47,18 @@ internal object GAConnectorProvider : ConnectorProvider {
         }
     }
 
-    /**
-     * Create a new google assistant connector configuration.
-     */
-    fun newConfiguration(
-        connectorId: String = "ga",
-        path: String = "/ga",
-        applicationName: String,
-        allowedProjectIds: Set<String> = emptySet()
-    ): ConnectorConfiguration {
-
-        return ConnectorConfiguration(
-            connectorId,
-            path,
-            connectorType,
-            applicationName,
-            null,
-            parameters = mapOf(
-                PROJECT_IDS to allowedProjectIds.joinToString(PROJECT_ID_SEPARATOR)
-            )
+    override fun configuration(): ConnectorTypeConfiguration =
+        ConnectorTypeConfiguration(
+            gaConnectorType,
+            listOf(
+                ConnectorTypeConfigurationField(
+                    "Restricted project ids",
+                    "_project_ids",
+                    false
+                )
+            ),
+            resourceAsString("/ga.svg")
         )
-    }
 }
 
 internal class GAConnectorProviderService : ConnectorProvider by GAConnectorProvider

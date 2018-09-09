@@ -18,11 +18,13 @@ import {Injectable, OnDestroy} from "@angular/core";
 import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
 import {StateService} from "tock-nlp-admin/src/app/core/state.service";
 import {Observable} from "rxjs/Observable";
-import {ConnectorType} from "../core/model/configuration";
+import {ConnectorType, ConnectorTypeConfiguration} from "../core/model/configuration";
 import {NlpCallStats} from "./model/dialog-data";
 
 @Injectable()
 export class BotSharedService implements OnDestroy {
+
+  private connectorTypes: ConnectorTypeConfiguration[];
 
   constructor(private rest: RestService,
               private state: StateService) {
@@ -31,8 +33,23 @@ export class BotSharedService implements OnDestroy {
   ngOnDestroy(): void {
   }
 
-  getConnectorTypes(): Observable<ConnectorType[]> {
-    return this.rest.get(`/connectorTypes`, ConnectorType.fromJSONArray);
+  getConnectorTypes(): Observable<ConnectorTypeConfiguration[]> {
+    if (this.connectorTypes) {
+      return Observable.of(this.connectorTypes)
+    } else {
+      return this.rest
+        .get(`/connectorTypes`, ConnectorTypeConfiguration.fromJSONArray)
+        .do((c => this.connectorTypes = c))
+    }
+  }
+
+  findConnectorConfiguration(connectorType: ConnectorType): ConnectorTypeConfiguration {
+    if (this.connectorTypes) {
+      return this.connectorTypes.find(c => c.connectorType.id === connectorType.id);
+    } else {
+      //should not happen
+      return new ConnectorTypeConfiguration(connectorType, [], "")
+    }
   }
 
   getNlpDialogStats(actionId: string): Observable<NlpCallStats> {

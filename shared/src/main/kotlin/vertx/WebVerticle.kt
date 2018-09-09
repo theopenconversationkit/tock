@@ -106,11 +106,13 @@ abstract class WebVerticle : AbstractVerticle() {
         )
     }
 
+    protected open val basePath : String = "/rest"
+
     protected open val rootPath: String = ""
 
-    protected open val authenticatePath: String = "/rest/authenticate"
+    protected open val authenticatePath: String get() = "$basePath/authenticate"
 
-    protected open val logoutPath: String = "/rest/logout"
+    protected open val logoutPath: String get() = "$basePath/logout"
 
     private val verticleName: String = this::class.simpleName!!
 
@@ -269,10 +271,11 @@ abstract class WebVerticle : AbstractVerticle() {
         method: HttpMethod,
         path: String,
         role: TockUserRole? = defaultRole(),
+        basePath: String = rootPath,
         handler: (RoutingContext) -> Unit
     ) {
 
-        router.route(method, "$rootPath$path")
+        router.route(method, "$basePath$path")
             .handler { context ->
                 val user = context.user()
                 if (user == null || role == null) {
@@ -293,9 +296,10 @@ abstract class WebVerticle : AbstractVerticle() {
         method: HttpMethod,
         path: String,
         role: TockUserRole? = defaultRole(),
+        basePath: String = rootPath,
         handler: (RoutingContext) -> Unit
     ) {
-        register(method, path, role) { it.executeBlocking(handler) }
+        register(method, path, role, basePath) { it.executeBlocking(handler) }
     }
 
     protected fun RoutingContext.isAuthorized(
@@ -310,12 +314,12 @@ abstract class WebVerticle : AbstractVerticle() {
         role: TockUserRole?,
         crossinline handler: (RoutingContext, I) -> O
     ) {
-        blocking(method, path, role, { context ->
+        blocking(method, path, role) { context ->
             val input = context.readJson<I>()
 
             val result = handler.invoke(context, input)
             context.endJson(result)
-        })
+        }
     }
 
     private fun <O> blockingWithoutBodyJson(
@@ -345,6 +349,17 @@ abstract class WebVerticle : AbstractVerticle() {
         blocking(POST, path, role) { context ->
             handler.invoke(context)
             context.success()
+        }
+    }
+
+    protected fun blockingGet(
+        path: String,
+        role: TockUserRole? = defaultRole(),
+        basePath: String = rootPath,
+        handler: (RoutingContext) -> String
+    ) {
+        blocking(GET, path, role, basePath) { context ->
+            context.response().end(handler.invoke(context))
         }
     }
 
@@ -379,7 +394,7 @@ abstract class WebVerticle : AbstractVerticle() {
         role: TockUserRole? = defaultRole(),
         crossinline handler: (RoutingContext, I) -> O
     ) {
-        blockingWithBodyJson<I, O>(POST, path, role, handler)
+        blockingWithBodyJson(POST, path, role, handler)
     }
 
     protected inline fun <reified I : Any, O> blockingJsonPut(
@@ -387,7 +402,7 @@ abstract class WebVerticle : AbstractVerticle() {
         role: TockUserRole? = defaultRole(),
         crossinline handler: (RoutingContext, I) -> O
     ) {
-        blockingWithBodyJson<I, O>(PUT, path, role, handler)
+        blockingWithBodyJson(PUT, path, role, handler)
     }
 
     protected fun blockingDelete(path: String, role: TockUserRole? = defaultRole(), handler: (RoutingContext) -> Unit) {
@@ -413,11 +428,11 @@ abstract class WebVerticle : AbstractVerticle() {
         role: TockUserRole?,
         crossinline handler: (RoutingContext, I, Handler<O>) -> Unit
     ) {
-        register(method, path, role, { context ->
+        register(method, path, role) { context ->
             val input = context.readJson<I>()
 
             handler.invoke(context, input, Handler { event -> context.endJson(event) })
-        })
+        }
     }
 
     protected inline fun <reified I : Any, O> jsonPost(

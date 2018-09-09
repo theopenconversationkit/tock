@@ -37,7 +37,7 @@ export class BotConfigurationComponent implements OnInit {
   connectorTypes: ConnectorType[] = [];
   connectorTypesAndRestType: ConnectorType[] = [];
 
-  constructor(private botSharedService: BotSharedService) {
+  constructor(public botSharedService: BotSharedService) {
   }
 
   ngOnInit(): void {
@@ -45,7 +45,8 @@ export class BotConfigurationComponent implements OnInit {
       .botSharedService
       .getConnectorTypes()
       .subscribe(
-        c => {
+        confConf => {
+          const c = confConf.map(it => it.connectorType);
           this.connectorTypes = c;
           const rest = c.find(conn => conn.isRest());
           this.connectorTypesAndRestType = c.filter(conn => !conn.isRest());

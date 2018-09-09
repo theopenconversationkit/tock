@@ -18,7 +18,7 @@ import {Component, Input, OnInit} from "@angular/core";
 import {I18nLabel, I18nLocalizedLabel, userInterfaces} from "../model/i18n";
 import {BotService} from "../bot-service";
 import {MdSnackBar} from "@angular/material";
-import {ConnectorType} from "../../core/model/configuration";
+import {ConnectorTypeConfiguration} from "../../core/model/configuration";
 import {BotSharedService} from "../../shared/bot-shared.service";
 
 @Component({
@@ -40,12 +40,12 @@ export class I18nLabelComponent implements OnInit {
   @Input()
   intent: string;
 
-  connectorTypes: ConnectorType[] = [];
+  connectorTypes: ConnectorTypeConfiguration[] = [];
 
   constructor(public state: StateService,
               private botService: BotService,
               private snackBar: MdSnackBar,
-              private botSharedService: BotSharedService) {
+              public botSharedService: BotSharedService) {
   }
 
   ngOnInit(): void {
@@ -54,7 +54,7 @@ export class I18nLabelComponent implements OnInit {
       .getConnectorTypes()
       .subscribe(
         c => {
-          this.connectorTypes = c.filter(conn => !conn.isRest());
+          this.connectorTypes = c.filter(conn => !conn.connectorType.isRest());
         }
       );
 

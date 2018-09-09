@@ -20,7 +20,7 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.shared.mapNotNullValues
 
 /**
- * Configuration parameters used by a [ConnectorProvided] to create a new [Connector] instance.
+ * Configuration parameters used by a [ConnectorProvider] to create a new [Connector] instance.
  */
 data class ConnectorConfiguration(
     /**

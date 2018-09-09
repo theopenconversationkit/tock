@@ -17,6 +17,7 @@
 
 import {defaultUserInterfaceType, UserInterfaceType} from "../../core/model/configuration";
 import {isNullOrUndefined} from "util";
+import {environment} from "../../../environments/environment";
 
 export const userInterfaces = [UserInterfaceType.textChat, UserInterfaceType.voiceAssistant];
 
@@ -77,6 +78,10 @@ export class I18nLocalizedLabel {
               public alternatives: string[],
               public stats?: I18nLabelStat[]) {
 
+  }
+
+  iconUrl(): string {
+    return environment.serverUrl + "/connectorIcon/" + this.connectorId + "/icon.svg";
   }
 
   displayStats(): string {

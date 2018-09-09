@@ -16,36 +16,20 @@
 
 package fr.vsct.tock.bot.connector
 
-import fr.vsct.tock.translator.UserInterfaceType
-import java.util.ServiceLoader
-
 /**
- * A connector identifier.
+ * Custom parameter for a [ConnectorTypeConfiguration].
  */
-data class ConnectorType(
+data class ConnectorTypeConfigurationField(
     /**
-     * An unique id.
+     * The label displayed in the admin interface.
      */
-    val id: String,
+    val label: String,
     /**
-     * The preferred [UserInterfaceType] of the connector.
+     * The technical key of the parameter.
      */
-    val userInterfaceType: UserInterfaceType = UserInterfaceType.textChat
-) {
-
-    companion object {
-        /**
-         * Not a specific connector type.
-         */
-        val none: ConnectorType = ConnectorType("NONE")
-
-        /**
-         * built-in rest connector.
-         */
-        val rest: ConnectorType = ConnectorType("rest")
-    }
-
-    override fun toString(): String {
-        return id
-    }
-}
+    val key: String,
+    /**
+     * Is the parameter is mandatory?
+     */
+    val mandatory: Boolean = false
+)
