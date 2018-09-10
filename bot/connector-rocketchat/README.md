@@ -1,15 +1,16 @@
 # RocketChat Tock Connector
 
-First version for Tock [RocketChat](https://rocket.chat/) connector.
+First version for Tock [Rocket.Chat](https://rocket.chat/) connector.
 
 ## Install
 
-- Install a rocket chat server: https://rocket.chat/docs/installation/ 
-- Create a RocketChat bot user: https://rocket.chat/docs/bots/creating-bot-users/
+- Install a Rocket.Chat server: https://rocket.chat/docs/installation/          
+
+- Create a Rocket.Chat bot user: https://rocket.chat/docs/bots/creating-bot-users/
 
 - Start Tock admin - please notice, if you install both Rocket and Tock on the same instance,
-that RocketChat and Tock use MongoDB with replicaset, but with a different replicaset.
-So you can't mutualize the Mongo instances and you need to change the Tock Mongo's ports or RocketChat Mongo's port.
+that Rocket.Chat and Tock use MongoDB with replicaset, but with a different replicaset.
+So you can't mutualize the Mongo instances and you need to change the Tock Mongo's ports or Rocket.Chat Mongo's port.
 
 - Configure a new Bot Configuration
 
