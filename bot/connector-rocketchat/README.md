@@ -16,6 +16,6 @@ So you can't mutualize the Mongo instances and you need to change the Tock Mongo
 
  ![RocketChat Bot Configuration Sample](./admin.png)
  
-You can now start do talk to the Bot!
+You can start to talk to the Bot!
 
  ![RocketChat Bot Talk Sample](./rocketchat.png)
