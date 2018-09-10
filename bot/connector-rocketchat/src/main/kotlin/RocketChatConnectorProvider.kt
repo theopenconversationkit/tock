@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.slack
+package fr.vsct.tock.bot.connector.rocketchat
 
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
@@ -24,51 +24,60 @@ import fr.vsct.tock.bot.connector.ConnectorTypeConfiguration
 import fr.vsct.tock.bot.connector.ConnectorTypeConfigurationField
 import fr.vsct.tock.shared.resourceAsString
 
-internal object SlackConnectorProvider : ConnectorProvider {
+/**
+ *
+ */
+internal object RocketChatConnectorProvider : ConnectorProvider {
 
-    private const val OUT_TOKEN_1 = "outToken1"
-    private const val OUT_TOKEN_2 = "outToken2"
-    private const val OUT_TOKEN_3 = "outToken3"
+    private const val ROCKET_CHAT_URL = "_url_"
+    private const val ROOM_ID = "_room_id_"
+    private const val LOGIN = "_login_"
+    private const val PASSWORD = "_password_"
 
-    override val connectorType: ConnectorType get() = slackConnectorType
+    override val connectorType: ConnectorType get() = rocketChatConnectorType
 
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
-            return SlackConnector(
+            return RocketChatConnector(
                 connectorId,
-                path,
-                "#bot",
-                parameters.getValue(OUT_TOKEN_1),
-                parameters.getValue(OUT_TOKEN_2),
-                parameters.getValue(OUT_TOKEN_3),
-                SlackClient
+                parameters.getValue(ROOM_ID),
+                RocketChatClient(
+                    parameters.getValue(ROCKET_CHAT_URL),
+                    parameters.getValue(LOGIN),
+                    parameters.getValue(PASSWORD)
+                )
             )
         }
     }
 
     override fun configuration(): ConnectorTypeConfiguration =
         ConnectorTypeConfiguration(
-            slackConnectorType,
+            rocketChatConnectorType,
             listOf(
                 ConnectorTypeConfigurationField(
-                    "Token 1",
-                    OUT_TOKEN_1,
+                    "Rocket.Chat Server Url",
+                    ROCKET_CHAT_URL,
                     true
                 ),
                 ConnectorTypeConfigurationField(
-                    "Token 2",
-                    OUT_TOKEN_2,
+                    "Room Id",
+                    ROOM_ID,
                     true
                 ),
                 ConnectorTypeConfigurationField(
-                    "Token 3",
-                    OUT_TOKEN_3,
+                    "Bot Login",
+                    LOGIN,
+                    true
+                ),
+                ConnectorTypeConfigurationField(
+                    "Bot Password",
+                    PASSWORD,
                     true
                 )
             ),
-            resourceAsString("/slack.svg")
+            resourceAsString("/rocketchat.svg")
         )
 
 }
 
-internal class SlackConnectorProviderService : ConnectorProvider by SlackConnectorProvider
+internal class RocketChatConnectorProviderService : ConnectorProvider by RocketChatConnectorProvider

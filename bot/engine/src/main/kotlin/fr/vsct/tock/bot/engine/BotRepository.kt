@@ -168,7 +168,7 @@ object BotRepository {
         vertx.deployVerticle(verticle)
 
         //listen future changes
-        botConfigurationDAO.listenChanges { checkBotConfigurations() }
+        botConfigurationDAO.listenChanges { executor.executeBlocking { checkBotConfigurations() } }
     }
 
     /**

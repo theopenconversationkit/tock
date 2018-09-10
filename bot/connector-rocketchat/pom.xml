@@ -19,59 +19,63 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>fr.vsct.tock</groupId>
         <artifactId>tock-bot</artifactId>
+        <groupId>fr.vsct.tock</groupId>
         <version>1.2.2-SNAPSHOT</version>
     </parent>
 
-    <artifactId>bot-toolkit</artifactId>
-    <name>Tock Bot Toolkit</name>
-    <description>Bot Toolkit - to build chatbots with ease</description>
+    <artifactId>tock-bot-connector-rocketchat</artifactId>
+    <name>Tock Bot Rocket Chat Connector</name>
+    <description>Bot Connector for Rocket Chat</description>
 
     <dependencies>
-        <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-reflect</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-engine</artifactId>
-        </dependency>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-engine-jackson</artifactId>
         </dependency>
+
+        <!-- TODO use rocket chat dependency when available -->
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-connector-messenger</artifactId>
+            <groupId>org.litote.chat.rocket.sdk</groupId>
+            <artifactId>core</artifactId>
+            <version>0.1-SNAPSHOT</version>
         </dependency>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-connector-ga</artifactId>
+            <groupId>org.litote.chat.rocket.sdk</groupId>
+            <artifactId>common</artifactId>
+            <version>0.1-SNAPSHOT</version>
+        </dependency>
+       
+        <dependency>
+            <groupId>org.jetbrains.kotlin</groupId>
+            <artifactId>kotlin-test-junit5</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-connector-alexa</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-engine</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-connector-rest</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-api</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-connector-slack</artifactId>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter-params</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-connector-rocketchat</artifactId>
+            <groupId>io.mockk</groupId>
+            <artifactId>mockk</artifactId>
+            <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-storage-mongo</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-translator-noop</artifactId>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-codegen</artifactId>
+            <version>${vertx}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

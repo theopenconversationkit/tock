@@ -20,6 +20,7 @@ import fr.vsct.tock.bot.connector.slack.model.SlackMessageIn
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.PlayerType.bot
 import mu.KotlinLogging
 
 
@@ -31,11 +32,11 @@ internal object SlackRequestConverter {
         val safeMessage = message
         safeMessage.text = message.getRealMessage()
         return SendSentence(
-                PlayerId(message.user_id),
-                applicationId,
-                PlayerId(""),
-                safeMessage.text,
-                mutableListOf(safeMessage)
+            PlayerId(message.user_id),
+            applicationId,
+            PlayerId("", bot),
+            safeMessage.text,
+            mutableListOf(safeMessage)
         )
     }
 }

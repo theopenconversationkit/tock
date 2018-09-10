@@ -49,15 +49,14 @@ class SlackConnector(val applicationId: String,
     private val executor: Executor by injector.instance()
 
     override fun register(controller: ConnectorController) {
-        controller.registerServices(path, { router ->
+        controller.registerServices(path) { router ->
             router.post(path).handler { context ->
                 val requestTimerData = requestTimer.start("slack_webhook")
                 try {
                     val body = context.convertUrlEncodedStringToJson()
                     logger.info { "message received from slack: $body" }
                     val message = mapper.readValue<SlackMessageIn>(body, SlackMessageIn::class.java)
-                    if(message.user_id != "USLACKBOT")
-                    {
+                    if(message.user_id != "USLACKBOT") {
                         vertx.executeBlocking<Void>({
                             try {
                                 val event = SlackRequestConverter.toEvent(message, applicationId)
@@ -83,7 +82,7 @@ class SlackConnector(val applicationId: String,
                 }
             }
 
-        })
+        }
     }
 
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {

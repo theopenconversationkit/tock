@@ -38,6 +38,7 @@
         <module>connector-ga</module>
         <module>connector-slack</module>
         <module>connector-alexa</module>
+        <module>connector-rocketchat</module>
         <module>storage-mongo</module>
 
         <module>toolkit</module>
@@ -81,6 +82,11 @@
             <dependency>
                 <groupId>fr.vsct.tock</groupId>
                 <artifactId>tock-bot-connector-slack</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
+                <artifactId>tock-bot-connector-rocketchat</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
