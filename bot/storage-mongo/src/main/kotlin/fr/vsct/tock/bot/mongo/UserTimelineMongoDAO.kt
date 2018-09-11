@@ -171,7 +171,12 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             //TODO if dialog updated
             val dialogToSave = DialogCol(dialog, newTimeline)
             logger.debug { "dialog to save created $userTimeline" }
-            dialogCol.save(dialogToSave)
+            try {
+                dialogCol.save(dialogToSave)
+            } catch (e: Exception) {
+                logger.error(e)
+                logger.error("Dialog save failure: $dialogToSave")
+            }
             logger.debug { "dialog saved $userTimeline" }
         }
         executor.executeBlocking {
