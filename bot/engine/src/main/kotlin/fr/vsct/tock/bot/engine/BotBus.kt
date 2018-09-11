@@ -324,7 +324,7 @@ interface BotBus : I18nTranslator {
     /**
      * Returns the persistent current context value.
      */
-    fun <T : Any> contextValue(key: ParameterKey): T? = contextValue(key.keyName)
+    fun <T : Any> contextValue(key: ParameterKey): T? = contextValue(key.key)
 
     /**
      * Updates persistent context value.
@@ -337,7 +337,7 @@ interface BotBus : I18nTranslator {
     /**
      * Updates persistent context value.
      */
-    fun changeContextValue(key: ParameterKey, value: Any?) = changeContextValue(key.keyName, value)
+    fun changeContextValue(key: ParameterKey, value: Any?) = changeContextValue(key.key, value)
 
     /**
      * Returns the non persistent current context value.
@@ -349,7 +349,7 @@ interface BotBus : I18nTranslator {
      * Returns the non persistent current context value.
      * Bus context values are useful to store a temporary (ie request scoped) state.
      */
-    fun <T> getBusContextValue(key: ParameterKey): T? = getBusContextValue(key.keyName)
+    fun <T> getBusContextValue(key: ParameterKey): T? = getBusContextValue(key.key)
 
     /**
      * Updates the non persistent current context value.
@@ -361,7 +361,7 @@ interface BotBus : I18nTranslator {
      * Updates the non persistent current context value.
      * Bus context values are useful to store a temporary (ie request scoped) state.
      */
-    fun setBusContextValue(key: ParameterKey, value: Any?) = setBusContextValue(key.keyName, value)
+    fun setBusContextValue(key: ParameterKey, value: Any?) = setBusContextValue(key.key, value)
 
     /**
      * Send previously registered [ConnectorMessage] as last bot answer.

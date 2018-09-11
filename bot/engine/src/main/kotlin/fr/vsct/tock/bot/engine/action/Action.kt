@@ -61,7 +61,7 @@ abstract class Action(
     fun choice(key: ParameterKey): String? =
         (this as? SendChoice)
             ?.parameters
-            ?.get(key.keyName)
+            ?.get(key.key)
 
     /**
      * Returns true if the specified choice as the "true" value, false either.

@@ -31,18 +31,18 @@ interface ParameterKey {
     /**
      * The key of the parameter.
      */
-    val keyName: String get() = name
+    val key: String get() = name
 
     /**
      * Create a [Parameters] with this as key and the [value].toString() value.
      */
     operator fun get(value: Any): Parameters =
-        Parameters(keyName to value.toString())
+        Parameters(key to value.toString())
 
     /**
      * Create a [Parameters] with this as key and the [value] json serialized string.
      */
     operator fun invoke(value: Any): Parameters =
-        Parameters(keyName to mapper.writeValueAsString(value))
+        Parameters(key to mapper.writeValueAsString(value))
 
 }
