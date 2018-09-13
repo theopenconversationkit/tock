@@ -30,7 +30,12 @@ open class ConnectorData(
      * The previous user id - used when the user had a "temporary" identifier
      * and the definitive identifier is now known.
      */
-    val priorUserId: PlayerId? = null
+    val priorUserId: PlayerId? = null,
+    /**
+     * To know if the timeline has to be saved - default is true.
+     * Set to false for bots that you don't need to register.
+     */
+    val saveTimeline: Boolean = true
 ) {
     /**
      * Set to true if the bot does not make any answer to a user sentence.

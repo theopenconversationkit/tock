@@ -19,24 +19,27 @@ package fr.vsct.tock.bot.connector.ga.model.request
 import com.fasterxml.jackson.annotation.JsonIgnore
 
 data class GAArgument(
-        val name: String,
-        val rawText: String? = null,
-        val boolValue: Boolean? = null,
-        val textValue: String? = null,
-        val datetimeValue: GADateTime? = null,
-        val extension: GAArgumentValue? = null
+    val name: String,
+    val rawText: String? = null,
+    val boolValue: Boolean? = null,
+    val textValue: String? = null,
+    val datetimeValue: GADateTime? = null,
+    val extension: GAArgumentValue? = null
 ) {
 
     @get:JsonIgnore
     val builtInArg: GAArgumentBuiltInName? =
-            try {
-                GAArgumentBuiltInName.valueOf(name)
-            } catch (e: Exception) {
-                null
-            }
+        try {
+            GAArgumentBuiltInName.valueOf(name)
+        } catch (e: Exception) {
+            null
+        }
 
+    /**
+     * Is it a google bot?
+     */
     @get:JsonIgnore
-    val healthcheck : Boolean = name == "isHealthCheck" && textValue == "1"
+    val healthcheck: Boolean = name == "is_health_check" && boolValue == true
 
 }
 

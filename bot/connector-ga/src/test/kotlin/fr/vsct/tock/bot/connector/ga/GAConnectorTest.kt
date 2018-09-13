@@ -33,6 +33,7 @@ import io.vertx.ext.web.RoutingContext
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import kotlin.test.assertFalse
 import kotlin.test.assertTrue
 
 /**
@@ -87,6 +88,36 @@ class GAConnectorTest {
         val slotLoginEvent = slot<LoginEvent>()
         verify { controller.handle(capture(slotLoginEvent), any()) }
         assertTrue { slotLoginEvent.captured.checkLogin }
+    }
+
+    @Test
+    fun `google bot timeline is not persisted`() {
+        every { controller.connector } returns connector
+
+        connector.handleRequest(
+            controller,
+            context,
+            Resources.toString(resource("/healthcheck.json"), Charsets.UTF_8)
+        )
+
+        val connectorData = slot<ConnectorData>()
+        verify { controller.handle(any(), capture(connectorData)) }
+        assertFalse { connectorData.captured.saveTimeline }
+    }
+
+    @Test
+    fun `GIVEN not google bot request THEN timeline is persisted`() {
+        every { controller.connector } returns connector
+
+        connector.handleRequest(
+            controller,
+            context,
+            Resources.toString(resource("/request-with-ACCESS-TOKEN.json"), Charsets.UTF_8)
+        )
+
+        val connectorData = slot<ConnectorData>()
+        verify { controller.handle(any(), capture(connectorData)) }
+        assertTrue { connectorData.captured.saveTimeline }
     }
 
 }

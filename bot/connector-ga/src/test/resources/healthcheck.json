@@ -1,0 +1,39 @@
+{
+  "user": {
+    "userId": "LULw45aXeGrlv3rcXId9mDcSUDf/fhT1WlHGe2OgM=",
+    "profile": {
+      "givenName": "Google",
+      "familyName": "Crawler"
+    },
+    "locale": "fr-FR"
+  },
+  "conversation": {
+    "conversationId": "HHVtcfCKNG2OB1CAyg9Kk7CQjRmYQq-ZSSYy9cohnnDV8L944IW6-V9K7TTKGfSwDzPnCtR3bYYeEzs",
+    "type": "NEW"
+  },
+  "inputs": [
+    {
+      "intent": "actions.intent.MAIN",
+      "rawInputs": [
+        {
+          "inputType": "VOICE",
+          "query": "hey"
+        }
+      ],
+      "arguments": [
+        {
+          "name": "is_health_check",
+          "boolValue": true,
+          "textValue": "1"
+        }
+      ]
+    }
+  ],
+  "surface": {
+    "capabilities": [
+      {
+        "name": "actions.capability.AUDIO_OUTPUT"
+      }
+    ]
+  }
+}

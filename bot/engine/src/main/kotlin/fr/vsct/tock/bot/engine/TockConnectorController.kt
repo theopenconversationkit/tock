@@ -107,7 +107,9 @@ internal class TockConnectorController constructor(
                             { bot.botDefinition.findStoryDefinition(it) }
                         )
                     bot.handle(action, userTimeline, this, data)
-                    userTimelineDAO.save(userTimeline)
+                    if(data.saveTimeline) {
+                        userTimelineDAO.save(userTimeline)
+                    }
                 } catch (t: Throwable) {
                     callback.exceptionThrown(action, t)
                     send(data, action, errorMessage(action.recipientId, action.applicationId, action.playerId))

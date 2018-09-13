@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector.ga.model.request
 
+import com.fasterxml.jackson.annotation.JsonIgnore
 import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.translator.UserInterfaceType
 
@@ -23,25 +24,32 @@ import fr.vsct.tock.translator.UserInterfaceType
  *
  */
 data class GARequest(
-        val user: GAUser,
-        val device: GADevice?,
-        val surface: GASurface,
-        val conversation: GAConversation,
-        val inputs: List<GAInput>,
-        val isInSandbox: Boolean = false) {
+    val user: GAUser,
+    val device: GADevice?,
+    val surface: GASurface,
+    val conversation: GAConversation,
+    val inputs: List<GAInput>,
+    val isInSandbox: Boolean = false
+) {
 
     fun getEventState(): EventState {
         val ui =
-                if (surface.hasAudio()) {
-                    if (surface.hasScreen()) {
-                        UserInterfaceType.textAndVoiceAssistant
-                    } else {
-                        UserInterfaceType.voiceAssistant
-                    }
+            if (surface.hasAudio()) {
+                if (surface.hasScreen()) {
+                    UserInterfaceType.textAndVoiceAssistant
                 } else {
-                    UserInterfaceType.textChat
+                    UserInterfaceType.voiceAssistant
                 }
+            } else {
+                UserInterfaceType.textChat
+            }
         return EventState(userInterface = ui)
     }
+
+    /**
+     * Is it a google bot?
+     */
+    @get:JsonIgnore
+    val healthcheck: Boolean = inputs.any { it.healthcheck }
 }
 

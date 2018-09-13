@@ -20,17 +20,23 @@ import com.fasterxml.jackson.annotation.JsonIgnore
 import fr.vsct.tock.bot.connector.ga.model.GAIntent
 
 data class GAInput(
-        val rawInputs: List<GARawInput>,
-        val intent: String,
-        val arguments: List<GAArgument>?
+    val rawInputs: List<GARawInput>,
+    val intent: String,
+    val arguments: List<GAArgument>?
 ) {
 
     @get:JsonIgnore
     val builtInIntent: GAIntent? =
-            try {
-                GAIntent.findIntent(intent)
-            } catch (e: Exception) {
-                null
-            }
+        try {
+            GAIntent.findIntent(intent)
+        } catch (e: Exception) {
+            null
+        }
+
+    /**
+     * Is it a google bot?
+     */
+    @get:JsonIgnore
+    val healthcheck: Boolean = arguments?.any { it.healthcheck } == true
 }
 

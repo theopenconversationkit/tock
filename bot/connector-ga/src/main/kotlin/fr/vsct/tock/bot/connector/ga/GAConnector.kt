@@ -17,7 +17,6 @@
 package fr.vsct.tock.bot.connector.ga
 
 import com.fasterxml.jackson.module.kotlin.readValue
-import com.github.salomonbrys.kodein.instance
 import com.google.api.client.auth.openidconnect.IdToken
 import com.google.api.client.auth.openidconnect.IdTokenVerifier
 import com.google.api.client.json.jackson2.JacksonFactory
@@ -59,9 +58,8 @@ class GAConnector internal constructor(
     private val executor: Executor get() = injector.provide()
     private val verifier: IdTokenVerifier by lazy(PUBLICATION) { IdTokenVerifier.Builder().build() }
 
-
     override fun register(controller: ConnectorController) {
-        controller.registerServices(path, { router ->
+        controller.registerServices(path) { router ->
             logger.info("deploy rest google assistant services for root path $path ")
 
             router.post(path).handler { context ->
@@ -77,7 +75,7 @@ class GAConnector internal constructor(
                     context.fail(e)
                 }
             }
-        })
+        }
     }
 
     //internal for tests
@@ -94,7 +92,7 @@ class GAConnector internal constructor(
             try {
                 val event = WebhookActionConverter.toEvent(request, applicationId)
                 fun sendRequest() {
-                    controller.handle(event, ConnectorData(callback))
+                    controller.handle(event, ConnectorData(callback, saveTimeline = !request.healthcheck))
                 }
 
                 if (request.user.accessToken != null && event !is LoginEvent) {
