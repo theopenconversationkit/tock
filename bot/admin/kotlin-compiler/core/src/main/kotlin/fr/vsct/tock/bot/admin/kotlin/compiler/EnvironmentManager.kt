@@ -18,7 +18,6 @@ package fr.vsct.tock.bot.admin.kotlin.compiler
 
 import com.google.common.collect.Lists
 import com.intellij.codeInsight.ContainerProvider
-import com.intellij.codeInsight.NullableNotNullManager
 import com.intellij.codeInsight.runner.JavaMainMethodProvider
 import com.intellij.core.CoreApplicationEnvironment.registerExtensionPoint
 import com.intellij.lang.ASTNode
@@ -37,7 +36,6 @@ import com.intellij.openapi.util.TextRange
 import com.intellij.psi.FileContextProvider
 import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiFile
-import com.intellij.psi.PsiModifierListOwner
 import com.intellij.psi.augment.PsiAugmentProvider
 import com.intellij.psi.codeStyle.ChangedRangesInfo
 import com.intellij.psi.codeStyle.CodeStyleManager
@@ -112,25 +110,13 @@ internal object EnvironmentManager {
         configuration.put(JSConfigurationKeys.TYPED_ARRAYS_ENABLED, true)
 
         val environment =
-            KotlinCoreEnvironment.createForProduction(disposable, configuration, EnvironmentConfigFiles.JVM_CONFIG_FILES)
+            KotlinCoreEnvironment.createForProduction(
+                disposable,
+                configuration,
+                EnvironmentConfigFiles.JVM_CONFIG_FILES
+            )
         val project = environment.project as MockProject
-        project.registerService(NullableNotNullManager::class.java, object : NullableNotNullManager(project) {
-            override fun isNullable(owner: PsiModifierListOwner, checkBases: Boolean): Boolean {
-                return false
-            }
 
-            override fun isNotNull(owner: PsiModifierListOwner, checkBases: Boolean): Boolean {
-                return true
-            }
-
-            override fun getPredefinedNotNulls(): List<String> {
-                return emptyList()
-            }
-
-            override fun hasHardcodedContracts(element: PsiElement?): Boolean {
-                return false
-            }
-        })
         project.registerService(CodeStyleManager::class.java, DummyCodeStyleManager())
 
         registerExtensionPoints(Extensions.getRootArea())

@@ -1,6 +1,6 @@
 # RocketChat Tock Connector
 
-First version for Tock [Rocket.Chat](https://rocket.chat/) connector.
+First version of Tock [Rocket.Chat](https://rocket.chat/) connector.
 
 ## Install
 
