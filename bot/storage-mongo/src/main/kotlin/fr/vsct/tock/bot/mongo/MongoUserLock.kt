@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.mongo
 
 import com.mongodb.MongoWriteException
+import com.mongodb.client.model.IndexOptions
 import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.bot.mongo.UserLock_.Companion.Date
@@ -30,6 +31,7 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.JacksonData
 import org.litote.kmongo.and
 import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
@@ -43,6 +45,7 @@ import org.litote.kmongo.upsert
 import java.lang.Exception
 import java.time.Instant
 import java.time.Instant.now
+import java.util.concurrent.TimeUnit.HOURS
 
 /**
  *
@@ -58,6 +61,17 @@ internal object MongoUserLock : UserLock {
     private val col = database.getCollection<UserLock>()
 
     private val lockTimeout = longProperty("tock_bot_lock_timeout_in_ms", 5000)
+
+    init {
+        col.ensureIndex(
+            Date,
+            indexOptions = IndexOptions()
+                .expireAfter(
+                    longProperty("mongo_user_ttl_hours", 6),
+                    HOURS
+                )
+        )
+    }
 
     override fun lock(userId: String): Boolean {
         val lock = UserLock(userId.toId())
