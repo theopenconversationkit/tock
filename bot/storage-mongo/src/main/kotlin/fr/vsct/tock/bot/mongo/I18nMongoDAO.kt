@@ -20,6 +20,7 @@ import com.mongodb.client.model.IndexOptions
 import fr.vsct.tock.bot.mongo.I18nAlternativeIndex_.Companion.ConnectorId
 import fr.vsct.tock.bot.mongo.I18nAlternativeIndex_.Companion.ContextId
 import fr.vsct.tock.bot.mongo.I18nAlternativeIndex_.Companion.Date
+import fr.vsct.tock.bot.mongo.I18nAlternativeIndex_.Companion.Index
 import fr.vsct.tock.bot.mongo.I18nAlternativeIndex_.Companion.InterfaceType
 import fr.vsct.tock.bot.mongo.I18nAlternativeIndex_.Companion.LabelId
 import fr.vsct.tock.bot.mongo.I18nAlternativeIndex_.Companion.Locale
@@ -35,6 +36,7 @@ import fr.vsct.tock.translator.I18nLabel_
 import fr.vsct.tock.translator.I18nLabel_.Companion._id
 import fr.vsct.tock.translator.I18nLocalizedLabel
 import mu.KotlinLogging
+import org.bson.Document
 import org.bson.conversions.Bson
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
@@ -44,12 +46,16 @@ import org.litote.kmongo.deleteOne
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
+import org.litote.kmongo.excludeId
+import org.litote.kmongo.fields
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.inc
+import org.litote.kmongo.include
 import org.litote.kmongo.save
 import org.litote.kmongo.set
 import org.litote.kmongo.upsert
+import org.litote.kmongo.withDocumentClass
 import java.util.concurrent.TimeUnit
 
 /**
@@ -147,10 +153,11 @@ internal object I18nMongoDAO : I18nDAO {
 
     override fun getAlternativeIndexes(label: I18nLabel, localized: I18nLocalizedLabel, contextId: String): Set<Int> =
         try {
-            //TODO use projection
             alternativeIndexCol
+                .withDocumentClass<Document>()
                 .find(alternativeIndexesFilter(label, localized, contextId))
-                .map { it.index }
+                .projection(fields(include(Index), excludeId()))
+                .map { it.getInteger(Index.name) }
                 .toSet()
         } catch (e: Exception) {
             logger.error(e)
