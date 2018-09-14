@@ -26,13 +26,13 @@ data class NlpEntityMergeContext(
     /**
      * The entity role
      */
-    internal val entityRole: String,
+    val entityRole: String,
     /**
      * The optional initial (old) value
      */
-    internal val initialValue: EntityStateValue?,
+    val initialValue: EntityStateValue?,
     /**
      * The proposed new values
      */
-    internal val newValues: List<EntityValue>
+    val newValues: List<EntityValue>
 )
