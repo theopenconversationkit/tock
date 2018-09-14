@@ -21,8 +21,11 @@ import fr.vsct.tock.bot.engine.BotEngineTest
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.TestStoryDefinition.test
 import fr.vsct.tock.bot.engine.TestStoryDefinition.test2
+import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.engine.dialog.DialogState
+import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
 import fr.vsct.tock.bot.engine.event.Event
@@ -30,6 +33,7 @@ import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
 import fr.vsct.tock.nlp.api.client.model.NlpQuery
 import fr.vsct.tock.nlp.api.client.model.NlpResult
+import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
 import fr.vsct.tock.nlp.entity.Value
 import io.mockk.every
 import io.mockk.slot
@@ -120,7 +124,7 @@ class NlpTest : BotEngineTest() {
         BotRepository.nlpListeners.add(nlpListener)
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
 
-        assertEquals(3, userAction.state.entityValues.size)
+        assertEquals(5, userAction.state.entityValues.size)
         assertTrue(userAction.state.entityValues.contains(customValue))
         assertTrue(userAction.state.entityValues.contains(EntityValue(nlpResult, entityAValue)))
         assertTrue(userAction.state.entityValues.contains(EntityValue(nlpResult, entityCValue)))
@@ -148,5 +152,39 @@ class NlpTest : BotEngineTest() {
         assertEquals(test2.wrappedIntent(), dialog.state.currentIntent)
         assertEquals(test2.wrappedIntent(), (userAction as SendSentence).nlpStats?.intentResult)
         assertEquals(test.wrappedIntent().name, (userAction as SendSentence).nlpStats?.nlpResult?.intent)
+    }
+
+    @Test
+    fun `NlpListener#configureEntityValuesMerge can be used to configure entity values merge`() {
+        every { nlpClient.parse(any()) } returns nlpResult
+        every { nlpClient.parse(match { it.intentsSubset.isNotEmpty() }) } returns nlpResult
+        val mergeQuery = slot<ValuesMergeQuery>()
+        every { nlpClient.mergeValues(capture(mergeQuery)) } returns null
+
+        val customInitialValue = EntityStateValue(EntityValue(entityWithMergeSupport, object : Value {}, "Z"))
+        val nlpListener = object : NlpListener {
+
+            override fun mergeEntityValues(
+                dialogState: DialogState,
+                action: Action,
+                entityToMerge: NlpEntityMergeContext
+            ): NlpEntityMergeContext =
+                if (entityToMerge.entityRole == entityWithMergeSupport.role) {
+                    NlpEntityMergeContext(
+                        entityWithMergeSupport.role,
+                        customInitialValue.copy(),
+                        entityToMerge.newValues
+                    )
+                } else {
+                    entityToMerge
+                }
+        }
+        BotRepository.nlpListeners.add(nlpListener)
+        Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
+
+        verify { nlpClient.mergeValues(any()) }
+        val query = mergeQuery.captured
+        assertEquals(3, query.values.size)
+        assertEquals(customInitialValue.value?.content, query.values.first { it.initial }.content)
     }
 }

@@ -16,9 +16,23 @@
 
 package fr.vsct.tock.bot.engine.nlp
 
-import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.engine.dialog.EntityStateValue
+import fr.vsct.tock.bot.engine.dialog.EntityValue
 
 /**
- * Used by [NlpCallStats]. Pair Intent - probability.
+ * Provides all info to allow multiple values of the same entity type to be merged.
  */
-data class NlpIntentStat(val intent: Intent, val probability: Double)
+data class NlpEntityMergeContext(
+    /**
+     * The entity role
+     */
+    internal val entityRole: String,
+    /**
+     * The optional initial (old) value
+     */
+    internal val initialValue: EntityStateValue?,
+    /**
+     * The proposed new values
+     */
+    internal val newValues: List<EntityValue>
+)

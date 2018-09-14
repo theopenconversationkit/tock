@@ -44,6 +44,7 @@ import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.api.client.model.EntityType
 import fr.vsct.tock.nlp.api.client.model.NlpEntityValue
 import fr.vsct.tock.nlp.api.client.model.NlpResult
+import fr.vsct.tock.nlp.entity.StringValue
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.sharedTestModule
@@ -82,16 +83,19 @@ abstract class BotEngineTest {
     val entityBValue = NlpEntityValue(2, 3, entityB, null, false)
     val entityC = Entity(EntityType("c"), "c")
     val entityCValue = NlpEntityValue(4, 5, entityC, null, false)
+    val entityWithMergeSupport = Entity(EntityType("entityWithMergeSupport"), "entityWithMergeSupport")
+    val entityWithMergeSupportValue1 = NlpEntityValue(6, 7, entityWithMergeSupport, StringValue("d"), mergeSupport = true)
+    val entityWithMergeSupportValue2 = NlpEntityValue(8, 9, entityWithMergeSupport, StringValue("e"), mergeSupport = true)
 
     val nlpResult = NlpResult(
         test.name,
         "test",
         defaultLocale,
-        listOf(entityAValue, entityBValue, entityCValue),
+        listOf(entityAValue, entityBValue, entityCValue, entityWithMergeSupportValue1, entityWithMergeSupportValue2),
         emptyList(),
         1.0,
         1.0,
-        "a b c",
+        "a b c d e",
         emptyMap()
     )
 

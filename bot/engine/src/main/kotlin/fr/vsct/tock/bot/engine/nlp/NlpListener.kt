@@ -18,7 +18,9 @@ package fr.vsct.tock.bot.engine.nlp
 
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.IntentAware
+import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.engine.dialog.DialogState
 import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.UserTimeline
@@ -27,7 +29,7 @@ import fr.vsct.tock.nlp.api.client.model.NlpResult
 
 /**
  * Used to customize behaviour of NLP parsing - and also to monitor NLP requests - on bot side.
- * Need to be registered using [fr.vsct.tock.bot.engine.BotRepository.registerNlpListener].
+ * Has to be registered using [fr.vsct.tock.bot.engine.BotRepository.registerNlpListener].
  */
 interface NlpListener {
 
@@ -39,7 +41,7 @@ interface NlpListener {
     fun handleKeyword(sentence: String): Intent? = null
 
     /**
-     * This is the method called by the bot after a NLP request to choose an intent.
+     * This method is automatically called by the bot after a NLP request in order to select an intent.
      * Overrides it if you need more control on intent choice.
      *
      * If it returns null, [BotDefinition.findIntent] is called.
@@ -49,7 +51,7 @@ interface NlpListener {
     fun findIntent(userTimeline: UserTimeline, dialog: Dialog, event: Event, nlpResult: NlpResult): IntentAware? = null
 
     /**
-     * Allow custom entity evaluation - default returns empty list.
+     * Allows custom entity evaluation - default returns empty list.
      */
     fun evaluateEntities(
         userTimeline: UserTimeline,
@@ -57,6 +59,23 @@ interface NlpListener {
         event: Event,
         nlpResult: NlpResult
     ): List<EntityValue> = emptyList()
+
+    /**
+     * Defines custom sort new entity values.
+     * This is useful when you want to evaluate an entity role only after an other entity role has been evaluated
+     * (entity dependence use case).
+     * Default does nothing.
+     */
+    fun sortEntitiesToMerge(entities: List<NlpEntityMergeContext>): List<NlpEntityMergeContext> = entities
+
+    /**
+     * Allows to override [NlpEntityMergeContext] before trying to merge the entity context.
+     */
+    fun mergeEntityValues(
+        dialogState: DialogState,
+        action: Action,
+        entityToMerge: NlpEntityMergeContext
+    ): NlpEntityMergeContext = entityToMerge
 
     /**
      * Called when nlp request is successful.
@@ -67,4 +86,5 @@ interface NlpListener {
      * Called when nlp request is throwing an error.
      */
     fun error(query: NlpQuery, throwable: Throwable?) = Unit
+
 }

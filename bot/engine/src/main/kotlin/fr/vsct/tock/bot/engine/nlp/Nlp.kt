@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.bot.engine.nlp
 
-import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.BotRepository
@@ -43,7 +42,6 @@ import fr.vsct.tock.nlp.api.client.model.evaluation.EntityEvaluationQuery
 import fr.vsct.tock.nlp.api.client.model.evaluation.EntityToEvaluate
 import fr.vsct.tock.nlp.api.client.model.merge.ValueToMerge
 import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeQuery
-import fr.vsct.tock.nlp.api.client.model.merge.ValuesMergeResult
 import fr.vsct.tock.nlp.api.client.model.monitoring.MarkAsUnknownQuery
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultZoneId
@@ -64,7 +62,7 @@ internal class Nlp : NlpController {
         private val logger = KotlinLogging.logger {}
     }
 
-    private val nlpClient: NlpClient by injector.instance()
+    private val nlpClient: NlpClient get() = injector.provide()
     private val executor: Executor get() = injector.provide()
 
     private class SentenceParser(
@@ -107,6 +105,7 @@ internal class Nlp : NlpController {
                         }
                         val entityEvaluations = customEntityEvaluations +
                                 nlpResult.entities
+                                    .asSequence()
                                     .filter { e -> customEntityEvaluations.none { it.entity == e.entity } }
                                     .map { EntityValue(nlpResult, it) }
                         sentence.state.entityValues.addAll(entityEvaluations)
@@ -120,7 +119,7 @@ internal class Nlp : NlpController {
                                 userTimeline.userPreferences.locale,
                                 intent,
                                 entityEvaluations,
-                                finalEntityValues.values.mapNotNull { it.value },
+                                finalEntityValues,
                                 query,
                                 nlpResult
                             )
@@ -287,7 +286,7 @@ internal class Nlp : NlpController {
             defaultNewValue: EntityValue,
             initialValue: EntityStateValue? = null
         ): EntityValue {
-            val result = mergeValues(
+            val result = nlpClient.mergeValues(
                 ValuesMergeQuery(
                     botDefinition.namespace,
                     botDefinition.nlpModelName,
@@ -319,13 +318,21 @@ internal class Nlp : NlpController {
             }
         }
 
-        private fun DialogState.mergeEntityValuesFromAction(action: Action): Map<String, EntityStateValue> {
-            return action.state.entityValues
+        private fun DialogState.mergeEntityValuesFromAction(action: Action): List<EntityValue> {
+            var merge: List<NlpEntityMergeContext> = action.state.entityValues
+                .asSequence()
                 .groupBy { it.entity.role }
-                .mapValues {
-                    mergeEntityValues(action, it.value, entityValues[it.key])
-                }
-                .also { entityValues.putAll(it) }
+                .map { NlpEntityMergeContext(it.key, entityValues[it.key], it.value) }
+            //sort entities
+            BotRepository.nlpListeners.forEach { merge = it.sortEntitiesToMerge(merge) }
+
+            return merge.mapNotNull { mergeContext ->
+                var context = mergeContext
+                BotRepository.nlpListeners.forEach { context = it.mergeEntityValues(this, action, context) }
+                val result = mergeEntityValues(action, context.newValues, context.initialValue)
+                entityValues[context.entityRole] = result
+                result.value
+            }
         }
 
         private fun parse(request: NlpQuery): NlpResult? {
@@ -336,7 +343,7 @@ internal class Nlp : NlpController {
                 nlpClient.parse(request)
             } else {
                 nlpClient.parse(
-                    request.copy(intentsSubset = intentsQualifiers!!.map {
+                    request.copy(intentsSubset = intentsQualifiers!!.asSequence().map {
                         it.copy(
                             intent = it.intent.withNamespace(
                                 request.namespace
@@ -357,9 +364,6 @@ internal class Nlp : NlpController {
             }
             return result
         }
-
-        private fun mergeValues(request: ValuesMergeQuery): ValuesMergeResult? =
-            nlpClient.mergeValues(request)
 
     }
 
