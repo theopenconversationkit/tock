@@ -112,6 +112,11 @@ fun I18nTranslator.gaMessage(
         )
     )
 
+fun gaLogout():GAResponseConnectorMessage =
+    GAResponseConnectorMessage(
+        logoutEvent = true
+    )
+
 /**
  * Google Assistant Message with suggestions.
  */

@@ -275,6 +275,13 @@ internal data class GAConnectorCallback(
         try {
             if (!answered) {
                 answered = true
+
+                if(isLogoutEvent()) {
+                    logger.debug { "ga logout event" }
+                    context.response().setStatusCode(401).end()
+                    return
+                }
+
                 val gaResponse = buildResponse()
 
                 logger.debug { "ga response : $gaResponse" }
@@ -291,6 +298,18 @@ internal data class GAConnectorCallback(
             logger.error(t)
             context.fail(t)
         }
+    }
+
+    /**
+     * test if is logout event for account unlinking
+     */
+    private fun isLogoutEvent(): Boolean {
+        return actions.map { it.action  }
+            .filterIsInstance<SendSentence>()
+            .mapNotNull {
+                (it.message(gaConnectorType) as GAResponseConnectorMessage?)
+            }.firstOrNull{it.logoutEvent} != null
+
     }
 
     override fun eventSkipped(event: Event) {
