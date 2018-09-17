@@ -101,6 +101,18 @@ class DucklingClientIntegrationTest {
     }
 
     @Test
+    fun testSameDay() {
+        val now = now().plusDays(1)
+        val result =
+            DucklingClient.parse("fr", listOf("time"), now, systemDefault(), "le même jour")
+        println(result)
+        assertEquals(
+            now.withFixedOffsetZone().truncatedTo(ChronoUnit.DAYS),
+            parse(result!![0][":value"][":values"][0][":value"].string(), formatter)
+        )
+    }
+
+    @Test
     fun testHealthcheck() {
         assertTrue { DucklingClient.healthcheck() }
     }
