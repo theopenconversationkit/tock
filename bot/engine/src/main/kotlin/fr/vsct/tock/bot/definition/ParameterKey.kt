@@ -37,7 +37,7 @@ interface ParameterKey {
      * Create a [Parameters] with this as key and the [value].toString() value.
      */
     operator fun get(value: Any): Parameters =
-        Parameters(key to value.toString())
+        Parameters(key to ((value as? ParameterKey)?.key ?: value.toString()))
 
     /**
      * Create a [Parameters] with this as key and the [value] json serialized string.

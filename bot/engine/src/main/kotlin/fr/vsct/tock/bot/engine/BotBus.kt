@@ -182,9 +182,14 @@ interface BotBus : I18nTranslator {
     fun choice(key: ParameterKey): String? = action.choice(key)
 
     /**
-     * Returns true if the specified choice as the "true" value, false either.
+     * Returns true if the specified choice parameter has the "true" value, false either.
      */
     fun booleanChoice(key: ParameterKey): Boolean = action.booleanChoice(key)
+
+    /**
+     * Checks that the specified choice parameter has the specified value.
+     */
+    fun hasChoiceValue(param: ParameterKey, value: ParameterKey): Boolean = choice(param) == value.key
 
     /**
      * Returns true if the current action has the specified entity role.
