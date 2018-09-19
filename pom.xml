@@ -39,10 +39,10 @@
         <kotlin-logging>1.6.10</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>3.8.2</kmongo>
+        <kmongo>3.8.3</kmongo>
         <fongo>2.2.0-RC2</fongo>
-        <jackson>2.9.3</jackson>
-        <jackson-module>2.9.3</jackson-module>
+        <jackson>2.9.7</jackson>
+        <jackson-module>2.9.7</jackson-module>
         <klaxon>3.0.8</klaxon>
         <vertx>3.5.3</vertx>
         <retrofit>2.4.0</retrofit>

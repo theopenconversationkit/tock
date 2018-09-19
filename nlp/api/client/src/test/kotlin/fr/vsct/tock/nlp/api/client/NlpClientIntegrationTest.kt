@@ -20,8 +20,11 @@ import com.fasterxml.jackson.databind.DeserializationFeature
 import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
+import fr.vsct.tock.nlp.api.client.model.NlpQuery
+import fr.vsct.tock.nlp.api.client.model.NlpQueryContext
 import fr.vsct.tock.nlp.api.client.model.dump.ApplicationDump
 import org.junit.jupiter.api.Test
+import java.util.Locale
 import java.util.UUID
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue
@@ -80,5 +83,20 @@ class NlpClientIntegrationTest {
                 unknownApplicationName
             )!!.size
         )
+    }
+
+    @Test
+    fun testBotOpenData() {
+        val client = TockNlpClient("http://localhost:8888")
+        for (i in 0..10000) {
+            client.parse(
+                NlpQuery(
+                    listOf("Bonjour"),
+                    "app",
+                    "bot_open_data",
+                    NlpQueryContext(Locale.FRENCH)
+                )
+            )
+        }
     }
 }
