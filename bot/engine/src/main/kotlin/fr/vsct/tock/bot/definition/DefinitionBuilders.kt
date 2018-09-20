@@ -87,14 +87,19 @@ fun bot(
     keywordStory: StoryDefinition = defaultKeywordStory
 ): SimpleBotDefinition {
     fun findStory(intent: IntentAware?): StoryDefinition? =
-        findStoryDefinition(stories, intent?.wrappedIntent()?.name, unknownStory, keywordStory)
-            .let {
-                if (it == unknownStory || it == keywordStory) {
-                    null
-                } else {
-                    it
+        intent as? StoryDefinition
+                ?: findStoryDefinition(
+                    stories,
+                    intent?.wrappedIntent()?.name,
+                    unknownStory,
+                    keywordStory
+                ).let {
+                    if (it == unknownStory || it == keywordStory) {
+                        null
+                    } else {
+                        it
+                    }
                 }
-            }
 
     return SimpleBotDefinition(
         botId,
