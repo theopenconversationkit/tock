@@ -149,8 +149,7 @@ data class AlexaConnectorCallback internal constructor(
             if (!answered) {
                 answered = true
                 alexaResponse = buildResponse()
-
-                logger.debug { "alexa response : $alexaResponse" }
+                logResponse()
             } else {
                 logger.trace { "already answered: $this" }
             }
@@ -172,6 +171,16 @@ data class AlexaConnectorCallback internal constructor(
                 "$method : \n${mapper.writeValueAsString(req.context)}\n${mapper.writeValueAsString(req.session)}\n${mapper.writeValueAsString(
                     req.request
                 )}"
+            }
+        } catch (e: Exception) {
+            logger.error(e)
+        }
+    }
+
+    private fun logResponse() {
+        try {
+            logger.debug {
+                "response: ${mapper.writeValueAsString(alexaResponse)}"
             }
         } catch (e: Exception) {
             logger.error(e)
