@@ -105,10 +105,11 @@ class BotBusTest : BotEngineTest() {
         bus.switchStory(withoutStep)
         assertEquals(withoutStep, bus.story.definition)
         assertNull(bus.step)
+        assertEquals(withoutStep, bus.dialog.stories.last().definition)
     }
 
     @Test
-    fun `default delay is used WHEN multiple setneces are sent`() {
+    fun `default delay is used WHEN multiple sentences are sent`() {
         val actionsList = mutableListOf<Long>()
         every { connector.send(any(), any(), capture(actionsList)) } returns Unit
         bus.send("test")
