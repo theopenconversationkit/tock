@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.definition.BotAnswerInterceptor
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
 import fr.vsct.tock.bot.definition.StoryHandlerListener
@@ -58,6 +59,7 @@ object BotRepository {
     internal val nlpListeners: MutableList<NlpListener> = mutableListOf(BuiltInKeywordListener)
     private val nlpClient: NlpClient get() = injector.provide()
     private val executor: Executor get() = injector.provide()
+    internal val botAnswerInterceptors: MutableList<BotAnswerInterceptor> = mutableListOf()
 
     internal val connectorProviders: MutableSet<ConnectorProvider> = CopyOnWriteArraySet(
         ServiceLoader.load(ConnectorProvider::class.java).map { it }.apply {
@@ -108,6 +110,13 @@ object BotRepository {
      */
     fun registerStoryHandlerListener(listener: StoryHandlerListener) {
         storyHandlerListeners.add(listener)
+    }
+
+    /**
+     * Registers a new [BotAnswerInterceptor].
+     */
+    fun registerBotAnswerInterceptor(botAnswerInterceptor :BotAnswerInterceptor){
+        botAnswerInterceptors.add(botAnswerInterceptor)
     }
 
     /**

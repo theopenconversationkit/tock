@@ -87,4 +87,13 @@ open class SendSentence(
     }
 
     fun hasEmptyText() : Boolean = precomputedNlp == null  && text.isNullOrBlank()
+
+    /**
+     * Replace a connectorMessage
+     */
+    fun changeConnectorMessage(message: ConnectorMessage):SendSentence{
+        messages.removeAll { it.connectorType == message.connectorType }
+        messages.add(message)
+        return this
+    }
 }

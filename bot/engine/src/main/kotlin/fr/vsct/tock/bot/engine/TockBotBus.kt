@@ -110,9 +110,19 @@ internal class TockBotBus(
 
         _currentAnswerIndex++
 
-        story.actions.add(a)
-        connector.send(connectorData, action, a, context.currentDelay)
+        val actionToSent = applyBotAnswerInterceptor(a)
+        story.actions.add(actionToSent)
+        connector.send(connectorData, action, actionToSent, context.currentDelay)
         return this
+    }
+
+    /**
+     * Update Action using BotAnswerInterceptor
+     */
+    fun applyBotAnswerInterceptor(a: Action): Action {
+        return BotRepository.botAnswerInterceptors.fold(a) { action, interceptor ->
+            interceptor.handle(action, this)
+        }
     }
 
     override fun end(action: Action, delay: Long): BotBus {

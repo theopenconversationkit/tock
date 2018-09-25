@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.admin.test.TestPlanDAO
 import fr.vsct.tock.bot.admin.user.UserReportDAO
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.messenger.messengerConnectorType
+import fr.vsct.tock.bot.definition.BotAnswerInterceptor
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.definition.StoryHandlerListener
@@ -135,6 +136,11 @@ open class TestContext {
      * The story handler listeners to apply.
      */
     val storyHandlerListeners: MutableList<StoryHandlerListener> = mutableListOf()
+
+    /**
+     * The bot answer interceptors to apply.
+     */
+    val botAnswerInterceptors: MutableList<BotAnswerInterceptor> = mutableListOf()
 
     /**
      * Default mocked Tock Ioc.

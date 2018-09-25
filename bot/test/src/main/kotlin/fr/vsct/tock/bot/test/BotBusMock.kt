@@ -309,7 +309,7 @@ open class BotBusMock(
         }
 
         logger.trace { "send action $action $mockData" }
-        sendAction(action, mockData.currentDelay)
+        sendAction(applyBotAnswerInterceptor(action), mockData.currentDelay)
         return this
     }
 
@@ -397,5 +397,14 @@ open class BotBusMock(
 
     override fun markAsUnknown() {
         //do nothing
+    }
+
+    /**
+     * Update Action using BotAnswerInterceptor
+     */
+    fun applyBotAnswerInterceptor(a: Action): Action {
+        return context.testContext.botAnswerInterceptors.fold(a) { action, interceptor ->
+            interceptor.handle(action, this)
+        }
     }
 }
