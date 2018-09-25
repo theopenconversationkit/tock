@@ -16,11 +16,13 @@
 
 package fr.vsct.tock.bot.test
 
-import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.definition.BotDefinition
+import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.SimpleStoryHandlerBase
 import fr.vsct.tock.bot.definition.StoryDefinition
-import fr.vsct.tock.bot.definition.StoryHandler
 import fr.vsct.tock.bot.definition.StoryHandlerListener
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.ActionMetadata
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.DialogState
 import fr.vsct.tock.bot.engine.dialog.EventState
@@ -28,6 +30,7 @@ import fr.vsct.tock.bot.engine.dialog.Story
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
+import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
@@ -36,34 +39,45 @@ import org.junit.jupiter.api.Test
  */
 class BotBusMockTest {
 
-    val storyHandler: StoryHandler = mockk()
+    val storyHandler: SimpleStoryHandlerBase = mockk()
     val storyDefinition: StoryDefinition = mockk()
     val story: Story = mockk()
     val action: Action = mockk()
-    val context: BotBusMockContext = mockk()
     val testContext: TestContext = mockk()
     val dialog: Dialog = mockk()
+    val metadata = ActionMetadata()
+    val botDefinition: BotDefinition = mockk()
+
+    val context: BotBusMockContext by lazy {
+        BotBusMockContext(
+            botDefinition,
+            storyDefinition,
+            testContext = testContext
+        )
+    }
 
     @BeforeEach
     fun before() {
         every { storyHandler.handle(any()) } answers {}
 
         every { storyDefinition.storyHandler } returns storyHandler
+        every { storyDefinition.mainIntent() } returns Intent("main")
 
         every { story.definition } returns storyDefinition
+        every { story.actions } returns mutableListOf()
 
         every { action.applicationId } returns "appId"
         every { action.state } returns EventState()
+        every { action.metadata } returns metadata
 
-        every { context.connectorType } returns ConnectorType.none
-        every { context.story } returns story
-        every { context.firstAction } returns action
-
-        every { context.testContext } returns testContext
-
-        every { context.dialog } returns dialog
         every { dialog.state } returns DialogState()
         every { dialog.stories } returns mutableListOf()
+
+        every { botDefinition.defaultDelay(any()) } returns 1000
+        every { botDefinition.botId } returns "botId"
+
+        every { testContext.storyHandlerListeners } returns mutableListOf()
+
     }
 
     @Test
@@ -102,5 +116,42 @@ class BotBusMockTest {
         verify { storyHandler.handle(any()) }
         verify { listener1.endAction(any(), any()) }
         verify { listener2.endAction(any(), any()) }
+    }
+
+    @Test
+    fun `not end called throws Exception`() {
+        val botBus = BotBusMock(context, action)
+        val action: Action = mockk()
+        every { action.metadata } returns ActionMetadata()
+        every { action.state } returns EventState()
+
+        every { storyHandler.handle(any()) } answers {
+            botBus.send(action)
+        }
+
+        botBus.run()
+
+        assertThrows(
+            IllegalStateException::class.java
+        ) { botBus.checkEndCalled() }
+    }
+
+    @Test
+    fun `end called twice throws Exception`() {
+        val botBus = BotBusMock(context, action)
+        val action: Action = mockk()
+        every { action.metadata } returns ActionMetadata()
+        every { action.state } returns EventState()
+
+        every { storyHandler.handle(any()) } answers {
+            botBus.end(action)
+            botBus.end(action)
+        }
+
+        botBus.run()
+
+        assertThrows(
+            IllegalStateException::class.java
+        ) { botBus.checkEndCalled() }
     }
 }

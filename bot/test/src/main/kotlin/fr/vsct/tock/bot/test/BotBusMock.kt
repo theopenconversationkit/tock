@@ -113,7 +113,7 @@ open class BotBusMock(
      */
     val lastBusAnswer: BotBusMockLog get() = checkEndCalled().run { logsRepository.last() }
 
-    private var endCalled: Boolean = false
+    private var endCount: Int = 0
 
     private var _currentAnswerIndex: Int = 0
     override val currentAnswerIndex: Int get() = _currentAnswerIndex
@@ -141,7 +141,8 @@ open class BotBusMock(
      * Throws an exception if the end() is not called
      */
     fun checkEndCalled(): BotBusMock {
-        if (!endCalled) error("end() method not called")
+        if (endCount == 0) error("end() method not called")
+        else if (endCount > 1) error("end() called $endCount times")
         return this
     }
 
@@ -237,6 +238,13 @@ open class BotBusMock(
 
     init {
         val a = action
+
+        a.state.targetConnectorType?.let {
+            context.connectorType = it
+        }
+        a.state.userInterface?.let {
+            context.userInterfaceType = it
+        }
         if (a is SendChoice) {
             context.dialog.state.currentIntent = context.botDefinition.findIntent(a.intentName)
         }
@@ -291,13 +299,16 @@ open class BotBusMock(
 
         story.actions.add(action)
 
-        endCalled = action.metadata.lastAnswer
+        if (action.metadata.lastAnswer) {
+            endCount++
+        }
         _currentAnswerIndex++
 
-        if (endCalled) {
+        if (endCount == 1) {
             addSnapshot()
         }
 
+        logger.trace { "send action $action $mockData" }
         sendAction(action, mockData.currentDelay)
         return this
     }
