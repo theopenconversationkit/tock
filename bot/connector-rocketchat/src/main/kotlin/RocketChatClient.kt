@@ -28,6 +28,7 @@ import chat.rocket.core.internal.rest.login
 import chat.rocket.core.internal.rest.sendMessage
 import chat.rocket.core.model.Room
 import fr.vsct.tock.shared.Dice
+import fr.vsct.tock.shared.error
 import kotlinx.coroutines.experimental.CommonPool
 import kotlinx.coroutines.experimental.channels.Channel
 import kotlinx.coroutines.experimental.launch
@@ -93,56 +94,68 @@ internal class RocketChatClient(
         }
     }
 
-    fun join(roomId:String, listener: (Room) -> Unit) {
+    fun join(roomId: String, listener: (Room) -> Unit) {
         val job = launch(CommonPool) {
+            try {
+                logger.debug { "Try to connect $login" }
+                val token = client.login(login, password)
+                logger.debug { "Token: userId = ${token.userId} - authToken = ${token.authToken}" }
 
-            val token = client.login(login, password)
-            logger.debug { "Token: userId = ${token.userId} - authToken = ${token.authToken}" }
-
-            launch {
-                val statusChannel = Channel<State>()
-                client.addStateChannel(statusChannel)
-                for (status in statusChannel) {
-                    logger.debug("Changing status to: $status")
-                    when (status) {
-                        is State.Authenticating -> {
-                            logger.debug("Authenticating")
-                        }
-                        is State.Connected -> {
-                            logger.debug("Connected")
-                            client.subscribeRooms { _, _ -> }
+                launch {
+                    val statusChannel = Channel<State>()
+                    client.addStateChannel(statusChannel)
+                    for (status in statusChannel) {
+                        logger.debug("Changing status to: $status")
+                        when (status) {
+                            is State.Authenticating -> {
+                                logger.debug("Authenticating")
+                            }
+                            is State.Connected -> {
+                                logger.debug("Connected")
+                                client.subscribeRooms { _, _ -> }
+                            }
                         }
                     }
+                    logger.debug("Done on statusChannel")
                 }
-                logger.debug("Done on statusChannel")
-            }
 
-            launch {
-                for (room in client.roomsChannel) {
-                    listener.invoke(room.data)
+                launch {
+                    for (room in client.roomsChannel) {
+                        listener.invoke(room.data)
+                    }
                 }
+
+                client.connect()
+
+                client.joinChat(roomId)
+            } catch (e: Exception) {
+                logger.error(e)
             }
-
-            client.connect()
-
-            client.joinChat(roomId)
         }
 
         runBlocking {
-            job.join()
+            try {
+                job.join()
+            } catch (e: Exception) {
+                logger.error(e)
+            }
         }
     }
 
-    fun send(roomId:String, message:String) {
+    fun send(roomId: String, message: String) {
         runBlocking {
-            client.sendMessage(
-                roomId = roomId,
-                messageId = Dice.newId(),
-                message = message,
-                alias = "Tock bot",
-                emoji = ":smirk:",
-                avatar = "https://avatars2.githubusercontent.com/u/224255?s=88&v=4"
-            )
+            try {
+                client.sendMessage(
+                    roomId = roomId,
+                    messageId = Dice.newId(),
+                    message = message,
+                    alias = "Tock bot",
+                    emoji = ":smirk:",
+                    avatar = "https://avatars2.githubusercontent.com/u/224255?s=88&v=4"
+                )
+            } catch (e: Exception) {
+                logger.error(e)
+            }
         }
     }
 }

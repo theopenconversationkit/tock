@@ -31,7 +31,7 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.2.70</kotlin>
+        <kotlin>1.2.71</kotlin>
 
         <slf4j>1.7.25</slf4j>
         <logback>1.2.3</logback>
@@ -50,15 +50,17 @@
         <guava>26.0-jre</guava>
         <google-auth>1.25.0</google-auth>
         <jasypt>1.9.2</jasypt>
-        <commons-csv>1.5</commons-csv>
+        <commons-csv>1.6</commons-csv>
         <emoji>5.0</emoji>
         <commons-codec>1.11</commons-codec>
-        <commons-lang>3.8</commons-lang>
+        <commons-lang>3.8.1</commons-lang>
+        <json>20180813</json>
 
         <junit-platform>1.3.0</junit-platform>
         <junit-jupiter>5.3.1</junit-jupiter>
         
         <mockk>1.8.6</mockk>
+        <byte-buddy>1.8.22</byte-buddy>
 
         <plugin.surefire>2.22.0</plugin.surefire>
         <plugin.source>3.0.1</plugin.source>
@@ -313,6 +315,11 @@
                 <artifactId>commons-csv</artifactId>
                 <version>${commons-csv}</version>
             </dependency>
+            <dependency>
+                <groupId>org.json</groupId>
+                <artifactId>json</artifactId>
+                <version>${json}</version>
+            </dependency>
 
             <dependency>
                 <groupId>io.github.microutils</groupId>
@@ -398,6 +405,12 @@
                 <groupId>io.mockk</groupId>
                 <artifactId>mockk</artifactId>
                 <version>${mockk}</version>
+                <scope>test</scope>
+            </dependency>
+            <dependency>
+                <groupId>net.bytebuddy</groupId>
+                <artifactId>byte-buddy</artifactId>
+                <version>${byte-buddy}</version>
                 <scope>test</scope>
             </dependency>
             <dependency>

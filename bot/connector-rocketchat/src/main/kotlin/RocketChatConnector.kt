@@ -42,10 +42,11 @@ internal class RocketChatConnector(
 
     override fun register(controller: ConnectorController) {
         client.join(roomId) { room ->
+            logger.debug { "listening room event: $room" }
             if (room.lastMessage?.sender == null) {
                 logger.warn { "no message for $room - skip" }
             } else if (room.lastMessage!!.sender!!.username == client.login) {
-                logger.debug { "do not reply to bot messages $room" }
+                logger.debug { "do not reply to bot messages $room because client login is the same than sender: ${client.login}" }
             } else {
                 val requestTimerData = BotRepository.requestTimer.start("rocketchat_webhook")
                 try {

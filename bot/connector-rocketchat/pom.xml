@@ -45,6 +45,10 @@
             <artifactId>common</artifactId>
             <version>0.1-SNAPSHOT</version>
         </dependency>
+        <dependency>
+            <groupId>org.json</groupId>
+            <artifactId>json</artifactId>
+        </dependency>
        
         <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
