@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector.rocketchat
 
+import chat.rocket.common.model.roomTypeOf
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.engine.BotRepository
@@ -50,11 +51,12 @@ internal class RocketChatConnector(
             } else {
                 val requestTimerData = BotRepository.requestTimer.start("rocketchat_webhook")
                 try {
+                    logger.debug { "To NLP from ${room.lastMessage!!.roomId}" }
                     controller.handle(
                         SendSentence(
                             PlayerId(room.lastMessage!!.sender!!.id!!),
                             applicationId,
-                            PlayerId("bot", PlayerType.bot),
+                            PlayerId("bot:"+room.lastMessage!!.roomId!!, PlayerType.bot),
                             room.lastMessage!!.message
                         )
                     )
@@ -72,8 +74,10 @@ internal class RocketChatConnector(
     }
 
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+        logger.debug { "I've got a ${event::class.qualifiedName}" }
         if (event is SendSentence && event.text != null) {
-            client.send(roomId, event.stringText!!)
+            logger.debug { "Time to send ! $event  to ${event.playerId.id.substring(4)}" }
+            client.send(event.playerId.id.substring(4), event.stringText!!)
         }
     }
 }

@@ -23,6 +23,7 @@ import chat.rocket.core.TokenRepository
 import chat.rocket.core.internal.realtime.socket.connect
 import chat.rocket.core.internal.realtime.socket.model.State
 import chat.rocket.core.internal.realtime.subscribeRooms
+import chat.rocket.core.internal.rest.getInfo
 import chat.rocket.core.internal.rest.joinChat
 import chat.rocket.core.internal.rest.login
 import chat.rocket.core.internal.rest.sendMessage
@@ -118,7 +119,6 @@ internal class RocketChatClient(
                     }
                     logger.debug("Done on statusChannel")
                 }
-
                 launch {
                     for (room in client.roomsChannel) {
                         listener.invoke(room.data)
@@ -151,7 +151,7 @@ internal class RocketChatClient(
                     message = message,
                     alias = "Tock bot",
                     emoji = ":smirk:",
-                    avatar = "https://avatars2.githubusercontent.com/u/224255?s=88&v=4"
+                    avatar = "https://images.discordapp.net/avatars/348187123536494592/32c74035bac6fb7636c12d51130e846f.png?size=64"
                 )
             } catch (e: Exception) {
                 logger.error(e)
