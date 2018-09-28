@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.connector.rocketchat
 
+import chat.rocket.common.model.RoomType
 import chat.rocket.common.model.roomTypeOf
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
@@ -33,7 +34,6 @@ import mu.KotlinLogging
  */
 internal class RocketChatConnector(
     private val applicationId: String,
-    private val roomId: String,
     private val client: RocketChatClient
 ) : ConnectorBase(rocketChatConnectorType) {
 
@@ -42,20 +42,23 @@ internal class RocketChatConnector(
     }
 
     override fun register(controller: ConnectorController) {
-        client.join(roomId) { room ->
+        client.join { room ->
             logger.debug { "listening room event: $room" }
-            if (room.lastMessage?.sender == null) {
+            if (room.type.toString() != RoomType.LIVECHAT) {
+                logger.debug { "Do not reply to messages in non-livechat rooms" }
+            } else if (room.lastMessage?.sender == null) {
                 logger.warn { "no message for $room - skip" }
             } else if (room.lastMessage!!.sender!!.username == client.login) {
                 logger.debug { "do not reply to bot messages $room because client login is the same than sender: ${client.login}" }
             } else {
                 val requestTimerData = BotRepository.requestTimer.start("rocketchat_webhook")
+                logger.debug { "patate : $room.id -- ${room.lastMessage!!.roomId!!}" }
                 try {
                     controller.handle(
                         SendSentence(
                             PlayerId(room.lastMessage!!.sender!!.id!!),
                             applicationId,
-                            PlayerId("bot:"+room.lastMessage!!.roomId!!, PlayerType.bot),
+                            PlayerId("bot:"+room.id, PlayerType.bot),
                             room.lastMessage!!.message
                         )
                     )
@@ -74,7 +77,8 @@ internal class RocketChatConnector(
 
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         if (event is SendSentence && event.text != null) {
-            client.send(event.playerId.id.substring(4), event.stringText!!)
+            val thisRoomId = event.playerId.id.substring(4)
+            client.send(thisRoomId, event.stringText!!)
         }
     }
 }

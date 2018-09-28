@@ -30,9 +30,9 @@ import fr.vsct.tock.shared.resourceAsString
 internal object RocketChatConnectorProvider : ConnectorProvider {
 
     private const val ROCKET_CHAT_URL = "_url_"
-    private const val ROOM_ID = "_room_id_"
     private const val LOGIN = "_login_"
     private const val PASSWORD = "_password_"
+    private const val AVATAR = "_avatar_"
 
     override val connectorType: ConnectorType get() = rocketChatConnectorType
 
@@ -40,11 +40,11 @@ internal object RocketChatConnectorProvider : ConnectorProvider {
         with(connectorConfiguration) {
             return RocketChatConnector(
                 connectorId,
-                parameters.getValue(ROOM_ID),
                 RocketChatClient(
                     parameters.getValue(ROCKET_CHAT_URL),
                     parameters.getValue(LOGIN),
-                    parameters.getValue(PASSWORD)
+                    parameters.getValue(PASSWORD),
+                    parameters.getValue(AVATAR)
                 )
             )
         }
@@ -60,11 +60,6 @@ internal object RocketChatConnectorProvider : ConnectorProvider {
                     true
                 ),
                 ConnectorTypeConfigurationField(
-                    "Room Id",
-                    ROOM_ID,
-                    true
-                ),
-                ConnectorTypeConfigurationField(
                     "Bot Login",
                     LOGIN,
                     true
@@ -72,6 +67,11 @@ internal object RocketChatConnectorProvider : ConnectorProvider {
                 ConnectorTypeConfigurationField(
                     "Bot Password",
                     PASSWORD,
+                    true
+                ),
+                ConnectorTypeConfigurationField(
+                    "Avatar Url",
+                    AVATAR,
                     true
                 )
             ),
