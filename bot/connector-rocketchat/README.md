@@ -16,6 +16,8 @@ So you can't mutualize the Mongo instances and you need to change the Tock Mongo
 
  ![RocketChat Bot Configuration Sample](./admin.png)
  
+If you don't set room id parameter, the bot will be available only on the live chat.
+ 
 You can start to talk to the Bot!
 
  ![RocketChat Bot Talk Sample](./rocketchat.png)

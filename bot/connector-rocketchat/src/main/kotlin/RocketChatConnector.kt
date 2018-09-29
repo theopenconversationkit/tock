@@ -16,8 +16,10 @@
 
 package fr.vsct.tock.bot.connector.rocketchat
 
+import chat.rocket.common.model.RoomType
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
+import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -32,8 +34,8 @@ import mu.KotlinLogging
  */
 internal class RocketChatConnector(
     private val applicationId: String,
-    private val roomId: String,
-    private val client: RocketChatClient
+    private val client: RocketChatClient,
+    private val roomId: String? = null
 ) : ConnectorBase(rocketChatConnectorType) {
 
     companion object {
@@ -43,20 +45,24 @@ internal class RocketChatConnector(
     override fun register(controller: ConnectorController) {
         client.join(roomId) { room ->
             logger.debug { "listening room event: $room" }
-            if (room.lastMessage?.sender == null) {
+            if (room.type.toString() != RoomType.LIVECHAT && room.id != roomId) {
+                logger.debug { "Do not reply to messages in non-livechat rooms" }
+            } else if (room.lastMessage?.sender == null) {
                 logger.warn { "no message for $room - skip" }
             } else if (room.lastMessage!!.sender!!.username == client.login) {
                 logger.debug { "do not reply to bot messages $room because client login is the same than sender: ${client.login}" }
             } else {
                 val requestTimerData = BotRepository.requestTimer.start("rocketchat_webhook")
+                logger.debug { "message handled : ${room.lastMessage}" }
                 try {
                     controller.handle(
                         SendSentence(
                             PlayerId(room.lastMessage!!.sender!!.id!!),
                             applicationId,
-                            PlayerId("bot", PlayerType.bot),
+                            PlayerId(applicationId, PlayerType.bot),
                             room.lastMessage!!.message
-                        )
+                        ),
+                        ConnectorData(RocketChatConnectorCallback(applicationId, room.id))
                     )
                 } catch (e: Throwable) {
                     logger.error(e)
@@ -73,6 +79,7 @@ internal class RocketChatConnector(
 
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         if (event is SendSentence && event.text != null) {
+            val roomId = (callback as RocketChatConnectorCallback).roomId
             client.send(roomId, event.stringText!!)
         }
     }

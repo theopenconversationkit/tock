@@ -44,7 +44,8 @@ import java.util.concurrent.TimeUnit
 internal class RocketChatClient(
     private val targetUrl: String,
     val login: String,
-    private val password: String
+    private val password: String,
+    private val avatar: String
 ) {
 
     companion object {
@@ -94,7 +95,7 @@ internal class RocketChatClient(
         }
     }
 
-    fun join(roomId: String, listener: (Room) -> Unit) {
+    fun join(roomId:String?, listener: (Room) -> Unit) {
         val job = launch(CommonPool) {
             try {
                 logger.debug { "Try to connect $login" }
@@ -118,7 +119,6 @@ internal class RocketChatClient(
                     }
                     logger.debug("Done on statusChannel")
                 }
-
                 launch {
                     for (room in client.roomsChannel) {
                         listener.invoke(room.data)
@@ -127,7 +127,9 @@ internal class RocketChatClient(
 
                 client.connect()
 
-                client.joinChat(roomId)
+                if(roomId != null) {
+                    client.joinChat(roomId)
+                }
             } catch (e: Exception) {
                 logger.error(e)
             }
@@ -151,7 +153,7 @@ internal class RocketChatClient(
                     message = message,
                     alias = "Tock bot",
                     emoji = ":smirk:",
-                    avatar = "https://avatars2.githubusercontent.com/u/224255?s=88&v=4"
+                    avatar = avatar
                 )
             } catch (e: Exception) {
                 logger.error(e)
