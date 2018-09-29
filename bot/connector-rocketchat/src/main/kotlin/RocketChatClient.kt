@@ -23,7 +23,6 @@ import chat.rocket.core.TokenRepository
 import chat.rocket.core.internal.realtime.socket.connect
 import chat.rocket.core.internal.realtime.socket.model.State
 import chat.rocket.core.internal.realtime.subscribeRooms
-import chat.rocket.core.internal.rest.getInfo
 import chat.rocket.core.internal.rest.joinChat
 import chat.rocket.core.internal.rest.login
 import chat.rocket.core.internal.rest.sendMessage
@@ -96,7 +95,7 @@ internal class RocketChatClient(
         }
     }
 
-    fun join(listener: (Room) -> Unit) {
+    fun join(roomId:String?, listener: (Room) -> Unit) {
         val job = launch(CommonPool) {
             try {
                 logger.debug { "Try to connect $login" }
@@ -127,6 +126,10 @@ internal class RocketChatClient(
                 }
 
                 client.connect()
+
+                if(roomId != null) {
+                    client.joinChat(roomId)
+                }
             } catch (e: Exception) {
                 logger.error(e)
             }

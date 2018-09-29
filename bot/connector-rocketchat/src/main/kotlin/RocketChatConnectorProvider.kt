@@ -33,6 +33,7 @@ internal object RocketChatConnectorProvider : ConnectorProvider {
     private const val LOGIN = "_login_"
     private const val PASSWORD = "_password_"
     private const val AVATAR = "_avatar_"
+    private const val DEDICATED_ROOM_ID = "_dedicated_room_id_"
 
     override val connectorType: ConnectorType get() = rocketChatConnectorType
 
@@ -45,7 +46,8 @@ internal object RocketChatConnectorProvider : ConnectorProvider {
                     parameters.getValue(LOGIN),
                     parameters.getValue(PASSWORD),
                     parameters.getValue(AVATAR)
-                )
+                ),
+                parameters[DEDICATED_ROOM_ID]?.run { if (isBlank()) null else trim() }
             )
         }
     }
@@ -73,6 +75,11 @@ internal object RocketChatConnectorProvider : ConnectorProvider {
                     "Avatar Url",
                     AVATAR,
                     true
+                ),
+                ConnectorTypeConfigurationField(
+                    "Optional Room Id",
+                    DEDICATED_ROOM_ID,
+                    false
                 )
             ),
             resourceAsString("/rocketchat.svg")
