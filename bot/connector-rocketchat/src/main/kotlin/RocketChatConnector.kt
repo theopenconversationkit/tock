@@ -45,8 +45,8 @@ internal class RocketChatConnector(
     override fun register(controller: ConnectorController) {
         client.join(roomId) { room ->
             logger.debug { "listening room event: $room" }
-            if (room.type.toString() != RoomType.LIVECHAT && room.id != roomId) {
-                logger.debug { "Do not reply to messages in non-livechat rooms" }
+            if (room.type.toString() != RoomType.LIVECHAT && (roomId == null || room.id != roomId)) {
+                logger.debug { "Do not reply to messages in non-livechat rooms or dedicated room" }
             } else if (room.lastMessage?.sender == null) {
                 logger.warn { "no message for $room - skip" }
             } else if (room.lastMessage!!.sender!!.username == client.login) {
