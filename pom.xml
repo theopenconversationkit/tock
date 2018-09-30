@@ -96,6 +96,11 @@
         <dependencies>
             <dependency>
                 <groupId>org.jetbrains.kotlin</groupId>
+                <artifactId>kotlin-stdlib</artifactId>
+                <version>${kotlin}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.jetbrains.kotlin</groupId>
                 <artifactId>kotlin-stdlib-jdk8</artifactId>
                 <version>${kotlin}</version>
             </dependency>
@@ -235,6 +240,16 @@
                 <artifactId>kmongo-flapdoodle</artifactId>
                 <version>${kmongo}</version>
                 <scope>test</scope>
+                <exclusions>
+                    <exclusion>
+                        <groupId>junit</groupId>
+                        <artifactId>junit</artifactId>
+                    </exclusion>
+                    <exclusion>
+                        <groupId>org.jetbrains.kotlin</groupId>
+                        <artifactId>kotlin-test-junit</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <dependency>

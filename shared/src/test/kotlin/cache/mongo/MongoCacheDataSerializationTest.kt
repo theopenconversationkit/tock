@@ -19,7 +19,7 @@ package fr.vsct.tock.shared.cache.mongo
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import fr.vsct.tock.shared.jackson.mapper
-import org.junit.Test
+import org.junit.jupiter.api.Test
 import java.util.Arrays
 import kotlin.test.assertEquals
 import kotlin.test.assertTrue

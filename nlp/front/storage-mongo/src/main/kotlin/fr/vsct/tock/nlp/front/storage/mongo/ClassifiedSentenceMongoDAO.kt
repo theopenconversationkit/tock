@@ -42,6 +42,7 @@ import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Tex
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UnknownCount
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UpdateDate
 import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.UsageCount
+import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogMongoDAO.ParseRequestLogStatCol
 import fr.vsct.tock.shared.defaultLocale
 import mu.KotlinLogging
@@ -138,7 +139,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
     }
 
     private val col: MongoCollection<ClassifiedSentenceCol> by lazy {
-        val c = MongoFrontConfiguration.database.getCollection<ClassifiedSentenceCol>("classified_sentence")
+        val c = database.getCollection<ClassifiedSentenceCol>("classified_sentence")
         c.ensureUniqueIndex(Text, Language, ApplicationId)
         c.ensureIndex(Language, ApplicationId, Status)
         c.ensureIndex(Status)
@@ -338,8 +339,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         entityType: String,
         role: String
     ) {
-        //TODO use 10 levels when this is resolved:  https:jira.mongodb.org/browse/SERVER-831
-        (1..1).forEach { removeSubEntitiesFromSentence(applicationId, entityType, role, it) }
+        (1..10).forEach { removeSubEntitiesFromSentence(applicationId, entityType, role, it) }
     }
 
     private fun removeSubEntitiesFromSentence(
@@ -349,8 +349,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         level: Int
     ) {
         val baseFilter = "classification.entities" + (2..level).joinToString("") { ".subEntities" }
-        col.updateMany(
-            """{
+        val filter = """{
             'applicationId':${applicationId.json},
             '$baseFilter':{
                 $elemMatch :{
@@ -362,15 +361,16 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     }
                 }
             }
-        }""",
-            """{
+        }"""
+        val update = """{
                     $pull:{
-                        '${baseFilter.replace(".subEntities", ".$.subEntities")}.$.subEntities':{
+                        '${baseFilter.replace(".subEntities", ".$[].subEntities")}.$.subEntities':{
                             'role':${role.json}
                             }
                         }
                     }"""
-        )
+        logger.debug { "$filter $update" }
+        col.updateMany(filter, update)
     }
 
     internal fun updateSentenceState(stat: ParseRequestLogStatCol) {
