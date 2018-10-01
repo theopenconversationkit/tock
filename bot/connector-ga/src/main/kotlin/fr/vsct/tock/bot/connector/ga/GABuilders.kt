@@ -112,7 +112,7 @@ fun I18nTranslator.gaMessage(
         )
     )
 
-fun gaLogout():GAResponseConnectorMessage =
+fun gaLogout(): GAResponseConnectorMessage =
     GAResponseConnectorMessage(
         logoutEvent = true
     )
@@ -120,7 +120,7 @@ fun gaLogout():GAResponseConnectorMessage =
 /**
  * Google Assistant Message with suggestions.
  */
-fun I18nTranslator.gaMessage(text: CharSequence, vararg suggestions: String): GAResponseConnectorMessage =
+fun I18nTranslator.gaMessage(text: CharSequence, vararg suggestions: CharSequence): GAResponseConnectorMessage =
     if (suggestions.isEmpty()) gaMessage(inputPrompt(text)) else gaMessage(richResponse(text, *suggestions))
 
 /**
@@ -151,7 +151,7 @@ fun I18nTranslator.gaMessage(possibleIntents: List<GAExpectedIntent>): GARespons
 /**
  * Google Assistant Message with text and multiple [GAExpectedIntent].
  */
-fun I18nTranslator.gaMessage(text: String, possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
+fun I18nTranslator.gaMessage(text: CharSequence, possibleIntents: List<GAExpectedIntent>): GAResponseConnectorMessage =
     gaMessage(
         inputPrompt(richResponse(text)),
         possibleIntents

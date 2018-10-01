@@ -97,8 +97,13 @@ fun I18nTranslator.richResponse(
  * Provides a [GARichResponse] with text item.
  */
 fun I18nTranslator.richResponse(text: CharSequence, vararg suggestions: CharSequence): GARichResponse =
-    richResponse(text, null, suggestions.toList())
+    richResponse(text, suggestions.toList())
 
+/**
+ * Provides a [GARichResponse] with text item.
+ */
+fun I18nTranslator.richResponse(text: CharSequence, suggestions: List<CharSequence>): GARichResponse =
+    richResponse(text, null, suggestions)
 
 /**
  * Provides a [GARichResponse] with a text and a [GABasicCard].
