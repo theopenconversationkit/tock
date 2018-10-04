@@ -16,17 +16,25 @@
 
 package fr.vsct.tock.bot.connector.slack
 
-import fr.vsct.tock.bot.connector.slack.model.SlackMessageIn
+import fr.vsct.tock.bot.connector.slack.model.MessageEvent
+import fr.vsct.tock.bot.connector.slack.model.old.SlackMessageIn
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType.bot
-import mu.KotlinLogging
 
 
 internal object SlackRequestConverter {
 
-    private val logger = KotlinLogging.logger {}
+    fun toEvent(message: MessageEvent, applicationId: String): Event? {
+        return if (message.user == null) null
+        else SendSentence(
+            PlayerId(message.user),
+            applicationId,
+            PlayerId(applicationId, bot),
+            message.text
+        )
+    }
 
     fun toEvent(message: SlackMessageIn, applicationId: String): Event? {
         val safeMessage = message

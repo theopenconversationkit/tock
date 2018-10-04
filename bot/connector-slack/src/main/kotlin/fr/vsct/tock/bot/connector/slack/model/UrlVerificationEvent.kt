@@ -16,28 +16,10 @@
 
 package fr.vsct.tock.bot.connector.slack.model
 
-import org.junit.jupiter.api.Test
-import kotlin.test.assertEquals
-
 /**
- *
+ * Url verification event - see [https://api.slack.com/events/url_verification]
  */
-class SlackMessageInTest {
-
-    @Test
-    fun `toSentenceElement provides SentenceElement with text`() {
-        val inMessage = SlackMessageIn(
-            "token",
-            "team_id",
-            "team_domain",
-            "channel_id",
-            "channel_name",
-            12,
-            "user_id",
-            "user_name",
-            "text",
-            "trigger_word"
-        )
-        assertEquals("text", inMessage.toSentenceElement().texts["text"])
-    }
-}
+data class UrlVerificationEvent(
+    val token: String,
+    val challenge: String
+) : EventApiMessage()

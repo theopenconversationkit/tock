@@ -16,25 +16,26 @@
 
 package fr.vsct.tock.bot.connector.slack.model
 
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import com.fasterxml.jackson.annotation.JsonSubTypes
+import com.fasterxml.jackson.annotation.JsonSubTypes.Type
+import com.fasterxml.jackson.annotation.JsonTypeInfo
+import com.fasterxml.jackson.annotation.JsonTypeInfo.As.PROPERTY
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id.NAME
 
+/**
+ * Event API base class.
+ */
+@JsonTypeInfo(
+    use = NAME,
+    include = PROPERTY,
+    property = "type"
+)
+@JsonSubTypes(
+    value = [
+        Type(UrlVerificationEvent::class, name = "url_verification"),
+        Type(CallbackEvent::class, name = "event_callback")
+    ]
+)
+abstract class EventApiMessage : SlackConnectorMessage() {
 
-data class SlackMessageIn(
-    val token: String,
-    val team_id: String,
-    val team_domain: String,
-    val channel_id: String,
-    val channel_name: String,
-    val timestamp: Number,
-    val user_id: String,
-    val user_name: String,
-    var text: String,
-    val trigger_word: String?
-) : SlackConnectorMessage() {
-
-    fun getRealMessage(): String {
-        return this.text.replace("${this.trigger_word} ", "")
-    }
-
-    override fun toSentenceElement(): SentenceElement = SentenceElement(texts = mapOf(::text.name to text))
 }

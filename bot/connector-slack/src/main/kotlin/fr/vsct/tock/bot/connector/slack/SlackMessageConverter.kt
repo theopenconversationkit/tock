@@ -28,13 +28,12 @@ internal object SlackMessageConverter {
     val logger = KotlinLogging.logger {}
 
     fun toMessageOut(action: Action): SlackConnectorMessage? {
-        logger.info { action.javaClass }
         return when (action) {
             is SendSentence ->
-                if (action.hasMessage(SlackConnectorProvider.connectorType) ) {
+                if (action.hasMessage(SlackConnectorProvider.connectorType)) {
                     action.message(SlackConnectorProvider.connectorType) as SlackConnectorMessage
                 } else {
-                    SlackMessageOut(action.stringText ?: "")
+                    action.stringText?.run { if (isBlank()) null else SlackMessageOut(this) }
                 }
             else -> {
                 logger.warn { "Action $action not supported" }

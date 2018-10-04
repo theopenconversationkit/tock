@@ -19,14 +19,18 @@ slackToken3 is the authentication token, and the only token that can be regenera
 * Then you can configure your connector for your bot: go to the Configuration -> Bot Configurations menu in the Tock Bot administration interface, and create a new configuration.
 
 
-### Outgoing webhook:
+### Event Subscriptions:
 
-You just have to give slack a url to contact your bot.
+Enable Event Subscriptions as described here: [https://api.slack.com/events-api#subscriptions].
 Say your tock bot installation lies at http://my-tock-bot-domain-name, then in our case (with the above configuration) the url will be:
 
 ```
-http://my-tock-bot-domain-name/path-to-my-slack-bot-http-endpoint
+http://my-tock-bot-domain-name/[relative path of bot configuration]
 ```
+
+Then you just have to create a Bot User and to subscribe to the *message.channels* Bot Event.
+
+Invite the Bot user to the channel.
 
 Your slack connector is ready to be used !!
 

@@ -37,7 +37,6 @@ internal object SlackConnectorProvider : ConnectorProvider {
             return SlackConnector(
                 connectorId,
                 path,
-                "#bot",
                 parameters.getValue(OUT_TOKEN_1),
                 parameters.getValue(OUT_TOKEN_2),
                 parameters.getValue(OUT_TOKEN_3),
