@@ -21,7 +21,7 @@ slackToken3 is the authentication token, and the only token that can be regenera
 
 ### Event Subscriptions:
 
-Enable Event Subscriptions as described here: [https://api.slack.com/events-api#subscriptions].
+Enable Event Subscriptions as described here: https://api.slack.com/events-api#subscriptions.
 Say your tock bot installation lies at http://my-tock-bot-domain-name, then in our case (with the above configuration) the url will be:
 
 ```
