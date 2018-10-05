@@ -65,7 +65,7 @@ internal object WebhookActionConverter {
                         )
                     )
                 }
-            } else if (input.arguments?.all { it.builtInArg == GAArgumentBuiltInName.OPTION } == true) {
+            } else if (input.arguments?.any { it.builtInArg == GAArgumentBuiltInName.OPTION } == true) {
                 val params = SendChoice.decodeChoiceId(
                     input.arguments.first { it.builtInArg == GAArgumentBuiltInName.OPTION }.textValue
                             ?: error("no text value")

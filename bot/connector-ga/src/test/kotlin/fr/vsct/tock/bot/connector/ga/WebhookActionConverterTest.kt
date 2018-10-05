@@ -36,6 +36,7 @@ class WebhookActionConverterTest {
 
     val appId = "test"
     val optionRequest: GARequest = mapper.readValue(resource("/request_with_option.json"))
+    val optionRequestWithTwoArguments: GARequest = mapper.readValue(resource("/request_with_option_two_arguments.json"))
     val optionWithRawTextRequest: GARequest = mapper.readValue(resource("/request_with_option_and_raw_text.json"))
     val sttRequest: GARequest = mapper.readValue(resource("/request_with_stt_transformer.json"))
 
@@ -43,6 +44,12 @@ class WebhookActionConverterTest {
     @Test
     fun toEvent_shouldReturnsSendChoice_whenOptionArgAndSameInputText() {
         val e = WebhookActionConverter.toEvent(optionRequest, appId)
+        assertTrue(e is SendChoice)
+    }
+
+    @Test
+    fun toEvent_shouldReturnsSendChoice_whenTwoOptionArgs() {
+        val e = WebhookActionConverter.toEvent(optionRequestWithTwoArguments, appId)
         assertTrue(e is SendChoice)
     }
 

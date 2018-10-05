@@ -1,0 +1,66 @@
+{
+  "user": {
+    "userId": "ABwppHEH-dsqdqsOhDCoh7jS4lRT432sQQ6Loxxxxxxzlrt8WbTwC34pvYVk2oOgYKnrNvRQSZP54",
+    "locale": "fr-CA",
+    "lastSeen": "2018-10-05T12:57:55Z"
+  },
+  "conversation": {
+    "conversationId": "ABwppHMlmGNfu8GqoCCPIxSkrl-tyfOlcNpQPcunXnkt5GuLj5zVVe8MzmSyKfJA5DwQ",
+    "type": "NEW"
+  },
+  "inputs": [
+    {
+      "intent": "actions.intent.OPTION",
+      "rawInputs": [
+        {
+          "inputType": "TOUCH",
+          "query": "Paris Nord-Lille Flandres départ le 10/10/18 à 10:46 pour 40€ - proposition 2"
+        }
+      ],
+      "arguments": [
+        {
+          "name": "OPTION",
+          "textValue": "select_proposal?UserTravelId=5bb7617fc9e77c0005f2b792&ProposalIndex=1&OutwardSelected=true&Inward=true&action=Select&_title=Paris+Nord-Lille+Flandres+d%C3%A9part+le+10%2F10%2F18+%C3%A0+10%3A46+pour+40%E2%82%AC+-+proposition+2&_previous_intent=search_inward"
+        },
+        {
+          "name": "text",
+          "rawText": "Paris Nord-Lille Flandres départ le 10/10/18 à 10:46 pour 40€ - proposition 2",
+          "textValue": "Paris Nord-Lille Flandres départ le 10/10/18 à 10:46 pour 40€ - proposition 2"
+        }
+      ]
+    }
+  ],
+  "surface": {
+    "capabilities": [
+      {
+        "name": "actions.capability.AUDIO_OUTPUT"
+      },
+      {
+        "name": "actions.capability.WEB_BROWSER"
+      },
+      {
+        "name": "actions.capability.MEDIA_RESPONSE_AUDIO"
+      },
+      {
+        "name": "actions.capability.SCREEN_OUTPUT"
+      }
+    ]
+  },
+  "isInSandbox": true,
+  "availableSurfaces": [
+    {
+      "capabilities": [
+        {
+          "name": "actions.capability.AUDIO_OUTPUT"
+        },
+        {
+          "name": "actions.capability.WEB_BROWSER"
+        },
+        {
+          "name": "actions.capability.SCREEN_OUTPUT"
+        }
+      ]
+    }
+  ],
+  "requestType": "SIMULATOR"
+}
