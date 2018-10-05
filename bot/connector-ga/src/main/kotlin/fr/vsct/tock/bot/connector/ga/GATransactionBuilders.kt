@@ -47,7 +47,10 @@ import fr.vsct.tock.bot.connector.ga.model.response.GASubLine
 import fr.vsct.tock.bot.connector.ga.model.response.GATransactionDecisionValueSpec
 import fr.vsct.tock.bot.connector.ga.model.response.GATransactionRequirementsCheckSpec
 import fr.vsct.tock.bot.engine.I18nTranslator
+import mu.KotlinLogging
 import java.time.Instant
+
+private val logger = KotlinLogging.logger {}
 
 private inline fun <reified T> ConnectorMessage.findTransactionObject(intent: GAIntent): T? =
     (this as? GARequestConnectorMessage)?.run {
@@ -259,7 +262,14 @@ fun I18nTranslator.lineItem(
 ): GALineItem =
     GALineItem(
         id,
-        translate(name).toString(),
+        translate(name).toString().run {
+            if(length > 100) {
+                logger.warn { "line item name has more than 100 chars - remove chars after 100" }
+                substring(0, 100)
+            } else {
+                this
+            }
+        },
         type,
         quantity,
         translate(description).toString(),
