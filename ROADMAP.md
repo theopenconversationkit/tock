@@ -14,16 +14,16 @@
     - Complex conversational context support
     - Mongo change stream support (perf improvement)
     
-- 1.3.0 September 2018    
-    - Agnostic web platform integration sample      
-    - Cleanup and upgrade admin web interface    
+- 1.3.0 October 2018    
+    - Agnostic web platform integration sample   
 
 - 2.0.0 November 2018
     - External demo server
     - Conversational framework: allow to create a bot in the administration interface without IDE
     - add code editor admin interface
     - Non-regression tests improvements
-    - Bot API
+    - Bot API          
+    - Cleanup and upgrade admin web interface 
 
 - 3.0.0 February 2019  
     - AB Test engine workflow
