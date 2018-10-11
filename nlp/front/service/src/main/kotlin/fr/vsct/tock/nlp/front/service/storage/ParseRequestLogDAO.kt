@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.service.storage
 
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLog
+import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogIntentStat
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQueryResult
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogStat
@@ -32,4 +33,7 @@ interface ParseRequestLogDAO {
     fun search(query: ParseRequestLogQuery): ParseRequestLogQueryResult
 
     fun stats(query: ParseRequestLogStatQuery): List<ParseRequestLogStat>
+
+    fun intentStats(query: ParseRequestLogStatQuery): List<ParseRequestLogIntentStat>
+
 }

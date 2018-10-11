@@ -23,6 +23,7 @@ import com.mongodb.client.model.ReturnDocument.AFTER
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLog
+import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogIntentStat
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQueryResult
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogStat
@@ -39,6 +40,8 @@ import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.Error
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.Query
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.Result
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.Text
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogIntentStatCol_.Companion.MainIntent
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogIntentStatCol_.Companion.SecondaryIntent
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatCol_.Companion.Language
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatCol_.Companion.LastUsage
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion.Count
@@ -61,7 +64,9 @@ import org.litote.kmongo.dayOfYear
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.document
 import org.litote.kmongo.ensureIndex
+import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
+import org.litote.kmongo.findOne
 import org.litote.kmongo.from
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.group
@@ -69,8 +74,10 @@ import org.litote.kmongo.gte
 import org.litote.kmongo.inc
 import org.litote.kmongo.lte
 import org.litote.kmongo.match
+import org.litote.kmongo.newId
 import org.litote.kmongo.project
 import org.litote.kmongo.regex
+import org.litote.kmongo.save
 import org.litote.kmongo.set
 import org.litote.kmongo.sort
 import org.litote.kmongo.sum
@@ -144,6 +151,18 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
 
     @Data(internal = true)
     @JacksonData(internal = true)
+    data class ParseRequestLogIntentStatCol(
+        val applicationId: Id<ApplicationDefinition>,
+        val language: Locale,
+        val mainIntent: String,
+        val secondaryIntent: String,
+        val averageDiff: Double,
+        val count: Long = 1,
+        val _id: Id<ParseRequestLogIntentStatCol> = newId()
+    )
+
+    @Data(internal = true)
+    @JacksonData(internal = true)
     data class DayAndYear(val dayOfYear: Int, val year: Int)
 
     @Data(internal = true)
@@ -184,6 +203,12 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
         c
     }
 
+    internal val intentStatsCol: MongoCollection<ParseRequestLogIntentStatCol> by lazy {
+        val c = database.getCollection<ParseRequestLogIntentStatCol>("parse_request_log_intent_stats")
+        c.ensureUniqueIndex(Language, ApplicationId, MainIntent, SecondaryIntent)
+        c
+    }
+
     override fun save(log: ParseRequestLog) {
         val savedLog = log.copy(
             query = log.query.copy(queries = obfuscate(log.query.queries)),
@@ -208,8 +233,41 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                 ),
                 FindOneAndUpdateOptions().upsert(true).returnDocument(AFTER)
             )
-            if(updatedStat != null) {
+            if (updatedStat != null) {
                 ClassifiedSentenceMongoDAO.updateSentenceState(updatedStat)
+            }
+
+            val secondaryIntent = log.result?.otherIntentsProbabilities?.run {
+                if (isNotEmpty()) {
+                    iterator().next()
+                } else {
+                    null
+                }
+            }
+            if (secondaryIntent != null) {
+                val diff = log.result!!.intentProbability - secondaryIntent.value
+                val s = intentStatsCol.findOne(
+                    and(
+                        Language eq stat.language,
+                        ApplicationId eq stat.applicationId,
+                        MainIntent eq log.result!!.intent,
+                        SecondaryIntent eq secondaryIntent.key
+                    )
+                )?.run {
+                    copy(
+                        count = count + 1,
+                        averageDiff = ((averageDiff * count) + diff) / (count + 1)
+                    )
+                }
+                        ?: ParseRequestLogIntentStatCol(
+                            log.applicationId,
+                            log.query.context.language,
+                            log.result!!.intent,
+                            secondaryIntent.key,
+                            diff,
+                            1
+                        )
+                intentStatsCol.save(s)
             }
         }
     }
@@ -281,4 +339,24 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                 .toList().map { it.toStat() }
         }
     }
+
+    override fun intentStats(query: ParseRequestLogStatQuery): List<ParseRequestLogIntentStat> {
+        return intentStatsCol
+            .find(
+                and(
+                    ApplicationId eq query.applicationId,
+                    Count gte 30
+                )
+            )
+            .sort("{'count':-1}")
+            .map {
+                ParseRequestLogIntentStat(
+                    it.mainIntent,
+                    it.secondaryIntent,
+                    it.count,
+                    it.averageDiff
+                )
+            }.toList()
+    }
+
 }

@@ -28,6 +28,7 @@ const tabs = [
   new TabLink("test-intent-errors", "Intent Errors"),
   new TabLink("test-entity-errors", "Entity Errors"),
   new TabLink("model-builds", "Model Builds"),
+  new TabLink("intent-quality", "Intent QA"),
 ];
 
 @Component({

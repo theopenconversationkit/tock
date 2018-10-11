@@ -969,6 +969,25 @@ export class TestBuildStat {
 
 }
 
+export class IntentQA {
+
+  constructor(public mainIntent: string,
+              public secondaryIntent: string,
+              public occurrence: number,
+              public average: number) {
+  }
+
+  static fromJSON(json?: any): IntentQA {
+    const value = Object.create(IntentQA.prototype);
+    const result = Object.assign(value, json, {});
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): IntentQA[] {
+    return json ? json.map(IntentQA.fromJSON) : [];
+  }
+}
+
 export class UpdateSentencesQuery extends ApplicationScopedQuery {
 
   constructor(public namespace: string,

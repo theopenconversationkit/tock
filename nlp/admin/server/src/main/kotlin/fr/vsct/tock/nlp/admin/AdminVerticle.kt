@@ -358,6 +358,18 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
+        blockingJsonGet("/logs/intent/stats/:name")
+        { context ->
+            val appName = context.pathParam("name")
+            val app = front.getApplicationByNamespaceAndName(context.organization, appName)
+            if (app != null) {
+                val req = LogStatsQuery(null).toStatQuery(app)
+                front.intentStats(req)
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonPost("/intent")
         { context, intent: IntentDefinition ->
             AdminService.createOrUpdateIntent(context.organization, intent) ?: unauthorized()
