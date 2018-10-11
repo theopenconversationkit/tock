@@ -53,10 +53,10 @@
     <input mdInput placeholder="Connector identifier" [(ngModel)]="configuration.applicationId">
   </md-input-container>
   <md-input-container>
-    <input mdInput placeholder="Relative REST path" [(ngModel)]="configuration.path" md-tooltip="e.g. /messenger">
+    <input mdInput placeholder="Relative REST path" [(ngModel)]="configuration.path" title="e.g. /messenger">
   </md-input-container>
   <md-input-container>
-    <input mdInput placeholder="Application base url" [(ngModel)]="configuration.baseUrl" md-tooltip="optional">
+    <input mdInput placeholder="Application base url" [(ngModel)]="configuration.baseUrl" title="optional">
   </md-input-container>
   <md-input-container>
     <input mdInput placeholder="Nlp model" [(ngModel)]="configuration.nlpModel" [disabled]="true">
