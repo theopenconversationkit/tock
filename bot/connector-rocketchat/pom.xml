@@ -29,6 +29,9 @@
     <name>Tock Bot Rocket Chat Connector</name>
     <description>Bot Connector for Rocket Chat</description>
 
+    <properties>
+        <rocket>1.0</rocket>
+    </properties>
 
     <dependencies>
         <dependency>
@@ -36,16 +39,15 @@
             <artifactId>tock-bot-engine-jackson</artifactId>
         </dependency>
 
-        <!-- TODO use rocket chat dependency when available -->
         <dependency>
             <groupId>org.litote.chat.rocket.sdk</groupId>
             <artifactId>core</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>${rocket}</version>
         </dependency>
         <dependency>
             <groupId>org.litote.chat.rocket.sdk</groupId>
             <artifactId>common</artifactId>
-            <version>0.1-SNAPSHOT</version>
+            <version>${rocket}</version>
         </dependency>
         <dependency>
             <groupId>org.json</groupId>
