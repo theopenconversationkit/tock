@@ -18,8 +18,9 @@ package fr.vsct.tock.bot.mongo
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.definition.Intent
-import fr.vsct.tock.bot.engine.dialog.EntityValue
+import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
@@ -27,17 +28,24 @@ import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.bot.mongo.DialogCol.DialogStateMongoWrapper
 import fr.vsct.tock.bot.mongo.DialogCol.EntityStateValueWrapper
+import fr.vsct.tock.bot.mongo.DialogCol.SendChoiceMongoWrapper
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.api.client.model.EntityType
 import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.security.ParameterObfuscator
+import fr.vsct.tock.shared.security.TockObfuscatorService
 import io.mockk.mockk
+import io.mockk.spyk
+import io.mockk.verify
 import org.junit.jupiter.api.Test
 import java.time.LocalDateTime
 import java.time.ZoneId
 import java.time.ZonedDateTime
+import java.util.UUID
 import kotlin.test.assertEquals
+import kotlin.test.assertTrue
 
 /**
  *
@@ -91,13 +99,74 @@ class DialogColDeserializationTest : AbstractTest() {
             state = fr.vsct.tock.bot.engine.dialog.DialogState(context = mutableMapOf("a" to LocalDateTime.now()))
         )
         val playerId = PlayerId("a", PlayerType.user)
-        val s = mapper.writeValueAsString(DialogCol(dialog, UserTimelineCol(
-            UserTimeline(
-                playerId
-            ), null)))
+        val s = mapper.writeValueAsString(
+            DialogCol(
+                dialog, UserTimelineCol(
+                    UserTimeline(
+                        playerId
+                    ), null
+                )
+            )
+        )
         val newValue = mapper.readValue<DialogCol>(s)
         assertEquals(dialog, newValue.toDialog { mockk() })
     }
 
+    @Test
+    fun `GIVEN a parameter obfuscator WHEN serializing a SendChoiceMongoWrapper THEN obfuscates the parameters`() {
+        class TestParamObfuscator : ParameterObfuscator {
+            override fun obfuscate(parameters: Map<String, String>): Map<String, String> {
+                return parameters.mapValues { "" }
+            }
+        }
+
+        val testParameterObfuscator = spyk(TestParamObfuscator())
+        TockObfuscatorService.registerParameterObfuscator(testParameterObfuscator)
+        val parameters: Map<String, String> = mapOf("key" to "value")
+
+        val stateWrapper = SendChoiceMongoWrapper(
+            "test",
+            parameters
+        )
+
+        assertTrue {
+            stateWrapper.parameters.all { it.value == "" }
+        }
+        verify(exactly = 1) { testParameterObfuscator.obfuscate(parameters) }
+        TockObfuscatorService.deregisterObfuscators()
+    }
+
+    @Test
+    fun `GIVEN a parameter obfuscator WHEN serializing a SendChoiceMongoWrapper instantiated from SendChoice THEN obfuscates the parameters`() {
+        class TestParamObfuscator : ParameterObfuscator {
+            override fun obfuscate(parameters: Map<String, String>): Map<String, String> {
+                return parameters.mapValues { "" }
+            }
+        }
+
+        val testParameterObfuscator = spyk(TestParamObfuscator())
+        TockObfuscatorService.registerParameterObfuscator(testParameterObfuscator)
+        val parameters: Map<String, String> = mapOf("key" to "value")
+
+        val stateWrapper = SendChoiceMongoWrapper(
+            SendChoice(
+                PlayerId(
+                    UUID.randomUUID().toString()
+                ),
+                "",
+                PlayerId(
+                    UUID.randomUUID().toString()
+                ),
+                "test",
+                parameters
+            )
+        )
+
+        assertTrue {
+            stateWrapper.parameters.all { it.value == "" }
+        }
+        verify(exactly = 1) { testParameterObfuscator.obfuscate(parameters) }
+        TockObfuscatorService.deregisterObfuscators()
+    }
 
 }

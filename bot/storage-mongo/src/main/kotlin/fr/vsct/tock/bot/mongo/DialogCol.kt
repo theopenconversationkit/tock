@@ -41,7 +41,7 @@ import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
-import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
+import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 import fr.vsct.tock.translator.UserInterfaceType.textChat
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
@@ -114,7 +114,7 @@ internal data class DialogCol(
                 .flatMap { it.actions }
                 .firstOrNull { it.state.userInterface != null }
                 ?.state?.userInterface
-                    ?: textChat,
+                ?: textChat,
             _id
         )
     }
@@ -292,10 +292,11 @@ internal data class DialogCol(
     @JsonTypeName(value = "choice")
     class SendChoiceMongoWrapper(
         val intentName: String,
-        val parameters: Map<String, String>
+        parameters: Map<String, String>
     ) : ActionMongoWrapper() {
+        val parameters = obfuscate(parameters)
 
-        constructor(choice: SendChoice) : this(choice.intentName, choice.parameters) {
+        constructor(choice: SendChoice) : this(choice.intentName, obfuscate(choice.parameters)) {
             assignFrom(choice)
         }
 

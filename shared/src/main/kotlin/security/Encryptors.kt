@@ -70,5 +70,5 @@ fun initEncryptor() {
         decrypt(encrypt("test"))
         logger.info { "encryptor initialized" }
     }
-    StringObfuscatorService.loadObfuscators()
+    TockObfuscatorService.loadObfuscators()
 }

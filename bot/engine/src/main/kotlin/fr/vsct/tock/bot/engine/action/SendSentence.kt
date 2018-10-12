@@ -26,7 +26,7 @@ import fr.vsct.tock.bot.engine.nlp.NlpCallStats
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.nlp.api.client.model.NlpResult
 import fr.vsct.tock.shared.security.StringObfuscatorMode
-import fr.vsct.tock.shared.security.StringObfuscatorService
+import fr.vsct.tock.shared.security.TockObfuscatorService
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.time.Instant
@@ -72,7 +72,7 @@ open class SendSentence(
                 playerId,
                 applicationId,
                 recipientId,
-                StringObfuscatorService.obfuscate(stringText, mode),
+                TockObfuscatorService.obfuscate(stringText, mode),
                 messages.map { it.obfuscate(mode) }.toMutableList(),
                 toActionId(),
                 date,

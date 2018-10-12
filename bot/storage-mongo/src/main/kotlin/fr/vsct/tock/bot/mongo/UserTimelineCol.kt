@@ -36,7 +36,7 @@ import fr.vsct.tock.bot.engine.user.UserState
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.defaultZoneId
-import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
+import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 import fr.vsct.tock.shared.security.decrypt
 import fr.vsct.tock.shared.security.encrypt
 import fr.vsct.tock.shared.security.encryptionEnabled

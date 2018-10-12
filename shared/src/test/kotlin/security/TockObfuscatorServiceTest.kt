@@ -17,7 +17,7 @@
 package fr.vsct.tock.shared.security
 
 import fr.vsct.tock.shared.security.StringObfuscatorMode.display
-import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
+import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 import org.junit.jupiter.api.AfterEach
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -27,16 +27,16 @@ import kotlin.test.assertEquals
 /**
  *
  */
-class StringObfuscatorServiceTest {
+class TockObfuscatorServiceTest {
 
     @BeforeEach
     fun before() {
-        StringObfuscatorService.registerObfuscator(SimpleObfuscator("\\d{9}".toRegex(), "sososecret", "?"))
+        TockObfuscatorService.registerStringObfuscator(SimpleObfuscator("\\d{9}".toRegex(), "sososecret", "?"))
     }
 
     @AfterEach
     fun after() {
-        StringObfuscatorService.deregisterObfuscators()
+        TockObfuscatorService.deregisterObfuscators()
     }
 
     @Test

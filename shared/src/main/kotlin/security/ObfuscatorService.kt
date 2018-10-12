@@ -25,4 +25,9 @@ interface ObfuscatorService {
      * Returns the string obfuscators to register.
      */
     fun stringObfuscators(): List<StringObfuscator>
+
+    /**
+     * Returns the parameter obfuscators to register.
+     */
+    fun parameterObfuscators(): List<ParameterObfuscator>
 }
