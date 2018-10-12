@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.engine.message.Choice
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.shared.security.StringObfuscatorMode
+import fr.vsct.tock.shared.security.TockObfuscatorService
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import java.net.URLDecoder.decode
@@ -188,7 +189,7 @@ class SendChoice(
             applicationId,
             recipientId,
             intentName,
-            parameters,
+            TockObfuscatorService.obfuscate(parameters),
             toActionId(),
             date,
             state,

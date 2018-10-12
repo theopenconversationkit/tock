@@ -23,7 +23,7 @@ import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.parser.ParseResult
 import fr.vsct.tock.nlp.front.shared.test.EntityTestError
 import fr.vsct.tock.nlp.front.shared.test.IntentTestError
-import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
+import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 import fr.vsct.tock.shared.security.decrypt
 import fr.vsct.tock.shared.security.encrypt
 import org.litote.kmongo.Id

@@ -47,7 +47,7 @@ import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion.IntentProbability
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion._id
 import fr.vsct.tock.shared.longProperty
-import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
+import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
 import org.litote.kmongo.JacksonData

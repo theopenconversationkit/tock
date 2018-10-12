@@ -21,7 +21,7 @@ import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType.image
 import fr.vsct.tock.bot.engine.message.SentenceSubElement
 import fr.vsct.tock.shared.mapNotNullValues
 import fr.vsct.tock.shared.security.StringObfuscatorMode
-import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
+import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 
 /**
  * List or generic template elements.

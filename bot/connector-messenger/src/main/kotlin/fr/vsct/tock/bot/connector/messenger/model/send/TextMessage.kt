@@ -19,7 +19,7 @@ package fr.vsct.tock.bot.connector.messenger.model.send
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.engine.message.SentenceElement
 import fr.vsct.tock.shared.security.StringObfuscatorMode
-import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
+import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 
 /**
  *

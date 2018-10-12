@@ -44,7 +44,7 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.provide
-import fr.vsct.tock.shared.security.StringObfuscatorService.obfuscate
+import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 import fr.vsct.tock.shared.withoutNamespace
 import mu.KotlinLogging
 import org.litote.kmongo.Id
