@@ -124,11 +124,13 @@ où la variable *openBot* est le bot que vous avez défini au départ.
 Une fois le bot démarré, il est également nécessaire de spécifier quels connecteurs sont utilisés
 dans l'interface d'administration du bot, du menu Configuration -> Bot Configurations -> Create a new configuration.
 
-La documentation pour chaque connecteur se trouve dans le README des projects correspondants. Trois sont disponibles à l'heure actuelle :
+La documentation pour chaque connecteur se trouve dans le README des projects correspondants. Cinq par défaut sont disponibles à l'heure actuelle :
 
 * [Messenger](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-messenger)
 * [Google Assistant](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-ga)
 * [Slack](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-slack)
+* [RocketChat](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-rocketchat)
+* [Alexa](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-alexa) - A noter que dans le cas d'Alexa, le modèle NLP est forcément chez Amazon. Seul le framework conversationel de Tock peut donc être utilisé.
 
 
 ## Aller un peu plus loin

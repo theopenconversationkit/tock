@@ -124,11 +124,13 @@ in the web administration interface: Configuration -> Bot Configurations -> Crea
 
 The documentation for each connector is in the README file of the corresponding sub-projects. 
 
-Three are available at the moment:
+Five are available by default:
 
 * [Messenger](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-messenger)
 * [Google Assistant](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-ga)
 * [Slack](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-slack)
+* [RocketChat](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-rocketchat)
+* [Alexa](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-alexa) - for Alexa, the NLP model is necessarily managed on Amazon side. So only the conversational framework of Tock can be used with this connector.
 
 ## Advanced options
 
