@@ -34,7 +34,7 @@ class KotlinCompilerVerticle : WebVerticle() {
     override val logger: KLogger = KotlinLogging.logger {}
 
     override fun configure() {
-        blockingJsonPost("/compile", TockUserRole.admin) { context, file: KotlinFile ->
+        blockingJsonPost("/compile", TockUserRole.admin) { _, file: KotlinFile ->
 
             try {
                 KotlinFileCompilation(TockKotlinCompiler.compile(file.script, file.fileName))

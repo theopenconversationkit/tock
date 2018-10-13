@@ -41,7 +41,7 @@ import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.translator.I18nDAO
-import io.mockk.classMockk
+import io.mockk.mockkClass
 import testModules
 import testTranslatorModule
 import java.util.Locale
@@ -60,7 +60,7 @@ open class TestContext {
     /**
      * Creates a new mock.
      */
-    open fun <T : Any> newMock(kClass: KClass<T>): T = classMockk(kClass, relaxed = true)
+    open fun <T : Any> newMock(kClass: KClass<T>): T = mockkClass(kClass, relaxed = true)
 
     /**
      * The context of the bus.

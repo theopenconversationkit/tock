@@ -31,14 +31,14 @@ class BotVerticleTest {
         var service1Installed = false
         var service2Installed = false
 
-        val installer1 = verticle.registerServices("/path", {
+        val installer1 = verticle.registerServices("/path") { router ->
             service1Installed = true
-            it.get("/path").handler { }
-        })
-        val installer2 = verticle.registerServices("/path", {
+            router.get("/path").handler { }
+        }
+        verticle.registerServices("/path") { router ->
             service2Installed = true
-            it.get("/path2").handler { }
-        })
+            router.get("/path2").handler { }
+        }
 
         verticle.configure()
 

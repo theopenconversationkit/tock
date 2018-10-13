@@ -230,8 +230,8 @@ internal class Bot(
     }
 
     private fun parseAttachment(attachment: SendAttachment, dialog: Dialog) {
-        botDefinition.handleAttachmentStory?.let {
-            it.mainIntent().let {
+        botDefinition.handleAttachmentStory?.let { definition ->
+            definition.mainIntent().let {
                 dialog.state.currentIntent = it
             }
         }
@@ -239,8 +239,8 @@ internal class Bot(
 
 
     private fun parseLocation(location: SendLocation, dialog: Dialog) {
-        botDefinition.userLocationStory?.let {
-            it.mainIntent().let {
+        botDefinition.userLocationStory?.let { definition ->
+            definition.mainIntent().let {
                 dialog.state.currentIntent = it
             }
         }

@@ -304,9 +304,9 @@ class MessengerConnector internal constructor(
                     if (response.attachmentId != null) {
                         val m = message.message
                         if (m is AttachmentMessage) {
-                            val payload = m.attachment.payload
-                            if (payload is UrlPayload && payload.url != null) {
-                                setAttachmentId(event.applicationId, payload.url, response.attachmentId)
+                            val p = m.attachment.payload
+                            if (p is UrlPayload && p.url != null) {
+                                setAttachmentId(event.applicationId, p.url, response.attachmentId)
                             }
                         }
                     }
