@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.connector.messenger.model</a>&nbsp;/&nbsp;<a href="./index.html">MessengerConnectorMessage</a><br/>
 <br/>
 <h1>MessengerConnectorMessage</h1>
-<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">MessengerConnectorMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-messenger/src/main/kotlin/fr/vsct/tock/bot/connector/messenger/model/MessengerConnectorMessage.kt#L27">(source)</a>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">MessengerConnectorMessage</span>&nbsp;<span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.bot.connector/-connector-message/index.html"><span class="identifier">ConnectorMessage</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/connector-messenger/src/main/kotlin/fr/vsct/tock/bot/connector/messenger/model/MessengerConnectorMessage.kt#L28">(source)</a>
 <h3>Constructors</h3>
 <table>
 <tbody>
@@ -31,6 +31,20 @@
 <td>
 <code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">connectorType</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code>
 <p>The connector type.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="find-elements.html">findElements</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">findElements</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../../fr.vsct.tock.bot.connector.messenger.model.send/-element/index.html"><span class="identifier">Element</span></a><span class="symbol">&gt;</span></code>
+<p>Find <a href="../../fr.vsct.tock.bot.connector.messenger.model.send/-element/index.html">Element</a>s if any.</p>
 </td>
 </tr>
 </tbody>

@@ -226,6 +226,14 @@ Use with care, as it stores the class name in json.</p>
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.definition/-bot-answer-interceptor/index.html">fr.vsct.tock.bot.definition.BotAnswerInterceptor</a></td>
+<td>
+<p>Change or update answer before sending to the user
+Need to be registered using <a href="#">fr.vsct.tock.bot.engine.BotRepository.registerActionInterceptor</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.admin.bot/-bot-application-configuration/index.html">fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration</a></td>
 <td>
 <p>Configuration details for a bot and a connector.</p>
@@ -354,6 +362,13 @@ Custom provider should usually not directly extend this class, but instead exten
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.slack.model/-callback-event/index.html">fr.vsct.tock.bot.connector.slack.model.CallbackEvent</a></td>
+<td>
+<p>An event callback.</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.messenger.model.webhook/-callback-request/index.html">fr.vsct.tock.bot.connector.messenger.model.webhook.CallbackRequest</a></td>
 <td>
 <p>Root callback request format :
@@ -413,7 +428,7 @@ see <a href="https://developers.facebook.com/docs/messenger-platform/webhook-ref
 <td>
 <a href="../fr.vsct.tock.bot.connector/-connector-configuration/index.html">fr.vsct.tock.bot.connector.ConnectorConfiguration</a></td>
 <td>
-<p>Configuration parameters used by a <a href="#">ConnectorProvided</a> to create a new <a href="../fr.vsct.tock.bot.connector/-connector/index.html">Connector</a> instance.</p>
+<p>Configuration parameters used by a <a href="../fr.vsct.tock.bot.connector/-connector-provider/index.html">ConnectorProvider</a> to create a new <a href="../fr.vsct.tock.bot.connector/-connector/index.html">Connector</a> instance.</p>
 </td>
 </tr>
 <tr>
@@ -490,6 +505,20 @@ The implementation is loaded at runtime to list all available connectors, using 
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector/-connector-type-configuration/index.html">fr.vsct.tock.bot.connector.ConnectorTypeConfiguration</a></td>
+<td>
+<p>A connector type configuration definition.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector/-connector-type-configuration-field/index.html">fr.vsct.tock.bot.connector.ConnectorTypeConfigurationField</a></td>
+<td>
+<p>Custom parameter for a <a href="../fr.vsct.tock.bot.connector/-connector-type-configuration/index.html">ConnectorTypeConfiguration</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.connector.messenger.model.send/-custom-event/index.html">fr.vsct.tock.bot.connector.messenger.model.send.CustomEvent</a></td>
 <td>
 </td>
@@ -557,6 +586,7 @@ The dialog has a (current) <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/st
 <td>
 <a href="../fr.vsct.tock.bot.connector.messenger.model.send/-element/index.html">fr.vsct.tock.bot.connector.messenger.model.send.Element</a></td>
 <td>
+<p>List or generic template elements.</p>
 </td>
 </tr>
 <tr>
@@ -610,6 +640,13 @@ The dialog has a (current) <a href="../fr.vsct.tock.bot.engine.dialog/-dialog/st
 <a href="../fr.vsct.tock.bot.engine.event/-event/index.html">fr.vsct.tock.bot.engine.event.Event</a></td>
 <td>
 <p>The base class for all events or actions.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.slack.model/-event-api-message/index.html">fr.vsct.tock.bot.connector.slack.model.EventApiMessage</a></td>
+<td>
+<p>Event API base class.</p>
 </td>
 </tr>
 <tr>
@@ -1575,6 +1612,13 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.connector.slack.model/-message-event/index.html">fr.vsct.tock.bot.connector.slack.model.MessageEvent</a></td>
+<td>
+<p>A <a href="https://api.slack.com/events/message">Message event</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.engine.message.parser/-message-parser/index.html">fr.vsct.tock.bot.engine.message.parser.MessageParser</a></td>
 <td>
 <p>(Very) simple DSL parser for <a href="../fr.vsct.tock.bot.engine.message/-message/index.html">Message</a>s.</p>
@@ -1677,6 +1721,13 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.bot.engine.nlp/-nlp-entity-merge-context/index.html">fr.vsct.tock.bot.engine.nlp.NlpEntityMergeContext</a></td>
+<td>
+<p>Provides all info to allow multiple values of the same entity type to be merged.</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.bot.engine.nlp/-nlp-intent-stat/index.html">fr.vsct.tock.bot.engine.nlp.NlpIntentStat</a></td>
 <td>
 <p>Used by <a href="../fr.vsct.tock.bot.engine.nlp/-nlp-call-stats/index.html">NlpCallStats</a>. Pair Intent - probability.</p>
@@ -1687,7 +1738,7 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 <a href="../fr.vsct.tock.bot.engine.nlp/-nlp-listener/index.html">fr.vsct.tock.bot.engine.nlp.NlpListener</a></td>
 <td>
 <p>Used to customize behaviour of NLP parsing - and also to monitor NLP requests - on bot side.
-Need to be registered using <a href="../fr.vsct.tock.bot.engine/-bot-repository/register-nlp-listener.html">fr.vsct.tock.bot.engine.BotRepository.registerNlpListener</a>.</p>
+Has to be registered using <a href="../fr.vsct.tock.bot.engine/-bot-repository/register-nlp-listener.html">fr.vsct.tock.bot.engine.BotRepository.registerNlpListener</a>.</p>
 </td>
 </tr>
 <tr>
@@ -1742,6 +1793,12 @@ Need to be registered using <a href="../fr.vsct.tock.bot.engine/-bot-repository/
 <a href="../fr.vsct.tock.bot.definition/-parameter-key/index.html">fr.vsct.tock.bot.definition.ParameterKey</a></td>
 <td>
 <p>A parameter key - the implementation is usually an enum.</p>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.shared.security/-parameter-obfuscator/index.html">fr.vsct.tock.shared.security.ParameterObfuscator</a></td>
+<td>
 </td>
 </tr>
 <tr>
@@ -2143,7 +2200,7 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
-<a href="../fr.vsct.tock.bot.connector.slack.model/-slack-message-in/index.html">fr.vsct.tock.bot.connector.slack.model.SlackMessageIn</a></td>
+<a href="../fr.vsct.tock.bot.connector.slack.model.old/-slack-message-in/index.html">fr.vsct.tock.bot.connector.slack.model.old.SlackMessageIn</a></td>
 <td>
 </td>
 </tr>
@@ -2287,13 +2344,6 @@ Used to manage workflow in a <a href="../fr.vsct.tock.bot.definition/-story-hand
 <a href="../fr.vsct.tock.shared.security/-string-obfuscator-mode/index.html">fr.vsct.tock.shared.security.StringObfuscatorMode</a></td>
 <td>
 <p>Modes of string obfuscation.</p>
-</td>
-</tr>
-<tr>
-<td>
-<a href="../fr.vsct.tock.shared.security/-string-obfuscator-service/index.html">fr.vsct.tock.shared.security.TockObfuscatorService</a></td>
-<td>
-<p>To manage obfuscations.</p>
 </td>
 </tr>
 <tr>
@@ -2477,6 +2527,13 @@ Used to manage workflow in a <a href="../fr.vsct.tock.bot.definition/-story-hand
 </tr>
 <tr>
 <td>
+<a href="../fr.vsct.tock.shared.security/-tock-obfuscator-service/index.html">fr.vsct.tock.shared.security.TockObfuscatorService</a></td>
+<td>
+<p>To manage obfuscations.</p>
+</td>
+</tr>
+<tr>
+<td>
 <a href="../fr.vsct.tock.shared.security/-tock-user/index.html">fr.vsct.tock.shared.security.TockUser</a></td>
 <td>
 <p>Tock implementation of vertx <a href="#">User</a>.</p>
@@ -2526,6 +2583,13 @@ Used to manage workflow in a <a href="../fr.vsct.tock.bot.definition/-story-hand
 <td>
 <a href="../fr.vsct.tock.bot.connector.messenger.model.webhook/-url-payload/index.html">fr.vsct.tock.bot.connector.messenger.model.webhook.UrlPayload</a></td>
 <td>
+</td>
+</tr>
+<tr>
+<td>
+<a href="../fr.vsct.tock.bot.connector.slack.model/-url-verification-event/index.html">fr.vsct.tock.bot.connector.slack.model.UrlVerificationEvent</a></td>
+<td>
+<p>Url verification event - see <a href="https//api.slack.com/events/url_verification">https//api.slack.com/events/url_verification</a></p>
 </td>
 </tr>
 <tr>

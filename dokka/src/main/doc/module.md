@@ -86,6 +86,10 @@ Messenger connector "webhook" model
 
 Slack connector model
 
+# Package fr.vsct.tock.bot.connector.slack.model.old
+
+Old Slack connector model - will be removed in 2.0
+
 # Package fr.vsct.tock.bot.definition
 
 Contains all classes used to *define* a bot

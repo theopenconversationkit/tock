@@ -50,6 +50,7 @@ fr.vsct.tock.bot.connector.messenger.model.send
 fr.vsct.tock.bot.connector.messenger.model.webhook
 fr.vsct.tock.bot.connector.slack
 fr.vsct.tock.bot.connector.slack.model
+fr.vsct.tock.bot.connector.slack.model.old
 fr.vsct.tock.bot.definition
 fr.vsct.tock.bot.engine
 fr.vsct.tock.bot.engine.action
