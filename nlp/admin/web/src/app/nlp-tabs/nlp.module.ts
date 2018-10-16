@@ -36,12 +36,12 @@ import {CreateIntentDialogComponent} from "../sentence-analysis/create-intent-di
 import {ApplicationResolver} from "../core/application.resolver";
 import {SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.component";
 
-import {MomentModule} from "angular2-moment";
+import {MomentModule} from "ngx-moment";
 import {AddStateDialogComponent} from "../intents/add-state/add-state-dialog.component";
 import {EntitiesComponent} from "../entities/entities.component";
 import {EditEntitiesComponent} from "../sentence-analysis/entities/edit-entities.component";
 import {EntityDetailsComponent} from "../entities/entity-details.component";
-import {MdDatepickerModule, MdNativeDateModule} from "@angular/material";
+import {MatDatepickerModule, MatNativeDateModule} from "@angular/material";
 
 const routes: Routes = [
   {
@@ -103,8 +103,8 @@ export class NlpRoutingModule {
     ApplicationsModule,
     InfiniteScrollModule,
     MomentModule,
-    MdDatepickerModule,
-    MdNativeDateModule
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   declarations: [
     NlpTabsComponent,

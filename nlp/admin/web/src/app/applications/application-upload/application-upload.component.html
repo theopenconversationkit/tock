@@ -14,20 +14,20 @@
   ~ limitations under the License.
   -->
 
-<md-card *ngIf="configuration">
-  <md-card-title>Upload a Dump</md-card-title>
-  <md-card-content>
+<mat-card *ngIf="configuration">
+  <mat-card-title>Upload a Dump</mat-card-title>
+  <mat-card-content>
     <div *ngIf="!report">
 
       <p>
-        <md-radio-group [(ngModel)]="type">
-          <md-radio-button *ngIf="state.hasRole(UserRole.technicalAdmin)" value="application">
+        <mat-radio-group [(ngModel)]="type">
+          <mat-radio-button *ngIf="state.hasRole(UserRole.technicalAdmin)" value="application">
             Application Dump
-          </md-radio-button>
-          <md-radio-button value="sentences">
+          </mat-radio-button>
+          <mat-radio-button value="sentences">
             Sentences Dump
-          </md-radio-button>
-        </md-radio-group>
+          </mat-radio-button>
+        </mat-radio-group>
       </p>
       <ul>
         <li *ngIf="state.hasRole(UserRole.technicalAdmin)">The "Application Dump" format is an internal format, useful to copy application data across environments.
@@ -35,9 +35,9 @@
         <li>The "Sentences Dump" format is an agnostic format, used to share data with other systems.</li>
       </ul>
       <p *ngIf="!applicationName">
-        <md-input-container id="applicationName">
-          <input mdInput [(ngModel)]="configuration.newApplicationName" placeholder="Target Application Name">
-        </md-input-container>
+        <mat-form-field id="applicationName">
+          <input matInput [(ngModel)]="configuration.newApplicationName" placeholder="Target Application Name">
+        </mat-form-field>
         (If empty, application name in dump will be used)
       </p>
       <p>
@@ -61,31 +61,31 @@
         <h4 *ngIf="!report.modified">No new data found, so no data imported.</h4>
         <div *ngIf="report.modified">
           <h4>Successful Import Report:</h4>
-          <md-list>
-            <h3 *ngIf="report.applicationsImported.length !== 0" md-subheader>Applications imported</h3>
-            <md-list-item *ngFor="let app of report.applicationsImported">
-              <md-icon md-list-icon>apps</md-icon>
-              <h4 md-line>{{app}}</h4>
-            </md-list-item>
-            <md-divider></md-divider>
-            <h3 *ngIf="report.entitiesImported.length !== 0" md-subheader>Entities imported</h3>
-            <md-list-item *ngFor="let entity of report.entitiesImported">
-              <md-icon md-list-icon>invert_colors</md-icon>
-              <h4 md-line>{{entity}}</h4>
-            </md-list-item>
-            <md-divider></md-divider>
-            <h3 *ngIf="report.intentsImported.length !== 0" md-subheader>Intents imported</h3>
-            <md-list-item *ngFor="let intent of report.intentsImported">
-              <md-icon md-list-icon>merge_type</md-icon>
-              <h4 md-line>{{intent}}</h4>
-            </md-list-item>
-            <md-divider></md-divider>
-            <h3 *ngIf="report.sentencesImported !== 0" md-subheader>Number of sentences imported</h3>
-            <md-list-item *ngIf="report.sentencesImported !=0">
-              <md-icon md-list-icon>speaker_notes</md-icon>
-              <h4 md-line>{{report.sentencesImported}}</h4>
-            </md-list-item>
-          </md-list>
+          <mat-list>
+            <h3 *ngIf="report.applicationsImported.length !== 0" mat-subheader>Applications imported</h3>
+            <mat-list-item *ngFor="let app of report.applicationsImported">
+              <mat-icon mat-list-icon>apps</mat-icon>
+              <h4 mat-line>{{app}}</h4>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <h3 *ngIf="report.entitiesImported.length !== 0" mat-subheader>Entities imported</h3>
+            <mat-list-item *ngFor="let entity of report.entitiesImported">
+              <mat-icon mat-list-icon>invert_colors</mat-icon>
+              <h4 mat-line>{{entity}}</h4>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <h3 *ngIf="report.intentsImported.length !== 0" mat-subheader>Intents imported</h3>
+            <mat-list-item *ngFor="let intent of report.intentsImported">
+              <mat-icon mat-list-icon>merge_type</mat-icon>
+              <h4 mat-line>{{intent}}</h4>
+            </mat-list-item>
+            <mat-divider></mat-divider>
+            <h3 *ngIf="report.sentencesImported !== 0" mat-subheader>Number of sentences imported</h3>
+            <mat-list-item *ngIf="report.sentencesImported !=0">
+              <mat-icon mat-list-icon>speaker_notes</mat-icon>
+              <h4 mat-line>{{report.sentencesImported}}</h4>
+            </mat-list-item>
+          </mat-list>
           <div *ngIf="report.errorMessages.length !== 0">
             <h5>Errors:</h5>
             <ul>
@@ -97,16 +97,16 @@
         </div>
       </div>
     </div>
-  </md-card-content>
-  <button (click)="cancel()" *ngIf="!report" md-button>
+  </mat-card-content>
+  <button (click)="cancel()" *ngIf="!report" mat-button>
     Cancel
   </button>
-  <button (click)="upload()" *ngIf="!report" [disabled]="!uploader.getNotUploadedItems().length" md-raised-button
+  <button (click)="upload()" *ngIf="!report" [disabled]="!uploader.getNotUploadedItems().length" mat-raised-button
           color="primary">
     Upload
   </button>
-  <button (click)="close()" *ngIf="report" md-raised-button color="primary">
+  <button (click)="close()" *ngIf="report" mat-raised-button color="primary">
     Hide dump report
   </button>
-</md-card>
+</mat-card>
 

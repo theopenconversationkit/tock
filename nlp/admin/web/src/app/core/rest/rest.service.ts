@@ -20,6 +20,8 @@ import {Observable} from "rxjs";
 import {environment} from "../../../environments/environment";
 import {Router} from "@angular/router";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
+import 'rxjs/add/operator/map';
+import 'rxjs/add/operator/catch';
 
 @Injectable()
 export class RestService {

@@ -35,7 +35,7 @@ import {
 } from "../../model/nlp";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core/state.service";
-import {MdDialog, MdDialogConfig, MdSnackBar, MdSnackBarConfig} from "@angular/material";
+import {MatDialog, MatDialogConfig, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {CreateEntityDialogComponent} from "../create-entity-dialog/create-entity-dialog.component";
 import {User} from "../../model/auth";
 import {Intent} from "../../model/nlp";
@@ -69,8 +69,8 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
 
   constructor(private nlp: NlpService,
               public state: StateService,
-              private snackBar: MdSnackBar,
-              private dialog: MdDialog,
+              private snackBar: MatSnackBar,
+              private dialog: MatDialog,
               private router: Router,
               public appConfig: ApplicationConfig) {
     this.editable = true;
@@ -194,7 +194,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
         data: {
           entityProvider: this.entityProvider
         }
-      } as MdDialogConfig);
+      } as MatDialogConfig);
     dialogRef.afterClosed().subscribe(result => {
       if (result && result !== "cancel") {
         let name = result.name;
@@ -212,7 +212,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
               this.state.entityTypes.next(entities);
               this.entityProvider.addEntity(entity, this);
             } else {
-              this.snackBar.open(`Error when creating Entity Type ${name}`, "Error", {duration: 1000} as MdSnackBarConfig);
+              this.snackBar.open(`Error when creating Entity Type ${name}`, "Error", {duration: 1000} as MatSnackBarConfig);
             }
           });
         }
@@ -222,7 +222,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
 
   notifyAddEntity(entity: EntityDefinition) {
     this.onSelect(entity);
-    this.snackBar.open(`Entity Type ${entity.qualifiedRole} added`, "Entity added", {duration: 1000} as MdSnackBarConfig)
+    this.snackBar.open(`Entity Type ${entity.qualifiedRole} added`, "Entity added", {duration: 1000} as MatSnackBarConfig)
   }
 
   private rebuild() {
@@ -297,7 +297,7 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
       //do nothing
     }
     t.style.display = "none";
-    this.snackBar.open(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, "Clipboard", {duration: 1000} as MdSnackBarConfig)
+    this.snackBar.open(successful ? `${text} copied to clipboard` : `Unable to copy to clipboard`, "Clipboard", {duration: 1000} as MatSnackBarConfig)
   }
 
 }

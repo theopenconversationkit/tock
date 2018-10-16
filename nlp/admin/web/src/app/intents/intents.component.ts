@@ -18,7 +18,7 @@ import {saveAs} from "file-saver";
 import {Component, OnInit} from "@angular/core";
 import {StateService} from "../core/state.service";
 import {EntityDefinition, Intent} from "../model/nlp";
-import {MdDialog, MdDialogConfig, MdSnackBar, MdSnackBarConfig} from "@angular/material";
+import {MatDialog, MatDialogConfig, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {ConfirmDialogComponent} from "../shared/confirm-dialog/confirm-dialog.component";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {ApplicationService} from "../core/applications.service";
@@ -36,8 +36,8 @@ export class IntentsComponent implements OnInit {
 
   constructor(public state: StateService,
               private nlp: NlpService,
-              private snackBar: MdSnackBar,
-              private dialog: MdDialog,
+              private snackBar: MatSnackBar,
+              private dialog: MatDialog,
               private applicationService: ApplicationService) {
   }
 
@@ -51,16 +51,16 @@ export class IntentsComponent implements OnInit {
         subtitle: "Are you sure?",
         action: "Remove"
       }
-    } as MdDialogConfig);
+    } as MatDialogConfig);
     dialogRef.afterClosed().subscribe(result => {
       if (result === "remove") {
         this.nlp.removeIntent(this.state.currentApplication, intent).subscribe(
           _ => {
             this.state.currentApplication.removeIntentById(intent._id);
-            this.snackBar.open(`Intent ${intent.name} removed`, "Remove Intent", {duration: 1000} as MdSnackBarConfig);
+            this.snackBar.open(`Intent ${intent.name} removed`, "Remove Intent", {duration: 1000} as MatSnackBarConfig);
           },
-          _ => this.snackBar.open(`Delete Intent ${intent.name} failed`, "Error", {duration: 5000} as MdSnackBarConfig)
-        );
+          _ => this.snackBar.open(`Delete Intent ${intent.name} failed`, "Error", {duration: 5000} as MatSnackBarConfig)
+        )
       }
     });
   }
@@ -69,10 +69,10 @@ export class IntentsComponent implements OnInit {
     this.nlp.removeState(this.state.currentApplication, intent, state).subscribe(
       result => {
         intent.mandatoryStates.splice(intent.mandatoryStates.indexOf(state), 1);
-        this.snackBar.open(`State ${state} removed from Intent ${intent.name}`, "Remove State", {duration: 1000} as MdSnackBarConfig);
+        this.snackBar.open(`State ${state} removed from Intent ${intent.name}`, "Remove State", {duration: 1000} as MatSnackBarConfig);
       },
       _ => {
-        this.snackBar.open(`Remove State failed`, "Error", {duration: 5000} as MdSnackBarConfig)
+        this.snackBar.open(`Remove State failed`, "Error", {duration: 5000} as MatSnackBarConfig)
       }
     );
   }
@@ -82,17 +82,17 @@ export class IntentsComponent implements OnInit {
       data: {
         title: `Add a state for intent \"${intent.name}\"`
       }
-    } as MdDialogConfig);
+    } as MatDialogConfig);
     dialogRef.afterClosed().subscribe(result => {
       if (result !== "cancel") {
         intent.mandatoryStates.push(result.name);
         this.nlp.saveIntent(intent).subscribe(
           result => {
-            this.snackBar.open(`State ${result.name} added for Intent ${intent.name}`, "Add State", {duration: 1000} as MdSnackBarConfig);
+            this.snackBar.open(`State ${result.name} added for Intent ${intent.name}`, "Add State", {duration: 1000} as MatSnackBarConfig);
           },
           _ => {
             intent.mandatoryStates.splice(intent.mandatoryStates.length - 1, 1);
-            this.snackBar.open(`Add State failed`, "Error", {duration: 5000} as MdSnackBarConfig)
+            this.snackBar.open(`Add State failed`, "Error", {duration: 5000} as MatSnackBarConfig)
           }
         );
       }
@@ -107,7 +107,7 @@ export class IntentsComponent implements OnInit {
         subtitle: "Are you sure?",
         action: "Remove"
       }
-    } as MdDialogConfig);
+    } as MatDialogConfig);
     dialogRef.afterClosed().subscribe(result => {
       if (result === "remove") {
         this.nlp.removeEntity(this.state.currentApplication, intent, entity).subscribe(
@@ -116,7 +116,7 @@ export class IntentsComponent implements OnInit {
             if (deleted) {
               this.state.removeEntityTypeByName(entity.entityTypeName)
             }
-            this.snackBar.open(`Entity ${entityName} removed from intent`, "Remove Entity", {duration: 1000} as MdSnackBarConfig);
+            this.snackBar.open(`Entity ${entityName} removed from intent`, "Remove Entity", {duration: 1000} as MatSnackBarConfig);
           });
       }
     });
@@ -126,10 +126,10 @@ export class IntentsComponent implements OnInit {
     this.nlp.removeSharedIntent(this.state.currentApplication, intent, intentId).subscribe(
       result => {
         intent.sharedIntents.splice(intent.sharedIntents.indexOf(intentId), 1);
-        this.snackBar.open(`Shared Intent removed from Intent ${intent.name}`, "Remove Intent", {duration: 1000} as MdSnackBarConfig);
+        this.snackBar.open(`Shared Intent removed from Intent ${intent.name}`, "Remove Intent", {duration: 1000} as MatSnackBarConfig);
       },
       _ => {
-        this.snackBar.open(`Remove Shared Intent failed`, "Error", {duration: 5000} as MdSnackBarConfig)
+        this.snackBar.open(`Remove Shared Intent failed`, "Error", {duration: 5000} as MatSnackBarConfig)
       }
     );
   }
@@ -139,11 +139,11 @@ export class IntentsComponent implements OnInit {
       intent.sharedIntents.push(intentId);
       this.nlp.saveIntent(intent).subscribe(
         result => {
-          this.snackBar.open(`Shared intent added for Intent ${intent.name}`, "Add Shared Intent", {duration: 1000} as MdSnackBarConfig);
+          this.snackBar.open(`Shared intent added for Intent ${intent.name}`, "Add Shared Intent", {duration: 1000} as MatSnackBarConfig);
         },
         _ => {
           intent.mandatoryStates.splice(intent.mandatoryStates.length - 1, 1);
-          this.snackBar.open(`Add Shared Intent failed`, "Error", {duration: 5000} as MdSnackBarConfig)
+          this.snackBar.open(`Add Shared Intent failed`, "Error", {duration: 5000} as MatSnackBarConfig)
         }
       );
     }
@@ -156,7 +156,7 @@ export class IntentsComponent implements OnInit {
       this.state.hasRole(UserRole.technicalAdmin))
       .subscribe(blob => {
         saveAs(blob, intent.name + "_sentences.json");
-        this.snackBar.open(`Dump provided`, "Dump", {duration: 1000} as MdSnackBarConfig);
+        this.snackBar.open(`Dump provided`, "Dump", {duration: 1000} as MatSnackBarConfig);
       })
   }
 

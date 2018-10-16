@@ -17,7 +17,7 @@
 import {Component, Input, OnInit} from "@angular/core";
 import {StateService} from "../core/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
-import {MdDialog, MdDialogConfig, MdSnackBar, MdSnackBarConfig} from "@angular/material";
+import {MatDialog, MatDialogConfig, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {ApplicationService} from "../core/applications.service";
 import {EntityDefinition, EntityType} from "../model/nlp";
 import {ConfirmDialogComponent} from "../shared/confirm-dialog/confirm-dialog.component";
@@ -38,8 +38,8 @@ export class EntityDetailsComponent implements OnInit {
 
   constructor(public state: StateService,
               private nlp: NlpService,
-              private snackBar: MdSnackBar,
-              private dialog: MdDialog,
+              private snackBar: MatSnackBar,
+              private dialog: MatDialog,
               private applicationService: ApplicationService) {
   }
 
@@ -54,7 +54,7 @@ export class EntityDetailsComponent implements OnInit {
     this.nlp.updateEntityDefinition(
       this.state.createUpdateEntityDefinitionQuery(this.entity)
     ).map(_ => this.applicationService.reloadCurrentApplication())
-      .subscribe(_ => this.snackBar.open(`Entity updated`, "Update", {duration: 1000} as MdSnackBarConfig));
+      .subscribe(_ => this.snackBar.open(`Entity updated`, "Update", {duration: 1000} as MatSnackBarConfig<any>));
   }
 
   remove() {
@@ -64,15 +64,15 @@ export class EntityDetailsComponent implements OnInit {
         subtitle: "Are you sure?",
         action: "Remove"
       }
-    } as MdDialogConfig);
+    } as MatDialogConfig);
     dialogRef.afterClosed().subscribe(result => {
       if (result === "remove") {
         this.nlp.removeSubEntity(this.state.currentApplication, this.entityType, this.entity).subscribe(
           _ => {
             this.state.removeSubEntityByRole(this.entityType, this.entity.role);
-            this.snackBar.open(`Subentity ${this.entity.entityTypeName} removed`, "Remove Subentity", {duration: 1000} as MdSnackBarConfig);
+            this.snackBar.open(`Subentity ${this.entity.entityTypeName} removed`, "Remove Subentity", {duration: 1000} as MatSnackBarConfig<any>);
           },
-          _ => this.snackBar.open(`Remove Subentity ${this.entity.entityTypeName} failed`, "Error", {duration: 5000} as MdSnackBarConfig)
+          _ => this.snackBar.open(`Remove Subentity ${this.entity.entityTypeName} failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>)
         );
       }
     });

@@ -24,4 +24,5 @@ if (environment.production) {
   enableProdMode();
 }
 
-platformBrowserDynamic().bootstrapModule(NlpAdminAppModule);
+platformBrowserDynamic().bootstrapModule(NlpAdminAppModule)
+  .catch(err => console.log(err));

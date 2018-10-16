@@ -15,11 +15,10 @@
  */
 
 import {Component, Input, OnInit} from "@angular/core";
-import {MdDialog, MdSnackBar} from "@angular/material";
+import {MatDialog, MatSnackBar} from "@angular/material";
 import {ActivatedRoute, Router} from "@angular/router";
 import {StateService} from "../../core/state.service";
 import {Application} from "../../model/application";
-import {ConfirmDialogComponent} from "../../shared/confirm-dialog/confirm-dialog.component";
 import {ApplicationService} from "../../core/applications.service";
 import {saveAs} from "file-saver";
 import {ApplicationScopedQuery} from "../../model/commons";
@@ -38,8 +37,8 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
   alexaLocale: string;
 
   constructor(private route: ActivatedRoute,
-              private snackBar: MdSnackBar,
-              private dialog: MdDialog,
+              private snackBar: MatSnackBar,
+              private dialog: MatDialog,
               public state: StateService,
               private applicationService: ApplicationService) {
   }

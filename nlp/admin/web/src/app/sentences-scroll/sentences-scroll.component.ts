@@ -22,7 +22,7 @@ import {StateService} from "../core/state.service";
 import {ScrollComponent} from "../scroll/scroll.component";
 import {Entry, PaginatedQuery, SearchMark} from "../model/commons";
 import {Observable} from "rxjs/Observable";
-import {MdPaginator, MdSnackBar} from "@angular/material";
+import {MatPaginator, MatSnackBar} from "@angular/material";
 import {UserRole} from "../model/auth";
 import {DataSource, SelectionModel} from "@angular/cdk/collections";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
@@ -49,7 +49,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   tableView: boolean = false;
   advancedView: boolean = false;
   displayedColumns = [];
-  @ViewChild(MdPaginator) paginator: MdPaginator;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
   dataSource: SentencesDataSource | null;
   selection: SelectionModel<Sentence> = new SelectionModel<Sentence>(true, []);
 
@@ -57,7 +57,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
 
   constructor(state: StateService,
               private nlp: NlpService,
-              private snackBar: MdSnackBar) {
+              private snackBar: MatSnackBar) {
     super(state);
   }
 

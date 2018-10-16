@@ -16,24 +16,24 @@
 
 <div class="search">
 
-  <md-card>
-    <md-card-content>
-      <md-input-container class="search-input">
-        <input mdInput placeholder="Search Logs" [(ngModel)]="text" (keyup.enter)="refresh()">
-      </md-input-container>
-      <button md-button (click)="refresh()">GO</button>
-    </md-card-content>
-  </md-card>
+  <mat-card>
+    <mat-card-content>
+      <mat-form-field class="search-input">
+        <input matInput placeholder="Search Logs" [(ngModel)]="text" (keyup.enter)="refresh()">
+      </mat-form-field>
+      <button mat-button (click)="refresh()">GO</button>
+    </mat-card-content>
+  </mat-card>
 
 <div *ngIf="total !== -1">
   <h1 *ngIf="total === 0">{{title}} is empty!
-    <button md-button (click)="refresh()">
-      <md-icon>refresh</md-icon>
+    <button mat-button (click)="refresh()">
+      <mat-icon>refresh</mat-icon>
     </button>
   </h1>
   <h1 *ngIf="total !== 0"><span *ngIf="total > 10">Estimated</span> {{title}} size : {{total}}
-    <button md-button (click)="refresh()">
-      <md-icon>refresh</md-icon>
+    <button mat-button (click)="refresh()">
+      <mat-icon>refresh</mat-icon>
     </button>
   </h1>
   <p></p>
@@ -42,21 +42,21 @@
     [infiniteScrollDistance]="2"
     [infiniteScrollThrottle]="300"
     (scrolled)="onScroll()">
-    <md-card *ngFor="let d of data" class="log">
-      <md-card-title>
-        <h4 *ngIf="d.error">{{d.textRequest()}} <md-icon color="warn" md-tooltip="error">error</md-icon></h4>
+    <mat-card *ngFor="let d of data" class="log">
+      <mat-card-title>
+        <h4 *ngIf="d.error">{{d.textRequest()}} <mat-icon color="warn" matTooltip="error">error</mat-icon></h4>
         <tock-highlight *ngIf="!d.error" [sentence]="d.sentence" [readOnly]="true"></tock-highlight>
-      </md-card-title>
-      <md-card-content>
+      </mat-card-title>
+      <mat-card-content>
         {{d.intent}}
-          <span *ngIf="d.sentence?.classification?.intentId && d.sentence.classification.hasIntentProbability()" md-tooltip="intent probability">
+          <span *ngIf="d.sentence?.classification?.intentId && d.sentence.classification.hasIntentProbability()" matTooltip="intent probability">
             <span class="intentProbability">({{d.sentence.classification.intentProbability | percent:'1.0-2'}})</span>
         </span> {{d.intent ? '-' : ''}}
         {{d.date | amTimeAgo}} <span *ngIf="d.durationInMS !== 0">in {{d.durationInMS}} ms</span>
-        <button *ngIf="config.displayDialogUrl" md-icon-button md-tooltip="Display Conversation" (click)="displayConversation(d)" color="primary"><md-icon>speaker_notes</md-icon></button>
-        <button md-icon-button (click)="displayFullLog(d)" md-tooltip="View Full Log"><md-icon>visibility</md-icon></button>
-      </md-card-content>
-    </md-card>
+        <button *ngIf="config.displayDialogUrl" mat-icon-button matTooltip="Display Conversation" (click)="displayConversation(d)" color="primary"><mat-icon>speaker_notes</mat-icon></button>
+        <button mat-icon-button (click)="displayFullLog(d)" matTooltip="View Full Log"><mat-icon>visibility</mat-icon></button>
+      </mat-card-content>
+    </mat-card>
   </div>
 </div>
 </div>

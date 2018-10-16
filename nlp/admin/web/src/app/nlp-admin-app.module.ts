@@ -26,15 +26,15 @@ const routes: Routes = [
   {path: '', redirectTo: '/nlp/inbox', pathMatch: 'full'},
   {
     path: 'nlp',
-    loadChildren: 'app/nlp-tabs/nlp.module#NlpModule'
+    loadChildren: './nlp-tabs/nlp.module#NlpModule'
   },
   {
     path: 'applications',
-    loadChildren: 'app/applications/applications.module#ApplicationsModule'
+    loadChildren: './applications/applications.module#ApplicationsModule'
   },
   {
     path: 'quality',
-    loadChildren: 'app/quality/quality.module#QualityModule'
+    loadChildren: './quality/quality.module#QualityModule'
   },
   { path: '**', redirectTo: '/nlp/inbox' }
 ];

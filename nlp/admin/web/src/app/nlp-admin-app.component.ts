@@ -18,7 +18,7 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {AuthService} from "./core/auth/auth.service";
 import {StateService} from "./core/state.service";
 import {RestService} from "./core/rest/rest.service";
-import {MdIconRegistry, MdSnackBar} from "@angular/material";
+import {MatIconRegistry, MatSnackBar} from "@angular/material";
 import {UserRole} from "./model/auth";
 import {DomSanitizer} from "@angular/platform-browser";
 
@@ -35,8 +35,8 @@ export class NlpAdminAppComponent implements OnInit, OnDestroy {
   constructor(public auth: AuthService,
               public state: StateService,
               private rest: RestService,
-              private snackBar: MdSnackBar,
-              iconRegistry: MdIconRegistry,
+              private snackBar: MatSnackBar,
+              iconRegistry: MatIconRegistry,
               sanitizer: DomSanitizer) {
     iconRegistry.addSvgIcon(
       'logo',

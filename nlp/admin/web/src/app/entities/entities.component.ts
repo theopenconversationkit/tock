@@ -17,7 +17,7 @@
 import {Component, OnInit} from "@angular/core";
 import {StateService} from "../core/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
-import {MdDialog, MdDialogConfig, MdSnackBar, MdSnackBarConfig} from "@angular/material";
+import {MatDialog, MatDialogConfig, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {ApplicationService} from "../core/applications.service";
 import {EntityDefinition, EntityType, PredefinedValue} from "../model/nlp";
 import {ConfirmDialogComponent} from "../shared/confirm-dialog/confirm-dialog.component";
@@ -33,8 +33,8 @@ export class EntitiesComponent implements OnInit {
 
   constructor(public state: StateService,
               private nlp: NlpService,
-              private snackBar: MdSnackBar,
-              private dialog: MdDialog,
+              private snackBar: MatSnackBar,
+              private dialog: MatDialog,
               private applicationService: ApplicationService) {
   }
 
@@ -45,7 +45,7 @@ export class EntitiesComponent implements OnInit {
     this.nlp.updateEntityDefinition(
       this.state.createUpdateEntityDefinitionQuery(entity)
     ).map(_ => this.applicationService.reloadCurrentApplication())
-      .subscribe(_ => this.snackBar.open(`Entity updated`, "Update", {duration: 1000} as MdSnackBarConfig));
+      .subscribe(_ => this.snackBar.open(`Entity updated`, "Update", {duration: 1000} as MatSnackBarConfig<any>));
   }
 
   deleteEntityType(entityType: EntityType) {
@@ -55,15 +55,15 @@ export class EntitiesComponent implements OnInit {
         subtitle: "Are you sure? This can completely cleanup your model!",
         action: "Remove"
       }
-    } as MdDialogConfig);
+    } as MatDialogConfig<any>);
     dialogRef.afterClosed().subscribe(result => {
       if (result === "remove") {
         this.nlp.removeEntityType(entityType).subscribe(
           _ => {
             this.state.resetConfiguration();
-            this.snackBar.open(`Entity Type ${entityType.name} removed`, "Remove Entity Type", {duration: 1000} as MdSnackBarConfig);
+            this.snackBar.open(`Entity Type ${entityType.name} removed`, "Remove Entity Type", {duration: 1000} as MatSnackBarConfig<any>);
           },
-          _ => this.snackBar.open(`Delete Entity Type ${entityType.name} failed`, "Error", {duration: 5000} as MdSnackBarConfig)
+          _ => this.snackBar.open(`Delete Entity Type ${entityType.name} failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>)
         );
       }
     });
@@ -79,27 +79,27 @@ export class EntitiesComponent implements OnInit {
 
   updatePredefinedValueName(predefinedValue: PredefinedValue, newValue: string) {
     if (newValue.trim() === "") {
-      this.snackBar.open(`Empty Predefined Value is not allowed`, "Error", {duration: 5000} as MdSnackBarConfig);
+      this.snackBar.open(`Empty Predefined Value is not allowed`, "Error", {duration: 5000} as MatSnackBarConfig<any>);
     } else {
       this.nlp.createOrUpdatePredefinedValue(
         this.state.createPredefinedValueQuery(this.selectedEntityType.name, newValue, predefinedValue.value)).subscribe(
         next => {
           this.selectedEntityType = next
         },
-        error => this.snackBar.open(`Update Predefined Value '${name}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
+        error => this.snackBar.open(`Update Predefined Value '${name}' failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>))
     }
   }
 
   createPredefinedValue(name: string) {
     if (name.trim() === "") {
-      this.snackBar.open(`Empty Predefined Value is not allowed`, "Error", {duration: 5000} as MdSnackBarConfig);
+      this.snackBar.open(`Empty Predefined Value is not allowed`, "Error", {duration: 5000} as MatSnackBarConfig<any>);
     } else {
       this.nlp.createOrUpdatePredefinedValue(
         this.state.createPredefinedValueQuery(this.selectedEntityType.name, name)).subscribe(
         next => {
           this.selectedEntityType = next
         },
-        error => this.snackBar.open(`Create Predefined Value '${name}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
+        error => this.snackBar.open(`Create Predefined Value '${name}' failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>))
     }
   }
 
@@ -117,12 +117,12 @@ export class EntitiesComponent implements OnInit {
           this.selectedEntityType.predefinedValues.splice(index, 1);
         }
       },
-      error => this.snackBar.open(`Delete Predefined Value '${name}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
+      error => this.snackBar.open(`Delete Predefined Value '${name}' failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>))
   }
 
   createLabel(predefinedValue: PredefinedValue, name: string) {
     if (name.trim() === "") {
-      this.snackBar.open(`Empty Label is not allowed`, "Error", {duration: 5000} as MdSnackBarConfig);
+      this.snackBar.open(`Empty Label is not allowed`, "Error", {duration: 5000} as MatSnackBarConfig<any>);
     } else {
       this.nlp.createLabel(
         this.state.createPredefinedLabelQuery(
@@ -134,7 +134,7 @@ export class EntitiesComponent implements OnInit {
           next => {
             this.selectedEntityType = next
           },
-          error => this.snackBar.open(`Create Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
+          error => this.snackBar.open(`Create Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>))
     }
   }
 
@@ -156,7 +156,7 @@ export class EntitiesComponent implements OnInit {
             }
           })
         },
-        error => this.snackBar.open(`Delete Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000} as MdSnackBarConfig))
+        error => this.snackBar.open(`Delete Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>))
   }
 
 }

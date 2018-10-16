@@ -27,21 +27,21 @@
                               [style.font-size]="fontSize"
                               [style.background]="t.color()"
                               [id]="t.index"
-                              [md-tooltip]="t.display(sentence, state.user)">{{t.text}}</span></div>
-    <button *ngIf="displayActions && appConfig.answerToSentenceUrl && isRootSentence()" md-icon-button (click)="answerToSentence()" md-tooltip="Set a custom answer" class="answer-button"><md-icon>question_answer</md-icon></button>
-    <button *ngIf="displayActions && isRootSentence()" md-icon-button (click)="copyToClipboard()" md-tooltip="Copy sentence to clipboard" class="copy-button"><md-icon>content_copy</md-icon></button>
+                              [matTooltip]="t.display(sentence, state.user)">{{t.text}}</span></div>
+    <button *ngIf="displayActions && appConfig.answerToSentenceUrl && isRootSentence()" mat-icon-button (click)="answerToSentence()" matTooltip="Set a custom answer" class="answer-button"><mat-icon>question_answer</mat-icon></button>
+    <button *ngIf="displayActions && isRootSentence()" mat-icon-button (click)="copyToClipboard()" matTooltip="Copy sentence to clipboard" class="copy-button"><mat-icon>content_copy</mat-icon></button>
     <textarea *ngIf="displayActions && isRootSentence()" #copy class="copy"></textarea>
   </div>
   <div *ngIf="sentence && sentence.getEditedSubEntities().length !== 0" class="sub-entities">
     <div *ngFor="let e of sentence.getEditedSubEntities();let idx = index" [style.padding-left]="leftPadding+'px'">
-      <md-chip-list class="role-container">
-        <md-chip [style.background-color]="e.entityColor"
-                 [md-tooltip]="e.qualifiedName(state.user)"
+      <mat-chip-list class="role-container">
+        <mat-chip [style.background-color]="e.entityColor"
+                 [matTooltip]="e.qualifiedName(state.user)"
                  selected="false"
                  color="primary">
           {{e.role}}
-        </md-chip>
-      </md-chip-list>
+        </mat-chip>
+      </mat-chip-list>
       <tock-highlight [sentence]="e"
                       [readOnly]="readOnly"
                       prefix="{{prefix}}_{{idx}}"
@@ -52,23 +52,23 @@
   </div>
 
   <div *ngIf="!readOnly && edited" class="highlight">
-    <md-chip-list *ngIf="entityProvider" class="inner-highlight">
-      <md-chip *ngFor="let entity of entityProvider.getEntities()"
-               mdTooltip="Select {{entity.qualifiedName(state.user)}}"
+    <mat-chip-list *ngIf="entityProvider" class="inner-highlight">
+      <mat-chip *ngFor="let entity of entityProvider.getEntities()"
+               matTooltip="Select {{entity.qualifiedName(state.user)}}"
                selected="false"
                (click)="onSelect(entity)"
                [style.background-color]="entity.entityColor"
                color="primary">
         {{entity.qualifiedName(state.user)}}
-      </md-chip>
-    </md-chip-list>
+      </mat-chip>
+    </mat-chip-list>
     <div>
-      <button md-button (click)="addEntity()">
-        <md-icon>add</md-icon>
+      <button mat-button (click)="addEntity()">
+        <mat-icon>add</mat-icon>
         Add New Entity
       </button>
-      <button md-raised-button (click)="onClose()">
-        <md-icon>close</md-icon>
+      <button mat-raised-button (click)="onClose()">
+        <mat-icon>close</mat-icon>
         Close Entity Selection
       </button>
     </div>

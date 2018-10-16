@@ -16,85 +16,99 @@
 
 <div class="search">
   <tock-sentences-scroll [filter]="filter" title="" [displayStatus]="true" (selectedSentences)="selectedSentences = $event">
-    <md-card>
-      <md-card-content>
-        <md-input-container class="search-input">
-          <input mdInput placeholder="Search sentences" [(ngModel)]="filter.search" (keyup.enter)="search()">
-        </md-input-container>
-        <md-icon color="primary" md-tooltip="Search support regexp (PCRE format)">info</md-icon>
+    <mat-card>
+      <mat-card-content>
+        <mat-form-field class="search-input">
+          <input matInput placeholder="Search sentences" [(ngModel)]="filter.search" (keyup.enter)="search()">
+        </mat-form-field>
+        <mat-icon color="primary" matTooltip="Search support regexp (PCRE format)">info</mat-icon>
+        <button mat-button (click)="search()">GO</button>
         <br>
-        <md-select placeholder="Intent" [(ngModel)]="filter.intentId" (change)="changeIntent()">
-          <md-option value="-1">All</md-option>
-          <md-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
+        <mat-form-field class="search-criterion">
+        <mat-select placeholder="Intent" [(ngModel)]="filter.intentId" (selectionChange)="changeIntent()">
+          <mat-option value="-1">All</mat-option>
+          <mat-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
             {{intent.name}}
-          </md-option>
-          <md-option value="unknown">Unknown</md-option>
-        </md-select>
-        <md-select *ngIf="entityTypes" placeholder="Entity Type" [(ngModel)]="filter.entityType" (change)="changeEntityType()">
-          <md-option value="">All</md-option>
-          <md-option *ngFor="let e of entityTypes" [value]="e.name">
+          </mat-option>
+          <mat-option value="unknown">Unknown</mat-option>
+        </mat-select>
+        </mat-form-field>
+        <mat-form-field class="search-criterion">
+        <mat-select *ngIf="entityTypes" placeholder="Entity Type" [(ngModel)]="filter.entityType" (selectionChange)="changeEntityType()">
+          <mat-option value="">All</mat-option>
+          <mat-option *ngFor="let e of entityTypes" [value]="e.name">
             {{e.qualifiedName(state.user)}}
-          </md-option>
-        </md-select>
-        <md-select *ngIf="entityRoles" placeholder="Entity Role" [(ngModel)]="filter.entityRole" (change)="search()">
-          <md-option value="">All</md-option>
-          <md-option *ngFor="let r of entityRoles" [value]="r">
+          </mat-option>
+        </mat-select>
+        </mat-form-field>
+        <mat-form-field class="search-criterion">
+        <mat-select *ngIf="entityRoles" placeholder="Entity Role" [(ngModel)]="filter.entityRole" (selectionChange)="search()">
+          <mat-option value="">All</mat-option>
+          <mat-option *ngFor="let r of entityRoles" [value]="r">
             {{r}}
-          </md-option>
-        </md-select>
-        <md-select placeholder="Status" [(ngModel)]="status" (change)="search()">
-          <md-option value="">All</md-option>
-          <md-option value="inbox">Inbox</md-option>
-          <md-option value="validated">Validated</md-option>
-          <md-option value="model">Included in model</md-option>
-        </md-select>
-        <md-input-container>
-          <input mdInput [mdDatepicker]="after" placeholder="Modified after" [(ngModel)]="filter.modifiedAfter" (change)="search()">
-          <md-datepicker-toggle mdSuffix [for]="after"></md-datepicker-toggle>
-        </md-input-container>
-        <md-datepicker #after (selectedChanged)="search()"></md-datepicker>
-        <button md-button (click)="search()">GO</button>
-        </md-card-content>
-       <md-card-footer *ngIf="state.hasRole(UserRole.admin)">
-         <md-expansion-panel>
-           <md-expansion-panel-header>
+          </mat-option>
+        </mat-select>
+        </mat-form-field>
+        <mat-form-field class="search-criterion">
+        <mat-select placeholder="Status" [(ngModel)]="status" (selectionChange)="search()">
+          <mat-option value="">All</mat-option>
+          <mat-option value="inbox">Inbox</mat-option>
+          <mat-option value="validated">Validated</mat-option>
+          <mat-option value="model">Included in model</mat-option>
+        </mat-select>
+        </mat-form-field>
+        <mat-form-field class="search-criterion">
+          <input matInput [matDatepicker]="after" placeholder="Modified after" [(ngModel)]="filter.modifiedAfter" (selectionChange)="search()">
+          <mat-datepicker-toggle matSuffix [for]="after"></mat-datepicker-toggle>
+          <mat-datepicker #after (selectedChanged)="search()"></mat-datepicker>
+        </mat-form-field>
+        </mat-card-content>
+       <mat-card-footer *ngIf="state.hasRole(UserRole.admin)">
+         <mat-expansion-panel>
+           <mat-expansion-panel-header>
              <mat-panel-title>
                Advanced Options
              </mat-panel-title>
              <mat-panel-description>
                Manage Intents and Entities
              </mat-panel-description>
-           </md-expansion-panel-header>
+           </mat-expansion-panel-header>
            <div>
              Change intent for selected sentences:
-           <md-select placeholder="Select Intent" [(ngModel)]="update.newIntentId">
-             <md-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
+           <mat-form-field>
+           <mat-select placeholder="Select Intent" [(ngModel)]="update.newIntentId">
+             <mat-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
                {{intent.name}}
-             </md-option>
-             <md-option value="unknown">Unknown</md-option>
-           </md-select>
+             </mat-option>
+             <mat-option value="unknown">Unknown</mat-option>
+           </mat-select>
+           </mat-form-field>
 
-           <button color="primary" md-button (click)="updateSentencesIntent()">Change Intent</button>
+             <button color="primary" mat-button (click)="updateSentencesIntent()">Change Intent</button>
            </div>
            <div>
              Change entity for selected sentences:
-             <md-select placeholder="Select Old Entity" [(ngModel)]="update.oldEntity">
-               <md-option *ngFor="let e of state.entities | async" [value]="e">
+             <mat-form-field class="search-criterion">
+             <mat-select placeholder="Select Old Entity" [(ngModel)]="update.oldEntity">
+               <mat-option *ngFor="let e of state.entities | async" [value]="e">
                  {{e.qualifiedRole}}
-               </md-option>
-             </md-select>
+               </mat-option>
+             </mat-select>
+             </mat-form-field>
 
-             <md-select placeholder="Select New Entity" [(ngModel)]="update.newEntity">
-               <md-option *ngFor="let e of state.entities | async" [value]="e">
+             <mat-form-field>
+             <mat-select placeholder="Select New Entity" [(ngModel)]="update.newEntity">
+               <mat-option *ngFor="let e of state.entities | async" [value]="e">
                  {{e.qualifiedRole}}
-               </md-option>
-             </md-select>
+               </mat-option>
+             </mat-select>
+             </mat-form-field>
 
-             <button color="primary" md-button (click)="updateSentencesEntity()">Change entity</button>
+             <button color="primary" mat-button (click)="updateSentencesEntity()">Change Entity</button>
            </div>
-         </md-expansion-panel>
-       </md-card-footer>
-    </md-card>
+         </mat-expansion-panel>
+       </mat-card-footer>
+    </mat-card>
   </tock-sentences-scroll>
 </div>
 

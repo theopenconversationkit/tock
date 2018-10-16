@@ -16,59 +16,59 @@
 
 <div>
 
-  <md-table #table [dataSource]="dataSource">
+  <mat-table #table [dataSource]="dataSource">
 
-    <ng-container mdColumnDef="text">
-      <md-header-cell *mdHeaderCellDef> Text </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{row.sentence.text}} </md-cell>
+    <ng-container matColumnDef="text">
+      <mat-header-cell *matHeaderCellDef> Text </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.sentence.text}} </mat-cell>
     </ng-container>
 
-    <ng-container mdColumnDef="currentIntent">
-      <md-header-cell *mdHeaderCellDef> Current Intent </md-header-cell>
-      <md-cell *mdCellDef="let row"> <span style="color:green">{{row.currentIntentName()}}</span></md-cell>
+    <ng-container matColumnDef="currentIntent">
+      <mat-header-cell *matHeaderCellDef> Current Intent </mat-header-cell>
+      <mat-cell *matCellDef="let row"> <span style="color:green">{{row.currentIntentName()}}</span></mat-cell>
     </ng-container>
 
-    <ng-container mdColumnDef="wrongIntent">
-      <md-header-cell *mdHeaderCellDef> Intent Found </md-header-cell>
-      <md-cell *mdCellDef="let row"> <span style="color:red">{{row.wrongIntentName()}}</span></md-cell>
+    <ng-container matColumnDef="wrongIntent">
+      <mat-header-cell *matHeaderCellDef> Intent Found </mat-header-cell>
+      <mat-cell *matCellDef="let row"> <span style="color:red">{{row.wrongIntentName()}}</span></mat-cell>
     </ng-container>
 
-    <ng-container mdColumnDef="count">
-      <md-header-cell *mdHeaderCellDef> Errors </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{row.count}} </md-cell>
+    <ng-container matColumnDef="count">
+      <mat-header-cell *matHeaderCellDef> Errors </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.count}} </mat-cell>
     </ng-container>
 
-    <ng-container mdColumnDef="percent">
-      <md-header-cell *mdHeaderCellDef md-tooltip="(after first error)"> Test Errors / Tests  </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{(row.count/row.total)| percent:'1.0-2'}} </md-cell>
+    <ng-container matColumnDef="percent">
+      <mat-header-cell *matHeaderCellDef matTooltip="(after first error)"> Test Errors / Tests  </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{(row.count/row.total)| percent:'1.0-2'}} </mat-cell>
     </ng-container>
 
-    <ng-container mdColumnDef="probability">
-      <md-header-cell *mdHeaderCellDef> Average Intent Error Probability </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{row.averageErrorProbability | percent:'1.0-2'}} </md-cell>
+    <ng-container matColumnDef="probability">
+      <mat-header-cell *matHeaderCellDef> Average Intent Error Probability </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.averageErrorProbability | percent:'1.0-2'}} </mat-cell>
     </ng-container>
 
-    <ng-container mdColumnDef="firstErrorDate">
-      <md-header-cell *mdHeaderCellDef> Detection Date </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{row.firstDetectionDate | amCalendar}} </md-cell>
+    <ng-container matColumnDef="firstErrorDate">
+      <mat-header-cell *matHeaderCellDef> Detection Date </mat-header-cell>
+      <mat-cell *matCellDef="let row"> {{row.firstDetectionDate | amCalendar}} </mat-cell>
     </ng-container>
 
-    <ng-container mdColumnDef="actions">
-      <md-header-cell *mdHeaderCellDef> Actions </md-header-cell>
-      <md-cell *mdCellDef="let row">
-        <button md-icon-button (click)="validate(row)"><md-icon mdTooltip="Validate Intent" style="color:green">sentiment_very_satisfied</md-icon></button>
-        <button md-icon-button (click)="change(row)"><md-icon mdTooltip="Change the Intent" style="color:red">update</md-icon></button>
-      </md-cell>
+    <ng-container matColumnDef="actions">
+      <mat-header-cell *matHeaderCellDef> Actions </mat-header-cell>
+      <mat-cell *matCellDef="let row">
+        <button mat-icon-button (click)="validate(row)"><mat-icon matTooltip="Validate Intent" style="color:green">sentiment_very_satisfied</mat-icon></button>
+        <button mat-icon-button (click)="change(row)"><mat-icon matTooltip="Change the Intent" style="color:red">update</mat-icon></button>
+      </mat-cell>
     </ng-container>
 
-    <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
-    <md-row *mdRowDef="let row; columns: displayedColumns;"></md-row>
-  </md-table>
+    <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+    <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+  </mat-table>
 
-  <md-paginator #paginator
+  <mat-paginator #paginator
                 [length]="dataSource.size"
                 [pageIndex]="0"
                 [pageSize]="10"
                 [pageSizeOptions]="[5, 10, 25, 100]">
-  </md-paginator>
+  </mat-paginator>
 </div>

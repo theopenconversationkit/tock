@@ -21,7 +21,7 @@ import {StateService} from "../core/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {PaginatedQuery, SearchMark} from "../model/commons";
 import {Observable} from "rxjs/Observable";
-import {MD_DIALOG_DATA, MdDialog, MdDialogRef} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
 import {ApplicationConfig} from "../core/application.config";
 import {Router} from "@angular/router";
 
@@ -37,7 +37,7 @@ export class LogsComponent extends ScrollComponent<Log> {
 
   constructor(state: StateService,
               private nlp: NlpService,
-              private dialog: MdDialog,
+              private dialog: MatDialog,
               private config: ApplicationConfig,
               private router: Router) {
     super(state);
@@ -91,21 +91,21 @@ export class LogsComponent extends ScrollComponent<Log> {
 
 @Component({
   selector: 'tock-display-full-log',
-  template: `<h1 md-dialog-title>Request Full Log</h1>
-  <div md-dialog-content>
+  template: `<h1 mat-dialog-title>Request Full Log</h1>
+  <div mat-dialog-content>
     Request:
     <pre>{{data.request}}</pre>
     Response:
     <pre>{{data.response}}</pre>
   </div>
-  <div md-dialog-actions>
-    <button md-raised-button md-dialog-close color="primary">Close</button>
+  <div mat-dialog-actions>
+    <button mat-raised-button mat-dialog-close color="primary">Close</button>
   </div>`
 })
 export class DisplayFullLogComponent {
 
-  constructor(public dialogRef: MdDialogRef<DisplayFullLogComponent>,
-              @Inject(MD_DIALOG_DATA) public data: any) {
+  constructor(public dialogRef: MatDialogRef<DisplayFullLogComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: any) {
 
   }
 

@@ -15,7 +15,7 @@
  */
 
 import {Component, Inject, OnInit} from "@angular/core";
-import {MD_DIALOG_DATA, MdDialogRef} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 
 @Component({
   selector: 'tock-add-state-dialog',
@@ -27,8 +27,8 @@ export class AddStateDialogComponent implements OnInit {
   name: string;
 
   constructor(
-    public dialogRef: MdDialogRef<AddStateDialogComponent>,
-    @Inject(MD_DIALOG_DATA) public data: any) {
+    public dialogRef: MatDialogRef<AddStateDialogComponent>,
+    @Inject(MAT_DIALOG_DATA) public data: any) {
   }
 
   ngOnInit() {

@@ -14,26 +14,26 @@
   ~ limitations under the License.
   -->
 
-<md-card class="try">
-  <md-card-content>
-    <md-input-container class="try-input">
-      <input mdInput placeholder="Write some text" #tryIt (keyup.enter)="onTry(tryIt.value)">
-    </md-input-container>
-    <button md-raised-button (click)="onTry(tryIt.value)" color="primary">GO</button>
-    <button md-raised-button (click)="advanced = true" class="advanced">Advanced</button>
-    <md-card *ngIf="advanced">
-      <md-card-content>
-        <md-input-container>
-          <input mdInput [(ngModel)]="queryState" placeholder="Enter query state">
-        </md-input-container><br>
-        <md-checkbox [(ngModel)]="skipCache" md-tooltip="Force NLP model query (skip cache)">skip cache</md-checkbox>
-      </md-card-content>
-      <md-card-actions>
-        <button md-raised-button (click)="advanced = false">Hide advanced parameters</button>
-      </md-card-actions>
-    </md-card>
-  </md-card-content>
-</md-card>
+<mat-card class="try">
+  <mat-card-content>
+    <mat-form-field class="try-input">
+      <input matInput placeholder="Write some text" #tryIt (keyup.enter)="onTry(tryIt.value)">
+    </mat-form-field>
+    <button mat-raised-button (click)="onTry(tryIt.value)" color="primary">GO</button>
+    <button mat-raised-button (click)="advanced = true" class="advanced">Advanced</button>
+    <mat-card *ngIf="advanced">
+      <mat-card-content>
+        <mat-form-field>
+          <input matInput [(ngModel)]="queryState" placeholder="Enter query state">
+        </mat-form-field><br>
+        <mat-checkbox [(ngModel)]="skipCache" matTooltip="Force NLP model query (skip cache)">skip cache</mat-checkbox>
+      </mat-card-content>
+      <mat-card-actions>
+        <button mat-raised-button (click)="advanced = false">Hide advanced parameters</button>
+      </mat-card-actions>
+    </mat-card>
+  </mat-card-content>
+</mat-card>
 <br>
 <tock-sentence-analysis *ngIf="sentence"
                         [(sentence)]="sentence"

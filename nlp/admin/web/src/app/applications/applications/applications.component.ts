@@ -17,7 +17,7 @@
 import {saveAs} from "file-saver";
 import {Component, OnInit} from "@angular/core";
 import {Application} from "../../model/application";
-import {MdSnackBar} from "@angular/material";
+import {MatSnackBar} from "@angular/material";
 import {StateService} from "../../core/state.service";
 import {ApplicationService} from "../../core/applications.service";
 import {UserRole} from "../../model/auth";
@@ -32,7 +32,7 @@ export class ApplicationsComponent implements OnInit {
   UserRole = UserRole;
   uploadDump: boolean = false;
 
-  constructor(private snackBar: MdSnackBar,
+  constructor(private snackBar: MatSnackBar,
               public state: StateService,
               private applicationService: ApplicationService) {
   }

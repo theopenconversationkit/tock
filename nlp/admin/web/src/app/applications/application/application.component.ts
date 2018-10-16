@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from "@angular/core";
-import {MdDialog, MdSnackBar} from "@angular/material";
+import {MatDialog, MatSnackBar} from "@angular/material";
 import {ActivatedRoute, Router} from "@angular/router";
 import {StateService} from "../../core/state.service";
 import {Application} from "../../model/application";
@@ -36,8 +36,8 @@ export class ApplicationComponent implements OnInit {
   nlpEngineType: string;
 
   constructor(private route: ActivatedRoute,
-              private snackBar: MdSnackBar,
-              private dialog: MdDialog,
+              private snackBar: MatSnackBar,
+              private dialog: MatDialog,
               public state: StateService,
               private applicationService: ApplicationService,
               private router: Router) {

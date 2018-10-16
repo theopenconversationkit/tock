@@ -19,7 +19,7 @@ import {Intent, nameFromQualifiedName, Sentence, SentenceStatus} from "../model/
 import {StateService} from "../core/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {CreateIntentDialogComponent} from "./create-intent-dialog/create-intent-dialog.component";
-import {MdDialog, MdSnackBar} from "@angular/material";
+import {MatDialog, MatSnackBar} from "@angular/material";
 import {ApplicationConfig} from "../core/application.config";
 import {Router} from "@angular/router";
 import {ConfirmDialogComponent} from "../shared/confirm-dialog/confirm-dialog.component";
@@ -40,8 +40,8 @@ export class SentenceAnalysisComponent implements OnInit {
 
   constructor(public state: StateService,
               private nlp: NlpService,
-              private snackBar: MdSnackBar,
-              private dialog: MdDialog,
+              private snackBar: MatSnackBar,
+              private dialog: MatDialog,
               public config: ApplicationConfig,
               private router: Router) {
   }

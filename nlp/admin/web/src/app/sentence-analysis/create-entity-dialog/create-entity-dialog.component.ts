@@ -15,7 +15,7 @@
  */
 
 import {Component, Inject, OnInit} from "@angular/core";
-import {MD_DIALOG_DATA, MdDialogRef} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {StateService} from "../../core/state.service";
 import {entityNameFromQualifiedName, EntityType, qualifiedNameWithoutRole} from "../../model/nlp";
 import {EntityProvider} from "../highlight/highlight.component";
@@ -37,9 +37,9 @@ export class CreateEntityDialogComponent implements OnInit {
   error: string;
   entityTypes: EntityType[];
 
-  constructor(public dialogRef: MdDialogRef<CreateEntityDialogComponent>,
+  constructor(public dialogRef: MatDialogRef<CreateEntityDialogComponent>,
               private state: StateService,
-              @Inject(MD_DIALOG_DATA) private data: any) {
+              @Inject(MAT_DIALOG_DATA) private data: any) {
     this.entityProvider = data.entityProvider;
     this.state.entityTypesSortedByName().subscribe(entities => this.entityTypes = entities);
   }

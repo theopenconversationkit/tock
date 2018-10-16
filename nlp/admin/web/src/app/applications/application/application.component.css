@@ -14,9 +14,18 @@
  * limitations under the License.
  */
 
+.locales {
+  padding-left: 20px;
+}
+
 .select-locale {
+
   padding-top:20px;
   padding-bottom:20px;
   width:200px;
   margin: 0 16px;
+}
+
+.separator {
+  padding-right: 10px;
 }

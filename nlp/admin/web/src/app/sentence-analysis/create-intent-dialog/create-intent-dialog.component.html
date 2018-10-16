@@ -14,16 +14,16 @@
   ~ limitations under the License.
   -->
 
-<h1 md-dialog-title>Create a New Intent</h1>
-<div md-dialog-content>
+<h1 mat-dialog-title>Create a New Intent</h1>
+<div mat-dialog-content>
   <form #intentForm="ngForm">
-    <md-input-container>
-      <input mdInput required name="name" placeholder="Intent Name" [(ngModel)]="name" (keyup)="format()" (keyup.enter)="save()">
-    </md-input-container>
+    <mat-form-field>
+      <input matInput required name="name" placeholder="Intent Name" [(ngModel)]="name" (keyup)="format()" (keyup.enter)="save()">
+    </mat-form-field>
   </form>
 </div>
-<div md-dialog-actions>
-  <button md-button (click)="dialogRef.close('cancel')">Cancel</button>
-  <button md-button (click)="save()" [disabled]="!intentForm.form.valid">Create</button>
+<div mat-dialog-actions>
+  <button mat-button (click)="dialogRef.close('cancel')">Cancel</button>
+  <button mat-button (click)="save()" [disabled]="!intentForm.form.valid">Create</button>
 </div>
 

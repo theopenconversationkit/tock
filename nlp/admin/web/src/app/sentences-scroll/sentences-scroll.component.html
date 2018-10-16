@@ -19,47 +19,47 @@
 <div class="paginator">
   <div class="header" *ngIf="total === 0">
     <h4 class="title">{{title}} is empty!</h4>
-    <button md-button (click)="refresh()" class="button">
-      <md-icon>refresh</md-icon>
+    <button mat-button (click)="refresh()" class="button">
+      <mat-icon>refresh</mat-icon>
     </button>
   </div>
 
   <div class="header" *ngIf="total !== 0">
     <h4 class="title"></h4>
-    <button md-icon-button (click)="refresh()" class="button" md-tooltip="Refresh">
-      <md-icon>refresh</md-icon>
+    <button mat-icon-button (click)="refresh()" class="button" matTooltip="Refresh">
+      <mat-icon>refresh</mat-icon>
     </button>
     <button *ngIf="state.hasRole(UserRole.admin)"
-            md-icon-button
+            mat-icon-button
             (click)="downloadSentencesDump()"
-            mdTooltip="Download a sentences dump of the current selection"
+            matTooltip="Download a sentences dump of the current selection"
             class="button">
-      <md-icon>cloud_download</md-icon>
+      <mat-icon>cloud_download</mat-icon>
     </button>
-    <button *ngIf="tableView" md-icon-button (click)="switchToScrollView()" class="button"
-            mdTooltip="Switch to scroll view">
-      <md-icon>grid_off</md-icon>
+    <button *ngIf="tableView" mat-icon-button (click)="switchToScrollView()" class="button"
+            matTooltip="Switch to scroll view">
+      <mat-icon>grid_off</mat-icon>
     </button>
-    <button *ngIf="tableView && !advancedView" md-icon-button (click)="switchAdvancedView(true)" class="button"
-            mdTooltip="Display additional stats">
-      <md-icon>expand_more</md-icon>
+    <button *ngIf="tableView && !advancedView" mat-icon-button (click)="switchAdvancedView(true)" class="button"
+            matTooltip="Display additional stats">
+      <mat-icon>expand_more</mat-icon>
     </button>
-    <button *ngIf="tableView && advancedView" md-icon-button (click)="switchAdvancedView(false)" class="button"
-            mdTooltip="Hide additional stats">
-      <md-icon>expand_less</md-icon>
+    <button *ngIf="tableView && advancedView" mat-icon-button (click)="switchAdvancedView(false)" class="button"
+            matTooltip="Hide additional stats">
+      <mat-icon>expand_less</mat-icon>
     </button>
-    <button *ngIf="!tableView" md-icon-button (click)="switchToTableView()" class="button"
-            mdTooltip="Switch to table view">
-      <md-icon>grid_on</md-icon>
+    <button *ngIf="!tableView" mat-icon-button (click)="switchToTableView()" class="button"
+            matTooltip="Switch to table view">
+      <mat-icon>grid_on</mat-icon>
     </button>
   </div>
 
-  <md-paginator #paginator
+  <mat-paginator #paginator
                 [length]="total"
                 [pageIndex]="pageIndex"
                 [pageSize]="pageSize"
                 [pageSizeOptions]="[10, 25, 50, 100]">
-  </md-paginator>
+  </mat-paginator>
 </div>
 <p></p>
 
@@ -81,71 +81,71 @@
 
   <div *ngIf="tableView">
 
-    <md-table #table mdSort [dataSource]="dataSource" (mdSortChange)="sortChange($event)">
+    <mat-table #table matSort [dataSource]="dataSource" (matSortChange)="sortChange($event)">
 
-      <ng-container mdColumnDef="select">
-        <md-header-cell *mdHeaderCellDef>
-          <md-checkbox (change)="$event ? masterToggle() : null"
+      <ng-container matColumnDef="select">
+        <mat-header-cell *matHeaderCellDef>
+          <mat-checkbox (selectionChange)="$event ? masterToggle() : null"
                         [checked]="selection.hasValue() && isAllSelected()"
                         [indeterminate]="selection.hasValue() && !isAllSelected()">
-          </md-checkbox>
-        </md-header-cell>
-        <md-cell *mdCellDef="let row">
-          <md-checkbox (click)="$event.stopPropagation()"
-                        (change)="$event ? toggle(row) : null"
+          </mat-checkbox>
+        </mat-header-cell>
+        <mat-cell *matCellDef="let row">
+          <mat-checkbox (click)="$event.stopPropagation()"
+                        (selectionChange)="$event ? toggle(row) : null"
                         [checked]="selection.isSelected(row)">
-          </md-checkbox>
-        </md-cell>
+          </mat-checkbox>
+        </mat-cell>
       </ng-container>
 
-      <ng-container mdColumnDef="text">
-        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Text</md-header-cell>
-        <md-cell *mdCellDef="let row"> <tock-highlight [sentence]="row" [readOnly]="true" [displayActions]="false"></tock-highlight></md-cell>
+      <ng-container matColumnDef="text">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Text</mat-header-cell>
+        <mat-cell *matCellDef="let row"> <tock-highlight [sentence]="row" [readOnly]="true" [displayActions]="false"></tock-highlight></mat-cell>
       </ng-container>
 
-      <ng-container mdColumnDef="currentIntent">
-        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Intent</md-header-cell>
-        <md-cell *mdCellDef="let row"><span style="color:green">{{row.getIntentLabel(state)}}</span></md-cell>
+      <ng-container matColumnDef="currentIntent">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Intent</mat-header-cell>
+        <mat-cell *matCellDef="let row"><span style="color:green">{{row.getIntentLabel(state)}}</span></mat-cell>
       </ng-container>
 
-      <ng-container mdColumnDef="status" *ngIf="displayStatus">
-        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Status</md-header-cell>
-        <md-cell *mdCellDef="let row"><span class="status" [style.background]="row.statusColor()">{{row.statusDisplayed()}}</span></md-cell>
+      <ng-container matColumnDef="status" *ngIf="displayStatus">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Status</mat-header-cell>
+        <mat-cell *matCellDef="let row"><span class="status" [style.background]="row.statusColor()">{{row.statusDisplayed()}}</span></mat-cell>
       </ng-container>
 
-      <ng-container mdColumnDef="lastUpdate" *ngIf="advancedView">
-        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Last update</md-header-cell>
-        <md-cell *mdCellDef="let row"><span style="color:green">{{row.updateDate | date:'yyyy-MM-dd HH:mm'}}</span></md-cell>
+      <ng-container matColumnDef="lastUpdate" *ngIf="advancedView">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Last update</mat-header-cell>
+        <mat-cell *matCellDef="let row"><span style="color:green">{{row.updateDate | date:'yyyy-MM-dd HH:mm'}}</span></mat-cell>
       </ng-container>
 
-      <ng-container mdColumnDef="intentProbability" *ngIf="advancedView">
-        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Intent proba</md-header-cell>
-        <md-cell *mdCellDef="let row"><span style="color:green">{{row.classification.intentProbability | number:'1.1-2'}}</span></md-cell>
+      <ng-container matColumnDef="intentProbability" *ngIf="advancedView">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Intent proba</mat-header-cell>
+        <mat-cell *matCellDef="let row"><span style="color:green">{{row.classification.intentProbability | number:'1.1-2'}}</span></mat-cell>
       </ng-container>
 
-      <ng-container mdColumnDef="entitiesProbability" *ngIf="advancedView">
-        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Entities proba</md-header-cell>
-        <md-cell *mdCellDef="let row"><span style="color:green">{{row.classification.entitiesProbability| number:'1.1-2'}}</span></md-cell>
+      <ng-container matColumnDef="entitiesProbability" *ngIf="advancedView">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Entities proba</mat-header-cell>
+        <mat-cell *matCellDef="let row"><span style="color:green">{{row.classification.entitiesProbability| number:'1.1-2'}}</span></mat-cell>
       </ng-container>
 
-      <ng-container mdColumnDef="lastUsage" *ngIf="advancedView">
-        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Last use</md-header-cell>
-        <md-cell *mdCellDef="let row"><span style="color:green">{{row.classification.lastUsage| date:'yyyy-MM-dd HH:mm'}}</span></md-cell>
+      <ng-container matColumnDef="lastUsage" *ngIf="advancedView">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Last use</mat-header-cell>
+        <mat-cell *matCellDef="let row"><span style="color:green">{{row.classification.lastUsage| date:'yyyy-MM-dd HH:mm'}}</span></mat-cell>
       </ng-container>
 
-      <ng-container mdColumnDef="usageCount" *ngIf="advancedView">
-        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Uses</md-header-cell>
-        <md-cell *mdCellDef="let row"><span style="color:green">{{row.classification.usageCount}}</span></md-cell>
+      <ng-container matColumnDef="usageCount" *ngIf="advancedView">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Uses</mat-header-cell>
+        <mat-cell *matCellDef="let row"><span style="color:green">{{row.classification.usageCount}}</span></mat-cell>
       </ng-container>
 
-      <ng-container mdColumnDef="unknownCount" *ngIf="advancedView">
-        <md-header-cell *mdHeaderCellDef md-sort-header class="sort-header">Unknown</md-header-cell>
-        <md-cell *mdCellDef="let row"><span style="color:green">{{row.classification.unknownCount}}</span></md-cell>
+      <ng-container matColumnDef="unknownCount" *ngIf="advancedView">
+        <mat-header-cell *matHeaderCellDef mat-sort-header class="sort-header">Unknown</mat-header-cell>
+        <mat-cell *matCellDef="let row"><span style="color:green">{{row.classification.unknownCount}}</span></mat-cell>
       </ng-container>
 
-      <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>
-      <md-row *mdRowDef="let row; columns: displayedColumns;"></md-row>
-    </md-table>
+      <mat-header-row *matHeaderRowDef="displayedColumns"></mat-header-row>
+      <mat-row *matRowDef="let row; columns: displayedColumns;"></mat-row>
+    </mat-table>
 
   </div>
 

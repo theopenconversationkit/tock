@@ -18,7 +18,7 @@ import {Component, OnDestroy, OnInit} from "@angular/core";
 import {ParseQuery, Sentence} from "../model/nlp";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {StateService} from "../core/state.service";
-import {MdSnackBar} from "@angular/material";
+import {MatSnackBar} from "@angular/material";
 
 @Component({
   selector: 'tock-try',
@@ -35,7 +35,7 @@ export class TryComponent implements OnInit, OnDestroy {
 
   constructor(private nlp: NlpService,
               private state: StateService,
-              private snackBar: MdSnackBar) {
+              private snackBar: MatSnackBar) {
   }
 
   ngOnInit() {

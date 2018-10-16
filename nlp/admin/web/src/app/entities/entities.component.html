@@ -14,20 +14,20 @@
   ~ limitations under the License.
   -->
 
-<md-card class="entities">
-  <md-card-content>
-    <md-card-title>Entity roles</md-card-title>
-    <md-list>
+<mat-card class="entities">
+  <mat-card-content>
+    <mat-card-title>Entity roles</mat-card-title>
+    <mat-list>
       <tock-entity-details *ngFor="let e of state.entities | async" [entity]="e"></tock-entity-details>
-    </md-list>
-  </md-card-content>
-</md-card>
+    </mat-list>
+  </mat-card-content>
+</mat-card>
 <p></p>
-<md-card class="entities">
-  <md-card-content>
-    <md-card-title>All Entity Types</md-card-title>
-      <md-chip-list>
-        <md-chip *ngFor="let e of state.entityTypes | async"
+<mat-card class="entities">
+  <mat-card-content>
+    <mat-card-title>All Entity Types</mat-card-title>
+      <mat-chip-list>
+        <mat-chip *ngFor="let e of state.entityTypes | async"
                  color="accent"
                  [removable]="e.namespace() === state.currentApplication.namespace"
                  (remove)="deleteEntityType(e)"
@@ -35,59 +35,60 @@
                  [selected]="e === selectedEntityType"
                  [selectable]="e.namespace() === state.currentApplication.namespace">
           {{e.name}}
-          <md-icon *ngIf="e.namespace() === state.currentApplication.namespace && e.predefinedValues?.length === 0"
+          <mat-icon *ngIf="e.namespace() === state.currentApplication.namespace && e.predefinedValues?.length === 0"
                    class="add-predefined-list"
-                   md-tooltip="add predefined values" >playlist_add</md-icon>
-          <md-icon *ngIf="e.namespace() === state.currentApplication.namespace && e.predefinedValues?.length !== 0"
+                   matTooltip="add predefined values" >playlist_add</mat-icon>
+          <mat-icon *ngIf="e.namespace() === state.currentApplication.namespace && e.predefinedValues?.length !== 0"
                    class="predefined-list"
-                   md-tooltip="update predefined values">playlist_add_check</md-icon>
-          <md-icon *ngIf="e.namespace() === state.currentApplication.namespace"
+                   matTooltip="update predefined values">playlist_add_check</mat-icon>
+          <mat-icon *ngIf="e.namespace() === state.currentApplication.namespace"
                    class="remove"
-                   md-tooltip="delete entity type">cancel</md-icon>
-        </md-chip>
-      </md-chip-list>
-  </md-card-content>
-</md-card>
-<md-card class="entities" *ngIf="selectedEntityType != null">
-  <md-card-content>
-    <md-card-title>Predefined values for {{ selectedEntityType.name }}</md-card-title>
+                   matTooltip="delete entity type">cancel</mat-icon>
+        </mat-chip>
+      </mat-chip-list>
+  </mat-card-content>
+</mat-card>
+<mat-card class="entities" *ngIf="selectedEntityType != null">
+  <mat-card-content>
+    <mat-card-title>Predefined values for {{ selectedEntityType.name }}</mat-card-title>
       <div>
-        <md-input-container>
-          <input mdInput placeholder="Add new predefined value" #pv (keyup.enter)="createPredefinedValue(pv.value)">
-        </md-input-container>
-        <button md-icon-button (click)="createPredefinedValue(pv.value)"><md-icon>add</md-icon></button>
+        <mat-form-field>
+          <input matInput placeholder="Add new predefined value" #pv (keyup.enter)="createPredefinedValue(pv.value)">
+        </mat-form-field>
+        <button mat-icon-button (click)="createPredefinedValue(pv.value)"><mat-icon>add</mat-icon></button>
       </div>
-      <table md-table [width]="'100%'">
-        <thead md-head>
-          <th md-column [width]="'20%'">Predefined Value</th>
-          <th md-column [width]="'50%'">Allowed labels</th>
-          <th md-column [width]="'30%'">Actions</th>
+
+      <table [width]="'100%'">
+        <thead>
+          <th [width]="'20%'">Predefined Value</th>
+          <th [width]="'50%'">Allowed labels</th>
+          <th [width]="'30%'">Actions</th>
         </thead>
-        <tbody md-body>
+        <tbody>
           <tr *ngFor="let predefinedValue of selectedEntityType.predefinedValues">
             <td>
-              <md-input-container>
-                <input mdInput #pv [(value)]="predefinedValue.value" (change)="updatePredefinedValueName(predefinedValue, pv.value)">
-              </md-input-container>
+              <mat-form-field>
+                <input matInput #pv [(value)]="predefinedValue.value" (selectionChange)="updatePredefinedValueName(predefinedValue, pv.value)">
+              </mat-form-field>
             </td>
             <td>
-              <md-chip-list>
-                <md-chip *ngFor="let label of predefinedValue.labels.get(state.currentLocale)"
+              <mat-chip-list>
+                <mat-chip *ngFor="let label of predefinedValue.labels.get(state.currentLocale)"
                          [removable]="true">
                   {{ label }}
-                  <md-icon mdChipRemove (click)="deleteLabel(predefinedValue, label)">cancel</md-icon>
-                </md-chip>
-              </md-chip-list>
+                  <mat-icon matChipRemove (click)="deleteLabel(predefinedValue, label)">cancel</mat-icon>
+                </mat-chip>
+              </mat-chip-list>
             </td>
             <td style="white-space:nowrap">
-              <md-input-container>
-                <input mdInput placeholder="Add label" #l (keyup.enter)="createLabel(predefinedValue, l.value)">
-              </md-input-container>
-              <button md-icon-button (click)="createLabel(predefinedValue, l.value)" md-tooltip="Add Label"><md-icon>add</md-icon></button>
-              <button md-icon-button (click)="deletePredefinedValue(predefinedValue.value)" color="warn" md-tooltip="Delete predefined value"><md-icon>remove</md-icon></button>
+              <mat-form-field>
+                <input matInput placeholder="Add label" #l (keyup.enter)="createLabel(predefinedValue, l.value)">
+              </mat-form-field>
+              <button mat-icon-button (click)="createLabel(predefinedValue, l.value)" matTooltip="Add Label"><mat-icon>add</mat-icon></button>
+              <button mat-icon-button (click)="deletePredefinedValue(predefinedValue.value)" color="warn" matTooltip="Delete predefined value"><mat-icon>remove</mat-icon></button>
             </td>
           </tr>
         </tbody>
       </table>
-  </md-card-content>
-</md-card>
+  </mat-card-content>
+</mat-card>

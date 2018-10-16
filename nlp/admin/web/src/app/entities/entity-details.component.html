@@ -14,18 +14,18 @@
   ~ limitations under the License.
   -->
 
-<md-list-item [style.padding-left]="paddingLeft+'px'">
-  <md-icon mdListIcon [style.color]="entity.entityColor">extension</md-icon>
+<mat-list-item [style.padding-left]="paddingLeft+'px'">
+  <mat-icon mdListIcon [style.color]="entity.entityColor">extension</mat-icon>
   <span [style.background-color]="entity.entityColor">{{entity.qualifiedName(state.user)}}</span>
   <div *ngIf="entity.isDateType()" class="dateType">
-    <md-checkbox [(ngModel)]="entity.atStartOfDay" md-tooltip="useful for non relative time">Evaluate at start of day
-    </md-checkbox>
-    <button md-button (click)="update()" color="primary">Update</button>
+    <mat-checkbox [(ngModel)]="entity.atStartOfDay" matTooltip="useful for non relative time">Evaluate at start of day
+    </mat-checkbox>
+    <button mat-button (click)="update()" color="primary">Update</button>
   </div>
-  <button *ngIf="entityType" md-icon-button (click)="remove()" color="warn">
-    <md-icon>delete</md-icon>
+  <button *ngIf="entityType" mat-icon-button (click)="remove()" color="warn">
+    <mat-icon>delete</mat-icon>
   </button>
-</md-list-item>
+</mat-list-item>
 <tock-entity-details *ngFor="let e of subEntities()"
                      [entity]="e"
                      [paddingLeft]="paddingLeft + 50"

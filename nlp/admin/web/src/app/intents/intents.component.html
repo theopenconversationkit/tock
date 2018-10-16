@@ -14,8 +14,8 @@
   ~ limitations under the License.
   -->
 
-<md-card>
-  <md-card-content>
+<mat-card>
+  <mat-card-content>
     <table border="1" class="table">
       <thead>
       <th>Intent</th>
@@ -28,75 +28,75 @@
         <td>
           <span class="intent_name">{{i.name}}</span>
           <div *ngIf="state.intentExistsInOtherApplication(i.name)"
-               md-tooltip="This intent is shared between at least one other application. All changes to the intent will also affect the other applications that use this intent."
-               mdTooltipPosition="right">
+               matTooltip="This intent is shared between at least one other application. All changes to the intent will also affect the other applications that use this intent."
+               matTooltipPosition="right">
             <span class="shared_application_label">Multi-application intent</span>
-            <md-icon>share</md-icon>
+            <mat-icon>share</mat-icon>
           </div>
         </td>
         <td>
           <span *ngFor="let e of i.entities">
-          <md-icon [style.color]="e.entityColor" class="entity_icon">extension</md-icon>
+          <mat-icon [style.color]="e.entityColor" class="entity_icon">extension</mat-icon>
           <span [style.background-color]="e.entityColor">{{e.qualifiedName(state.user)}}</span>
-          <button *ngIf="!state.intentExistsInOtherApplication(i.name)" md-icon-button (click)="removeEntity(i, e)">
-            <md-icon>remove_circle_outline</md-icon>
+          <button *ngIf="!state.intentExistsInOtherApplication(i.name)" mat-icon-button (click)="removeEntity(i, e)">
+            <mat-icon>remove_circle_outline</mat-icon>
           </button>
           </span>
         </td>
         <td class="shared">
-          <md-select *ngIf="!state.intentExistsInOtherApplication(i.name)"
+          <mat-select *ngIf="!state.intentExistsInOtherApplication(i.name)"
                      class="intent"
                      placeholder="Add shared intent"
-                     (change)="addSharedIntent(i, $event.value)">
-            <md-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
+                     (selectionChange)="addSharedIntent(i, $event.value)">
+            <mat-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
               {{intent.name}}
-            </md-option>
-          </md-select>
+            </mat-option>
+          </mat-select>
           <div *ngIf="i.sharedIntents.length !== 0" class="shared_list">
-            <md-chip-list *ngIf="!state.intentExistsInOtherApplication(i.name)" mdTooltip="Shared intent - click to remove">
-              <md-chip *ngFor="let intentId of i.sharedIntents" color="accent" selected="true"
+            <mat-chip-list *ngIf="!state.intentExistsInOtherApplication(i.name)" matTooltip="Shared intent - click to remove">
+              <mat-chip *ngFor="let intentId of i.sharedIntents" color="accent" selected="true"
                        (click)="removeSharedIntent(i, intentId)">
                 {{state.findIntentById(intentId)?.name}}
-              </md-chip>
-            </md-chip-list>
-            <md-chip-list *ngIf="state.intentExistsInOtherApplication(i.name)" mdTooltip="Shared intent">
-              <md-chip *ngFor="let intentId of i.sharedIntents" color="accent" selected="true">
+              </mat-chip>
+            </mat-chip-list>
+            <mat-chip-list *ngIf="state.intentExistsInOtherApplication(i.name)" matTooltip="Shared intent">
+              <mat-chip *ngFor="let intentId of i.sharedIntents" color="accent" selected="true">
                 {{state.findIntentById(intentId)?.name}}
-              </md-chip>
-            </md-chip-list>
+              </mat-chip>
+            </mat-chip-list>
           </div>
         </td>
         <td class="states">
-          <button *ngIf="!state.intentExistsInOtherApplication(i.name)" md-button (click)="addState(i)">
-            <md-icon>add_box</md-icon>
+          <button *ngIf="!state.intentExistsInOtherApplication(i.name)" mat-button (click)="addState(i)">
+            <mat-icon>add_box</mat-icon>
             Add state
           </button>
           <div *ngIf="i.mandatoryStates.length !== 0" class="shared_list">
-            <md-chip-list *ngIf="!state.intentExistsInOtherApplication(i.name)" mdTooltip="Mandatory states - click to delete">
+            <mat-chip-list *ngIf="!state.intentExistsInOtherApplication(i.name)" matTooltip="Mandatory states - click to delete">
               <br>
-              <md-chip *ngFor="let s of i.mandatoryStates" color="accent" selected="true" (click)="removeState(i, s)">
+              <mat-chip *ngFor="let s of i.mandatoryStates" color="accent" selected="true" (click)="removeState(i, s)">
                 {{s}}
-              </md-chip>
-            </md-chip-list>
-            <md-chip-list *ngIf="state.intentExistsInOtherApplication(i.name)" mdTooltip="Mandatory states">
+              </mat-chip>
+            </mat-chip-list>
+            <mat-chip-list *ngIf="state.intentExistsInOtherApplication(i.name)" matTooltip="Mandatory states">
               <br>
-              <md-chip *ngFor="let s of i.mandatoryStates" color="accent" selected="true">
+              <mat-chip *ngFor="let s of i.mandatoryStates" color="accent" selected="true">
                 {{s}}
-              </md-chip>
-            </md-chip-list>
+              </mat-chip>
+            </mat-chip-list>
           </div>
         </td>
         <td class="actions">
-          <button *ngIf="state.hasRole(UserRole.admin)" (click)="downloadSentencesDump(i)" md-icon-button
-                  mdTooltip="Download a sentences dump">
-            <md-icon>cloud_download</md-icon>
+          <button *ngIf="state.hasRole(UserRole.admin)" (click)="downloadSentencesDump(i)" mat-icon-button
+                  matTooltip="Download a sentences dump">
+            <mat-icon>cloud_download</mat-icon>
           </button>
-          <button md-icon-button (click)="deleteIntent(i)" mdTooltip="Delete the intent {{i.name}}">
-            <md-icon>delete</md-icon>
+          <button mat-icon-button (click)="deleteIntent(i)" matTooltip="Delete the intent {{i.name}}">
+            <mat-icon>delete</mat-icon>
           </button>
         </td>
       </tr>
     </table>
-  </md-card-content>
-</md-card>
+  </mat-card-content>
+</mat-card>
 

@@ -14,50 +14,53 @@
   ~ limitations under the License.
   -->
 
-<md-card class="sentence-analysis">
+<mat-card class="sentence-analysis">
   <tock-highlight *ngIf="displayEntities" [sentence]="sentence"></tock-highlight>
-  <md-card-content>
+  <mat-card-content>
     <div class="sentence-analysis-content">
-      <md-select class="intent"
-                 placeholder="Intent"
+      <mat-form-field class="intent">
+      <mat-select placeholder="Intent"
                  [ngModel]="sentence.classification.intentId"
-                 (change)="onIntentChange($event.value)">
-        <md-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
+                 (selectionChange)="onIntentChange($event.value)">
+        <mat-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
           {{intent.name}}
-        </md-option>
-        <md-option value="tock:unknown">unknown</md-option>
-        <md-option value="newIntent">Create a new Intent</md-option>
-      </md-select>
+        </mat-option>
+        <mat-option value="tock:unknown">unknown</mat-option>
+        <mat-option value="newIntent">Create a new Intent</mat-option>
+      </mat-select>
+      </mat-form-field>
 
-      <md-select placeholder="Language" [(ngModel)]="sentence.language" (change)="onLanguageChange($event.value)">
-        <md-option *ngFor="let l of state.currentApplication.supportedLocales" [value]="l">
+      <mat-form-field class="locale">
+      <mat-select placeholder="Language" [(ngModel)]="sentence.language" (selectionChange)="onLanguageChange($event.value)">
+        <mat-option *ngFor="let l of state.currentApplication.supportedLocales" [value]="l">
           {{state.localeName(l)}}
-        </md-option>
-      </md-select>
+        </mat-option>
+      </mat-select>
+      </mat-form-field>
       <span *ngIf="displayStatus" class="status" [style.background]="sentence.statusColor()">
         {{sentence.statusDisplayed()}}
       </span>
       <span *ngIf="displayProbabilities" class="probability">
         <span
           *ngIf="displayProbabilities && sentence.classification.intentId && sentence.classification.hasIntentProbability()"
-          md-tooltip="intent probability">
+          matTooltip="intent probability">
            intent : {{sentence.classification.intentProbability | percent:'1.0-2'}}
         </span>
         <span *ngIf="displayProbabilities && displayEntities
         && sentence.classification.entities.length !== 0 && sentence.classification.hasEntitiesProbability()"
-              md-tooltip="entities probability">
+              matTooltip="entities probability">
            , entities : {{sentence.classification.entitiesProbability | percent:'1.0-2'}}
         </span>
         <span *ngIf="displayProbabilities && (sentence.classification.notRetainedEntities?.length !== 0 || sentence.classification.otherIntentsProbabilities?.size !== 0)">
                 <button *ngIf="!sentence.classification.displayOtherIntents"
                           (click)="sentence.classification.displayOtherIntents=true"
-                          md-icon-button
-                          md-tooltip="Display probability for other intents & entities"><md-icon>expand_more</md-icon></button>
+                          mat-icon-button
+                          matTooltip="Display probability for other intents & entities"><mat-icon>expand_more</mat-icon></button>
                 <button
                   *ngIf="sentence.classification.displayOtherIntents"
-                  md-icon-button
+                  mat-icon-button
                   (click)="sentence.classification.displayOtherIntents=false"
-                  md-tooltip="Hide probabilities"><md-icon>expand_less</md-icon></button>
+                  matTooltip="Hide probabilities"><mat-icon>expand_less</mat-icon></button>
         </span>
         <span *ngIf="displayProbabilities && sentence.classification.notRetainedEntities?.length !== 0">
           <div *ngIf="sentence.classification.displayOtherIntents" class="otherEntities">
@@ -84,15 +87,15 @@
                           [displayProbabilities]="displayProbabilities"
                           (containerChange)="onSentenceChange()"></tock-edit-entities>
     </div>
-  </md-card-content>
-  <md-card-actions class="sentence-analysis-content">
-    <button md-raised-button color="warn" (click)="onDelete()">Delete</button>
-    <button md-raised-button color="accent" (click)="onArchive()" *ngIf="displayArchiveButton">Archive</button>
-    <button md-raised-button color="primary" (click)="onValidate()">Validate</button>
-    <button md-button *ngIf="config.displayDialogUrl"
+  </mat-card-content>
+  <mat-card-actions class="sentence-analysis-content">
+    <button mat-raised-button color="warn" (click)="onDelete()">Delete</button>
+    <button mat-raised-button color="accent" (click)="onArchive()" *ngIf="displayArchiveButton">Archive</button>
+    <button mat-raised-button color="primary" (click)="onValidate()">Validate</button>
+    <button mat-button *ngIf="config.displayDialogUrl"
             color="primary"
             (click)="displayDialogs()"
-            md-tooltip="Display conversations using this sentence">Conversations
+            matTooltip="Display conversations using this sentence">Conversations
     </button>
-  </md-card-actions>
-</md-card>
+  </mat-card-actions>
+</mat-card>

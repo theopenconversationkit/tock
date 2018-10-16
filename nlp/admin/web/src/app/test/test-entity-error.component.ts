@@ -15,7 +15,7 @@
  */
 
 import {AfterViewInit, Component, EventEmitter, OnInit, ViewChild} from "@angular/core";
-import {MdPaginator, MdSnackBar, MdSnackBarConfig} from "@angular/material";
+import {MatPaginator, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {DataSource} from "@angular/cdk/collections";
 import {Observable} from "rxjs/Observable";
 import {EntityTestError, TestErrorQuery} from "../model/nlp";
@@ -24,6 +24,7 @@ import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {Router} from "@angular/router";
 import {QualityService} from "../quality/quality.service";
 import {escapeRegex} from "../model/commons";
+import {merge} from "rxjs";
 
 @Component({
   selector: 'tock-test-entity-error',
@@ -33,12 +34,12 @@ import {escapeRegex} from "../model/commons";
 export class TestEntityErrorComponent implements OnInit, AfterViewInit {
 
   displayedColumns = ['text', 'intent', 'error', 'count', 'percent', 'probability', 'firstErrorDate', 'actions'];
-  @ViewChild(MdPaginator) paginator: MdPaginator;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
   dataSource: TestEntityErrorDataSource | null;
 
   constructor(private state: StateService,
               private quality: QualityService,
-              private snackBar: MdSnackBar,
+              private snackBar: MatSnackBar,
               private router: Router) {
   }
 
@@ -58,7 +59,7 @@ export class TestEntityErrorComponent implements OnInit, AfterViewInit {
   validate(error: EntityTestError) {
     this.quality.deleteEntityError(error).subscribe(
       e => {
-        this.snackBar.open(`Sentence validated`, "Validate Entities", {duration: 1000} as MdSnackBarConfig)
+        this.snackBar.open(`Sentence validated`, "Validate Entities", {duration: 1000} as MatSnackBarConfig)
         this.dataSource.refresh()
       }
     )
@@ -86,7 +87,7 @@ export class TestEntityErrorDataSource extends DataSource<EntityTestError> {
   private refreshEvent = new EventEmitter();
   private subject = new BehaviorSubject([]);
 
-  constructor(private _paginator: MdPaginator,
+  constructor(private _paginator: MatPaginator,
               private state: StateService,
               private qualityService: QualityService) {
     super();
@@ -103,7 +104,7 @@ export class TestEntityErrorDataSource extends DataSource<EntityTestError> {
       this.refreshEvent
     ];
 
-    Observable.merge(...displayDataChanges).subscribe(() => {
+    merge(...displayDataChanges).subscribe(() => {
       const startIndex = this._paginator.pageIndex * this._paginator.pageSize;
 
       this.qualityService.searchEntityErrors(

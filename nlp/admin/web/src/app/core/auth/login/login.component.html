@@ -14,35 +14,35 @@
   ~ limitations under the License.
   -->
 
-<md-card class="">
-  <md-card-title>Authentication</md-card-title>
-  <md-card-content>
-    <md-spinner *ngIf="sendLogin" class="spinner"></md-spinner>
+<mat-card class="">
+  <mat-card-title>Authentication</mat-card-title>
+  <mat-card-content>
+    <mat-spinner *ngIf="sendLogin" class="spinner"></mat-spinner>
     <p *ngIf="errorMessage" class="error">
       {{errorMessage}}
     </p>
     <form (keydown.enter)="onSubmit()" (ngSubmit)="onSubmit()" #loginForm="ngForm">
       <p>
-        <md-form-field #emailInputContainer class="formInput">
-          <input mdInput placeholder="E-MAIL"
+        <mat-form-field #emailInputContainer class="formInput">
+          <input matInput placeholder="E-MAIL"
                  #emailInput name="emailInput"
                  [(ngModel)]="email" autofocus
                  ngDefaultControl required email>
-        </md-form-field>
+        </mat-form-field>
       </p>
       <p>
-        <md-form-field class="formInput">
+        <mat-form-field class="formInput">
           <input type="password"
                  [(ngModel)]="password"
-                 #passwordInput name="passwordInput" mdInput placeholder="PASSWORD"
+                 #passwordInput name="passwordInput" matInput placeholder="PASSWORD"
                  ngDefaultControl required>
-        </md-form-field>
+        </mat-form-field>
       </p>
-      <md-card-actions>
-        <button md-raised-button color="primary" type="submit" [disabled]="!loginForm.form.valid">LOGIN</button>
-      </md-card-actions>
+      <mat-card-actions>
+        <button mat-raised-button color="primary" type="submit">LOGIN</button>
+      </mat-card-actions>
     </form>
-  </md-card-content>
-</md-card>
+  </mat-card-content>
+</mat-card>
 
 

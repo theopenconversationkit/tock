@@ -14,8 +14,8 @@
   ~ limitations under the License.
   -->
 
-<h1 md-dialog-title>{{data.title}}</h1>
-<div md-dialog-content>
+<h1 mat-dialog-title>{{data.title}}</h1>
+<div mat-dialog-content>
   <p>
     If at least one mandatory state is set for an intent,
     <br>
@@ -24,12 +24,12 @@
     is able to returns this intent.
   </p>
   <form #stateForm="ngForm">
-    <md-input-container>
-      <input mdInput required name="name" placeholder="New State" [(ngModel)]="name">
-    </md-input-container>
+    <mat-form-field>
+      <input matInput required name="name" placeholder="New State" [(ngModel)]="name">
+    </mat-form-field>
   </form>
 </div>
-<div md-dialog-actions>
-  <button md-button (click)="dialogRef.close('cancel')">Cancel</button>
-  <button md-button (click)="save()" [disabled]="!stateForm.form.valid">Add</button>
+<div mat-dialog-actions>
+  <button mat-button (click)="dialogRef.close('cancel')">Cancel</button>
+  <button mat-button (click)="save()" [disabled]="!stateForm.form.valid">Add</button>
 </div>

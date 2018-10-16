@@ -17,12 +17,13 @@
 import {AfterViewInit, Component, EventEmitter, OnInit, ViewChild} from "@angular/core";
 import {StateService} from "../core/state.service";
 import {ApplicationService} from "../core/applications.service";
-import {MdPaginator} from "@angular/material";
+import {MatPaginator} from "@angular/material";
 import {DataSource} from "@angular/cdk/collections";
 import {ModelBuild} from "../model/application";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {Observable} from "rxjs/Observable";
 import {PaginatedQuery} from "../model/commons";
+import {merge} from "rxjs";
 
 @Component({
   selector: 'tock-model-builds',
@@ -32,7 +33,7 @@ import {PaginatedQuery} from "../model/commons";
 export class ModelBuildsComponent implements OnInit, AfterViewInit {
 
   displayedColumns = ['date', 'type', 'intent', 'count', 'duration', 'error'];
-  @ViewChild(MdPaginator) paginator: MdPaginator;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
   dataSource: ModelBuildDataSource | null;
 
   constructor(private state: StateService,
@@ -65,7 +66,7 @@ export class ModelBuildDataSource extends DataSource<ModelBuild> {
   private refreshEvent = new EventEmitter();
   private subject = new BehaviorSubject([]);
 
-  constructor(private _paginator: MdPaginator,
+  constructor(private _paginator: MatPaginator,
               private state: StateService,
               private  applicationService: ApplicationService) {
     super();
@@ -82,7 +83,7 @@ export class ModelBuildDataSource extends DataSource<ModelBuild> {
       this.refreshEvent
     ];
 
-    Observable.merge(...displayDataChanges).subscribe(() => {
+    merge(...displayDataChanges).subscribe(() => {
       const startIndex = this._paginator.pageIndex * this._paginator.pageSize;
 
       this.applicationService.builds(

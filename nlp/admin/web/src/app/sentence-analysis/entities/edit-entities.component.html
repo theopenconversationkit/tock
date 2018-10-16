@@ -16,23 +16,23 @@
 
 <div *ngIf="container" [style.padding-left]="paddingLeft+'px'">
   <div *ngFor="let entity of container.getEntities()" class="entity">
-    <md-chip-list class="role-container">
-      <md-chip [style.background-color]="entity.entityColor"
-               [md-tooltip]="entity.qualifiedName(state.user)"
+    <mat-chip-list class="role-container">
+      <mat-chip [style.background-color]="entity.entityColor"
+               [matTooltip]="entity.qualifiedName(state.user)"
                selected="false"
                color="primary">
         {{entity.role}}
-      </md-chip>
-    </md-chip-list>
+      </mat-chip>
+    </mat-chip-list>
     <span *ngIf="!readOnly" class="value">
       {{container.entityValue(entity)}}
     <span *ngIf="displayProbabilities && entity.hasProbability()"
           class="probability"
-          md-tooltip="Probability of entity recognition">
+          matTooltip="Probability of entity recognition">
                {{entity.probability | percent:'1.0-2'}}
           </span>
-    <button md-icon-button color="warn" (click)="onDeleteEntity(entity)" md-tooltip="Delete">
-      <md-icon>delete</md-icon>
+    <button mat-icon-button color="warn" (click)="onDeleteEntity(entity)" matTooltip="Delete">
+      <mat-icon>delete</mat-icon>
     </button>
     </span>
 
@@ -42,7 +42,7 @@
 
     <span *ngIf="displayProbabilities && entity.hasProbability()"
           class="probability"
-          md-tooltip="Probability of entity recognition">
+          matTooltip="Probability of entity recognition">
                {{entity.probability | percent:'1.0-2'}}
           </span>
     </span>

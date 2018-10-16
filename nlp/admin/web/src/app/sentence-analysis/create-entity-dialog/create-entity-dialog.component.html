@@ -14,8 +14,8 @@
   ~ limitations under the License.
   -->
 
-<h1 md-dialog-title>Add Entity</h1>
-<div md-dialog-content>
+<h1 mat-dialog-title>Add Entity</h1>
+<div mat-dialog-content>
 
   <p *ngIf="error" class="error">
     {{error}}
@@ -24,31 +24,31 @@
   <p>
     Select existing Entity
 
-    <md-chip-list *ngIf="entityTypes">
-      <md-chip *ngFor="let e of entityTypes" mdTooltip="Select {{e.qualifiedName(state.user)}}" selected="{{e === entityType}}" (click)="onSelect(e)" [style.background-color]="e === entityType ? '' : e.qualifiedEntityColor(state.user)" color="primary">
+    <mat-chip-list *ngIf="entityTypes">
+      <mat-chip *ngFor="let e of entityTypes" matTooltip="Select {{e.qualifiedName(state.user)}}" selected="{{e === entityType}}" (click)="onSelect(e)" [style.background-color]="e === entityType ? '' : e.qualifiedEntityColor(state.user)" color="primary">
         {{e.qualifiedName(state.user)}}
-      </md-chip>
-    </md-chip-list>
+      </mat-chip>
+    </mat-chip-list>
   </p>
 
   <p>
     Or create :
 
-    <md-input-container>
-      <input mdInput placeholder="Entity Type" [(ngModel)]="type" (keyup)="onTypeKeyUp($event)">
-    </md-input-container>
+    <mat-form-field>
+      <input matInput placeholder="Entity Type" [(ngModel)]="type" (keyup)="onTypeKeyUp($event)">
+    </mat-form-field>
   </p>
 
   <p>
     With role :
 
-    <md-input-container>
-      <input mdInput placeholder="Role" [(ngModel)]="role" (keyup)="onRoleKeyUp($event)">
-    </md-input-container>
+    <mat-form-field>
+      <input matInput placeholder="Role" [(ngModel)]="role" (keyup)="onRoleKeyUp($event)">
+    </mat-form-field>
   </p>
 
 </div>
-<div md-dialog-actions>
-  <button md-button (click)="dialogRef.close('cancel')">Cancel</button>
-  <button md-button (click)="save()">Create</button>
+<div mat-dialog-actions>
+  <button mat-button (click)="dialogRef.close('cancel')">Cancel</button>
+  <button mat-button (click)="save()">Create</button>
 </div>

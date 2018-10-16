@@ -22,6 +22,8 @@ import {StateService} from "./state.service";
 import {ApplicationScopedQuery, Entry, PaginatedQuery} from "../model/commons";
 import {Intent, NlpEngineType} from "../model/nlp";
 import {FileUploader} from "ng2-file-upload";
+import 'rxjs/add/operator/map';
+import { of } from 'rxjs';
 
 @Injectable()
 export class ApplicationService implements OnDestroy {
@@ -108,7 +110,7 @@ export class ApplicationService implements OnDestroy {
 
   retrieveCurrentApplication(): Observable<Application> {
     if (this.state.applications) {
-      return Observable.of(this.state.findCurrentApplication());
+      return of(this.state.findCurrentApplication());
     }
     else {
       return this.getApplications().map(apps => {

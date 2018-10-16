@@ -14,27 +14,29 @@
   ~ limitations under the License.
   -->
 
-<md-expansion-panel>
-  <md-expansion-panel-header>
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
     Advanced options
-  </md-expansion-panel-header>
+  </mat-expansion-panel-header>
   <div>
-    <button md-raised-button (click)="uploadDump = true" color="accent">Upload Dump</button>
-    <button md-raised-button (click)="triggerBuild()" color="accent">Trigger Build</button>
-    <button md-raised-button (click)="exportAlexa = true" color="accent">Alexa Export</button>
+    <button mat-raised-button (click)="uploadDump = true" color="accent">Upload Dump</button>
+    &nbsp;
+    <button mat-raised-button (click)="triggerBuild()" color="accent">Trigger Build</button>
+    &nbsp;
+    <button mat-raised-button (click)="exportAlexa = true" color="accent">Alexa Export</button>
   </div>
 
-  <md-card *ngIf="exportAlexa">
-    <md-select placeholder="select Locale to export" [(ngModel)]="alexaLocale">
-      <md-option *ngFor="let locale of application.supportedLocales" [value]="locale">
+  <mat-card *ngIf="exportAlexa">
+    <mat-select placeholder="select Locale to export" [(ngModel)]="alexaLocale">
+      <mat-option *ngFor="let locale of application.supportedLocales" [value]="locale">
         {{state.localeName(locale)}}
-      </md-option>
-    </md-select>
-    <button md-button (click)="downloadAlexaExport()">Export</button>
-    <button md-button (click)="exportAlexa = false"> Cancel</button>
-  </md-card>
+      </mat-option>
+    </mat-select>
+    <button mat-button (click)="downloadAlexaExport()">Export</button>
+    <button mat-button (click)="exportAlexa = false"> Cancel</button>
+  </mat-card>
 
   <tock-application-upload *ngIf="uploadDump" (closed)="uploadDump = false"
                            [applicationName]="application.name"></tock-application-upload>
 
-</md-expansion-panel>
+</mat-expansion-panel>

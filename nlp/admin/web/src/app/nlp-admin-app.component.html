@@ -14,54 +14,55 @@
   ~ limitations under the License.
   -->
 
-<md-sidenav-container>
-  <md-sidenav #sidenav mode="side" class="tock-sidenav">
-    <md-nav-list>
-      <md-list-item (click)="sidenav.close()">
-        <md-icon aria-hidden="true" mdListIcon svgIcon="logo"></md-icon>
+<mat-sidenav-container>
+  <mat-sidenav #sidenav mode="side" class="tock-sidenav">
+    <mat-nav-list>
+      <mat-list-item (click)="sidenav.close()">
+        <mat-icon aria-hidden="true" mdListIcon svgIcon="logo"></mat-icon>
         <h3>Tock</h3>
-      </md-list-item>
-      <a *ngIf="state.hasRole(UserRole.admin)" md-list-item routerLink="/applications">Applications</a>
-      <a *ngIf="state.hasRole(UserRole.nlpUser)" md-list-item routerLink="/nlp/inbox">NLP</a>
-      <a *ngIf="state.hasRole(UserRole.nlpUser)" md-list-item routerLink="/quality/log-stats">NLP QA</a>
-    </md-nav-list>
-  </md-sidenav>
+      </mat-list-item>
+      <a *ngIf="state.hasRole(UserRole.admin)" mat-list-item routerLink="/applications">Applications</a>
+      <a *ngIf="state.hasRole(UserRole.nlpUser)" mat-list-item routerLink="/nlp/inbox">NLP</a>
+      <a *ngIf="state.hasRole(UserRole.nlpUser)" mat-list-item routerLink="/quality/log-stats">NLP QA</a>
+    </mat-nav-list>
+  </mat-sidenav>
 
-  <md-toolbar color="primary">
+  <mat-toolbar color="primary">
 
-    <button md-button class="tock-menu-button" (click)="sidenav.toggle()">
-      <md-icon>menu</md-icon>
+    <button mat-button class="tock-menu-button" (click)="sidenav.toggle()">
+      <mat-icon>menu</mat-icon>
     </button>
 
     <a routerLink="/" class="tock-title">Tock NLP Administration</a>
 
     <span class="fill-remaining-space"></span>
 
-    <md-select *ngIf="state.currentApplication"
-               (change)="changeApplication($event.value)"
+    <mat-select *ngIf="state.currentApplication"
+               (selectionChange)="changeApplication($event.value)"
                [ngModel]="state.currentApplication.name"
                class="select-application">
-      <md-option *ngFor="let app of state.applications"
+      <mat-option *ngFor="let app of state.applications"
                  [value]="app.name">{{ app.name }}
-      </md-option>
-    </md-select>
+      </mat-option>
+    </mat-select>
 
-    <md-select *ngIf="state.currentApplication"
-               (change)="changeLocale($event.value)"
-               [ngModel]="state.currentLocale">
-      <md-option *ngFor="let l of state.currentApplication.supportedLocales"
+    <mat-select *ngIf="state.currentApplication"
+               (selectionChange)="changeLocale($event.value)"
+               [ngModel]="state.currentLocale"
+               class="select-locale">
+      <mat-option *ngFor="let l of state.currentApplication.supportedLocales"
                  [value]="l">{{ state.localeName(l) }}
-      </md-option>
-    </md-select>
+      </mat-option>
+    </mat-select>
 
-    <button *ngIf="auth.isLoggedIn()" class="tock-icon-button" (click)="auth.logout()" md-tooltip="Logout">
+    <button *ngIf="auth.isLoggedIn()" class="tock-icon-button" (click)="auth.logout()" matTooltip="Logout">
       <i class="material-icons tock-toolbar-menu">exit_to_app</i>
     </button>
 
-  </md-toolbar>
+  </mat-toolbar>
 
   <div class="main">
     <router-outlet></router-outlet>
   </div>
 
-</md-sidenav-container>
+</mat-sidenav-container>

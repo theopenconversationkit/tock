@@ -15,7 +15,7 @@
  */
 
 import {AfterViewInit, Component, EventEmitter, OnInit, ViewChild} from "@angular/core";
-import {MdPaginator, MdSnackBar, MdSnackBarConfig} from "@angular/material";
+import {MatPaginator, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {DataSource} from "@angular/cdk/collections";
 import {Observable} from "rxjs/Observable";
 import {IntentTestError, TestErrorQuery} from "../model/nlp";
@@ -24,6 +24,7 @@ import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {Router} from "@angular/router";
 import {QualityService} from "../quality/quality.service";
 import {escapeRegex} from "../model/commons";
+import {merge} from "rxjs";
 
 @Component({
   selector: 'tock-test-intent-error',
@@ -33,12 +34,12 @@ import {escapeRegex} from "../model/commons";
 export class TestIntentErrorComponent implements OnInit, AfterViewInit {
 
   displayedColumns = ['text', 'currentIntent', 'wrongIntent', 'count', 'percent', 'probability', 'firstErrorDate', 'actions'];
-  @ViewChild(MdPaginator) paginator: MdPaginator;
+  @ViewChild(MatPaginator) paginator: MatPaginator;
   dataSource: TestIntentErrorDataSource | null;
 
   constructor(private state: StateService,
               private quality: QualityService,
-              private snackBar: MdSnackBar,
+              private snackBar: MatSnackBar,
               private router: Router) {
   }
 
@@ -53,7 +54,7 @@ export class TestIntentErrorComponent implements OnInit, AfterViewInit {
   validate(error: IntentTestError) {
     this.quality.deleteIntentError(error).subscribe(
       e => {
-        this.snackBar.open(`Sentence validated`, "Validate Intent", {duration: 1000} as MdSnackBarConfig)
+        this.snackBar.open(`Sentence validated`, "Validate Intent", {duration: 1000} as MatSnackBarConfig)
         this.dataSource.refresh()
       }
     )
@@ -81,7 +82,7 @@ export class TestIntentErrorDataSource extends DataSource<IntentTestError> {
   private refreshEvent = new EventEmitter();
   private subject = new BehaviorSubject([]);
 
-  constructor(private _paginator: MdPaginator,
+  constructor(private _paginator: MatPaginator,
               private state: StateService,
               private qualityService: QualityService) {
     super();
@@ -98,7 +99,7 @@ export class TestIntentErrorDataSource extends DataSource<IntentTestError> {
       this.refreshEvent
     ];
 
-    Observable.merge(...displayDataChanges).subscribe(() => {
+    merge(...displayDataChanges).subscribe(() => {
       const startIndex = this._paginator.pageIndex * this._paginator.pageSize;
 
       this.qualityService.searchIntentErrors(

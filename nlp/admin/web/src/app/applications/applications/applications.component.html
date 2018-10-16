@@ -14,21 +14,21 @@
   ~ limitations under the License.
   -->
 
-<md-card class="applications-applications">
-  <md-card-title>
+<mat-card class="applications-applications">
+  <mat-card-title>
     <span *ngIf="state.applications.length === 0">Welcome! Please create your first NLP Application</span>
     <span *ngIf="state.applications.length !== 0">NLP Applications</span>
-  </md-card-title>
+  </mat-card-title>
 
-  <md-card-content>
+  <mat-card-content>
     <div class="applications-applications__item" *ngFor="let app of state.applications">
-      <button *ngIf="app._id === state.currentApplication._id" mdTooltip="Current" md-button class="applications-applications__select-action">
-        <md-icon>done</md-icon>
+      <button *ngIf="app._id === state.currentApplication._id" matTooltip="Current" mat-button class="applications-applications__select-action">
+        <mat-icon>done</mat-icon>
       </button>
 
-      <button *ngIf="app._id !== state.currentApplication._id" class="applications-applications__select-action" md-button mdTooltip="Select"
+      <button *ngIf="app._id !== state.currentApplication._id" class="applications-applications__select-action" mat-button matTooltip="Select"
               (click)="selectApplication(app)">
-        <md-icon></md-icon>
+        <mat-icon></mat-icon>
       </button>
 
       <span class="applications-applications__app-name">{{app.name}}</span>
@@ -40,22 +40,22 @@
       </div>
 
       <div class="applications-applications__complex-actions">
-        <button *ngIf="state.hasRole(UserRole.technicalAdmin)" (click)="downloadDump(app)" md-button>Download an application dump</button>
-        <button (click)="downloadSentencesDump(app)" md-button>Download a sentences dump</button>
+        <button *ngIf="state.hasRole(UserRole.technicalAdmin)" (click)="downloadDump(app)" mat-button>Download an application dump</button>
+        <button (click)="downloadSentencesDump(app)" mat-button>Download a sentences dump</button>
       </div>
 
-      <button routerLink="edit/{{app._id}}" md-icon-button mdTooltip="Edit"><md-icon>edit</md-icon></button>
+      <button routerLink="edit/{{app._id}}" mat-icon-button matTooltip="Edit"><mat-icon>edit</mat-icon></button>
     </div>
-  </md-card-content>
+  </mat-card-content>
 
-  <md-card-actions *ngIf="!uploadDump">
-    <button (click)="showUploadDumpPanel()" md-button>
+  <mat-card-actions *ngIf="!uploadDump">
+    <button (click)="showUploadDumpPanel()" mat-button>
       Upload Dump
     </button>
-    <button md-raised-button routerLink="create" color="primary">Create New
+    <button mat-raised-button routerLink="create" color="primary">Create New
       Application
     </button>
-  </md-card-actions>
-</md-card>
+  </mat-card-actions>
+</mat-card>
 
 <tock-application-upload *ngIf="uploadDump" (closed)="uploadDump = false"></tock-application-upload>

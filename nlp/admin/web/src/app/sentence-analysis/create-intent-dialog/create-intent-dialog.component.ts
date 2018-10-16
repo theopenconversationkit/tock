@@ -15,7 +15,7 @@
  */
 
 import {Component, OnInit} from '@angular/core';
-import {MdDialogRef} from "@angular/material";
+import {MatDialogRef} from "@angular/material";
 
 @Component({
   selector: 'tock-create-intent-dialog',
@@ -26,7 +26,7 @@ export class CreateIntentDialogComponent implements OnInit {
 
   name: string;
 
-  constructor(public dialogRef: MdDialogRef<CreateIntentDialogComponent>) {
+  constructor(public dialogRef: MatDialogRef<CreateIntentDialogComponent>) {
 
   }
 

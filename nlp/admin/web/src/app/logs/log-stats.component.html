@@ -14,18 +14,18 @@
   ~ limitations under the License.
   -->
 
-<md-card class="search">
-  <md-card-content>
-    <md-select placeholder="Intent" [(ngModel)]="intent" (change)="search()" class="search-input">
-      <md-option value="">All</md-option>
-      <md-option *ngFor="let intent of state.currentIntents | async" [value]="intent.name">
+<mat-card class="search">
+  <mat-card-content>
+    <mat-select placeholder="Intent" [(ngModel)]="intent" (selectionChange)="search()" class="search-input">
+      <mat-option value="">All</mat-option>
+      <mat-option *ngFor="let intent of state.currentIntents | async" [value]="intent.name">
         {{intent.name}}
-      </md-option>
-      <md-option value="unknown">Unknown</md-option>
-    </md-select>
-    <button md-button (click)="search()">GO</button>
-  </md-card-content>
-</md-card>
+      </mat-option>
+      <mat-option value="unknown">Unknown</mat-option>
+    </mat-select>
+    <button mat-button (click)="search()">GO</button>
+  </mat-card-content>
+</mat-card>
 
 <h2 *ngIf="nodata" class="search">
       No Data
