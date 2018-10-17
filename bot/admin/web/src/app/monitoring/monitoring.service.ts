@@ -18,7 +18,7 @@ import {Injectable, OnDestroy} from "@angular/core";
 import {RestService} from "../core-nlp/rest/rest.service";
 import {StateService} from "../core-nlp/state.service";
 import {UserReportQueryResult, UserSearchQuery} from "./model/users";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {DialogReportQuery, DialogReportQueryResult} from "./model/dialogs";
 import {TestPlan} from "../test/model/test";
 

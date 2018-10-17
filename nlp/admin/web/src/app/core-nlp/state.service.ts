@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+
+import {map} from 'rxjs/operators';
 import {EventEmitter, Injectable} from "@angular/core";
 import {Application} from "../model/application";
 import {AuthService} from "./auth/auth.service";
@@ -31,9 +33,7 @@ import {
   PredefinedValueQuery,
   UpdateEntityDefinitionQuery
 } from "../model/nlp";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
-import {Observable} from "rxjs/Observable";
-import "rxjs-compat/add/operator/map";
+import {BehaviorSubject, Observable} from "rxjs";
 
 @Injectable()
 export class StateService implements AuthListener {
@@ -127,7 +127,7 @@ export class StateService implements AuthListener {
   }
 
   entityTypesSortedByName(): Observable<EntityType[]> {
-    return this.entityTypes.map(e => e.sort((e1, e2) => e1.simpleName().localeCompare(e2.simpleName())));
+    return this.entityTypes.pipe(map(e => e.sort((e1, e2) => e1.simpleName().localeCompare(e2.simpleName()))));
   }
 
   removeEntityTypeByName(name: string) {

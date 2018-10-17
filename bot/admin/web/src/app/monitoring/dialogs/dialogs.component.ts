@@ -14,9 +14,11 @@
  * limitations under the License.
  */
 
+
+import {mergeMap} from 'rxjs/operators';
 import {Component} from "@angular/core";
 import {ScrollComponent} from "../../scroll/scroll.component";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {PaginatedResult} from "../../model/nlp";
 import {PaginatedQuery} from "../../model/commons";
 import {DialogReport} from "../../shared/model/dialog-data";
@@ -48,7 +50,7 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
   }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<DialogReport>> {
-    return this.route.queryParams.flatMap(params => {
+    return this.route.queryParams.pipe(mergeMap(params => {
       if (!this.filter) {
         this.filter = new DialogFilter(true);
         this.filter.dialogId = params["dialogId"];
@@ -56,7 +58,7 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
         this.filter.intentName = params["intentName"];
       }
       return this.monitoring.dialogs(this.buildDialogQuery(query));
-    });
+    }));
   }
 
   dataEquals(d1: DialogReport, d2: DialogReport): boolean {

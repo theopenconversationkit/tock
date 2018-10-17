@@ -19,7 +19,7 @@ import {RestService} from "../core-nlp/rest/rest.service";
 import {StateService} from "../core-nlp/state.service";
 import {BotIntent, BotIntentSearchQuery, CreateBotIntentRequest, UpdateBotIntentRequest} from "./model/bot-intent";
 import {Intent} from "../model/nlp";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {I18nLabel, I18nLabels} from "./model/i18n";
 import {FileUploader} from "ng2-file-upload";
 import {Feature} from "./model/feature";

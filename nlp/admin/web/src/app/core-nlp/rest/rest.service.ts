@@ -14,14 +14,15 @@
  * limitations under the License.
  */
 
+
+import {Observable, throwError as observableThrowError} from 'rxjs';
+
+import {catchError, map} from 'rxjs/operators';
 import {EventEmitter, Injectable} from "@angular/core";
 import {Headers, Http, Response} from "@angular/http";
-import {Observable} from "rxjs-compat";
 import {environment} from "../../../environments/environment";
 import {Router} from "@angular/router";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
-import 'rxjs-compat/add/operator/catch';
-import "rxjs-compat/add/operator/map";
 
 @Injectable()
 export class RestService {
@@ -58,50 +59,50 @@ export class RestService {
   }
 
   get<T>(path: string, parseFunction: (value: any) => T): Observable<T> {
-    return this.http.get(`${this.url}${path}`, {headers: this.headers()})
-      .map((res: Response) => parseFunction(res.json() || {}))
-      .catch(e => RestService.handleError(this, e));
+    return this.http.get(`${this.url}${path}`, {headers: this.headers()}).pipe(
+      map((res: Response) => parseFunction(res.json() || {})),
+      catchError(e => RestService.handleError(this, e)),);
   }
 
   getArray<T>(path: string, parseFunction: (value: any) => T[]): Observable<T[]> {
-    return this.http.get(`${this.url}${path}`, {headers: this.headers()})
-      .map((res: Response) => parseFunction(res.json() || []))
-      .catch(e => RestService.handleError(this, e));
+    return this.http.get(`${this.url}${path}`, {headers: this.headers()}).pipe(
+      map((res: Response) => parseFunction(res.json() || [])),
+      catchError(e => RestService.handleError(this, e)),);
   }
 
   delete<I>(path: string): Observable<boolean> {
     return this.http.delete(
       `${this.url}${path}`,
-      {headers: this.headers()})
-      .map((res: Response) => BooleanResponse.fromJSON(res.json() || {}).success)
-      .catch(e => RestService.handleError(this, e));
+      {headers: this.headers()}).pipe(
+      map((res: Response) => BooleanResponse.fromJSON(res.json() || {}).success),
+      catchError(e => RestService.handleError(this, e)),);
   }
 
   post<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
     return this.http.post(
       `${this.url}${path}`,
       value ? JSON.stringify(value) : "{}",
-      {headers: this.headers()})
-      .map((res: Response) => parseFunction ? parseFunction(res.json() || {}) : (res.json() || {}))
-      .catch(e => RestService.handleError(this, e));
+      {headers: this.headers()}).pipe(
+      map((res: Response) => parseFunction ? parseFunction(res.json() || {}) : (res.json() || {})),
+      catchError(e => RestService.handleError(this, e)),);
   }
 
   put<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
     return this.http.put(
       `${this.url}${path}`,
       value ? JSON.stringify(value) : "{}",
-      {headers: this.headers()})
-      .map((res: Response) => parseFunction ? parseFunction(res.json() || {}) : (res.json() || {}))
-      .catch(e => RestService.handleError(this, e));
+      {headers: this.headers()}).pipe(
+      map((res: Response) => parseFunction ? parseFunction(res.json() || {}) : (res.json() || {})),
+      catchError(e => RestService.handleError(this, e)),);
   }
 
   postNotAuthenticated<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
     return this.http.post(
       `${this.notAuthenticatedUrl}${path}`,
       value ? JSON.stringify(value) : "{}",
-      {headers: this.notAuthenticatedHeaders()})
-      .map((res: Response) =>  parseFunction ? parseFunction(res.json() || {}) : (res.json() || {}))
-      .catch(e => RestService.handleError(this, e));
+      {headers: this.notAuthenticatedHeaders()}).pipe(
+      map((res: Response) =>  parseFunction ? parseFunction(res.json() || {}) : (res.json() || {})),
+      catchError(e => RestService.handleError(this, e)),);
   }
 
   fileUploader(path: string): FileUploader {
@@ -136,7 +137,7 @@ export class RestService {
       errMsg = error.message ? error.message : error.toString();
     }
     rest.errorEmitter.emit(errMsg);
-    return Observable.throw(errMsg);
+    return observableThrowError(errMsg);
   }
 
 }

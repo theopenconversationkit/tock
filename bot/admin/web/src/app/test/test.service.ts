@@ -25,7 +25,7 @@ import {
   XRayPlanExecutionConfiguration,
   XRayPlanExecutionResult
 } from "./model/test";
-import {Observable} from "rxjs-compat";
+import {Observable} from "rxjs";
 
 @Injectable()
 export class TestService {

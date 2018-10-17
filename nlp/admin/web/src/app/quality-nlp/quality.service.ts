@@ -26,7 +26,7 @@ import {
   TestBuildStat,
   TestErrorQuery
 } from "../model/nlp";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {ApplicationScopedQuery} from "../model/commons";
 
 @Injectable()

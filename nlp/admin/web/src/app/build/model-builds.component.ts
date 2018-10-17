@@ -20,10 +20,8 @@ import {ApplicationService} from "../core-nlp/applications.service";
 import {MatPaginator} from "@angular/material";
 import {DataSource} from "@angular/cdk/collections";
 import {ModelBuild} from "../model/application";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
-import {Observable} from "rxjs/Observable";
+import {BehaviorSubject, Observable, merge} from "rxjs";
 import {PaginatedQuery} from "../model/commons";
-import {merge} from "rxjs";
 
 @Component({
   selector: 'tock-model-builds',

@@ -18,7 +18,7 @@ import {PaginatedResult} from "../model/nlp";
 import {StateService} from "../core-nlp/state.service";
 import {Component, Input, OnDestroy, OnInit} from "@angular/core";
 import {PaginatedQuery, SearchMark} from "../model/commons";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 
 @Component({
   selector: 'tock-scroll',

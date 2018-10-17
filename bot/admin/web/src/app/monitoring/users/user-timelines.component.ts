@@ -23,7 +23,7 @@ import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {MatSnackBar} from "@angular/material";
 import {DialogReport} from "../../shared/model/dialog-data";
 import {ScrollComponent} from "../../scroll/scroll.component";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {PaginatedResult} from "../../model/nlp";
 import {PaginatedQuery} from "../../model/commons";
 

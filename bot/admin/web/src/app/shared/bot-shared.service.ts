@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+
+import {tap} from 'rxjs/operators';
 import {Injectable, OnDestroy} from "@angular/core";
 import {RestService} from "../core-nlp/rest/rest.service";
 import {StateService} from "../core-nlp/state.service";
-import {Observable} from "rxjs/Observable";
+import {Observable, of} from "rxjs";
 import {ConnectorType, ConnectorTypeConfiguration} from "../core/model/configuration";
 import {NlpCallStats} from "./model/dialog-data";
-import {of} from "rxjs";
 
 @Injectable()
 export class BotSharedService implements OnDestroy {
@@ -39,8 +40,8 @@ export class BotSharedService implements OnDestroy {
       return of(this.connectorTypes)
     } else {
       return this.rest
-        .get(`/connectorTypes`, ConnectorTypeConfiguration.fromJSONArray)
-        .do((c => this.connectorTypes = c))
+        .get(`/connectorTypes`, ConnectorTypeConfiguration.fromJSONArray).pipe(
+        tap((c => this.connectorTypes = c)))
     }
   }
 

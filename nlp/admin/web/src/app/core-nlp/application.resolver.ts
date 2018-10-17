@@ -14,13 +14,14 @@
  * limitations under the License.
  */
 
+
+import {map} from 'rxjs/operators';
 import {Injectable} from "@angular/core";
 import {ActivatedRouteSnapshot, Resolve, Router, RouterStateSnapshot} from "@angular/router";
 import {Observable} from "rxjs";
 import {Application} from "../model/application";
 import {ApplicationService} from "./applications.service";
 import {ApplicationConfig} from "./application.config";
-import "rxjs-compat/add/operator/map";
 
 @Injectable()
 export class ApplicationResolver implements Resolve<Application> {
@@ -31,13 +32,13 @@ export class ApplicationResolver implements Resolve<Application> {
   }
 
   resolve(route: ActivatedRouteSnapshot, state: RouterStateSnapshot): Observable<Application> {
-    return this.appService.retrieveCurrentApplication().map(app => {
+    return this.appService.retrieveCurrentApplication().pipe(map(app => {
       if (app) {
         return app;
       } else {
         this.router.navigateByUrl(this.config.configurationUrl);
         return null;
       }
-    });
+    }));
   }
 }

@@ -21,11 +21,10 @@ import {NlpService} from "../nlp-tabs/nlp.service";
 import {StateService} from "../core-nlp/state.service";
 import {ScrollComponent} from "../scroll/scroll.component";
 import {Entry, PaginatedQuery, SearchMark} from "../model/commons";
-import {Observable} from "rxjs/Observable";
+import {Observable, BehaviorSubject} from "rxjs";
 import {MatPaginator, MatSnackBar} from "@angular/material";
 import {UserRole} from "../model/auth";
 import {DataSource, SelectionModel} from "@angular/cdk/collections";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {Sort} from "@angular/material/sort/typings/sort";
 
 @Component({

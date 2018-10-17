@@ -20,7 +20,7 @@ import {ScrollComponent} from "../scroll/scroll.component";
 import {StateService} from "../core-nlp/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {PaginatedQuery, SearchMark} from "../model/commons";
-import {Observable} from "rxjs/Observable";
+import {Observable} from "rxjs";
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
 import {ApplicationConfig} from "../core-nlp/application.config";
 import {Router} from "@angular/router";

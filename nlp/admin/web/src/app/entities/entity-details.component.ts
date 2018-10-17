@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+
+import {map} from 'rxjs/operators';
 import {Component, Input, OnInit} from "@angular/core";
 import {StateService} from "../core-nlp/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
@@ -21,7 +23,6 @@ import {MatDialog, MatDialogConfig, MatSnackBar, MatSnackBarConfig} from "@angul
 import {ApplicationService} from "../core-nlp/applications.service";
 import {EntityDefinition, EntityType} from "../model/nlp";
 import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
-import "rxjs-compat/add/operator/map";
 
 @Component({
   selector: 'tock-entity-details',
@@ -54,7 +55,7 @@ export class EntityDetailsComponent implements OnInit {
   update() {
     this.nlp.updateEntityDefinition(
       this.state.createUpdateEntityDefinitionQuery(this.entity)
-    ).map(_ => this.applicationService.reloadCurrentApplication())
+    ).pipe(map(_ => this.applicationService.reloadCurrentApplication()))
       .subscribe(_ => this.snackBar.open(`Entity updated`, "Update", {duration: 1000} as MatSnackBarConfig<any>));
   }
 

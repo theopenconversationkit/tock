@@ -17,10 +17,9 @@
 import {Injectable, OnDestroy, OnInit} from "@angular/core";
 import {RestService} from "../core-nlp/rest/rest.service";
 import {StateService} from "../core-nlp/state.service";
-import {Observable} from "rxjs/Observable";
+import {Observable, BehaviorSubject} from "rxjs";
 import {ApplicationScopedQuery} from "../model/commons";
 import {BotApplicationConfiguration, ConnectorType} from "./model/configuration";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
 
 @Injectable()
 export class BotConfigurationService implements OnInit, OnDestroy {

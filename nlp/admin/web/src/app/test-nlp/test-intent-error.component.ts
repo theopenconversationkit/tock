@@ -17,14 +17,12 @@
 import {AfterViewInit, Component, EventEmitter, OnInit, ViewChild} from "@angular/core";
 import {MatPaginator, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {DataSource} from "@angular/cdk/collections";
-import {Observable} from "rxjs/Observable";
+import {Observable, BehaviorSubject, merge} from "rxjs";
 import {IntentTestError, TestErrorQuery} from "../model/nlp";
 import {StateService} from "../core-nlp/state.service";
-import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {Router} from "@angular/router";
 import {QualityService} from "../quality-nlp/quality.service";
 import {escapeRegex} from "../model/commons";
-import {merge} from "rxjs";
 
 @Component({
   selector: 'tock-test-intent-error',

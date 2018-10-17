@@ -14,6 +14,8 @@
  * limitations under the License.
  */
 
+
+import {map} from 'rxjs/operators';
 import {Injectable, OnDestroy} from "@angular/core";
 import {Observable, of} from "rxjs";
 import {Application, ApplicationImportConfiguration, ModelBuildQueryResult} from "../model/application";
@@ -22,7 +24,6 @@ import {StateService} from "./state.service";
 import {ApplicationScopedQuery, Entry, PaginatedQuery} from "../model/commons";
 import {Intent, NlpEngineType} from "../model/nlp";
 import {FileUploader} from "ng2-file-upload";
-import "rxjs-compat/add/operator/map";
 
 @Injectable()
 export class ApplicationService implements OnDestroy {
@@ -40,11 +41,11 @@ export class ApplicationService implements OnDestroy {
   }
 
   reloadCurrentApplication(): Observable<Application> {
-    return this.getApplicationById(this.state.currentApplication._id)
-      .map(app => {
+    return this.getApplicationById(this.state.currentApplication._id).pipe(
+      map(app => {
         this.refreshCurrentApplication(app);
         return app;
-      })
+      }))
   }
 
   refreshCurrentApplication(app: Application) {
@@ -89,8 +90,8 @@ export class ApplicationService implements OnDestroy {
   }
 
   deleteApplication(application: Application): Observable<boolean> {
-    return this.rest.delete(`/application/${application._id}`)
-      .map(r => {
+    return this.rest.delete(`/application/${application._id}`).pipe(
+      map(r => {
           if (r) {
             const app = this.state.applications.find(app => app._id === application._id);
             this.state.applications.splice(this.state.applications.indexOf(app), 1);
@@ -104,7 +105,7 @@ export class ApplicationService implements OnDestroy {
           }
           return r
         }
-      );
+      ));
   }
 
   retrieveCurrentApplication(): Observable<Application> {
@@ -112,10 +113,10 @@ export class ApplicationService implements OnDestroy {
       return of(this.state.findCurrentApplication());
     }
     else {
-      return this.getApplications().map(apps => {
+      return this.getApplications().pipe(map(apps => {
         this.state.applications = apps;
         return this.state.findCurrentApplication();
-      })
+      }))
     }
   }
 
