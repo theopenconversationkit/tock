@@ -4,8 +4,6 @@
 
 The project uses [Maven](https://maven.apache.org/).
 
-Jdk8 is required during the build (jvm from 8 to 10 are supported at runtime).
-
 ``` mvn package ```
 
 A CI build is available on [Travis](https://travis-ci.org/voyages-sncf-technologies/tock).
@@ -26,13 +24,12 @@ And for the open data bot:
 
 - [OpenDataBot](https://github.com/voyages-sncf-technologies/tock-bot-open-data/blob/master/.idea/runConfigurations/OpenDataBot.xml)
 
-In order to launch the administration front interfaces, you will need a *node v6*
-and use the following commands in the directories
+In order to launch the administration front interfaces, please consult the README files:
 
-- for bot and NLP administration interface: bot/admin/web
-- for NLP administration only: nlp/admin/web
+- [For bot and NLP administration interface](https://github.com/voyages-sncf-technologies/tock/blob/master/bot/admin/web/README.md)
+- [For NLP administration only](https://github.com/voyages-sncf-technologies/tock/blob/master/nlp/admin/web/README.md)
 
-```
-npm install
-ng serve
-```
+## Code conventions
+
+Conventions are described in [Kotlin Code Conventions](https://kotlinlang.org/docs/reference/coding-conventions.html)
+

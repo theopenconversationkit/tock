@@ -442,7 +442,7 @@
         }, 
         {
             "location": "/contribute/", 
-            "text": "Contribute to the Tock project\n\n\nBuild the project\n\n\nThe project uses \nMaven\n.\n\n\nJdk8 is required during the build (jvm from 8 to 10 are supported at runtime).\n\n\nmvn package\n\n\nA CI build is available on \nTravis\n.\n\n\nStart the project in the IDE\n\n\nIn addition to \ndocker images\n,\nthe project provides IntelliJ configurations:\n\n\n\n\nThe bot administration server: \nBotAdmin\n \n\n\nThe NLP administration server only: \nAdmin\n \n\n\nThe NLP service: \nNlpService\n\n\nThe Duckling service: \nDuckling\n\n\nBuild engine for NLP models: \nBuildWorker\n\n\nTo manage script compilation at runtime: \nKotlinCompilerServer\n\n\n\n\nAnd for the open data bot:\n\n\n\n\nOpenDataBot\n\n\n\n\nIn order to launch the administration front interfaces, you will need a \nnode v6\n\nand use the following commands in the directories\n\n\n\n\nfor bot and NLP administration interface: bot/admin/web\n\n\nfor NLP administration only: nlp/admin/web\n\n\n\n\nnpm install\nng serve", 
+            "text": "Contribute to the Tock project\n\n\nBuild the project\n\n\nThe project uses \nMaven\n.\n\n\nmvn package\n\n\nA CI build is available on \nTravis\n.\n\n\nStart the project in the IDE\n\n\nIn addition to \ndocker images\n,\nthe project provides IntelliJ configurations:\n\n\n\n\nThe bot administration server: \nBotAdmin\n \n\n\nThe NLP administration server only: \nAdmin\n \n\n\nThe NLP service: \nNlpService\n\n\nThe Duckling service: \nDuckling\n\n\nBuild engine for NLP models: \nBuildWorker\n\n\nTo manage script compilation at runtime: \nKotlinCompilerServer\n\n\n\n\nAnd for the open data bot:\n\n\n\n\nOpenDataBot\n\n\n\n\nIn order to launch the administration front interfaces, please consult the README files:\n\n\n\n\nFor bot and NLP administration interface\n\n\nFor NLP administration only\n\n\n\n\nCode conventions\n\n\nConventions are described in \nKotlin Code Conventions", 
             "title": "Contribute"
         }, 
         {
@@ -452,13 +452,18 @@
         }, 
         {
             "location": "/contribute/#build-the-project", 
-            "text": "The project uses  Maven .  Jdk8 is required during the build (jvm from 8 to 10 are supported at runtime).  mvn package  A CI build is available on  Travis .", 
+            "text": "The project uses  Maven .  mvn package  A CI build is available on  Travis .", 
             "title": "Build the project"
         }, 
         {
             "location": "/contribute/#start-the-project-in-the-ide", 
-            "text": "In addition to  docker images ,\nthe project provides IntelliJ configurations:   The bot administration server:  BotAdmin    The NLP administration server only:  Admin    The NLP service:  NlpService  The Duckling service:  Duckling  Build engine for NLP models:  BuildWorker  To manage script compilation at runtime:  KotlinCompilerServer   And for the open data bot:   OpenDataBot   In order to launch the administration front interfaces, you will need a  node v6 \nand use the following commands in the directories   for bot and NLP administration interface: bot/admin/web  for NLP administration only: nlp/admin/web   npm install\nng serve", 
+            "text": "In addition to  docker images ,\nthe project provides IntelliJ configurations:   The bot administration server:  BotAdmin    The NLP administration server only:  Admin    The NLP service:  NlpService  The Duckling service:  Duckling  Build engine for NLP models:  BuildWorker  To manage script compilation at runtime:  KotlinCompilerServer   And for the open data bot:   OpenDataBot   In order to launch the administration front interfaces, please consult the README files:   For bot and NLP administration interface  For NLP administration only", 
             "title": "Start the project in the IDE"
+        }, 
+        {
+            "location": "/contribute/#code-conventions", 
+            "text": "Conventions are described in  Kotlin Code Conventions", 
+            "title": "Code conventions"
         }
     ]
 }

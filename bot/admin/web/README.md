@@ -1,6 +1,6 @@
 In order to install in dev mode, add these symbolic links (linux) :
 
-In the current directory:
+In the current directory (bot/admin/web):
 
 ```
 ln -s ../../../../../nlp/admin/web/src/app/applications src/app/applications
@@ -22,3 +22,16 @@ ln -s ../../../../../nlp/admin/web/src/app/shared-nlp src/app/shared-nlp
 ln -s ../../../../../nlp/admin/web/src/app/test-nlp src/app/test-nlp
 ln -s ../../../../../nlp/admin/web/src/app/try src/app/try
 ```
+
+Alternatively, you can run ```mvn validate``` to create these symbolic links.
+ 
+
+Then run these npm commands in order to setup and launch [Angular CLI](https://cli.angular.io/) :
+
+```
+npm install
+npm install -g @angular/cli
+ng serve
+```
+
+Of course you need also to start the [Bot Admin server](https://github.com/voyages-sncf-technologies/tock/blob/master/.idea/runConfigurations/BotAdmin.xml).

@@ -379,6 +379,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#code-conventions" title="Code conventions" class="md-nav__link">
+    Code conventions
+  </a>
+  
+</li>
+      
       
       
     </ul>
@@ -422,6 +429,13 @@
   
 </li>
       
+        <li class="md-nav__item">
+  <a href="#code-conventions" title="Code conventions" class="md-nav__link">
+    Code conventions
+  </a>
+  
+</li>
+      
       
       
     </ul>
@@ -440,7 +454,6 @@
                 <h1 id="contribute-to-the-tock-project">Contribute to the Tock project<a class="headerlink" href="#contribute-to-the-tock-project" title="Permanent link">&para;</a></h1>
 <h2 id="build-the-project">Build the project<a class="headerlink" href="#build-the-project" title="Permanent link">&para;</a></h2>
 <p>The project uses <a href="https://maven.apache.org/">Maven</a>.</p>
-<p>Jdk8 is required during the build (jvm from 8 to 10 are supported at runtime).</p>
 <p><code>mvn package</code></p>
 <p>A CI build is available on <a href="https://travis-ci.org/voyages-sncf-technologies/tock">Travis</a>.</p>
 <h2 id="start-the-project-in-the-ide">Start the project in the IDE<a class="headerlink" href="#start-the-project-in-the-ide" title="Permanent link">&para;</a></h2>
@@ -458,15 +471,13 @@ the project provides IntelliJ configurations:</p>
 <ul>
 <li><a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data/blob/master/.idea/runConfigurations/OpenDataBot.xml">OpenDataBot</a></li>
 </ul>
-<p>In order to launch the administration front interfaces, you will need a <em>node v6</em>
-and use the following commands in the directories</p>
+<p>In order to launch the administration front interfaces, please consult the README files:</p>
 <ul>
-<li>for bot and NLP administration interface: bot/admin/web</li>
-<li>for NLP administration only: nlp/admin/web</li>
+<li><a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/admin/web/README.md">For bot and NLP administration interface</a></li>
+<li><a href="https://github.com/voyages-sncf-technologies/tock/blob/master/nlp/admin/web/README.md">For NLP administration only</a></li>
 </ul>
-<div class="codehilite"><pre><span></span>npm install
-ng serve
-</pre></div>
+<h2 id="code-conventions">Code conventions<a class="headerlink" href="#code-conventions" title="Permanent link">&para;</a></h2>
+<p>Conventions are described in <a href="https://kotlinlang.org/docs/reference/coding-conventions.html">Kotlin Code Conventions</a></p>
                 
                   
                 

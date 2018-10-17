@@ -454,8 +454,6 @@
                 <h1 id="contribuer-au-projet-tock">Contribuer au projet tock<a class="headerlink" href="#contribuer-au-projet-tock" title="Permanent link">&para;</a></h1>
 <h2 id="construire-le-projet">Construire le projet<a class="headerlink" href="#construire-le-projet" title="Permanent link">&para;</a></h2>
 <p>Le projet utilise <a href="https://maven.apache.org/">Maven</a>. </p>
-<p>Il est nécessaire d'utiliser un jdk8 lors du build
- (les jvm de 8 à 10 sont supportées à l'exécution).</p>
 <p><code>mvn package</code></p>
 <p>Un build d'intégration continue est disponible sur <a href="https://travis-ci.org/voyages-sncf-technologies/tock">Travis</a>.</p>
 <h2 id="lancer-le-projet-dans-lide">Lancer le projet  dans l'IDE<a class="headerlink" href="#lancer-le-projet-dans-lide" title="Permanent link">&para;</a></h2>
@@ -473,19 +471,13 @@ des configurations IntelliJ sont disponibles :</p>
 <ul>
 <li><a href="https://github.com/voyages-sncf-technologies/tock-bot-open-data/blob/master/.idea/runConfigurations/OpenDataBot.xml">OpenDataBot</a></li>
 </ul>
-<p>Enfin pour lancer les interfaces d'administration, vous aurez besoin d'un <em>node v6</em>
-et de lancer les commandes suivantes dans les répertoires</p>
+<p>Enfin pour lancer les interfaces d'administration, vous aurez besoin de lancer les commandes décrites dans les liens suivants :</p>
 <ul>
-<li>pour l'administration complètre : bot/admin/web</li>
-<li>pour l'administration NLP uniquement : nlp/admin/web</li>
+<li><a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/admin/web/README.md">Pour l'administration complète (Bot + NLP)</a></li>
+<li><a href="https://github.com/voyages-sncf-technologies/tock/blob/master/nlp/admin/web/README.md">Pour l'administration NLP uniquement</a></li>
 </ul>
-<div class="codehilite"><pre><span></span>npm install
-ng serve
-</pre></div>
-
-
 <h2 id="code-conventions">Code conventions<a class="headerlink" href="#code-conventions" title="Permanent link">&para;</a></h2>
-<p>The format to follow is described in <a href="https://kotlinlang.org/docs/reference/coding-conventions.html">Kotlin Code Conventions</a></p>
+<p>Le format à suivre est décrit dans les <a href="https://kotlinlang.org/docs/reference/coding-conventions.html">Kotlin Code Conventions</a></p>
                 
                   
                 

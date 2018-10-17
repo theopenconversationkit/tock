@@ -452,7 +452,7 @@
         }, 
         {
             "location": "/contribuer/", 
-            "text": "Contribuer au projet tock\n\n\nConstruire le projet\n\n\nLe projet utilise \nMaven\n. \n\n\nIl est n\u00e9cessaire d'utiliser un jdk8 lors du build\n (les jvm de 8 \u00e0 10 sont support\u00e9es \u00e0 l'ex\u00e9cution).\n\n\nmvn package\n\n\nUn build d'int\u00e9gration continue est disponible sur \nTravis\n.\n\n\nLancer le projet  dans l'IDE\n\n\nOutre les \nimages docker\n,\ndes configurations IntelliJ sont disponibles :\n\n\n\n\nLe serveur d'administration du bot : \nBotAdmin\n \n\n\nLe serveur d'administration du NLP uniquement : \nAdmin\n \n\n\nLe service NLP : \nNlpService\n\n\nLe service Duckling : \nDuckling\n\n\nLe service de construction des mod\u00e8les NLP : \nBuildWorker\n\n\nLe service de compilation des scripts : \nKotlinCompilerServer\n\n\n\n\nPour le bot d'exemple :\n\n\n\n\nOpenDataBot\n\n\n\n\nEnfin pour lancer les interfaces d'administration, vous aurez besoin d'un \nnode v6\n\net de lancer les commandes suivantes dans les r\u00e9pertoires\n\n\n\n\npour l'administration compl\u00e8tre : bot/admin/web\n\n\npour l'administration NLP uniquement : nlp/admin/web\n\n\n\n\nnpm install\nng serve\n\n\n\n\n\nCode conventions\n\n\nThe format to follow is described in \nKotlin Code Conventions", 
+            "text": "Contribuer au projet tock\n\n\nConstruire le projet\n\n\nLe projet utilise \nMaven\n. \n\n\nmvn package\n\n\nUn build d'int\u00e9gration continue est disponible sur \nTravis\n.\n\n\nLancer le projet  dans l'IDE\n\n\nOutre les \nimages docker\n,\ndes configurations IntelliJ sont disponibles :\n\n\n\n\nLe serveur d'administration du bot : \nBotAdmin\n \n\n\nLe serveur d'administration du NLP uniquement : \nAdmin\n \n\n\nLe service NLP : \nNlpService\n\n\nLe service Duckling : \nDuckling\n\n\nLe service de construction des mod\u00e8les NLP : \nBuildWorker\n\n\nLe service de compilation des scripts : \nKotlinCompilerServer\n\n\n\n\nPour le bot d'exemple :\n\n\n\n\nOpenDataBot\n\n\n\n\nEnfin pour lancer les interfaces d'administration, vous aurez besoin de lancer les commandes d\u00e9crites dans les liens suivants :\n\n\n\n\nPour l'administration compl\u00e8te (Bot + NLP)\n\n\nPour l'administration NLP uniquement\n\n\n\n\nCode conventions\n\n\nLe format \u00e0 suivre est d\u00e9crit dans les \nKotlin Code Conventions", 
             "title": "Contribuer au projet"
         }, 
         {
@@ -462,17 +462,17 @@
         }, 
         {
             "location": "/contribuer/#construire-le-projet", 
-            "text": "Le projet utilise  Maven .   Il est n\u00e9cessaire d'utiliser un jdk8 lors du build\n (les jvm de 8 \u00e0 10 sont support\u00e9es \u00e0 l'ex\u00e9cution).  mvn package  Un build d'int\u00e9gration continue est disponible sur  Travis .", 
+            "text": "Le projet utilise  Maven .   mvn package  Un build d'int\u00e9gration continue est disponible sur  Travis .", 
             "title": "Construire le projet"
         }, 
         {
             "location": "/contribuer/#lancer-le-projet-dans-lide", 
-            "text": "Outre les  images docker ,\ndes configurations IntelliJ sont disponibles :   Le serveur d'administration du bot :  BotAdmin    Le serveur d'administration du NLP uniquement :  Admin    Le service NLP :  NlpService  Le service Duckling :  Duckling  Le service de construction des mod\u00e8les NLP :  BuildWorker  Le service de compilation des scripts :  KotlinCompilerServer   Pour le bot d'exemple :   OpenDataBot   Enfin pour lancer les interfaces d'administration, vous aurez besoin d'un  node v6 \net de lancer les commandes suivantes dans les r\u00e9pertoires   pour l'administration compl\u00e8tre : bot/admin/web  pour l'administration NLP uniquement : nlp/admin/web   npm install\nng serve", 
+            "text": "Outre les  images docker ,\ndes configurations IntelliJ sont disponibles :   Le serveur d'administration du bot :  BotAdmin    Le serveur d'administration du NLP uniquement :  Admin    Le service NLP :  NlpService  Le service Duckling :  Duckling  Le service de construction des mod\u00e8les NLP :  BuildWorker  Le service de compilation des scripts :  KotlinCompilerServer   Pour le bot d'exemple :   OpenDataBot   Enfin pour lancer les interfaces d'administration, vous aurez besoin de lancer les commandes d\u00e9crites dans les liens suivants :   Pour l'administration compl\u00e8te (Bot + NLP)  Pour l'administration NLP uniquement", 
             "title": "Lancer le projet  dans l'IDE"
         }, 
         {
             "location": "/contribuer/#code-conventions", 
-            "text": "The format to follow is described in  Kotlin Code Conventions", 
+            "text": "Le format \u00e0 suivre est d\u00e9crit dans les  Kotlin Code Conventions", 
             "title": "Code conventions"
         }
     ]

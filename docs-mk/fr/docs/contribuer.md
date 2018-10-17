@@ -3,9 +3,6 @@
 ## Construire le projet
 
 Le projet utilise [Maven](https://maven.apache.org/). 
-
-Il est nécessaire d'utiliser un jdk8 lors du build
- (les jvm de 8 à 10 sont supportées à l'exécution).
  
 ``` mvn package ```
 
@@ -27,17 +24,11 @@ Pour le bot d'exemple :
 
 - [OpenDataBot](https://github.com/voyages-sncf-technologies/tock-bot-open-data/blob/master/.idea/runConfigurations/OpenDataBot.xml)
 
-Enfin pour lancer les interfaces d'administration, vous aurez besoin d'un *node v6*
-et de lancer les commandes suivantes dans les répertoires
+Enfin pour lancer les interfaces d'administration, vous aurez besoin de lancer les commandes décrites dans les liens suivants :
 
-- pour l'administration complètre : bot/admin/web
-- pour l'administration NLP uniquement : nlp/admin/web
-
-```
-npm install
-ng serve
-```
+- [Pour l'administration complète (Bot + NLP)](https://github.com/voyages-sncf-technologies/tock/blob/master/bot/admin/web/README.md)
+- [Pour l'administration NLP uniquement](https://github.com/voyages-sncf-technologies/tock/blob/master/nlp/admin/web/README.md)
 
 ## Code conventions
 
-The format to follow is described in [Kotlin Code Conventions](https://kotlinlang.org/docs/reference/coding-conventions.html)
+Le format à suivre est décrit dans les [Kotlin Code Conventions](https://kotlinlang.org/docs/reference/coding-conventions.html)
