@@ -17,6 +17,7 @@
 package fr.vsct.tock.shared.security
 
 import fr.vsct.tock.shared.devEnvironment
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.propertyExists
 import mu.KotlinLogging
@@ -57,7 +58,12 @@ fun encrypt(s: String): String {
  * Decrypt a string and return the result.
  */
 fun decrypt(s: String): String {
-    return textEncryptor.decrypt(s)
+    return try {
+        textEncryptor.decrypt(s)
+    } catch (e: Exception) {
+        logger.error(e)
+        s
+    }
 }
 
 /**
