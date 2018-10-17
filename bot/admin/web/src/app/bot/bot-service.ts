@@ -15,10 +15,10 @@
  */
 
 import {Injectable} from "@angular/core";
-import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
-import {StateService} from "tock-nlp-admin/src/app/core/state.service";
+import {RestService} from "../core-nlp/rest/rest.service";
+import {StateService} from "../core-nlp/state.service";
 import {BotIntent, BotIntentSearchQuery, CreateBotIntentRequest, UpdateBotIntentRequest} from "./model/bot-intent";
-import {Intent} from "tock-nlp-admin/src/app/model/nlp";
+import {Intent} from "../model/nlp";
 import {Observable} from "rxjs/Observable";
 import {I18nLabel, I18nLabels} from "./model/i18n";
 import {FileUploader} from "ng2-file-upload";

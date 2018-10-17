@@ -18,9 +18,9 @@ import {Injectable} from "@angular/core";
 import {ActivatedRouteSnapshot, Resolve, RouterStateSnapshot} from "@angular/router";
 import {Application} from "../model/application";
 import {Observable} from "rxjs";
-import {StateService} from "../core/state.service";
-import {ApplicationService} from "../core/applications.service";
-import 'rxjs/add/operator/map'
+import {StateService} from "../core-nlp/state.service";
+import {ApplicationService} from "../core-nlp/applications.service";
+import "rxjs-compat/add/operator/map";
 
 @Injectable()
 export class ApplicationsResolver implements Resolve<Application[]> {

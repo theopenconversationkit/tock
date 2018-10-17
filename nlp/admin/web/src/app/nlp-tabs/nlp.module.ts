@@ -17,7 +17,7 @@
 import {NgModule} from "@angular/core";
 import {RouterModule, Routes} from "@angular/router";
 import {TryComponent} from "../try/try.component";
-import {SharedModule} from "../shared/shared.module";
+import {SharedModule} from "../shared-nlp/shared.module";
 import {NlpTabsComponent} from "./nlp-tabs.component";
 import {InboxComponent} from "../inbox/inbox.component";
 import {ArchiveComponent} from "../archive/archive.component";
@@ -25,7 +25,7 @@ import {IntentsComponent} from "../intents/intents.component";
 import {SearchComponent} from "../search/search.component";
 import {DisplayFullLogComponent, LogsComponent} from "../logs/logs.component";
 import {CommonModule} from "@angular/common";
-import {AuthGuard} from "../core/auth/auth.guard";
+import {AuthGuard} from "../core-nlp/auth/auth.guard";
 import {ApplicationsModule} from "../applications/applications.module";
 import {HighlightComponent} from "../sentence-analysis/highlight/highlight.component";
 import {SentenceAnalysisComponent} from "../sentence-analysis/sentence-analysis.component";
@@ -33,7 +33,7 @@ import {NlpService} from "./nlp.service";
 import {CreateEntityDialogComponent} from "../sentence-analysis/create-entity-dialog/create-entity-dialog.component";
 import {InfiniteScrollModule} from "ngx-infinite-scroll";
 import {CreateIntentDialogComponent} from "../sentence-analysis/create-intent-dialog/create-intent-dialog.component";
-import {ApplicationResolver} from "../core/application.resolver";
+import {ApplicationResolver} from "../core-nlp/application.resolver";
 import {SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.component";
 
 import {MomentModule} from "ngx-moment";

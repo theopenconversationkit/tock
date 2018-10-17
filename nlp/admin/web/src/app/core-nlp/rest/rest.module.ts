@@ -14,43 +14,20 @@
  * limitations under the License.
  */
 
-import {HttpModule} from "@angular/http";
-import {SharedModule} from "../../shared/shared.module";
 import {NgModule} from "@angular/core";
-import {LoginComponent} from "./login/login.component";
-import {AuthService} from "./auth.service";
-import {AuthGuard} from "./auth.guard";
-import {RouterModule, Routes} from "@angular/router";
+import {SharedModule} from "../../shared-nlp/shared.module";
 import {CommonModule} from "@angular/common";
-import {RestModule} from "../rest/rest.module";
-
-const authRoutes: Routes = [
-  {
-    path: 'login',
-    component: LoginComponent
-  }
-];
-
-@NgModule({
-  imports: [RouterModule.forChild(authRoutes)],
-  exports: [RouterModule]
-})
-export class AuthRoutingModule {
-}
-
+import {RestService} from "./rest.service";
 @NgModule({
   imports: [
     CommonModule,
     SharedModule,
-    RestModule,
-    AuthRoutingModule
   ],
   declarations: [
-    LoginComponent
   ],
   providers: [
-    AuthService, AuthGuard
+    RestService
   ]
 })
-export class AuthModule {
+export class RestModule {
 }

@@ -3,7 +3,7 @@
   "version": 1,
   "newProjectRoot": "projects",
   "projects": {
-    "nlp": {
+    "bot": {
       "root": "",
       "sourceRoot": "src",
       "projectType": "application",
@@ -13,7 +13,8 @@
         "build": {
           "builder": "@angular-devkit/build-angular:browser",
           "options": {
-            "outputPath": "dist/nlp",
+            "preserveSymlinks": true,
+            "outputPath": "dist/bot",
             "index": "src/index.html",
             "main": "src/main.ts",
             "polyfills": "src/polyfills.ts",
@@ -53,18 +54,18 @@
         "serve": {
           "builder": "@angular-devkit/build-angular:dev-server",
           "options": {
-            "browserTarget": "nlp:build"
+            "browserTarget": "bot:build"
           },
           "configurations": {
             "production": {
-              "browserTarget": "nlp:build:production"
+              "browserTarget": "bot:build:production"
             }
           }
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n",
           "options": {
-            "browserTarget": "nlp:build"
+            "browserTarget": "bot:build"
           }
         },
         "test": {
@@ -75,9 +76,6 @@
             "tsConfig": "src/tsconfig.spec.json",
             "karmaConfig": "src/karma.conf.js",
             "styles": [
-              {
-                "input": "node_modules/@angular/material/prebuilt-themes/indigo-pink.css"
-              },
               "src/styles.css"
             ],
             "scripts": [],
@@ -101,7 +99,7 @@
         }
       }
     },
-    "nlp-e2e": {
+    "bot-e2e": {
       "root": "e2e/",
       "projectType": "application",
       "architect": {
@@ -109,11 +107,11 @@
           "builder": "@angular-devkit/build-angular:protractor",
           "options": {
             "protractorConfig": "e2e/protractor.conf.js",
-            "devServerTarget": "nlp:serve"
+            "devServerTarget": "bot:serve"
           },
           "configurations": {
             "production": {
-              "devServerTarget": "nlp:serve:production"
+              "devServerTarget": "bot:serve:production"
             }
           }
         },
@@ -129,5 +127,5 @@
       }
     }
   },
-  "defaultProject": "nlp"
+  "defaultProject": "bot"
 }

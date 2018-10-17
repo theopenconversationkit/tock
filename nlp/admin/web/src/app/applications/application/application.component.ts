@@ -17,10 +17,10 @@
 import {Component, OnInit} from "@angular/core";
 import {MatDialog, MatSnackBar} from "@angular/material";
 import {ActivatedRoute, Router} from "@angular/router";
-import {StateService} from "../../core/state.service";
+import {StateService} from "../../core-nlp/state.service";
 import {Application} from "../../model/application";
-import {ConfirmDialogComponent} from "../../shared/confirm-dialog/confirm-dialog.component";
-import {ApplicationService} from "../../core/applications.service";
+import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
+import {ApplicationService} from "../../core-nlp/applications.service";
 
 @Component({
   selector: 'tock-application',

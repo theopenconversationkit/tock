@@ -34,14 +34,14 @@ import {
   Sentence
 } from "../../model/nlp";
 import {NlpService} from "../../nlp-tabs/nlp.service";
-import {StateService} from "../../core/state.service";
+import {StateService} from "../../core-nlp/state.service";
 import {MatDialog, MatDialogConfig, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {CreateEntityDialogComponent} from "../create-entity-dialog/create-entity-dialog.component";
 import {User} from "../../model/auth";
 import {Intent} from "../../model/nlp";
-import {isNullOrUndefined} from "util";
-import {ApplicationConfig} from "../../core/application.config";
+import {ApplicationConfig} from "../../core-nlp/application.config";
 import {Router} from "@angular/router";
+import {isNullOrUndefined} from "../../model/commons";
 
 @Component({
   selector: 'tock-highlight',

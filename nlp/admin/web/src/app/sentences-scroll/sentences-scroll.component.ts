@@ -18,7 +18,7 @@ import {saveAs} from "file-saver";
 import {AfterViewInit, Component, EventEmitter, Input, Output, ViewChild, ViewEncapsulation} from "@angular/core";
 import {PaginatedResult, SearchQuery, Sentence, SentenceStatus} from "../model/nlp";
 import {NlpService} from "../nlp-tabs/nlp.service";
-import {StateService} from "../core/state.service";
+import {StateService} from "../core-nlp/state.service";
 import {ScrollComponent} from "../scroll/scroll.component";
 import {Entry, PaginatedQuery, SearchMark} from "../model/commons";
 import {Observable} from "rxjs/Observable";

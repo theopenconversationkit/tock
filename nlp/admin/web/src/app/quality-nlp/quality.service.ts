@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {RestService} from "../core/rest/rest.service";
+import {RestService} from "../core-nlp/rest/rest.service";
 import {Injectable} from "@angular/core";
 import {
   EntityTestError,

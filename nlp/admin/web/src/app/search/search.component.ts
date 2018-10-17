@@ -17,7 +17,7 @@
 import {Component, OnInit, ViewChild} from "@angular/core";
 import {SentenceFilter, SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.component";
 import {EntityDefinition, EntityType, getRoles, Sentence, SentenceStatus, UpdateSentencesQuery} from "../model/nlp";
-import {StateService} from "../core/state.service";
+import {StateService} from "../core-nlp/state.service";
 import {ActivatedRoute} from "@angular/router";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {MatSnackBar} from "@angular/material";

@@ -15,8 +15,8 @@
  */
 
 import {AfterViewInit, Component, EventEmitter, OnInit, ViewChild} from "@angular/core";
-import {StateService} from "../core/state.service";
-import {ApplicationService} from "../core/applications.service";
+import {StateService} from "../core-nlp/state.service";
+import {ApplicationService} from "../core-nlp/applications.service";
 import {MatPaginator} from "@angular/material";
 import {DataSource} from "@angular/cdk/collections";
 import {ModelBuild} from "../model/application";
@@ -64,7 +64,7 @@ export class ModelBuildDataSource extends DataSource<ModelBuild> {
 
   size: number = 0;
   private refreshEvent = new EventEmitter();
-  private subject = new BehaviorSubject([]);
+  private subject = new BehaviorSubject<ModelBuild[]>([]);
 
   constructor(private _paginator: MatPaginator,
               private state: StateService,

@@ -18,24 +18,24 @@ import {AfterViewInit, Component, EventEmitter, OnInit, ViewChild} from "@angula
 import {MatPaginator, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {DataSource} from "@angular/cdk/collections";
 import {Observable} from "rxjs/Observable";
-import {IntentTestError, TestErrorQuery} from "../model/nlp";
-import {StateService} from "../core/state.service";
+import {EntityTestError, TestErrorQuery} from "../model/nlp";
+import {StateService} from "../core-nlp/state.service";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {Router} from "@angular/router";
-import {QualityService} from "../quality/quality.service";
+import {QualityService} from "../quality-nlp/quality.service";
 import {escapeRegex} from "../model/commons";
 import {merge} from "rxjs";
 
 @Component({
-  selector: 'tock-test-intent-error',
-  templateUrl: './test-intent-error.component.html',
-  styleUrls: ['./test-intent-error.component.css']
+  selector: 'tock-test-entity-error',
+  templateUrl: './test-entity-error.component.html',
+  styleUrls: ['./test-entity-error.component.css']
 })
-export class TestIntentErrorComponent implements OnInit, AfterViewInit {
+export class TestEntityErrorComponent implements OnInit, AfterViewInit {
 
-  displayedColumns = ['text', 'currentIntent', 'wrongIntent', 'count', 'percent', 'probability', 'firstErrorDate', 'actions'];
+  displayedColumns = ['text', 'intent', 'error', 'count', 'percent', 'probability', 'firstErrorDate', 'actions'];
   @ViewChild(MatPaginator) paginator: MatPaginator;
-  dataSource: TestIntentErrorDataSource | null;
+  dataSource: TestEntityErrorDataSource | null;
 
   constructor(private state: StateService,
               private quality: QualityService,
@@ -44,24 +44,29 @@ export class TestIntentErrorComponent implements OnInit, AfterViewInit {
   }
 
   ngOnInit(): void {
-    this.dataSource = new TestIntentErrorDataSource(this.paginator, this.state, this.quality);
+    this.dataSource = new TestEntityErrorDataSource(this.paginator, this.state, this.quality);
   }
 
   ngAfterViewInit(): void {
     this.dataSource.refresh();
   }
 
-  validate(error: IntentTestError) {
-    this.quality.deleteIntentError(error).subscribe(
+  intentName(error: EntityTestError) {
+    const i = this.state.findIntentById(error.originalSentence.classification.intentId)
+    return i ? i.name : "unknown";
+  }
+
+  validate(error: EntityTestError) {
+    this.quality.deleteEntityError(error).subscribe(
       e => {
-        this.snackBar.open(`Sentence validated`, "Validate Intent", {duration: 1000} as MatSnackBarConfig)
+        this.snackBar.open(`Sentence validated`, "Validate Entities", {duration: 1000} as MatSnackBarConfig)
         this.dataSource.refresh()
       }
     )
   }
 
-  change(error: IntentTestError) {
-    this.quality.deleteIntentError(error).subscribe(
+  change(error: EntityTestError) {
+    this.quality.deleteEntityError(error).subscribe(
       e => {
         this.router.navigate(
           ['/nlp/search'],
@@ -76,7 +81,7 @@ export class TestIntentErrorComponent implements OnInit, AfterViewInit {
   }
 }
 
-export class TestIntentErrorDataSource extends DataSource<IntentTestError> {
+export class TestEntityErrorDataSource extends DataSource<EntityTestError> {
 
   size: number = 0;
   private refreshEvent = new EventEmitter();
@@ -93,7 +98,7 @@ export class TestIntentErrorDataSource extends DataSource<IntentTestError> {
   }
 
   /** Connect function called by the table to retrieve one stream containing the data to render. */
-  connect(): Observable<IntentTestError[]> {
+  connect(): Observable<EntityTestError[]> {
     const displayDataChanges = [
       this._paginator.page,
       this.refreshEvent
@@ -102,7 +107,7 @@ export class TestIntentErrorDataSource extends DataSource<IntentTestError> {
     merge(...displayDataChanges).subscribe(() => {
       const startIndex = this._paginator.pageIndex * this._paginator.pageSize;
 
-      this.qualityService.searchIntentErrors(
+      this.qualityService.searchEntityErrors(
         new TestErrorQuery(
           this.state.currentApplication._id,
           this.state.currentLocale,

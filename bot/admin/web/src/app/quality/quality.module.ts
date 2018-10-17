@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {QualityModule} from "tock-nlp-admin/src/app/quality/quality.module";
+import {QualityModule} from "../quality-nlp/quality.module";
 import {NgModule} from "@angular/core";
-import {SharedModule} from "tock-nlp-admin/src/app/shared/shared.module";
+import {SharedModule} from "../shared-nlp/shared.module";
 
 @NgModule({
   declarations: [],

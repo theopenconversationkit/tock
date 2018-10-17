@@ -17,7 +17,7 @@
 import {Component, OnInit} from "@angular/core";
 import {Feature} from "../model/feature";
 import {BotService} from "../bot-service";
-import {StateService} from "tock-nlp-admin/src/app/core/state.service";
+import {StateService} from "../../core-nlp/state.service";
 
 @Component({
   selector: 'tock-feature',

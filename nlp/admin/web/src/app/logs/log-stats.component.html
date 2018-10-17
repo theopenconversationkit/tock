@@ -16,19 +16,21 @@
 
 <mat-card class="search">
   <mat-card-content>
-    <mat-select placeholder="Intent" [(ngModel)]="intent" (selectionChange)="search()" class="search-input">
-      <mat-option value="">All</mat-option>
-      <mat-option *ngFor="let intent of state.currentIntents | async" [value]="intent.name">
-        {{intent.name}}
-      </mat-option>
-      <mat-option value="unknown">Unknown</mat-option>
-    </mat-select>
+    <mat-form-field>
+      <mat-select placeholder="Intent" [(ngModel)]="intent" (selectionChange)="search()" class="search-input">
+        <mat-option value="">All</mat-option>
+        <mat-option *ngFor="let intent of state.currentIntents | async" [value]="intent.name">
+          {{intent.name}}
+        </mat-option>
+        <mat-option value="unknown">Unknown</mat-option>
+      </mat-select>
+    </mat-form-field>
     <button mat-button (click)="search()">GO</button>
   </mat-card-content>
 </mat-card>
 
 <h2 *ngIf="nodata" class="search">
-      No Data
+  No Data
 </h2>
 
 <p></p>

@@ -15,8 +15,8 @@
  */
 
 import {Injectable, OnDestroy} from "@angular/core";
-import {RestService} from "../core/rest/rest.service";
-import {StateService} from "../core/state.service";
+import {RestService} from "../core-nlp/rest/rest.service";
+import {StateService} from "../core-nlp/state.service";
 import {
   EntityDefinition,
   EntityType, Intent,

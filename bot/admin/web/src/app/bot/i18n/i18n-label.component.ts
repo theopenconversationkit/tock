@@ -13,11 +13,11 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-import {StateService} from "tock-nlp-admin/src/app/core/state.service";
+import {StateService} from "../../core-nlp/state.service";
 import {Component, Input, OnInit} from "@angular/core";
 import {I18nLabel, I18nLocalizedLabel, userInterfaces} from "../model/i18n";
 import {BotService} from "../bot-service";
-import {MdSnackBar} from "@angular/material";
+import {MatSnackBar} from "@angular/material";
 import {ConnectorTypeConfiguration} from "../../core/model/configuration";
 import {BotSharedService} from "../../shared/bot-shared.service";
 
@@ -47,7 +47,7 @@ export class I18nLabelComponent implements OnInit {
 
   constructor(public state: StateService,
               private botService: BotService,
-              private snackBar: MdSnackBar,
+              private snackBar: MatSnackBar,
               public botSharedService: BotSharedService) {
   }
 

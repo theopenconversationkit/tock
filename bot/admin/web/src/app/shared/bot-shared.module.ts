@@ -22,7 +22,7 @@ import {BotMessageSentenceComponent} from "./bot-message/bot-message-sentence";
 import {BotMessageChoiceComponent} from "./bot-message/bot-message-choice.component";
 import {BotMessageLocationComponent} from "./bot-message/bot-message-location";
 import {BotMessageAttachmentComponent} from "./bot-message/bot-message-attachment";
-import {SharedModule} from "tock-nlp-admin/src/app/shared/shared.module";
+import {SharedModule} from "../shared-nlp/shared.module";
 import {BotSharedService} from "./bot-shared.service";
 import {DisplayDialogComponent} from "./bot-dialog/display-dialog.component";
 import {MomentModule} from "angular2-moment";

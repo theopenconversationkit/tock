@@ -20,6 +20,7 @@ import {Observable} from "rxjs";
 import {Application} from "../model/application";
 import {ApplicationService} from "./applications.service";
 import {ApplicationConfig} from "./application.config";
+import "rxjs-compat/add/operator/map";
 
 @Injectable()
 export class ApplicationResolver implements Resolve<Application> {

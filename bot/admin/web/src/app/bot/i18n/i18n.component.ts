@@ -17,8 +17,8 @@
 import {Component, OnInit} from "@angular/core";
 import {I18nLabel} from "../model/i18n";
 import {BotService} from "../bot-service";
-import {StateService} from "tock-nlp-admin/src/app/core/state.service";
-import {MdSnackBar, PageEvent} from "@angular/material";
+import {StateService} from "../../core-nlp/state.service";
+import {MatSnackBar, PageEvent} from "@angular/material";
 import {saveAs} from "file-saver";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 import {I18nController} from "./i18n-label.component";
@@ -51,7 +51,7 @@ export class I18nComponent extends I18nController implements OnInit {
 
   constructor(public state: StateService,
               private botService: BotService,
-              private snackBar: MdSnackBar) {
+              private snackBar: MatSnackBar) {
     super(state, [], null);
   }
 

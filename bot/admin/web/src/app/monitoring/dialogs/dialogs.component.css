@@ -26,6 +26,10 @@
   font-size: large;
 }
 
+.exact {
+  padding-right: 10px;
+}
+
 .dialogs {
   height:100%;
   width:90%;

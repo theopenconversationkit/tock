@@ -15,8 +15,8 @@
  */
 
 import {AttachmentType, ConnectorType, EventType} from "../../core/model/configuration";
-import {JsonUtils} from "tock-nlp-admin/src/app/model/commons";
-import {ClassifiedEntity} from "tock-nlp-admin/src/app/model/nlp";
+import {JsonUtils} from "../../model/commons";
+import {ClassifiedEntity} from "../../model/nlp";
 import {IntentName} from "../../bot/model/bot-intent";
 
 export class DialogReport {

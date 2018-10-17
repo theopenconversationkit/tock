@@ -16,7 +16,7 @@
 
 import {Component, Inject, OnInit} from "@angular/core";
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
-import {StateService} from "../../core/state.service";
+import {StateService} from "../../core-nlp/state.service";
 import {entityNameFromQualifiedName, EntityType, qualifiedNameWithoutRole} from "../../model/nlp";
 import {EntityProvider} from "../highlight/highlight.component";
 

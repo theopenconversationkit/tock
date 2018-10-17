@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {PaginatedQuery} from "tock-nlp-admin/src/app/model/commons";
-import {Sentence} from "tock-nlp-admin/src/app/model/nlp";
+import {PaginatedQuery} from "../../model/commons";
+import {Sentence} from "../../model/nlp";
 import {I18nLabel} from "./i18n";
 
 export class CreateBotIntentRequest {

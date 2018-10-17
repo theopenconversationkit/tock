@@ -16,12 +16,12 @@
 
 import {saveAs} from "file-saver";
 import {Component, OnInit} from "@angular/core";
-import {StateService} from "../core/state.service";
+import {StateService} from "../core-nlp/state.service";
 import {EntityDefinition, Intent} from "../model/nlp";
 import {MatDialog, MatDialogConfig, MatSnackBar, MatSnackBarConfig} from "@angular/material";
-import {ConfirmDialogComponent} from "../shared/confirm-dialog/confirm-dialog.component";
+import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {NlpService} from "../nlp-tabs/nlp.service";
-import {ApplicationService} from "../core/applications.service";
+import {ApplicationService} from "../core-nlp/applications.service";
 import {AddStateDialogComponent} from "./add-state/add-state-dialog.component";
 import {UserRole} from "../model/auth";
 

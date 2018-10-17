@@ -16,9 +16,9 @@
 
 import {Component, OnInit} from "@angular/core";
 import {BotService} from "../bot-service";
-import {MdSnackBar} from "@angular/material";
-import {NlpService} from "tock-nlp-admin/src/app/nlp-tabs/nlp.service";
-import {StateService} from "tock-nlp-admin/src/app/core/state.service";
+import {MatSnackBar} from "@angular/material";
+import {NlpService} from "../../nlp-tabs/nlp.service";
+import {StateService} from "../../core-nlp/state.service";
 import {BotIntent, BotIntentSearchQuery, UpdateBotIntentRequest} from "../model/bot-intent";
 
 @Component({
@@ -33,7 +33,7 @@ export class SearchBotIntentComponent implements OnInit {
   constructor(private nlp: NlpService,
               private state: StateService,
               private bot: BotService,
-              private snackBar: MdSnackBar) {
+              private snackBar: MatSnackBar) {
   }
 
   ngOnInit(): void {

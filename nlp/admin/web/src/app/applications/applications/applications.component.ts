@@ -18,8 +18,8 @@ import {saveAs} from "file-saver";
 import {Component, OnInit} from "@angular/core";
 import {Application} from "../../model/application";
 import {MatSnackBar} from "@angular/material";
-import {StateService} from "../../core/state.service";
-import {ApplicationService} from "../../core/applications.service";
+import {StateService} from "../../core-nlp/state.service";
+import {ApplicationService} from "../../core-nlp/applications.service";
 import {UserRole} from "../../model/auth";
 
 @Component({

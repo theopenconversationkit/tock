@@ -14,10 +14,9 @@
  * limitations under the License.
  */
 
-import {ApplicationScopedQuery, Entry, JsonUtils, PaginatedQuery, SearchMark} from "./commons";
+import {ApplicationScopedQuery, Entry, isNullOrUndefined, JsonUtils, PaginatedQuery, SearchMark} from "./commons";
 import {User} from "./auth";
-import {isNullOrUndefined} from "util";
-import {StateService} from "../core/state.service";
+import {StateService} from "../core-nlp/state.service";
 
 export class EntityDefinition {
 
@@ -311,7 +310,7 @@ export class Sentence extends EntityContainer {
     super()
   }
 
-  notRetainedEntitiesContainer() : NotRetainedEntities {
+  notRetainedEntitiesContainer(): NotRetainedEntities {
     return new NotRetainedEntities(this.text, this.classification.notRetainedEntities)
   }
 

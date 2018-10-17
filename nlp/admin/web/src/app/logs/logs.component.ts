@@ -17,12 +17,12 @@
 import {Component, Inject} from "@angular/core";
 import {Log, LogsQuery, PaginatedResult} from "../model/nlp";
 import {ScrollComponent} from "../scroll/scroll.component";
-import {StateService} from "../core/state.service";
+import {StateService} from "../core-nlp/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {PaginatedQuery, SearchMark} from "../model/commons";
 import {Observable} from "rxjs/Observable";
 import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
-import {ApplicationConfig} from "../core/application.config";
+import {ApplicationConfig} from "../core-nlp/application.config";
 import {Router} from "@angular/router";
 
 @Component({

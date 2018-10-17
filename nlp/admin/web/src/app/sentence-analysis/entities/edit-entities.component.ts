@@ -15,7 +15,7 @@
  */
 import {Component, EventEmitter, Input, Output} from "@angular/core";
 import {ClassifiedEntity, EntityContainer} from "../../model/nlp";
-import {StateService} from "../../core/state.service";
+import {StateService} from "../../core-nlp/state.service";
 
 @Component({
   selector: 'tock-edit-entities',

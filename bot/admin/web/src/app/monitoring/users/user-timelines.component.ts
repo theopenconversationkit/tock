@@ -17,15 +17,15 @@
 import {Component} from "@angular/core";
 import {MonitoringService} from "../monitoring.service";
 import {UserReport, UserSearchQuery} from "../model/users";
-import {StateService} from "tock-nlp-admin/src/app/core/state.service";
+import {StateService} from "../../core-nlp/state.service";
 import {DialogReportQuery} from "../model/dialogs";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
-import {MdSnackBar} from "@angular/material";
+import {MatSnackBar} from "@angular/material";
 import {DialogReport} from "../../shared/model/dialog-data";
-import {ScrollComponent} from "tock-nlp-admin/src/app/scroll/scroll.component";
+import {ScrollComponent} from "../../scroll/scroll.component";
 import {Observable} from "rxjs/Observable";
-import {PaginatedResult} from "tock-nlp-admin/src/app/model/nlp";
-import {PaginatedQuery} from "tock-nlp-admin/src/app/model/commons";
+import {PaginatedResult} from "../../model/nlp";
+import {PaginatedQuery} from "../../model/commons";
 
 @Component({
   selector: 'tock-user-timelines',
@@ -39,7 +39,7 @@ export class UserTimelinesComponent extends ScrollComponent<UserReport> {
   constructor(state: StateService,
               private monitoring: MonitoringService,
               private botConfiguration: BotConfigurationService,
-              private snackBar: MdSnackBar) {
+              private snackBar: MatSnackBar) {
     super(state);
     this.botConfiguration.configurations.subscribe(_ => this.refresh());
   }

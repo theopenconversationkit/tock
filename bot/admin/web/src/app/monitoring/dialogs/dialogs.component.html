@@ -15,35 +15,37 @@
   -->
 
 <div class="dialogs">
-  <md-card>
-    <md-card-content>
-      <md-input-container class="search-input">
-        <input mdInput placeholder="Search User text" [(ngModel)]="filter.text" (keyup.enter)="refresh()">
-      </md-input-container>
-      <md-checkbox [(ngModel)]="filter.exactMatch">Exact text match</md-checkbox>
-      <md-select placeholder="Intent" [(ngModel)]="filter.intentName" (change)="refresh()">
-        <md-option value="">All</md-option>
-        <md-option *ngFor="let intent of state.currentApplication.intents" [value]="intent.name">
+  <mat-card>
+    <mat-card-content>
+      <mat-form-field class="search-input">
+        <input matInput placeholder="Search User text" [(ngModel)]="filter.text" (keyup.enter)="refresh()">
+      </mat-form-field>
+      <mat-checkbox class="exact" [(ngModel)]="filter.exactMatch">Exact text match</mat-checkbox>
+      <mat-form-field>
+      <mat-select placeholder="Intent" [(ngModel)]="filter.intentName" (selectionChange)="refresh()">
+        <mat-option value="">All</mat-option>
+        <mat-option *ngFor="let intent of state.currentApplication.intents" [value]="intent.name">
           {{intent.name}}
-        </md-option>
-        <md-option value="unknown">Unknown</md-option>
-      </md-select>
-      <button md-button (click)="refresh()">GO</button>
-    </md-card-content>
-  </md-card>
+        </mat-option>
+        <mat-option value="unknown">Unknown</mat-option>
+      </mat-select>
+      </mat-form-field>
+      <button mat-button (click)="refresh()">GO</button>
+    </mat-card-content>
+  </mat-card>
   <div *ngIf="total !== -1">
     <h1 *ngIf="total === 0">No dialogs found!
-      <button md-button (click)="refresh()">
-        <md-icon>refresh</md-icon>
+      <button mat-button (click)="refresh()">
+        <mat-icon>refresh</mat-icon>
       </button>
     </h1>
     <h1 *ngIf="total !== 0"><span *ngIf="total > 10">Estimated</span> Dialogs : {{total}}
-      <button md-button (click)="refresh()">
-        <md-icon>refresh</md-icon>
+      <button mat-button (click)="refresh()">
+        <mat-icon>refresh</mat-icon>
       </button>
-      <button *ngIf="filter.dialogId" md-button (click)="viewAllWithThisText()"
-              md-tooltip="View all dialogs using this text">
-        <md-icon>speaker_notes</md-icon>
+      <button *ngIf="filter.dialogId" mat-button (click)="viewAllWithThisText()"
+              matTooltip="View all dialogs using this text">
+        <mat-icon>speaker_notes</mat-icon>
       </button>
     </h1>
     <p></p>

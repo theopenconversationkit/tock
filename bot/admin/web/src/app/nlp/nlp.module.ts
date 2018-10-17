@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {NlpModule} from "tock-nlp-admin/src/app/nlp-tabs/nlp.module";
+import {NlpModule} from "../nlp-tabs/nlp.module";
 import {NgModule} from "@angular/core";
-import {SharedModule} from "tock-nlp-admin/src/app/shared/shared.module";
+import {SharedModule} from "../shared-nlp/shared.module";
 
 @NgModule({
   declarations: [],

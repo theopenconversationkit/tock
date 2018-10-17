@@ -16,13 +16,13 @@
 
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {Intent, nameFromQualifiedName, Sentence, SentenceStatus} from "../model/nlp";
-import {StateService} from "../core/state.service";
+import {StateService} from "../core-nlp/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {CreateIntentDialogComponent} from "./create-intent-dialog/create-intent-dialog.component";
 import {MatDialog, MatSnackBar} from "@angular/material";
-import {ApplicationConfig} from "../core/application.config";
+import {ApplicationConfig} from "../core-nlp/application.config";
 import {Router} from "@angular/router";
-import {ConfirmDialogComponent} from "../shared/confirm-dialog/confirm-dialog.component";
+import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
 
 @Component({
   selector: 'tock-sentence-analysis',

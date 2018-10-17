@@ -17,7 +17,7 @@
 import {CommonModule} from "@angular/common";
 import {NgModule, Optional, SkipSelf} from "@angular/core";
 import {BotConfigurationService} from "./bot-configuration.service";
-import {ApplicationConfig} from "tock-nlp-admin/src/app/core/application.config";
+import {ApplicationConfig} from "../core-nlp/application.config";
 
 @NgModule({
   imports: [CommonModule],

@@ -15,15 +15,14 @@
  */
 
 import {Injectable, OnDestroy} from "@angular/core";
-import {Observable} from "rxjs";
+import {Observable, of} from "rxjs";
 import {Application, ApplicationImportConfiguration, ModelBuildQueryResult} from "../model/application";
 import {RestService} from "./rest/rest.service";
 import {StateService} from "./state.service";
 import {ApplicationScopedQuery, Entry, PaginatedQuery} from "../model/commons";
 import {Intent, NlpEngineType} from "../model/nlp";
 import {FileUploader} from "ng2-file-upload";
-import 'rxjs/add/operator/map';
-import { of } from 'rxjs';
+import "rxjs-compat/add/operator/map";
 
 @Injectable()
 export class ApplicationService implements OnDestroy {

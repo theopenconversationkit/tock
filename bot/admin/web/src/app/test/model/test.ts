@@ -14,8 +14,8 @@
  * limitations under the License.
  */
 
-import {ActionReport, BotMessage, DialogReport, PlayerId, PlayerType} from "app/shared/model/dialog-data";
-import {ApplicationScopedQuery} from "tock-nlp-admin/src/app/model/commons";
+import {ActionReport, BotMessage, DialogReport, PlayerId, PlayerType} from "../../shared/model/dialog-data";
+import {ApplicationScopedQuery} from "../../model/commons";
 import {ConnectorType, UserInterfaceType} from "../../core/model/configuration";
 
 export class BotDialogRequest extends ApplicationScopedQuery {

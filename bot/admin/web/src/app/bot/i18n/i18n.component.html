@@ -13,89 +13,95 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<md-toolbar>
-  <md-input-container>
-    <input mdInput placeholder="Search" [(ngModel)]="filterString" (keyup)="filter($event.target.value)">
-  </md-input-container>
-  <button md-button (click)="refresh()" md-tooltip="Reload all">
-    <md-icon>refresh</md-icon>
+<mat-toolbar>
+  <mat-form-field>
+    <input matInput placeholder="Search" [(ngModel)]="filterString" (keyup)="filter($event.target.value)">
+  </mat-form-field>
+  <button mat-button (click)="refresh()" matTooltip="Reload all">
+    <mat-icon>refresh</mat-icon>
   </button>
-  <md-select placeholder="Filter by category" [(ngModel)]="selectedCategory"
-             (ngModelChange)="onSelectedCategoryChange()">
-    <md-option *ngFor="let c of allCategories" [value]="c">{{c}}</md-option>
-  </md-select>
+  <mat-form-field class="i18n-select">
+  <mat-select placeholder="Filter by category" [(ngModel)]="selectedCategory"
+             (selectionChange)="onSelectedCategoryChange()">
+    <mat-option *ngFor="let c of allCategories" [value]="c">{{c}}</mat-option>
+  </mat-select>
+  </mat-form-field>
   <span class="fill-remaining-space"></span>
-  <md-select placeholder="Filter by state" [(ngModel)]="filterOption"
-             (ngModelChange)="filterValidatedChange()">
-    <md-option value="">All</md-option>
-    <md-option value="not_validated">Only Not validated</md-option>
-    <md-option value="validated">Only validated</md-option>
-  </md-select>
+  <mat-form-field class="i18n-select">
+  <mat-select placeholder="Filter by state" [(ngModel)]="filterOption"
+             (selectionChange)="filterValidatedChange()">
+    <mat-option value="">All</mat-option>
+    <mat-option value="not_validated">Only Not validated</mat-option>
+    <mat-option value="validated">Only validated</mat-option>
+  </mat-select>
+  </mat-form-field>
   <span class="fill-remaining-space"></span>
-  <md-select placeholder="Not used since" [(ngModel)]="notUsedFrom"
-             (ngModelChange)="onNotUsedFromChange()">
-    <md-option value="-1"></md-option>
-    <md-option value="1">last day</md-option>
-    <md-option value="7">last week</md-option>
-    <md-option value="30">last month</md-option>
-  </md-select>
+  <mat-form-field class="i18n-select">
+  <mat-select placeholder="Not used since" [(ngModel)]="notUsedFrom"
+             (selectionChange)="onNotUsedFromChange()">
+    <mat-option value="-1"></mat-option>
+    <mat-option value="1">last day</mat-option>
+    <mat-option value="7">last week</mat-option>
+    <mat-option value="30">last month</mat-option>
+  </mat-select>
+  </mat-form-field>
   <span class="fill-remaining-space"></span>
-  <button md-button (click)="validateAll()" md-tooltip="Validate all existing labels">Validate all</button>
-  <button md-button (click)="complete()">Complete all fields</button>
+  <button mat-button (click)="validateAll()" matTooltip="Validate all existing labels">Validate all</button>
+  <button mat-button (click)="complete()">Complete all fields</button>
 
-  <button md-icon-button (click)="displayImportExport = true" md-tooltip="Import / Export">
-    <md-icon>import_export</md-icon>
+  <button mat-icon-button (click)="displayImportExport = true" matTooltip="Import / Export">
+    <mat-icon>import_export</mat-icon>
   </button>
-</md-toolbar>
+</mat-toolbar>
 
-<md-card *ngIf="displayImportExport">
-  <md-card-title>Import / Export Panel</md-card-title>
+<mat-card *ngIf="displayImportExport">
+  <mat-card-title>Import / Export Panel</mat-card-title>
 
-  <button md-raised-button (click)="displayImportExport = false" color="accent">Close Panel</button>
-  <button md-button (click)="downloadCsv()" md-tooltip="Download Csv">
-    <md-icon>file_download</md-icon>
+  <button mat-raised-button (click)="displayImportExport = false" color="accent">Close Panel</button>
+  <button mat-button (click)="downloadCsv()" matTooltip="Download Csv">
+    <mat-icon>file_download</mat-icon>
     Download CSV
   </button>
-  <button md-button (click)="prepareCsvUpload()" md-tooltip="Upload Csv">
-    <md-icon>file_upload</md-icon>
+  <button mat-button (click)="prepareCsvUpload()" matTooltip="Upload Csv">
+    <mat-icon>file_upload</mat-icon>
     Upload CSV
   </button>
-  <button md-button (click)="downloadJson()" md-tooltip="Download JSON">
-    <md-icon>file_download</md-icon>
+  <button mat-button (click)="downloadJson()" matTooltip="Download JSON">
+    <mat-icon>file_download</mat-icon>
     Download JSON
   </button>
-  <button md-button (click)="prepareJsonUpload()" md-tooltip="Upload JSON">
-    <md-icon>file_upload</md-icon>
+  <button mat-button (click)="prepareJsonUpload()" matTooltip="Upload JSON">
+    <mat-icon>file_upload</mat-icon>
     Upload JSON
   </button>
 
-  <md-card *ngIf="displayUpload">
-    <md-card-title>Upload a {{uploadType}} File</md-card-title>
-    <md-card-content>
+  <mat-card *ngIf="displayUpload">
+    <mat-card-title>Upload a {{uploadType}} File</mat-card-title>
+    <mat-card-content>
       <p>
         <label for="file">Please select a {{uploadType}} file:</label>
         <input id="file" type="file" ng2FileSelect [uploader]="uploader"/>
       </p>
-    </md-card-content>
-    <button (click)="displayUpload = false" md-button>
+    </mat-card-content>
+    <button (click)="displayUpload = false" mat-button>
       Cancel
     </button>
-    <button (click)="upload()" [disabled]="!uploader.getNotUploadedItems().length" md-raised-button
+    <button (click)="upload()" [disabled]="!uploader.getNotUploadedItems().length" mat-raised-button
             color="primary">
       Upload
     </button>
-  </md-card>
-</md-card>
+  </mat-card>
+</mat-card>
 
-<md-list dense *ngIf="!loading">
+<mat-list dense *ngIf="!loading">
   <div *ngFor="let i of pagedItems()">
     <tock-i18n-label [i]="i" [i18nController]="controller()" [intent]="i.category" [localeBase]="localeBase"></tock-i18n-label>
   </div>
-</md-list>
+</mat-list>
 
-<md-paginator *ngIf="!loading"
+<mat-paginator *ngIf="!loading"
               [length]="filteredI18n.length"
               [pageSize]="pageSize"
               [pageSizeOptions]="pageSizeOptions"
               (page)="pageEvent = $event">
-</md-paginator>
+</mat-paginator>

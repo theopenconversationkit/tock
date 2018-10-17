@@ -14,87 +14,87 @@
   ~ limitations under the License.
   -->
 
-<md-card *ngIf="(botConfiguration.restConfigurations|async).length ===0">
+<mat-card *ngIf="(botConfiguration.restConfigurations|async).length ===0">
   <h3>No bot configuration detected.</h3>
-</md-card>
+</mat-card>
 
-<md-card *ngIf="xray">
-  <md-card-title>Execute XRay plan</md-card-title>
+<mat-card *ngIf="xray">
+  <mat-card-title>Execute XRay plan</mat-card-title>
   <tock-select-bot [(configurationId)]="xrayBotConfigurationId"
                    (configurationIdChange)="xrayBotConfigurationId=$event"
                     [allowNoSelection]="true"></tock-select-bot>
 
-    <md-input-container class="input-text">
-      <input mdInput
+    <mat-form-field class="input-text">
+      <input matInput
              placeholder="JIRA Test Plan"
              [(ngModel)]="xray.testPlanKey"
              (keyup.enter)="executeXRay()">
-    </md-input-container>
+    </mat-form-field>
 
-    <button md-button (click)="executeXRay()" color="primary">Create</button>
+    <button mat-button (click)="executeXRay()" color="primary">Create</button>
   <div *ngIf="executeXray"><br>
     <img src="/assets/images/loading.gif" width="40px" height="40px"/>
   </div>
-</md-card>
+</mat-card>
 
-<md-card *ngIf="(botConfiguration.restConfigurations|async).length !==0">
-  <md-card-title>Test Plans</md-card-title>
-  <md-card-subtitle>
-    <button md-button (click)="prepareCreateTestPlan()" color="primary">
-      <md-icon>add_box</md-icon>
+<mat-card *ngIf="(botConfiguration.restConfigurations|async).length !==0">
+  <mat-card-title>Test Plans</mat-card-title>
+  <mat-card-subtitle>
+    <button mat-button (click)="prepareCreateTestPlan()" color="primary">
+      <mat-icon>add_box</mat-icon>
       Create a new Test Plan
     </button>
-  </md-card-subtitle>
-  <md-card-content>
+  </mat-card-subtitle>
+  <mat-card-content>
     <div *ngIf="testPlanCreation">
-      <md-input-container class="input-text">
-        <input mdInput
+      <mat-form-field class="input-text">
+        <input matInput
                placeholder="Test Plan name"
                [(ngModel)]="testPlanName"
                (keyup.enter)="createTestPlan()">
-      </md-input-container>
-      <md-select placeholder="Select a bot"
+      </mat-form-field>
+      <mat-select placeholder="Select a bot"
                  [ngModel]="testBotConfigurationId"
                  class="select-configuration">
-        <md-option *ngFor="let conf of (botConfiguration.restConfigurations|async)"
+        <mat-option *ngFor="let conf of (botConfiguration.restConfigurations|async)"
                    [value]="conf._id">{{ conf.name }}
-        </md-option>
-      </md-select>
+        </mat-option>
+      </mat-select>
 
-      <button md-button (click)="createTestPlan()" color="primary">Create</button>
-      <button md-button (click)="resetCreateTestPlan()">Cancel</button>
+      <button mat-button (click)="createTestPlan()" color="primary">Create</button>
+      <button mat-button (click)="resetCreateTestPlan()">Cancel</button>
     </div>
 
     <div *ngIf="testPlans">
-      <md-card *ngFor="let p of testPlans">
-        <md-card-title>
+      <mat-card *ngFor="let p of testPlans">
+        <mat-card-title>
           Plan "{{p.name}}" - {{p.botName}}
-          <button *ngIf="p.dialogs.length !== 0" md-button (click)="exec(p)" color="primary">
-            <md-icon>launch</md-icon>
+          <button *ngIf="p.dialogs.length !== 0" mat-button (click)="exec(p)" color="primary">
+            <mat-icon>launch</mat-icon>
             Launch
           </button>
-          <button md-button (click)="deleteTestPlan(p)" color="warn">
-            <md-icon>delete</md-icon>
+          <button mat-button (click)="deleteTestPlan(p)" color="warn">
+            <mat-icon>delete</mat-icon>
             Delete
           </button>
-        </md-card-title>
-        <md-card-subtitle>
+        </mat-card-title>
+        <mat-card-subtitle>
           {{p.dialogs.length}} Conversation{{p.dialogs.length < 2 ? '' : 's'}}
           <span *ngIf="p.dialogs.length !== 0">
-          - <button *ngIf="!p.displayDialog" md-button (click)="showDialogs(p)">
-            <md-icon>visibility</md-icon>
+          - <button *ngIf="!p.displayDialog" mat-button (click)="showDialogs(p)">
+            <mat-icon>visibility</mat-icon>
             Display Conversation{{p.dialogs.length < 2 ? '' : 's'}}
           </button>
-            <button *ngIf="p.displayDialog" md-button (click)="hideDialogs(p)">
-            <md-icon>visibility_off</md-icon>
+            <button *ngIf="p.displayDialog" mat-button (click)="hideDialogs(p)">
+            <mat-icon>visibility_off</mat-icon>
             Hide Conversation{{p.dialogs.length < 2 ? '' : 's'}}
           </button>
             </span>
           <span *ngIf="p.dialogs.length === 0">
           - you can add dialogs via the Monitoring menu.
             </span>
-        </md-card-subtitle>
-        <md-card-content>
+        </mat-card-subtitle>
+        <mat-card-content>
 
           <ol *ngIf="p.displayDialog">
             <li *ngFor="let d of p.dialogs">
@@ -105,28 +105,28 @@
                  <tock-bot-message [message]="d.actions[0].messages[0]" [user]="true"></tock-bot-message>
                </span>
               ...
-              <button *ngIf="!d.displayActions" md-button (click)="d.displayActions=true">
-                <md-icon>visibility</md-icon>
+              <button *ngIf="!d.displayActions" mat-button (click)="d.displayActions=true">
+                <mat-icon>visibility</mat-icon>
                 Display all sentences
               </button>
-              <button *ngIf="d.displayActions" md-button (click)="d.displayActions=false">
-                <md-icon>visibility_off</md-icon>
+              <button *ngIf="d.displayActions" mat-button (click)="d.displayActions=false">
+                <mat-icon>visibility_off</mat-icon>
                 Hide all sentences
               </button>
-              <button md-button (click)="removeDialog(p, d)" color="warn">
-                <md-icon>delete</md-icon>
+              <button mat-button (click)="removeDialog(p, d)" color="warn">
+                <mat-icon>delete</mat-icon>
                 Remove dialog
               </button>
               <tock-display-dialog *ngIf="d.displayActions" [dialog]="d.toDialogReport()"></tock-display-dialog>
             </li>
           </ol>
 
-          <button *ngIf="!p.displayExecutions" md-button (click)="showExecutions(p)">
-            <md-icon>slideshow</md-icon>
+          <button *ngIf="!p.displayExecutions" mat-button (click)="showExecutions(p)">
+            <mat-icon>slideshow</mat-icon>
             Show Executions
           </button>
-          <button *ngIf="p.displayExecutions" md-button (click)="hideExecutions(p)">
-            <md-icon>slideshow</md-icon>
+          <button *ngIf="p.displayExecutions" mat-button (click)="hideExecutions(p)">
+            <mat-icon>slideshow</mat-icon>
             Hide Executions
           </button>
           <div *ngIf="executePlan"><br>
@@ -137,27 +137,27 @@
           <ol>
             <li *ngFor="let e of p.testPlanExecutions">
               {{e.date | amDateFormat: "HH:mm:ss YYYY-MM-DD"}}
-              <button *ngIf="!e.displayExecution" md-button (click)="e.displayExecution=true">
-                <md-icon>visibility</md-icon>
+              <button *ngIf="!e.displayExecution" mat-button (click)="e.displayExecution=true">
+                <mat-icon>visibility</mat-icon>
                 Display details
               </button>
-              <button *ngIf="e.displayExecution" md-button (click)="e.displayExecution=false">
-                <md-icon>visibility_off</md-icon>
+              <button *ngIf="e.displayExecution" mat-button (click)="e.displayExecution=false">
+                <mat-icon>visibility_off</mat-icon>
                 Hide details
               </button>
               <span *ngIf="e.nbErrors === 0">
-                <md-icon style="height:auto" class="success">check_circle</md-icon>
+                <mat-icon style="height:auto" class="success">check_circle</mat-icon>
                 {{e.dialogs.length}} conversation{{e.dialogs.length < 2 ? "" :"s"}}
               </span>
               <span *ngIf="e.nbErrors !== 0">
-                <md-icon class="error">error</md-icon>
+                <mat-icon class="error">error</mat-icon>
                 {{e.nbErrors}} error{{e.nbErrors ? "":"s"}} / {{e.dialogs.length}} conversation{{e.dialogs.length < 2 ? "" :"s"}}
               </span>
               <ol *ngIf="e.displayExecution">
                 <li *ngFor="let details of e.dialogs">
-                  <span *ngIf="!details.error"><md-icon class="success">check_circle</md-icon> Success</span>
+                  <span *ngIf="!details.error"><mat-icon class="success">check_circle</mat-icon> Success</span>
                   <span *ngIf="details.error">
-                       <md-icon class="error">error</md-icon>
+                       <mat-icon class="error">error</mat-icon>
                        Error
                        <span *ngIf="details.dialogReport">
                          <h4>Expected dialog:</h4>
@@ -176,10 +176,10 @@
             </li>
           </ol>
             </span>
-        </md-card-content>
-      </md-card>
+        </mat-card-content>
+      </mat-card>
 
     </div>
-  </md-card-content>
-</md-card>
+  </mat-card-content>
+</mat-card>
 

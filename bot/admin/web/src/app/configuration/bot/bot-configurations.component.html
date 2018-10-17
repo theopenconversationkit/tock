@@ -14,26 +14,25 @@
   ~ limitations under the License.
   -->
 
-<md-card *ngIf="configurations">
-  <md-card-title>
+<mat-card *ngIf="configurations">
+  <mat-card-title>
     Bot Configurations
-    <button md-button (click)="refresh()" md-tooltip="Refresh">
-      <md-icon>refresh</md-icon>
+    <button mat-button (click)="refresh()" matTooltip="Refresh">
+      <mat-icon>refresh</mat-icon>
     </button>
-  </md-card-title>
-  <md-card-subtitle *ngIf="!newApplicationConfiguration">
-    <button md-button (click)="prepareCreate()" color="primary">
-      <md-icon>add_box</md-icon>
+  </mat-card-title>
+  <mat-card-subtitle *ngIf="!newApplicationConfiguration">
+    <button mat-button (click)="prepareCreate()" color="primary">
+      <mat-icon>add_box</mat-icon>
       Create a new Configuration
     </button>
-    <button md-button (click)="displayTestConfigurations = !displayTestConfigurations">
-      <md-icon *ngIf="!displayTestConfigurations">visibility</md-icon>
-      <md-icon *ngIf="displayTestConfigurations">visibility_off</md-icon>
-      <span *ngIf="displayTestConfigurations">Hide test configurations</span>
-      <span *ngIf="!displayTestConfigurations">Display test configurations</span>
+    <button mat-button (click)="displayTestConfigurations = !displayTestConfigurations">
+      <mat-icon *ngIf="!displayTestConfigurations">visibility</mat-icon>
+      <mat-icon *ngIf="displayTestConfigurations">visibility_off</mat-icon>
+      {{ displayTestConfigurations ? 'Hide test configurations' : 'Display test configurations'}}
     </button>
-  </md-card-subtitle>
-  <md-card-content>
+  </mat-card-subtitle>
+  <mat-card-content>
     <div>
       <div *ngIf="configurations.length ===0">
         <h3>No bot configuration detected.</h3>
@@ -43,8 +42,7 @@
         *ngIf="newApplicationConfiguration"
         [configuration]="newApplicationConfiguration"
         (onRemove)="cancelCreate()"
-        (onValidate)="create()"
-      ></tock-bot-configuration>
+        (onValidate)="create()"></tock-bot-configuration>
 
       <div *ngFor="let a of configurations">
 
@@ -60,5 +58,5 @@
         </div>
       </div>
     </div>
-  </md-card-content>
-</md-card>
+  </mat-card-content>
+</mat-card>

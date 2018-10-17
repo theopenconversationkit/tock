@@ -15,9 +15,8 @@
  */
 
 import {Injectable} from "@angular/core";
-import {BooleanResponse, RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
-import {StateService} from "tock-nlp-admin/src/app/core/state.service";
-import {Observable} from "rxjs/Observable";
+import {BooleanResponse, RestService} from "../core-nlp/rest/rest.service";
+import {StateService} from "../core-nlp/state.service";
 import {
   BotDialogRequest,
   BotDialogResponse,
@@ -26,6 +25,7 @@ import {
   XRayPlanExecutionConfiguration,
   XRayPlanExecutionResult
 } from "./model/test";
+import {Observable} from "rxjs-compat";
 
 @Injectable()
 export class TestService {

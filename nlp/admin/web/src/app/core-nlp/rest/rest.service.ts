@@ -16,12 +16,12 @@
 
 import {EventEmitter, Injectable} from "@angular/core";
 import {Headers, Http, Response} from "@angular/http";
-import {Observable} from "rxjs";
+import {Observable} from "rxjs-compat";
 import {environment} from "../../../environments/environment";
 import {Router} from "@angular/router";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
-import 'rxjs/add/operator/map';
-import 'rxjs/add/operator/catch';
+import 'rxjs-compat/add/operator/catch';
+import "rxjs-compat/add/operator/map";
 
 @Injectable()
 export class RestService {

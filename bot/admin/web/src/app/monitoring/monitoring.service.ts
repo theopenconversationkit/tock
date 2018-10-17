@@ -15,8 +15,8 @@
  */
 
 import {Injectable, OnDestroy} from "@angular/core";
-import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
-import {StateService} from "tock-nlp-admin/src/app/core/state.service";
+import {RestService} from "../core-nlp/rest/rest.service";
+import {StateService} from "../core-nlp/state.service";
 import {UserReportQueryResult, UserSearchQuery} from "./model/users";
 import {Observable} from "rxjs/Observable";
 import {DialogReportQuery, DialogReportQueryResult} from "./model/dialogs";

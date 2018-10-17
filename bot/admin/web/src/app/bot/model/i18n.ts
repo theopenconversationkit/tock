@@ -16,8 +16,8 @@
 
 
 import {defaultUserInterfaceType, UserInterfaceType} from "../../core/model/configuration";
-import {isNullOrUndefined} from "util";
 import {environment} from "../../../environments/environment";
+import {isNullOrUndefined} from "util";
 
 export const userInterfaces = [UserInterfaceType.textChat, UserInterfaceType.voiceAssistant];
 

@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {PaginatedQuery} from "tock-nlp-admin/src/app/model/commons";
+import {PaginatedQuery} from "../../model/commons";
 import {BotApplicationConfiguration} from "../../core/model/configuration";
 import {TestPlan} from "../../test/model/test";
 import {DialogReport, PlayerId} from "../../shared/model/dialog-data";
-import {PaginatedResult} from "tock-nlp-admin/src/app/model/nlp";
+import {PaginatedResult} from "../../model/nlp";
 
 export class UserSearchQuery extends PaginatedQuery {
 

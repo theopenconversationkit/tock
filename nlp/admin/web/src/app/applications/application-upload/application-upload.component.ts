@@ -17,8 +17,8 @@
 import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 import {ApplicationImportConfiguration, ImportReport} from "../../model/application";
-import {StateService} from "../../core/state.service";
-import {ApplicationService} from "../../core/applications.service";
+import {StateService} from "../../core-nlp/state.service";
+import {ApplicationService} from "../../core-nlp/applications.service";
 import {UserRole} from "../../model/auth";
 
 @Component({

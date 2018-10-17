@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-import {SharedModule} from "../shared/shared.module";
+import {SharedModule} from "../shared-nlp/shared.module";
 import {CommonModule} from "@angular/common";
 import {NgModule} from "@angular/core";
 import {RouterModule, Routes} from "@angular/router";
-import {AuthGuard} from "../core/auth/auth.guard";
+import {AuthGuard} from "../core-nlp/auth/auth.guard";
 import {ApplicationsComponent} from "./applications/applications.component";
 import {ApplicationsResolver} from "./applications.resolver";
 import {ApplicationComponent} from "./application/application.component";

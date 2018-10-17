@@ -15,8 +15,8 @@
   -->
 
 <span *ngIf="intents">
-  <md-card class="intent" *ngFor="let intent of intents">
-  <md-card-content>
+  <mat-card class="intent" *ngFor="let intent of intents">
+  <mat-card-content>
     <h2><span class="intent-mention">intent :</span> {{intent.storyDefinition.intent.name}}</h2>
     <h4 *ngIf="intent.firstSentences.length !== 0">Sentence
       <span *ngIf="intent.firstSentences.length === 1">sample:</span>
@@ -29,20 +29,20 @@
     </ul>
     <br>
     <div *ngIf="intent.storyDefinition.isSimpleAnswer()">
-    <md-list dense>
+    <mat-list dense>
         <tock-i18n-label [i]="intent.storyDefinition.simpleAnswer().answers[0].label"
                          [deleteAllowed]="false"></tock-i18n-label>
-    </md-list>
+    </mat-list>
     </div>
     <div *ngIf="intent.storyDefinition.isScriptAnswer()">
-    <md-input-container class="input text-area-container text-area">
-      <textarea mdInput [(ngModel)]="intent.storyDefinition.textAnswer" cols="200" rows="20"></textarea>
-      </md-input-container>
+    <mat-form-field class="input text-area-container text-area">
+      <textarea matInput [(ngModel)]="intent.storyDefinition.textAnswer" cols="200" rows="20"></textarea>
+      </mat-form-field>
     </div>
-  </md-card-content>
-  <md-card-actions>
-    <button md-button (click)="delete(intent)" color="warn">Delete</button>
-    <button *ngIf="!intent.storyDefinition.isSimpleAnswer()" md-raised-button (click)="update(intent)" color="primary">Update</button>
-  </md-card-actions>
-</md-card>
+  </mat-card-content>
+  <mat-card-actions>
+    <button mat-button (click)="delete(intent)" color="warn">Delete</button>
+    <button *ngIf="!intent.storyDefinition.isSimpleAnswer()" mat-raised-button (click)="update(intent)" color="primary">Update</button>
+  </mat-card-actions>
+</mat-card>
 </span>

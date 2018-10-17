@@ -18,16 +18,16 @@ import {RouterModule, Routes} from "@angular/router";
 import {NgModule} from "@angular/core";
 import {CommonModule} from "@angular/common";
 import {InfiniteScrollModule} from "ngx-infinite-scroll";
-import {SharedModule} from "tock-nlp-admin/src/app/shared/shared.module";
-import {AuthGuard} from "tock-nlp-admin/src/app/core/auth/auth.guard";
+import {SharedModule} from "../shared-nlp/shared.module";
+import {AuthGuard} from "../core-nlp/auth/auth.guard";
 import {MonitoringTabsComponent} from "./monitoring-tabs.component";
-import {ApplicationResolver} from "tock-nlp-admin/src/app/core/application.resolver";
+import {ApplicationResolver} from "../core-nlp/application.resolver";
 import {UserTimelinesComponent} from "./users/user-timelines.component";
 import {MonitoringService} from "./monitoring.service";
 import {BotSharedModule} from "../shared/bot-shared.module";
 import {MomentModule} from "angular2-moment";
 import {DialogsComponent} from "./dialogs/dialogs.component";
-import {MdDatepickerModule, MdNativeDateModule} from "@angular/material";
+import {MatDatepickerModule, MatNativeDateModule} from "@angular/material";
 
 
 const routes: Routes = [
@@ -69,8 +69,8 @@ export class MonitoringRoutingModule {
     InfiniteScrollModule,
     MomentModule,
     BotSharedModule,
-    MdDatepickerModule,
-    MdNativeDateModule
+    MatDatepickerModule,
+    MatNativeDateModule
   ],
   declarations: [
     MonitoringTabsComponent,

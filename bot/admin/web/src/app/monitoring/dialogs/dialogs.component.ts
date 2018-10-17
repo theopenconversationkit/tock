@@ -15,15 +15,15 @@
  */
 
 import {Component} from "@angular/core";
-import {ScrollComponent} from "tock-nlp-admin/src/app/scroll/scroll.component";
+import {ScrollComponent} from "../../scroll/scroll.component";
 import {Observable} from "rxjs/Observable";
-import {PaginatedResult} from "tock-nlp-admin/src/app/model/nlp";
-import {PaginatedQuery} from "tock-nlp-admin/src/app/model/commons";
+import {PaginatedResult} from "../../model/nlp";
+import {PaginatedQuery} from "../../model/commons";
 import {DialogReport} from "../../shared/model/dialog-data";
 import {MonitoringService} from "../monitoring.service";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
-import {MdSnackBar} from "@angular/material";
-import {StateService} from "tock-nlp-admin/src/app/core/state.service";
+import {MatSnackBar} from "@angular/material";
+import {StateService} from "../../core-nlp/state.service";
 import {DialogReportQuery} from "../model/dialogs";
 import {ActivatedRoute} from "@angular/router";
 
@@ -40,7 +40,7 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
   constructor(state: StateService,
               private monitoring: MonitoringService,
               private botConfiguration: BotConfigurationService,
-              private snackBar: MdSnackBar,
+              private snackBar: MatSnackBar,
               private route: ActivatedRoute) {
     super(state);
     this.state = state;

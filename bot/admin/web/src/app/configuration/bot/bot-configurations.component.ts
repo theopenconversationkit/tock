@@ -17,9 +17,9 @@
 import {Component, OnInit} from "@angular/core";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {BotApplicationConfiguration, ConnectorType, UserInterfaceType} from "../../core/model/configuration";
-import {MdDialog, MdSnackBar} from "@angular/material";
-import {ConfirmDialogComponent} from "tock-nlp-admin/src/app/shared/confirm-dialog/confirm-dialog.component";
-import {StateService} from "tock-nlp-admin/src/app/core/state.service";
+import {MatDialog, MatSnackBar} from "@angular/material";
+import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
+import {StateService} from "../../core-nlp/state.service";
 
 @Component({
   selector: 'tock-bot-configurations',
@@ -34,8 +34,8 @@ export class BotConfigurationsComponent implements OnInit {
 
   constructor(private state: StateService,
               private botConfiguration: BotConfigurationService,
-              private snackBar: MdSnackBar,
-              private dialog: MdDialog) {
+              private snackBar: MatSnackBar,
+              private dialog: MatDialog) {
   }
 
   ngOnInit() {

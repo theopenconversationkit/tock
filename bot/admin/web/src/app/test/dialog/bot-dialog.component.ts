@@ -16,11 +16,11 @@
 
 import {Component, Inject, OnDestroy, OnInit} from "@angular/core";
 import {TestService} from "../test.service";
-import {StateService} from "tock-nlp-admin/src/app/core/state.service";
-import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
+import {StateService} from "../../core-nlp/state.service";
+import {RestService} from "../../core-nlp/rest/rest.service";
 import {BotDialogRequest, TestMessage} from "../model/test";
 import {BotMessage, Sentence} from "../../shared/model/dialog-data";
-import {MD_DIALOG_DATA, MdDialog, MdDialogRef, MdSnackBar} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatSnackBar} from "@angular/material";
 import {BotSharedService} from "../../shared/bot-shared.service";
 
 @Component({
@@ -43,8 +43,8 @@ export class BotDialogComponent implements OnInit, OnDestroy {
               private test: TestService,
               private rest: RestService,
               private shared:BotSharedService,
-              private snackBar: MdSnackBar,
-              private dialog: MdDialog) {
+              private snackBar: MatSnackBar,
+              private dialog: MatDialog) {
   }
 
   ngOnInit() {
@@ -126,21 +126,21 @@ export class BotDialogComponent implements OnInit, OnDestroy {
 
 @Component({
   selector: 'tock-display-nlp-stats',
-  template: `<h1 md-dialog-title>Nlp Stats</h1>
-  <div md-dialog-content>
+  template: `<h1 mat-dialog-title>Nlp Stats</h1>
+  <div mat-dialog-content>
     Request:
     <pre>{{data.request}}</pre>
     Response:
     <pre>{{data.response}}</pre>
   </div>
-  <div md-dialog-actions>
-    <button md-raised-button md-dialog-close color="primary">Close</button>
+  <div mat-dialog-actions>
+    <button mat-raised-button mat-dialog-close color="primary">Close</button>
   </div>`
 })
 export class DisplayNlpStatsComponent {
 
-  constructor(public dialogRef: MdDialogRef<DisplayNlpStatsComponent>,
-              @Inject(MD_DIALOG_DATA) public data: any) {
+  constructor(public dialogRef: MatDialogRef<DisplayNlpStatsComponent>,
+              @Inject(MAT_DIALOG_DATA) public data: any) {
 
   }
 

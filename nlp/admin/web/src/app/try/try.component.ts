@@ -17,7 +17,7 @@
 import {Component, OnDestroy, OnInit} from "@angular/core";
 import {ParseQuery, Sentence} from "../model/nlp";
 import {NlpService} from "../nlp-tabs/nlp.service";
-import {StateService} from "../core/state.service";
+import {StateService} from "../core-nlp/state.service";
 import {MatSnackBar} from "@angular/material";
 
 @Component({

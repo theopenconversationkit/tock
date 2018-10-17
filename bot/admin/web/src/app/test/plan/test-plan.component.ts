@@ -17,9 +17,9 @@
 import {Component, OnInit} from "@angular/core";
 import {TestPlan, XRayPlanExecutionConfiguration} from "../model/test";
 import {TestService} from "../test.service";
-import {StateService} from "tock-nlp-admin/src/app/core/state.service";
-import {MdSnackBar} from "@angular/material";
-import {BotConfigurationService} from "app/core/bot-configuration.service";
+import {StateService} from "../../core-nlp/state.service";
+import {MatSnackBar} from "@angular/material";
+import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {DialogReport} from "../../shared/model/dialog-data";
 
 @Component({
@@ -43,7 +43,7 @@ export class TestPlanComponent implements OnInit {
 
   constructor(private state: StateService,
               private test: TestService,
-              private snackBar: MdSnackBar,
+              private snackBar: MatSnackBar,
               public botConfiguration: BotConfigurationService) {
   }
 

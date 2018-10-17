@@ -1,7 +1,7 @@
 import {BrowserModule} from "@angular/platform-browser";
 import {NgModule} from "@angular/core";
-import {CoreModule} from "tock-nlp-admin/src/app/core/core.module";
-import {SharedModule} from "tock-nlp-admin/src/app/shared/shared.module";
+import {CoreModule} from "./core-nlp/core.module";
+import {SharedModule} from "./shared-nlp/shared.module";
 import {RouterModule, Routes} from "@angular/router";
 import {BotAdminAppComponent} from "./bot-admin-app.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
@@ -11,27 +11,27 @@ const routes: Routes = [
   {path: '', redirectTo: '/nlp/inbox', pathMatch: 'full'},
   {
     path: 'nlp',
-    loadChildren: 'app/nlp/nlp.module#BotNlpModule'
+    loadChildren: './nlp/nlp.module#BotNlpModule'
   },
   {
     path: 'quality',
-    loadChildren: 'app/quality/quality.module#BotQualityModule'
+    loadChildren: './quality/quality.module#BotQualityModule'
   },
   {
     path: 'configuration',
-    loadChildren: 'app/configuration/configuration.module#BotConfigurationModule'
+    loadChildren: './configuration/configuration.module#BotConfigurationModule'
   },
   {
     path: 'build',
-    loadChildren: 'app/bot/bot.module#BotModule'
+    loadChildren: './bot/bot.module#BotModule'
   },
   {
     path: 'test',
-    loadChildren: 'app/test/test.module#BotTestModule'
+    loadChildren: './test/test.module#BotTestModule'
   },
   {
     path: 'monitoring',
-    loadChildren: 'app/monitoring/monitoring.module#BotMonitoringModule'
+    loadChildren: './monitoring/monitoring.module#BotMonitoringModule'
   },
   { path: '**', redirectTo: '/nlp/inbox' }
 ];

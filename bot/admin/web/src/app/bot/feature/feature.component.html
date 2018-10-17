@@ -14,28 +14,28 @@
   ~ limitations under the License.
   -->
 
-<md-card>
-  <md-card-title>
+<mat-card>
+  <mat-card-title>
     Features
-    <button md-button (click)="refresh()" md-tooltip="Refresh">
-      <md-icon>refresh</md-icon>
+    <button mat-button (click)="refresh()" matTooltip="Refresh">
+      <mat-icon>refresh</mat-icon>
     </button>
-  </md-card-title>
-  <md-card-subtitle *ngIf="!create">
-    <button md-button (click)="prepareCreate()" color="primary">
-      <md-icon>add_box</md-icon>
+  </mat-card-title>
+  <mat-card-subtitle *ngIf="!create">
+    <button mat-button (click)="prepareCreate()" color="primary">
+      <mat-icon>add_box</mat-icon>
       Add a new Feature
     </button>
-  </md-card-subtitle>
-  <md-card-content>
+  </mat-card-subtitle>
+  <mat-card-content>
     <div *ngIf="create">
-      <md-input-container>
-        <input mdInput placeholder="Category" [(ngModel)]="feature.category">
-      </md-input-container>
-      <md-input-container>
-        <input mdInput placeholder="Name" [(ngModel)]="feature.name">
-      </md-input-container>
-      <md-slide-toggle color="primary" [checked]="feature.enabled" (change)="toggleNew()">Status</md-slide-toggle>
+      <mat-form-field>
+        <input matInput placeholder="Category" [(ngModel)]="feature.category">
+      </mat-form-field>
+      <mat-form-field>
+        <input matInput placeholder="Name" [(ngModel)]="feature.name">
+      </mat-form-field>
+      <mat-slide-toggle color="primary" [checked]="feature.enabled" (change)="toggleNew()">Status</mat-slide-toggle>
     </div>
 
     <div *ngIf="!create">
@@ -43,19 +43,19 @@
         <span class="category">{{f.category}}</span>
         <span class="name">{{f.name}}</span>
         <span class="toggle">
-          <md-slide-toggle color="primary" [checked]="f.enabled" (change)="toggle(f)">Status</md-slide-toggle>
+          <mat-slide-toggle color="primary" [checked]="f.enabled" (change)="toggle(f)">Status</mat-slide-toggle>
         </span>
         <span>
-          <button md-button (click)="deleteFeature(f)" md-tooltip="Delete"
+          <button mat-button (click)="deleteFeature(f)" matTooltip="Delete"
                   color="warn">
-            <md-icon>delete_forever</md-icon>
+            <mat-icon>delete_forever</mat-icon>
           </button>
         </span>
       </div>
     </div>
-  </md-card-content>
-  <md-card-actions *ngIf="create">
-    <button md-button color="warn" (click)="cancelCreate()">Cancel</button>
-    <button md-raised-button color="primary" (click)="addFeature()">Add</button>
-  </md-card-actions>
-</md-card>
+  </mat-card-content>
+  <mat-card-actions *ngIf="create">
+    <button mat-button color="warn" (click)="cancelCreate()">Cancel</button>
+    <button mat-raised-button color="primary" (click)="addFeature()">Add</button>
+  </mat-card-actions>
+</mat-card>

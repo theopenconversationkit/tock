@@ -17,9 +17,9 @@
 import {Component, Input, OnInit} from "@angular/core";
 import {MatDialog, MatSnackBar} from "@angular/material";
 import {ActivatedRoute, Router} from "@angular/router";
-import {StateService} from "../../core/state.service";
+import {StateService} from "../../core-nlp/state.service";
 import {Application} from "../../model/application";
-import {ApplicationService} from "../../core/applications.service";
+import {ApplicationService} from "../../core-nlp/applications.service";
 import {saveAs} from "file-saver";
 import {ApplicationScopedQuery} from "../../model/commons";
 

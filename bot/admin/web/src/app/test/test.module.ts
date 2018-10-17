@@ -16,10 +16,10 @@
 
 import {RouterModule, Routes} from "@angular/router";
 import {NgModule} from "@angular/core";
-import {SharedModule} from "tock-nlp-admin/src/app/shared/shared.module";
-import {AuthGuard} from "tock-nlp-admin/src/app/core/auth/auth.guard";
+import {SharedModule} from "../shared-nlp/shared.module";
+import {AuthGuard} from "../core-nlp/auth/auth.guard";
 import {TestTabsComponent} from "./test-tabs.component";
-import {ApplicationResolver} from "tock-nlp-admin/src/app/core/application.resolver";
+import {ApplicationResolver} from "../core-nlp/application.resolver";
 import {BotDialogComponent, DisplayNlpStatsComponent} from "./dialog/bot-dialog.component";
 import {CommonModule} from "@angular/common";
 import {TestService} from "./test.service";

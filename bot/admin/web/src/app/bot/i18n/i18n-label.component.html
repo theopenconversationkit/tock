@@ -16,14 +16,14 @@
 
 <div class="i18n-label" *ngIf="i.i18n.length !== 0">
   <div class="i18n-label__title">
-    <span class="i18n-label__title__label" md-tooltip="key:{{i._id}}">{{i.defaultLocalizedLabel().label.length === 0 ? i._id : i.defaultLocalizedLabel().label}}</span>
+    <span class="i18n-label__title__label" matTooltip="key:{{i._id}}">{{i.defaultLocalizedLabel().label.length === 0 ? i._id : i.defaultLocalizedLabel().label}}</span>
 
     <span class="i18n-label__title__intent">{{intent}}</span>
 
-    <span *ngIf="i.defaultLocalizedLabel().label !== i.defaultLabel" class="i18n-label__title__original_label" md-tooltip="Original Label">{{i.defaultLabel}}</span>
+    <span *ngIf="i.defaultLocalizedLabel().label !== i.defaultLabel" class="i18n-label__title__original_label" matTooltip="Original Label">{{i.defaultLabel}}</span>
 
-    <button class="i18n-label__title__delete" *ngIf="deleteAllowed" md-button (click)="deleteLabel(i)"
-            md-tooltip="Delete Label" color="warn">
+    <button class="i18n-label__title__delete" *ngIf="deleteAllowed" mat-button (click)="deleteLabel(i)"
+            matTooltip="Delete Label" color="warn">
       delete
     </button>
 
@@ -38,41 +38,41 @@
     <div class="i18n-label__entry__locale" title="{{l.displayStats()}}">{{l.locale}}</div>
 
     <div class="i18n-label__entry__mode">
-      <md-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 0" md-list-avatar>chat</md-icon>
-      <md-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 1" md-list-avatar>record_voice_over
-      </md-icon>
+      <mat-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 0" mat-list-avatar>chat</mat-icon>
+      <mat-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 1" mat-list-avatar>record_voice_over
+      </mat-icon>
     </div>
 
     <div class="i18n-label__entry__connector" *ngIf="l.connectorId">
       <img *ngIf="l.connectorId"
            src="{{l.iconUrl()}}"
            class="i18n-label__entry__connector__img"
-           [md-tooltip]="l.connectorId"/>
+           [matTooltip]="l.connectorId"/>
     </div>
 
     <div class="i18n-label__entry__input">
       <textarea class="i18n-label__entry__input__textarea"
-                mdInput
+                matInput
                 [(ngModel)]="l.label"
                 (change)="save(i)"
                 [title]="l.stats && l.stats.length !== 0 ? ('used '+ l.mergedStats().count +' times, last used ' + (l.mergedStats().lastUpdate | amTimeAgo)) : 'No stats'"></textarea>
     </div>
 
     <div class="i18n-label__entry__alternative-management">
-      <button class="i18n-label__entry__alternatives__button" md-button (click)="addNewAlternative(l)">
-        <md-icon>add</md-icon>
+      <button class="i18n-label__entry__alternatives__button" mat-button (click)="addNewAlternative(l)">
+        <mat-icon>add</mat-icon>
         Add an alternative
       </button>
     </div>
 
     <div class="i18n-label__entry__validation">
-      <md-checkbox [(ngModel)]="l.validated" (change)="save(i)"></md-checkbox>
+      <mat-checkbox [(ngModel)]="l.validated" (change)="save(i)"></mat-checkbox>
     </div>
 
     <div class="i18n-label__entry__delete">
-      <button *ngIf="deleteAllowed" md-button (click)="removeLocalizedLabel(i, l)" md-tooltip="Delete Label"
+      <button *ngIf="deleteAllowed" mat-button (click)="removeLocalizedLabel(i, l)" matTooltip="Delete Label"
               color="warn">
-        <md-icon>delete_forever</md-icon>
+        <mat-icon>delete_forever</mat-icon>
       </button>
     </div>
 
@@ -80,21 +80,21 @@
       <div class="i18n-label__entry__locale">{{l.locale}}</div>
 
       <div class="i18n-label__entry__mode">
-        <md-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 0" md-list-avatar>chat</md-icon>
-        <md-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 1" md-list-avatar>record_voice_over
-        </md-icon>
+        <mat-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 0" mat-list-avatar>chat</mat-icon>
+        <mat-icon class="i18n-label__entry__mode__icon" *ngIf="l.interfaceType === 1" mat-list-avatar>record_voice_over
+        </mat-icon>
       </div>
 
       <div class="i18n-label__entry__connector" *ngIf="l.connectorId">
         <img *ngIf="l.connectorId"
              src="{{l.iconUrl()}}"
              class="i18n-label__entry__connector__img"
-             [md-tooltip]="l.connectorId"/>
+             [matTooltip]="l.connectorId"/>
       </div>
 
       <div class="i18n-label__entry__input">
         <textarea class="i18n-label__entry__input__textarea"
-                  mdInput
+                  matInput
                   [value]="a"
                   (change)="addAlternative(i, l, index, $event.target.value)"
                   cols="90"
@@ -102,8 +102,8 @@
       </div>
 
       <div class="i18n-label__entry__alternative-management">
-        <button class="i18n-label__entry__alternatives__button" md-button (click)="removeAlternative(i, l, index)">
-          <md-icon>remove</md-icon>
+        <button class="i18n-label__entry__alternatives__button" mat-button (click)="removeAlternative(i, l, index)">
+          <mat-icon>remove</mat-icon>
           Remove alternative
         </button>
       </div>
@@ -112,13 +112,13 @@
     <div class="i18n-label__entry__connectors"
          *ngIf="isLast || i.i18n[index + 1].interfaceType !== l.interfaceType || i.i18n[index + 1].locale !== l.locale">
       <span *ngFor="let connector of connectorTypes">
-          <button *ngIf="!i.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.connectorType.id)" md-icon-button
-                  (click)="addLocalizedLabelForConnector(i, l, connector.connectorType.id)" md-tooltip="Clear localized label"
+          <button *ngIf="!i.hasLocaleAndInterfaceAndConnector(l.locale, l.interfaceType, connector.connectorType.id)" mat-icon-button
+                  (click)="addLocalizedLabelForConnector(i, l, connector.connectorType.id)" matTooltip="Clear localized label"
                   color="warn">
             <img
               src="{{connector.connectorType.iconUrl()}}"
               class="connector"
-              md-tooltip="Add specific label for connector {{connector.connectorType.id}}"/>
+              matTooltip="Add specific label for connector {{connector.connectorType.id}}"/>
 
           </button>
       </span>

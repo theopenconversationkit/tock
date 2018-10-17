@@ -18,19 +18,20 @@
   <h3>No bot configuration detected.</h3>
 </div>
 <div *ngIf="configurations && configurations.length !== 0">
-  <md-select (change)="changeBotName($event.value)"
-             placeholder="Select a configuration"
-             [ngModel]="currentBotName"
-             class="select-configuration">
-    <md-option *ngIf="allowNoSelection" value="None">No configuration</md-option>
-    <md-option *ngFor="let n of botNames" [value]="n">{{ n }}</md-option>
-  </md-select>
-  <md-select *ngIf="displayConnectorChoice && currentBotName !== 'None'"
-             (change)="changeConnectorType($event.value)"
-             placeholder="Select a connector"
-             [ngModel]="currentConnectorType"
-             class="select-configuration">
-    <md-option *ngFor="let c of connectorTypes" [value]="c">{{ c.id }}</md-option>
-  </md-select>
+  <mat-form-field class="select-configuration">
+    <mat-select (selectionChange)="changeBotName($event.value)"
+                placeholder="Select a configuration"
+                [ngModel]="currentBotName">
+      <mat-option *ngIf="allowNoSelection" value="None">No configuration</mat-option>
+      <mat-option *ngFor="let n of botNames" [value]="n">{{ n }}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-form-field *ngIf="displayConnectorChoice && currentBotName !== 'None'" class="select-configuration">
+    <mat-select (selectionChange)="changeConnectorType($event.value)"
+                placeholder="Select a connector"
+                [ngModel]="currentConnectorType">
+      <mat-option *ngFor="let c of connectorTypes" [value]="c">{{ c.id }}</mat-option>
+    </mat-select>
+  </mat-form-field>
   <ng-content></ng-content>
 </div>

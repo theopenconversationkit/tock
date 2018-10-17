@@ -14,62 +14,65 @@
   ~ limitations under the License.
   -->
 
-<md-card class="sentence">
-  <md-card-content>
+<mat-card class="sentence">
+  <mat-card-content>
     <tock-select-bot [(configurationId)]="botConfigurationId" [displayConnectorChoice]="false">
       <br>
-      <md-form-field [ngClass]="{'sentence-input' : !intentMode, 'sentence-input-hidden': intentMode}" #newSentenceContainer>
-        <input mdInput
+      <mat-form-field [ngClass]="{'sentence-input' : !intentMode, 'sentence-input-hidden': intentMode}"
+                      #newSentenceContainer>
+        <input matInput
                [(ngModel)]="text"
                placeholder="Enter a sentence sample"
                #newSentence
                (keyup.enter)="onSentence(newSentence.value)">
-      </md-form-field>
-      <button [ngClass]="{'sentence-input-hidden': intentMode || sentenceMode}" color="primary" md-button (click)="onSentence(newSentence.value)">Add</button>
+      </mat-form-field>
+      <button [ngClass]="{'sentence-input-hidden': intentMode || sentenceMode}" color="primary" mat-button
+              (click)="onSentence(newSentence.value)">Add
+      </button>
       <br>
-      <md-select *ngIf="!sentenceMode"
-                 class="select-intent"
-                 placeholder="Or select an existing intent"
-                 [ngModel]="intentId"
-                 (change)="onIntentChange($event.value)">
-        <md-option [value]="">None</md-option>
-        <md-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
-          {{intent.name}}
-        </md-option>
-      </md-select>
+      <mat-form-field *ngIf="!sentenceMode" class="select-intent">
+        <mat-select placeholder="Or select an existing intent"
+                    [ngModel]="intentId"
+                    (selectionChange)="onIntentChange($event.value)">
+          <mat-option [value]="">None</mat-option>
+          <mat-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
+            {{intent.name}}
+          </mat-option>
+        </mat-select>
+      </mat-form-field>
       <div *ngIf="sentenceMode || intentMode" class="separator"></div>
       <div *ngIf="sentenceMode || intentMode">
-       <md-radio-group id="types" [(ngModel)]="configType">
-        <md-radio-button *ngFor="let type of supportedConfigTypes" [value]="type" class="answer-type">
-          {{getTypeLabel(type)}}
-        </md-radio-button>
-        </md-radio-group>
-      <br><br>
+        <mat-radio-group id="types" [(ngModel)]="configType">
+          <mat-radio-button *ngFor="let type of supportedConfigTypes" [value]="type" class="answer-type">
+            {{getTypeLabel(type)}}
+          </mat-radio-button>
+        </mat-radio-group>
+        <br><br>
 
-      <div *ngIf="isSimpleAnswer()">
-      <md-form-field class="sentence-input" #newReplyContainer>
-        <input mdInput [(ngModel)]="reply" placeholder="And add a reply" #newReply (keyup.enter)="onReply()">
-      </md-form-field>
-      <button (click)="onReply()" md-raised-button color="primary">Reply</button>
-      <button (click)="resetState()" md-button>Cancel</button>
+        <div *ngIf="isSimpleAnswer()">
+          <mat-form-field class="sentence-input" #newReplyContainer>
+            <input matInput [(ngModel)]="reply" placeholder="And add a reply" #newReply (keyup.enter)="onReply()">
+          </mat-form-field>
+          <button (click)="onReply()" mat-raised-button color="primary">Reply</button>
+          <button (click)="resetState()" mat-button>Cancel</button>
+        </div>
+
+        <div *ngIf="isScriptAnswer()">
+          <mat-form-field class="input text-area-container">
+            <textarea matInput [(ngModel)]="script" cols="200" rows="20" class="text-area"></textarea>
+          </mat-form-field>
+          <br>
+          <button (click)="onReply()" mat-raised-button color="primary">Register the script</button>
+        </div>
+
+        <br>
+        <mat-form-field *ngIf="sentenceMode" class="sentence-intent" #intentContainer>
+          <input matInput [(ngModel)]="intent" placeholder="Set the intent name" #newIntent (keyup.enter)="onReply()">
+        </mat-form-field>
       </div>
-
-      <div *ngIf="isScriptAnswer()">
-      <md-input-container class="input text-area-container">
-        <textarea mdInput [(ngModel)]="script" cols="200" rows="20" class="text-area"></textarea>
-      </md-input-container>
-      <br>
-      <button (click)="onReply()" md-raised-button color="primary">Register the script</button>
-      </div>
-
-      <br>
-      <md-form-field *ngIf="sentenceMode" class="sentence-intent" #intentContainer>
-        <input mdInput [(ngModel)]="intent" placeholder="Set the intent name" #newIntent (keyup.enter)="onReply()">
-      </md-form-field>
-    </div>
     </tock-select-bot>
-  </md-card-content>
-</md-card>
+  </mat-card-content>
+</mat-card>
 <br>
 <span *ngIf="sentenceMode" class="current-analysis">
   <br><br>

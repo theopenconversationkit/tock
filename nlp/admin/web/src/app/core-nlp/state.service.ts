@@ -33,6 +33,7 @@ import {
 } from "../model/nlp";
 import {BehaviorSubject} from "rxjs/BehaviorSubject";
 import {Observable} from "rxjs/Observable";
+import "rxjs-compat/add/operator/map";
 
 @Injectable()
 export class StateService implements AuthListener {
@@ -194,8 +195,8 @@ export class StateService implements AuthListener {
 
   createApplicationScopedQuery(): ApplicationScopedQuery {
     return new ApplicationScopedQuery(
-      this.currentApplication.namespace,
-      this.currentApplication.name,
+      this.currentApplication ? this.currentApplication.namespace : "",
+      this.currentApplication ? this.currentApplication.name : "",
       this.currentLocale
     )
   }

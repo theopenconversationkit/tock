@@ -15,12 +15,13 @@
  */
 
 import {Component, OnInit} from "@angular/core";
-import {StateService} from "../core/state.service";
+import {StateService} from "../core-nlp/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {MatDialog, MatDialogConfig, MatSnackBar, MatSnackBarConfig} from "@angular/material";
-import {ApplicationService} from "../core/applications.service";
+import {ApplicationService} from "../core-nlp/applications.service";
 import {EntityDefinition, EntityType, PredefinedValue} from "../model/nlp";
-import {ConfirmDialogComponent} from "../shared/confirm-dialog/confirm-dialog.component";
+import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
+import "rxjs-compat/add/operator/map";
 
 @Component({
   selector: 'tock-entities',

@@ -13,16 +13,16 @@
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
   -->
-<md-card>
-  <md-card-title>
+<mat-card>
+  <mat-card-title>
     Test the application {{state.currentApplication.name}}
-  </md-card-title>
-  <md-card-content>
+  </mat-card-title>
+  <mat-card-content>
     <br>
     <div>
       <tock-select-bot [(configurationId)]="currentConfigurationId"
                        (configurationIdChange)="changeConfiguration($event)">
-        <button *ngIf="messages.length !== 0" md-icon-button md-tooltip="Clear conversation" (click)="clear()" color="primary"><md-icon>remove_from_queue</md-icon></button>
+        <button *ngIf="messages.length !== 0" mat-icon-button matTooltip="Clear conversation" (click)="clear()" color="primary"><mat-icon>remove_from_queue</mat-icon></button>
         <br><br><br>
         <table *ngIf="messages.length !== 0">
           <tr *ngFor="let m of messages">
@@ -32,7 +32,7 @@
             <td *ngIf="!m.bot" style="min-width: 200px">
               <span *ngIf="m.locale" class="stats">
                 [{{m.locale}}]
-                <button *ngIf="m.hasNlpStats" md-icon-button (click)="displayNlpStats(m)" md-tooltip="View Nlp Stats" color="primary"><md-icon>visibility</md-icon></button>
+                <button *ngIf="m.hasNlpStats" mat-icon-button (click)="displayNlpStats(m)" matTooltip="View Nlp Stats" color="primary"><mat-icon>visibility</mat-icon></button>
               </span>
               <tock-bot-message [message]="m.message" (user)="true"></tock-bot-message>
             </td>
@@ -47,14 +47,14 @@
             </td>
           </tr>
         </table>
-        <md-input-container class="input-text">
-          <input mdInput
+        <mat-form-field class="input-text">
+          <input matInput
                  placeholder="Type some text"
                  [(ngModel)]="userMessage"
                  (keyup.enter)="submit()">
-        </md-input-container>
-        <button md-button (click)="submit()">GO</button>
+        </mat-form-field>
+        <button mat-button (click)="submit()">GO</button>
       </tock-select-bot>
     </div>
-  </md-card-content>
-</md-card>
+  </mat-card-content>
+</mat-card>

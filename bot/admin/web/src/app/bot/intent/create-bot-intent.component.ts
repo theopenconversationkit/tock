@@ -15,11 +15,11 @@
  */
 
 import {Component, ElementRef, OnInit, ViewChild} from "@angular/core";
-import {MdSnackBar} from "@angular/material";
-import {NlpService} from "tock-nlp-admin/src/app/nlp-tabs/nlp.service";
-import {StateService} from "tock-nlp-admin/src/app/core/state.service";
-import {NormalizeUtil} from "tock-nlp-admin/src/app/model/commons";
-import {ParseQuery, Sentence} from "tock-nlp-admin/src/app/model/nlp";
+import {MatSnackBar} from "@angular/material";
+import {NlpService} from "../../nlp-tabs/nlp.service";
+import {StateService} from "../../core-nlp/state.service";
+import {NormalizeUtil} from "../../model/commons";
+import {ParseQuery, Sentence} from "../../model/nlp";
 import {BotService} from "../bot-service";
 import {AnswerConfigurationType, CreateBotIntentRequest} from "../model/bot-intent";
 import {ActivatedRoute} from "@angular/router";
@@ -52,7 +52,7 @@ export class CreateBotIntentComponent implements OnInit {
   constructor(private nlp: NlpService,
               private state: StateService,
               private bot: BotService,
-              private snackBar: MdSnackBar,
+              private snackBar: MatSnackBar,
               private route: ActivatedRoute) {
   }
 

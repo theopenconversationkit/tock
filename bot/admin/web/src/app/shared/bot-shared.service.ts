@@ -15,11 +15,12 @@
  */
 
 import {Injectable, OnDestroy} from "@angular/core";
-import {RestService} from "tock-nlp-admin/src/app/core/rest/rest.service";
-import {StateService} from "tock-nlp-admin/src/app/core/state.service";
+import {RestService} from "../core-nlp/rest/rest.service";
+import {StateService} from "../core-nlp/state.service";
 import {Observable} from "rxjs/Observable";
 import {ConnectorType, ConnectorTypeConfiguration} from "../core/model/configuration";
 import {NlpCallStats} from "./model/dialog-data";
+import {of} from "rxjs";
 
 @Injectable()
 export class BotSharedService implements OnDestroy {
@@ -35,7 +36,7 @@ export class BotSharedService implements OnDestroy {
 
   getConnectorTypes(): Observable<ConnectorTypeConfiguration[]> {
     if (this.connectorTypes) {
-      return Observable.of(this.connectorTypes)
+      return of(this.connectorTypes)
     } else {
       return this.rest
         .get(`/connectorTypes`, ConnectorTypeConfiguration.fromJSONArray)

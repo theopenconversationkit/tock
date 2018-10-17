@@ -15,9 +15,9 @@
  */
 
 import {Component, OnDestroy, OnInit} from "@angular/core";
-import {AuthService} from "./core/auth/auth.service";
-import {StateService} from "./core/state.service";
-import {RestService} from "./core/rest/rest.service";
+import {AuthService} from "./core-nlp/auth/auth.service";
+import {StateService} from "./core-nlp/state.service";
+import {RestService} from "./core-nlp/rest/rest.service";
 import {MatIconRegistry, MatSnackBar} from "@angular/material";
 import {UserRole} from "./model/auth";
 import {DomSanitizer} from "@angular/platform-browser";

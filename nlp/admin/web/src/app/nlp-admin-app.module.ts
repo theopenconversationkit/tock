@@ -16,10 +16,10 @@
 
 import {NgModule} from "@angular/core";
 import {NlpAdminAppComponent} from "./nlp-admin-app.component";
-import {SharedModule} from "./shared/shared.module";
+import {SharedModule} from "./shared-nlp/shared.module";
 import {RouterModule, Routes} from "@angular/router";
 import {BrowserModule} from "@angular/platform-browser";
-import {CoreModule} from "./core/core.module";
+import {CoreModule} from "./core-nlp/core.module";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 
 const routes: Routes = [
@@ -34,7 +34,7 @@ const routes: Routes = [
   },
   {
     path: 'quality',
-    loadChildren: './quality/quality.module#QualityModule'
+    loadChildren: './quality-nlp/quality.module#QualityModule'
   },
   { path: '**', redirectTo: '/nlp/inbox' }
 ];

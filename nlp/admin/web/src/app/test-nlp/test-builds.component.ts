@@ -15,9 +15,9 @@
  */
 
 import {Component, OnInit} from "@angular/core";
-import {StateService} from "../core/state.service";
+import {StateService} from "../core-nlp/state.service";
 import * as moment from 'moment';
-import {QualityService} from "../quality/quality.service";
+import {QualityService} from "../quality-nlp/quality.service";
 
 let maxDurationUnit: string = "ms";
 

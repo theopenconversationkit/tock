@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-import {ApplicationsModule} from "tock-nlp-admin/src/app/applications/applications.module";
+import {ApplicationsModule} from "../applications/applications.module";
 import {NgModule} from "@angular/core";
-import {SharedModule} from "tock-nlp-admin/src/app/shared/shared.module";
+import {SharedModule} from "../shared-nlp/shared.module";
 import {RouterModule, Routes} from "@angular/router";
-import {ApplicationsComponent} from "tock-nlp-admin/src/app/applications/applications/applications.component";
-import {ApplicationComponent} from "tock-nlp-admin/src/app/applications/application/application.component";
-import {AuthGuard} from "tock-nlp-admin/src/app/core/auth/auth.guard";
+import {ApplicationsComponent} from "../applications/applications/applications.component";
+import {ApplicationComponent} from "../applications/application/application.component";
+import {AuthGuard} from "../core-nlp/auth/auth.guard";
 import {BotConfigurationsComponent} from "./bot/bot-configurations.component";
 import {ConfigurationTabsComponent} from "./configuration-tabs.component";
-import {ApplicationsResolver} from "tock-nlp-admin/src/app/applications/applications.resolver";
+import {ApplicationsResolver} from "../applications/applications.resolver";
 import {CommonModule} from "@angular/common";
 import {BotSharedModule} from "../shared/bot-shared.module";
 import {BotConfigurationComponent} from "./bot/bot-configuration.component";

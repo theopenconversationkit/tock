@@ -58,7 +58,7 @@
         </mat-select>
         </mat-form-field>
         <mat-form-field class="search-criterion">
-          <input matInput [matDatepicker]="after" placeholder="Modified after" [(ngModel)]="filter.modifiedAfter" (selectionChange)="search()">
+          <input matInput [matDatepicker]="after" placeholder="Modified after" [(ngModel)]="filter.modifiedAfter" (dateChange)="search()">
           <mat-datepicker-toggle matSuffix [for]="after"></mat-datepicker-toggle>
           <mat-datepicker #after (selectedChanged)="search()"></mat-datepicker>
         </mat-form-field>

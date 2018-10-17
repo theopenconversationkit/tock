@@ -15,8 +15,8 @@
  */
 
 import {Component, OnInit} from "@angular/core";
-import {QualityService} from "../quality/quality.service";
-import {StateService} from "../core/state.service";
+import {QualityService} from "../quality-nlp/quality.service";
+import {StateService} from "../core-nlp/state.service";
 import {LogStatsQuery} from "../model/nlp";
 
 @Component({
