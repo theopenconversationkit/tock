@@ -38,7 +38,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   UserRole = UserRole;
 
   @Input() filter: SentenceFilter;
-  @Input() displayArchiveButton: boolean = true;
+  @Input() displayUnknownButton: boolean = true;
   @Input() displayProbabilities: boolean = false;
   @Input() displayStatus: boolean = false;
   @Output() selectedSentences: EventEmitter<Sentence[]> = new EventEmitter<Sentence[]>();

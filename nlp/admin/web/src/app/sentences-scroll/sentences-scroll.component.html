@@ -73,7 +73,7 @@
     <div *ngFor="let d of data">
       <tock-sentence-analysis [sentence]="d"
                               (closed)="onClose($event)"
-                              [displayArchiveButton]="displayArchiveButton"
+                              [displayUnknownButton]="displayUnknownButton"
                               [displayProbabilities]="displayProbabilities"
                               [displayStatus]="displayStatus"></tock-sentence-analysis>
     </div>

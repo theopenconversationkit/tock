@@ -65,7 +65,7 @@ const routes: Routes = [
         component: InboxComponent
       },
       {
-        path: 'archive',
+        path: 'unknown',
         component: ArchiveComponent
       },
       {

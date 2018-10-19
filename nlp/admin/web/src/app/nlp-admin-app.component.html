@@ -18,7 +18,7 @@
   <mat-sidenav #sidenav mode="side" class="tock-sidenav">
     <mat-nav-list>
       <mat-list-item (click)="sidenav.close()">
-        <mat-icon aria-hidden="true" mdListIcon svgIcon="logo"></mat-icon>
+        <mat-icon aria-hidden="true" matListIcon svgIcon="logo"></mat-icon>
         <h3>Tock</h3>
       </mat-list-item>
       <a *ngIf="state.hasRole(UserRole.admin)" mat-list-item routerLink="/applications">Applications</a>

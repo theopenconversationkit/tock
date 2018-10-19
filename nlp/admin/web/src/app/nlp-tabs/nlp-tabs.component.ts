@@ -25,7 +25,7 @@ class TabLink {
 const tabs = [
   new TabLink("try", "Try it"),
   new TabLink("inbox", "Inbox"),
-  new TabLink("archive", "Archive"),
+  new TabLink("unknown", "Unknown"),
   new TabLink("search", "Search"),
   new TabLink("intents", "Intents"),
   new TabLink("entities", "Entities"),

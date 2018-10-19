@@ -32,7 +32,7 @@ import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialo
 export class SentenceAnalysisComponent implements OnInit {
 
   @Input() @Output() sentence: Sentence;
-  @Input() displayArchiveButton: boolean = true;
+  @Input() displayUnknownButton: boolean = true;
   @Input() displayProbabilities: boolean = false;
   @Input() displayStatus: boolean = false;
   @Output() closed = new EventEmitter();
@@ -96,13 +96,13 @@ export class SentenceAnalysisComponent implements OnInit {
     if (!intent) {
       this.snackBar.open(`Please select an intent first`, "Error", {duration: 3000});
     } else if (intent === Intent.unknown) {
-      this.onArchive();
+      this.onUnknown();
     } else {
       this.update(SentenceStatus.validated);
     }
   }
 
-  onArchive() {
+  onUnknown() {
     this.sentence.classification.intentId = Intent.unknown;
     this.sentence.classification.entities = [];
     this.update(SentenceStatus.validated);

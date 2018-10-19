@@ -90,8 +90,8 @@
   </mat-card-content>
   <mat-card-actions class="sentence-analysis-content">
     <button mat-raised-button color="warn" (click)="onDelete()">Delete</button>
-    <button mat-raised-button color="accent" (click)="onArchive()" *ngIf="displayArchiveButton">Archive</button>
-    <button mat-raised-button color="primary" (click)="onValidate()">Validate</button>
+    <button mat-raised-button color="accent" (click)="onUnknown()" *ngIf="displayUnknownButton" matTooltip="Set as unknown to use later">Unknown</button>
+    <button mat-raised-button class="validate" color="primary" (click)="onValidate()">Validate</button>
     <button mat-button *ngIf="config.displayDialogUrl"
             color="primary"
             (click)="displayDialogs()"
