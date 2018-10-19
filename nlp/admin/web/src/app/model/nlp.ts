@@ -810,7 +810,8 @@ export class LogStatsQuery extends ApplicationScopedQuery {
   constructor(public namespace: string,
               public applicationName: string,
               public language: string,
-              public intent?: string) {
+              public intent?: string,
+              public minOccurrences?: number) {
     super(namespace, applicationName, language)
   }
 }
@@ -967,6 +968,25 @@ export class TestBuildStat {
     return json ? json.map(TestBuildStat.fromJSON) : [];
   }
 
+}
+
+export class IntentQA {
+
+  constructor(public intent1: string,
+              public intent2: string,
+              public occurrences: number,
+              public average: number) {
+  }
+
+  static fromJSON(json?: any): IntentQA {
+    const value = Object.create(IntentQA.prototype);
+    const result = Object.assign(value, json, {});
+    return result;
+  }
+
+  static fromJSONArray(json?: Array<any>): IntentQA[] {
+    return json ? json.map(IntentQA.fromJSON) : [];
+  }
 }
 
 export class UpdateSentencesQuery extends ApplicationScopedQuery {

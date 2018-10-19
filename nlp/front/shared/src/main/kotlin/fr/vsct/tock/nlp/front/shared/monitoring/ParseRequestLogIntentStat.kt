@@ -14,22 +14,14 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.admin.model
-
-import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
-import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogStatQuery
+package fr.vsct.tock.nlp.front.shared.monitoring
 
 /**
  *
  */
-data class LogStatsQuery(val intent: String?, val minOccurrences: Int?) : ApplicationScopedQuery() {
-
-    fun toStatQuery(application: ApplicationDefinition): ParseRequestLogStatQuery {
-        return ParseRequestLogStatQuery(
-            application._id,
-            language,
-            intent,
-            minOccurrences
-        )
-    }
-}
+data class ParseRequestLogIntentStat(
+        val intent1: String,
+        val intent2: String,
+        val occurrences: Long,
+        val average: Double
+)

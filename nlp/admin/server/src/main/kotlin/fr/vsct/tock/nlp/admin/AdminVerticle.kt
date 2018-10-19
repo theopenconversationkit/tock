@@ -358,6 +358,15 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
+        blockingJsonPost("/logs/intent/stats")
+        { context, s: LogStatsQuery ->
+            if (context.organization == s.namespace) {
+                front.intentStats(s.toStatQuery(front.getApplicationByNamespaceAndName(s.namespace, s.applicationName)!!))
+            } else {
+                unauthorized()
+            }
+        }
+
         blockingJsonPost("/intent")
         { context, intent: IntentDefinition ->
             AdminService.createOrUpdateIntent(context.organization, intent) ?: unauthorized()

@@ -32,6 +32,7 @@ import {QualityService} from "./quality.service";
 import {NlpModule} from "../nlp-tabs/nlp.module";
 import {LogStatsComponent} from "../logs/log-stats.component";
 import {ModelBuildsComponent} from "../build/model-builds.component";
+import {IntentQAComponent} from "../intents/quality/intent-qa.component";
 
 const routes: Routes = [
   {
@@ -65,6 +66,10 @@ const routes: Routes = [
       {
         path: 'model-builds',
         component: ModelBuildsComponent
+      },
+      {
+        path: 'intent-quality',
+        component: IntentQAComponent
       }
     ]
   }
@@ -93,7 +98,8 @@ export class QualityRoutingModule {
     TestEntityErrorComponent,
     TestBuildsComponent,
     LogStatsComponent,
-    ModelBuildsComponent
+    ModelBuildsComponent,
+    IntentQAComponent
   ],
   exports: [],
   providers: [

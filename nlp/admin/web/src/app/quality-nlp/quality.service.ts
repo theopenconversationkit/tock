@@ -24,7 +24,8 @@ import {
   LogStat,
   LogStatsQuery,
   TestBuildStat,
-  TestErrorQuery
+  TestErrorQuery,
+  IntentQA
 } from "../model/nlp";
 import {Observable} from "rxjs";
 import {ApplicationScopedQuery} from "../model/commons";
@@ -37,6 +38,10 @@ export class QualityService {
 
   logStats(query: LogStatsQuery): Observable<LogStat[]> {
     return this.rest.post("/logs/stats", query, LogStat.fromJSONArray)
+  }
+
+  intentQA(query: LogStatsQuery): Observable<IntentQA[]> {
+    return this.rest.post(`/logs/intent/stats`, query, IntentQA.fromJSONArray);
   }
 
   searchIntentErrors(query: TestErrorQuery): Observable<IntentTestErrorQueryResult> {
