@@ -25,7 +25,7 @@ import {BotMessageAttachmentComponent} from "./bot-message/bot-message-attachmen
 import {SharedModule} from "../shared-nlp/shared.module";
 import {BotSharedService} from "./bot-shared.service";
 import {DisplayDialogComponent} from "./bot-dialog/display-dialog.component";
-import {MomentModule} from "angular2-moment";
+import {MomentModule} from "ngx-moment";
 import {SelectBotComponent} from "./select-bot/select-bot.component";
 @NgModule({
   imports: [

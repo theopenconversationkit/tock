@@ -21,7 +21,7 @@ import {InfiniteScrollModule} from "ngx-infinite-scroll";
 import {SharedModule} from "../shared-nlp/shared.module";
 import {AuthGuard} from "../core-nlp/auth/auth.guard";
 import {BotSharedModule} from "../shared/bot-shared.module";
-import {MomentModule} from "angular2-moment";
+import {MomentModule} from "ngx-moment";
 import {CreateBotIntentComponent} from "./intent/create-bot-intent.component";
 import {BotService} from "./bot-service";
 import {BotTabsComponent} from "./bot-tabs.component";

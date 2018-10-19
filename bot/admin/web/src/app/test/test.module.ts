@@ -25,7 +25,7 @@ import {CommonModule} from "@angular/common";
 import {TestService} from "./test.service";
 import {BotSharedModule} from "../shared/bot-shared.module";
 import {TestPlanComponent} from "./plan/test-plan.component";
-import {MomentModule} from "angular2-moment";
+import {MomentModule} from "ngx-moment";
 
 const routes: Routes = [
   {

@@ -25,7 +25,7 @@ import {ApplicationResolver} from "../core-nlp/application.resolver";
 import {UserTimelinesComponent} from "./users/user-timelines.component";
 import {MonitoringService} from "./monitoring.service";
 import {BotSharedModule} from "../shared/bot-shared.module";
-import {MomentModule} from "angular2-moment";
+import {MomentModule} from "ngx-moment";
 import {DialogsComponent} from "./dialogs/dialogs.component";
 import {MatDatepickerModule, MatNativeDateModule} from "@angular/material";
 

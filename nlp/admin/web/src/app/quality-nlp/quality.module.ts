@@ -22,7 +22,7 @@ import {AuthGuard} from "../core-nlp/auth/auth.guard";
 import {ApplicationsModule} from "../applications/applications.module";
 import {ApplicationResolver} from "../core-nlp/application.resolver";
 
-import {MomentModule} from "angular2-moment";
+import {MomentModule} from "ngx-moment";
 import {TestIntentErrorComponent} from "../test-nlp/test-intent-error.component";
 import {TestEntityErrorComponent} from "../test-nlp/test-entity-error.component";
 import {ChartsModule} from "ng2-charts";
