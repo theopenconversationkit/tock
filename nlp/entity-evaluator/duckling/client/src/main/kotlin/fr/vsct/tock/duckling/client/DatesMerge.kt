@@ -40,16 +40,17 @@ internal object DatesMerge {
 
     private val logger = KotlinLogging.logger {}
 
+    private val remodeDuplicateSpaceRegexp = "\\s+".toRegex()
     private val frenchAddRegex = ".*prochaine?$|.*suivante?$|.*qui suit$|.*(d')? ?apr[eèé]s$|.*plus tard$|.*derni[èe]re?$|.*pass[ée]e?$|.*pr[eé]c[eé]dente?$|.*(d')? ?avant$|.*plus t[oô]t$|lendemain|le lendemain|la veille|ce jour|(le |la )?m[eê]me jour(n[eé]e)?".toRegex()
-    private val frenchChangeHourRegex = ("(dans )?(le |la |en )?soir[ée]?e?" +
-            "|(dans )?((le|la) )?mat(in[ée]?e?)?" +
-            "|(dans )?(l' ?)?apr[eéè](s?[ \\-]?midi|m)" +
+    private val frenchChangeHourRegex = ("(dans )?(le |la |en |(en )?fin de |(en )?d[ée]but de |(en )?milieu de )?soir[ée]?e?" +
+            "|(dans )?(le |la |en |(en )?fin de |(en )?d[ée]but de |(en )?milieu de )?mat(in[ée]?e?)?" +
+            "|(dans )?(l. ?|(en )?fin d. ?|(en )?d[ée]but d. ?|(en )?milieu d. ?)?apr[eéè](s?[ \\-]?midi|m)" +
             "|([aà]|vers|apr(e|è)s|[aà] partir de|avant|jusqu'[aà])? ?((([01]?\\d)|(2[0-3]))([:h]|heures?)?([0-5]\\d)?)(du|dans l[ae']? ?|au|en|l[ae'] ?|dès l?[ae']? ?|(en )?d[ée]but (de |d' ?)|(en )?fin (de |d' ?)|(en )?d[ée]but (d' ?|de ))?(mat(in[ée]?e?)|soir[ée]?e?|apr[eéè]s?[ \\-]?midi|journ[ée]e)?").toRegex()
 
 
     private val parser: Parser by injector.instance()
 
-    private class MergeGrain(val additional: Boolean, val grain: DateEntityGrain)
+    data class MergeGrain(val additional: Boolean, val grain: DateEntityGrain)
 
     private fun ValueDescriptor.start(): ZonedDateTime = (value as DateEntityRange).start()
     private fun ValueDescriptor.end(): ZonedDateTime = (value as DateEntityRange).end()
@@ -117,10 +118,12 @@ internal object DatesMerge {
         return newValue
     }
 
-    private fun mergeGrain(language: Locale, oldValue: ValueDescriptor, newValue: ValueDescriptor): MergeGrain? {
+    private fun normalize(s:String) : String = s.trim().replace(remodeDuplicateSpaceRegexp, " ").toLowerCase()
+
+    fun mergeGrain(language: Locale, oldValue: ValueDescriptor, newValue: ValueDescriptor): MergeGrain? {
         return if (oldValue.end() < ZonedDateTime.now()) {
             null
-        } else if (language.language == "fr" && frenchChangeHourRegex.matches(newValue.content!!.toLowerCase())) {
+        } else if (language.language == "fr" && frenchChangeHourRegex.matches(normalize(newValue.content!!))) {
             MergeGrain(false, day)
         } else if (oldValue.grain() > newValue.grain()
                 && oldValue.grain().calculateEnd(newValue.start(), defaultZoneId) >= newValue.end()) {
@@ -138,7 +141,7 @@ internal object DatesMerge {
         } else {
             true
         }
-        return if (basicSupport && newValue.content != null && frenchAddRegex.matches(newValue.content!!.toLowerCase())) {
+        return if (basicSupport && newValue.content != null && frenchAddRegex.matches(normalize(newValue.content!!))) {
             MergeGrain(true, newValue.grain())
         } else {
             null

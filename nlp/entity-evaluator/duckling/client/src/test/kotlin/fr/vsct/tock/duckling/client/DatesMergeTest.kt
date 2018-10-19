@@ -72,6 +72,16 @@ internal class DatesMergeTest {
             0.8
         )
 
+        val endAfternoon = ValueDescriptor(
+            DateIntervalEntityValue(
+                DateEntityValue(referenceTime.withHour(17), DateEntityGrain.hour),
+                DateEntityValue(referenceTime.withHour(19), DateEntityGrain.hour)
+            ),
+            "en fin  d'après-midi ",
+            false,
+            2
+        )
+
         val evening = ValueDescriptor(
             DateIntervalEntityValue(
                 DateEntityValue(referenceTime.withHour(18), DateEntityGrain.hour),
@@ -175,5 +185,11 @@ internal class DatesMergeTest {
     fun merge_shouldReturnsTheValueWithTheInitialDateValueAsReference_whenInitialValueIsOfSameGrainButGrainFromNowIsGreater() {
         val result = DatesMerge.merge(context, listOf(tomorrowAt8.copy(initial = true), evening))
         assertEquals(tomorrowInTheEvening, result?.value)
+    }
+
+    @Test
+    fun `mergeGrain returns non additional merge for 'en fin d'après-midi'(fr)`() {
+         val r = DatesMerge.mergeGrain(Locale.FRENCH, tomorrow, endAfternoon)
+         assertEquals(DatesMerge.MergeGrain(false, DateEntityGrain.day), r)
     }
 }

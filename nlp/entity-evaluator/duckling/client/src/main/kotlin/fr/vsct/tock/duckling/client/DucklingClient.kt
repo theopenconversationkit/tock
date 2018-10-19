@@ -59,10 +59,9 @@ internal object DucklingClient {
 
     private val logger = KotlinLogging.logger {}
     private val service: DucklingService
-    private val jacksonConverterFactory: JacksonConverterFactory
+    private val jacksonConverterFactory: JacksonConverterFactory = JacksonConverterFactory.create(mapper)
 
     init {
-        jacksonConverterFactory = JacksonConverterFactory.create(mapper)
         val retrofit = retrofitBuilderWithTimeoutAndLogger(longProperty("tock_duckling_request_timeout_ms", 5000), logger)
                 .baseUrl("${property("nlp_duckling_url", "http://localhost:8889")}/")
                 .addConverterFactory(RawJsonBodyConverterFactory)
