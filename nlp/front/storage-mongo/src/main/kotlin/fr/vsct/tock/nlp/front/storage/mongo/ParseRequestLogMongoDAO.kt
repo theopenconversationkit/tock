@@ -345,10 +345,10 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
             .find(
                 and(
                     ApplicationId eq query.applicationId,
-                    Count gte 30
+                    Count gte query.minOccurrence
                 )
             )
-            .sort("{'count':-1}")
+            .descendingSort(Count)
             .map {
                 ParseRequestLogIntentStat(
                     it.mainIntent,

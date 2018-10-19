@@ -18,7 +18,7 @@ import {AfterViewInit, Component, OnInit} from "@angular/core";
 import {DataSource} from "@angular/cdk/collections";
 import {Observable} from "rxjs/Observable";
 import {QualityService} from "../../quality/quality.service";
-import {IntentQA} from "../../model/nlp";
+import {IntentQA, LogStatsQuery} from "../../model/nlp";
 import {StateService} from "../../core/state.service";
 
 @Component({
@@ -31,17 +31,29 @@ export class IntentQAComponent implements OnInit, AfterViewInit {
   displayedColumns = ['mainIntent', 'secondaryIntent', 'occurrence', 'average'];
 
   public dataSource: IntentQADataSource | null
+  public minOccurrence: number = 30
 
   constructor(private state:StateService, private quality: QualityService) {
   }
 
   ngOnInit(): void {
     var r : Array<IntentQA>
-    this.quality.intentQA(this.state.currentApplication.name)
+    this.updateContent()
+  }
+
+  ngAfterViewInit(): void {
+  }
+
+  updateContent(): void {
+    this.quality.intentQA(
+      new LogStatsQuery(
+        this.state.currentApplication.namespace,
+        this.state.currentApplication.name,
+        this.state.currentLocale,
+        "",
+        this.minOccurrence))
       .subscribe(result => {
         const r = result.map(p => {
-          console.log('element')
-          console.log(p)
           return {
             mainIntent: p.mainIntent,
             secondaryIntent: p.secondaryIntent,
@@ -50,13 +62,8 @@ export class IntentQAComponent implements OnInit, AfterViewInit {
           };
         });
         this.dataSource = new IntentQADataSource(r)
-    })
-
+      })
   }
-
-  ngAfterViewInit(): void {
-  }
-
 }
 
 export class IntentQADataSource extends DataSource<IntentQA> {

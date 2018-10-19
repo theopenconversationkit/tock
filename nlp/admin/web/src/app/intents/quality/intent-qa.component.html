@@ -16,26 +16,34 @@
 
 <div>
 
+  <div id="intent-qa-update-container">
+    <label for="minOccurrence">Min of Occurrence</label>
+    <input id="minOccurrence" type="number" [(ngModel)]="minOccurrence"/>
+    <button md-button (click)="updateContent()" md-tooltip="Refresh">
+      <md-icon>refresh</md-icon>
+    </button>
+  </div>
+
   <md-table #table [dataSource]="dataSource">
 
     <ng-container mdColumnDef="mainIntent">
-      <md-header-cell *mdHeaderCellDef> Maint Intent </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{row.mainIntent}} </md-cell>
+      <md-header-cell *mdHeaderCellDef> Maint Intent</md-header-cell>
+      <md-cell *mdCellDef="let row"> {{row.mainIntent}}</md-cell>
     </ng-container>
 
     <ng-container mdColumnDef="secondaryIntent">
-      <md-header-cell *mdHeaderCellDef> Secondary Intent </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{row.secondaryIntent}} </md-cell>
+      <md-header-cell *mdHeaderCellDef> Secondary Intent</md-header-cell>
+      <md-cell *mdCellDef="let row"> {{row.secondaryIntent}}</md-cell>
     </ng-container>
 
     <ng-container mdColumnDef="occurrence">
-      <md-header-cell *mdHeaderCellDef> Occurrence </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{row.occurrence}} </md-cell>
+      <md-header-cell *mdHeaderCellDef> Occurrence</md-header-cell>
+      <md-cell *mdCellDef="let row"> {{row.occurrence}}</md-cell>
     </ng-container>
 
     <ng-container mdColumnDef="average">
-      <md-header-cell *mdHeaderCellDef> Average Difference </md-header-cell>
-      <md-cell *mdCellDef="let row"> {{row.average}} </md-cell>
+      <md-header-cell *mdHeaderCellDef> Average Difference</md-header-cell>
+      <md-cell *mdCellDef="let row"> {{row.average}}</md-cell>
     </ng-container>
 
     <md-header-row *mdHeaderRowDef="displayedColumns"></md-header-row>

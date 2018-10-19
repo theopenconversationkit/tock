@@ -810,7 +810,8 @@ export class LogStatsQuery extends ApplicationScopedQuery {
   constructor(public namespace: string,
               public applicationName: string,
               public language: string,
-              public intent?: string) {
+              public intent?: string,
+              public minOccurrence?: number) {
     super(namespace, applicationName, language)
   }
 }

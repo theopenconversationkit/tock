@@ -40,8 +40,8 @@ export class QualityService {
     return this.rest.post("/logs/stats", query, LogStat.fromJSONArray)
   }
 
-  intentQA(appName: string): Observable<IntentQA[]> {
-    return this.rest.get(`/logs/intent/stats/${appName}`, IntentQA.fromJSONArray);
+  intentQA(query: LogStatsQuery): Observable<IntentQA[]> {
+    return this.rest.post(`/logs/intent/stats`, query, IntentQA.fromJSONArray);
   }
 
   searchIntentErrors(query: TestErrorQuery): Observable<IntentTestErrorQueryResult> {

@@ -358,13 +358,10 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
-        blockingJsonGet("/logs/intent/stats/:name")
-        { context ->
-            val appName = context.pathParam("name")
-            val app = front.getApplicationByNamespaceAndName(context.organization, appName)
-            if (app != null) {
-                val req = LogStatsQuery(null).toStatQuery(app)
-                front.intentStats(req)
+        blockingJsonPost("/logs/intent/stats")
+        { context, s: LogStatsQuery ->
+            if (context.organization == s.namespace) {
+                front.intentStats(s.toStatQuery(front.getApplicationByNamespaceAndName(s.namespace, s.applicationName)!!))
             } else {
                 unauthorized()
             }
