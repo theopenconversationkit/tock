@@ -40,8 +40,8 @@ import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.Error
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.Query
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.Result
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_.Companion.Text
-import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogIntentStatCol_.Companion.MainIntent
-import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogIntentStatCol_.Companion.SecondaryIntent
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogIntentStatCol_.Companion.Intent1
+import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogIntentStatCol_.Companion.Intent2
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatCol_.Companion.Language
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatCol_.Companion.LastUsage
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion.Count
@@ -206,7 +206,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
 
     internal val intentStatsCol: MongoCollection<ParseRequestLogIntentStatCol> by lazy {
         val c = database.getCollection<ParseRequestLogIntentStatCol>("parse_request_log_intent_stats")
-        c.ensureUniqueIndex(Language, ApplicationId, MainIntent, SecondaryIntent)
+        c.ensureUniqueIndex(Language, ApplicationId, Intent1, Intent2)
         c
     }
 
@@ -243,7 +243,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
             var intent2 = nextIntent?.key?.name()
             if (intent1 != null && intent2 != null && intent2 != intent1) {
                 //order by string intent
-                if(intent1 > intent2) {
+                if (intent1 > intent2) {
                     val tmp = intent1
                     intent1 = intent2
                     intent2 = tmp
@@ -253,8 +253,8 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                     and(
                         Language eq stat.language,
                         ApplicationId eq stat.applicationId,
-                        MainIntent eq intent1,
-                        SecondaryIntent eq intent2
+                        Intent1 eq intent1,
+                        Intent2 eq intent2
                     )
                 )?.run {
                     copy(
