@@ -50,6 +50,7 @@ import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion.IntentProbability
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion._id
 import fr.vsct.tock.shared.longProperty
+import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
@@ -154,8 +155,8 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
     data class ParseRequestLogIntentStatCol(
         val applicationId: Id<ApplicationDefinition>,
         val language: Locale,
-        val mainIntent: String,
-        val secondaryIntent: String,
+        val intent1: String,
+        val intent2: String,
         val averageDiff: Double,
         val count: Long = 1,
         val _id: Id<ParseRequestLogIntentStatCol> = newId()
@@ -237,21 +238,23 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                 ClassifiedSentenceMongoDAO.updateSentenceState(updatedStat)
             }
 
-            val secondaryIntent = log.result?.otherIntentsProbabilities?.run {
-                if (isNotEmpty()) {
-                    iterator().next()
-                } else {
-                    null
+            var intent1 = log.result?.intent
+            val nextIntent = log.result?.otherIntentsProbabilities?.asSequence()?.firstOrNull()
+            var intent2 = nextIntent?.key?.name()
+            if (intent1 != null && intent2 != null && intent2 != intent1) {
+                //order by string intent
+                if(intent1 > intent2) {
+                    val tmp = intent1
+                    intent1 = intent2
+                    intent2 = tmp
                 }
-            }
-            if (secondaryIntent != null) {
-                val diff = log.result!!.intentProbability - secondaryIntent.value
+                val diff = log.result!!.intentProbability - nextIntent!!.value
                 val s = intentStatsCol.findOne(
                     and(
                         Language eq stat.language,
                         ApplicationId eq stat.applicationId,
-                        MainIntent eq log.result!!.intent,
-                        SecondaryIntent eq secondaryIntent.key
+                        MainIntent eq intent1,
+                        SecondaryIntent eq intent2
                     )
                 )?.run {
                     copy(
@@ -262,8 +265,8 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                         ?: ParseRequestLogIntentStatCol(
                             log.applicationId,
                             log.query.context.language,
-                            log.result!!.intent,
-                            secondaryIntent.key,
+                            intent1,
+                            intent2,
                             diff,
                             1
                         )
@@ -345,14 +348,14 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
             .find(
                 and(
                     ApplicationId eq query.applicationId,
-                    Count gte query.minOccurrence
+                    Count gte query.minOccurrences
                 )
             )
             .descendingSort(Count)
             .map {
                 ParseRequestLogIntentStat(
-                    it.mainIntent,
-                    it.secondaryIntent,
+                    it.intent1,
+                    it.intent2,
                     it.count,
                     it.averageDiff
                 )

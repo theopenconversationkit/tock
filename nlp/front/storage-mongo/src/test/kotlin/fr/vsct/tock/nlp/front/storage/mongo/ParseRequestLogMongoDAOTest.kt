@@ -62,7 +62,7 @@ internal class ParseRequestLogMongoDAOTest : AbstractTest() {
         1.0,
         1.0,
         "sentence",
-        mapOf("test2" to 0.4)
+        mapOf("app:test2" to 0.4)
     )
 
     private val log = ParseRequestLog(
@@ -77,7 +77,7 @@ internal class ParseRequestLogMongoDAOTest : AbstractTest() {
         date = Instant.now().truncatedTo(ChronoUnit.MILLIS)
     )
 
-    private val log2 = log.copy(result = parseResult.copy(otherIntentsProbabilities = mapOf("test2" to 0.5)))
+    private val log2 = log.copy(result = parseResult.copy(otherIntentsProbabilities = mapOf("app:test2" to 0.5)))
 
     private val log3 = log.copy(result = parseResult.copy(otherIntentsProbabilities = emptyMap()))
 
@@ -114,8 +114,8 @@ internal class ParseRequestLogMongoDAOTest : AbstractTest() {
         ParseRequestLogMongoDAO.save(log)
         val intentStatCol = intentStatsCol.findOne()
         assertNotNull(intentStatCol)
-        assertEquals(intentStatCol!!.mainIntent, "test")
-        assertEquals(intentStatCol.secondaryIntent, "test2")
+        assertEquals(intentStatCol!!.intent1, "test")
+        assertEquals(intentStatCol.intent2, "test2")
         assertEquals(intentStatCol.averageDiff, 0.6)
         assertEquals(intentStatCol.count, 1)
     }

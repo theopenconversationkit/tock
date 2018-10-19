@@ -811,7 +811,7 @@ export class LogStatsQuery extends ApplicationScopedQuery {
               public applicationName: string,
               public language: string,
               public intent?: string,
-              public minOccurrence?: number) {
+              public minOccurrences?: number) {
     super(namespace, applicationName, language)
   }
 }
@@ -972,9 +972,9 @@ export class TestBuildStat {
 
 export class IntentQA {
 
-  constructor(public mainIntent: string,
-              public secondaryIntent: string,
-              public occurrence: number,
+  constructor(public intent1: string,
+              public intent2: string,
+              public occurrences: number,
               public average: number) {
   }
 

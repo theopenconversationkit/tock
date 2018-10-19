@@ -20,8 +20,8 @@ package fr.vsct.tock.nlp.front.shared.monitoring
  *
  */
 data class ParseRequestLogIntentStat(
-        val mainIntent: String,
-        val secondaryIntent: String,
-        val occurrence: Long,
+        val intent1: String,
+        val intent2: String,
+        val occurrences: Long,
         val average: Double
 )

@@ -14,34 +14,30 @@
  * limitations under the License.
  */
 
-import {AfterViewInit, Component, OnInit} from "@angular/core";
+import {Component, OnInit} from "@angular/core";
 import {DataSource} from "@angular/cdk/collections";
-import {Observable} from "rxjs/Observable";
-import {QualityService} from "../../quality/quality.service";
+import {QualityService} from "../../quality-nlp/quality.service";
 import {IntentQA, LogStatsQuery} from "../../model/nlp";
-import {StateService} from "../../core/state.service";
+import {StateService} from "../../core-nlp/state.service";
+import {Observable, of} from "rxjs";
 
 @Component({
   selector: 'intent-qa',
   templateUrl: './intent-qa.component.html',
   styleUrls: ['./intent-qa.component.css']
 })
-export class IntentQAComponent implements OnInit, AfterViewInit {
+export class IntentQAComponent implements OnInit {
 
-  displayedColumns = ['mainIntent', 'secondaryIntent', 'occurrence', 'average'];
+  displayedColumns = ['intent1', 'intent2', 'occurrences', 'average'];
 
-  public dataSource: IntentQADataSource | null
-  public minOccurrence: number = 30
+  public dataSource: IntentQADataSource | null;
+  public minOccurrences: number = 30;
 
-  constructor(private state:StateService, private quality: QualityService) {
+  constructor(private state: StateService, private quality: QualityService) {
   }
 
   ngOnInit(): void {
-    var r : Array<IntentQA>
     this.updateContent()
-  }
-
-  ngAfterViewInit(): void {
   }
 
   updateContent(): void {
@@ -51,18 +47,18 @@ export class IntentQAComponent implements OnInit, AfterViewInit {
         this.state.currentApplication.name,
         this.state.currentLocale,
         "",
-        this.minOccurrence))
+        this.minOccurrences))
       .subscribe(result => {
         const r = result.map(p => {
           return {
-            mainIntent: p.mainIntent,
-            secondaryIntent: p.secondaryIntent,
-            occurrence: p.occurrence,
+            intent1: p.intent1,
+            intent2: p.intent2,
+            occurrences: p.occurrences,
             average: p.average
           };
         });
-        this.dataSource = new IntentQADataSource(r)
-      })
+        this.dataSource = new IntentQADataSource(r);
+      });
   }
 }
 
@@ -73,7 +69,7 @@ export class IntentQADataSource extends DataSource<IntentQA> {
   }
 
   connect(): Observable<IntentQA[]> {
-    return Observable.of(this.intentQa);
+    return of(this.intentQa);
   }
 
   disconnect() {

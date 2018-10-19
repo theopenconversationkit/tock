@@ -2,6 +2,8 @@ fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_Serializer
 fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogCol_Deserializer
 fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatCol_Serializer
 fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatCol_Deserializer
+fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogIntentStatCol_Serializer
+fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogIntentStatCol_Deserializer
 fr.vsct.tock.nlp.front.storage.mongo.DayAndYear_Serializer
 fr.vsct.tock.nlp.front.storage.mongo.DayAndYear_Deserializer
 fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_Serializer
