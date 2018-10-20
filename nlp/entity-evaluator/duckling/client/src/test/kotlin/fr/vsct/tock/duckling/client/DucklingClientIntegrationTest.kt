@@ -77,6 +77,14 @@ class DucklingClientIntegrationTest {
     }
 
     @Test
+    fun testIntervalDateWIthWeekEnd() {
+        val result =
+            DucklingClient.parse("fr", listOf("time"), now(), systemDefault(), "le we du 3 au 4")
+        println(result)
+        assertEquals(3, parse(result!![0][":value"][":from"][":value"].string(), formatter).dayOfMonth)
+    }
+
+    @Test
     fun testCallWithDifferentTimezone() {
         val zoneId = ZoneId.of("America/New_York")
         val now = now()
