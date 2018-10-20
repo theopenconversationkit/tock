@@ -77,7 +77,15 @@ class DucklingClientIntegrationTest {
     }
 
     @Test
-    fun testIntervalDateWIthWeekEnd() {
+    fun testIntervalDate2() {
+        val result =
+            DucklingClient.parse("fr", listOf("time"), now(), systemDefault(), "du 3 au 4 septembre")
+        println(result)
+        assertEquals(3, parse(result!![0][":value"][":from"][":value"].string(), formatter).dayOfMonth)
+    }
+
+    @Test
+    fun testIntervalDateWithWeekEnd() {
         val result =
             DucklingClient.parse("fr", listOf("time"), now(), systemDefault(), "le we du 3 au 4")
         println(result)
