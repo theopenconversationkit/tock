@@ -53,7 +53,7 @@ object AdminService {
         val result = front.parse(query.toQuery())
         val intentId =
             if (result.intent.withNamespace(result.intentNamespace) == Intent.UNKNOWN_INTENT_NAME) Intent.UNKNOWN_INTENT_NAME.toId()
-            else front.getIntentIdByQualifiedName(result.intent.withNamespace(query.namespace))!!
+            else front.getIntentIdByQualifiedName(result.intent.withNamespace(result.intentNamespace))!!
         val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
         return SentenceReport(result, query.language, application._id, intentId)
     }

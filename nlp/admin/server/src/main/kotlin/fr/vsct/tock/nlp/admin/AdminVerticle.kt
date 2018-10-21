@@ -290,8 +290,9 @@ open class AdminVerticle : WebVerticle() {
         }
 
         blockingJsonGet("/locales")
-        {
+        { _ ->
             Locale.getAvailableLocales()
+                .asSequence()
                 .filter { it.language.isNotEmpty() }
                 .distinctBy { it.language }
                 .map { it.language to it.getDisplayLanguage(Locale.ENGLISH).capitalize() }
