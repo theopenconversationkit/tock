@@ -9,9 +9,11 @@
     <option name="MAIN_CLASS_NAME" value="fr.vsct.tock.nlp.admin.StartAdminServerKt" />
     <option name="WORKING_DIRECTORY" value="" />
     <envs>
-      <env name="tock_nlp_model_refresh_rate" value="10" />
       <env name="adminverticle_port" value="7999" />
+      <env name="botadminverticle_body_limit" value="-1" />
     </envs>
-    <method />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
   </configuration>
 </component>
