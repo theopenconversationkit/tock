@@ -50,7 +50,10 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
     private val logger = KotlinLogging.logger {}
     private val minExpSizeToBuild = 2
 
-    override fun buildTokenizerModel(context: TokenizerContext, expressions: List<SampleExpression>): TokenizerModelHolder {
+    override fun buildTokenizerModel(
+        context: TokenizerContext,
+        expressions: List<SampleExpression>
+    ): TokenizerModelHolder {
         return TokenizerModelHolder(context.language)
     }
 
@@ -62,15 +65,16 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
             GISModel(arrayOf(), arrayOf(), arrayOf())
         } else {
             val events = ObjectStreamUtils.createObjectStream(expressions
-                    .map {
-                        Event(it.intent.name, tokenizer.tokenize(tokenizerContext, it.text))
-                    })
+                .map {
+                    Event(it.intent.name, tokenizer.tokenize(tokenizerContext, it.text))
+                })
             val dataIndexer = if (expressions.size < 100) OnePassRealValueDataIndexer() else TwoPassDataIndexer()
             dataIndexer.init(
-                    TrainingParameters(
-                            mapNotNullValues(CUTOFF_PARAM to if (expressions.size < 1000) "1" else null)
-                    )
-                    , null)
+                TrainingParameters(
+                    mapNotNullValues(CUTOFF_PARAM to if (expressions.size < 1000) "1" else null)
+                )
+                , null
+            )
             dataIndexer.index(events)
             GISTrainer().trainModel(1000, dataIndexer)
         }
@@ -78,7 +82,10 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
         return IntentModelHolder(context.application, model, Instant.now())
     }
 
-    override fun buildEntityModel(context: EntityBuildContext, expressions: List<SampleExpression>): EntityModelHolder? {
+    override fun buildEntityModel(
+        context: EntityBuildContext,
+        expressions: List<SampleExpression>
+    ): EntityModelHolder? {
         val model = if (expressions.size < minExpSizeToBuild) {
             null
         } else {
@@ -88,13 +95,12 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
             val spanEntityMap = mutableMapOf<Span, SampleEntity>()
 
             var entityCount = 0;
-            val trainingEvents = expressions.mapNotNull {
-                expression ->
+            val trainingEvents = expressions.mapNotNull { expression ->
                 val text = expression.text
                 val tokens = tokenizer.tokenize(tokenizerContext, text)
-                val spans = expression.entities.mapNotNull {
-                    e ->
-                    val start = if (e.start == 0) 0 else tokenizer.tokenize(tokenizerContext, text.substring(0, e.start)).size
+                val spans = expression.entities.mapNotNull { e ->
+                    val start =
+                        if (e.start == 0) 0 else tokenizer.tokenize(tokenizerContext, text.substring(0, e.start)).size
                     val end = start + tokenizer.tokenize(tokenizerContext, text.substring(e.start, e.end)).size
                     if (start >= tokens.size || end > tokens.size) {
                         null
@@ -107,10 +113,16 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
                 }.toTypedArray().sortedArray()
 
                 if (spans.size == expression.entities.size) {
-                    NameSample(tokens,
+                    try {
+                        NameSample(
+                            tokens,
                             spans,
                             false
-                    )
+                        )
+                    } catch (e: Exception) {
+                        logger.error("error with $text when reunify entities", e)
+                        null
+                    }
                 } else {
                     logger.error { "error with $text when reunify entities" }
                     null
@@ -127,11 +139,12 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
                 //params.put(BeamSearch.BEAM_SIZE_PARAMETER, Integer.toString(5));
 
                 NameFinderME.train(
-                        context.language.language,
-                        null,
-                        ObjectStreamUtils.createObjectStream(trainingEvents),
-                        params,
-                        TokenNameFinderFactory(null, null, BilouCodec()))
+                    context.language.language,
+                    null,
+                    ObjectStreamUtils.createObjectStream(trainingEvents),
+                    params,
+                    TokenNameFinderFactory(null, null, BilouCodec())
+                )
             }
         }
 
