@@ -64,3 +64,10 @@
 .validate {
   margin-left: 20px;
 }
+
+.lastUpdate {
+  float: right;
+  font-size: x-small;
+  position: relative;
+  top: 20px;
+}

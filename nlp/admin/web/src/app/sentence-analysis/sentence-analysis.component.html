@@ -63,23 +63,23 @@
                   matTooltip="Hide probabilities"><mat-icon>expand_less</mat-icon></button>
         </span>
         <span *ngIf="displayProbabilities && sentence.classification.notRetainedEntities?.length !== 0">
-          <div *ngIf="sentence.classification.displayOtherIntents" class="otherEntities">
+          <span *ngIf="sentence.classification.displayOtherIntents" class="otherEntities">
             <span style="float:left">Other entities:</span><br>
             <tock-edit-entities [container]="sentence.notRetainedEntitiesContainer()"
                               [displayProbabilities]="displayProbabilities"
                               [readOnly]="true">
             </tock-edit-entities>
-          </div>
+          </span>
         </span>
         <span *ngIf="displayProbabilities && sentence.classification.otherIntentsProbabilities?.size !== 0">
-           <div *ngIf="sentence.classification.displayOtherIntents" class="otherIntents">
+           <span *ngIf="sentence.classification.displayOtherIntents" class="otherIntents">
                   Probability for other intents:
                   <ol style="overflow:auto">
                     <li *ngFor="let i of sentence.classification.otherIntentsProbabilities | mapToIterable">
                       <div style="float:left">{{i.key}}&nbsp;&nbsp;</div><div style="float:right">&nbsp;{{i.value | percent:'1.0-2'}}</div>
                     </li>
                   </ol>
-           </div>
+           </span>
         </span>
       </span>
       <tock-edit-entities *ngIf="displayEntities"
@@ -97,5 +97,6 @@
             (click)="displayDialogs()"
             matTooltip="Display conversations using this sentence">Conversations
     </button>
+    <span *ngIf="sentence.updateDate" class="lastUpdate" matTooltip="Last update">{{sentence.updateDate | amLocal | amDateFormat: 'HH:mm:ss YYYY/MM/DD'}}</span>
   </mat-card-actions>
 </mat-card>
