@@ -113,5 +113,3 @@ internal object PredefinedValuesEntityClassifier : EntityTypeClassifier {
     }
 
 }
-
-data class PredefinedEntityValue(val predefined: String, val synonym: String)

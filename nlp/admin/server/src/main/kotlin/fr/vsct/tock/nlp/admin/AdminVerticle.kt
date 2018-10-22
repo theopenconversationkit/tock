@@ -297,6 +297,7 @@ open class AdminVerticle : WebVerticle() {
                 .distinctBy { it.language }
                 .map { it.language to it.getDisplayLanguage(Locale.ENGLISH).capitalize() }
                 .sortedBy { it.second }
+                .toList()
         }
 
         blockingJsonPost("/parse")
