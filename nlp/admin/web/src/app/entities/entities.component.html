@@ -30,7 +30,7 @@
         <mat-chip *ngFor="let e of state.entityTypes | async"
                  color="accent"
                  [removable]="e.namespace() === state.currentApplication.namespace"
-                 (remove)="deleteEntityType(e)"
+                 (removed)="deleteEntityType(e)"
                  (click)="selectEntityType(e)"
                  [selected]="e === selectedEntityType"
                  [selectable]="e.namespace() === state.currentApplication.namespace">
@@ -42,6 +42,7 @@
                    class="predefined-list"
                    matTooltip="update predefined values">playlist_add_check</mat-icon>
           <mat-icon *ngIf="e.namespace() === state.currentApplication.namespace"
+                   matChipRemove
                    class="remove"
                    matTooltip="delete entity type">cancel</mat-icon>
         </mat-chip>
