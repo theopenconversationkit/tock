@@ -42,6 +42,7 @@
                    class="predefined-list"
                    matTooltip="update predefined values">playlist_add_check</mat-icon>
           <mat-icon *ngIf="e.namespace() === state.currentApplication.namespace"
+                   matChipRemove
                    class="remove"
                    matTooltip="delete entity type">cancel</mat-icon>
         </mat-chip>
