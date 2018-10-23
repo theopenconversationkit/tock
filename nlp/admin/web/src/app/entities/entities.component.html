@@ -30,7 +30,7 @@
         <mat-chip *ngFor="let e of state.entityTypes | async"
                  color="accent"
                  [removable]="e.namespace() === state.currentApplication.namespace"
-                 (remove)="deleteEntityType(e)"
+                 (removed)="deleteEntityType(e)"
                  (click)="selectEntityType(e)"
                  [selected]="e === selectedEntityType"
                  [selectable]="e.namespace() === state.currentApplication.namespace">
