@@ -17,7 +17,6 @@
 import {NgModule} from "@angular/core";
 import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
-import {HttpModule} from "@angular/http";
 import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component";
 import {
   MatButtonModule,
@@ -47,12 +46,10 @@ import {
 } from "@angular/material";
 import {MapToIterablePipe} from "./map-to-iterable.pipe";
 import {ScrollComponent} from "../scroll/scroll.component";
-import {HttpClientModule} from "@angular/common/http";
 
 @NgModule({
   imports: [
     CommonModule,
-    HttpClientModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,
@@ -80,7 +77,6 @@ import {HttpClientModule} from "@angular/common/http";
   declarations: [ConfirmDialogComponent, MapToIterablePipe, ScrollComponent],
   providers: [],
   exports: [
-    HttpClientModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,
@@ -106,7 +102,6 @@ import {HttpClientModule} from "@angular/common/http";
     MatToolbarModule,
     MatTooltipModule,
     FormsModule,
-    HttpModule,
     MapToIterablePipe],
   entryComponents: [
     ConfirmDialogComponent

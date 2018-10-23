@@ -6,6 +6,7 @@ import {RouterModule, Routes} from "@angular/router";
 import {BotAdminAppComponent} from "./bot-admin-app.component";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
 import {BotCoreModule} from "./core/bot-core.module";
+import {HttpClientModule} from "@angular/common/http";
 
 const routes: Routes = [
   {path: '', redirectTo: '/nlp/inbox', pathMatch: 'full'},
@@ -47,6 +48,7 @@ export class BotAdminAppRoutingModule {
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    HttpClientModule,
     CoreModule,
     BotCoreModule,
     SharedModule,

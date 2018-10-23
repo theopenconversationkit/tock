@@ -106,7 +106,7 @@ abstract class WebVerticle : AbstractVerticle() {
         )
     }
 
-    protected open val basePath : String = "/rest"
+    protected open val basePath: String = "/rest"
 
     protected open val rootPath: String = ""
 
@@ -128,8 +128,8 @@ abstract class WebVerticle : AbstractVerticle() {
                 try {
                     router.route().handler(bodyHandler())
                     addDevCorsHandler()
-                    authProvider()?.let {
-                        addAuth(it)
+                    authProvider()?.also { p ->
+                        addAuth(p)
                     }
 
                     router.get("$rootPath/healthcheck").handler(healthcheck())
@@ -165,21 +165,24 @@ abstract class WebVerticle : AbstractVerticle() {
     ) {
 
         val authHandler = BasicAuthHandler.create(authProvider)
+        val cookieHandler = CookieHandler.create()
+        val sessionHandler = SessionHandler.create(LocalSessionStore.create(vertx))
+            .setSessionTimeout(6 * 60 * 60 * 1000 /*6h*/)
+            .setNagHttps(!devEnvironment)
+            .setCookieHttpOnlyFlag(!devEnvironment)
+            .setCookieSecureFlag(!devEnvironment)
+            .setSessionCookieName("tock-session")
+        val userSessionHandler = UserSessionHandler.create(authProvider)
 
-        pathsToProtect.forEach { protectedPath ->
-            router.route(protectedPath).handler(CookieHandler.create())
-            router.route(protectedPath).handler(
-                SessionHandler.create(LocalSessionStore.create(vertx))
-                    .setSessionTimeout(6 * 60 * 60 * 1000 /*6h*/)
-                    .setNagHttps(devEnvironment)
-                    .setCookieHttpOnlyFlag(!devEnvironment)
-                    .setCookieSecureFlag(!devEnvironment)
-                    .setSessionCookieName("tock-session")
-            )
-            router.route(protectedPath).handler(UserSessionHandler.create(authProvider))
-            router.route(protectedPath).handler(authHandler)
+        (pathsToProtect + logoutPath + authenticatePath).forEach { protectedPath ->
+            router.route(protectedPath).handler(cookieHandler)
+            router.route(protectedPath).handler(sessionHandler)
+            router.route(protectedPath).handler(userSessionHandler)
         }
 
+        pathsToProtect.forEach { protectedPath ->
+            router.route(protectedPath).handler(authHandler)
+        }
 
         router.post(authenticatePath).handler { context ->
             val request = mapper.readValue<AuthenticateRequest>(context.bodyAsString)

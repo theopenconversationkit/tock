@@ -17,10 +17,9 @@
 import {Injectable} from "@angular/core";
 import {AuthListener} from "./auth.listener";
 import {Router} from "@angular/router";
-import {AuthenticateResponse, AuthenticateRequest} from "../../model/auth";
+import {AuthenticateRequest, AuthenticateResponse} from "../../model/auth";
 import {Observable} from "rxjs";
 import {RestService} from "../rest/rest.service";
-import {environment} from "../../../environments/environment";
 
 @Injectable()
 export class AuthService {
@@ -50,7 +49,6 @@ export class AuthService {
 
   login(password: string, response: AuthenticateResponse): boolean {
     if (response.authenticated) {
-      this.rest.setAuthToken(btoa(`${response.email}:${password}`));
       this.logged = true;
       this.authListeners.forEach(l => l.login(response.toUser()));
     }
@@ -58,10 +56,9 @@ export class AuthService {
   }
 
   logout() {
-    this.rest.postNotAuthenticated("/logout")
-      .subscribe(_ => {
+    this.rest.post("/logout", null, null, this.rest.notAuthenticatedUrl)
+      .subscribe(() => {
         this.logged = false;
-        this.rest.setAuthToken(null);
         this.authListeners.forEach(l => l.logout());
         this.router.navigateByUrl("/login");
       });
@@ -71,6 +68,6 @@ export class AuthService {
     return this.rest.postNotAuthenticated(
       '/authenticate',
       new AuthenticateRequest(email, password),
-      (j => this.login(password, AuthenticateResponse.fromJSON(j)) ));
+      (j => this.login(password, AuthenticateResponse.fromJSON(j))));
   }
 }

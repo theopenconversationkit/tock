@@ -21,6 +21,7 @@ import {RouterModule, Routes} from "@angular/router";
 import {BrowserModule} from "@angular/platform-browser";
 import {CoreModule} from "./core-nlp/core.module";
 import {BrowserAnimationsModule} from "@angular/platform-browser/animations";
+import {HttpClientModule} from "@angular/common/http";
 
 const routes: Routes = [
   {path: '', redirectTo: '/nlp/inbox', pathMatch: 'full'},
@@ -36,8 +37,9 @@ const routes: Routes = [
     path: 'quality',
     loadChildren: './quality-nlp/quality.module#QualityModule'
   },
-  { path: '**', redirectTo: '/nlp/inbox' }
+  {path: '**', redirectTo: '/nlp/inbox'}
 ];
+
 @NgModule({
   imports: [RouterModule.forRoot(routes)],
   exports: [RouterModule]
@@ -52,6 +54,7 @@ export class NlpAdminAppRoutingModule {
   imports: [
     BrowserModule,
     BrowserAnimationsModule,
+    HttpClientModule,
     CoreModule,
     SharedModule,
     NlpAdminAppRoutingModule

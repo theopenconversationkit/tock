@@ -19,7 +19,7 @@ import {Observable, throwError as observableThrowError} from 'rxjs';
 
 import {catchError, map} from 'rxjs/operators';
 import {EventEmitter, Injectable} from "@angular/core";
-import {Headers, Http, Response} from "@angular/http";
+import {HttpClient, HttpHeaders} from "@angular/common/http";
 import {environment} from "../../../environments/environment";
 import {Router} from "@angular/router";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
@@ -27,63 +27,58 @@ import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 @Injectable()
 export class RestService {
 
-  private url: string;
-  private notAuthenticatedUrl: string;
-  private authToken: string;
-  private basicAuthToken: string;
+  private readonly url: string;
+  readonly notAuthenticatedUrl: string;
 
   readonly errorEmitter: EventEmitter<string> = new EventEmitter();
 
-  constructor(private http: Http,
+  constructor(private http: HttpClient,
               private router: Router) {
     this.notAuthenticatedUrl = environment.serverUrl;
     this.url = `${environment.serverUrl}/admin`;
   }
 
-  setAuthToken(value: string) {
-    this.authToken = value;
-    this.basicAuthToken = `Basic ${this.authToken}`
-  }
-
-  private headers(): Headers {
+  private headers(): HttpHeaders {
     const headers = this.notAuthenticatedHeaders();
-
-    headers.append('Authorization', this.basicAuthToken);
+    //hack for dev env
+    if (environment.autologin) {
+      headers.append('Authorization', btoa(`${environment.default_user}:${environment.default_password}`));
+    }
     return headers;
   }
 
-  private notAuthenticatedHeaders(): Headers {
-    const headers = new Headers();
+  private notAuthenticatedHeaders(): HttpHeaders {
+    const headers = new HttpHeaders();
     headers.append('Content-Type', 'application/json');
     return headers;
   }
 
   get<T>(path: string, parseFunction: (value: any) => T): Observable<T> {
-    return this.http.get(`${this.url}${path}`, {headers: this.headers()}).pipe(
-      map((res: Response) => parseFunction(res.json() || {})),
+    return this.http.get(`${this.url}${path}`, {headers: this.headers(), withCredentials: true}).pipe(
+      map((res: string) => parseFunction(res || {})),
       catchError(e => RestService.handleError(this, e)),);
   }
 
   getArray<T>(path: string, parseFunction: (value: any) => T[]): Observable<T[]> {
-    return this.http.get(`${this.url}${path}`, {headers: this.headers()}).pipe(
-      map((res: Response) => parseFunction(res.json() || [])),
+    return this.http.get(`${this.url}${path}`, {headers: this.headers(), withCredentials: true}).pipe(
+      map((res: string) => parseFunction(res || [])),
       catchError(e => RestService.handleError(this, e)),);
   }
 
   delete<I>(path: string): Observable<boolean> {
     return this.http.delete(
       `${this.url}${path}`,
-      {headers: this.headers()}).pipe(
-      map((res: Response) => BooleanResponse.fromJSON(res.json() || {}).success),
+      {headers: this.headers(), withCredentials: true}).pipe(
+      map((res: string) => BooleanResponse.fromJSON(res || {}).success),
       catchError(e => RestService.handleError(this, e)),);
   }
 
-  post<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
+  post<I, O>(path: string, value?: I, parseFunction?: (value: any) => O, baseUrl?: string): Observable<O> {
     return this.http.post(
-      `${this.url}${path}`,
+      `${baseUrl ? baseUrl : this.url}${path}`,
       value ? JSON.stringify(value) : "{}",
-      {headers: this.headers()}).pipe(
-      map((res: Response) => parseFunction ? parseFunction(res.json() || {}) : (res.json() || {})),
+      {headers: this.headers(), withCredentials: true}).pipe(
+      map((res: string) => parseFunction ? parseFunction(res || {}) : (res || {}) as O),
       catchError(e => RestService.handleError(this, e)),);
   }
 
@@ -91,8 +86,8 @@ export class RestService {
     return this.http.put(
       `${this.url}${path}`,
       value ? JSON.stringify(value) : "{}",
-      {headers: this.headers()}).pipe(
-      map((res: Response) => parseFunction ? parseFunction(res.json() || {}) : (res.json() || {})),
+      {headers: this.headers(), withCredentials: true}).pipe(
+      map((res: string) => parseFunction ? parseFunction(res || {}) : (res || {}) as O),
       catchError(e => RestService.handleError(this, e)),);
   }
 
@@ -100,8 +95,8 @@ export class RestService {
     return this.http.post(
       `${this.notAuthenticatedUrl}${path}`,
       value ? JSON.stringify(value) : "{}",
-      {headers: this.notAuthenticatedHeaders()}).pipe(
-      map((res: Response) =>  parseFunction ? parseFunction(res.json() || {}) : (res.json() || {})),
+      {headers: this.notAuthenticatedHeaders(), withCredentials: true}).pipe(
+      map((res: string) => parseFunction ? parseFunction(res || {}) : (res || {}) as O),
       catchError(e => RestService.handleError(this, e)),);
   }
 
@@ -112,7 +107,7 @@ export class RestService {
   }
 
   setFileUploaderOptions(uploader: FileUploader, path: string) {
-    uploader.setOptions({url: `${this.url}${path}`, authToken: this.basicAuthToken});
+    uploader.setOptions({url: `${this.url}${path}`});
     uploader.onErrorItem =
       (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
         uploader.removeFromQueue(item);

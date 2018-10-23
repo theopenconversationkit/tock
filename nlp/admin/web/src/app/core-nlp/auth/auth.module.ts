@@ -14,7 +14,6 @@
  * limitations under the License.
  */
 
-import {HttpModule} from "@angular/http";
 import {SharedModule} from "../../shared-nlp/shared.module";
 import {NgModule} from "@angular/core";
 import {LoginComponent} from "./login/login.component";

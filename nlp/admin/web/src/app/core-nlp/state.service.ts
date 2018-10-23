@@ -20,10 +20,9 @@ import {EventEmitter, Injectable} from "@angular/core";
 import {Application} from "../model/application";
 import {AuthService} from "./auth/auth.service";
 import {AuthListener} from "./auth/auth.listener";
-import {AuthenticateResponse, User, UserRole} from "../model/auth";
+import {User, UserRole} from "../model/auth";
 import {SettingsService} from "./settings.service";
 import {ApplicationScopedQuery, Entry, PaginatedQuery, SearchMark} from "../model/commons";
-import {environment} from "../../environments/environment";
 import {
   EntityDefinition,
   EntityType,
@@ -68,18 +67,6 @@ export class StateService implements AuthListener {
 
   constructor(private auth: AuthService, private settings: SettingsService) {
     this.auth.addListener(this);
-    //hack for dev env
-    if (environment.autologin) {
-      this.auth.login(
-        environment.default_password,
-        new AuthenticateResponse(
-          true,
-          environment.default_user,
-          environment.default_namespace,
-          [UserRole.nlpUser, UserRole.botUser, UserRole.admin, UserRole.technicalAdmin]
-        )
-      );
-    }
   }
 
   hasRole(role: UserRole): boolean {
@@ -221,7 +208,7 @@ export class StateService implements AuthListener {
     );
   }
 
-  createPredefinedValueQuery(entityTypeName: string, predefinedValue: string, oldPredefinedValue?:string): PredefinedValueQuery {
+  createPredefinedValueQuery(entityTypeName: string, predefinedValue: string, oldPredefinedValue?: string): PredefinedValueQuery {
     return new PredefinedValueQuery(
       entityTypeName,
       predefinedValue.trim(),
