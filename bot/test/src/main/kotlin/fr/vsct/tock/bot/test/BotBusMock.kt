@@ -266,16 +266,41 @@ open class BotBusMock(
             context.dialog.stories.add(context.story)
         }
 
+        var forced = false
+        val newIntent = context.dialog.state.currentIntent
         if (a is SendChoice) {
             context.story.apply {
                 if (a.step() != null) {
+                    forced = true
                     currentStep = a.step()
                 }
+            }
+        }
+        //revalidate step
+        context.story.apply {
+            currentStep = findCurrentStep()?.name
+            //check the step from the intent
+            if (!forced && step == null && newIntent != null) {
+                definition.steps.find { it.supportStarterIntent(newIntent) }
+                    ?.apply {
+                        forced = true
+                        currentStep = name
+                    }
+            }
+
+            //reset the step if applicable
+            if (!forced && newIntent != null
+                && (step?.intent != null && step?.supportIntent(newIntent) == false)
+            ) {
+                currentStep = null
             }
         }
 
         if (a != context.firstAction) {
             context.story.actions.add(a)
+            //update action state
+            a.state.intent = context.dialog.state.currentIntent?.name
+            a.state.step = context.story.currentStep
         }
         if (a.state.userInterface != null) {
             context.userInterfaceType = a.state.userInterface!!

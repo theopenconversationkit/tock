@@ -103,9 +103,8 @@ internal class TockConnectorController constructor(
                     val userTimeline =
                         userTimelineDAO.loadWithLastValidDialog(
                             action.playerId,
-                            data.priorUserId,
-                            { bot.botDefinition.findStoryDefinition(it) }
-                        )
+                            data.priorUserId
+                        ) { bot.botDefinition.findStoryDefinition(it) }
                     bot.handle(action, userTimeline, this, data)
                     if(data.saveTimeline) {
                         userTimelineDAO.save(userTimeline)

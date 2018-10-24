@@ -19,32 +19,33 @@ package fr.vsct.tock.bot.test
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.SimpleStoryHandlerBase
+import fr.vsct.tock.bot.definition.SimpleStoryStep
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.definition.StoryHandlerListener
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionMetadata
-import fr.vsct.tock.bot.engine.dialog.Dialog
-import fr.vsct.tock.bot.engine.dialog.DialogState
 import fr.vsct.tock.bot.engine.dialog.EventState
-import fr.vsct.tock.bot.engine.dialog.Story
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Assertions.assertThrows
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
+import kotlin.test.assertNull
 
 /**
  *
  */
 class BotBusMockTest {
 
+    enum class Step : SimpleStoryStep { a }
+
+    val intent = Intent("main")
     val storyHandler: SimpleStoryHandlerBase = mockk()
     val storyDefinition: StoryDefinition = mockk()
-    val story: Story = mockk()
     val action: Action = mockk()
     val testContext: TestContext = mockk()
-    val dialog: Dialog = mockk()
     val metadata = ActionMetadata()
     val botDefinition: BotDefinition = mockk()
 
@@ -61,20 +62,17 @@ class BotBusMockTest {
         every { storyHandler.handle(any()) } answers {}
 
         every { storyDefinition.storyHandler } returns storyHandler
-        every { storyDefinition.mainIntent() } returns Intent("main")
-
-        every { story.definition } returns storyDefinition
-        every { story.actions } returns mutableListOf()
+        every { storyDefinition.mainIntent() } returns intent
+        every { storyDefinition.supportIntent(any()) } returns true
+        every { storyDefinition.steps } returns emptySet()
 
         every { action.applicationId } returns "appId"
         every { action.state } returns EventState()
         every { action.metadata } returns metadata
 
-        every { dialog.state } returns DialogState()
-        every { dialog.stories } returns mutableListOf()
-
         every { botDefinition.defaultDelay(any()) } returns 1000
         every { botDefinition.botId } returns "botId"
+        every { botDefinition.findIntent(any()) } returns intent
 
         every { testContext.storyHandlerListeners } returns mutableListOf()
 
@@ -155,5 +153,30 @@ class BotBusMockTest {
         assertThrows(
             IllegalStateException::class.java
         ) { botBus.checkEndCalled() }
+    }
+
+    @Test
+    fun `unsupported step is not persisted`() {
+        val botBus = BotBusMock(context, context.choice("intent", Step.a))
+        val action: Action = mockk()
+        every { action.metadata } returns ActionMetadata()
+        every { action.state } returns EventState()
+
+        botBus.run()
+
+        assertNull(botBus.story.currentStep)
+    }
+
+    @Test
+    fun `supported step is persisted`() {
+        every { storyDefinition.steps } returns setOf(Step.a)
+        val botBus = BotBusMock(context, context.choice("intent", Step.a))
+        val action: Action = mockk()
+        every { action.metadata } returns ActionMetadata()
+        every { action.state } returns EventState()
+
+        botBus.run()
+
+        assertEquals(Step.a.name, botBus.story.currentStep)
     }
 }
