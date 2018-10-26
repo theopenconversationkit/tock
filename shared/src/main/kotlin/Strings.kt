@@ -38,6 +38,12 @@ fun String.namespaceAndName(): Pair<String, String> = this.split(":").let { it[0
 fun String.withNamespace(namespace: String): String = if (contains(":")) this else "$namespace:$this"
 
 /**
+ * Replace the current namespace with the new namespace.
+ */
+fun String.changeNamespace(newNamespace: String): String =
+    withoutNamespace().withNamespace(newNamespace)
+
+/**
  * Remove the specified namespace from a qualified name if this qualified name contains the namespace,
  * and return the result.
  */
