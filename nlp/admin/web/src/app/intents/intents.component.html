@@ -36,26 +36,31 @@
         </td>
         <td>
           <span *ngFor="let e of i.entities">
+          <span class="entity">
           <mat-icon [style.color]="e.entityColor" class="entity_icon">extension</mat-icon>
-          <span [style.background-color]="e.entityColor">{{e.qualifiedName(state.user)}}</span>
-          <button *ngIf="!state.intentExistsInOtherApplication(i.name)" mat-icon-button (click)="removeEntity(i, e)">
+          <span class="status" [style.background-color]="e.entityColor">{{e.qualifiedName(state.user)}}</span>
+          <button *ngIf="!state.intentExistsInOtherApplication(i.name)" mat-icon-button (click)="removeEntity(i, e)"
+                  class="removeEntity">
             <mat-icon>remove_circle_outline</mat-icon>
           </button>
+          </span>
+          &nbsp;
           </span>
         </td>
         <td class="shared">
           <mat-select *ngIf="!state.intentExistsInOtherApplication(i.name)"
-                     class="intent"
-                     placeholder="Add shared intent"
-                     (selectionChange)="addSharedIntent(i, $event.value)">
+                      class="intent"
+                      placeholder="Add shared intent"
+                      (selectionChange)="addSharedIntent(i, $event.value)">
             <mat-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
               {{intent.name}}
             </mat-option>
           </mat-select>
           <div *ngIf="i.sharedIntents.length !== 0" class="shared_list">
-            <mat-chip-list *ngIf="!state.intentExistsInOtherApplication(i.name)" matTooltip="Shared intent - click to remove">
+            <mat-chip-list *ngIf="!state.intentExistsInOtherApplication(i.name)"
+                           matTooltip="Shared intent - click to remove">
               <mat-chip *ngFor="let intentId of i.sharedIntents" color="accent" selected="true"
-                       (click)="removeSharedIntent(i, intentId)">
+                        (click)="removeSharedIntent(i, intentId)">
                 {{state.findIntentById(intentId)?.name}}
               </mat-chip>
             </mat-chip-list>
@@ -72,7 +77,8 @@
             Add state
           </button>
           <div *ngIf="i.mandatoryStates.length !== 0" class="shared_list">
-            <mat-chip-list *ngIf="!state.intentExistsInOtherApplication(i.name)" matTooltip="Mandatory states - click to delete">
+            <mat-chip-list *ngIf="!state.intentExistsInOtherApplication(i.name)"
+                           matTooltip="Mandatory states - click to delete">
               <br>
               <mat-chip *ngFor="let s of i.mandatoryStates" color="accent" selected="true" (click)="removeState(i, s)">
                 {{s}}

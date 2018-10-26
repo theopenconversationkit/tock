@@ -51,3 +51,16 @@
 .actions {
   white-space: nowrap;
 }
+
+.entity {
+  white-space:nowrap;
+}
+
+.status {
+  border-radius: 25px;
+  padding: 8px;
+}
+
+.removeEntity {
+  transform: translateX(-8px);
+}

@@ -17,3 +17,9 @@
 .dateType {
   padding-left: 20px;
 }
+
+.status {
+  border-radius: 25px;
+  padding: 8px;
+}
+

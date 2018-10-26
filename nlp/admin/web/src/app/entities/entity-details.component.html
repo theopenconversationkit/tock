@@ -16,7 +16,7 @@
 
 <mat-list-item [style.padding-left]="paddingLeft+'px'">
   <mat-icon matListIcon [style.color]="entity.entityColor">extension</mat-icon>
-  <span [style.background-color]="entity.entityColor">{{entity.qualifiedName(state.user)}}</span>
+  <span class="status" [style.background-color]="entity.entityColor">{{entity.qualifiedName(state.user)}}</span>
   <div *ngIf="entity.isDateType()" class="dateType">
     <mat-checkbox [(ngModel)]="entity.atStartOfDay" matTooltip="useful for non relative time">Evaluate at start of day
     </mat-checkbox>
