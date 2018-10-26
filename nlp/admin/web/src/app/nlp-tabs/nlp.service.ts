@@ -19,7 +19,8 @@ import {RestService} from "../core-nlp/rest/rest.service";
 import {StateService} from "../core-nlp/state.service";
 import {
   EntityDefinition,
-  EntityType, Intent,
+  EntityType,
+  Intent,
   LogsQuery,
   LogsResult,
   ParseQuery,
@@ -62,11 +63,11 @@ export class NlpService implements OnDestroy {
     return this.rest.post("/intent", intent, Intent.fromJSON);
   }
 
-  removeState(application: Application, intent:Intent, state:string) : Observable<boolean> {
+  removeState(application: Application, intent: Intent, state: string): Observable<boolean> {
     return this.rest.delete(`/application/${application._id}/intent/${intent._id}/state/${state}`);
   }
 
-  removeSharedIntent(application: Application, intent:Intent, intentId:string) : Observable<boolean> {
+  removeSharedIntent(application: Application, intent: Intent, intentId: string): Observable<boolean> {
     return this.rest.delete(`/application/${application._id}/intent/${intent._id}/shared/${intentId}`);
   }
 
@@ -127,8 +128,7 @@ export class NlpService implements OnDestroy {
   }
 
   deletePredefinedValue(query: PredefinedValueQuery): Observable<boolean> {
-      // TODO replace POST by DELETE verb because is forbbiden on some network
-    return this.rest.post(`/entity-types/predefined-values/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}`)
+    return this.rest.delete(`/entity-types/predefined-values/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}`)
   }
 
   createLabel(query: PredefinedLabelQuery): Observable<EntityType> {
@@ -136,8 +136,7 @@ export class NlpService implements OnDestroy {
   }
 
   deleteLabel(query: PredefinedLabelQuery): Observable<boolean> {
-    // TODO replace POST by DELETE verb because is forbbiden on some network
-    return this.rest.post(`/entity-type/predefined-value/labels/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}/${encodeURIComponent(query.locale)}/${encodeURIComponent(query.label)}`)
+    return this.rest.delete(`/entity-type/predefined-value/labels/${encodeURIComponent(query.entityTypeName)}/${encodeURIComponent(query.predefinedValue)}/${encodeURIComponent(query.locale)}/${encodeURIComponent(query.label)}`)
   }
 
 }
