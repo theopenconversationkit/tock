@@ -124,6 +124,7 @@ object ModelCoreService : ModelCore {
         val intentContext = IntentContext(context)
         val intentModel = nlpClassifier.buildIntentModel(intentContext, modelExpressions)
         val entityModels = modelExpressions
+            .asSequence()
             .groupBy { it.intent }
             .mapNotNull { (intent, expressions)
                 ->
