@@ -38,11 +38,11 @@ import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
+import fr.vsct.tock.shared.changeNamespace
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.name
-import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.provide
 import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 import fr.vsct.tock.shared.withoutNamespace
@@ -125,12 +125,12 @@ object ApplicationCodecService : ApplicationCodec {
 
                 val intentsToCreate = mutableListOf<IntentDefinition>()
                 var intentsIdsMap = dump.intents.map { i ->
-                    var intent = config.getIntentByNamespaceAndName(i.namespace, i.name)
+                    var intent = config.getIntentByNamespaceAndName(namespace, i.name)
                     if (intent == null) {
-                        intent = i.copy(_id = newId(), applications = setOf(appId))
+                        intent = i.copy(_id = newId(), namespace = namespace, applications = setOf(appId))
                         intentsToCreate.add(intent)
                     } else {
-                        config.save(intent.copy(applications = intent.applications + appId))
+                        config.save(intent.copy(namespace = namespace, applications = intent.applications + appId))
                     }
                     i._id to intent._id
                 }.toMap()
@@ -138,7 +138,7 @@ object ApplicationCodecService : ApplicationCodec {
                 //save new intents
                 intentsToCreate.forEach { intent ->
                     val newIntent =
-                        intent.copy(sharedIntents = intent.sharedIntents.mapNotNull { intentsIdsMap[it] }.toSet())
+                        intent.copy(sharedIntents = intent.sharedIntents.asSequence().mapNotNull { intentsIdsMap[it] }.toSet())
                     config.save(newIntent)
                     report.add(newIntent)
                     logger.debug { "Import intent $newIntent" }
@@ -155,7 +155,7 @@ object ApplicationCodecService : ApplicationCodec {
                 report.localeAdded = !app.supportedLocales.containsAll(dump.application.supportedLocales)
 
                 //add unknown intent to intent map
-                intentsIdsMap += (Intent.UNKNOWN_INTENT_NAME.toId<IntentDefinition>() to Intent.UNKNOWN_INTENT_NAME.toId<IntentDefinition>())
+                intentsIdsMap += (Intent.UNKNOWN_INTENT_NAME.toId<IntentDefinition>() to Intent.UNKNOWN_INTENT_NAME.toId())
 
                 dump.sentences.forEach { s ->
                     if (config.search(
@@ -240,11 +240,13 @@ object ApplicationCodecService : ApplicationCodec {
                     val intent: IntentDefinition? = if (s.intent == UNKNOWN_INTENT_NAME) {
                         null
                     } else {
-                        val newIntent: IntentDefinition = intentsByNameMap[s.intent]
+                        //force intent namespace
+                        val sentenceIntent = s.intent.changeNamespace(namespace)
+                        val newIntent: IntentDefinition = intentsByNameMap[sentenceIntent]
                             .let { newIntent ->
                                 if (newIntent == null) {
                                     val intent =
-                                        config.getIntentByNamespaceAndName(s.intent.namespace(), s.intent.name())
+                                        config.getIntentByNamespaceAndName(namespace, sentenceIntent.name())
                                     if (intent != null) {
                                         val i = intent.copy(applications = intent.applications + appId)
                                         config.save(i)
@@ -258,8 +260,8 @@ object ApplicationCodecService : ApplicationCodec {
                                         i
                                     } else {
                                         IntentDefinition(
-                                            s.intent.name(),
-                                            s.intent.namespace(),
+                                            sentenceIntent.name(),
+                                            namespace,
                                             setOf(appId),
                                             emptySet()
                                         ).run {
