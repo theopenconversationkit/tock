@@ -20,12 +20,11 @@ import {Router} from "@angular/router";
 import {AuthenticateRequest, AuthenticateResponse} from "../../model/auth";
 import {Observable} from "rxjs";
 import {RestService} from "../rest/rest.service";
-import {environment} from "../../../environments/environment";
 
 @Injectable()
 export class AuthService {
 
-  private logged: boolean = environment.autologin;
+  private logged: boolean;
   private redirectUrl: string;
   private authListeners: AuthListener[] = [];
 

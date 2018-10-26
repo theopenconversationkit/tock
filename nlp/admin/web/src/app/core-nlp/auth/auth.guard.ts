@@ -15,11 +15,14 @@
  */
 
 import {Injectable} from "@angular/core";
-import {CanActivate, CanActivateChild, Router, ActivatedRouteSnapshot, RouterStateSnapshot} from "@angular/router";
+import {ActivatedRouteSnapshot, CanActivate, CanActivateChild, Router, RouterStateSnapshot} from "@angular/router";
 import {AuthService} from "./auth.service";
+import {environment} from "../../../environments/environment";
 
 @Injectable()
 export class AuthGuard implements CanActivate, CanActivateChild {
+
+  private autologin = environment.autologin;
 
   constructor(private authService: AuthService, private router: Router) {
   }
@@ -34,7 +37,16 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   }
 
   private checkLogin(url: string): boolean {
-    if (this.authService.isLoggedIn()) {
+    const login = this.authService.isLoggedIn();
+    if (!login && this.autologin) {
+      this.autologin = false;
+      this.authService.authenticate(environment.default_user, environment.default_password).subscribe(_ =>
+        this.router.navigateByUrl(url)
+      );
+      return false;
+    }
+
+    if (login) {
       return true;
     }
 
