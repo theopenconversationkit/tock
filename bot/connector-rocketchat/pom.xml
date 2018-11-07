@@ -29,7 +29,7 @@
     <description>Bot Connector for Rocket Chat</description>
 
     <properties>
-        <rocket>1.0</rocket>
+        <rocket>3.1.0</rocket>
     </properties>
 
     <dependencies>
