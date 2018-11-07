@@ -21,12 +21,12 @@
         <mat-icon aria-hidden="true" matListIcon svgIcon="logo"></mat-icon>
         <h3>Tock</h3>
       </mat-list-item>
-        <a mat-list-item *ngIf="state.hasRole(UserRole.admin)" routerLink="/configuration/nlp">Configuration</a>
-        <a mat-list-item *ngIf="state.hasRole(UserRole.nlpUser)" routerLink="/nlp/inbox">NLP</a>
-        <a mat-list-item *ngIf="state.hasRole(UserRole.nlpUser)" routerLink="/quality/log-stats">NLP QA</a>
-        <a mat-list-item *ngIf="state.hasRole(UserRole.botUser)" routerLink="/build/intent-create">Build</a>
-        <a mat-list-item *ngIf="state.hasRole(UserRole.botUser)" routerLink="/test/test">Test</a>
-        <a mat-list-item *ngIf="state.hasRole(UserRole.botUser)" routerLink="/monitoring/users">Monitoring</a>
+        <a mat-list-item *ngIf="state.hasRole(UserRole.admin)" routerLink="/configuration/nlp" routerLinkActive="active-link">Configuration</a>
+        <a mat-list-item *ngIf="state.hasRole(UserRole.nlpUser)" routerLink="/nlp/inbox" routerLinkActive="active-link">NLP</a>
+        <a mat-list-item *ngIf="state.hasRole(UserRole.nlpUser)" routerLink="/quality/log-stats" routerLinkActive="active-link">NLP QA</a>
+        <a mat-list-item *ngIf="state.hasRole(UserRole.botUser)" routerLink="/build/intent-create" routerLinkActive="active-link">Build</a>
+        <a mat-list-item *ngIf="state.hasRole(UserRole.botUser)" routerLink="/test/test" routerLinkActive="active-link">Test</a>
+        <a mat-list-item *ngIf="state.hasRole(UserRole.botUser)" routerLink="/monitoring/users" routerLinkActive="active-link">Monitoring</a>
     </mat-nav-list>
   </mat-sidenav>
 
