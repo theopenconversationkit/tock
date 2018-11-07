@@ -33,6 +33,12 @@ import kotlin.test.assertTrue
  */
 class SendChoiceTest {
 
+    class TestParamObfuscator : ParameterObfuscator {
+        override fun obfuscate(parameters: Map<String, String>): Map<String, String> {
+            return parameters.mapValues { "" }
+        }
+    }
+
     @Test
     fun encodeChoiceId_shouldNotFail_whenCurrentIntentIsNull() {
         assertEquals("test", SendChoice.encodeChoiceId(Intent("test"), null))
@@ -40,11 +46,7 @@ class SendChoiceTest {
 
     @Test
     fun `GIVEN a sendchoice with parameters WHEN obfuscate the sendchoice THEN obfuscates the parameters`() {
-        class TestParamObfuscator : ParameterObfuscator {
-            override fun obfuscate(parameters: Map<String, String>): Map<String, String> {
-                return parameters.mapValues { "" }
-            }
-        }
+
         val testParameterObfuscator = spyk(TestParamObfuscator())
         TockObfuscatorService.registerParameterObfuscator(testParameterObfuscator)
 
