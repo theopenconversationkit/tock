@@ -19,6 +19,7 @@
   min-width: 100px;
   overflow-y: visible;
   background-color:#fafafa;
+  position:fixed;
 }
 
 .tock-menu-button {
@@ -68,4 +69,8 @@
 
 .main {
   min-height: 80vh;
+}
+
+.active-link {
+    background-color: silver;
 }

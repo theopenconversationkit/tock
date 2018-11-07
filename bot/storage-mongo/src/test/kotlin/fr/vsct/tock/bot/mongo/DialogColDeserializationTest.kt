@@ -52,6 +52,12 @@ import kotlin.test.assertTrue
  */
 class DialogColDeserializationTest : AbstractTest() {
 
+    class TestParamObfuscator : ParameterObfuscator {
+        override fun obfuscate(parameters: Map<String, String>): Map<String, String> {
+            return parameters.mapValues { "" }
+        }
+    }
+
     @Test
     fun serializeAndDeserializeAnyValueWrapper_shouldLeftDataInchanged() {
         val value = AnyValueWrapper(
@@ -114,12 +120,6 @@ class DialogColDeserializationTest : AbstractTest() {
 
     @Test
     fun `GIVEN a parameter obfuscator WHEN serializing a SendChoiceMongoWrapper THEN obfuscates the parameters`() {
-        class TestParamObfuscator : ParameterObfuscator {
-            override fun obfuscate(parameters: Map<String, String>): Map<String, String> {
-                return parameters.mapValues { "" }
-            }
-        }
-
         val testParameterObfuscator = spyk(TestParamObfuscator())
         TockObfuscatorService.registerParameterObfuscator(testParameterObfuscator)
         val parameters: Map<String, String> = mapOf("key" to "value")
@@ -138,11 +138,6 @@ class DialogColDeserializationTest : AbstractTest() {
 
     @Test
     fun `GIVEN a parameter obfuscator WHEN serializing a SendChoiceMongoWrapper instantiated from SendChoice THEN obfuscates the parameters`() {
-        class TestParamObfuscator : ParameterObfuscator {
-            override fun obfuscate(parameters: Map<String, String>): Map<String, String> {
-                return parameters.mapValues { "" }
-            }
-        }
 
         val testParameterObfuscator = spyk(TestParamObfuscator())
         TockObfuscatorService.registerParameterObfuscator(testParameterObfuscator)
