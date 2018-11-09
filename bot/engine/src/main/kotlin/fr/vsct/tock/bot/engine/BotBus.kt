@@ -161,6 +161,11 @@ interface BotBus : I18nTranslator {
     val currentAnswerIndex: Int
 
     /**
+     * The text sent by the user if any.
+     */
+    val userText: String? get() = (action as? SendSentence)?.stringText?.trim()
+
+    /**
      * To know if the current intent is owned by the [IntentAware].
      */
     fun isIntent(intentOwner: IntentAware): Boolean = intentOwner.wrap(intent?.wrappedIntent())
@@ -283,7 +288,7 @@ interface BotBus : I18nTranslator {
      * @param entity the entity definition
      * @param textContent the new entity text content
      */
-    fun changeEntityText(entity: Entity, textContent: String) =
+    fun changeEntityText(entity: Entity, textContent: String?) =
         changeEntityValue(
             entity.role,
             EntityValue(entity, null, textContent)
