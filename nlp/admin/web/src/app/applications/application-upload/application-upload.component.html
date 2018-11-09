@@ -16,6 +16,7 @@
 
 <mat-card *ngIf="configuration">
   <mat-card-title>Upload a Dump</mat-card-title>
+  <mat-card-subtitle><mat-progress-bar mode="indeterminate" *ngIf="uploading"></mat-progress-bar></mat-card-subtitle>
   <mat-card-content>
     <div *ngIf="!report">
 

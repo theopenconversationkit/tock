@@ -201,21 +201,18 @@ object ApplicationCodecService : ApplicationCodec {
         logger.info { "Import Sentences dump..." }
         val report = ImportReport()
         try {
-            var app =
-                config.getApplicationByNamespaceAndName(namespace, dump.applicationName.withoutNamespace(namespace))
-                    .let { app ->
-                        if (app == null) {
-                            val appToSave = ApplicationDefinition(
-                                dump.applicationName.withoutNamespace(namespace),
-                                namespace
-                            )
-                            report.add(appToSave)
-                            logger.debug { "Import application $appToSave" }
-                            config.save(appToSave)
-                        } else {
-                            app
-                        }
+            val appName = dump.applicationName.withoutNamespace()
+            var app = config.getApplicationByNamespaceAndName(namespace, appName)
+                .let { app ->
+                    if (app == null) {
+                        val appToSave = ApplicationDefinition(appName, namespace)
+                        report.add(appToSave)
+                        logger.debug { "Import application $appToSave" }
+                        config.save(appToSave)
+                    } else {
+                        app
                     }
+                }
 
             val appId = app._id
             val intentsByNameMap =

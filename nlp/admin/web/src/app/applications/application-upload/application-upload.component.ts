@@ -32,6 +32,7 @@ export class ApplicationUploadComponent implements OnInit {
   public uploader: FileUploader;
   public configuration: ApplicationImportConfiguration;
   public report: ImportReport;
+  public uploading: boolean = false;
 
   public type: string = "application";
 
@@ -46,6 +47,7 @@ export class ApplicationUploadComponent implements OnInit {
     this.uploader = new FileUploader({removeAfterUpload: true});
     this.uploader.onCompleteItem =
       (item: FileItem, response: string, status: number, headers: ParsedResponseHeaders) => {
+        this.uploading = false;
         this.report = ImportReport.fromJSON(JSON.parse(response));
         if (this.report.modified) {
           this.state.resetConfiguration();
@@ -73,6 +75,7 @@ export class ApplicationUploadComponent implements OnInit {
         this.state.hasRole(UserRole.technicalAdmin),
         this.configuration.newApplicationName);
     }
+    this.uploading = true;
     this.uploader.uploadAll();
   }
 }
