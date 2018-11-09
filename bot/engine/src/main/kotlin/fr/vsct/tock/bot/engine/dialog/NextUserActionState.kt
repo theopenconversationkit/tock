@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.bot.engine.dialog
 
-import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -25,30 +25,47 @@ import java.time.ZonedDateTime
  * The temporary initial state for next user action.
  */
 data class NextUserActionState(
-        /**
-         * Next sentence will be analysed for these intents.
-         */
-        var intentsQualifiers: List<NlpIntentQualifier>? = null,
-        /**
-         * Entity parsing will use this date as reference.
-         */
-        var referenceDate: ZonedDateTime? = null,
-        /**
-         * Entity parsing will use this referenceTimezone as reference.
-         */
-        var referenceTimezone: ZoneId? = null,
-        /**
-         * NLP query states.
-         */
-        var states: Set<String>? = null
+    /**
+     * Next sentence will be analysed for these intents.
+     */
+    var intentsQualifiers: List<NlpIntentQualifier>? = null,
+    /**
+     * Entity parsing will use this date as reference.
+     */
+    var referenceDate: ZonedDateTime? = null,
+    /**
+     * Entity parsing will use this referenceTimezone as reference.
+     */
+    var referenceTimezone: ZoneId? = null,
+    /**
+     * NLP query states.
+     */
+    var states: Set<String>? = null
 ) {
 
-    constructor(intentsQualifiers: Map<Intent, Double>,
-                referenceDate: ZonedDateTime? = null,
-                referenceTimezone: ZoneId? = null,
-                states: Set<String>? = null) :
-            this(intentsQualifiers.map { NlpIntentQualifier(it.key.name, it.value) },
-                    referenceDate,
-                    referenceTimezone,
-                    states)
+    /**
+     * Build NextUserActionState from [IntentAware]/modifier map (in order to build [NlpIntentQualifier]).
+     */
+    constructor(
+        intentsQualifiers: Map<IntentAware, Double>,
+        referenceDate: ZonedDateTime? = null,
+        referenceTimezone: ZoneId? = null,
+        states: Set<String>? = null
+    ) :
+            this(
+                intentsQualifiers.map { NlpIntentQualifier(it.key.wrappedIntent().name, it.value) },
+                referenceDate,
+                referenceTimezone,
+                states
+            )
+
+    /**
+     * Build NextUserActionState from [IntentAware]/modifier list (in order to build [NlpIntentQualifier]).
+     */
+    constructor(vararg intentsQualifiers: Pair<IntentAware, Double>) : this(mapOf(*intentsQualifiers))
+
+    /**
+     * Build NextUserActionState from list of current states.
+     */
+    constructor(vararg states: String) : this(emptyMap(), states = states.toSet())
 }
