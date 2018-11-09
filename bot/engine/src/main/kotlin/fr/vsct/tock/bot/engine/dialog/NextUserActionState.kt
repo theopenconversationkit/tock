@@ -47,7 +47,7 @@ data class NextUserActionState(
      * Build NextUserActionState from [IntentAware]/modifier map (in order to build [NlpIntentQualifier]).
      */
     constructor(
-        intentsQualifiers: Map<IntentAware, Double>,
+        intentsQualifiers: Map<out IntentAware, Double>,
         referenceDate: ZonedDateTime? = null,
         referenceTimezone: ZoneId? = null,
         states: Set<String>? = null
