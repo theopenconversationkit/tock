@@ -28,6 +28,9 @@ class IntentDefinition_Deserializer : StdDeserializer<IntentDefinition>(IntentDe
         var entitiesRegexp: Map<Locale, LinkedHashSet<EntitiesRegexp>>? = null
         var mandatoryStates: Set<String>? = null
         var sharedIntents: Set<Id<IntentDefinition>>? = null
+        var label: String? = null
+        var description: String? = null
+        var category: String? = null
         var _id: Id<IntentDefinition>? = null
         while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
         nextToken() 
@@ -42,10 +45,13 @@ class IntentDefinition_Deserializer : StdDeserializer<IntentDefinition>(IntentDe
         "entitiesRegexp" -> entitiesRegexp = p.readValueAs(entitiesRegexp_reference)
         "mandatoryStates" -> mandatoryStates = p.readValueAs(mandatoryStates_reference)
         "sharedIntents" -> sharedIntents = p.readValueAs(sharedIntents_reference)
+        "label" -> label = p.text
+        "description" -> description = p.text
+        "category" -> category = p.text
         "_id" -> _id = p.readValueAs(_id_reference)
         else -> if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) { p.skipChildren() } else { nextToken() }
          }  }
-        return IntentDefinition(name!!, namespace!!, applications!!, entities!!, entitiesRegexp!!, mandatoryStates!!, sharedIntents!!, _id!!)
+        return IntentDefinition(name!!, namespace!!, applications!!, entities!!, entitiesRegexp!!, mandatoryStates!!, sharedIntents!!, label, description, category, _id!!)
                 }
     }
     companion object {

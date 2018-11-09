@@ -32,7 +32,7 @@ import {SentenceAnalysisComponent} from "../sentence-analysis/sentence-analysis.
 import {NlpService} from "./nlp.service";
 import {CreateEntityDialogComponent} from "../sentence-analysis/create-entity-dialog/create-entity-dialog.component";
 import {InfiniteScrollModule} from "ngx-infinite-scroll";
-import {CreateIntentDialogComponent} from "../sentence-analysis/create-intent-dialog/create-intent-dialog.component";
+import {IntentDialogComponent} from "../sentence-analysis/intent-dialog/intent-dialog.component";
 import {ApplicationResolver} from "../core-nlp/application.resolver";
 import {SentencesScrollComponent} from "../sentences-scroll/sentences-scroll.component";
 
@@ -118,7 +118,7 @@ export class NlpRoutingModule {
     EditEntitiesComponent,
     SentenceAnalysisComponent,
     CreateEntityDialogComponent,
-    CreateIntentDialogComponent,
+    IntentDialogComponent,
     SentencesScrollComponent,
     DisplayFullLogComponent,
     AddStateDialogComponent,
@@ -134,7 +134,7 @@ export class NlpRoutingModule {
   ],
   entryComponents: [
     CreateEntityDialogComponent,
-    CreateIntentDialogComponent,
+    IntentDialogComponent,
     DisplayFullLogComponent,
     AddStateDialogComponent
   ]

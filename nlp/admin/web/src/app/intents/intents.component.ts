@@ -17,13 +17,17 @@
 import {saveAs} from "file-saver";
 import {Component, OnInit} from "@angular/core";
 import {StateService} from "../core-nlp/state.service";
-import {EntityDefinition, Intent} from "../model/nlp";
+import {EntityDefinition, Intent, IntentsCategory} from "../model/nlp";
 import {MatDialog, MatDialogConfig, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {ApplicationService} from "../core-nlp/applications.service";
 import {AddStateDialogComponent} from "./add-state/add-state-dialog.component";
 import {UserRole} from "../model/auth";
+import {IntentDialogComponent} from "../sentence-analysis/intent-dialog/intent-dialog.component";
+import {FlatTreeControl} from "@angular/cdk/tree";
+import {BehaviorSubject} from "rxjs";
+
 
 @Component({
   selector: 'tock-intents',
@@ -33,6 +37,9 @@ import {UserRole} from "../model/auth";
 export class IntentsComponent implements OnInit {
 
   UserRole = UserRole;
+  treeControl: FlatTreeControl<IntentsCategory>;
+  intentsCategories: BehaviorSubject<IntentsCategory[]> = new BehaviorSubject([]);
+  expandedCategories: Set<string> = new Set(["default"]);
 
   constructor(public state: StateService,
               private nlp: NlpService,
@@ -42,6 +49,58 @@ export class IntentsComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.treeControl = new FlatTreeControl<IntentsCategory>(_ => 0, _ => true);
+    this.state.currentIntentsCategories.subscribe(it => {
+      this.treeControl.dataNodes = it;
+      this.intentsCategories.next(it);
+      it.forEach(c => {
+        if (this.expandedCategories.has(c.category)) {
+          this.treeControl.expand(c);
+        }
+      });
+    })
+  }
+
+  private captureExpanded() {
+    this.expandedCategories = new Set(this.intentsCategories.getValue().filter(c => this.treeControl.isExpanded(c)).map(c => c.category));
+  }
+
+  updateIntent(intent: Intent) {
+    let dialogRef = this.dialog.open(
+      IntentDialogComponent,
+      {
+        data:
+          {
+            name: intent.name,
+            label: intent.label,
+            description: intent.description,
+            category: intent.category
+          }
+      }
+    );
+    dialogRef.afterClosed().subscribe(result => {
+      if (result.name) {
+        this.captureExpanded();
+        this.nlp
+          .saveIntent(
+            new Intent(
+              intent.name,
+              this.state.user.organization,
+              [],
+              [this.state.currentApplication._id],
+              [],
+              [],
+              result.label,
+              result.description,
+              result.category,
+              intent._id)
+          )
+          .subscribe(intent => {
+              this.state.updateIntent(intent);
+            }
+          )
+      }
+    });
   }
 
   deleteIntent(intent: Intent) {
@@ -54,9 +113,10 @@ export class IntentsComponent implements OnInit {
     } as MatDialogConfig);
     dialogRef.afterClosed().subscribe(result => {
       if (result === "remove") {
+        this.captureExpanded();
         this.nlp.removeIntent(this.state.currentApplication, intent).subscribe(
           _ => {
-            this.state.currentApplication.removeIntentById(intent._id);
+            this.state.removeIntent(intent);
             this.snackBar.open(`Intent ${intent.name} removed`, "Remove Intent", {duration: 1000} as MatSnackBarConfig);
           },
           _ => this.snackBar.open(`Delete Intent ${intent.name} failed`, "Error", {duration: 5000} as MatSnackBarConfig)

@@ -22,11 +22,12 @@ import {AuthService} from "./auth/auth.service";
 import {AuthListener} from "./auth/auth.listener";
 import {User, UserRole} from "../model/auth";
 import {SettingsService} from "./settings.service";
-import {ApplicationScopedQuery, Entry, PaginatedQuery, SearchMark} from "../model/commons";
+import {ApplicationScopedQuery, Entry, groupBy, PaginatedQuery, SearchMark} from "../model/commons";
 import {
   EntityDefinition,
   EntityType,
   Intent,
+  IntentsCategory,
   NlpEngineType,
   PredefinedLabelQuery,
   PredefinedValueQuery,
@@ -48,6 +49,7 @@ export class StateService implements AuthListener {
   entityTypes: BehaviorSubject<EntityType[]> = new BehaviorSubject([]);
   entities: BehaviorSubject<EntityDefinition[]> = new BehaviorSubject([]);
   currentIntents: BehaviorSubject<Intent[]> = new BehaviorSubject([]);
+  currentIntentsCategories: BehaviorSubject<IntentsCategory[]> = new BehaviorSubject([]);
 
   currentApplication: Application;
   currentLocale: string = StateService.DEFAULT_LOCALE;
@@ -85,7 +87,7 @@ export class StateService implements AuthListener {
     if (application) {
       this.currentApplication = application;
       this.currentApplicationEmitter.emit(application);
-      this.currentIntents.next(application.intents);
+      this.sortIntents();
       this.entities.next(application.allEntities());
       if (application.supportedLocales.indexOf(this.currentLocale) === -1) {
         this.changeLocale(application.supportedLocales[0])
@@ -105,8 +107,41 @@ export class StateService implements AuthListener {
     this.settings.onLocaleChange(this.currentLocale);
   }
 
+  private sortIntents() {
+    this.currentApplication.intents.sort((a, b) => a.intentLabel().localeCompare(b.intentLabel()));
+    this.currentIntents.next(this.currentApplication.intents);
+    const categories = [];
+    groupBy(this.currentApplication.intents, i => i.category ? i.category : "default")
+      .forEach((intents, category) => {
+        categories.push(new IntentsCategory(category, intents));
+      });
+    this.currentIntentsCategories.next(
+      categories.sort((a, b) => a.category.localeCompare(b.category))
+    );
+  }
+
+  addIntent(intent: Intent) {
+    this.currentApplication.intents.push(intent);
+    this.sortIntents();
+  }
+
+  updateIntent(intent: Intent) {
+    this.currentApplication.removeIntentById(intent._id);
+    this.currentApplication.intents.push(intent);
+    this.sortIntents();
+  }
+
+  removeIntent(intent: Intent) {
+    this.currentApplication.removeIntentById(intent._id);
+    this.sortIntents();
+  }
+
   findIntentById(id: string): Intent {
     return this.currentApplication.intents.find(i => i._id === id);
+  }
+
+  findIntentByName(name: string): Intent {
+    return this.currentApplication.intents.find(i => i.name === name);
   }
 
   findEntityTypeByName(name: string): EntityType {

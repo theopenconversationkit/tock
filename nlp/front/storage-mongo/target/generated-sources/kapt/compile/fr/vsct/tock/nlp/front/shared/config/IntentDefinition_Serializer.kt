@@ -37,6 +37,15 @@ class IntentDefinition_Serializer : StdSerializer<IntentDefinition>(IntentDefini
         gen.writeFieldName("sharedIntents")
         val _sharedIntents_ = value.sharedIntents
         serializers.defaultSerializeValue(_sharedIntents_, gen)
+        gen.writeFieldName("label")
+        val _label_ = value.label
+        if(_label_ == null) { gen.writeNull() } else {gen.writeString(_label_)}
+        gen.writeFieldName("description")
+        val _description_ = value.description
+        if(_description_ == null) { gen.writeNull() } else {gen.writeString(_description_)}
+        gen.writeFieldName("category")
+        val _category_ = value.category
+        if(_category_ == null) { gen.writeNull() } else {gen.writeString(_category_)}
         gen.writeFieldName("_id")
         val __id_ = value._id
         serializers.defaultSerializeValue(__id_, gen)

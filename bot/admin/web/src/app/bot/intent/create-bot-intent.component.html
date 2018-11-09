@@ -34,10 +34,11 @@
         <mat-select placeholder="Or select an existing intent"
                     [ngModel]="intentId"
                     (selectionChange)="onIntentChange($event.value)">
-          <mat-option [value]="">None</mat-option>
-          <mat-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
-            {{intent.name}}
-          </mat-option>
+          <mat-optgroup *ngFor="let category of state.currentIntentsCategories | async" [label]="category.category">
+            <mat-option *ngFor="let intent of category.intents" [value]="intent._id">
+              {{intent.intentLabel()}}
+            </mat-option>
+          </mat-optgroup>
         </mat-select>
       </mat-form-field>
       <div *ngIf="sentenceMode || intentMode" class="separator"></div>

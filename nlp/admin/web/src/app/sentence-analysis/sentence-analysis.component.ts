@@ -18,7 +18,7 @@ import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {Intent, nameFromQualifiedName, Sentence, SentenceStatus} from "../model/nlp";
 import {StateService} from "../core-nlp/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
-import {CreateIntentDialogComponent} from "./create-intent-dialog/create-intent-dialog.component";
+import {IntentDialogComponent} from "./intent-dialog/intent-dialog.component";
 import {MatDialog, MatSnackBar} from "@angular/material";
 import {ApplicationConfig} from "../core-nlp/application.config";
 import {Router} from "@angular/router";
@@ -53,10 +53,10 @@ export class SentenceAnalysisComponent implements OnInit {
     if (value === "newIntent") {
       //cleanup entities
       this.sentence.classification.entities = [];
-      let dialogRef = this.dialog.open(CreateIntentDialogComponent);
+      let dialogRef = this.dialog.open(IntentDialogComponent, {data: {create:true}});
       dialogRef.afterClosed().subscribe(result => {
-        if (result !== "cancel") {
-          if (this.createIntent(result.name)) {
+        if (result.name) {
+          if (this.createIntent(result.name, result.label, result.description, result.category)) {
             return;
           }
         }
@@ -141,7 +141,7 @@ export class SentenceAnalysisComponent implements OnInit {
     }
   }
 
-  private createIntent(name: string): boolean {
+  private createIntent(name: string, label: string, description: string, category: string): boolean {
     if (StateService.intentExistsInApp(this.state.currentApplication, name) || name === nameFromQualifiedName(Intent.unknown)) {
       this.snackBar.open(`Intent ${name} already exists`, "Error", {duration: 5000});
       return false
@@ -156,17 +156,17 @@ export class SentenceAnalysisComponent implements OnInit {
         });
         dialogRef.afterClosed().subscribe(result => {
           if (result === "confirm") {
-            this.saveIntent(name);
+            this.saveIntent(name, label, description, category);
           }
         });
       } else {
-        this.saveIntent(name);
+        this.saveIntent(name, label, description, category);
         return true;
       }
     }
   }
 
-  private saveIntent(name: string) {
+  private saveIntent(name: string, label: string, description: string, category: string) {
     this.nlp
       .saveIntent(
         new Intent(
@@ -175,10 +175,13 @@ export class SentenceAnalysisComponent implements OnInit {
           [],
           [this.state.currentApplication._id],
           [],
-          [])
+          [],
+          label,
+          description,
+          category)
       )
       .subscribe(intent => {
-          this.state.currentApplication.intents.push(intent);
+          this.state.addIntent(intent);
           this.onIntentChange(intent._id);
         },
         _ => this.onIntentChange(Intent.unknown));

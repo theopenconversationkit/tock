@@ -159,7 +159,7 @@ export class CreateBotIntentComponent implements OnInit {
         this.intentId
       )
     ).subscribe(intent => {
-      this.state.currentApplication.intents.push(intent);
+      this.state.addIntent(intent);
       this.snackBar.open(`New answer saved for language ${this.state.currentLocale}`, "Answer Saved", {duration: 3000});
       this.onClose();
 

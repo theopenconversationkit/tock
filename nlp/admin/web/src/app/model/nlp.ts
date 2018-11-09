@@ -248,8 +248,15 @@ export class Intent {
               public applications: string[],
               public mandatoryStates: string[],
               public sharedIntents: string[],
+              public label?: string,
+              public description?: string,
+              public category?: string,
               public _id?: string) {
     EntityDefinition.sortEntities(entities);
+  }
+
+  intentLabel(): string {
+    return this.label ? this.label : this.name;
   }
 
   qualifiedName(): string {
@@ -291,6 +298,12 @@ export class Intent {
 
   static fromJSONArray(json?: Array<any>): Intent[] {
     return json ? json.map(Intent.fromJSON) : [];
+  }
+}
+
+export class IntentsCategory {
+  constructor(public category: string,
+              public intents: Intent[]) {
   }
 }
 

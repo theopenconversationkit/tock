@@ -104,6 +104,9 @@ object AdminService {
             } else {
                 val oldIntent = front.getIntentById(intentId)!!.run {
                     copy(
+                        label = intent.label,
+                        description = intent.description,
+                        category = intent.category,
                         applications = applications + intent.applications,
                         entities = intent.entities + entities.filter { e -> intent.entities.none { it.role == e.role } },
                         entitiesRegexp = entitiesRegexp + intent.entitiesRegexp,

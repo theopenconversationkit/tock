@@ -14,9 +14,26 @@
  * limitations under the License.
  */
 
+.default_category {
+  font-style: italic;
+}
+
+.category {
+  font-size: x-large;
+}
+
+.tree {
+  margin-top: 20px;
+}
+
+.tree-open {
+  display: block;
+}
+
 .table {
   border-spacing: 0;
   border-collapse: collapse;
+  width: 100%;
 }
 
 .entity_icon {
@@ -31,6 +48,15 @@
 .intent_name {
   font-size: larger;
 }
+
+.intent_id {
+  text-align: center;
+}
+
+.intent_description {
+  white-space: pre-wrap;
+}
+
 
 .shared_application_label {
   font-size: smaller;

@@ -42,7 +42,7 @@ data class ApplicationWithIntents(
             this(
                 application.name,
                 application.namespace,
-                intents.sortedBy { it.name },
+                intents.sortedWith(compareBy({ it.label }, { it.name })),
                 application.supportedLocales,
                 application.nlpEngineType,
                 application.mergeEngineTypes,

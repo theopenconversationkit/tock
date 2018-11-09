@@ -37,6 +37,15 @@ class IntentDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
     val sharedIntents: KCollectionSimplePropertyPath<T, Id<IntentDefinition>?>
         get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,IntentDefinition::sharedIntents)
 
+    val label: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentDefinition::label)
+
+    val description: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentDefinition::description)
+
+    val category: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentDefinition::category)
+
     val _id: KPropertyPath<T, Id<IntentDefinition>?>
         get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,IntentDefinition::_id)
     companion object {
@@ -54,6 +63,12 @@ class IntentDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
             get() = KCollectionSimplePropertyPath(null, IntentDefinition::mandatoryStates)
         val SharedIntents: KCollectionSimplePropertyPath<IntentDefinition, Id<IntentDefinition>?>
             get() = KCollectionSimplePropertyPath(null, IntentDefinition::sharedIntents)
+        val Label: KProperty1<IntentDefinition, String?>
+            get() = IntentDefinition::label
+        val Description: KProperty1<IntentDefinition, String?>
+            get() = IntentDefinition::description
+        val Category: KProperty1<IntentDefinition, String?>
+            get() = IntentDefinition::category
         val _id: KProperty1<IntentDefinition, Id<IntentDefinition>?>
             get() = IntentDefinition::_id}
 }
@@ -79,6 +94,15 @@ class IntentDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KPropert
 
     val sharedIntents: KCollectionSimplePropertyPath<T, Id<IntentDefinition>?>
         get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,IntentDefinition::sharedIntents)
+
+    val label: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentDefinition::label)
+
+    val description: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentDefinition::description)
+
+    val category: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentDefinition::category)
 
     val _id: KPropertyPath<T, Id<IntentDefinition>?>
         get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,IntentDefinition::_id)
@@ -107,6 +131,15 @@ class IntentDefinition_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProp
 
     val sharedIntents: KCollectionSimplePropertyPath<T, Id<IntentDefinition>?>
         get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,IntentDefinition::sharedIntents)
+
+    val label: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentDefinition::label)
+
+    val description: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentDefinition::description)
+
+    val category: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentDefinition::category)
 
     val _id: KPropertyPath<T, Id<IntentDefinition>?>
         get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,IntentDefinition::_id)

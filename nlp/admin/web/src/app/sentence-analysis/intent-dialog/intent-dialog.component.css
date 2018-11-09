@@ -14,3 +14,24 @@
  * limitations under the License.
  */
 
+.container {
+  display: flex;
+  flex-direction: column;
+  width:400px;
+}
+
+.container > * {
+  width: 100%;
+}
+
+.container form {
+  margin-bottom: 20px;
+}
+
+.container form > * {
+  margin: 5px 0;
+}
+
+.submit-button {
+  margin-left: 20px;
+}

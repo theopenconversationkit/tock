@@ -57,6 +57,18 @@ data class IntentDefinition(
      */
     val sharedIntents: Set<Id<IntentDefinition>> = emptySet(),
     /**
+     * The optional displayed label of the intent.
+     */
+    val label: String? = null,
+    /**
+     * The optional description of the intent.
+     */
+    val description: String? = null,
+    /**
+     * The optional category of the intent.
+     */
+    val category: String? = null,
+    /**
      * The unique [Id] of the intent.
      */
     val _id: Id<IntentDefinition> = newId()

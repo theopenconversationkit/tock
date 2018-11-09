@@ -224,7 +224,8 @@ object BotAdminService {
                         request.intent!!,
                         namespace,
                         setOf(nlpApplication._id),
-                        emptySet()
+                        emptySet(),
+                        category = "build"
                     )
                 )
             }

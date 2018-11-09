@@ -17,7 +17,7 @@
 <span *ngIf="intents">
   <mat-card class="intent" *ngFor="let intent of intents">
   <mat-card-content>
-    <h2><span class="intent-mention">intent :</span> {{intent.storyDefinition.intent.name}}</h2>
+    <h2><span class="intent-mention">Intent :</span> {{state.findIntentByName(intent.storyDefinition.intent.name)?.intentLabel()}}</h2>
     <h4 *ngIf="intent.firstSentences.length !== 0">Sentence
       <span *ngIf="intent.firstSentences.length === 1">sample:</span>
       <span *ngIf="intent.firstSentences.length !== 1">samples:</span>
