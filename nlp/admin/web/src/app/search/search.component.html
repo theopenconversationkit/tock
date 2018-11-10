@@ -15,7 +15,8 @@
   -->
 
 <div class="search">
-  <tock-sentences-scroll [filter]="filter" title="" [displayStatus]="true" (selectedSentences)="selectedSentences = $event">
+  <tock-sentences-scroll [filter]="filter" title="" [displayStatus]="true"
+                         (selectedSentences)="selectedSentences = $event">
     <mat-card>
       <mat-card-content>
         <mat-form-field class="search-input">
@@ -25,89 +26,96 @@
         <button mat-button (click)="search()">GO</button>
         <br>
         <mat-form-field class="search-criterion">
-        <mat-select placeholder="Intent" [(ngModel)]="filter.intentId" (selectionChange)="changeIntent()">
-          <mat-option value="-1">All</mat-option>
-          <mat-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
-            {{intent.name}}
-          </mat-option>
-          <mat-option value="unknown">Unknown</mat-option>
-        </mat-select>
+          <mat-select placeholder="Intent"
+                      [(ngModel)]="filter.intentId"
+                      (selectionChange)="changeIntent()">
+            <mat-option value="-1">All</mat-option>
+            <mat-optgroup *ngFor="let category of state.currentIntentsCategories | async" [label]="category.category">
+              <mat-option *ngFor="let intent of category.intents" [value]="intent._id">
+                {{intent.intentLabel()}}
+              </mat-option>
+            </mat-optgroup>
+            <mat-option value="tock:unknown">Unknown</mat-option>
+          </mat-select>
         </mat-form-field>
         <mat-form-field class="search-criterion">
-        <mat-select *ngIf="entityTypes" placeholder="Entity Type" [(ngModel)]="filter.entityType" (selectionChange)="changeEntityType()">
-          <mat-option value="">All</mat-option>
-          <mat-option *ngFor="let e of entityTypes" [value]="e.name">
-            {{e.qualifiedName(state.user)}}
-          </mat-option>
-        </mat-select>
+          <mat-select *ngIf="entityTypes" placeholder="Entity Type" [(ngModel)]="filter.entityType"
+                      (selectionChange)="changeEntityType()">
+            <mat-option value="">All</mat-option>
+            <mat-option *ngFor="let e of entityTypes" [value]="e.name">
+              {{e.qualifiedName(state.user)}}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
         <mat-form-field class="search-criterion">
-        <mat-select *ngIf="entityRoles" placeholder="Entity Role" [(ngModel)]="filter.entityRole" (selectionChange)="search()">
-          <mat-option value="">All</mat-option>
-          <mat-option *ngFor="let r of entityRoles" [value]="r">
-            {{r}}
-          </mat-option>
-        </mat-select>
+          <mat-select *ngIf="entityRoles" placeholder="Entity Role" [(ngModel)]="filter.entityRole"
+                      (selectionChange)="search()">
+            <mat-option value="">All</mat-option>
+            <mat-option *ngFor="let r of entityRoles" [value]="r">
+              {{r}}
+            </mat-option>
+          </mat-select>
         </mat-form-field>
         <mat-form-field class="search-criterion">
-        <mat-select placeholder="Status" [(ngModel)]="status" (selectionChange)="search()">
-          <mat-option value="">All</mat-option>
-          <mat-option value="inbox">Inbox</mat-option>
-          <mat-option value="validated">Validated</mat-option>
-          <mat-option value="model">Included in model</mat-option>
-        </mat-select>
+          <mat-select placeholder="Status" [(ngModel)]="status" (selectionChange)="search()">
+            <mat-option value="">All</mat-option>
+            <mat-option value="inbox">Inbox</mat-option>
+            <mat-option value="validated">Validated</mat-option>
+            <mat-option value="model">Included in model</mat-option>
+          </mat-select>
         </mat-form-field>
         <mat-form-field class="search-criterion">
-          <input matInput [matDatepicker]="after" placeholder="Modified after" [(ngModel)]="filter.modifiedAfter" (dateChange)="search()">
+          <input matInput [matDatepicker]="after" placeholder="Modified after" [(ngModel)]="filter.modifiedAfter"
+                 (dateChange)="search()">
           <mat-datepicker-toggle matSuffix [for]="after"></mat-datepicker-toggle>
           <mat-datepicker #after (selectedChanged)="search()"></mat-datepicker>
         </mat-form-field>
-        </mat-card-content>
-       <mat-card-footer *ngIf="state.hasRole(UserRole.admin)">
-         <mat-expansion-panel>
-           <mat-expansion-panel-header>
-             <mat-panel-title>
-               Advanced Options
-             </mat-panel-title>
-             <mat-panel-description>
-               Manage Intents and Entities
-             </mat-panel-description>
-           </mat-expansion-panel-header>
-           <div>
-             Change intent for selected sentences:
-           <mat-form-field>
-           <mat-select placeholder="Select Intent" [(ngModel)]="update.newIntentId">
-             <mat-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
-               {{intent.name}}
-             </mat-option>
-             <mat-option value="unknown">Unknown</mat-option>
-           </mat-select>
-           </mat-form-field>
+      </mat-card-content>
+      <mat-card-footer *ngIf="state.hasRole(UserRole.admin)">
+        <mat-expansion-panel>
+          <mat-expansion-panel-header>
+            <mat-panel-title>
+              Advanced Options
+            </mat-panel-title>
+            <mat-panel-description>
+              Manage Intents and Entities
+            </mat-panel-description>
+          </mat-expansion-panel-header>
+          <div>
+            Change intent for selected sentences:
+            <mat-form-field>
+              <mat-select placeholder="Select Intent" [(ngModel)]="update.newIntentId">
+                <mat-option *ngFor="let intent of state.currentIntents | async" [value]="intent._id">
+                  {{intent.name}}
+                </mat-option>
+                <mat-option value="unknown">Unknown</mat-option>
+              </mat-select>
+            </mat-form-field>
 
-             <button color="primary" mat-button (click)="updateSentencesIntent()">Change Intent</button>
-           </div>
-           <div>
-             Change entity for selected sentences:
-             <mat-form-field class="search-criterion">
-             <mat-select placeholder="Select Old Entity" [(ngModel)]="update.oldEntity">
-               <mat-option *ngFor="let e of state.entities | async" [value]="e">
-                 {{e.qualifiedRole}}
-               </mat-option>
-             </mat-select>
-             </mat-form-field>
+            <button color="primary" mat-button (click)="updateSentencesIntent()">Change Intent</button>
+          </div>
+          <div>
+            Change entity for selected sentences:
+            <mat-form-field class="search-criterion">
+              <mat-select placeholder="Select Old Entity" [(ngModel)]="update.oldEntity">
+                <mat-option *ngFor="let e of state.entities | async" [value]="e">
+                  {{e.qualifiedRole}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
 
-             <mat-form-field>
-             <mat-select placeholder="Select New Entity" [(ngModel)]="update.newEntity">
-               <mat-option *ngFor="let e of state.entities | async" [value]="e">
-                 {{e.qualifiedRole}}
-               </mat-option>
-             </mat-select>
-             </mat-form-field>
+            <mat-form-field>
+              <mat-select placeholder="Select New Entity" [(ngModel)]="update.newEntity">
+                <mat-option *ngFor="let e of state.entities | async" [value]="e">
+                  {{e.qualifiedRole}}
+                </mat-option>
+              </mat-select>
+            </mat-form-field>
 
-             <button color="primary" mat-button (click)="updateSentencesEntity()">Change Entity</button>
-           </div>
-         </mat-expansion-panel>
-       </mat-card-footer>
+            <button color="primary" mat-button (click)="updateSentencesEntity()">Change Entity</button>
+          </div>
+        </mat-expansion-panel>
+      </mat-card-footer>
     </mat-card>
   </tock-sentences-scroll>
 </div>

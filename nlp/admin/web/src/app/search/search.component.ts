@@ -50,8 +50,15 @@ export class SearchComponent implements OnInit {
     this.route.queryParams.subscribe(params => {
       this.filter.search = params["text"];
       this.fillEntitiesFilter();
-
     });
+    this.state.currentIntents.subscribe(i => {
+         this.filter = new SentenceFilter();
+         this.status = null;
+         this.selectedSentences = null;
+         this.update = new SentencesUpdate();
+         this.fillEntitiesFilter();
+         this.search();
+    })
   }
 
   private fillEntitiesFilter() {
