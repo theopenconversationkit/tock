@@ -19,9 +19,11 @@
     <mat-form-field>
       <mat-select placeholder="Intent" [(ngModel)]="intent" (selectionChange)="search()" class="search-input">
         <mat-option value="">All</mat-option>
-        <mat-option *ngFor="let intent of state.currentIntents | async" [value]="intent.name">
-          {{intent.name}}
-        </mat-option>
+        <mat-optgroup *ngFor="let category of state.currentIntentsCategories | async" [label]="category.category">
+          <mat-option *ngFor="let intent of category.intents" [value]="intent.name">
+            {{intent.intentLabel()}}
+          </mat-option>
+        </mat-optgroup>
         <mat-option value="unknown">Unknown</mat-option>
       </mat-select>
     </mat-form-field>

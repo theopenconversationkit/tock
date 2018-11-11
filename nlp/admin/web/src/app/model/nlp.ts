@@ -882,14 +882,6 @@ export class IntentTestError {
               public firstDetectionDate: Date) {
   }
 
-  currentIntentName(): string {
-    return entityNameFromQualifiedName(this.currentIntent);
-  }
-
-  wrongIntentName(): string {
-    return entityNameFromQualifiedName(this.wrongIntent);
-  }
-
   static fromJSON(json?: any): IntentTestError {
     const value = Object.create(IntentTestError.prototype);
 

@@ -50,8 +50,8 @@ export class TestEntityErrorComponent implements OnInit, AfterViewInit {
   }
 
   intentName(error: EntityTestError) {
-    const i = this.state.findIntentById(error.originalSentence.classification.intentId)
-    return i ? i.name : "unknown";
+    const i = this.state.findIntentById(error.originalSentence.classification.intentId);
+    return i ? i.intentLabel() : "unknown";
   }
 
   validate(error: EntityTestError) {

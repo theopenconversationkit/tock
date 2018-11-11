@@ -25,12 +25,12 @@
 
     <ng-container matColumnDef="currentIntent">
       <mat-header-cell *matHeaderCellDef> Current Intent </mat-header-cell>
-      <mat-cell *matCellDef="let row"> <span style="color:green">{{row.currentIntentName()}}</span></mat-cell>
+      <mat-cell *matCellDef="let row"> <span style="color:green">{{state.intentLabelByName(row.currentIntent)}}</span></mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="wrongIntent">
       <mat-header-cell *matHeaderCellDef> Intent Found </mat-header-cell>
-      <mat-cell *matCellDef="let row"> <span style="color:red">{{row.wrongIntentName()}}</span></mat-cell>
+      <mat-cell *matCellDef="let row"> <span style="color:red">{{state.intentLabelByName(row.wrongIntent)}}</span></mat-cell>
     </ng-container>
 
     <ng-container matColumnDef="count">

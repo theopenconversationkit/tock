@@ -50,12 +50,12 @@ export class IntentQAComponent implements OnInit {
         this.minOccurrences))
       .subscribe(result => {
         const r = result.map(p => {
-          return {
-            intent1: p.intent1,
-            intent2: p.intent2,
-            occurrences: p.occurrences,
-            average: p.average
-          };
+          return new IntentQA(
+            this.state.intentLabelByName(p.intent1),
+            this.state.intentLabelByName(p.intent2),
+            p.occurrences,
+            p.average
+          );
         });
         this.dataSource = new IntentQADataSource(r);
       });

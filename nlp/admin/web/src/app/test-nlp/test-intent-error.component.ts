@@ -81,7 +81,7 @@ export class TestIntentErrorDataSource extends DataSource<IntentTestError> {
   private subject = new BehaviorSubject([]);
 
   constructor(private _paginator: MatPaginator,
-              private state: StateService,
+              public state: StateService,
               private qualityService: QualityService) {
     super();
   }

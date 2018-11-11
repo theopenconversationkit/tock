@@ -28,6 +28,7 @@ import {
   EntityType,
   Intent,
   IntentsCategory,
+  nameFromQualifiedName,
   NlpEngineType,
   PredefinedLabelQuery,
   PredefinedValueQuery,
@@ -142,6 +143,16 @@ export class StateService implements AuthListener {
 
   findIntentByName(name: string): Intent {
     return this.currentApplication.intents.find(i => i.name === name);
+  }
+
+  intentLabelByName(name: string): string {
+    const n = name.indexOf(":") == -1 ? name : nameFromQualifiedName(name);
+    const i = this.findIntentByName(n);
+    if (i == null) {
+      return name;
+    } else {
+      return i.intentLabel()
+    }
   }
 
   findEntityTypeByName(name: string): EntityType {

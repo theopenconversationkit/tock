@@ -80,7 +80,7 @@
                   Probability for other intents:
                   <ol style="overflow:auto">
                     <li *ngFor="let i of sentence.classification.otherIntentsProbabilities | mapToIterable">
-                      <div style="float:left">{{i.key}}&nbsp;&nbsp;</div><div style="float:right">&nbsp;{{i.value | percent:'1.0-2'}}</div>
+                      <div style="float:left">{{state.intentLabelByName(i.key)}}&nbsp;&nbsp;</div><div style="float:right">&nbsp;{{i.value | percent:'1.0-2'}}</div>
                     </li>
                   </ol>
            </span>

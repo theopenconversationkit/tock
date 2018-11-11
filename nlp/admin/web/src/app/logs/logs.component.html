@@ -48,10 +48,10 @@
         <tock-highlight *ngIf="!d.error" [sentence]="d.sentence" [readOnly]="true"></tock-highlight>
       </mat-card-title>
       <mat-card-content>
-        {{d.intent}}
+        {{state.intentLabelByName(d.intent)}}
           <span *ngIf="d.sentence?.classification?.intentId && d.sentence.classification.hasIntentProbability()" matTooltip="intent probability">
             <span class="intentProbability">({{d.sentence.classification.intentProbability | percent:'1.0-2'}})</span>
-        </span> {{d.intent ? '-' : ''}}
+        </span> {{state.intentLabelByName(d.intent) ? '-' : ''}}
         {{d.date | amTimeAgo}} <span *ngIf="d.durationInMS !== 0">in {{d.durationInMS}} ms</span>
         <button *ngIf="config.displayDialogUrl" mat-icon-button matTooltip="Display Conversation" (click)="displayConversation(d)" color="primary"><mat-icon>speaker_notes</mat-icon></button>
         <button mat-icon-button (click)="displayFullLog(d)" matTooltip="View Full Log"><mat-icon>visibility</mat-icon></button>

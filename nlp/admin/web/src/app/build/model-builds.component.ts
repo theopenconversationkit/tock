@@ -50,7 +50,7 @@ export class ModelBuildsComponent implements OnInit, AfterViewInit {
   intentName(build: ModelBuild): string {
     if (build.intentId) {
       const i = this.state.findIntentById(build.intentId)
-      return i ? i.name : "unknown";
+      return i ? i.intentLabel() : "unknown";
     } else {
       return "";
     }
