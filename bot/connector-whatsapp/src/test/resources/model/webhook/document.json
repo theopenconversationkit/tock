@@ -1,0 +1,17 @@
+{
+  "messages": [
+    {
+      "from": "16315555555",
+      "id": "ABGGFlA5FpafAgo6tHcNmNjXmuSf",
+      "timestamp": "1522189546",
+      "type": "document",
+      "document": {
+        "caption": "80skaraokesonglistartist",
+        "file": "/usr/local/wamedia/shared/fc233119-733f-49c-bcbd-b2f68f798e33",
+        "id": "fc233119-733f-49c-bcbd-b2f68f798e33",
+        "mime_type": "application/pdf",
+        "sha256": "3b11fa6ef2bde1dd14726e09d3edaf782120919d06f6484f32d5d5caa4b8e"
+      }
+    }
+  ]
+}

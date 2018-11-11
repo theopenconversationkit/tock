@@ -67,6 +67,10 @@
         </dependency>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
+            <artifactId>tock-bot-connector-whatsapp</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-storage-mongo</artifactId>
         </dependency>
         <dependency>

@@ -1,0 +1,17 @@
+{
+  "messages": [
+    {
+      "errors": [
+        {
+          "code": 501,
+          "details": "Message type is not currently supported",
+          "title": "Unknown message type"
+        }
+      ],
+      "from": "16315555555",
+      "id": "ABGGFRBzFymPAgo6N9KKs7HsN6eB",
+      "timestamp": "1531933468",
+      "type": "unknown"
+    }
+  ]
+}

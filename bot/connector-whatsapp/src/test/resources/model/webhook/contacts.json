@@ -1,0 +1,60 @@
+{
+  "messages": [
+    {
+      "contacts": [
+        {
+          "addresses": [
+            {
+              "city": "Menlo Park",
+              "country": "United States",
+              "country_code": "us",
+              "state": "CA",
+              "street": "1 Hacker Way",
+              "type": "WORK",
+              "zip": "94025"
+            }
+          ],
+          "birthday": "2012-08-18",
+          "emails": [
+            {
+              "email": "kfish@fb.com",
+              "type": "WORK"
+            }
+          ],
+          "name": {
+            "first_name": "Kerry",
+            "formatted_name": "Kerry Fisher",
+            "last_name": "Fisher"
+          },
+          "org": {
+            "company": "Facebook"
+          },
+          "phones": [
+            {
+              "phone": "+1 (940) 555-1234",
+              "type": "CELL"
+            },
+            {
+              "phone": "+1 (650) 555-1234",
+              "type": "WORK",
+              "wa_id": "16505551234"
+            }
+          ],
+          "urls": [
+            {
+              "url": "https://www.facebook.com",
+              "type": "WORK"
+            }
+          ]
+        }
+      ],
+      "from": "16505551234",
+      "id": "ABGGFlA4dSRvAgo6C4Z53hMh1ugR",
+      "profile": {
+        "name": "Kerry Fisher"
+      },
+      "timestamp": "1537248012",
+      "type": "contacts"
+    }
+  ]
+}

@@ -66,27 +66,27 @@ internal object MessengerConnectorProvider : ConnectorProvider {
             listOf(
                 ConnectorTypeConfigurationField(
                     "Application Id",
-                    "appId",
+                    APP_ID,
                     true
                 ),
                 ConnectorTypeConfigurationField(
                     "Page Id",
-                    "pageId",
+                    PAGE_ID,
                     true
                 ),
                 ConnectorTypeConfigurationField(
                     "Call Token",
-                    "token",
+                    TOKEN,
                     true
                 ),
                 ConnectorTypeConfigurationField(
                     "Webhook token",
-                    "verifyToken",
+                    VERIFY_TOKEN,
                     false
                 ),
                 ConnectorTypeConfigurationField(
                     "Secret",
-                    "secret",
+                    SECRET,
                     true
                 )
             ),

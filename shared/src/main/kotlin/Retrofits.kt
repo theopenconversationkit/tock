@@ -99,16 +99,14 @@ fun retrofitBuilderWithTimeoutAndLogger(
  */
 fun basicAuthInterceptor(login: String, password: String): Interceptor {
     val credential = Credentials.basic(login, password)
-    return object : Interceptor {
-        override fun intercept(chain: Interceptor.Chain): Response {
-            val original = chain.request()
+    return Interceptor { chain ->
+        val original = chain.request()
 
-            val requestBuilder = original.newBuilder()
-                .header("Authorization", credential)
+        val requestBuilder = original.newBuilder()
+            .header("Authorization", credential)
 
-            val request = requestBuilder.build()
-            return chain.proceed(request)
-        }
+        val request = requestBuilder.build()
+        chain.proceed(request)
     }
 }
 

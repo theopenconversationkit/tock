@@ -1,0 +1,188 @@
+/*
+ * Copyright (C) 2017 VSCT
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package fr.vsct.tock.bot.connector.whatsapp
+
+import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.databind.module.SimpleModule
+import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer
+import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotMessage
+import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppResponse
+import fr.vsct.tock.shared.addJacksonConverter
+import fr.vsct.tock.shared.basicAuthInterceptor
+import fr.vsct.tock.shared.create
+import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.jackson.addDeserializer
+import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.longProperty
+import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import mu.KotlinLogging
+import okhttp3.Interceptor
+import retrofit2.Call
+import retrofit2.Response
+import retrofit2.http.Body
+import retrofit2.http.Headers
+import retrofit2.http.POST
+import java.time.Instant
+import java.time.OffsetDateTime
+import java.time.format.DateTimeFormatter
+
+/**
+ *
+ */
+internal class WhatsAppClient(
+    whatsAppUrl: String,
+    login: String,
+    password: String
+) {
+
+    data class LoginResponse(val users: List<LoginUser> = emptyList())
+    data class LoginUser(
+        val token: String,
+        @get:JsonProperty("expires_after") val expiresAfter: OffsetDateTime
+    )
+
+    private interface WhatsAppLoginApi {
+
+        @Headers("Content-Type: application/json")
+        @POST("/v1/users/login")
+        fun login(): Call<LoginResponse>
+    }
+
+    private interface WhatsAppApi {
+
+        @Headers("Content-Type: application/json")
+        @POST("/v1/messages")
+        fun sendMessage(@Body message: WhatsAppBotMessage): Call<WhatsAppResponse>
+
+    }
+
+    private val logger = KotlinLogging.logger {}
+    private val loginApi: WhatsAppLoginApi
+    private val api: WhatsAppApi
+
+    @Volatile
+    private var tokenExpiration: OffsetDateTime? = null
+    @Volatile
+    private var token: String? = null
+
+    val clientMapper = mapper.copy().registerModule(
+        SimpleModule()
+            .addDeserializer(
+                OffsetDateTime::class,
+                object : InstantDeserializer<OffsetDateTime>(
+                    OffsetDateTime::class.java,
+                    DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ssXXX"),
+                    { OffsetDateTime.from(it) },
+                    { a -> OffsetDateTime.ofInstant(Instant.ofEpochMilli(a.value), a.zoneId) },
+                    { a ->
+                        OffsetDateTime.ofInstant(
+                            Instant.ofEpochSecond(a.integer, a.fraction.toLong()),
+                            a.zoneId
+                        )
+                    },
+                    { d, z -> d.withOffsetSameInstant(z.rules.getOffset(d.toLocalDateTime())) },
+                    false
+                ) {
+                }
+            )
+    )
+
+    init {
+        loginApi = retrofitBuilderWithTimeoutAndLogger(
+            longProperty("tock_whatsapp_request_timeout_ms", 30000),
+            logger,
+            interceptors = listOf(basicAuthInterceptor(login, password))
+        )
+            .baseUrl(whatsAppUrl)
+            .addJacksonConverter(clientMapper)
+            .build()
+            .create()
+
+        api = retrofitBuilderWithTimeoutAndLogger(
+            longProperty("tock_whatsapp_request_timeout_ms", 30000),
+            logger,
+            interceptors = listOf(tokenInterceptor())
+        )
+            .baseUrl(whatsAppUrl)
+            .addJacksonConverter(clientMapper)
+            .build()
+            .create()
+    }
+
+    /**
+     * Create a Bearer token interceptor.
+     */
+    private fun tokenInterceptor(): Interceptor {
+        return Interceptor { chain ->
+            val original = chain.request()
+
+            val requestBuilder = original.newBuilder()
+                .header("Authorization", "Bearer $token")
+
+            val request = requestBuilder.build()
+            chain.proceed(request)
+        }
+    }
+
+    private fun checkLogin(): Boolean {
+        return if (token == null || tokenExpiration?.isBefore(OffsetDateTime.now().plusHours(1)) != false) {
+            login()
+        } else {
+            true
+        }
+    }
+
+    private fun Response<*>.logError() {
+        val error = message()
+        val errorCode = code()
+        logger.warn { "WhatsApp Error : $errorCode $error" }
+        val errorBody = errorBody()?.string()
+        logger.warn { "Messenger Error body : $errorBody" }
+    }
+
+    fun sendMessage(message: WhatsAppBotMessage) {
+        try {
+            val response = api.sendMessage(message).execute()
+            if (!response.isSuccessful) {
+                response.logError()
+            }
+        } catch (e: Exception) {
+            logger.error(e)
+        }
+    }
+
+    fun login(): Boolean {
+        return try {
+            val response = loginApi.login().execute()
+            if (response.isSuccessful) {
+                response.body()?.users?.firstOrNull()?.let {
+                    token = it.token
+                    tokenExpiration = it.expiresAfter
+                    true
+                } ?: false
+            } else {
+                response.logError()
+                false
+            }
+        } catch (e: Exception) {
+            logger.error(e)
+            false
+        }
+    }
+
+
+}
