@@ -31,6 +31,7 @@ import {
   EntityDefinition,
   EntityType,
   EntityWithSubEntities,
+  Intent,
   Sentence
 } from "../../model/nlp";
 import {NlpService} from "../../nlp-tabs/nlp.service";
@@ -38,7 +39,6 @@ import {StateService} from "../../core-nlp/state.service";
 import {MatDialog, MatDialogConfig, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {CreateEntityDialogComponent} from "../create-entity-dialog/create-entity-dialog.component";
 import {User} from "../../model/auth";
-import {Intent} from "../../model/nlp";
 import {ApplicationConfig} from "../../core-nlp/application.config";
 import {Router} from "@angular/router";
 import {isNullOrUndefined} from "../../model/commons";
@@ -143,7 +143,6 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
     }
   }
 
-
   @HostListener('window:keyup', ['$event'])
   keyup(event: KeyboardEvent) {
     if (event.shiftKey && (event.keyCode === 39 || event.keyCode === 37)) {
@@ -242,9 +241,29 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
   onSelect(entity: EntityDefinition) {
     if (this.selectedStart < this.selectedEnd) {
       this.edited = false;
-      const e = new ClassifiedEntity(entity.entityTypeName, entity.role, this.selectedStart, this.selectedEnd, []);
-      this.sentence.addEntity(e);
-      this.initTokens();
+      const text = this.sentence.getText();
+      if (this.selectedStart >= 0 && this.selectedEnd <= text.length) {
+        //trim spaces
+        for (let i = this.selectedEnd - 1; i >= this.selectedStart; i--) {
+          if (text[i].trim().length === 0) {
+            this.selectedEnd--;
+          } else {
+            break;
+          }
+        }
+        for (let i = this.selectedStart; i < this.selectedEnd; i++) {
+          if (text[i].trim().length === 0) {
+            this.selectedStart++;
+          } else {
+            break;
+          }
+        }
+        if (this.selectedStart < this.selectedEnd) {
+          const e = new ClassifiedEntity(entity.entityTypeName, entity.role, this.selectedStart, this.selectedEnd, []);
+          this.sentence.addEntity(e);
+        }
+        this.initTokens();
+      }
     }
   }
 
@@ -257,7 +276,6 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
         for (const child of node.childNodes) {
           if (node.nodeType === 1) {
             if (node === result.selectedNode) {
-              const textNode = node.childNodes[0];
               this.selectedStart = result.alreadyCount + result.startOffset;
               this.selectedEnd = this.selectedStart + result.endOffset - result.startOffset;
             } else {
