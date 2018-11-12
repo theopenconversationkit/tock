@@ -28,6 +28,7 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.shared.error
 import mu.KotlinLogging
+import java.util.concurrent.ArrayBlockingQueue
 
 /**
  *
@@ -42,25 +43,35 @@ internal class RocketChatConnector(
         private val logger = KotlinLogging.logger {}
     }
 
+    private val lastMessages = ArrayBlockingQueue<String>(10, true, (0..9).map { "" })
+
     override fun register(controller: ConnectorController) {
         client.join(roomId) { room ->
             logger.debug { "listening room event: $room" }
+            val message = room.lastMessage
             if (room.type.toString() != RoomType.LIVECHAT && (roomId == null || room.id != roomId)) {
                 logger.debug { "Do not reply to messages in non-livechat rooms or dedicated room" }
-            } else if (room.lastMessage?.sender == null) {
+            } else if (message?.sender == null) {
                 logger.warn { "no message for $room - skip" }
-            } else if (room.lastMessage!!.sender!!.username == client.login) {
+            } else if (message.sender!!.username == client.login) {
                 logger.debug { "do not reply to bot messages $room because client login is the same than sender: ${client.login}" }
+            } //sometimes the same message comes twice
+            else if (lastMessages.contains(message.id)) {
+                logger.debug { "message $message already seen - skip" }
             } else {
+                //register last messages
+                lastMessages.poll()
+                lastMessages.offer(message.id)
+
                 val requestTimerData = BotRepository.requestTimer.start("rocketchat_webhook")
-                logger.debug { "message handled : ${room.lastMessage}" }
+                logger.debug { "message handled : $message" }
                 try {
                     controller.handle(
                         SendSentence(
-                            PlayerId(room.lastMessage!!.sender!!.id!!),
+                            PlayerId(message.sender!!.id!!),
                             applicationId,
                             PlayerId(applicationId, PlayerType.bot),
-                            room.lastMessage!!.message
+                            message.message
                         ),
                         ConnectorData(RocketChatConnectorCallback(applicationId, room.id))
                     )

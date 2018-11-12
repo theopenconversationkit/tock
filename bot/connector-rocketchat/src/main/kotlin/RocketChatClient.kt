@@ -121,6 +121,7 @@ internal class RocketChatClient(
                 }
                 launch {
                     for (room in client.roomsChannel) {
+                        logger.debug { "room: $room" }
                         listener.invoke(room.data)
                     }
                 }
