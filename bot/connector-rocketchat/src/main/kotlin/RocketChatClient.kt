@@ -42,7 +42,7 @@ import java.util.concurrent.TimeUnit
  *
  */
 internal class RocketChatClient(
-    private val targetUrl: String,
+    val targetUrl: String,
     val login: String,
     private val password: String,
     private val avatar: String
@@ -51,6 +51,9 @@ internal class RocketChatClient(
     companion object {
         private val logger = KotlinLogging.logger {}
     }
+
+    @Volatile
+    private var disabled = false
 
     private class SimpleTokenRepository : TokenRepository {
         private var savedToken: Token? = null
@@ -95,7 +98,7 @@ internal class RocketChatClient(
         }
     }
 
-    fun join(roomId:String?, listener: (Room) -> Unit) {
+    fun join(roomId: String?, listener: (Room) -> Unit) {
         val job = launch(CommonPool) {
             try {
                 logger.debug { "Try to connect $login" }
@@ -121,14 +124,16 @@ internal class RocketChatClient(
                 }
                 launch {
                     for (room in client.roomsChannel) {
-                        logger.debug { "room: $room" }
-                        listener.invoke(room.data)
+                        if (!disabled) {
+                            logger.debug { "room: $room" }
+                            listener.invoke(room.data)
+                        }
                     }
                 }
 
                 client.connect()
 
-                if(roomId != null) {
+                if (roomId != null) {
                     client.joinChat(roomId)
                 }
             } catch (e: Exception) {
@@ -160,5 +165,9 @@ internal class RocketChatClient(
                 logger.error(e)
             }
         }
+    }
+
+    fun unregister() {
+        disabled = true
     }
 }

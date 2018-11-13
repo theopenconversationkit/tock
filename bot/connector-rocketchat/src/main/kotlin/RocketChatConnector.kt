@@ -29,6 +29,7 @@ import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.shared.error
 import mu.KotlinLogging
 import java.util.concurrent.ArrayBlockingQueue
+import java.util.concurrent.CopyOnWriteArraySet
 
 /**
  *
@@ -41,51 +42,63 @@ internal class RocketChatConnector(
 
     companion object {
         private val logger = KotlinLogging.logger {}
+        private val registeredClientUrls = CopyOnWriteArraySet<String>()
     }
 
     private val lastMessages = ArrayBlockingQueue<String>(10, true, (0..9).map { "" })
 
     override fun register(controller: ConnectorController) {
-        client.join(roomId) { room ->
-            logger.debug { "listening room event: $room" }
-            val message = room.lastMessage
-            if (room.type.toString() != RoomType.LIVECHAT && (roomId == null || room.id != roomId)) {
-                logger.debug { "Do not reply to messages in non-livechat rooms or dedicated room" }
-            } else if (message?.sender == null) {
-                logger.warn { "no message for $room - skip" }
-            } else if (message.sender!!.username == client.login) {
-                logger.debug { "do not reply to bot messages $room because client login is the same than sender: ${client.login}" }
-            } //sometimes the same message comes twice
-            else if (lastMessages.contains(message.id)) {
-                logger.debug { "message $message already seen - skip" }
-            } else {
-                //register last messages
-                lastMessages.poll()
-                lastMessages.offer(message.id)
+        if (registeredClientUrls.contains(client.targetUrl)) {
+            logger.warn { "client url already registered - skip: ${client.targetUrl}" }
+        } else {
+            registeredClientUrls.add(client.targetUrl)
+            client.join(roomId) { room ->
+                logger.debug { "listening room event: $room" }
+                val message = room.lastMessage
+                if (room.type.toString() != RoomType.LIVECHAT && (roomId == null || room.id != roomId)) {
+                    logger.debug { "Do not reply to messages in non-livechat rooms or dedicated room" }
+                } else if (message?.sender == null) {
+                    logger.warn { "no message for $room - skip" }
+                } else if (message.sender!!.username == client.login) {
+                    logger.debug { "do not reply to bot messages $room because client login is the same than sender: ${client.login}" }
+                } //sometimes the same message comes twice
+                else if (lastMessages.contains(message.id)) {
+                    logger.debug { "message $message already seen - skip" }
+                } else {
+                    //register last messages
+                    lastMessages.poll()
+                    lastMessages.offer(message.id)
 
-                val requestTimerData = BotRepository.requestTimer.start("rocketchat_webhook")
-                logger.debug { "message handled : $message" }
-                try {
-                    controller.handle(
-                        SendSentence(
-                            PlayerId(message.sender!!.id!!),
-                            applicationId,
-                            PlayerId(applicationId, PlayerType.bot),
-                            message.message
-                        ),
-                        ConnectorData(RocketChatConnectorCallback(applicationId, room.id))
-                    )
-                } catch (e: Throwable) {
-                    logger.error(e)
-                } finally {
+                    val requestTimerData = BotRepository.requestTimer.start("rocketchat_webhook")
+                    logger.debug { "message handled : $message" }
                     try {
-                        BotRepository.requestTimer.end(requestTimerData)
+                        controller.handle(
+                            SendSentence(
+                                PlayerId(message.sender!!.id!!),
+                                applicationId,
+                                PlayerId(applicationId, PlayerType.bot),
+                                message.message
+                            ),
+                            ConnectorData(RocketChatConnectorCallback(applicationId, room.id))
+                        )
                     } catch (e: Throwable) {
                         logger.error(e)
+                    } finally {
+                        try {
+                            BotRepository.requestTimer.end(requestTimerData)
+                        } catch (e: Throwable) {
+                            logger.error(e)
+                        }
                     }
                 }
             }
         }
+    }
+
+    override fun unregister(controller: ConnectorController) {
+        super.unregister(controller)
+        client.unregister()
+        registeredClientUrls.remove(client.targetUrl)
     }
 
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {

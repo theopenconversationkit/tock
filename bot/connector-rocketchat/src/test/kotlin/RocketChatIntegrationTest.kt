@@ -40,6 +40,16 @@ class RocketChatIntegrationTest {
         "GENERAL"
     )
 
+    private val connector2 = RocketChatConnector(
+        "appId",
+        RocketChatClient(
+            "http://localhost:3000",
+            "test",
+            "a",
+            "https://avatars2.githubusercontent.com/u/224255?s=88&v=4"
+        )
+    )
+
 
     @Test
     fun testRocketChatIntegration() {
@@ -57,6 +67,7 @@ class RocketChatIntegrationTest {
             )
         }
         connector.register(connectorController)
+        connector2.register(connectorController)
         Thread.sleep(100000000L)
 
     }
