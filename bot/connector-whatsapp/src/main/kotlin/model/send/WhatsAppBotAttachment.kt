@@ -16,10 +16,23 @@
 
 package fr.vsct.tock.bot.connector.whatsapp.model.send
 
+import com.fasterxml.jackson.annotation.JsonIgnore
+
 /**
  *
  */
 data class WhatsAppBotAttachment(
-    val id: String,
+    var id: String = "",
     val caption: String? = null
-)
+) {
+    @get:JsonIgnore
+    internal var byteImages: ByteArray? = null
+    @get:JsonIgnore
+    internal var contentType: String = "image/png"
+
+    constructor(byteImages: ByteArray, contentType: String, caption: String? = null) : this("", caption) {
+        this.byteImages = byteImages
+        this.contentType = contentType
+    }
+
+}

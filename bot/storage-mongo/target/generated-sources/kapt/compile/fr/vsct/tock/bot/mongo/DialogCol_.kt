@@ -32,6 +32,9 @@ internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,DialogCol::lastUpdateDate)
+
+    val groupId: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,DialogCol::groupId)
     companion object {
         val PlayerIds: PlayerId_Col<DialogCol>
             get() = PlayerId_Col<DialogCol>(null,DialogCol::playerIds)
@@ -44,7 +47,9 @@ internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty
         val ApplicationIds: KCollectionSimplePropertyPath<DialogCol, String?>
             get() = KCollectionSimplePropertyPath(null, DialogCol::applicationIds)
         val LastUpdateDate: KProperty1<DialogCol, Instant?>
-            get() = DialogCol::lastUpdateDate}
+            get() = DialogCol::lastUpdateDate
+        val GroupId: KProperty1<DialogCol, String?>
+            get() = DialogCol::groupId}
 }
 
 internal class DialogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<DialogCol>?>) : KCollectionPropertyPath<T, DialogCol?, DialogCol_<T>>(previous,property) {
@@ -65,6 +70,9 @@ internal class DialogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KPrope
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,DialogCol::lastUpdateDate)
+
+    val groupId: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,DialogCol::groupId)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DialogCol_<T> = DialogCol_(this, customProperty(this, additionalPath))}
@@ -87,6 +95,9 @@ internal class DialogCol_Map<T, K>(previous: KPropertyPath<T, *>?, property: KPr
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
         get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,DialogCol::lastUpdateDate)
+
+    val groupId: KPropertyPath<T, String?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,DialogCol::groupId)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DialogCol_<T> = DialogCol_(this, customProperty(this, additionalPath))}

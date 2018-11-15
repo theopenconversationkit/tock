@@ -19,7 +19,9 @@ package fr.vsct.tock.bot.connector.whatsapp
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.datatype.jsr310.deser.InstantDeserializer
+import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotImageMessage
 import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotMessage
+import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotTextMessage
 import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppResponse
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.basicAuthInterceptor
@@ -31,11 +33,18 @@ import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 import okhttp3.Interceptor
+import okhttp3.MediaType
+import okhttp3.RequestBody
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
+import retrofit2.http.GET
+import retrofit2.http.Header
 import retrofit2.http.Headers
 import retrofit2.http.POST
+import retrofit2.http.Path
 import java.time.Instant
 import java.time.OffsetDateTime
 import java.time.format.DateTimeFormatter
@@ -55,18 +64,33 @@ internal class WhatsAppClient(
         @get:JsonProperty("expires_after") val expiresAfter: OffsetDateTime
     )
 
+    data class MediaResponse(val media: List<MediaId> = emptyList())
+    data class MediaId(val id: String)
+
     private interface WhatsAppLoginApi {
 
         @Headers("Content-Type: application/json")
-        @POST("/v1/users/login")
+        @POST("v1/users/login")
         fun login(): Call<LoginResponse>
     }
 
     private interface WhatsAppApi {
 
         @Headers("Content-Type: application/json")
-        @POST("/v1/messages")
+        @POST("v1/messages")
         fun sendMessage(@Body message: WhatsAppBotMessage): Call<WhatsAppResponse>
+
+        @GET("v1/media/{mediaId}")
+        fun getMedia(@Path("mediaId") mediaId: String): Call<ResponseBody>
+
+        @DELETE("v1/media/{mediaId}")
+        fun deleteMedia(@Path("mediaId") mediaId: String): Call<ResponseBody>
+
+        @POST("v1/media")
+        fun sendMedia(
+            @Header("Content-Type") contentType: String,
+            @Body body: RequestBody
+        ): Call<MediaResponse>
 
     }
 
@@ -154,14 +178,51 @@ internal class WhatsAppClient(
         logger.warn { "Messenger Error body : $errorBody" }
     }
 
-    fun sendMessage(message: WhatsAppBotMessage) {
-        try {
-            val response = api.sendMessage(message).execute()
-            if (!response.isSuccessful) {
-                response.logError()
+    fun getMedia(id: String): ByteArray? {
+        return if (checkLogin()) {
+            api.getMedia(id).execute().run {
+                body()?.bytes() ?: null.also { logError() }
             }
-        } catch (e: Exception) {
-            logger.error(e)
+        } else {
+            null
+        }
+    }
+
+    fun sendMessage(message: WhatsAppBotMessage) {
+        if (checkLogin()) {
+            try {
+                when (message) {
+                    is WhatsAppBotTextMessage -> {
+                        val response = api.sendMessage(message).execute()
+                        if (!response.isSuccessful) {
+                            response.logError()
+                        }
+                    }
+                    is WhatsAppBotImageMessage -> {
+                        val response = api.sendMedia(
+                            message.image.contentType,
+                            RequestBody.create(
+                                MediaType.parse(message.image.contentType),
+                                message.image.byteImages!!
+                            )
+                        ).execute()
+                        val id = response.body()?.media?.firstOrNull()?.id
+                        if (id == null) {
+                            response.logError()
+                        } else {
+                            message.image.id = id
+                            val response2 = api.sendMessage(message).execute()
+                            if (!response2.isSuccessful) {
+                                response2.logError()
+                            }
+                        }
+
+                    }
+                }
+
+            } catch (e: Exception) {
+                logger.error(e)
+            }
         }
     }
 

@@ -27,6 +27,7 @@ internal class DialogCol_Deserializer : StdDeserializer<DialogCol>(DialogCol::cl
         var stories: List<DialogCol.StoryMongoWrapper>? = null
         var applicationIds: Set<String>? = null
         var lastUpdateDate: Instant? = null
+        var groupId: String? = null
         while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
         nextToken() 
         if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) { break } 
@@ -39,9 +40,10 @@ internal class DialogCol_Deserializer : StdDeserializer<DialogCol>(DialogCol::cl
         "stories" -> stories = p.readValueAs(stories_reference)
         "applicationIds" -> applicationIds = p.readValueAs(applicationIds_reference)
         "lastUpdateDate" -> lastUpdateDate = p.readValueAs(Instant::class.java)
+        "groupId" -> groupId = p.text
         else -> if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) { p.skipChildren() } else { nextToken() }
          }  }
-        return DialogCol(playerIds!!, _id!!, state!!, stories!!, applicationIds!!, lastUpdateDate!!)
+        return DialogCol(playerIds!!, _id!!, state!!, stories!!, applicationIds!!, lastUpdateDate!!, groupId)
                 }
     }
     companion object {

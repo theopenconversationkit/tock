@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.whatsapp.model.webhook
+package fr.vsct.tock.bot.connector.whatsapp
+
+import fr.vsct.tock.bot.connector.ConnectorHandler
+import fr.vsct.tock.bot.definition.ConnectorStoryHandler
+import kotlin.reflect.KClass
 
 /**
- *
+ * To specify [ConnectorStoryHandler] for WhatsApp connector.
+ * [KClass] passed as [value] of this annotation must have a primary constructor
+ * with a single not optional [StoryHandlerDefinitionBase] argument.
  */
-enum class WhatsAppMessageType {
-    audio, contacts, document, image, location, text, unknown, video, voice, system
-}
+@ConnectorHandler(connectorTypeId = WHATS_APP_CONNECTOR_TYPE_ID)
+@Target(AnnotationTarget.CLASS)
+@MustBeDocumented
+annotation class WhatsAppHandler(val value: KClass<out ConnectorStoryHandler<*>>)

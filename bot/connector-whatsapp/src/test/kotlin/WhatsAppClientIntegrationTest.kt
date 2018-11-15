@@ -14,11 +14,23 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.whatsapp.model.common
+package fr.vsct.tock.bot.connector.whatsapp
 
-data class WhatsAppError(
-    val code: Long,
-    val title: String,
-    val details: String?,
-    val href: String? = null
-)
+import fr.vsct.tock.shared.property
+import org.junit.jupiter.api.Test
+
+/**
+ *
+ */
+class WhatsAppClientIntegrationTest {
+
+    @Test
+    fun `get Media`() {
+        val client = WhatsAppClient(
+            property("url", "none"),
+            "admin",
+            property("password", "password")
+        )
+        client.getMedia("eeeee")
+    }
+}

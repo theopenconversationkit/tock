@@ -60,7 +60,8 @@ internal data class DialogCol(
     val state: DialogStateMongoWrapper,
     val stories: List<StoryMongoWrapper>,
     val applicationIds: Set<String> = emptySet(),
-    val lastUpdateDate: Instant = now()
+    val lastUpdateDate: Instant = now(),
+    val groupId: String? = null
 ) {
 
     companion object {
@@ -80,7 +81,8 @@ internal data class DialogCol(
         dialog.id,
         DialogStateMongoWrapper(dialog.state),
         dialog.stories.map { StoryMongoWrapper(it) },
-        userTimeline.applicationIds
+        userTimeline.applicationIds,
+        groupId = dialog.groupId
     )
 
     fun toDialog(storyDefinitionProvider: (String) -> StoryDefinition): Dialog {
@@ -89,7 +91,8 @@ internal data class DialogCol(
                 playerIds,
                 _id,
                 state.toState(stories.flatMap { it.actions }.map { it.toActionId() to it }.toMap()),
-                stories.toMutableList()
+                stories.toMutableList(),
+                groupId = groupId
             )
         }
     }
@@ -114,7 +117,7 @@ internal data class DialogCol(
                 .flatMap { it.actions }
                 .firstOrNull { it.state.userInterface != null }
                 ?.state?.userInterface
-                ?: textChat,
+                    ?: textChat,
             _id
         )
     }

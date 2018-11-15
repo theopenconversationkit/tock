@@ -29,12 +29,13 @@ import fr.vsct.tock.bot.engine.action.SendSentence
 internal object SendActionConverter {
 
     fun toBotMessage(action: Action): WhatsAppBotMessage? {
-        return if (action is SendSentence && action.stringText != null) {
-            WhatsAppBotTextMessage(
-                WhatsAppTextBody(action.stringText!!),
-                individual,
-                action.playerId.id
-            )
+        return if (action is SendSentence) {
+            action.message(whatsAppConnectorType) as? WhatsAppBotMessage
+                    ?: WhatsAppBotTextMessage(
+                        WhatsAppTextBody(action.stringText!!),
+                        individual,
+                        action.recipientId.id
+                    )
         } else {
             null
         }

@@ -39,10 +39,16 @@ interface UserTimelineDAO {
 
     /**
      * Loads with last dialog. If no timeline exists, creates a new one.
+     *
+     * @param userId the user id of the last message
+     * @param priorUserId not null if this user ahs an other id before
+     * @param groupId not null if this is a conversation group
+     * @param storyDefinitionProvider provides [StoryDefinition] from story ids.
      */
     fun loadWithLastValidDialog(
         userId: PlayerId,
         priorUserId: PlayerId? = null,
+        groupId: String? = null,
         storyDefinitionProvider: (String) -> StoryDefinition
     ): UserTimeline
 

@@ -31,7 +31,12 @@ import com.fasterxml.jackson.annotation.JsonTypeInfo
 )
 @JsonSubTypes(
     Type(value = WhatsAppTextMessage::class, name = "text"),
-    Type(value = WhatsAppLocationMessage::class, name = "location")
+    Type(value = WhatsAppLocationMessage::class, name = "location"),
+    Type(value = WhatsAppImageMessage::class, name = "image"),
+    Type(value = WhatsAppDocumentMessage::class, name = "document"),
+    Type(value = WhatsAppVoiceMessage::class, name = "voice"),
+    Type(value = WhatsAppSystemMessage::class, name = "system"),
+    Type(value = WhatsAppUnknownMessage::class, name = "unknown")
 )
 abstract class WhatsAppMessage(val type: WhatsAppMessageType) {
     abstract val from: String

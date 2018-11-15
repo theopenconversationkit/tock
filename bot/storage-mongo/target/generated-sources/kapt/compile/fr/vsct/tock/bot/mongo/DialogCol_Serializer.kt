@@ -34,6 +34,9 @@ internal class DialogCol_Serializer : StdSerializer<DialogCol>(DialogCol::class.
         gen.writeFieldName("lastUpdateDate")
         val _lastUpdateDate_ = value.lastUpdateDate
         serializers.defaultSerializeValue(_lastUpdateDate_, gen)
+        gen.writeFieldName("groupId")
+        val _groupId_ = value.groupId
+        if(_groupId_ == null) { gen.writeNull() } else {gen.writeString(_groupId_)}
         gen.writeEndObject()
     }
 }

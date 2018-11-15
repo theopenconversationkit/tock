@@ -39,6 +39,7 @@ import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.bot.mongo.ClientIdCol_.Companion.UserIds
+import fr.vsct.tock.bot.mongo.DialogCol_.Companion.GroupId
 import fr.vsct.tock.bot.mongo.DialogCol_.Companion.PlayerIds
 import fr.vsct.tock.bot.mongo.DialogCol_.Companion.Stories
 import fr.vsct.tock.bot.mongo.DialogCol_.Companion._id
@@ -91,7 +92,6 @@ import org.litote.kmongo.sort
 import org.litote.kmongo.toId
 import org.litote.kmongo.updateOneById
 import org.litote.kmongo.upsert
-import java.lang.Exception
 import java.time.Instant
 import java.time.Instant.now
 import java.util.concurrent.TimeUnit.DAYS
@@ -136,6 +136,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 )
             )
         )
+        dialogCol.ensureIndex(DialogCol_.GroupId)
 
         dialogTextCol.ensureIndex(Text)
         dialogTextCol.ensureUniqueIndex(Text, DialogId)
@@ -309,11 +310,12 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     override fun loadWithLastValidDialog(
         userId: PlayerId,
         priorUserId: PlayerId?,
+        groupId: String?,
         storyDefinitionProvider: (String) -> StoryDefinition
     ): UserTimeline {
         val timeline = loadWithoutDialogs(userId)
 
-        loadLastValidDialog(userId, storyDefinitionProvider)?.apply { timeline.dialogs.add(this) }
+        loadLastValidDialog(userId, groupId, storyDefinitionProvider)?.apply { timeline.dialogs.add(this) }
 
         if (priorUserId != null) {
             //link timeline
@@ -328,7 +330,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 }
 
             //copy dialog
-            loadLastValidDialog(priorUserId, storyDefinitionProvider)
+            loadLastValidDialog(priorUserId, groupId, storyDefinitionProvider)
                 ?.apply {
                     timeline.dialogs.add(
                         copy(
@@ -367,6 +369,18 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     }
 
 
+    private fun loadLastValidGroupDialogCol(groupId: String): DialogCol? {
+        return dialogCol.aggregate<DialogCol>(
+            match(
+                GroupId eq groupId, LastUpdateDate gt now().minusSeconds(60 * 60 * 24)
+            ),
+            sort(
+                descending(LastUpdateDate)
+            ),
+            limit(1)
+        ).firstOrNull()
+    }
+
     private fun loadLastValidDialogCol(userId: PlayerId): DialogCol? {
         return dialogCol.aggregate<DialogCol>(
             match(
@@ -379,9 +393,14 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         ).firstOrNull()
     }
 
-    private fun loadLastValidDialog(userId: PlayerId, storyDefinitionProvider: (String) -> StoryDefinition): Dialog? {
+    private fun loadLastValidDialog(
+        userId: PlayerId,
+        groupId: String? = null,
+        storyDefinitionProvider: (String) -> StoryDefinition
+    ): Dialog? {
         return try {
-            return loadLastValidDialogCol(userId)?.toDialog(storyDefinitionProvider)
+            (groupId?.let { loadLastValidGroupDialogCol(it) } ?: loadLastValidDialogCol(userId))
+                ?.toDialog(storyDefinitionProvider)
         } catch (e: Exception) {
             logger.error(e)
             null

@@ -35,6 +35,9 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
+import fr.vsct.tock.bot.connector.ConnectorData
+import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType.group
+import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotRecipientType.individual
 import fr.vsct.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessages
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
@@ -71,11 +74,20 @@ class WhatsAppConnector(
                     val body = context.bodyAsString
                     logger.debug { "WhatsApp request input : $body" }
                     val messages: WhatsAppMessages = mapper.readValue(body)
-                    messages.messages.forEach {
-                        val e = WebhookActionConverter.toEvent(it, applicationId)
+                    messages.messages.forEach { m ->
+                        val e = WebhookActionConverter.toEvent(m, applicationId)
                         if (e != null) {
                             executor.executeBlocking {
-                                controller.handle(e)
+                                controller.handle(
+                                    e,
+                                    ConnectorData(
+                                        WhatsAppConnectorCallback(
+                                            applicationId,
+                                            if (m.groupId == null) individual else group
+                                        ),
+                                        groupId = m.groupId
+                                    )
+                                )
                             }
                         }
                     }

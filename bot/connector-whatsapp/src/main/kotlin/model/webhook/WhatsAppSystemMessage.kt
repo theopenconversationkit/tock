@@ -14,11 +14,19 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.whatsapp.model.common
+package fr.vsct.tock.bot.connector.whatsapp.model.webhook
 
-data class WhatsAppError(
-    val code: Long,
-    val title: String,
-    val details: String?,
-    val href: String? = null
-)
+import fr.vsct.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
+
+/**
+ *
+ */
+data class WhatsAppSystemMessage(
+    val system: WhatsAppTextBody,
+    override val id: String,
+    override val from: String,
+    override val timestamp: String,
+    override val profile: WhatsAppProfile? = null,
+    override val context: WhatsAppContext? = null,
+    override val groupId: String? = null
+) : WhatsAppMessage(WhatsAppMessageType.system)

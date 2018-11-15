@@ -16,12 +16,8 @@
 
 package fr.vsct.tock.bot.connector.whatsapp.model.send
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
 data class WhatsAppBotImageMessage(
     val image: WhatsAppBotAttachment,
     override val recipientType: WhatsAppBotRecipientType,
-    override val to: String,
-    @get:JsonProperty("preview_url")
-    val previewUrl: Boolean = false
+    override val to: String
 ) : WhatsAppBotMessage(WhatsAppBotMessageType.image)

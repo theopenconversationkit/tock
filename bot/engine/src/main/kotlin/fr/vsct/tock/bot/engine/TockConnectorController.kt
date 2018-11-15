@@ -103,10 +103,11 @@ internal class TockConnectorController constructor(
                     val userTimeline =
                         userTimelineDAO.loadWithLastValidDialog(
                             action.playerId,
-                            data.priorUserId
+                            data.priorUserId,
+                            data.groupId
                         ) { bot.botDefinition.findStoryDefinition(it) }
                     bot.handle(action, userTimeline, this, data)
-                    if(data.saveTimeline) {
+                    if (data.saveTimeline) {
                         userTimelineDAO.save(userTimeline)
                     }
                 } catch (t: Throwable) {
@@ -138,8 +139,8 @@ internal class TockConnectorController constructor(
                 userTimelineDAO.loadWithLastValidDialog(
                     action.playerId,
                     data.priorUserId,
-                    { bot.botDefinition.findStoryDefinition(it) }
-                )
+                    data.groupId
+                ) { bot.botDefinition.findStoryDefinition(it) }
             bot.support(action, userTimeline, this, data)
         } catch (t: Throwable) {
             callback.exceptionThrown(action, t)

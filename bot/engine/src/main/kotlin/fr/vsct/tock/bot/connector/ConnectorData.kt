@@ -35,7 +35,11 @@ open class ConnectorData(
      * To know if the timeline has to be saved - default is true.
      * Set to false for bots that you don't need to register.
      */
-    val saveTimeline: Boolean = true
+    val saveTimeline: Boolean = true,
+    /**
+     * An optional group id (for users group conversation handling).
+     */
+    val groupId: String? = null
 ) {
     /**
      * Set to true if the bot does not make any answer to a user sentence.

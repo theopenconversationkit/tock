@@ -14,11 +14,18 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.whatsapp.model.common
+package fr.vsct.tock.bot.connector.whatsapp.model.webhook
 
-data class WhatsAppError(
-    val code: Long,
-    val title: String,
-    val details: String?,
-    val href: String? = null
+import com.fasterxml.jackson.annotation.JsonProperty
+
+/**
+ *
+ */
+data class WhatsAppAttachment(
+    val file: String,
+    val id: String,
+    @get:JsonProperty("mime_type")
+    val mimeType: String,
+    val sha256: String,
+    val caption: String? = null
 )

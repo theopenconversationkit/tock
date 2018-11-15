@@ -34,7 +34,11 @@ data class Dialog(
     val playerIds: Set<PlayerId>,
     var id: Id<Dialog> = newId(),
     val state: DialogState = DialogState(),
-    val stories: MutableList<Story> = mutableListOf()
+    val stories: MutableList<Story> = mutableListOf(),
+    /**
+     * An optional group identifier.
+     */
+    val groupId:String? = null
 ) {
 
     /**
