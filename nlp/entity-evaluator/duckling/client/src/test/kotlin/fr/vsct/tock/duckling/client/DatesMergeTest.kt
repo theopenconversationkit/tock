@@ -48,6 +48,7 @@ internal class DatesMergeTest {
             EntityType("duckling:datetime"),
             Locale.FRENCH,
             NlpEngineType.opennlp,
+            "test",
             referenceTime
         )
 

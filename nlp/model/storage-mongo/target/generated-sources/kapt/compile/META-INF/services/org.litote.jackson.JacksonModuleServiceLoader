@@ -1,0 +1,6 @@
+fr.vsct.tock.nlp.model.service.storage.mongo.NlpApplicationConfigurationCol_Serializer
+fr.vsct.tock.nlp.model.service.storage.mongo.NlpApplicationConfigurationCol_Deserializer
+fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration_Serializer
+fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration_Deserializer
+fr.vsct.tock.nlp.core.configuration.NlpModelConfiguration_Serializer
+fr.vsct.tock.nlp.core.configuration.NlpModelConfiguration_Deserializer

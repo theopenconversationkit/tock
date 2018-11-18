@@ -16,12 +16,14 @@
 
 import {Component, Input, OnInit} from "@angular/core";
 import {MatDialog, MatSnackBar} from "@angular/material";
-import {ActivatedRoute, Router} from "@angular/router";
+import {ActivatedRoute} from "@angular/router";
 import {StateService} from "../../core-nlp/state.service";
-import {Application} from "../../model/application";
+import {Application, NlpApplicationConfiguration, NlpModelConfiguration} from "../../model/application";
 import {ApplicationService} from "../../core-nlp/applications.service";
 import {saveAs} from "file-saver";
 import {ApplicationScopedQuery} from "../../model/commons";
+import {NlpEngineType} from "../../model/nlp";
+import {Subject} from "rxjs";
 
 @Component({
   selector: 'tock-application-advanced-options',
@@ -32,9 +34,14 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
 
   @Input()
   application: Application;
+  @Input()
+  nlpEngineTypeChange: Subject<NlpEngineType>;
   uploadDump: boolean = false;
   exportAlexa: boolean = false;
   alexaLocale: string;
+  tokenizerProperties: string;
+  intentClassifierProperties: string;
+  entityClassifierProperties: string;
 
   constructor(private route: ActivatedRoute,
               private snackBar: MatSnackBar,
@@ -47,6 +54,12 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
     if (this.application && this.application.supportedLocales.length > 0) {
       this.alexaLocale = this.application.supportedLocales[0];
     }
+    this.nlpEngineTypeChange.subscribe(type => {
+      this.application.nlpEngineType = type;
+      if (this.tokenizerProperties) {
+        this.displayConfiguration()
+      }
+    });
   }
 
   triggerBuild() {
@@ -70,5 +83,29 @@ export class ApplicationAdvancedOptionsComponent implements OnInit {
         })
     });
   }
+
+  displayConfiguration() {
+    this.applicationService.getNlpConfiguration(this.application._id, this.application.nlpEngineType)
+      .subscribe(m => {
+        this.tokenizerProperties = m.tokenizerConfiguration.toProperties();
+        this.intentClassifierProperties = m.intentConfiguration.toProperties();
+        this.entityClassifierProperties = m.entityConfiguration.toProperties();
+      });
+  }
+
+  updateConfiguration() {
+    const m = new NlpApplicationConfiguration(
+      NlpModelConfiguration.parseProperties(this.tokenizerProperties),
+      NlpModelConfiguration.parseProperties(this.intentClassifierProperties),
+      NlpModelConfiguration.parseProperties(this.entityClassifierProperties)
+    );
+    this.applicationService.updateModelConfiguration(this.application._id, this.application.nlpEngineType, m)
+      .subscribe(_ => {
+        this.tokenizerProperties = null;
+        this.intentClassifierProperties = null;
+        this.entityClassifierProperties = null;
+      });
+  }
+
 
 }

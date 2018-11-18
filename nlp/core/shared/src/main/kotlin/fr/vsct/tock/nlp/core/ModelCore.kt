@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.core
 
+import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration
 import fr.vsct.tock.nlp.core.quality.TestContext
 import fr.vsct.tock.nlp.core.quality.TestModelReport
 import fr.vsct.tock.nlp.core.sample.SampleExpression
@@ -69,5 +70,21 @@ interface ModelCore {
         context: TestContext,
         expressions: List<SampleExpression>
     ): TestModelReport
+
+    /**
+     * Returns the current model configuration.
+     */
+    fun getCurrentModelConfiguration(
+        applicationName: String, nlpEngineType: NlpEngineType
+    ): NlpApplicationConfiguration
+
+    /**
+     * Updates the model configuration for the given application name.
+     */
+    fun updateModelConfiguration(
+        applicationName: String,
+        engineType: NlpEngineType,
+        configuration: NlpApplicationConfiguration
+    )
 
 }

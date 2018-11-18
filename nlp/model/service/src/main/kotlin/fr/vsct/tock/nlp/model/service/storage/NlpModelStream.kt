@@ -16,11 +16,15 @@
 
 package fr.vsct.tock.nlp.model.service.storage
 
+import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration
 import java.io.InputStream
 import java.time.Instant
 
 /**
  *
  */
-data class NlpModelStream(val inputStream: InputStream, val updatedDate: Instant) {
-}
+data class NlpModelStream(
+    val inputStream: InputStream,
+    val updatedDate: Instant,
+    val configuration: NlpApplicationConfiguration?
+)

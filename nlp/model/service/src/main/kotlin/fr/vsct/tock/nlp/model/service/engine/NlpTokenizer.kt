@@ -16,12 +16,11 @@
 
 package fr.vsct.tock.nlp.model.service.engine
 
-import fr.vsct.tock.nlp.model.Tokenizer
 import fr.vsct.tock.shared.ThreadSafe
 
 /**
  *
  */
 @ThreadSafe
-abstract class NlpTokenizer(val model : TokenizerModelHolder) : Tokenizer {
+abstract class NlpTokenizer(val model: TokenizerModelHolder) : Tokenizer {
 }

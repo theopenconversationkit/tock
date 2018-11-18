@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.shared
 
+import java.util.Properties
+
 private fun findProperty(name: String): String? {
     return System.getProperty(name) ?: System.getenv(name)
 }
@@ -75,6 +77,12 @@ fun mapListProperty(
 ): Map<String, List<String>> = findProperty(name)?.split(entrySeparator)?.map {
     it.split(keyValueSeparator).let { it[0] to it[1].split(listSeparator) }
 }?.toMap() ?: defaultValue
+
+/**
+ * Load a [Properties] for classpath.
+ */
+fun loadProperties(fileInClasspath: String): Properties =
+    Properties().apply { load(resourceAsStream(fileInClasspath)) }
 
 
 /**

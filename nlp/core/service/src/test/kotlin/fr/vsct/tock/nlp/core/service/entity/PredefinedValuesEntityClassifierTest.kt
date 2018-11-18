@@ -46,13 +46,13 @@ class PredefinedValuesEntityClassifierTest {
         )
 
         val context = EntityCallContextForIntent(
-            "pizzayolo",
             Intent("eat", listOf(Entity(entityType, "pizza"))),
             Locale.FRENCH,
             NlpEngineType.stanford,
+            "pizzayolo",
             ZonedDateTime.now())
 
-        val entityTypeRecognitions = PredefinedValuesEntityClassifier.classifyEntities(context, text, arrayOf())
+        val entityTypeRecognitions = PredefinedValuesEntityClassifier.classifyEntities(context, text)
 
         Assertions.assertEquals(listOf(
             EntityTypeRecognition(

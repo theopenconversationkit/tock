@@ -16,20 +16,68 @@
 
 package fr.vsct.tock.nlp.model.service.engine
 
+import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration
+import fr.vsct.tock.nlp.core.configuration.NlpModelConfiguration
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 import fr.vsct.tock.nlp.model.EntityBuildContext
 import fr.vsct.tock.nlp.model.IntentContext
 import fr.vsct.tock.nlp.model.TokenizerContext
 
 /**
- *
+ * Model builder to implement for nlp engines.
  */
 interface NlpEngineModelBuilder {
 
-    fun buildTokenizerModel(context: TokenizerContext, expressions: List<SampleExpression>): TokenizerModelHolder
+    /**
+     * Builds a tokenizer model.
+     */
+    fun buildTokenizerModel(
+        context: TokenizerContext,
+        configuration: NlpApplicationConfiguration,
+        expressions: List<SampleExpression>
+    ): TokenizerModelHolder = TokenizerModelHolder(context.language, configuration)
 
-    fun buildIntentModel(context: IntentContext, expressions: List<SampleExpression>): IntentModelHolder
+    /**
+     * Builds an intent model.
+     */
+    fun buildIntentModel(
+        context: IntentContext,
+        configuration: NlpApplicationConfiguration,
+        expressions: List<SampleExpression>
+    ): IntentModelHolder
 
-    fun buildEntityModel(context: EntityBuildContext, expressions: List<SampleExpression>): EntityModelHolder?
+    /**
+     * Builds an entity model.
+     */
+    fun buildEntityModel(
+        context: EntityBuildContext,
+        configuration: NlpApplicationConfiguration,
+        expressions: List<SampleExpression>
+    ): EntityModelHolder?
+
+    /**
+     * Default tokenizer properties for the nlp engine.
+     */
+    val defaultTokenizerConfiguration: NlpModelConfiguration get() = NlpModelConfiguration()
+
+    /**
+     * Default intent classifier properties for the nlp engine.
+     */
+    val defaultIntentClassifierConfiguration: NlpModelConfiguration get() = NlpModelConfiguration()
+
+    /**
+     * Default entity classifier properties for the nlp engine.
+     */
+    val defaultEntityClassifierConfiguration: NlpModelConfiguration get() = NlpModelConfiguration()
+
+    /**
+     * Helper method.
+     */
+    fun defaultNlpApplicationConfiguration(): NlpApplicationConfiguration =
+        NlpApplicationConfiguration(
+            defaultTokenizerConfiguration,
+            defaultIntentClassifierConfiguration,
+            defaultEntityClassifierConfiguration
+        )
 
 }

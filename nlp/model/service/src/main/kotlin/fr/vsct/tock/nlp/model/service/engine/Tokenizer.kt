@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.model
+package fr.vsct.tock.nlp.model.service.engine
 
+import fr.vsct.tock.nlp.model.TokenizerContext
 import fr.vsct.tock.shared.ThreadSafe
 
 /**

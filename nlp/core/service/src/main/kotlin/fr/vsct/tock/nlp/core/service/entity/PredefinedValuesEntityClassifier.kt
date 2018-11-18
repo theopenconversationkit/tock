@@ -30,8 +30,7 @@ internal object PredefinedValuesEntityClassifier : EntityTypeClassifier {
 
     override fun classifyEntities(
         context: EntityCallContext,
-        text: String,
-        tokens: Array<String>
+        text: String
     ): List<EntityTypeRecognition> {
         return when (context) {
             is EntityCallContextForIntent -> classifyForIntent(context, stripAccents(text))

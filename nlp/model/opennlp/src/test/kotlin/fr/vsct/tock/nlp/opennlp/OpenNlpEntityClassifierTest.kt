@@ -23,6 +23,7 @@ import fr.vsct.tock.nlp.core.EntityValue
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.model.EntityCallContextForIntent
+import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration.Companion.EMPTY_CONFIGURATION
 import fr.vsct.tock.nlp.model.service.engine.EntityModelHolder
 import fr.vsct.tock.shared.defaultLocale
 import io.mockk.every
@@ -42,10 +43,10 @@ class OpenNlpEntityClassifierTest {
     fun classify_withAdjacentEntitiesOfSameRole_shouldMergeEntities() {
         val entity = Entity(EntityType("test:test"), "test")
         val context = EntityCallContextForIntent(
-            "test",
             Intent("test", listOf(entity)),
             defaultLocale,
             NlpEngineType.opennlp,
+            "test",
             ZonedDateTime.now()
         )
         val text = "a b"
@@ -53,7 +54,7 @@ class OpenNlpEntityClassifierTest {
         val model: NameFinderME = mockk()
         every { model.find(eq(tokens)) } answers { arrayOf(Span(0, 1, "test", 0.8), Span(1, 2, "test", 0.6)) }
 
-        val classifier = OpenNlpEntityClassifier(EntityModelHolder(model))
+        val classifier = OpenNlpEntityClassifier(EntityModelHolder(model, EMPTY_CONFIGURATION))
 
         val result = classifier.classifyEntities(context, text, tokens)
 
@@ -65,10 +66,10 @@ class OpenNlpEntityClassifierTest {
     fun classify_withAdjacentMultiTokensEntitiesOfSameRole_shouldMergeEntities() {
         val entity = Entity(EntityType("test:test"), "test")
         val context = EntityCallContextForIntent(
-            "test",
             Intent("test", listOf(entity)),
             defaultLocale,
             NlpEngineType.opennlp,
+            "test",
             ZonedDateTime.now()
         )
         val text = "a a b"
@@ -76,7 +77,7 @@ class OpenNlpEntityClassifierTest {
         val model: NameFinderME = mockk()
         every { model.find(eq(tokens)) } answers { arrayOf(Span(0, 2, "test", 0.8), Span(2, 3, "test", 0.6)) }
 
-        val classifier = OpenNlpEntityClassifier(EntityModelHolder(model))
+        val classifier = OpenNlpEntityClassifier(EntityModelHolder(model, EMPTY_CONFIGURATION))
 
         val result = classifier.classifyEntities(context, text, tokens)
 
@@ -88,10 +89,10 @@ class OpenNlpEntityClassifierTest {
     fun classify_withNotAdjacentEntitiesOfSameRole_shouldReturnsTwoEntities() {
         val entity = Entity(EntityType("test:test"), "test")
         val context = EntityCallContextForIntent(
-            "test",
             Intent("test", listOf(entity)),
             defaultLocale,
             NlpEngineType.opennlp,
+            "test",
             ZonedDateTime.now()
         )
         val text = "a toto b"
@@ -99,7 +100,7 @@ class OpenNlpEntityClassifierTest {
         val model: NameFinderME = mockk()
         every { model.find(eq(tokens)) } answers { arrayOf(Span(0, 1, "test", 0.8), Span(2, 3, "test", 0.6)) }
 
-        val classifier = OpenNlpEntityClassifier(EntityModelHolder(model))
+        val classifier = OpenNlpEntityClassifier(EntityModelHolder(model, EMPTY_CONFIGURATION))
 
         val result = classifier.classifyEntities(context, text, tokens)
 
@@ -131,14 +132,14 @@ class OpenNlpEntityClassifierTest {
             )
         }
 
-        val classifier = OpenNlpEntityClassifier(EntityModelHolder(model))
+        val classifier = OpenNlpEntityClassifier(EntityModelHolder(model, EMPTY_CONFIGURATION))
 
         val entity = Entity(EntityType("location:location"), "location")
         val context = EntityCallContextForIntent(
-            "test",
             Intent("test", listOf(entity)),
             defaultLocale,
             NlpEngineType.opennlp,
+            "test",
             ZonedDateTime.now()
         )
 

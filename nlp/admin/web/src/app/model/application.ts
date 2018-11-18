@@ -15,7 +15,7 @@
  */
 
 import {EntityDefinition, Intent, NlpEngineType} from "./nlp";
-import {flatMap} from "./commons";
+import {flatMap, JsonUtils} from "./commons";
 
 export class Application {
 
@@ -172,6 +172,64 @@ export class ModelBuildQueryResult {
     const value = Object.create(ModelBuildQueryResult.prototype);
     const result = Object.assign(value, json, {
       data: ModelBuild.fromJSONArray(json.data)
+    });
+    return result;
+  }
+
+}
+
+export class NlpApplicationConfiguration {
+
+  constructor(public tokenizerConfiguration: NlpModelConfiguration,
+              public intentConfiguration: NlpModelConfiguration,
+              public entityConfiguration: NlpModelConfiguration) {
+
+  }
+
+  static fromJSON(json: any): NlpApplicationConfiguration {
+    const value = Object.create(NlpApplicationConfiguration.prototype);
+    const result = Object.assign(value, json, {
+      tokenizerConfiguration: NlpModelConfiguration.fromJSON(json.tokenizerConfiguration),
+      intentConfiguration: NlpModelConfiguration.fromJSON(json.intentConfiguration),
+      entityConfiguration: NlpModelConfiguration.fromJSON(json.entityConfiguration)
+    });
+    return result;
+  }
+}
+
+export class NlpModelConfiguration {
+
+  constructor(public properties: Map<string, string>) {
+  }
+
+  toProperties(): string {
+    let s = "#properties";
+    this.properties.forEach((value, key) => s = s + "\n" + key + "=" + value);
+    return s;
+  }
+
+  toJSON() {
+    return {properties: JsonUtils.mapToObject(this.properties)}
+  }
+
+  static parseProperties(properties: string): NlpModelConfiguration {
+    const r = new Map();
+    properties.match(/[^\r\n]+/g).forEach(line => {
+      let l = line.trim();
+      if (!l.startsWith("#") && l.length !== 0) {
+        let i = l.indexOf("=");
+        if (i !== -1) {
+          r.set(l.substring(0, i).trim(), i === l.length - 1 ? "" : l.substring(i + 1, l.length).trim());
+        }
+      }
+    });
+    return new NlpModelConfiguration(r);
+  }
+
+  static fromJSON(json: any): NlpModelConfiguration {
+    const value = Object.create(NlpModelConfiguration.prototype);
+    const result = Object.assign(value, json, {
+      properties: JsonUtils.jsonToMap(json.properties)
     });
     return result;
   }

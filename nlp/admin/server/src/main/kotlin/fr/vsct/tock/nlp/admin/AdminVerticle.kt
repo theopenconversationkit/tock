@@ -34,7 +34,9 @@ import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.admin.model.SentencesReport
 import fr.vsct.tock.nlp.admin.model.UpdateEntityDefinitionQuery
 import fr.vsct.tock.nlp.admin.model.UpdateSentencesQuery
+import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.PredefinedValue
+import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.shared.build.ModelBuildTrigger
 import fr.vsct.tock.nlp.front.shared.codec.ApplicationDump
@@ -98,6 +100,21 @@ open class AdminVerticle : WebVerticle() {
         blockingJsonGet("/application/:id") { context ->
             service.getApplicationWithIntents(context.pathId("id"))
                 ?.takeIf { it.namespace == context.organization }
+        }
+
+        blockingJsonGet("/application/:id/model/:engine/configuration", admin) { context ->
+            front.getApplicationById(context.pathId("id"))
+                ?.takeIf { it.namespace == context.organization }
+                ?.let { front.getCurrentModelConfiguration(it.qualifiedName, NlpEngineType(context.path("engine"))) }
+        }
+
+        blockingJsonPost(
+            "/application/:id/model/:engine/configuration",
+            admin
+        ) { context, conf: NlpApplicationConfiguration ->
+            front.getApplicationById(context.pathId("id"))
+                ?.takeIf { it.namespace == context.organization }
+                ?.let { front.updateModelConfiguration(it.qualifiedName, NlpEngineType(context.path("engine")), conf) }
         }
 
         blockingJsonGet("/application/dump/:id", technicalAdmin) {

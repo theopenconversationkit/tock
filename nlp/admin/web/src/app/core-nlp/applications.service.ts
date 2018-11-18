@@ -18,7 +18,12 @@
 import {map} from 'rxjs/operators';
 import {Injectable, OnDestroy} from "@angular/core";
 import {Observable, of} from "rxjs";
-import {Application, ApplicationImportConfiguration, ModelBuildQueryResult} from "../model/application";
+import {
+  Application,
+  ApplicationImportConfiguration,
+  ModelBuildQueryResult,
+  NlpApplicationConfiguration
+} from "../model/application";
 import {RestService} from "./rest/rest.service";
 import {StateService} from "./state.service";
 import {ApplicationScopedQuery, Entry, PaginatedQuery} from "../model/commons";
@@ -128,11 +133,11 @@ export class ApplicationService implements OnDestroy {
     return this.rest.get(`/application/dump/${application._id}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
-  getSentencesDump(application: Application, full:boolean): Observable<Blob> {
+  getSentencesDump(application: Application, full: boolean): Observable<Blob> {
     return this.rest.get(`/sentences/dump/${full ? 'full/' : ''}${application._id}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
-  getSentencesDumpForIntent(application: Application, intent: Intent, full:boolean): Observable<Blob> {
+  getSentencesDumpForIntent(application: Application, intent: Intent, full: boolean): Observable<Blob> {
     return this.rest.get(`/sentences/dump/${full ? 'full/' : ''}${application._id}/${intent.qualifiedName()}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
@@ -146,7 +151,7 @@ export class ApplicationService implements OnDestroy {
     this.rest.setFileUploaderOptions(uploader, url);
   }
 
-  prepareSentencesDumpUploader(uploader: FileUploader, full:boolean, name?: string) {
+  prepareSentencesDumpUploader(uploader: FileUploader, full: boolean, name?: string) {
     let url: string;
     if (name) {
       url = `/dump/sentences/${name}`;
@@ -158,5 +163,13 @@ export class ApplicationService implements OnDestroy {
 
   getAlexaExport(query: ApplicationScopedQuery): Observable<Blob> {
     return this.rest.post(`/alexa/export`, query, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
+  }
+
+  getNlpConfiguration(applicationId: string, engineType: NlpEngineType): Observable<NlpApplicationConfiguration> {
+    return this.rest.get(`/application/${applicationId}/model/${engineType.name}/configuration`, NlpApplicationConfiguration.fromJSON);
+  }
+
+  updateModelConfiguration(applicationId: string, engineType: NlpEngineType, conf: NlpApplicationConfiguration): Observable<NlpApplicationConfiguration> {
+    return this.rest.post(`/application/${applicationId}/model/${engineType.name}/configuration`, conf);
   }
 }

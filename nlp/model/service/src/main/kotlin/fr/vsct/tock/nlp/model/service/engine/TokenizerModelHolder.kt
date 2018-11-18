@@ -16,10 +16,14 @@
 
 package fr.vsct.tock.nlp.model.service.engine
 
+import fr.vsct.tock.nlp.model.ModelHolder
+import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration
 import java.util.Locale
 
 /**
  *
  */
-class TokenizerModelHolder(val language: Locale) {
-}
+data class TokenizerModelHolder(
+    val language: Locale,
+    val configuration: NlpApplicationConfiguration
+) : ModelHolder

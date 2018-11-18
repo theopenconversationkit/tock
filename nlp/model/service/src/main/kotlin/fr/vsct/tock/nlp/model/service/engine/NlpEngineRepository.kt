@@ -20,10 +20,8 @@ import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.model.ClassifierContext
 import fr.vsct.tock.nlp.model.ClassifierContextKey
 import fr.vsct.tock.nlp.model.EntityCallContext
-import fr.vsct.tock.nlp.model.EntityClassifier
-import fr.vsct.tock.nlp.model.IntentClassifier
+import fr.vsct.tock.nlp.model.EntityContext
 import fr.vsct.tock.nlp.model.IntentContext
-import fr.vsct.tock.nlp.model.Tokenizer
 import fr.vsct.tock.nlp.model.TokenizerContext
 import fr.vsct.tock.shared.ThreadSafe
 
@@ -33,7 +31,8 @@ import fr.vsct.tock.shared.ThreadSafe
 @ThreadSafe
 internal object NlpEngineRepository {
 
-    private val repository: Map<NlpEngineType, NlpEngineProvider> = SupportedNlpEnginesProvider.engines().associateBy { it.type() }
+    private val repository: Map<NlpEngineType, NlpEngineProvider> =
+        SupportedNlpEnginesProvider.engines().associateBy { it.type }
 
     fun registeredNlpEngineTypes(): Set<NlpEngineType> {
         return repository.keys
@@ -43,8 +42,26 @@ internal object NlpEngineRepository {
         return repository[nlpEngineType] ?: error("Unknown nlp engine type : $nlpEngineType")
     }
 
-    fun getTokenizer(context: TokenizerContext): Tokenizer {
-        return getProvider(context.engineType).getTokenizer(NlpModelRepository.getTokenizerModelHolder(context))
+    fun getTokenizer(context: IntentContext): Tokenizer {
+        return getProvider(context.engineType).let {
+            it.getTokenizer(
+                NlpModelRepository.getTokenizerModelHolder(
+                    TokenizerContext(context),
+                    NlpModelRepository.getConfiguration(context, it)
+                )
+            )
+        }
+    }
+
+    fun getTokenizer(context: EntityContext): Tokenizer {
+        return getProvider(context.engineType).let {
+            it.getTokenizer(
+                NlpModelRepository.getTokenizerModelHolder(
+                    TokenizerContext(context),
+                    NlpModelRepository.getConfiguration(context, it)
+                )
+            )
+        }
     }
 
     fun getIntentClassifier(context: IntentContext): IntentClassifier {
@@ -74,11 +91,11 @@ internal object NlpEngineRepository {
     }
 
     fun <T : ClassifierContextKey> getModelBuilder(context: ClassifierContext<T>): NlpEngineModelBuilder {
-        return getProvider(context.engineType).getModelBuilder()
+        return getProvider(context.engineType).modelBuilder
     }
 
     fun <T : ClassifierContextKey> getModelIo(context: ClassifierContext<T>): NlpEngineModelIo {
-        return getProvider(context.engineType).getModelIo()
+        return getProvider(context.engineType).modelIo
     }
 
 }

@@ -36,13 +36,15 @@ internal object OpenNlpModelIo : NlpEngineModelIo {
         TODO()
     }
 
-    override fun loadIntentModel(input: NlpModelStream): Any {
-        return BinaryGISModelReader(DataInputStream(input.inputStream)).getModel()
-    }
+    override fun loadIntentModel(input: NlpModelStream): Any =
+        input.inputStream.use {
+            BinaryGISModelReader(DataInputStream(it)).model
+        }
 
-    override fun loadEntityModel(input: NlpModelStream): Any {
-        return NameFinderME(TokenNameFinderModel(input.inputStream))
-    }
+    override fun loadEntityModel(input: NlpModelStream): Any =
+        input.inputStream.use {
+            NameFinderME(TokenNameFinderModel(it))
+        }
 
     override fun copyTokenizerModel(model: Any, output: OutputStream) {
         TODO()

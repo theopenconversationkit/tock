@@ -18,10 +18,12 @@
   <mat-expansion-panel-header>
     Advanced options
   </mat-expansion-panel-header>
-  <div>
+  <div *ngIf="!exportAlexa && !tokenizerProperties && !uploadDump">
     <button mat-raised-button (click)="uploadDump = true" color="accent">Upload Dump</button>
     &nbsp;
     <button mat-raised-button (click)="triggerBuild()" color="accent">Trigger Build</button>
+    &nbsp;
+    <button mat-raised-button (click)="displayConfiguration()" color="accent">Nlp Engine configuration</button>
     &nbsp;
     <button mat-raised-button (click)="exportAlexa = true" color="accent">Alexa Export</button>
   </div>
@@ -32,11 +34,38 @@
         {{state.localeName(locale)}}
       </mat-option>
     </mat-select>
-    <button mat-button (click)="downloadAlexaExport()">Export</button>
     <button mat-button (click)="exportAlexa = false"> Cancel</button>
+    <button mat-button color="primary" (click)="downloadAlexaExport()">Export</button>
   </mat-card>
 
   <tock-application-upload *ngIf="uploadDump" (closed)="uploadDump = false"
                            [applicationName]="application.name"></tock-application-upload>
+
+  <mat-card *ngIf="tokenizerProperties">
+    <mat-card-content>
+    <mat-form-field class="conf-container">
+    <textarea matInput
+              class="conf"
+              [(ngModel)]="tokenizerProperties"
+              placeholder="Tokenizer properties"></textarea>
+    </mat-form-field>
+    <mat-form-field class="conf-container">
+    <textarea matInput
+              class="conf"
+              [(ngModel)]="intentClassifierProperties"
+              placeholder="Intent Classifier properties"></textarea>
+    </mat-form-field>
+    <mat-form-field class="conf-container">
+    <textarea matInput
+              class="conf"
+              [(ngModel)]="entityClassifierProperties"
+              placeholder="Entity Classifier properties"></textarea>
+    </mat-form-field>
+    </mat-card-content>
+    <mat-card-actions>
+      <button mat-button (click)="tokenizerProperties = null;intentClassifierProperties = null;entityClassifierProperties=null"> Cancel</button>
+      <button mat-button color="primary" (click)="updateConfiguration()">Update Configuration</button>
+    </mat-card-actions>
+  </mat-card>
 
 </mat-expansion-panel>

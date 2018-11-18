@@ -19,10 +19,12 @@ package fr.vsct.tock.nlp.model
 import fr.vsct.tock.nlp.core.Application
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.Intent
+import fr.vsct.tock.nlp.core.NlpEngineType
+import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 
 /**
- * To manage nlp models.
+ * To manage and build nlp models.
  */
 interface ModelBuilder {
 
@@ -51,4 +53,16 @@ interface ModelBuilder {
      * Stores in memory the model.
      */
     fun warmupEntityModel(context: EntityCallContext)
+
+    /**
+     * Returns the current model configuration.
+     */
+    fun getCurrentModelConfiguration(
+        applicationName: String, nlpEngineType: NlpEngineType
+    ): NlpApplicationConfiguration
+
+    /**
+     * Updates the model configuration for the given application name.
+     */
+    fun updateModelConfiguration(applicationName: String, engineType:NlpEngineType, configuration: NlpApplicationConfiguration)
 }

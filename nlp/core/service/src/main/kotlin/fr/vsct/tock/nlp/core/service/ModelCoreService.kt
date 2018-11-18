@@ -24,6 +24,8 @@ import fr.vsct.tock.nlp.core.EntityRecognition
 import fr.vsct.tock.nlp.core.EntityType
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.ModelCore
+import fr.vsct.tock.nlp.core.NlpEngineType
+import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration
 import fr.vsct.tock.nlp.core.quality.EntityMatchError
 import fr.vsct.tock.nlp.core.quality.IntentMatchError
 import fr.vsct.tock.nlp.core.quality.TestContext
@@ -46,7 +48,7 @@ import java.util.Collections
 /**
  *
  */
-object ModelCoreService : ModelCore {
+internal object ModelCoreService : ModelCore {
 
     private val logger = KotlinLogging.logger {}
 
@@ -192,4 +194,16 @@ object ModelCoreService : ModelCore {
             }
         }
     }
+
+    override fun getCurrentModelConfiguration(
+        applicationName: String,
+        nlpEngineType: NlpEngineType
+    ): NlpApplicationConfiguration =
+        nlpClassifier.getCurrentModelConfiguration(applicationName, nlpEngineType)
+
+    override fun updateModelConfiguration(
+        applicationName: String,
+        engineType: NlpEngineType,
+        configuration: NlpApplicationConfiguration
+    ) = nlpClassifier.updateModelConfiguration(applicationName, engineType, configuration)
 }

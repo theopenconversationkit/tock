@@ -25,25 +25,34 @@ import fr.vsct.tock.nlp.model.IntentContext.IntentContextKey
 import java.util.Locale
 
 
-data class IntentContext(val application: Application,
-                         override val language: Locale,
-                         override val engineType: NlpEngineType) : ClassifierContext<IntentContextKey> {
+data class IntentContext(
+    val application: Application,
+    override val language: Locale,
+    override val engineType: NlpEngineType,
+    override val applicationName: String = application.name
+) : ClassifierContext<IntentContextKey> {
 
     constructor(callContext: CallContext) : this(callContext.application, callContext.language, callContext.engineType)
 
     constructor(testContext: TestContext) : this(testContext.callContext)
 
-    constructor(buildContext: BuildContext) : this(buildContext.application, buildContext.language, buildContext.engineType)
+    constructor(buildContext: BuildContext) : this(
+        buildContext.application,
+        buildContext.language,
+        buildContext.engineType
+    )
 
-    data class IntentContextKey(val applicationName: String,
-                                val language: Locale,
-                                val nlpEngineType: NlpEngineType) : ClassifierContextKey {
+    data class IntentContextKey(
+        override val applicationName: String,
+        val language: Locale,
+        override val engineType: NlpEngineType
+    ) : ClassifierContextKey {
         override fun id(): String {
-            return "$applicationName-$language-${nlpEngineType.name}"
+            return "$applicationName-$language-${engineType.name}"
         }
     }
 
     override fun key(): IntentContextKey {
-        return IntentContextKey(application.name, language, engineType)
+        return IntentContextKey(applicationName, language, engineType)
     }
 }

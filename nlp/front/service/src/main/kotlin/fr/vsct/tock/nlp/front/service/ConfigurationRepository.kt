@@ -147,7 +147,7 @@ internal object ConfigurationRepository {
                 it.entities.mapNotNull { toEntity(it.entityTypeName, it.role) },
                 it.entitiesRegexp.mapValues { LinkedHashSet(it.value.map { EntitiesRegexp(it.regexp) }) })
         }
-        return Application(applicationDefinition.name, intents, applicationDefinition.supportedLocales)
+        return Application(applicationDefinition.qualifiedName, intents, applicationDefinition.supportedLocales)
     }
 
     fun getApplicationByNamespaceAndName(namespace: String, name: String): ApplicationDefinition? {

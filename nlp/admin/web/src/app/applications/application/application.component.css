@@ -20,12 +20,20 @@
 
 .select-locale {
 
-  padding-top:20px;
-  padding-bottom:20px;
-  width:200px;
+  padding-top: 20px;
+  padding-bottom: 20px;
+  width: 200px;
   margin: 0 16px;
 }
 
 .separator {
   padding-right: 10px;
+}
+
+.divider {
+  height: 10px;
+}
+
+.engine-type {
+  margin-left: 20px;
 }

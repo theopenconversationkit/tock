@@ -17,9 +17,6 @@
 package fr.vsct.tock.nlp.model.service.engine
 
 import fr.vsct.tock.nlp.core.NlpEngineType
-import fr.vsct.tock.nlp.model.EntityClassifier
-import fr.vsct.tock.nlp.model.IntentClassifier
-import fr.vsct.tock.nlp.model.Tokenizer
 
 /**
  * Implements this interface to add a new nlp engine.
@@ -27,15 +24,35 @@ import fr.vsct.tock.nlp.model.Tokenizer
  */
 interface NlpEngineProvider {
 
-    fun type(): NlpEngineType
+    /**
+     * Type of nlp engine.
+     */
+    val type: NlpEngineType
 
+    /**
+     * [NlpEngineModelBuilder] implementation for this nlp engine.
+     */
+    val modelBuilder: NlpEngineModelBuilder
+
+    /**
+     * [NlpEngineModelIo] implementation for this nlp engine.
+     */
+    val modelIo: NlpEngineModelIo
+
+    /**
+     * Returns the intent classifier from this [IntentModelHolder].
+     */
     fun getIntentClassifier(model: IntentModelHolder): IntentClassifier
 
+    /**
+     * Returns the entity classifier from this [EntityModelHolder].
+     */
     fun getEntityClassifier(model: EntityModelHolder): EntityClassifier
 
+    /**
+     * Returns the tokenizer from this [TokenizerModelHolder].
+     */
     fun getTokenizer(model: TokenizerModelHolder): Tokenizer
 
-    fun getModelBuilder(): NlpEngineModelBuilder
 
-    fun getModelIo(): NlpEngineModelIo
 }

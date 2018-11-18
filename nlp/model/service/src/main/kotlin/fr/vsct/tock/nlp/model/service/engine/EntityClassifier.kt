@@ -14,9 +14,10 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.model
+package fr.vsct.tock.nlp.model.service.engine
 
 import fr.vsct.tock.nlp.core.EntityRecognition
+import fr.vsct.tock.nlp.model.EntityCallContext
 import fr.vsct.tock.shared.ThreadSafe
 
 /**

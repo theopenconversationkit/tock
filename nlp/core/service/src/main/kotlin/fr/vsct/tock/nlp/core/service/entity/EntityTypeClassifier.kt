@@ -23,5 +23,5 @@ import fr.vsct.tock.nlp.model.EntityCallContext
  */
 interface EntityTypeClassifier {
 
-    fun classifyEntities(context: EntityCallContext, text: String, tokens: Array<String>): List<EntityTypeRecognition>
+    fun classifyEntities(context: EntityCallContext, text: String): List<EntityTypeRecognition>
 }

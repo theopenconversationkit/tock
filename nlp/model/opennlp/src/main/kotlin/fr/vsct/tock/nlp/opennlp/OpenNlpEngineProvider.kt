@@ -17,14 +17,14 @@
 package fr.vsct.tock.nlp.opennlp
 
 import fr.vsct.tock.nlp.core.NlpEngineType
-import fr.vsct.tock.nlp.model.EntityClassifier
-import fr.vsct.tock.nlp.model.IntentClassifier
-import fr.vsct.tock.nlp.model.Tokenizer
+import fr.vsct.tock.nlp.model.service.engine.EntityClassifier
 import fr.vsct.tock.nlp.model.service.engine.EntityModelHolder
+import fr.vsct.tock.nlp.model.service.engine.IntentClassifier
 import fr.vsct.tock.nlp.model.service.engine.IntentModelHolder
 import fr.vsct.tock.nlp.model.service.engine.NlpEngineModelBuilder
 import fr.vsct.tock.nlp.model.service.engine.NlpEngineModelIo
 import fr.vsct.tock.nlp.model.service.engine.NlpEngineProvider
+import fr.vsct.tock.nlp.model.service.engine.Tokenizer
 import fr.vsct.tock.nlp.model.service.engine.TokenizerModelHolder
 
 /**
@@ -32,9 +32,7 @@ import fr.vsct.tock.nlp.model.service.engine.TokenizerModelHolder
  */
 class OpenNlpEngineProvider : NlpEngineProvider {
 
-    override fun type(): NlpEngineType {
-        return NlpEngineType.opennlp
-    }
+    override val type: NlpEngineType = NlpEngineType.opennlp
 
     override fun getIntentClassifier(model: IntentModelHolder): IntentClassifier {
         return OpenNlpIntentClassifier(model)
@@ -48,11 +46,7 @@ class OpenNlpEngineProvider : NlpEngineProvider {
         return OpenNlpTokenizer(model)
     }
 
-    override fun getModelBuilder(): NlpEngineModelBuilder {
-        return OpenNlpModelBuilder
-    }
+    override val modelBuilder: NlpEngineModelBuilder = OpenNlpModelBuilder
 
-    override fun getModelIo(): NlpEngineModelIo {
-        return OpenNlpModelIo
-    }
+    override val modelIo: NlpEngineModelIo = OpenNlpModelIo
 }

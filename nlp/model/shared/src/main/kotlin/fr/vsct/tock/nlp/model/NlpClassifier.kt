@@ -21,13 +21,32 @@ import fr.vsct.tock.nlp.core.IntentClassification
 import fr.vsct.tock.nlp.core.NlpEngineType
 
 /**
- *
+ * NLP query operations.
  */
-interface NlpClassifier : Tokenizer, IntentClassifier, EntityClassifier, ModelBuilder {
+interface NlpClassifier : ModelBuilder {
 
     fun supportedNlpEngineTypes(): Set<NlpEngineType>
 
-    fun classifyIntent(context: IntentContext, modelHolder: ModelHolder, text: String, tokens: Array<String>): IntentClassification
+    fun classifyIntent(
+        context: IntentContext,
+        modelHolder: ModelHolder,
+        text: String
+    ): IntentClassification
 
-    fun classifyEntities(context: EntityCallContext, modelHolder: ModelHolder?, text: String, tokens: Array<String>): List<EntityRecognition>
+    fun classifyEntities(
+        context: EntityCallContext,
+        modelHolder: ModelHolder,
+        text: String
+    ): List<EntityRecognition>
+
+    fun classifyIntent(
+        context: IntentContext,
+        text: String
+    ): IntentClassification
+
+    fun classifyEntities(
+        context: EntityCallContext,
+        text: String
+    ): List<EntityRecognition>
+
 }

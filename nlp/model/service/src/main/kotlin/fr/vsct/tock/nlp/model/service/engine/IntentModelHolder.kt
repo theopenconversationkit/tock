@@ -17,12 +17,17 @@
 package fr.vsct.tock.nlp.model.service.engine
 
 import fr.vsct.tock.nlp.core.Application
+import fr.vsct.tock.nlp.model.ModelHolder
+import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration
 import java.time.Instant
+import java.time.Instant.now
 
 /**
  * Holder of native intent model.
  */
 data class IntentModelHolder(
-        val application: Application,
-        val nativeModel: Any,
-        override val lastUpdate: Instant) : UpdatableHolder
+    val application: Application,
+    val nativeModel: Any,
+    val configuration: NlpApplicationConfiguration,
+    val lastUpdate: Instant = now()
+) : ModelHolder

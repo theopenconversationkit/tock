@@ -68,11 +68,10 @@ internal object EntityCoreService : EntityCore {
 
     override fun classifyEntityTypes(
         context: EntityCallContext,
-        text: String,
-        tokens: Array<String>
+        text: String
     ): List<EntityTypeRecognition> {
         return when (context) {
-            is EntityCallContextForIntent -> classifyEntityTypesForIntent(context, text, tokens)
+            is EntityCallContextForIntent -> classifyEntityTypesForIntent(context, text)
             is EntityCallContextForEntity -> TODO()
             is EntityCallContextForSubEntities -> TODO()
         }
@@ -80,25 +79,23 @@ internal object EntityCoreService : EntityCore {
 
     private fun classifyEntityTypesForIntent(
         context: EntityCallContextForIntent,
-        text: String,
-        tokens: Array<String>
+        text: String
     ): List<EntityTypeRecognition> {
         return context.intent
             .entities
             .mapNotNull { getEntityEvaluatorProvider(it.entityType) }
             .distinct()
             .mapNotNull { it.getEntityTypeClassifier() }
-            .flatMap { classifyEntities(it, context, text, tokens) }
+            .flatMap { classifyEntities(it, context, text) }
     }
 
     private fun classifyEntities(
         classifier: EntityTypeClassifier,
         context: EntityCallContext,
-        text: String,
-        tokens: Array<String>
+        text: String
     ): List<EntityTypeRecognition> {
         return try {
-            classifier.classifyEntities(context, text, tokens)
+            classifier.classifyEntities(context, text)
         } catch (e: Exception) {
             logger.error(e)
             emptyList()

@@ -40,7 +40,7 @@ internal interface EntityCore {
      */
     fun supportValuesMerge(entityType: EntityType): Boolean
 
-    fun classifyEntityTypes(context: EntityCallContext, text: String, tokens: Array<String>): List<EntityTypeRecognition>
+    fun classifyEntityTypes(context: EntityCallContext, text: String): List<EntityTypeRecognition>
 
     /**
      * Evaluate entity values.

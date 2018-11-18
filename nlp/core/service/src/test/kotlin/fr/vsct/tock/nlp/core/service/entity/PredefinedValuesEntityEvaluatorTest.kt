@@ -27,6 +27,7 @@ class PredefinedValuesEntityEvaluatorTest {
             )),
         Locale.FRENCH,
         NlpEngineType.stanford,
+        "test",
         ZonedDateTime.now())
 
     @Test

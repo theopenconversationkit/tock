@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.nlp.opennlp
 
+import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration
+import fr.vsct.tock.nlp.core.configuration.NlpModelConfiguration
 import fr.vsct.tock.nlp.core.sample.SampleEntity
 import fr.vsct.tock.nlp.core.sample.SampleExpression
 import fr.vsct.tock.nlp.model.EntityBuildContext
@@ -25,7 +27,7 @@ import fr.vsct.tock.nlp.model.service.engine.EntityModelHolder
 import fr.vsct.tock.nlp.model.service.engine.IntentModelHolder
 import fr.vsct.tock.nlp.model.service.engine.NlpEngineModelBuilder
 import fr.vsct.tock.nlp.model.service.engine.TokenizerModelHolder
-import fr.vsct.tock.shared.mapNotNullValues
+import fr.vsct.tock.shared.loadProperties
 import mu.KotlinLogging
 import opennlp.tools.ml.maxent.GISModel
 import opennlp.tools.ml.maxent.GISTrainer
@@ -48,20 +50,17 @@ import java.time.Instant
 internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
 
     private val logger = KotlinLogging.logger {}
-    private val minExpSizeToBuild = 2
+    private const val MIN_BUILD_SIZE = 2
 
-    override fun buildTokenizerModel(
-        context: TokenizerContext,
+    override fun buildIntentModel(
+        context: IntentContext,
+        configuration: NlpApplicationConfiguration,
         expressions: List<SampleExpression>
-    ): TokenizerModelHolder {
-        return TokenizerModelHolder(context.language)
-    }
-
-    override fun buildIntentModel(context: IntentContext, expressions: List<SampleExpression>): IntentModelHolder {
-        val tokenizer = OpenNlpTokenizer(TokenizerModelHolder(context.language))
+    ): IntentModelHolder {
+        val tokenizer = OpenNlpTokenizer(TokenizerModelHolder(context.language, configuration))
         val tokenizerContext = TokenizerContext(context)
 
-        val model = if (expressions.size < minExpSizeToBuild) {
+        val model = if (expressions.size < MIN_BUILD_SIZE) {
             GISModel(arrayOf(), arrayOf(), arrayOf())
         } else {
             val events = ObjectStreamUtils.createObjectStream(expressions
@@ -69,27 +68,31 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
                     Event(it.intent.name, tokenizer.tokenize(tokenizerContext, it.text))
                 })
             val dataIndexer = if (expressions.size < 100) OnePassRealValueDataIndexer() else TwoPassDataIndexer()
-            dataIndexer.init(
-                TrainingParameters(
-                    mapNotNullValues(CUTOFF_PARAM to if (expressions.size < 1000) "1" else null)
-                )
-                , null
-            )
+            val param = TrainingParameters()
+            if (expressions.size < 1000) {
+                param.put(CUTOFF_PARAM, 1)
+            }
+            configuration.intentConfiguration.properties.forEach {
+                param.put(it.key.toString(), it.value?.toString())
+            }
+
+            dataIndexer.init(param, null)
             dataIndexer.index(events)
             GISTrainer().trainModel(1000, dataIndexer)
         }
 
-        return IntentModelHolder(context.application, model, Instant.now())
+        return IntentModelHolder(context.application, model, configuration, Instant.now())
     }
 
     override fun buildEntityModel(
         context: EntityBuildContext,
+        configuration: NlpApplicationConfiguration,
         expressions: List<SampleExpression>
     ): EntityModelHolder? {
-        val model = if (expressions.size < minExpSizeToBuild) {
+        val model = if (expressions.size < MIN_BUILD_SIZE) {
             null
         } else {
-            val tokenizer = OpenNlpTokenizer(TokenizerModelHolder(context.language))
+            val tokenizer = OpenNlpTokenizer(TokenizerModelHolder(context.language, configuration))
             val tokenizerContext = TokenizerContext(context)
 
             val spanEntityMap = mutableMapOf<Span, SampleEntity>()
@@ -129,14 +132,13 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
                 }
             }
 
-            if (entityCount < minExpSizeToBuild) {
+            if (entityCount < MIN_BUILD_SIZE) {
                 null
             } else {
                 val params = TrainingParameters()
-
-                params.put(TrainingParameters.ITERATIONS_PARAM, Integer.toString(200))
-                params.put(TrainingParameters.CUTOFF_PARAM, Integer.toString(0))
-                //params.put(BeamSearch.BEAM_SIZE_PARAMETER, Integer.toString(5));
+                configuration.entityConfiguration.properties.forEach {
+                    params.put(it.key.toString(), it.value?.toString())
+                }
 
                 NameFinderME.train(
                     context.language.language,
@@ -148,6 +150,20 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
             }
         }
 
-        return if (model == null) null else EntityModelHolder(OpenNlpNameFinderME(model), Instant.now())
+        return if (model == null) null else EntityModelHolder(OpenNlpNameFinderME(model), configuration, Instant.now())
     }
+
+    /**
+     * Default intent classifier properties for the nlp engine.
+     */
+    override val defaultIntentClassifierConfiguration: NlpModelConfiguration =
+        NlpModelConfiguration(loadProperties("/opennlp/defaultIntentClassifier.properties"))
+
+    /**
+     * Default entity classifier properties for the nlp engine.
+     */
+    override val defaultEntityClassifierConfiguration: NlpModelConfiguration =
+        NlpModelConfiguration(loadProperties("/opennlp/defaultEntityClassifier.properties"))
+
+
 }

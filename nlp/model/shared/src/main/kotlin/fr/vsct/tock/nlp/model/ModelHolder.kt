@@ -17,7 +17,6 @@
 package fr.vsct.tock.nlp.model
 
 /**
- *
+ * Contains "native" (open nlp, stanford nlp, etc.) model.
  */
-interface ModelHolder {
-}
+interface ModelHolder

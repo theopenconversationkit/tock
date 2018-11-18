@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.opennlp
 
 import fr.vsct.tock.nlp.core.NlpEngineType
+import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration.Companion.EMPTY_CONFIGURATION
 import fr.vsct.tock.nlp.model.TokenizerContext
 import fr.vsct.tock.nlp.model.service.engine.TokenizerModelHolder
 import org.junit.jupiter.api.Test
@@ -28,8 +29,13 @@ import kotlin.test.assertEquals
  */
 internal class OpenNlpTokenizerTest {
 
-    val tokenizer = OpenNlpTokenizer(TokenizerModelHolder(Locale.FRENCH))
-    val context = TokenizerContext(Locale.FRENCH, NlpEngineType.Companion.opennlp)
+    val tokenizer = OpenNlpTokenizer(
+        TokenizerModelHolder(
+            Locale.FRENCH,
+            EMPTY_CONFIGURATION
+        )
+    )
+    val context = TokenizerContext(Locale.FRENCH, NlpEngineType.Companion.opennlp, "test")
 
     @Test
     fun tokenize_wordsWithDash_areSplitted() {

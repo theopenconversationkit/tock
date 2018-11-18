@@ -14,16 +14,13 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.nlp.model
+package fr.vsct.tock.nlp.core.configuration
 
-import fr.vsct.tock.nlp.core.IntentClassification
-import fr.vsct.tock.shared.ThreadSafe
+import java.util.Properties
 
 /**
- *
+ * The NLP model configuration properties.
  */
-@ThreadSafe
-interface IntentClassifier {
-
-    fun classifyIntent(context: IntentContext, text: String, tokens: Array<String>): IntentClassification
-}
+data class NlpModelConfiguration(
+    val properties: Properties = Properties()
+)

@@ -52,14 +52,19 @@
     </mat-card>
     <mat-card>
       <label for="engines">NLP engine:&nbsp;</label>
-      <mat-radio-group id="engines" [(ngModel)]="nlpEngineType">
-        <mat-radio-button *ngFor="let engine of state.supportedNlpEngines" [value]="engine.name">
+      <mat-radio-group id="engines" [(ngModel)]="nlpEngineType" (change)="changeNlpEngine($event.value)">
+        <mat-radio-button class="engine-type" *ngFor="let engine of state.supportedNlpEngines" [value]="engine.name">
           {{engine.name}}
         </mat-radio-button>
       </mat-radio-group>
     </mat-card>
 
-    <tock-application-advanced-options *ngIf="!newApplication" [application]="application"></tock-application-advanced-options>
+    <div class="divider"></div>
+
+    <tock-application-advanced-options
+      *ngIf="!newApplication"
+      [application]="application"
+      [nlpEngineTypeChange]="nlpEngineTypeChange"></tock-application-advanced-options>
 
   </mat-card-content>
   <mat-card-actions>

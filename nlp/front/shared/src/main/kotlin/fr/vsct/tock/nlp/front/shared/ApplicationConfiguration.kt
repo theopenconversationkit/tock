@@ -17,6 +17,7 @@
 package fr.vsct.tock.nlp.front.shared
 
 import fr.vsct.tock.nlp.core.NlpEngineType
+import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
@@ -163,5 +164,21 @@ interface ApplicationConfiguration {
      * Load the configuration cache.
      */
     fun initializeConfiguration()
+
+    /**
+     * Returns the current model configuration.
+     */
+    fun getCurrentModelConfiguration(
+        applicationName: String, nlpEngineType: NlpEngineType
+    ): NlpApplicationConfiguration
+
+    /**
+     * Updates the model configuration for the given application name.
+     */
+    fun updateModelConfiguration(
+        applicationName: String,
+        engineType: NlpEngineType,
+        configuration: NlpApplicationConfiguration
+    )
 
 }

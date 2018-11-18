@@ -42,6 +42,16 @@ export class JsonUtils {
       return new Map<K, V>((<any>Object).entries(json))
     }
   }
+
+  static mapToObject<K, V>(map:Map<string,string>): any {
+    let obj = Object.create(null);
+    map.forEach((v,k) => {
+      // We don’t escape the key '__proto__'
+      // which can cause problems on older engines
+      obj[k] = v;
+    });
+    return obj;
+  }
 }
 
 export class ApplicationScopedQuery {

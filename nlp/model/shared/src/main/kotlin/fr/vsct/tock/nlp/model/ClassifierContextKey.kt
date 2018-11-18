@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.nlp.model
 
+import fr.vsct.tock.nlp.core.NlpEngineType
+
 /**
  * The key used by the classifier to know if a [ClassifierContext] is equals
  * to another [ClassifierContext].
@@ -26,5 +28,9 @@ interface ClassifierContextKey {
      * The id of the key. key1 == key2 <=> key1.id == key2.id
      */
     fun id(): String
+
+    val applicationName: String
+
+    val engineType: NlpEngineType
 
 }

@@ -19,14 +19,15 @@ package fr.vsct.tock.nlp.model.service.engine
 import com.github.salomonbrys.kodein.instance
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
+import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration
 import fr.vsct.tock.nlp.model.EntityBuildContext
-import fr.vsct.tock.nlp.model.EntityCallContext
+import fr.vsct.tock.nlp.model.EntityContext
 import fr.vsct.tock.nlp.model.EntityContextKey
 import fr.vsct.tock.nlp.model.IntentContext
 import fr.vsct.tock.nlp.model.IntentContext.IntentContextKey
 import fr.vsct.tock.nlp.model.ModelNotInitializedException
 import fr.vsct.tock.nlp.model.TokenizerContext
-import fr.vsct.tock.nlp.model.service.storage.NlpEngineModelIO
+import fr.vsct.tock.nlp.model.service.storage.NlpEngineModelDAO
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.injector
@@ -48,21 +49,25 @@ internal object NlpModelRepository {
 
     private val logger = KotlinLogging.logger {}
 
-    private data class TimeStampedModel(val nativeModel: Any?, val lastUpdate: Instant)
+    private data class ConfiguredModel(
+        val nativeModel: Any?,
+        val lastUpdate: Instant,
+        val configuration: NlpApplicationConfiguration
+    )
 
-    private val modelIO: NlpEngineModelIO by injector.instance()
+    private val modelDAO: NlpEngineModelDAO by injector.instance()
 
     private val executor: Executor by injector.instance()
 
-    private val intentModelsCache: Cache<IntentContextKey, TimeStampedModel> =
+    private val intentModelsCache: Cache<IntentContextKey, ConfiguredModel> =
         CacheBuilder.newBuilder().softValues().build()
 
-    private val entityModelsCache: Cache<EntityContextKey, TimeStampedModel> =
+    private val entityModelsCache: Cache<EntityContextKey, ConfiguredModel> =
         CacheBuilder.newBuilder().softValues().build()
 
     init {
         if (booleanProperty("tock_nlp_model_refresh", true)) {
-            modelIO.listenIntentModelChanges { key ->
+            modelDAO.listenIntentModelChanges { key ->
                 intentModelsCache
                     .asMap()
                     .keys
@@ -73,13 +78,13 @@ internal object NlpModelRepository {
                             it,
                             loadIntentModel(
                                 it,
-                                NlpEngineRepository.getProvider(it.nlpEngineType)
+                                NlpEngineRepository.getProvider(it.engineType)
                             )
                         )
                     }
 
             }
-            modelIO.listenEntityModelChanges { key ->
+            modelDAO.listenEntityModelChanges { key ->
                 entityModelsCache
                     .asMap()
                     .keys
@@ -90,7 +95,7 @@ internal object NlpModelRepository {
                             it,
                             loadEntityModel(
                                 it,
-                                NlpEngineRepository.getProvider(it.nlpEngineType)
+                                NlpEngineRepository.getProvider(it.engineType)
                             )
                         )
                     }
@@ -100,9 +105,12 @@ internal object NlpModelRepository {
         }
     }
 
-    fun getTokenizerModelHolder(context: TokenizerContext): TokenizerModelHolder {
-        return TokenizerModelHolder(context.language)
+    fun getTokenizerModelHolder(context: TokenizerContext, conf: NlpApplicationConfiguration): TokenizerModelHolder {
+        return TokenizerModelHolder(context.language, conf)
     }
+
+    fun getConfiguration(context: IntentContext, provider: NlpEngineProvider): NlpApplicationConfiguration =
+        getIntentModelHolder(context, provider).configuration
 
     fun getIntentModelHolder(context: IntentContext, provider: NlpEngineProvider): IntentModelHolder {
         return context
@@ -112,41 +120,56 @@ internal object NlpModelRepository {
                     loadIntentModel(key, provider)
                 }
             }
-            .let { IntentModelHolder(context.application, it.nativeModel!!, it.lastUpdate) }
+            .let { IntentModelHolder(context.application, it.nativeModel!!, it.configuration, it.lastUpdate) }
     }
+
+    private fun NlpEngineProvider.configuration(configuration: NlpApplicationConfiguration? = null): NlpApplicationConfiguration =
+        configuration ?: modelBuilder.defaultNlpApplicationConfiguration()
 
     private fun loadIntentModel(
         contextKey: IntentContextKey,
         provider: NlpEngineProvider
-    ): TimeStampedModel {
-        val inputStream = modelIO.getIntentModelInputStream(contextKey)
+    ): ConfiguredModel {
+        val inputStream = modelDAO.getIntentModelInputStream(contextKey)
         if (inputStream != null) {
             logger.debug { "load intent model for $contextKey" }
-            val model = provider.getModelIo().loadIntentModel(inputStream)
-            return TimeStampedModel(model, inputStream.updatedDate)
+            val model = provider.modelIo.loadIntentModel(inputStream)
+            return ConfiguredModel(
+                model,
+                inputStream.updatedDate,
+                provider.configuration(inputStream.configuration)
+            )
         }
 
         throw ModelNotInitializedException("no intent model found for $contextKey")
     }
 
-    fun getEntityModelHolder(context: EntityCallContext, provider: NlpEngineProvider): EntityModelHolder? {
+    fun getConfiguration(context: EntityContext, provider: NlpEngineProvider): NlpApplicationConfiguration =
+        getEntityModelHolder(context, provider)?.configuration
+                ?: provider.modelBuilder.defaultNlpApplicationConfiguration()
+
+    fun getEntityModelHolder(context: EntityContext, provider: NlpEngineProvider): EntityModelHolder? {
         return context
             .key()
             .let {
                 entityModelsCache.get(it) { loadEntityModel(it, provider) }
             }
-            .let { (nativeModel, lastUpdate) ->
-                if (nativeModel == null) null else EntityModelHolder(nativeModel, lastUpdate)
+            .let { (nativeModel, lastUpdate, conf) ->
+                if (nativeModel == null) null else EntityModelHolder(nativeModel, conf, lastUpdate)
             }
     }
 
-    private fun loadEntityModel(contextKey: EntityContextKey, provider: NlpEngineProvider): TimeStampedModel {
-        return modelIO.getEntityModelInputStream(contextKey)
+    private fun loadEntityModel(contextKey: EntityContextKey, provider: NlpEngineProvider): ConfiguredModel {
+        return modelDAO.getEntityModelInputStream(contextKey)
             ?.let { inputStream ->
                 logger.debug { "load entity model for $contextKey" }
-                val model = provider.getModelIo().loadEntityModel(inputStream)
-                return TimeStampedModel(model, inputStream.updatedDate)
-            } ?: TimeStampedModel(null, now())
+                val model = provider.modelIo.loadEntityModel(inputStream)
+                return ConfiguredModel(
+                    model,
+                    inputStream.updatedDate,
+                    provider.configuration(inputStream.configuration)
+                )
+            } ?: ConfiguredModel(null, now(), provider.configuration())
     }
 
 
@@ -188,7 +211,7 @@ internal object NlpModelRepository {
     ) {
         saveModel(
             { modelIo.copyIntentModel(model.nativeModel, it) },
-            { modelIO.saveIntentModel(intentContextKey, it) }
+            { modelDAO.saveIntentModel(intentContextKey, it) }
         )
     }
 
@@ -199,24 +222,24 @@ internal object NlpModelRepository {
     ) {
         saveModel(
             { modelIo.copyEntityModel(model.nativeModel, it) },
-            { modelIO.saveEntityModel(entityContextKey, it) }
+            { modelDAO.saveEntityModel(entityContextKey, it) }
         )
     }
 
     fun isIntentModelExist(context: IntentContext): Boolean {
-        return modelIO.getIntentModelLastUpdate(context.key()) != null
+        return modelDAO.getIntentModelLastUpdate(context.key()) != null
     }
 
     fun isEntityModelExist(context: EntityBuildContext): Boolean {
-        return modelIO.getEntityModelLastUpdate(context.key()) != null
+        return modelDAO.getEntityModelLastUpdate(context.key()) != null
     }
 
     fun removeEntityModelsNotIn(keys: List<EntityContextKey>) {
-        modelIO.removeEntityModelsNotIn(keys)
+        modelDAO.deleteEntityModelsNotIn(keys)
     }
 
     fun removeIntentModelsNotIn(keys: List<IntentContextKey>) {
-        modelIO.removeIntentModelsNotIn(keys)
+        modelDAO.deleteIntentModelsNotIn(keys)
     }
 
 }

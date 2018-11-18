@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.nlp.model.service.engine
 
-import fr.vsct.tock.nlp.model.EntityClassifier
 import fr.vsct.tock.shared.ThreadSafe
 
 /**

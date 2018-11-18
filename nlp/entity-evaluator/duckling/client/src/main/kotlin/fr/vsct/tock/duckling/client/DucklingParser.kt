@@ -43,7 +43,6 @@ import fr.vsct.tock.nlp.model.EntityCallContextForEntity
 import fr.vsct.tock.nlp.model.EntityCallContextForIntent
 import fr.vsct.tock.nlp.model.EntityCallContextForSubEntities
 import mu.KotlinLogging
-import java.lang.Exception
 import java.time.Duration
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
@@ -59,7 +58,7 @@ internal object DucklingParser : EntityEvaluator, EntityTypeClassifier, Parser {
     val ducklingAveragePertinence: Double = 0.8
 
 
-    override fun classifyEntities(context: EntityCallContext, text: String, tokens: Array<String>): List<EntityTypeRecognition> {
+    override fun classifyEntities(context: EntityCallContext, text: String): List<EntityTypeRecognition> {
         return DucklingParser.classify(context, text)
     }
 
@@ -73,62 +72,68 @@ internal object DucklingParser : EntityEvaluator, EntityTypeClassifier, Parser {
 
     private fun classifyForIntent(context: EntityCallContextForIntent, text: String): List<EntityTypeRecognition> {
         val matchedEntities = context.intent
-                .entities
-                .filter { DucklingDimensions.entityTypes.contains(it.entityType.name) }
+            .entities
+            .filter { DucklingDimensions.entityTypes.contains(it.entityType.name) }
         return if (matchedEntities.isEmpty()) {
             emptyList()
         } else {
             matchedEntities
-                    .groupBy { DucklingDimensions.tockTypeToDucklingType(it.entityType) }
-                    .map { it.key to it.value.first() }
-                    .toMap()
-                    .let {
-                        classify(
-                                it.mapValues { it.value.entityType },
-                                context.language.language,
-                                it.keys,
-                                context.referenceDate,
-                                text)
-                    }
+                .groupBy { DucklingDimensions.tockTypeToDucklingType(it.entityType) }
+                .map { it.key to it.value.first() }
+                .toMap()
+                .let {
+                    classify(
+                        it.mapValues { it.value.entityType },
+                        context.language.language,
+                        it.keys,
+                        context.referenceDate,
+                        text
+                    )
+                }
 
 
         }
     }
 
     fun classify(
-            entityTypeMap: Map<String, EntityType>,
-            language: String,
-            dimensions: Set<String>,
-            referenceDate: ZonedDateTime,
-            textToParse: String): List<EntityTypeRecognition> {
+        entityTypeMap: Map<String, EntityType>,
+        language: String,
+        dimensions: Set<String>,
+        referenceDate: ZonedDateTime,
+        textToParse: String
+    ): List<EntityTypeRecognition> {
 
-        val parseResult = DucklingClient.parse(language, dimensions.toList(), referenceDate, referenceDate.zone, textToParse)
+        val parseResult =
+            DucklingClient.parse(language, dimensions.toList(), referenceDate, referenceDate.zone, textToParse)
 
         return if (parseResult == null) {
             logger.warn { "parsing error for $language $dimensions $textToParse" }
             emptyList()
         } else {
             dimensions
-                    .flatMap { parseDimension(parseResult, it) }
-                    .map {
-                        EntityTypeRecognition(
-                                EntityTypeValue(
-                                        it.start,
-                                        it.end,
-                                        entityTypeMap.getValue(it.type),
-                                        it.value,
-                                        true),
-                                ducklingAveragePertinence)
-                    }
+                .flatMap { parseDimension(parseResult, it) }
+                .map {
+                    EntityTypeRecognition(
+                        EntityTypeValue(
+                            it.start,
+                            it.end,
+                            entityTypeMap.getValue(it.type),
+                            it.value,
+                            true
+                        ),
+                        ducklingAveragePertinence
+                    )
+                }
         }
     }
 
     override fun evaluate(context: EntityCallContextForEntity, text: String): EvaluationResult {
         val values = parse(
-                context.language.language,
-                DucklingDimensions.tockTypeToDucklingType(context.entityType),
-                context.referenceDate,
-                text)
+            context.language.language,
+            DucklingDimensions.tockTypeToDucklingType(context.entityType),
+            context.referenceDate,
+            text
+        )
         val v = values.firstOrNull()
         return if (v == null) {
             EvaluationResult(false)
@@ -137,8 +142,14 @@ internal object DucklingParser : EntityEvaluator, EntityTypeClassifier, Parser {
         }
     }
 
-    override fun parse(language: String, dimension: String, referenceDate: ZonedDateTime, textToParse: String): List<ValueWithRange> {
-        val parseResult = DucklingClient.parse(language, listOf(dimension), referenceDate, referenceDate.zone, textToParse)
+    override fun parse(
+        language: String,
+        dimension: String,
+        referenceDate: ZonedDateTime,
+        textToParse: String
+    ): List<ValueWithRange> {
+        val parseResult =
+            DucklingClient.parse(language, listOf(dimension), referenceDate, referenceDate.zone, textToParse)
 
         return if (parseResult == null) {
             logger.warn { "parse error for $language $dimension $textToParse" }
@@ -153,19 +164,35 @@ internal object DucklingParser : EntityEvaluator, EntityTypeClassifier, Parser {
             timeDucklingDimension -> parseDate(parseResult)
             "number" -> parseSimple(parseResult, dimension, { NumberValue(it[":value"].number()) })
             "ordinal" -> parseSimple(parseResult, dimension, { OrdinalValue(it[":value"].number()) })
-            "distance" -> parseSimple(parseResult, dimension, { DistanceValue(it[":value"].number(), it[":unit"].string()) })
-            "temperature" -> parseSimple(parseResult, dimension, { TemperatureValue(it[":value"].number(), TemperatureUnit.valueOf(it[":unit"].string())) })
-            "volume" -> parseSimple(parseResult, dimension, { VolumeValue(it[":value"].number(), it[":unit"].string()) })
-            "amount-of-money" -> parseSimple(parseResult, dimension, { AmountOfMoneyValue(it[":value"].number(), it[":unit"].string()) })
+            "distance" -> parseSimple(
+                parseResult,
+                dimension,
+                { DistanceValue(it[":value"].number(), it[":unit"].string()) })
+            "temperature" -> parseSimple(
+                parseResult,
+                dimension,
+                { TemperatureValue(it[":value"].number(), TemperatureUnit.valueOf(it[":unit"].string())) })
+            "volume" -> parseSimple(
+                parseResult,
+                dimension,
+                { VolumeValue(it[":value"].number(), it[":unit"].string()) })
+            "amount-of-money" -> parseSimple(
+                parseResult,
+                dimension,
+                { AmountOfMoneyValue(it[":value"].number(), it[":unit"].string()) })
             "url" -> parseSimple(parseResult, dimension, { UrlValue(it[":value"].string()) })
             "email" -> parseSimple(parseResult, dimension, { EmailValue(it[":value"].string()) })
             "phone-number" -> parseSimple(parseResult, dimension, { PhoneNumberValue(it[":value"].string()) })
-        //TODO duration
+            //TODO duration
             else -> TODO("Not yet supported yet : $dimension")
         }
     }
 
-    private fun parseSimple(parseResult: JSONValue, dim: String, parseFunction: (JSONValue) -> Value): List<ValueWithRange> {
+    private fun parseSimple(
+        parseResult: JSONValue,
+        dim: String,
+        parseFunction: (JSONValue) -> Value
+    ): List<ValueWithRange> {
         return parseResult.iterable().mapNotNull {
             if (it[":dim"].string() == dim) {
                 val value = parseFunction.invoke(it[":value"])
@@ -191,14 +218,17 @@ internal object DucklingParser : EntityEvaluator, EntityTypeClassifier, Parser {
 
                         val grain = valueMap[":grain"]
                         if (grain.isNotNull()) {
-                            result.add(ValueWithRange(
+                            result.add(
+                                ValueWithRange(
                                     start,
                                     end,
                                     DateEntityValue(
-                                            ZonedDateTime.parse(valueMap[":value"].string(), formatter),
-                                            DateEntityGrain.valueOf(grain.string())
+                                        ZonedDateTime.parse(valueMap[":value"].string(), formatter),
+                                        DateEntityGrain.valueOf(grain.string())
                                     ),
-                                    timeDucklingDimension))
+                                    timeDucklingDimension
+                                )
+                            )
                         } else {
                             //type interval
                             val fromMap = valueMap[":from"]
@@ -208,19 +238,20 @@ internal object DucklingParser : EntityEvaluator, EntityTypeClassifier, Parser {
                                 val toGrain = toMap[":grain"]
                                 if (toGrain.isNotNull()) {
                                     entityValue = ValueWithRange(
-                                            start,
-                                            end,
-                                            DateIntervalEntityValue(
-                                                    DateEntityValue(
-                                                            ZonedDateTime.parse(fromMap[":value"].string(), formatter),
-                                                            DateEntityGrain.valueOf(fromMap[":grain"].string())
-                                                    ),
-                                                    DateEntityValue(
-                                                            ZonedDateTime.parse(toMap[":value"].string(), formatter),
-                                                            DateEntityGrain.valueOf(toMap[":grain"].string())
-                                                    )
+                                        start,
+                                        end,
+                                        DateIntervalEntityValue(
+                                            DateEntityValue(
+                                                ZonedDateTime.parse(fromMap[":value"].string(), formatter),
+                                                DateEntityGrain.valueOf(fromMap[":grain"].string())
                                             ),
-                                            timeDucklingDimension)
+                                            DateEntityValue(
+                                                ZonedDateTime.parse(toMap[":value"].string(), formatter),
+                                                DateEntityGrain.valueOf(toMap[":grain"].string())
+                                            )
+                                        ),
+                                        timeDucklingDimension
+                                    )
                                 }
                             }
 
@@ -228,13 +259,14 @@ internal object DucklingParser : EntityEvaluator, EntityTypeClassifier, Parser {
                                 val vMap = if (fromMap.isNotNull()) fromMap else toMap
                                 if (vMap.isNotNull()) {
                                     entityValue = ValueWithRange(
-                                            start,
-                                            end,
-                                            DateEntityValue(
-                                                    ZonedDateTime.parse(vMap[":value"].string(), formatter),
-                                                    DateEntityGrain.valueOf(vMap[":grain"].string())
-                                            ),
-                                            timeDucklingDimension)
+                                        start,
+                                        end,
+                                        DateEntityValue(
+                                            ZonedDateTime.parse(vMap[":value"].string(), formatter),
+                                            DateEntityGrain.valueOf(vMap[":grain"].string())
+                                        ),
+                                        timeDucklingDimension
+                                    )
                                 }
                             }
 
@@ -285,18 +317,23 @@ internal object DucklingParser : EntityEvaluator, EntityTypeClassifier, Parser {
 
             if (r1.value.grain == r2.value.grain) {
                 return ValueWithRange(
-                        r1.start,
-                        r2.end,
-                        DateIntervalEntityValue(r1.value, r2.value),
-                        timeDucklingDimension)
+                    r1.start,
+                    r2.end,
+                    DateIntervalEntityValue(r1.value, r2.value),
+                    timeDucklingDimension
+                )
             } else {
                 val dateGrain = if (r1.value.grain.time) r2.value else r1.value
                 val timeGrain = if (r1.value.grain.time) r2.value else r1.value
                 return ValueWithRange(
-                        r1.start,
-                        r2.end,
-                        DateEntityValue(dateGrain.date.plus(Duration.ofSeconds(timeGrain.date.toLocalTime().toSecondOfDay().toLong())), timeGrain.grain),
-                        timeDucklingDimension)
+                    r1.start,
+                    r2.end,
+                    DateEntityValue(
+                        dateGrain.date.plus(Duration.ofSeconds(timeGrain.date.toLocalTime().toSecondOfDay().toLong())),
+                        timeGrain.grain
+                    ),
+                    timeDucklingDimension
+                )
             }
         }
         //return the first for now

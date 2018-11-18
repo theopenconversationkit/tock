@@ -16,9 +16,7 @@
 
 package fr.vsct.tock.nlp.model.service.storage.mongo
 
-import com.github.salomonbrys.kodein.instance
 import com.mongodb.MongoGridFSException
-import com.mongodb.client.MongoDatabase
 import com.mongodb.client.gridfs.GridFSBucket
 import com.mongodb.client.gridfs.GridFSBuckets
 import com.mongodb.client.gridfs.GridFSDownloadStream
@@ -31,9 +29,10 @@ import com.mongodb.client.model.changestream.FullDocument
 import fr.vsct.tock.nlp.model.ClassifierContextKey
 import fr.vsct.tock.nlp.model.EntityContextKey
 import fr.vsct.tock.nlp.model.IntentContext.IntentContextKey
-import fr.vsct.tock.nlp.model.service.storage.NlpEngineModelIO
+import fr.vsct.tock.nlp.model.service.storage.NlpEngineModelDAO
 import fr.vsct.tock.nlp.model.service.storage.NlpModelStream
-import fr.vsct.tock.shared.injector
+import fr.vsct.tock.nlp.model.service.storage.mongo.MongoModelConfiguration.asyncDatabase
+import fr.vsct.tock.nlp.model.service.storage.mongo.MongoModelConfiguration.database
 import fr.vsct.tock.shared.watchSafely
 import mu.KotlinLogging
 import org.litote.kmongo.ensureIndex
@@ -43,12 +42,9 @@ import java.time.Instant
 /**
  *
  */
-object NlpEngineMongoModelIO : NlpEngineModelIO {
+internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
 
     private val logger = KotlinLogging.logger {}
-
-    private val database: MongoDatabase by injector.instance(MONGO_DATABASE)
-    private val asyncDatabase: com.mongodb.async.client.MongoDatabase by injector.instance(MONGO_DATABASE)
 
     private val entityBucket: GridFSBucket  by lazy {
         GridFSBuckets.create(database, "fs_entity")
@@ -67,9 +63,22 @@ object NlpEngineMongoModelIO : NlpEngineModelIO {
 
     private val asyncIntentCol = asyncDatabase.getCollection("fs_intent.files")
 
+    //TODO remove in 3.0
+    private fun ClassifierContextKey.idWithoutNamespace(): String? =
+        id().run {
+            val i = indexOf(":")
+            val i2 = indexOf("-")
+            if (i != -1 && i2 > i) {
+                substring(i + 1)
+            } else {
+                null
+            }
+        }
+
     private fun getGridFSFile(bucket: GridFSBucket, key: ClassifierContextKey): GridFSFile? {
         return try {
             bucket.find(eq("filename", key.id())).limit(1).first()
+                    ?: key.idWithoutNamespace()?.let { bucket.find(eq("filename", it)).limit(1).first() }
         } catch (e: MongoGridFSException) {
             logger.debug(e) { "no model exists for $key" }
             null
@@ -77,9 +86,11 @@ object NlpEngineMongoModelIO : NlpEngineModelIO {
     }
 
     private fun getDownloadStream(bucket: GridFSBucket, key: ClassifierContextKey): GridFSDownloadStream? {
-        return getGridFSFile(bucket, key)?.let {
-            bucket.openDownloadStream(it.id)
-        }
+        return (getGridFSFile(bucket, key)
+                ?: key.idWithoutNamespace()?.let { getGridFSFile(bucket, key) })
+            ?.let {
+                bucket.openDownloadStream(it.id)
+            }
     }
 
     private fun saveModel(bucket: GridFSBucket, key: ClassifierContextKey, stream: InputStream) {
@@ -111,8 +122,13 @@ object NlpEngineMongoModelIO : NlpEngineModelIO {
     }
 
     private fun getModelInputStream(bucket: GridFSBucket, key: ClassifierContextKey): NlpModelStream? {
-        return getDownloadStream(bucket, key)?.let {
-            NlpModelStream(it, it.gridFSFile.uploadDate.toInstant())
+        return getDownloadStream(bucket, key)?.let { stream ->
+            val date = stream.gridFSFile.uploadDate.toInstant()
+            NlpModelStream(
+                stream,
+                date,
+                NlpApplicationConfigurationMongoDAO.loadLastConfiguration(key.applicationName, key.engineType, date)
+            )
         }
     }
 
@@ -132,7 +148,7 @@ object NlpEngineMongoModelIO : NlpEngineModelIO {
         return getLastUpdate(entityBucket, key)
     }
 
-    override fun removeEntityModelsNotIn(keys: List<EntityContextKey>) {
+    override fun deleteEntityModelsNotIn(keys: List<EntityContextKey>) {
         deleteModelNotIn(entityBucket, keys)
     }
 
@@ -152,7 +168,7 @@ object NlpEngineMongoModelIO : NlpEngineModelIO {
         return getLastUpdate(intentBucket, key)
     }
 
-    override fun removeIntentModelsNotIn(keys: List<IntentContextKey>) {
+    override fun deleteIntentModelsNotIn(keys: List<IntentContextKey>) {
         deleteModelNotIn(intentBucket, keys)
     }
 
@@ -163,7 +179,7 @@ object NlpEngineMongoModelIO : NlpEngineModelIO {
     override fun listenEntityModelChanges(listener: (String) -> Unit) {
         asyncEntityCol.watchSafely({ it.fullDocument(FullDocument.UPDATE_LOOKUP) }) {
             val id = it.fullDocument?.get("filename") as? String
-            if(id != null) {
+            if (id != null) {
                 listener.invoke(id)
             }
         }
@@ -172,7 +188,7 @@ object NlpEngineMongoModelIO : NlpEngineModelIO {
     override fun listenIntentModelChanges(listener: (String) -> Unit) {
         asyncIntentCol.watchSafely({ it.fullDocument(FullDocument.UPDATE_LOOKUP) }) {
             val id = it.fullDocument?.get("filename") as? String
-            if(id != null) {
+            if (id != null) {
                 listener.invoke(id)
             }
         }

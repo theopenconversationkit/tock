@@ -21,6 +21,8 @@ import {StateService} from "../../core-nlp/state.service";
 import {Application} from "../../model/application";
 import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-dialog.component";
 import {ApplicationService} from "../../core-nlp/applications.service";
+import {Subject} from "rxjs";
+import {NlpEngineType} from "../../model/nlp";
 
 @Component({
   selector: 'tock-application',
@@ -34,6 +36,7 @@ export class ApplicationComponent implements OnInit {
   newApplication: boolean;
   newLocale: string;
   nlpEngineType: string;
+  nlpEngineTypeChange: Subject<NlpEngineType> = new Subject();
 
   constructor(private route: ActivatedRoute,
               private snackBar: MatSnackBar,
@@ -129,4 +132,7 @@ export class ApplicationComponent implements OnInit {
     this.snackBar.open(`${this.state.localeName(newLocale)} added`, "Locale", {duration: 1000});
   }
 
+  changeNlpEngine(type: string) {
+    this.nlpEngineTypeChange.next(this.state.supportedNlpEngines.find(e => e.name === type));
+  }
 }

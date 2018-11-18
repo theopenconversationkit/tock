@@ -18,8 +18,10 @@ package fr.vsct.tock.nlp.front.service
 
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.core.Intent.Companion.UNKNOWN_INTENT_NAME
+import fr.vsct.tock.nlp.core.ModelCore
 import fr.vsct.tock.nlp.core.NlpCore
 import fr.vsct.tock.nlp.core.NlpEngineType
+import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration
 import fr.vsct.tock.nlp.front.service.ConfigurationRepository.addNewEntityType
 import fr.vsct.tock.nlp.front.service.storage.ApplicationDefinitionDAO
 import fr.vsct.tock.nlp.front.service.storage.ClassifiedSentenceDAO
@@ -57,6 +59,7 @@ object ApplicationConfigurationService :
     private val logger = KotlinLogging.logger {}
 
     private val core: NlpCore get() = injector.provide()
+    private val modelCore: ModelCore get() = injector.provide()
 
     private val config: ApplicationConfiguration get() = injector.provide()
 
@@ -270,4 +273,16 @@ object ApplicationConfigurationService :
     override fun initializeConfiguration() {
         ConfigurationRepository.initRepository()
     }
+
+    override fun getCurrentModelConfiguration(
+        applicationName: String,
+        nlpEngineType: NlpEngineType
+    ): NlpApplicationConfiguration = modelCore.getCurrentModelConfiguration(applicationName, nlpEngineType)
+
+    override fun updateModelConfiguration(
+        applicationName: String,
+        engineType: NlpEngineType,
+        configuration: NlpApplicationConfiguration
+    ) =
+        modelCore.updateModelConfiguration(applicationName, engineType, configuration)
 }
