@@ -22,19 +22,27 @@ import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.SendAttachment
+import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType.audio
+import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.event.TypingOnEvent
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.engine.user.UserPreferences
+import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.shared.Executor
+import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.longProperty
+import fr.vsct.tock.shared.provide
+import fr.vsct.tock.stt.STT
 import io.vertx.ext.web.Router
 import mu.KotlinLogging
+import java.net.URL
 import java.time.Duration
 import java.util.concurrent.CopyOnWriteArrayList
 
@@ -53,6 +61,8 @@ internal class TockConnectorController constructor(
         private val logger = KotlinLogging.logger {}
         private val maxLockedAttempts = intProperty("tock_bot_max_locked_attempts", 10)
         private val lockedAttemptsWaitInMs = longProperty("tock_bot_locked_attempts_wait_in_ms", 500L)
+        private val parseAudioFileEnabled = booleanProperty("tock_bot_audio_nlp_enabled", true)
+        private val audioNlpFileLimit = intProperty("tock_bot_audio_nlp_max_size", 1024 * 1024)
 
         internal fun register(
             connector: Connector,
@@ -90,6 +100,25 @@ internal class TockConnectorController constructor(
         }
     }
 
+    private fun tryToParseVoiceAudio(action: Action, userTimeline: UserTimeline): Action {
+        if (parseAudioFileEnabled && action is SendAttachment && action.type == audio) {
+            val bytes = URL(action.url).readBytes()
+            if (bytes.size < audioNlpFileLimit) {
+                val stt: STT = injector.provide()
+                val text = stt.parse(bytes, userTimeline.userPreferences.locale)
+                if (text != null) {
+                    return SendSentence(
+                        action.playerId,
+                        action.applicationId,
+                        action.recipientId,
+                        text
+                    )
+                }
+            }
+        }
+        return action
+    }
+
     private fun handleAction(action: Action, nbAttempts: Int, data: ConnectorData) {
         val callback = data.callback
         try {
@@ -100,13 +129,18 @@ internal class TockConnectorController constructor(
             if (userLock.lock(id)) {
                 try {
                     callback.userLocked(action)
+
                     val userTimeline =
                         userTimelineDAO.loadWithLastValidDialog(
                             action.playerId,
                             data.priorUserId,
                             data.groupId
                         ) { bot.botDefinition.findStoryDefinition(it) }
-                    bot.handle(action, userTimeline, this, data)
+
+                    val transformedAction = tryToParseVoiceAudio(action, userTimeline)
+
+                    bot.handle(transformedAction, userTimeline, this, data)
+
                     if (data.saveTimeline) {
                         userTimelineDAO.save(userTimeline)
                     }

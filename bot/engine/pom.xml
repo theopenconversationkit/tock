@@ -41,6 +41,10 @@
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-translator-core</artifactId>
         </dependency>
+        <dependency>
+            <groupId>fr.vsct.tock</groupId>
+            <artifactId>tock-stt-core</artifactId>
+        </dependency>
 
         <dependency>
             <groupId>io.vertx</groupId>

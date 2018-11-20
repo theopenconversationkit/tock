@@ -75,9 +75,9 @@ class WhatsAppConnector(
                     logger.debug { "WhatsApp request input : $body" }
                     val messages: WhatsAppMessages = mapper.readValue(body)
                     messages.messages.forEach { m ->
-                        val e = WebhookActionConverter.toEvent(m, applicationId)
-                        if (e != null) {
-                            executor.executeBlocking {
+                        executor.executeBlocking {
+                            val e = WebhookActionConverter.toEvent(m, applicationId, client)
+                            if (e != null) {
                                 controller.handle(
                                     e,
                                     ConnectorData(

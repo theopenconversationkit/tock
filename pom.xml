@@ -80,6 +80,7 @@
 
     <modules>
         <module>shared</module>
+        <module>stt</module>
         <module>translator</module>
         <module>nlp</module>
         <module>bot</module>
@@ -146,6 +147,21 @@
             <dependency>
                 <groupId>fr.vsct.tock</groupId>
                 <artifactId>tock-translator-noop</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
+                <artifactId>tock-stt-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
+                <artifactId>tock-stt-noop</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
+                <artifactId>tock-stt-google-speech</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

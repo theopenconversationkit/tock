@@ -77,6 +77,10 @@
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-translator-noop</artifactId>
         </dependency>
+        <dependency>
+            <groupId>fr.vsct.tock</groupId>
+            <artifactId>tock-stt-noop</artifactId>
+        </dependency>
     </dependencies>
 
 </project>

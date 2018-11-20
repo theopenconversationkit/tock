@@ -22,6 +22,7 @@ import com.github.salomonbrys.kodein.Kodein.Module
 import fr.vsct.tock.bot.mongo.botMongoModule
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.sharedModule
+import fr.vsct.tock.stt.noop.noOpSTTModule
 import fr.vsct.tock.translator.noop.noOpTranslatorModule
 import mu.KotlinLogging
 
@@ -36,7 +37,7 @@ object BotIoc {
      * The core modules of the bot.
      */
     val coreModules: List<Module> =
-        listOf(sharedModule, botModule, botMongoModule, noOpTranslatorModule)
+        listOf(sharedModule, botModule, botMongoModule, noOpTranslatorModule, noOpSTTModule)
 
     /**
      * Start the bot with the specified additional [modules].

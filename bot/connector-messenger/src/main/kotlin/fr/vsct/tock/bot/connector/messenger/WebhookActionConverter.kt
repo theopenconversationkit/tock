@@ -31,6 +31,8 @@ import fr.vsct.tock.bot.connector.messenger.model.webhook.PostbackWebhook
 import fr.vsct.tock.bot.connector.messenger.model.webhook.UrlPayload
 import fr.vsct.tock.bot.connector.messenger.model.webhook.Webhook
 import fr.vsct.tock.bot.engine.action.SendAttachment
+import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType.audio
+import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType.image
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -84,8 +86,9 @@ internal object WebhookActionConverter {
                             val type = a.first().type
                             when (type) {
                                 AttachmentType.location -> readLocation(message, a.first(), applicationId)
-                                AttachmentType.image -> readImage(message, a.first(), applicationId)
-                            // ignore for now
+                                AttachmentType.image -> readAttachment(message, a.first(), applicationId, image)
+                                AttachmentType.audio -> readAttachment(message, a.first(), applicationId, audio)
+                                // ignore for now
                                 else -> readSentence(message, applicationId)
                             }
                         } else {
@@ -204,15 +207,21 @@ internal object WebhookActionConverter {
         )
     }
 
-    private fun readImage(message: MessageWebhook, attachment: Attachment, applicationId: String): SendAttachment {
-        logger.debug { "read image attachment : $attachment" }
+    private fun readAttachment(
+        message: MessageWebhook,
+        attachment: Attachment,
+        applicationId: String,
+        attachmentType: SendAttachment.AttachmentType
+    ): SendAttachment {
+        logger.debug { "read attachment : $attachment" }
         return SendAttachment(
             message.playerId(PlayerType.user),
             applicationId,
             message.recipientId(PlayerType.bot),
             (attachment.payload as UrlPayload).url,
-            SendAttachment.AttachmentType.image,
+            attachmentType,
             message.getMessageId().toId()
         )
     }
+
 }

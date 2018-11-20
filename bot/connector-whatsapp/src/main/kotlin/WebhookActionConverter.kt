@@ -16,19 +16,25 @@
 
 package fr.vsct.tock.bot.connector.whatsapp
 
+import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.whatsapp.model.webhook.WhatsAppMessage
 import fr.vsct.tock.bot.connector.whatsapp.model.webhook.WhatsAppTextMessage
+import fr.vsct.tock.bot.connector.whatsapp.model.webhook.WhatsAppVoiceMessage
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
+import fr.vsct.tock.shared.injector
+import fr.vsct.tock.stt.STT
 
 /**
  *
  */
 internal object WebhookActionConverter {
 
-    fun toEvent(message: WhatsAppMessage, applicationId: String): Event? {
+    private val stt: STT by injector.instance()
+
+    fun toEvent(message: WhatsAppMessage, applicationId: String, client: WhatsAppClient): Event? {
         return when (message) {
             is WhatsAppTextMessage -> SendSentence(
                 PlayerId(message.from),
@@ -36,6 +42,19 @@ internal object WebhookActionConverter {
                 PlayerId(applicationId, PlayerType.bot),
                 message.text.body
             )
+            is WhatsAppVoiceMessage -> {
+                client.getMedia(message.voice.id)
+                    ?.let { audio ->
+                        stt.parse(audio)?.let { text ->
+                            SendSentence(
+                                PlayerId(message.from),
+                                applicationId,
+                                PlayerId(applicationId, PlayerType.bot),
+                                text
+                            )
+                        }
+                    }
+            }
             else -> null
         }
     }

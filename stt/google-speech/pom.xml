@@ -20,48 +20,31 @@
 
     <parent>
         <groupId>fr.vsct.tock</groupId>
-        <artifactId>tock-bot</artifactId>
+        <artifactId>tock-stt</artifactId>
         <version>2.0.0-SNAPSHOT</version>
     </parent>
 
-    <artifactId>tock-bot-connector-whatsapp</artifactId>
-    <name>Tock Bot WhatsApp Connector</name>
-    <description>Bot Connector for WhatsApp</description>
+    <artifactId>tock-stt-google-speech</artifactId>
+    <name>Tock Google Speech STT </name>
+    <description>Google Speech STT implementation</description>
+
+    <properties>
+        <google-speech>0.71.0-beta</google-speech>
+    </properties>
 
     <dependencies>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-engine-jackson</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-stt-core</artifactId>
         </dependency>
-
         <dependency>
-            <groupId>org.jetbrains.kotlin</groupId>
-            <artifactId>kotlin-test-junit5</artifactId>
-            <scope>test</scope>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-core</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-engine</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-api</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>org.junit.jupiter</groupId>
-            <artifactId>junit-jupiter-params</artifactId>
-            <scope>test</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.mockk</groupId>
-            <artifactId>mockk</artifactId>
-            <scope>test</scope>
+            <groupId>com.google.cloud</groupId>
+            <artifactId>google-cloud-speech</artifactId>
+            <version>${google-speech}</version>
         </dependency>
     </dependencies>
 
