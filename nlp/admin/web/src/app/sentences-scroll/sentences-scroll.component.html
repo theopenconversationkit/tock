@@ -52,7 +52,11 @@
             matTooltip="Switch to table view">
       <mat-icon>grid_on</mat-icon>
     </button>
-  </div>
+
+    <div class="loader-parent">
+    <mat-progress-spinner class="loader" mode="indeterminate" *ngIf="loading" [diameter]="28"></mat-progress-spinner>
+    </div>
+    </div>
 
   <mat-paginator #paginator
                 [length]="total"

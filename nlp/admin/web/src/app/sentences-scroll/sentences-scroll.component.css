@@ -78,3 +78,11 @@
   display:flex;
   justify-content:center;
 }
+
+.loader-parent {
+  display:flex;
+}
+
+.loader {
+  margin: auto;
+}
