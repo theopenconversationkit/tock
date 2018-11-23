@@ -1,7 +1,7 @@
 /*
  * Copyright (C) 2017 VSCT
  *
- * Licensed under the Apache License, Version 2.0 (the "License");
+ * Licensed under the Apache License, Version 2.0 (the "License")
  * you may not use this file except in compliance with the License.
  * You may obtain a copy of the License at
  *
@@ -21,9 +21,17 @@ import com.google.cloud.speech.v1.RecognitionConfig
 import com.google.cloud.speech.v1.SpeechClient
 import com.google.protobuf.ByteString
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.stt.AudioCodec
 import fr.vsct.tock.stt.STT
 import mu.KotlinLogging
+import ws.schild.jave.AudioAttributes
+import ws.schild.jave.Encoder
+import ws.schild.jave.EncodingAttributes
+import ws.schild.jave.MultimediaObject
+import java.io.File
+import java.nio.file.Files
 import java.util.Locale
+
 
 /**
  *
@@ -32,16 +40,52 @@ internal object GoogleSpeechClient : STT {
 
     private val logger = KotlinLogging.logger {}
 
-    override fun parse(bytes: ByteArray, language: Locale): String? =
+    private fun parseUnknown(sourceBytes: ByteArray): ByteArray {
+        val encoder = Encoder()
+        val a = EncodingAttributes()
+        val audioA = AudioAttributes()
+        audioA.setChannels(1)
+        a.audioAttributes = audioA
+        a.format = "flac"
+        val sourceFile = File.createTempFile("tock-", ".flac")
+        val targetFile = File.createTempFile("tock-", ".flac")
+        return try {
+            Files.write(sourceFile.toPath(), sourceBytes)
+            encoder.encode(
+                MultimediaObject(sourceFile),
+                targetFile,
+                a
+            )
+            Files.readAllBytes(targetFile.toPath())
+        } finally {
+            sourceFile.delete()
+            targetFile.delete()
+        }
+
+    }
+
+    override fun parse(bytes: ByteArray, language: Locale, codec: AudioCodec): String? =
         try {
             SpeechClient.create().use { speechClient ->
 
                 val config = RecognitionConfig.newBuilder()
-                    .setEncoding(RecognitionConfig.AudioEncoding.ENCODING_UNSPECIFIED)
+                    .setEncoding(
+                        when (codec) {
+                            AudioCodec.ogg -> RecognitionConfig.AudioEncoding.OGG_OPUS
+                            AudioCodec.unknown -> RecognitionConfig.AudioEncoding.FLAC
+                        }
+                    )
                     .setLanguageCode(language.toString())
                     .build()
                 val audio = RecognitionAudio.newBuilder()
-                    .setContent(ByteString.copyFrom(bytes))
+                    .setContent(
+                        ByteString.copyFrom(
+                            when (codec) {
+                                AudioCodec.ogg -> bytes
+                                AudioCodec.unknown -> parseUnknown(bytes)
+                            }
+                        )
+                    )
                     .build()
                 val response = speechClient.recognize(config, audio)
                 logger.info { response }

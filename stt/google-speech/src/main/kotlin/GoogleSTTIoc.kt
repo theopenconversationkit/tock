@@ -25,5 +25,5 @@ import fr.vsct.tock.stt.STT
  *
  */
 val googleSTTModule = Kodein.Module {
-    bind<STT>() with provider { GoogleSpeechClient }
+    bind<STT>(overrides = true) with provider { GoogleSpeechClient }
 }

@@ -27,5 +27,5 @@ interface STT {
     /**
      * Parse audio data for the specified language. Return null if the transcript fails.
      **/
-    fun parse(bytes: ByteArray, language: Locale = defaultLocale): String?
+    fun parse(bytes: ByteArray, language: Locale = defaultLocale, codec: AudioCodec = AudioCodec.unknown): String?
 }

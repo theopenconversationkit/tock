@@ -13,16 +13,13 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package fr.vsct.tock.stt.noop
 
-import fr.vsct.tock.stt.AudioCodec
-import fr.vsct.tock.stt.STT
-import java.util.Locale
+package fr.vsct.tock.stt
 
 /**
- *
+ * Codec audio for STT input stream.
  */
-internal object NoOpSTT : STT {
+enum class AudioCodec {
 
-    override fun parse(bytes: ByteArray, language: Locale, codec: AudioCodec): String? = null
+    unknown, ogg
 }
