@@ -30,6 +30,7 @@ import {I18nController} from "./i18n-label.component";
 })
 export class I18nComponent extends I18nController implements OnInit {
 
+  originalI18n: I18nLabel[];
   i18n: I18nLabel[];
   filteredI18n: I18nLabel[];
   filterString: string = "";
@@ -63,6 +64,7 @@ export class I18nComponent extends I18nController implements OnInit {
         this.displayUpload = false;
         this.refresh();
       };
+    this.state.currentApplicationEmitter.subscribe(_ => this.load());
   }
 
   controller(): I18nController {
@@ -87,7 +89,8 @@ export class I18nComponent extends I18nController implements OnInit {
     this.botService.i18nLabels().subscribe(r => {
       this.loading = false;
       this.localeBase = r.localeBase;
-      this.i18n = r.labels;
+      this.originalI18n = r.labels;
+      this.filterBySupportedLocales();
       this.initCategories(this.i18n);
       this.sortLabels();
 
@@ -97,6 +100,15 @@ export class I18nComponent extends I18nController implements OnInit {
       );
       this.filter(this.filterString);
     });
+  }
+
+  private filterBySupportedLocales() {
+    const supportedLocales = this.state.currentApplication.supportedLocales;
+    this.i18n = this.originalI18n.map(l => {
+        l.i18n = l.i18n.filter(i => supportedLocales.indexOf(i.locale) !== -1);
+        return l;
+      }
+    );
   }
 
   private setCategoryOnFirstItem(i18n: I18nLabel[]) {
