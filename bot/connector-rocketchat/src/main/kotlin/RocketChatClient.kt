@@ -99,6 +99,7 @@ internal class RocketChatClient(
     }
 
     fun join(roomId: String?, listener: (Room) -> Unit) {
+        disabled = false
         val job = launch(CommonPool) {
             try {
                 logger.debug { "Try to connect $login" }
