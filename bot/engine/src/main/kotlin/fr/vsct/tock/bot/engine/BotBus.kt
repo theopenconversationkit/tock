@@ -116,6 +116,8 @@ interface BotBus : I18nTranslator {
     val userPreferences: UserPreferences
     /**
      * The current user [Locale].
+     * Only supported app locales are returned.
+     * if the locale is not supported, returns the supported language or the default.
      */
     override val userLocale: Locale
     /**

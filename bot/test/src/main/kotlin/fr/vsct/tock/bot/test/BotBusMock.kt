@@ -409,10 +409,10 @@ open class BotBusMock(
             translator.translate(
                 key.defaultLabel.toString(),
                 defaultLocale,
-                userTimeline.userPreferences.locale
+                userLocale
             ),
             I18nContext(
-                userTimeline.userPreferences.locale,
+                userLocale,
                 userInterfaceType,
                 targetConnectorType.id,
                 dialog.id.toString()

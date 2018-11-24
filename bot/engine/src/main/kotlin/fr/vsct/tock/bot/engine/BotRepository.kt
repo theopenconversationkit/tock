@@ -115,7 +115,7 @@ object BotRepository {
     /**
      * Registers a new [BotAnswerInterceptor].
      */
-    fun registerBotAnswerInterceptor(botAnswerInterceptor :BotAnswerInterceptor){
+    fun registerBotAnswerInterceptor(botAnswerInterceptor: BotAnswerInterceptor) {
         botAnswerInterceptors.add(botAnswerInterceptor)
     }
 
@@ -230,7 +230,16 @@ object BotRepository {
         conf: BotApplicationConfiguration
     ): BotApplicationConfiguration {
 
-        val bot = Bot(botDefinition, conf)
+        val app = try {
+            nlpClient.getApplicationByNamespaceAndName(botDefinition.namespace, botDefinition.nlpModelName)
+        } catch (e: Exception) {
+            logger.error(e)
+            null
+        }
+        if (app == null) {
+            logger.warn { "model ${botDefinition.namespace}:${botDefinition.nlpModelName} not found" }
+        }
+        val bot = Bot(botDefinition, conf, app?.supportedLocales ?: emptySet())
         return botConfigurationDAO.save(conf)
             .apply {
                 val controller = TockConnectorController.register(connector, bot, verticle)

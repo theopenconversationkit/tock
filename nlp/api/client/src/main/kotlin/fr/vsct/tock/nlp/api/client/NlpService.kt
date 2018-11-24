@@ -60,6 +60,9 @@ internal interface NlpService {
     @GET("intents")
     fun getIntentsByNamespaceAndName(@Query("namespace") namespace: String, @Query("name") name: String): Call<List<IntentDefinition>>
 
+    @GET("application")
+    fun getApplicationByNamespaceAndName(@Query("namespace") namespace: String, @Query("name") name: String): Call<ApplicationDefinition>
+
     @POST("application/create")
     fun createApplication(@Body query: CreateApplicationQuery): Call<ApplicationDefinition?>
 

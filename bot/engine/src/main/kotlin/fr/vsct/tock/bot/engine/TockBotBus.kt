@@ -31,6 +31,7 @@ import fr.vsct.tock.bot.engine.dialog.NextUserActionState
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserTimeline
+import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.translator.I18nKeyProvider
 import fr.vsct.tock.translator.UserInterfaceType
 import java.util.Locale
@@ -61,7 +62,17 @@ internal class TockBotBus(
     override val botId = action.recipientId
     override val userId = action.playerId
     override val userPreferences: UserPreferences = userTimeline.userPreferences
-    override val userLocale: Locale = userPreferences.locale
+    override val userLocale: Locale =
+        userPreferences.locale.let { locale ->
+            val supp = bot.supportedLocales
+            when {
+                supp.contains(locale) || supp.isEmpty() -> locale
+                supp.any { it.language == locale.language } -> Locale(locale.language)
+                supp.contains(defaultLocale) -> defaultLocale
+                else -> supp.first()
+            }
+        }
+
     override val userInterfaceType: UserInterfaceType =
         action.state.userInterface ?: connector.connectorType.userInterfaceType
     override val targetConnectorType: ConnectorType = action.state.targetConnectorType ?: connector.connectorType

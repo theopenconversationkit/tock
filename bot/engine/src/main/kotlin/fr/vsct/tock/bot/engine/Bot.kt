@@ -34,13 +34,15 @@ import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
+import java.util.Locale
 
 /**
  *
  */
 internal class Bot(
     botDefinitionBase: BotDefinition,
-    private val configuration: BotApplicationConfiguration
+    private val configuration: BotApplicationConfiguration,
+    val supportedLocales: Set<Locale> = emptySet()
 ) {
 
     companion object {

@@ -56,7 +56,7 @@ interface NlpClient {
     fun markAsUnknown(query: MarkAsUnknownQuery)
 
     /**
-     * Export list of IntentDefinition
+     * Returns the list of intents of a model.
      *
      * @namespace Application Namespace
      * @name Application Name
@@ -64,6 +64,16 @@ interface NlpClient {
      * @return List of IntentDefinition
      */
     fun getIntentsByNamespaceAndName(namespace: String, name: String): List<IntentDefinition>?
+
+    /**
+     * Returns an application for the specified namespace and name.
+     *
+     * @namespace Application Namespace
+     * @name Application Name
+     *
+     * @return the application if any
+     */
+    fun getApplicationByNamespaceAndName(namespace: String, name: String): ApplicationDefinition?
 
     /**
      * Creates an application if it does not exists.

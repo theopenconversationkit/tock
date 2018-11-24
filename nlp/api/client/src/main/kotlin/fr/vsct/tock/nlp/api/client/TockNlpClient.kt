@@ -135,6 +135,10 @@ class TockNlpClient(baseUrl: String = System.getenv("tock_nlp_service_url") ?: "
         return nlpService.getIntentsByNamespaceAndName(namespace, name).execute().parseAndReturns()
     }
 
+    override fun getApplicationByNamespaceAndName(namespace: String, name: String): ApplicationDefinition? {
+        return nlpService.getApplicationByNamespaceAndName(namespace, name).execute().parseAndReturns()
+    }
+
     override fun importNlpDump(stream: InputStream): Boolean {
         return nlpService.importNlpDump(createMultipart(stream)).execute().body()?.success ?: false
     }

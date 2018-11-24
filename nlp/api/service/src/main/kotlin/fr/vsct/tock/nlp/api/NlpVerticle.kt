@@ -114,6 +114,20 @@ class NlpVerticle : WebVerticle() {
             }
         }
 
+        blockingJsonGet("/application") { context ->
+            val namespace = context.firstQueryParam("namespace")
+            if (protectPath && context.organization != namespace) {
+                unauthorized()
+            } else {
+                val name = context.firstQueryParam("name")
+                if (namespace == null || name == null) {
+                    badRequest("One of the parameters name or namespace is invalid")
+                } else {
+                    front.getApplicationByNamespaceAndName(namespace, name)
+                }
+            }
+        }
+
         blockingJsonPost("/application/create") { context, query: CreateApplicationQuery ->
             if (protectPath && context.organization != query.namespace) {
                 unauthorized()
