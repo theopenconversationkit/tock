@@ -30,6 +30,7 @@
 
     <properties>
         <google-speech>0.71.0-beta</google-speech>
+        <jave>2.4.4</jave>
     </properties>
 
     <dependencies>
@@ -44,12 +45,18 @@
         <dependency>
             <groupId>ws.schild</groupId>
             <artifactId>jave-core</artifactId>
-            <version>2.4.4</version>
+            <version>${jave}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>commons-logging</groupId>
+                    <artifactId>commons-logging-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <groupId>ws.schild</groupId>
             <artifactId>jave-native-linux64</artifactId>
-            <version>2.4.4</version>
+            <version>${jave}</version>
         </dependency>
         <dependency>
             <groupId>com.google.cloud</groupId>

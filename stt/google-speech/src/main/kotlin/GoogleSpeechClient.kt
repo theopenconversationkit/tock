@@ -47,7 +47,7 @@ internal object GoogleSpeechClient : STT {
         audioA.setChannels(1)
         a.audioAttributes = audioA
         a.format = "flac"
-        val sourceFile = File.createTempFile("tock-", ".flac")
+        val sourceFile = File.createTempFile("tock-", ".unknown")
         val targetFile = File.createTempFile("tock-", ".flac")
         return try {
             Files.write(sourceFile.toPath(), sourceBytes)

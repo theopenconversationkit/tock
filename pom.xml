@@ -55,6 +55,7 @@
         <commons-codec>1.11</commons-codec>
         <commons-lang>3.8.1</commons-lang>
         <json>20180813</json>
+        <httpclient>4.5.5</httpclient>
 
         <junit-jupiter>5.3.1</junit-jupiter>
         
@@ -405,6 +406,18 @@
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-lang3</artifactId>
                 <version>${commons-lang}</version>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.httpcomponents</groupId>
+                <artifactId>httpclient</artifactId>
+                <version>${httpclient}</version>
+                <exclusions>
+                    <exclusion>
+                        <groupId>commons-logging</groupId>
+                        <artifactId>commons-logging</artifactId>
+                    </exclusion>
+                </exclusions>
             </dependency>
 
             <dependency>
