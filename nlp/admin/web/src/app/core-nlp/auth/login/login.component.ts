@@ -37,21 +37,25 @@ export class LoginComponent implements OnInit {
   }
 
   onSubmit() {
-    this.errorMessage = null;
-    this.sendLogin = true;
-    this.authService.authenticate(this.email, this.password).subscribe(
-      response => {
-        this.sendLogin = false;
-        if (response) {
-          this.router.navigateByUrl(this.authService.getRedirectUrl());
-        } else {
-          this.errorMessage = "Invalid credentials";
+    if (!this.password || this.password.trim().length === 0) {
+      this.errorMessage = "Empty password";
+    } else {
+      this.errorMessage = null;
+      this.sendLogin = true;
+      this.authService.authenticate(this.email, this.password).subscribe(
+        response => {
+          this.sendLogin = false;
+          if (response) {
+            this.router.navigateByUrl(this.authService.getRedirectUrl());
+          } else {
+            this.errorMessage = "Invalid credentials";
+          }
+        },
+        error => {
+          this.sendLogin = false;
         }
-      },
-      error => {
-        this.sendLogin = false;
-      }
-    );
+      );
+    }
     return false;
   }
 
