@@ -202,10 +202,10 @@ abstract class WebVerticle : AbstractVerticle() {
                                             request.email,
                                             (user as TockUser).namespace,
                                             listOfNotNull(
-                                                if (nlpUserResult.succeeded()) nlpUser else null,
-                                                if (botUserResult.succeeded()) botUser else null,
-                                                if (adminResult.succeeded()) admin else null,
-                                                if (technicalAdminResult.succeeded()) technicalAdmin else null
+                                                if (nlpUserResult.result()) nlpUser else null,
+                                                if (botUserResult.result()) botUser else null,
+                                                if (adminResult.result()) admin else null,
+                                                if (technicalAdminResult.result()) technicalAdmin else null
                                             )
                                         )
                                     )

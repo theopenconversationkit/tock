@@ -42,12 +42,19 @@ object PropertyBasedAuthProvider : AuthProvider {
         val username = authInfo.getString("username")
         val password = authInfo.getString("password")
         resultHandler.handle(
-                users
-                        .indexOfFirst { it == username }
-                        .takeIf { it != -1 }
-                        ?.takeIf { passwords[it] == password }
-                        ?.let { Future.succeededFuture<User>(TockUser(username, organizations[it], roles.getOrNull(it) ?: allRoles)) }
-                        ?: Future.failedFuture<User>("invalid credentials")
+            users
+                .indexOfFirst { it == username }
+                .takeIf { it != -1 }
+                ?.takeIf { passwords[it] == password }
+                ?.let {
+                    Future.succeededFuture<User>(
+                        TockUser(
+                            username,
+                            organizations[it],
+                            roles.getOrNull(it)?.takeIf { r -> r.size > 1 || r.firstOrNull()?.isBlank() == false }
+                                    ?: allRoles))
+                }
+                    ?: Future.failedFuture<User>("invalid credentials")
         )
     }
 }
