@@ -15,6 +15,7 @@
  */
 
 import {Component, OnInit} from "@angular/core";
+import {Router} from "@angular/router";
 
 class TabLink {
   constructor(public link: string, public label: string) {
@@ -39,10 +40,13 @@ export class QualityTabsComponent implements OnInit {
 
   tabLinks = tabs;
 
-  constructor() {
+  constructor(private router: Router) {
   }
 
   ngOnInit() {
+    if(this.router.routerState.snapshot.url.endsWith("/quality")) {
+      this.router.navigateByUrl("/quality/log-stats");
+    }
   }
 
 }

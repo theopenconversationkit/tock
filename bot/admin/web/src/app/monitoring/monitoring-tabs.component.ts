@@ -15,6 +15,7 @@
  */
 
 import {Component, OnInit} from "@angular/core";
+import {ActivatedRoute, Router, RouterState} from "@angular/router";
 class TabLink {
   constructor(public link: string, public label: string) {
 
@@ -35,10 +36,13 @@ export class MonitoringTabsComponent implements OnInit {
 
   monitoringTabLinks = tabs;
 
-  constructor() {
+  constructor(private router: Router) {
   }
 
   ngOnInit() {
+    if(this.router.routerState.snapshot.url.endsWith("/monitoring")) {
+       this.router.navigateByUrl("/monitoring/users");
+    }
   }
 
 }

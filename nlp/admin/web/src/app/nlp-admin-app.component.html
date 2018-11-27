@@ -22,8 +22,8 @@
         <h3>Tock</h3>
       </mat-list-item>
       <a *ngIf="state.hasRole(UserRole.admin)" mat-list-item routerLink="/applications" routerLinkActive="active-link">Applications</a>
-      <a *ngIf="state.hasRole(UserRole.nlpUser)" mat-list-item routerLink="/nlp/inbox" routerLinkActive="active-link">NLP</a>
-      <a *ngIf="state.hasRole(UserRole.nlpUser)" mat-list-item routerLink="/quality/log-stats" routerLinkActive="active-link">NLP QA</a>
+      <a *ngIf="state.hasRole(UserRole.nlpUser)" mat-list-item routerLink="/nlp" routerLinkActive="active-link">NLP</a>
+      <a *ngIf="state.hasRole(UserRole.nlpUser)" mat-list-item routerLink="/quality" routerLinkActive="active-link">NLP QA</a>
     </mat-nav-list>
   </mat-sidenav>
 

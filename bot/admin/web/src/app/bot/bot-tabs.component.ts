@@ -15,6 +15,7 @@
  */
 
 import {Component, OnInit} from "@angular/core";
+import {Router} from "@angular/router";
 class TabLink {
   constructor(public link: string, public label: string) {
 
@@ -37,10 +38,13 @@ export class BotTabsComponent implements OnInit {
 
   botTabLinks = tabs;
 
-  constructor() {
+  constructor(private router: Router) {
   }
 
   ngOnInit() {
+    if(this.router.routerState.snapshot.url.endsWith("/build")) {
+      this.router.navigateByUrl("/build/intent-create");
+    }
   }
 
 }
