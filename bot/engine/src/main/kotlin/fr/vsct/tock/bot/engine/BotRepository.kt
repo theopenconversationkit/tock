@@ -29,6 +29,7 @@ import fr.vsct.tock.bot.definition.StoryHandlerListener
 import fr.vsct.tock.bot.engine.config.StoryConfigurationMonitor
 import fr.vsct.tock.bot.engine.monitoring.RequestTimer
 import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener
+import fr.vsct.tock.bot.engine.nlp.NlpController
 import fr.vsct.tock.bot.engine.nlp.NlpListener
 import fr.vsct.tock.nlp.api.client.NlpClient
 import fr.vsct.tock.shared.Executor
@@ -58,6 +59,7 @@ object BotRepository {
     internal val storyHandlerListeners: MutableList<StoryHandlerListener> = mutableListOf()
     internal val nlpListeners: MutableList<NlpListener> = mutableListOf(BuiltInKeywordListener)
     private val nlpClient: NlpClient get() = injector.provide()
+    private val nlpController: NlpController get() = injector.provide()
     private val executor: Executor get() = injector.provide()
     internal val botAnswerInterceptors: MutableList<BotAnswerInterceptor> = mutableListOf()
 
@@ -231,6 +233,7 @@ object BotRepository {
     ): BotApplicationConfiguration {
 
         val app = try {
+            nlpController.waitAvailability()
             nlpClient.getApplicationByNamespaceAndName(botDefinition.namespace, botDefinition.nlpModelName)
         } catch (e: Exception) {
             logger.error(e)
