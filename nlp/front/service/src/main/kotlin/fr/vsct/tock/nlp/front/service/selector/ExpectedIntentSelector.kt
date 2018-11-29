@@ -32,25 +32,25 @@ internal class ExpectedIntentSelector(data: ParserRequestData) : SelectorBase(da
 
             while (hasNext()) {
                 (next() to probability())
-                        .also { (intent, prob) ->
-                            //intents with modifiers are always supported
-                            val modifier = data.getModifierForIntent(intent)
+                    .also { (intent, prob) ->
+                        //intents with modifiers are always supported
+                        val modifier = data.getModifierForIntent(intent)
 
-                            if (modifier != null) {
-                                if (prob > 0.1) {
-                                    otherIntents.put(intent.name, prob)
-                                }
-                                qualifiedIntents.put(intent, prob + modifier)
-                                qualifiedIntentsNames.add(intent.name)
+                        if (modifier != null) {
+                            if (prob > 0.1) {
+                                otherIntents[intent.name] = prob
                             }
+                            qualifiedIntents[intent] = prob + modifier
+                            qualifiedIntentsNames.add(intent.name)
                         }
+                    }
             }
 
             return if (qualifiedIntents.isEmpty()) {
                 null
             } else {
                 val result = qualifiedIntents.entries.sortedByDescending { it.value }.first()
-                val realProb = otherIntents[result.key.name] ?: 0.0
+                val realProb = otherIntents.remove(result.key.name) ?: 0.0
                 result.key to realProb
             }
         }
