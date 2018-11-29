@@ -5,14 +5,14 @@
     - Nlp & Admin API swagger documentation          
     - Cleanup and upgrade admin web interface
     
-- 18.3 March 2019
+- 19.3 March 2019
     - Conversational framework: allow to create a bot in the administration interface without IDE
     - Bot API 
     - AB Test engine workflow
     - add code editor admin interface
     - External Bot demo server        
 
-- 18.9 September 2019  
+- 19.9 September 2019  
     - Spacy and RASA support
     - Spark NLP support 
     - NLP model translation support       
