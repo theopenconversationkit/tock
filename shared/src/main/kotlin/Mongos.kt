@@ -112,7 +112,7 @@ internal object TockKMongoConfiguration {
 private val mongoUrl = ConnectionString(
     property(
         "tock_mongo_url",
-        "mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=tock"
+        "mongodb://localhost:27017,localhost:27018,localhost:27019/?replicaSet=tock&retryWrites=true"
     )
 )
 

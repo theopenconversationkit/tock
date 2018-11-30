@@ -30,6 +30,8 @@ import fr.vsct.tock.nlp.model.TokenizerContext
 import fr.vsct.tock.nlp.model.service.storage.NlpEngineModelDAO
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.booleanProperty
+import fr.vsct.tock.shared.debug
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
 import java.io.InputStream
@@ -173,16 +175,21 @@ internal object NlpModelRepository {
     }
 
 
-    private fun saveModel(copy: (OutputStream) -> Unit, save: (InputStream) -> Unit) {
+    private fun saveModel(copy: (OutputStream) -> Unit, save: (InputStream) -> Unit, retry: Boolean = true) {
         val pipedOutputStream = PipedOutputStream()
         val pipedInputStream = PipedInputStream(pipedOutputStream)
         val latch = CountDownLatch(1)
         executor.executeBlocking {
             pipedOutputStream.use {
                 try {
+                    logger.debug { "Start copy model" }
                     copy(it)
                 } catch (t: Throwable) {
-                    logger.error(t) { t.message }
+                    if (latch.count == 0L) {
+                        logger.debug(t)
+                    } else {
+                        logger.error(t)
+                    }
                 } finally {
                     logger.debug { "Copy model end" }
                 }
@@ -195,10 +202,15 @@ internal object NlpModelRepository {
             try {
                 logger.debug { "Start to save the model" }
                 save(it)
-            } catch (t: Throwable) {
-                logger.error(t) { t.message }
+            } catch (e: Exception) {
+                logger.debug(e)
+                if (retry) {
+                    saveModel(copy, save, false)
+                } else {
+                    throw e
+                }
             } finally {
-                logger.debug { "Model saved" }
+                logger.debug { "End persisting model" }
                 latch.countDown()
             }
         }
