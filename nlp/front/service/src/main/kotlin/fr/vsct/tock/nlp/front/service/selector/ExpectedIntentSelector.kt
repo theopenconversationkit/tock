@@ -28,7 +28,7 @@ internal class ExpectedIntentSelector(data: ParserRequestData) : SelectorBase(da
     override fun selectIntent(classification: IntentClassification): Pair<Intent, Double>? {
         with(classification) {
             val qualifiedIntents = mutableMapOf<Intent, Double>()
-            val qualifiedIntentsNames = mutableSetOf<String>()
+            val intentsProbabilities = mutableMapOf<String, Double>()
 
             while (hasNext()) {
                 (next() to probability())
@@ -41,7 +41,7 @@ internal class ExpectedIntentSelector(data: ParserRequestData) : SelectorBase(da
                                 otherIntents[intent.name] = prob
                             }
                             qualifiedIntents[intent] = prob + modifier
-                            qualifiedIntentsNames.add(intent.name)
+                            intentsProbabilities[intent.name] = prob
                         }
                     }
             }
@@ -50,8 +50,9 @@ internal class ExpectedIntentSelector(data: ParserRequestData) : SelectorBase(da
                 null
             } else {
                 val result = qualifiedIntents.entries.sortedByDescending { it.value }.first()
-                val realProb = otherIntents.remove(result.key.name) ?: 0.0
-                result.key to realProb
+                //remove selected from other intents
+                otherIntents.remove(result.key.name)
+                result.key to (intentsProbabilities[result.key.name] ?: 0.0)
             }
         }
     }
