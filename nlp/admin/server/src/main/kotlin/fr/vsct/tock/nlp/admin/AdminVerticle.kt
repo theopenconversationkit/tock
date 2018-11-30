@@ -83,7 +83,7 @@ open class AdminVerticle : WebVerticle() {
     //TODO remove this flag when the new platform is set
     private val OLD_ENTITY_TYPE_BEHAVIOUR = booleanProperty("tock_nlp_admin_old_entity_type_behaviour", false)
 
-    fun configureServices() {
+    open fun configureServices() {
         val front = FrontClient
         val service = AdminService
 

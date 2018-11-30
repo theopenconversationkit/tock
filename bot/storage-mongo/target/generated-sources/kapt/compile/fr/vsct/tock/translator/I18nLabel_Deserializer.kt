@@ -7,6 +7,7 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.deser.std.StdDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import java.util.LinkedHashSet
+import kotlin.Int
 import kotlin.String
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
@@ -22,6 +23,7 @@ class I18nLabel_Deserializer : StdDeserializer<I18nLabel>(I18nLabel::class.java)
         var category: String? = null
         var i18n: LinkedHashSet<I18nLocalizedLabel>? = null
         var defaultLabel: String? = null
+        var version: Int? = null
         while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
         nextToken() 
         if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) { break } 
@@ -33,9 +35,10 @@ class I18nLabel_Deserializer : StdDeserializer<I18nLabel>(I18nLabel::class.java)
         "category" -> category = p.text
         "i18n" -> i18n = p.readValueAs(i18n_reference)
         "defaultLabel" -> defaultLabel = p.text
+        "version" -> version = p.readValueAs(Int::class.java)
         else -> if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) { p.skipChildren() } else { nextToken() }
          }  }
-        return I18nLabel(_id!!, namespace!!, category!!, i18n!!, defaultLabel) }
+        return I18nLabel(_id!!, namespace!!, category!!, i18n!!, defaultLabel, version!!) }
     }
     companion object {
         val _id_reference: TypeReference<Id<I18nLabel>> = object : TypeReference<Id<I18nLabel>>() {}

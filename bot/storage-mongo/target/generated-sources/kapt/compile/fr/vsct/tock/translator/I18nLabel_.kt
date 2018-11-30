@@ -1,5 +1,6 @@
 package fr.vsct.tock.translator
 
+import kotlin.Int
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Collection
@@ -26,6 +27,9 @@ class I18nLabel_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18n
 
     val defaultLabel: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nLabel::defaultLabel)
+
+    val version: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,I18nLabel::version)
     companion object {
         val _id: KProperty1<I18nLabel, Id<I18nLabel>?>
             get() = I18nLabel::_id
@@ -36,7 +40,9 @@ class I18nLabel_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18n
         val I18n: KCollectionSimplePropertyPath<I18nLabel, I18nLocalizedLabel?>
             get() = KCollectionSimplePropertyPath(null, I18nLabel::i18n)
         val DefaultLabel: KProperty1<I18nLabel, String?>
-            get() = I18nLabel::defaultLabel}
+            get() = I18nLabel::defaultLabel
+        val Version: KProperty1<I18nLabel, Int?>
+            get() = I18nLabel::version}
 }
 
 class I18nLabel_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<I18nLabel>?>) : KCollectionPropertyPath<T, I18nLabel?, I18nLabel_<T>>(previous,property) {
@@ -54,6 +60,9 @@ class I18nLabel_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, C
 
     val defaultLabel: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nLabel::defaultLabel)
+
+    val version: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,I18nLabel::version)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): I18nLabel_<T> = I18nLabel_(this, customProperty(this, additionalPath))}
@@ -73,6 +82,9 @@ class I18nLabel_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*
 
     val defaultLabel: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nLabel::defaultLabel)
+
+    val version: KPropertyPath<T, Int?>
+        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,I18nLabel::version)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): I18nLabel_<T> = I18nLabel_(this, customProperty(this, additionalPath))}

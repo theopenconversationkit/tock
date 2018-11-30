@@ -44,18 +44,13 @@ interface I18nKeyProvider {
          * Generates a label key from a namespace, a category and a default label.
          */
         fun generateKey(namespace: String, category: String, defaultLabel: CharSequence): String {
-            val prefix = if (i18nOldIdBehaviour) {
-                category
-            } else if (category.isEmpty()) {
+            val prefix = if (category.isEmpty()) {
                 namespace
             } else {
                 "${namespace}_$category"
             }
             return "${prefix}_${Translator.getKeyFromDefaultLabel(defaultLabel)}"
         }
-
-        //TODO remove this for 1.1.0
-        private val i18nOldIdBehaviour = booleanProperty("tock_bot_i18n_generated_id", false)
     }
 
     /**

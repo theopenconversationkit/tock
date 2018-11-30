@@ -48,7 +48,8 @@ export class I18nLabel {
               public defaultLabel?: string,
               public statCount?: number,
               public lastUpdate?: Date,
-              public unhandledLocaleStats?: I18nLabelStat[]) {
+              public unhandledLocaleStats?: I18nLabelStat[],
+              public version?:number) {
   }
 
   defaultLocalizedLabel(): I18nLocalizedLabel {

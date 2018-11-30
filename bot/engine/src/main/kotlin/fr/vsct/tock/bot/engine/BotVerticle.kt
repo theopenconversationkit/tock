@@ -20,6 +20,7 @@ import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.WebVerticle
+import fr.vsct.tock.translator.Translator.initTranslator
 import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
@@ -111,6 +112,7 @@ internal class BotVerticle : WebVerticle() {
     override fun configure() {
         if (!initialized) {
             initEncryptor()
+            initTranslator()
             initialized = true
         }
 

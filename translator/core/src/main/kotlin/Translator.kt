@@ -18,10 +18,11 @@ package fr.vsct.tock.translator
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
-import com.google.common.util.concurrent.UncheckedExecutionException
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.shared.defaultNamespace
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.provide
@@ -35,8 +36,8 @@ import java.text.MessageFormat
 import java.time.Duration
 import java.util.Formatter
 import java.util.Locale
+import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
-import java.util.concurrent.TimeUnit
 import java.util.concurrent.atomic.AtomicInteger
 
 /**
@@ -46,7 +47,9 @@ object Translator {
 
     private val logger = KotlinLogging.logger {}
 
-    private val oldKeyTransformer = booleanProperty("tock_old_key_transformer", false)
+    private val noTransformer = booleanProperty("tock_no_key_transformer", true)
+
+    private val loadAllLabelsOfDefaultNamespace = booleanProperty("tock_load_all_labels_of_default_namespace", true)
 
     /**
      * Translator and i18n support is disable by default.
@@ -63,9 +66,7 @@ object Translator {
     private val i18nDAO: I18nDAO get() = injector.provide()
     private val translator: TranslatorEngine get() = injector.provide()
 
-    private val cache: Cache<String, I18nLabel> = CacheBuilder.newBuilder()
-        .expireAfterWrite(longProperty("tock_i18n_cache_write_timeout_in_seconds", 10), TimeUnit.SECONDS)
-        .build()
+    private val cache: MutableMap<String, I18nLabel> = ConcurrentHashMap()
 
     private val statsCache: Cache<I18nLabelStatKey, AtomicInteger> by lazy {
         val executor: Executor = injector.provide()
@@ -82,6 +83,60 @@ object Translator {
 
     private val voiceTransformers: MutableList<VoiceTransformer> = CopyOnWriteArrayList()
 
+    fun initTranslator() {
+        if (enabled && loadAllLabelsOfDefaultNamespace) {
+            try {
+                val labels = i18nDAO.getLabels(defaultNamespace)
+                //TODO remove in 19.3
+                //transform labels
+                val transformedLabels = if (noTransformer) labels.map { label ->
+                    if (label.version == 0) {
+                        logger.debug { "Update label $label" }
+                        with(label) {
+                            val l = defaultLabel ?: findLabel(defaultLocale, null)?.label
+                            if (l == null) {
+                                logger.warn { "no default label" }
+                                label
+                            } else {
+                                val key1 = "${category}_${oldKeyFromDefaultLabel(l)}"
+                                val key2 = "${namespace}_${category}_${oldKeyFromDefaultLabel(l)}"
+                                val key3 = "${namespace}_${oldKeyFromDefaultLabel(l)}"
+                                val key4 = "${category}_${newKeyFromDefaultLabel(l)}"
+                                val key5 = "${namespace}_${category}_${newKeyFromDefaultLabel(l)}"
+                                val key6 = "${namespace}_${newKeyFromDefaultLabel(l)}"
+                                when (_id.toString()) {
+                                    key1, key2, key3, key4, key5, key6 -> label.copy(
+                                        _id =
+                                        ((if (category.isEmpty()) namespace else "${namespace}_$category") +
+                                                "_${notTransformedKeyFromDefaultLabel(l)}").toId()
+                                    )
+                                    else -> label
+                                }.also {
+                                    logger.debug { "update i18n $it" }
+                                    i18nDAO.deleteByNamespaceAndId(namespace, label._id)
+                                    i18nDAO.save(it)
+                                }
+                            }
+                        }
+                    } else {
+                        label
+                    }
+                } else {
+                    labels
+                }
+
+                cache.putAll(transformedLabels.associateBy { it._id.toString() })
+                //clean up cache
+                i18nDAO.listenI18n {
+                    logger.debug { "remove i18n $it from cache" }
+                    cache.remove(it.toString())
+                }
+            } catch (e: Exception) {
+                logger.error(e)
+            }
+        }
+    }
+
     fun registerVoiceTransformer(transformer: VoiceTransformer) {
         voiceTransformers.add(transformer)
     }
@@ -97,11 +152,7 @@ object Translator {
     }
 
     private fun loadLabel(id: String): I18nLabel? {
-        return try {
-            cache.get(id, { requireNotNull(i18nDAO.getLabelById(id.toId())) }).copy()
-        } catch (e: UncheckedExecutionException) {
-            null
-        }
+        return cache[id]?.copy() ?: i18nDAO.getLabelById(id.toId())
     }
 
     private fun getLabel(id: String): I18nLabel? = loadLabel(id)
@@ -418,9 +469,13 @@ object Translator {
         return s.substring(0, Math.min(512, s.length))
     }
 
-    fun getKeyFromDefaultLabel(label: CharSequence): String {
-        return if (oldKeyTransformer) oldKeyFromDefaultLabel(label) else newKeyFromDefaultLabel(label)
+    private fun notTransformedKeyFromDefaultLabel(label: CharSequence): String {
+        return label.substring(0, Math.min(512, label.length))
     }
+
+    fun getKeyFromDefaultLabel(label: CharSequence): String =
+        if (noTransformer) notTransformedKeyFromDefaultLabel(label)
+        else newKeyFromDefaultLabel(label)
 
     fun completeAllLabels(i18n: List<I18nLabel>) {
         val newI18n = i18n.map { i ->

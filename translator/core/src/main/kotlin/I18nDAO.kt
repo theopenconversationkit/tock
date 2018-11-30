@@ -24,6 +24,11 @@ import org.litote.kmongo.Id
 interface I18nDAO {
 
     /**
+     * Listen all i18n changes.
+     */
+    fun listenI18n(listener: (Id<I18nLabel>) -> Unit)
+
+    /**
      * Gets all labels for the specified namespace.
      */
     fun getLabels(namespace: String): List<I18nLabel>

@@ -49,6 +49,7 @@ import fr.vsct.tock.shared.security.TockUserRole.botUser
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.Translator
+import fr.vsct.tock.translator.Translator.initTranslator
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
@@ -61,6 +62,11 @@ open class BotAdminVerticle : AdminVerticle() {
     override val logger: KLogger = KotlinLogging.logger {}
 
     val i18n: I18nDAO  by injector.instance()
+
+    override fun configureServices() {
+        initTranslator()
+        super.configureServices()
+    }
 
     override fun configure() {
         configureServices()

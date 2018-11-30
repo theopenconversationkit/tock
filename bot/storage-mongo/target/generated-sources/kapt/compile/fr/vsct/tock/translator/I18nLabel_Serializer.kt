@@ -31,6 +31,9 @@ class I18nLabel_Serializer : StdSerializer<I18nLabel>(I18nLabel::class.java),
         gen.writeFieldName("defaultLabel")
         val _defaultLabel_ = value.defaultLabel
         if(_defaultLabel_ == null) { gen.writeNull() } else {gen.writeString(_defaultLabel_)}
+        gen.writeFieldName("version")
+        val _version_ = value.version
+        gen.writeNumber(_version_)
         gen.writeEndObject()
     }
 }

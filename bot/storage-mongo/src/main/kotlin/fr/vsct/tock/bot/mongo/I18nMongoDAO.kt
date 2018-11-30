@@ -24,10 +24,12 @@ import fr.vsct.tock.bot.mongo.I18nAlternativeIndex_.Companion.Index
 import fr.vsct.tock.bot.mongo.I18nAlternativeIndex_.Companion.InterfaceType
 import fr.vsct.tock.bot.mongo.I18nAlternativeIndex_.Companion.LabelId
 import fr.vsct.tock.bot.mongo.I18nAlternativeIndex_.Companion.Locale
+import fr.vsct.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.longProperty
+import fr.vsct.tock.shared.watchSafely
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.I18nLabelStat
@@ -36,10 +38,12 @@ import fr.vsct.tock.translator.I18nLabel_
 import fr.vsct.tock.translator.I18nLabel_.Companion._id
 import fr.vsct.tock.translator.I18nLocalizedLabel
 import mu.KotlinLogging
+import org.bson.BsonString
 import org.bson.Document
 import org.bson.conversions.Bson
 import org.litote.kmongo.Id
 import org.litote.kmongo.and
+import org.litote.kmongo.async.getCollection
 import org.litote.kmongo.combine
 import org.litote.kmongo.currentDate
 import org.litote.kmongo.deleteOne
@@ -54,6 +58,7 @@ import org.litote.kmongo.inc
 import org.litote.kmongo.include
 import org.litote.kmongo.save
 import org.litote.kmongo.set
+import org.litote.kmongo.toId
 import org.litote.kmongo.upsert
 import org.litote.kmongo.withDocumentClass
 import java.util.concurrent.TimeUnit
@@ -66,6 +71,7 @@ internal object I18nMongoDAO : I18nDAO {
     private val logger = KotlinLogging.logger {}
 
     private val col = database.getCollection<I18nLabel>()
+    private val asyncCol = asyncDatabase.getCollection<I18nLabel>()
     private val alternativeIndexCol = database.getCollection<I18nAlternativeIndex>().apply {
         ensureIndex(ContextId, LabelId, I18nAlternativeIndex_.Namespace, Locale, InterfaceType, ConnectorId)
         ensureIndex(
@@ -90,7 +96,13 @@ internal object I18nMongoDAO : I18nDAO {
         LinkedHashSet(list.sortedWith(compareBy({ it.locale.language }, { it.interfaceType }, { it.connectorId })))
 
     private fun sortLocalizedLabels(label: I18nLabel): I18nLabel =
-        label.copy(i18n = sortLocalizedLabels(label.i18n))
+        label.copy(i18n = sortLocalizedLabels(label.i18n), version = label.version + 1)
+
+    override fun listenI18n(listener: (Id<I18nLabel>) -> Unit) {
+        asyncCol.watchSafely {
+            listener((it.documentKey["_id"] as BsonString).value.toId())
+        }
+    }
 
     override fun getLabels(namespace: String): List<I18nLabel> {
         return sortLabels(col.find(I18nLabel_.Namespace eq namespace).toList())

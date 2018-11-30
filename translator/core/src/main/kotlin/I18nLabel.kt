@@ -28,7 +28,8 @@ data class I18nLabel(
     val namespace: String = defaultNamespace,
     val category: String,
     val i18n: LinkedHashSet<I18nLocalizedLabel>,
-    val defaultLabel: String? = null
+    val defaultLabel: String? = null,
+    val version: Int = 0
 ) {
 
     fun findLabel(locale: Locale, userInterfaceType: UserInterfaceType, connectorId: String?): I18nLocalizedLabel? =

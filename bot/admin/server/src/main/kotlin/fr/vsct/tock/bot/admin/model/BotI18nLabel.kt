@@ -35,7 +35,8 @@ data class BotI18nLabel(
     val defaultLabel: String? = null,
     val statCount: Int = 0,
     val lastUpdate: Instant? = null,
-    val unhandledLocaleStats: List<I18nLabelStat> = emptyList()
+    val unhandledLocaleStats: List<I18nLabelStat> = emptyList(),
+    val version:Int = 0
 ) {
 
     companion object {
@@ -63,7 +64,8 @@ data class BotI18nLabel(
                 label.defaultLabel,
                 stats.sumBy { it.count },
                 stats.maxBy { it.lastUpdate }?.lastUpdate,
-                stats.filter { label.i18n.none { l -> it.hasSameLanguage(l)} }
+                stats.filter { label.i18n.none { l -> it.hasSameLanguage(l)} },
+                label.version
             )
 
 }
