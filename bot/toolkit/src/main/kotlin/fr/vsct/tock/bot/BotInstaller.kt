@@ -31,6 +31,7 @@ import fr.vsct.tock.shared.resource
 import fr.vsct.tock.shared.resourceAsStream
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.I18nLabel
+import fr.vsct.tock.translator.Translator
 import io.vertx.ext.web.Router
 
 /**
@@ -113,7 +114,7 @@ fun importNlpSentencesDump(path: String) {
  */
 fun importI18nDump(path: String, replaceAllLabels: Boolean = false) {
     val i18n: I18nDAO by injector.instance()
-    val labels: List<I18nLabel> = mapper.readValue(resource(path))
+    val labels: List<I18nLabel> = Translator.transformOldLabels(mapper.readValue(resource(path)))
     if (replaceAllLabels) {
         i18n.save(labels)
     } else {

@@ -87,43 +87,8 @@ object Translator {
         if (enabled && loadAllLabelsOfDefaultNamespace) {
             try {
                 val labels = i18nDAO.getLabels(defaultNamespace)
-                //TODO remove in 19.3
                 //transform labels
-                val transformedLabels = if (noTransformer) labels.map { label ->
-                    if (label.version == 0) {
-                        logger.debug { "Update label $label" }
-                        with(label) {
-                            val l = defaultLabel ?: findLabel(defaultLocale, null)?.label
-                            if (l == null) {
-                                logger.warn { "no default label" }
-                                label
-                            } else {
-                                val key1 = "${category}_${oldKeyFromDefaultLabel(l)}"
-                                val key2 = "${namespace}_${category}_${oldKeyFromDefaultLabel(l)}"
-                                val key3 = "${namespace}_${oldKeyFromDefaultLabel(l)}"
-                                val key4 = "${category}_${newKeyFromDefaultLabel(l)}"
-                                val key5 = "${namespace}_${category}_${newKeyFromDefaultLabel(l)}"
-                                val key6 = "${namespace}_${newKeyFromDefaultLabel(l)}"
-                                when (_id.toString()) {
-                                    key1, key2, key3, key4, key5, key6 -> label.copy(
-                                        _id =
-                                        ((if (category.isEmpty()) namespace else "${namespace}_$category") +
-                                                "_${notTransformedKeyFromDefaultLabel(l)}").toId()
-                                    )
-                                    else -> label
-                                }.also {
-                                    logger.debug { "update i18n $it" }
-                                    i18nDAO.deleteByNamespaceAndId(namespace, label._id)
-                                    i18nDAO.save(it)
-                                }
-                            }
-                        }
-                    } else {
-                        label
-                    }
-                } else {
-                    labels
-                }
+                val transformedLabels = transformOldLabels(labels)
 
                 cache.putAll(transformedLabels.associateBy { it._id.toString() })
                 //clean up cache
@@ -135,6 +100,44 @@ object Translator {
                 logger.error(e)
             }
         }
+    }
+
+    fun transformOldLabels(labels: List<I18nLabel>): List<I18nLabel> {
+        //TODO remove in 19.3
+        //transform labels
+        return if (noTransformer) labels.map { label ->
+            if (label.version == 0) {
+                logger.debug { "Update label $label" }
+                with(label) {
+                    val l = defaultLabel ?: findLabel(defaultLocale, null)?.label
+                    if (l == null) {
+                        logger.warn { "no default label" }
+                        label
+                    } else {
+                        val key1 = "${category}_${oldKeyFromDefaultLabel(l)}"
+                        val key2 = "${namespace}_${category}_${oldKeyFromDefaultLabel(l)}"
+                        val key3 = "${namespace}_${oldKeyFromDefaultLabel(l)}"
+                        val key4 = "${category}_${newKeyFromDefaultLabel(l)}"
+                        val key5 = "${namespace}_${category}_${newKeyFromDefaultLabel(l)}"
+                        val key6 = "${namespace}_${newKeyFromDefaultLabel(l)}"
+                        when (_id.toString()) {
+                            key1, key2, key3, key4, key5, key6 -> label.copy(
+                                _id =
+                                ((if (category.isEmpty()) namespace else "${namespace}_$category") +
+                                        "_${notTransformedKeyFromDefaultLabel(l)}").toId()
+                            )
+                            else -> label
+                        }.also {
+                            logger.debug { "update i18n $it" }
+                            i18nDAO.deleteByNamespaceAndId(namespace, label._id)
+                            i18nDAO.save(it)
+                        }
+                    }
+                }
+            } else {
+                label
+            }
+        } else labels
     }
 
     fun registerVoiceTransformer(transformer: VoiceTransformer) {
