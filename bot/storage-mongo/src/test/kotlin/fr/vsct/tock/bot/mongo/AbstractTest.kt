@@ -40,7 +40,6 @@ abstract class AbstractTest {
         init {
             System.setProperty("tock_bot_encrypted_flags", "test1,test2")
             System.setProperty("tock_encrypt_pass", "dev")
-            System.setProperty("tock_bot_lock_timeout_in_ms", "500")
         }
     }
 

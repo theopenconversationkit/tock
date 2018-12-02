@@ -53,7 +53,7 @@ class MongoUserLockTest : AbstractTest() {
     fun `take lock on a old locked user is ok`() {
         MongoUserLock.lock(userId)
         assertFalse(MongoUserLock.lock(userId))
-        Thread.sleep(2000)
+        Thread.sleep(5100L)
         assertTrue(MongoUserLock.lock(userId))
     }
 }
