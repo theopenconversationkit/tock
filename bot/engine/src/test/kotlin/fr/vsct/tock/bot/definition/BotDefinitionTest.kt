@@ -35,7 +35,7 @@ class BotDefinitionTest {
         val result = botDef.i18nTranslator(Locale.ENGLISH, ConnectorType.none).i18n("test")
         assertEquals(
             I18nLabelValue(
-                "namespace_bottest_test",
+                "namespace_BotTest_test",
                 "namespace",
                 "bottest",
                 "test"

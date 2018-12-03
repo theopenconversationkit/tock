@@ -26,7 +26,7 @@ class I18nLabelValue constructor(
     /**
      * Unique key of the label (for a given namespace).
      */
-    key: String,
+    val key: String,
     /**
      * Namespace of the label.
      */
@@ -45,10 +45,6 @@ class I18nLabelValue constructor(
     val args: List<Any?> = emptyList()
 ) : CharSequence by defaultLabel {
 
-    /**
-     * Unique key of the label (for a given namespace).
-     */
-    val key: String = key
     /**
      * Namespace of the label.
      */
