@@ -48,7 +48,7 @@ class I18nLabelValue constructor(
     /**
      * Unique key of the label (for a given namespace).
      */
-    val key: String = key.toLowerCase()
+    val key: String = key
     /**
      * Namespace of the label.
      */
