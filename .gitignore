@@ -33,3 +33,5 @@ Thumbs.db
 /file-uploads
 *.log
 
+#ngrok
+scripts/connector-messenger/ngrok.exe
