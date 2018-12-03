@@ -20,8 +20,9 @@ In order to connect your bot with a messenger bot application, you need a Messen
 * Take the ngrok value (ie  https://xxxx.ngrok.io ) and use it in the webhook interface of messenger settings, to specify :
    * the url : https://xxxx.ngrok.io/messenger
    * the webhook token you set
+   
+* You can use a script to automatically up ngrok and updating webhook (https://github.com/voyages-sncf-technologies/tock/scripts/connector-messenger/update.sh)
 
 * A Messenger integration sample is available in the [open data Bot](https://github.com/voyages-sncf-technologies/tock-bot-open-data) source code
 
 * The documentation of the messenger builders is available in [KDoc format](https://voyages-sncf-technologies.github.io/tock/dokka/tock/fr.vsct.tock.bot.connector.messenger/index.html)
-
