@@ -35,6 +35,7 @@ import fr.vsct.tock.bot.engine.stt.SttService
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserLocation
+import fr.vsct.tock.translator.UserInterfaceType
 import mu.KotlinLogging
 
 /**
@@ -48,7 +49,11 @@ internal object WebhookActionConverter {
         message: GARequest,
         applicationId: String
     ): Event {
-        val playerId = PlayerId(message.user.userId, PlayerType.user)
+        val eventState =  message.getEventState()
+        val userInterface = eventState.userInterface
+        //for google home, use conversationId
+        val userId = if(userInterface == UserInterfaceType.voiceAssistant) message.conversation.conversationId else message.user.userId
+        val playerId = PlayerId(userId, PlayerType.user)
         val botId = PlayerId(applicationId, PlayerType.bot)
 
         val input = message.inputs.firstOrNull()
@@ -79,13 +84,13 @@ internal object WebhookActionConverter {
                         botId,
                         params.first,
                         params.second,
-                        state = message.getEventState()
+                        state = eventState
                     )
                 }
             }
 
             fun Event.setEventState(): Event {
-                state.userInterface = message.getEventState().userInterface
+                state.userInterface = userInterface
                 return this
             }
 
@@ -112,7 +117,7 @@ internal object WebhookActionConverter {
                         botId,
                         text,
                         mutableListOf(GARequestConnectorMessage(message)),
-                        state = message.getEventState()
+                        state = eventState
                     )
                 }
             }

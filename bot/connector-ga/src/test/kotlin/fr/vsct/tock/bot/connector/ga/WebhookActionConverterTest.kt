@@ -34,12 +34,15 @@ import kotlin.test.assertTrue
  */
 class WebhookActionConverterTest {
 
-    val appId = "test"
-    val optionRequest: GARequest = mapper.readValue(resource("/request_with_option.json"))
-    val optionRequestWithTwoArguments: GARequest = mapper.readValue(resource("/request_with_option_two_arguments.json"))
-    val optionWithRawTextRequest: GARequest = mapper.readValue(resource("/request_with_option_and_raw_text.json"))
-    val sttRequest: GARequest = mapper.readValue(resource("/request_with_stt_transformer.json"))
-
+    companion object {
+        val appId = "test"
+        val optionRequest: GARequest = mapper.readValue(resource("/request_with_option.json"))
+        val optionRequestWithTwoArguments: GARequest =
+            mapper.readValue(resource("/request_with_option_two_arguments.json"))
+        val optionWithRawTextRequest: GARequest = mapper.readValue(resource("/request_with_option_and_raw_text.json"))
+        val sttRequest: GARequest = mapper.readValue(resource("/request_with_stt_transformer.json"))
+        val googleHomeRequest: GARequest = mapper.readValue(resource("/google-home-request.json"))
+    }
 
     @Test
     fun toEvent_shouldReturnsSendChoice_whenOptionArgAndSameInputText() {
@@ -71,5 +74,18 @@ class WebhookActionConverterTest {
         assertEquals("ds 10h qs", (e as SendSentence).text)
         SttService.removeListener(sttListener)
     }
+
+    @Test
+    fun `GIVEN GoogleHome request THEN toEvent returns conversationId as player id`() {
+        val e = WebhookActionConverter.toEvent(googleHomeRequest, appId) as SendSentence
+        assertEquals(googleHomeRequest.conversation.conversationId, e.playerId.id)
+    }
+
+    @Test
+    fun `GIVEN Assistant request THEN toEvent returns conversationId as player id`() {
+        val e = WebhookActionConverter.toEvent(optionRequest, appId) as SendChoice
+        assertEquals(optionRequest.user.userId, e.playerId.id)
+    }
+
 
 }

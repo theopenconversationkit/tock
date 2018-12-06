@@ -1,0 +1,38 @@
+{
+  "user": {
+    "userId": "15441232217043679100041",
+    "locale": "fr-FR"
+  },
+  "conversation": {
+    "conversationId": "15441231299612512113202",
+    "type": "NEW"
+  },
+  "inputs": [
+    {
+      "intent": "actions.intent.TEXT",
+      "rawInputs": [
+        {
+          "inputType": "VOICE",
+          "query": "demain"
+        }
+      ],
+      "arguments": [
+        {
+          "name": "text",
+          "rawText": "demain",
+          "textValue": "demain"
+        }
+      ]
+    }
+  ],
+  "surface": {
+    "capabilities": [
+      {
+        "name": "actions.capability.MEDIA_RESPONSE_AUDIO"
+      },
+      {
+        "name": "actions.capability.AUDIO_OUTPUT"
+      }
+    ]
+  }
+}
