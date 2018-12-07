@@ -472,6 +472,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 if (dialogIds.isEmpty()) null else _id `in` dialogIds,
                 if (from == null) null else LastUpdateDate gt from,
                 if (to == null) null else LastUpdateDate lt to,
+                if (connectorType == null) null else DialogCol_.Stories.actions.state.targetConnectorType.id eq connectorType!!.id,
                 if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName
             )
             logger.debug("dialog search query: $filter")

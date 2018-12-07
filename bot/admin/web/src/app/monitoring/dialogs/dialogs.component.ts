@@ -28,6 +28,8 @@ import {MatSnackBar} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
 import {DialogReportQuery} from "../model/dialogs";
 import {ActivatedRoute} from "@angular/router";
+import {ConnectorType} from "../../core/model/configuration";
+import {BotSharedService} from "../../shared/bot-shared.service";
 
 @Component({
   selector: 'tock-dialogs',
@@ -38,15 +40,25 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
 
   filter: DialogFilter;
   state: StateService;
+  connectorTypes: ConnectorType[] = [];
 
   constructor(state: StateService,
               private monitoring: MonitoringService,
               private botConfiguration: BotConfigurationService,
               private snackBar: MatSnackBar,
-              private route: ActivatedRoute) {
+              private route: ActivatedRoute,
+              public botSharedService: BotSharedService) {
     super(state);
     this.state = state;
     this.botConfiguration.configurations.subscribe(_ => this.refresh());
+    this
+      .botSharedService
+      .getConnectorTypes()
+      .subscribe(
+        confConf => {
+          this.connectorTypes = confConf.map(it => it.connectorType);
+        }
+      )
   }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<DialogReport>> {
@@ -81,7 +93,8 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
       null,
       this.filter.dialogId,
       this.filter.text,
-      this.filter.intentName);
+      this.filter.intentName,
+      this.filter.connectorType);
   }
 
   addDialogToTestPlan(planId: string, dialog: DialogReport) {
@@ -99,6 +112,7 @@ export class DialogFilter {
   constructor(public exactMatch: boolean,
               public dialogId?: string,
               public text?: string,
-              public intentName?: string) {
+              public intentName?: string,
+              public connectorType?:ConnectorType) {
   }
 }

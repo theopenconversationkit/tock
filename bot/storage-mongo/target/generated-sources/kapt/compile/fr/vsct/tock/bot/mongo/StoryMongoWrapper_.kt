@@ -7,7 +7,6 @@ import kotlin.collections.Collection
 import kotlin.collections.Map
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.property.KCollectionPropertyPath
-import org.litote.kmongo.property.KCollectionSimplePropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
@@ -21,8 +20,8 @@ internal class StoryMongoWrapper_<T>(previous: KPropertyPath<T, *>?, property: K
     val currentStep: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,DialogCol.StoryMongoWrapper::currentStep)
 
-    val actions: KCollectionSimplePropertyPath<T, DialogCol.ActionMongoWrapper?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.bot.mongo.DialogCol.ActionMongoWrapper?>(this,DialogCol.StoryMongoWrapper::actions)
+    val actions: ActionMongoWrapper_Col<T>
+        get() = ActionMongoWrapper_Col(this,DialogCol.StoryMongoWrapper::actions)
     companion object {
         val StoryDefinitionId: KProperty1<DialogCol.StoryMongoWrapper, String?>
             get() = DialogCol.StoryMongoWrapper::storyDefinitionId
@@ -30,8 +29,8 @@ internal class StoryMongoWrapper_<T>(previous: KPropertyPath<T, *>?, property: K
             get() = Intent_<DialogCol.StoryMongoWrapper>(null,DialogCol.StoryMongoWrapper::currentIntent)
         val CurrentStep: KProperty1<DialogCol.StoryMongoWrapper, String?>
             get() = DialogCol.StoryMongoWrapper::currentStep
-        val Actions: KCollectionSimplePropertyPath<DialogCol.StoryMongoWrapper, DialogCol.ActionMongoWrapper?>
-            get() = KCollectionSimplePropertyPath(null, DialogCol.StoryMongoWrapper::actions)}
+        val Actions: ActionMongoWrapper_Col<DialogCol.StoryMongoWrapper>
+            get() = ActionMongoWrapper_Col<DialogCol.StoryMongoWrapper>(null,DialogCol.StoryMongoWrapper::actions)}
 }
 
 internal class StoryMongoWrapper_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<DialogCol.StoryMongoWrapper>?>) : KCollectionPropertyPath<T, DialogCol.StoryMongoWrapper?, StoryMongoWrapper_<T>>(previous,property) {
@@ -44,8 +43,8 @@ internal class StoryMongoWrapper_Col<T>(previous: KPropertyPath<T, *>?, property
     val currentStep: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,DialogCol.StoryMongoWrapper::currentStep)
 
-    val actions: KCollectionSimplePropertyPath<T, DialogCol.ActionMongoWrapper?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.bot.mongo.DialogCol.ActionMongoWrapper?>(this,DialogCol.StoryMongoWrapper::actions)
+    val actions: ActionMongoWrapper_Col<T>
+        get() = ActionMongoWrapper_Col(this,DialogCol.StoryMongoWrapper::actions)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): StoryMongoWrapper_<T> = StoryMongoWrapper_(this, customProperty(this, additionalPath))}
@@ -60,8 +59,8 @@ internal class StoryMongoWrapper_Map<T, K>(previous: KPropertyPath<T, *>?, prope
     val currentStep: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,DialogCol.StoryMongoWrapper::currentStep)
 
-    val actions: KCollectionSimplePropertyPath<T, DialogCol.ActionMongoWrapper?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.bot.mongo.DialogCol.ActionMongoWrapper?>(this,DialogCol.StoryMongoWrapper::actions)
+    val actions: ActionMongoWrapper_Col<T>
+        get() = ActionMongoWrapper_Col(this,DialogCol.StoryMongoWrapper::actions)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): StoryMongoWrapper_<T> = StoryMongoWrapper_(this, customProperty(this, additionalPath))}

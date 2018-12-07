@@ -20,7 +20,9 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanExecution
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.engine.dialog.EventState
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.I18nLabelStat
@@ -39,7 +41,9 @@ import org.litote.kmongo.JacksonDataRegistry
         TestPlan::class,
         TestPlanExecution::class,
         Intent::class,
-        PlayerId::class
+        PlayerId::class,
+        EventState::class,
+        ConnectorType::class
     ]
 )
 @JacksonDataRegistry(

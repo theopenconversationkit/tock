@@ -225,6 +225,7 @@ internal data class DialogCol(
         JsonSubTypes.Type(value = SendAttachmentMongoWrapper::class, name = "attachment"),
         JsonSubTypes.Type(value = SendLocationMongoWrapper::class, name = "location")
     )
+    @Data(internal = true)
     abstract class ActionMongoWrapper {
 
         lateinit var id: Id<Action>

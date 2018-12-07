@@ -1,7 +1,7 @@
 package fr.vsct.tock.bot.admin.test
 
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
-import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.ConnectorType_
 import fr.vsct.tock.bot.engine.message.Message
 import java.util.Locale
 import kotlin.String
@@ -40,8 +40,8 @@ class TestPlan_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, TestP
     val startAction: KPropertyPath<T, Message?>
         get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.bot.engine.message.Message?>(this,TestPlan::startAction)
 
-    val targetConnectorType: KPropertyPath<T, ConnectorType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.bot.connector.ConnectorType?>(this,TestPlan::targetConnectorType)
+    val targetConnectorType: ConnectorType_<T>
+        get() = ConnectorType_(this,TestPlan::targetConnectorType)
 
     val _id: KPropertyPath<T, Id<TestPlan>?>
         get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlan>?>(this,TestPlan::_id)
@@ -62,8 +62,8 @@ class TestPlan_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, TestP
             get() = TestPlan::locale
         val StartAction: KProperty1<TestPlan, Message?>
             get() = TestPlan::startAction
-        val TargetConnectorType: KProperty1<TestPlan, ConnectorType?>
-            get() = TestPlan::targetConnectorType
+        val TargetConnectorType: ConnectorType_<TestPlan>
+            get() = ConnectorType_<TestPlan>(null,TestPlan::targetConnectorType)
         val _id: KProperty1<TestPlan, Id<TestPlan>?>
             get() = TestPlan::_id}
 }
@@ -93,8 +93,8 @@ class TestPlan_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Co
     val startAction: KPropertyPath<T, Message?>
         get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.bot.engine.message.Message?>(this,TestPlan::startAction)
 
-    val targetConnectorType: KPropertyPath<T, ConnectorType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.bot.connector.ConnectorType?>(this,TestPlan::targetConnectorType)
+    val targetConnectorType: ConnectorType_<T>
+        get() = ConnectorType_(this,TestPlan::targetConnectorType)
 
     val _id: KPropertyPath<T, Id<TestPlan>?>
         get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlan>?>(this,TestPlan::_id)
@@ -127,8 +127,8 @@ class TestPlan_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
     val startAction: KPropertyPath<T, Message?>
         get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.bot.engine.message.Message?>(this,TestPlan::startAction)
 
-    val targetConnectorType: KPropertyPath<T, ConnectorType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.bot.connector.ConnectorType?>(this,TestPlan::targetConnectorType)
+    val targetConnectorType: ConnectorType_<T>
+        get() = ConnectorType_(this,TestPlan::targetConnectorType)
 
     val _id: KPropertyPath<T, Id<TestPlan>?>
         get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlan>?>(this,TestPlan::_id)

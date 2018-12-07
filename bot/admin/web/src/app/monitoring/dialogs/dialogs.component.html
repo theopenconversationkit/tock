@@ -22,13 +22,23 @@
       </mat-form-field>
       <mat-checkbox class="exact" [(ngModel)]="filter.exactMatch">Exact text match</mat-checkbox>
       <mat-form-field>
-      <mat-select placeholder="Intent" [(ngModel)]="filter.intentName" (selectionChange)="refresh()">
-        <mat-option value="">All</mat-option>
-        <mat-option *ngFor="let intent of state.currentApplication.intents" [value]="intent.name">
-          {{intent.name}}
-        </mat-option>
-        <mat-option value="unknown">Unknown</mat-option>
-      </mat-select>
+        <mat-select
+          placeholder="Connector type"
+          [(ngModel)]="filter.connectorType" (selectionChange)="refresh()">
+          <mat-option></mat-option>
+          <mat-option *ngFor="let c of connectorTypes"
+                      [value]="c">{{ c.id }}</mat-option>
+        </mat-select>
+      </mat-form-field>
+      &nbsp;
+      <mat-form-field>
+        <mat-select placeholder="Intent" [(ngModel)]="filter.intentName" (selectionChange)="refresh()">
+          <mat-option value="">All</mat-option>
+          <mat-option *ngFor="let intent of state.currentApplication.intents" [value]="intent.name">
+            {{intent.name}}
+          </mat-option>
+          <mat-option value="unknown">Unknown</mat-option>
+        </mat-select>
       </mat-form-field>
       <button mat-button (click)="refresh()">GO</button>
     </mat-card-content>

@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.admin.model
 
 import fr.vsct.tock.bot.admin.dialog.DialogReportQuery
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.nlp.admin.model.PaginatedQuery
 
@@ -24,13 +25,27 @@ import fr.vsct.tock.nlp.admin.model.PaginatedQuery
  *
  */
 data class DialogsSearchQuery(
-        val playerId: PlayerId?,
-        val text: String?,
-        val dialogId: String?,
-        val intentName:String?,
-        val exactMatch:Boolean) : PaginatedQuery() {
+    val playerId: PlayerId?,
+    val text: String?,
+    val dialogId: String?,
+    val intentName: String?,
+    val exactMatch: Boolean,
+    val connectorType: ConnectorType?
+) : PaginatedQuery() {
 
     fun toDialogReportQuery(): DialogReportQuery {
-        return DialogReportQuery(namespace, applicationName, language, start, size, playerId, text, dialogId, intentName, exactMatch)
+        return DialogReportQuery(
+            namespace,
+            applicationName,
+            language,
+            start,
+            size,
+            playerId,
+            text,
+            dialogId,
+            intentName,
+            exactMatch,
+            connectorType = connectorType
+        )
     }
 }

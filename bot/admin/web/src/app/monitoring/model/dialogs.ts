@@ -16,6 +16,7 @@
 import {PaginatedQuery} from "../../model/commons";
 import {DialogReport, PlayerId} from "../../shared/model/dialog-data";
 import {PaginatedResult} from "../../model/nlp";
+import {ConnectorType} from "../../core/model/configuration";
 
 export class DialogReportQuery extends PaginatedQuery {
 
@@ -28,7 +29,8 @@ export class DialogReportQuery extends PaginatedQuery {
               public playerId?: PlayerId,
               public dialogId?: string,
               public text?: string,
-              public intentName?:string) {
+              public intentName?:string,
+              public connectorType?:ConnectorType) {
     super(namespace, applicationName, language, start, size)
   }
 }
