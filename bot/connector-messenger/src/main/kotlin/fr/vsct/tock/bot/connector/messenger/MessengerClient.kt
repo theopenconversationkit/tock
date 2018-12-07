@@ -32,6 +32,8 @@ import fr.vsct.tock.bot.connector.messenger.model.send.CustomEventRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.SendResponse
 import fr.vsct.tock.bot.connector.messenger.model.send.SendResponseErrorContainer
+import fr.vsct.tock.bot.connector.messenger.model.webhook.SubscriptionsResponse
+import fr.vsct.tock.bot.connector.messenger.model.webhook.SuccessResponse
 import fr.vsct.tock.bot.engine.BotRepository.requestTimer
 import fr.vsct.tock.bot.engine.monitoring.logError
 import fr.vsct.tock.shared.Level
@@ -49,6 +51,7 @@ import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
@@ -91,6 +94,28 @@ internal class MessengerClient(val secretKey: String) {
 
         @POST("/{appId}/activities")
         fun sendCustomEvent(@Path("appId") appId: String, @Body customEventRequest: CustomEventRequest): Call<SendResponse>
+
+        @GET("/v3.1/{appId}/subscriptions")
+        fun getSubscriptions(@Path("appId") appId: String, @Query("access_token") appAccessToken: String): Call<SubscriptionsResponse>
+
+        @POST("/v3.1/{appId}/subscriptions")
+        fun subscriptions(
+            @Path("appId") appId: String, @Query("object") obj: String,
+            @Query("callback_url") callbackUrl: String, @Query("fields") fields: String,
+            @Query("verify_token") verifyToken: String, @Query("access_token") appAccessToken: String
+        ): Call<SuccessResponse>
+
+        @DELETE("/v3.1/{pageId}/subscribed_apps")
+        fun deleteSubscribedApps(
+            @Path("pageId") pageId: String, @Query("subscribed_fields") subscribedFields: String,
+            @Query("access_token") accessToken: String
+        ): Call<SuccessResponse>
+
+        @POST("/v3.1/{pageId}/subscribed_apps")
+        fun subscribedApps(
+            @Path("pageId") pageId: String, @Query("subscribed_fields") subscribedFields: String,
+            @Query("access_token") accessToken: String
+        ): Call<SuccessResponse>
 
     }
 
@@ -264,6 +289,55 @@ internal class MessengerClient(val secretKey: String) {
             throwError(request, e.message ?: "")
         } finally {
             requestTimer.end(requestTimerData)
+        }
+    }
+
+    fun getSubscriptions(appId: String, appToken: String): SubscriptionsResponse? {
+        return try {
+            graphApi.getSubscriptions(appId, appToken).execute().body()
+        } catch (e: Exception) {
+            //log and ignore
+            logger.error(e)
+            null
+        }
+    }
+
+    fun subscriptions(
+        appId: String,
+        callbackUrl: String,
+        fields: String,
+        verifyToken: String,
+        appToken: String
+    ): SuccessResponse? {
+        return try {
+            if (callbackUrl == "") {
+                throw ConnectorException("No callback URL found to subscribe webhook")
+            }
+            graphApi.subscriptions(appId, "page", callbackUrl, fields, verifyToken, appToken).execute().body()
+        } catch (e: Exception) {
+            //log and ignore
+            logger.error(e)
+            null
+        }
+    }
+
+    fun deleteSubscribedApps(pageId: String, fields: String, token: String): SuccessResponse? {
+        return try {
+            graphApi.deleteSubscribedApps(pageId, fields, token).execute().body()
+        } catch (e: Exception) {
+            //log and ignore
+            logger.error(e)
+            null
+        }
+    }
+
+    fun subscribedApps(pageId: String, fields: String, token: String): SuccessResponse? {
+        return try {
+            graphApi.subscribedApps(pageId, fields, token).execute().body()
+        } catch (e: Exception) {
+            //log and ignore
+            logger.error(e)
+            null
         }
     }
 }

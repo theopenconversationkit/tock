@@ -57,10 +57,12 @@ import fr.vsct.tock.bot.engine.user.PlayerType.bot
 import fr.vsct.tock.bot.engine.user.PlayerType.temporary
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.Executor
+import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.vertx.vertx
 import mu.KotlinLogging
 import org.apache.commons.codec.binary.Hex
@@ -82,6 +84,7 @@ class MessengerConnector internal constructor(
     val applicationId: String,
     val path: String,
     val pageId: String,
+    val appToken: String,
     val token: String,
     val verifyToken: String?,
     val client: MessengerClient
@@ -117,10 +120,17 @@ class MessengerConnector internal constructor(
         CacheBuilder.newBuilder()
             .expireAfterAccess(1, TimeUnit.MINUTES)
             .build()
+    private val webhookCheckPeriod = property("tock_messenger_webhook_check_period", "600").toLong()
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
             logger.info("deploy rest messenger connector services for root path $path ")
+
+            // Subscribe to an automatic webhook check
+            if (booleanProperty("tock_messenger_webhook_check_subscription", false)) {
+                logger.info { "Subscribe to automatic webhook check" }
+                registerCheckWebhook()
+            }
 
             //see https://developers.facebook.com/docs/graph-api/webhooks
             router.get(path).handler { context ->
@@ -560,5 +570,43 @@ class MessengerConnector internal constructor(
         val bytes = mac.doFinal(payload.toByteArray())
 
         return String(Hex().encode(bytes))
+    }
+
+
+    fun registerCheckWebhook() {
+        executor.setPeriodic(Duration.ofSeconds(1), Duration.ofSeconds(webhookCheckPeriod)) {
+            logger.info { "Run periodic webhook subscription" }
+            checkWebhookSubscription()
+        }
+    }
+
+    fun checkWebhookSubscription() {
+        val defaultFields = "messages,messaging_postbacks,messaging_optins,messaging_account_linking"
+        try {
+            val getSubscriptionsResponse = client.getSubscriptions(applicationId, appToken)
+            if (getSubscriptionsResponse?.data?.size == 0 || getSubscriptionsResponse?.data?.firstOrNull()?.active == false) {
+                logger.info { "Get disabled webhook subscription, response: $getSubscriptionsResponse" }
+                val fields = getSubscriptionsResponse.data.firstOrNull()?.fields?.let {
+                    it.map { it.name }.joinToString (",")
+                } ?: defaultFields
+                val callbackUrl = property(
+                    "tock_messenger_webhook_url",
+                    getSubscriptionsResponse.data.firstOrNull()?.callbackUrl ?: ""
+                )
+                val subscriptionsRequest = client.subscriptions(
+                    applicationId,
+                    callbackUrl,
+                    fields,
+                    verifyToken ?: "",
+                    appToken
+                )
+                if (subscriptionsRequest?.success == true) {
+                    client.deleteSubscribedApps(pageId, fields, token)
+                    client.subscribedApps(pageId, fields, token)
+                }
+            }
+        } catch (e: Exception) {
+            logger.error("Error when running webhook subscription", e)
+        }
     }
 }
