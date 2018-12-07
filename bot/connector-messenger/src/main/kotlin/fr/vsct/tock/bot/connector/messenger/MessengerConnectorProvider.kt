@@ -43,6 +43,7 @@ internal object MessengerConnectorProvider : ConnectorProvider {
                 parameters[APP_ID]?.takeIf { it.isNotBlank() } ?: connectorId,
                 path,
                 parameters.getValue(PAGE_ID),
+                "${parameters.getValue(APP_ID)}|${parameters.getValue(SECRET)}",
                 parameters.getValue(TOKEN),
                 parameters[VERIFY_TOKEN],
                 MessengerClient(parameters.getValue(SECRET))
