@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.bot.engine
 
+import fr.vsct.tock.bot.engine.nlp.NlpProxyBotListener
+import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.security.initEncryptor
@@ -109,11 +111,17 @@ internal class BotVerticle : WebVerticle() {
         return property("tock_bot_protected_path", "/admin")
     }
 
+    private val nlpProxyOnBot = booleanProperty("nlp_proxy_on_bot", false)
+
     override fun configure() {
         if (!initialized) {
             initEncryptor()
             initTranslator()
             initialized = true
+        }
+
+        if (nlpProxyOnBot) {
+            registerServices("nlp_proxy_bot", NlpProxyBotListener.configure())
         }
 
         handlers.forEach {
