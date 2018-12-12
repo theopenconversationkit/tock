@@ -49,4 +49,38 @@ class BotVerticleTest {
 
         assert(service2Installed)
     }
+
+    @Test
+    fun `GIVEN default BOT configuration WHEN configure BOT Verticle THEN nlp api is not exposed`() {
+        System.setProperty("nlp_proxy_on_bot", "false")
+        val verticle = BotVerticle()
+        //NLP Api not exposed
+        verticle.configure()
+
+        var service1Installed = false
+        verticle.registerServices("nlp_proxy_bot") { router ->
+            service1Installed = true
+            router.post("/_nlp").handler { }
+        }
+        verticle.configure()
+        //NLP Api exposed !
+        assert(service1Installed)
+    }
+
+    @Test
+    fun `GIVEN the need to expose NLP API on a BOT WHEN configure BOT Verticle THEN api is exposed`() {
+        System.setProperty("nlp_proxy_on_bot", "true")
+        val verticle = BotVerticle()
+        //NLP Api exposed
+        verticle.configure()
+
+        var service1Installed = false
+        verticle.registerServices("nlp_proxy_bot") { router ->
+            service1Installed = true
+            router.post("/_nlp").handler { }
+        }
+        verticle.configure()
+        //Can't exposed same identifier !
+        assertFalse(service1Installed)
+    }
 }
