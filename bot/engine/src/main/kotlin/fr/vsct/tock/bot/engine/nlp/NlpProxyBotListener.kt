@@ -23,7 +23,7 @@ object NlpProxyBotListener {
 
     fun configure(): (Router) -> Unit {
         return { router ->
-            router.post("/_nlp").blocking { context ->
+            router.post("/_proxy_nlp/rest/nlp/").blocking { context ->
                 try {
                     val query = mapper.readValue<NlpQuery>(context.bodyAsString)
                     val result = nlpClient.parse(query)
