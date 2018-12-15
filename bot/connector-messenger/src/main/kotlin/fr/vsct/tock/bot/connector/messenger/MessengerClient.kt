@@ -32,8 +32,8 @@ import fr.vsct.tock.bot.connector.messenger.model.send.CustomEventRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.MessageRequest
 import fr.vsct.tock.bot.connector.messenger.model.send.SendResponse
 import fr.vsct.tock.bot.connector.messenger.model.send.SendResponseErrorContainer
-import fr.vsct.tock.bot.connector.messenger.model.webhook.SubscriptionsResponse
-import fr.vsct.tock.bot.connector.messenger.model.webhook.SuccessResponse
+import fr.vsct.tock.bot.connector.messenger.model.subscription.SubscriptionsResponse
+import fr.vsct.tock.bot.connector.messenger.model.subscription.SuccessResponse
 import fr.vsct.tock.bot.engine.BotRepository.requestTimer
 import fr.vsct.tock.bot.engine.monitoring.logError
 import fr.vsct.tock.shared.Level

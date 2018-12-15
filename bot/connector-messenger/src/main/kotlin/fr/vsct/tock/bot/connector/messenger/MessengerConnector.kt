@@ -67,7 +67,6 @@ import fr.vsct.tock.shared.vertx.vertx
 import mu.KotlinLogging
 import org.apache.commons.codec.binary.Hex
 import org.apache.commons.lang3.LocaleUtils
-import java.lang.Exception
 import java.time.Duration
 import java.time.ZoneOffset
 import java.util.concurrent.ConcurrentHashMap
@@ -87,7 +86,9 @@ class MessengerConnector internal constructor(
     val appToken: String,
     val token: String,
     val verifyToken: String?,
-    val client: MessengerClient
+    val client: MessengerClient,
+    @Volatile
+    private var subscriptionCheck: Boolean = webhookSubscriptionCheckEnabled
 ) : ConnectorBase(MessengerConnectorProvider.connectorType) {
 
     private data class ActionWithTimestamp(val action: Action, val timestamp: Long)
@@ -97,6 +98,9 @@ class MessengerConnector internal constructor(
         private val pageApplicationMap: MutableMap<String, String> = ConcurrentHashMap()
         private val applicationTokenMap: MutableMap<String, String> = ConcurrentHashMap()
         private val connectors: MutableSet<MessengerConnector> = CopyOnWriteArraySet<MessengerConnector>()
+        private val webhookSubscriptionCheckPeriod = property("tock_messenger_webhook_check_period", "600").toLong()
+        private val webhookSubscriptionCheckEnabled =
+            booleanProperty("tock_messenger_webhook_check_subscription", false)
 
         fun getConnectorByPageId(pageId: String): MessengerConnector? {
             return connectors.find { it.pageId == pageId }
@@ -120,14 +124,13 @@ class MessengerConnector internal constructor(
         CacheBuilder.newBuilder()
             .expireAfterAccess(1, TimeUnit.MINUTES)
             .build()
-    private val webhookCheckPeriod = property("tock_messenger_webhook_check_period", "600").toLong()
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
             logger.info("deploy rest messenger connector services for root path $path ")
 
             // Subscribe to an automatic webhook check
-            if (booleanProperty("tock_messenger_webhook_check_subscription", false)) {
+            if (webhookSubscriptionCheckEnabled) {
                 logger.info { "Subscribe to automatic webhook check" }
                 registerCheckWebhook()
             }
@@ -240,6 +243,11 @@ class MessengerConnector internal constructor(
                 }
             }
         }
+    }
+
+    override fun unregister(controller: ConnectorController) {
+        super.unregister(controller)
+        subscriptionCheck = false
     }
 
     /**
@@ -361,7 +369,7 @@ class MessengerConnector internal constructor(
      * @param customEventRequest an object containing a list of custom events
      */
     @Deprecated("To be removed in next release - app id is already known")
-    fun sendCustomEvent(applicationId:String, customEventRequest: CustomEventRequest) {
+    fun sendCustomEvent(applicationId: String, customEventRequest: CustomEventRequest) {
         try {
             client.sendCustomEvent(applicationId, customEventRequest)
         } catch (e: Throwable) {
@@ -573,40 +581,43 @@ class MessengerConnector internal constructor(
     }
 
 
-    fun registerCheckWebhook() {
-        executor.setPeriodic(Duration.ofSeconds(1), Duration.ofSeconds(webhookCheckPeriod)) {
+    private fun registerCheckWebhook() {
+        subscriptionCheck = true
+        executor.setPeriodic(Duration.ofSeconds(1), Duration.ofSeconds(webhookSubscriptionCheckPeriod)) {
             logger.info { "Run periodic webhook subscription" }
             checkWebhookSubscription()
         }
     }
 
-    fun checkWebhookSubscription() {
-        val defaultFields = "messages,messaging_postbacks,messaging_optins,messaging_account_linking"
-        try {
-            val getSubscriptionsResponse = client.getSubscriptions(applicationId, appToken)
-            if (getSubscriptionsResponse?.data?.size == 0 || getSubscriptionsResponse?.data?.firstOrNull()?.active == false) {
-                logger.info { "Get disabled webhook subscription, response: $getSubscriptionsResponse" }
-                val fields = getSubscriptionsResponse.data.firstOrNull()?.fields?.let {
-                    it.map { it.name }.joinToString (",")
-                } ?: defaultFields
-                val callbackUrl = property(
-                    "tock_messenger_webhook_url",
-                    getSubscriptionsResponse.data.firstOrNull()?.callbackUrl ?: ""
-                )
-                val subscriptionsRequest = client.subscriptions(
-                    applicationId,
-                    callbackUrl,
-                    fields,
-                    verifyToken ?: "",
-                    appToken
-                )
-                if (subscriptionsRequest?.success == true) {
-                    client.deleteSubscribedApps(pageId, fields, token)
-                    client.subscribedApps(pageId, fields, token)
+    internal fun checkWebhookSubscription() {
+        if (subscriptionCheck) {
+            val defaultFields = "messages,messaging_postbacks,messaging_optins,messaging_account_linking"
+            try {
+                val getSubscriptionsResponse = client.getSubscriptions(applicationId, appToken)
+                if (getSubscriptionsResponse?.data?.size == 0 || getSubscriptionsResponse?.data?.firstOrNull()?.active == false) {
+                    logger.info { "Get disabled webhook subscription, response: $getSubscriptionsResponse" }
+                    val fields = getSubscriptionsResponse.data.firstOrNull()?.fields?.let {
+                        it.map { it.name }.joinToString(",")
+                    } ?: defaultFields
+                    val callbackUrl = property(
+                        "tock_messenger_webhook_url",
+                        getSubscriptionsResponse.data.firstOrNull()?.callbackUrl ?: ""
+                    )
+                    val subscriptionsRequest = client.subscriptions(
+                        applicationId,
+                        callbackUrl,
+                        fields,
+                        verifyToken ?: "",
+                        appToken
+                    )
+                    if (subscriptionsRequest?.success == true) {
+                        client.deleteSubscribedApps(pageId, fields, token)
+                        client.subscribedApps(pageId, fields, token)
+                    }
                 }
+            } catch (e: Exception) {
+                logger.error("Error when running webhook subscription", e)
             }
-        } catch (e: Exception) {
-            logger.error("Error when running webhook subscription", e)
         }
     }
 }

@@ -14,6 +14,6 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.webhook
+package fr.vsct.tock.bot.connector.messenger.model.subscription
 
-data class SuccessResponse (val success: Boolean?)
+internal data class SuccessResponse (val success: Boolean?)

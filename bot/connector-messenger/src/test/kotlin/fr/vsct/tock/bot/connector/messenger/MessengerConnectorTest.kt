@@ -13,13 +13,12 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package fr.vsct.tock.bot.connector.messenger
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.Kodein
-import fr.vsct.tock.bot.connector.messenger.model.webhook.SubscriptionsResponse
-import fr.vsct.tock.bot.connector.messenger.model.webhook.SuccessResponse
+import fr.vsct.tock.bot.connector.messenger.model.subscription.SubscriptionsResponse
+import fr.vsct.tock.bot.connector.messenger.model.subscription.SuccessResponse
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.resourceAsStream
@@ -30,31 +29,35 @@ import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 
-internal class MessengerConnectorTest {
+class MessengerConnectorTest {
 
-    val appId = "appId"
-    val pageId = "pageId"
-    val appToken = "appToken"
-    val token = "token"
-    val verifyToken = "verifyToken"
-    val messengerClient = mockk<MessengerClient>()
-    val messengerConnector =
-        MessengerConnector(appId, "path", pageId, appToken, token, verifyToken, messengerClient)
+    private val appId = "appId"
+    private val pageId = "pageId"
+    private val appToken = "appToken"
+    private val token = "token"
+    private val verifyToken = "verifyToken"
+    private val messengerClient = mockk<MessengerClient>()
+    private val messengerConnector =
+        MessengerConnector(appId, "path", pageId, appToken, token, verifyToken, messengerClient, true)
 
-    val expectedFields = "messages,messaging_postbacks,messaging_optins,messaging_account_linking"
-    val expectedCallbackUrl = "https://bot.oui.sncf/messenger"
+    private val expectedFields = "messages,messaging_postbacks,messaging_optins,messaging_account_linking"
+    private val expectedCallbackUrl = "https://bot.oui.sncf/messenger"
 
     @BeforeEach
-    internal fun setUp() {
+    fun setUp() {
         injector.inject(Kodein {
             import(sharedModule)
         })
-        every { messengerClient.deleteSubscribedApps(any(), any(), any()) } returns SuccessResponse(true)
-        every { messengerClient.subscribedApps(any(), any(), any()) } returns SuccessResponse(true)
+        every { messengerClient.deleteSubscribedApps(any(), any(), any()) } returns SuccessResponse(
+            true
+        )
+        every { messengerClient.subscribedApps(any(), any(), any()) } returns SuccessResponse(
+            true
+        )
     }
 
     @Test
-    internal fun `GIVEN already active webhook WHEN check subscription THEN do nothing`() {
+    fun `GIVEN already active webhook WHEN check subscription THEN do nothing`() {
         val response: SubscriptionsResponse =
             mapper.readValue(resourceAsStream("/get_subscribed_apps_filled_data_and_active.json"))
         every { messengerClient.getSubscriptions(any(), any()) } returns response
@@ -67,11 +70,13 @@ internal class MessengerConnectorTest {
     }
 
     @Test
-    internal fun `GIVEN not subscribed app webhook WHEN subscription success THEN call webhook and page subscriptions`() {
+    fun `GIVEN not subscribed app webhook WHEN subscription success THEN call webhook and page subscriptions`() {
         val response: SubscriptionsResponse =
             mapper.readValue(resourceAsStream("/get_subscribed_apps_filled_data_and_disabled.json"))
         every { messengerClient.getSubscriptions(any(), any()) } returns response
-        every { messengerClient.subscriptions(any(), any(), any(), any(), any()) } returns SuccessResponse(true)
+        every { messengerClient.subscriptions(any(), any(), any(), any(), any()) } returns SuccessResponse(
+            true
+        )
 
         messengerConnector.checkWebhookSubscription()
 
@@ -89,11 +94,13 @@ internal class MessengerConnectorTest {
     }
 
     @Test
-    internal fun `GIVEN not subscribed app webhook WHEN subscription fails THEN not call page subscription`() {
+    fun `GIVEN not subscribed app webhook WHEN subscription fails THEN not call page subscription`() {
         val response: SubscriptionsResponse =
             mapper.readValue(resourceAsStream("/get_subscribed_apps_filled_data_and_disabled.json"))
         every { messengerClient.getSubscriptions(any(), any()) } returns response
-        every { messengerClient.subscriptions(any(), any(), any(), any(), any()) } returns SuccessResponse(false)
+        every { messengerClient.subscriptions(any(), any(), any(), any(), any()) } returns SuccessResponse(
+            false
+        )
 
         messengerConnector.checkWebhookSubscription()
 
@@ -111,10 +118,12 @@ internal class MessengerConnectorTest {
     }
 
     @Test
-    internal fun `GIVEN empty data of subscribed app webhook WHEN subscription success THEN call webhook and page subscriptions`() {
+    fun `GIVEN empty data of subscribed app webhook WHEN subscription success THEN call webhook and page subscriptions`() {
         val response: SubscriptionsResponse = mapper.readValue(resourceAsStream("/get_subscribed_apps_empty_data.json"))
         every { messengerClient.getSubscriptions(any(), any()) } returns response
-        every { messengerClient.subscriptions(any(), any(), any(), any(), any()) } returns SuccessResponse(true)
+        every { messengerClient.subscriptions(any(), any(), any(), any(), any()) } returns SuccessResponse(
+            true
+        )
 
         messengerConnector.checkWebhookSubscription()
 

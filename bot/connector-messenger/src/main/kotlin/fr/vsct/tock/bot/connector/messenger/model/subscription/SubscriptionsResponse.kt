@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.messenger.model.webhook
+package fr.vsct.tock.bot.connector.messenger.model.subscription
 
 import com.fasterxml.jackson.annotation.JsonProperty
 
-/**
- *
- */
-data class SubscriptionsResponse(val data: List<SubscriptionsData>)
+internal data class SubscriptionsResponse(val data: List<SubscriptionsData>)
 
-data class SubscriptionsData(
+internal data class SubscriptionsData(
     val active: Boolean?,
     @get:JsonProperty("callback_url")
     val callbackUrl: String?,
     val fields: List<Field>?
 )
 
-data class Field(
+internal data class Field(
     val name: String,
     val version: String
 )
