@@ -39,11 +39,12 @@ internal object MessengerConnectorProvider : ConnectorProvider {
 
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
+            val appId = parameters[APP_ID]?.takeIf { it.isNotBlank() } ?: connectorId
             return MessengerConnector(
-                parameters[APP_ID]?.takeIf { it.isNotBlank() } ?: connectorId,
+                appId,
                 path,
                 parameters.getValue(PAGE_ID),
-                "${parameters.getValue(APP_ID)}|${parameters.getValue(SECRET)}",
+                "$appId|${parameters.getValue(SECRET)}",
                 parameters.getValue(TOKEN),
                 parameters[VERIFY_TOKEN],
                 MessengerClient(parameters.getValue(SECRET))
