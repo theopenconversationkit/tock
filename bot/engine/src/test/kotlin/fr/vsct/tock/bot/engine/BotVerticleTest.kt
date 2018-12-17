@@ -52,7 +52,7 @@ class BotVerticleTest {
 
     @Test
     fun `GIVEN default BOT configuration WHEN configure BOT Verticle THEN nlp api is not exposed`() {
-        System.setProperty("nlp_proxy_on_bot", "false")
+        System.setProperty("tock_nlp_proxy_on_bot", "false")
         val verticle = BotVerticle()
         //NLP Api not exposed
         verticle.configure()
@@ -69,7 +69,7 @@ class BotVerticleTest {
 
     @Test
     fun `GIVEN the need to expose NLP API on a BOT WHEN configure BOT Verticle THEN api is exposed`() {
-        System.setProperty("nlp_proxy_on_bot", "true")
+        System.setProperty("tock_nlp_proxy_on_bot", "true")
         val verticle = BotVerticle()
         //NLP Api exposed
         verticle.configure()

@@ -116,7 +116,7 @@ internal class BotVerticle : WebVerticle() {
         return (paths + path).map { it.trim() }.toSet()
     }
 
-    private val nlpProxyOnBot = booleanProperty("nlp_proxy_on_bot", false)
+    private val nlpProxyOnBot = booleanProperty("tock_nlp_proxy_on_bot", false)
 
     override fun configure() {
         if (!initialized) {
@@ -126,7 +126,7 @@ internal class BotVerticle : WebVerticle() {
         }
 
         if (nlpProxyOnBot) {
-            registerServices("nlp_proxy_bot", NlpProxyBotListener.configure())
+            registerServices("nlp_proxy_bot", NlpProxyBotListener.configure(vertx))
         }
 
         handlers.forEach {
