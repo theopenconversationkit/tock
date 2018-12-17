@@ -31,6 +31,7 @@ import fr.vsct.tock.shared.injector
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
+import java.time.DayOfWeek
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.Locale
@@ -104,6 +105,26 @@ internal class DatesMergeTest {
                 DateEntityGrain.hour
             ),
             "demain à 20h",
+            false,
+            2
+        )
+
+        val changeDayOfMonth = ValueDescriptor(
+            DateEntityValue(
+                referenceTime.plusDays(1).withHour(20),
+                DateEntityGrain.hour
+            ),
+            "le 20",
+            false,
+            2
+        )
+
+        val changeDayOfWeek = ValueDescriptor(
+            DateEntityValue(
+                referenceTime.plusDays(1).withHour(20),
+                DateEntityGrain.hour
+            ),
+            "le jeudi",
             false,
             2
         )
@@ -190,7 +211,20 @@ internal class DatesMergeTest {
 
     @Test
     fun `mergeGrain returns non additional merge for 'en fin d'après-midi'(fr)`() {
-         val r = DatesMerge.mergeGrain(Locale.FRENCH, tomorrow, endAfternoon)
-         assertEquals(DatesMerge.MergeGrain(false, DateEntityGrain.day), r)
+        val r = DatesMerge.mergeGrain(Locale.FRENCH, tomorrow, endAfternoon)
+        assertEquals(DatesMerge.MergeGrain(false, DateEntityGrain.day), r)
+    }
+
+    @Test
+    fun `merge with change day of month returns the new day of month with the right month`() {
+        val r = DatesMerge.merge(context, listOf(tomorrow.copy(initial = true), changeDayOfMonth))
+        assertEquals((tomorrow.value as DateEntityValue).date.month, (r?.value as DateEntityValue).date.month)
+        assertEquals(20, (r.value as DateEntityValue).date.dayOfMonth)
+    }
+
+    @Test
+    fun `merge with change day of week returns the new day of week`() {
+        val r = DatesMerge.merge(context, listOf(tomorrow.copy(initial = true), changeDayOfWeek))
+        assertEquals(DayOfWeek.THURSDAY, (r?.value as DateEntityValue).date.dayOfWeek)
     }
 }
