@@ -122,11 +122,10 @@ internal class BotVerticle : WebVerticle() {
         if (!initialized) {
             initEncryptor()
             initTranslator()
+            if (nlpProxyOnBot) {
+                registerServices("nlp_proxy_bot", NlpProxyBotListener.configure(vertx))
+            }
             initialized = true
-        }
-
-        if (nlpProxyOnBot) {
-            registerServices("nlp_proxy_bot", NlpProxyBotListener.configure(vertx))
         }
 
         handlers.forEach {
