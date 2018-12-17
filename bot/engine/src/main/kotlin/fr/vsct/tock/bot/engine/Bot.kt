@@ -113,6 +113,7 @@ internal class Bot(
         if (botDefinition.isBotEnabledIntent(dialog.state.currentIntent)) {
             logger.debug { "Enable bot for $action" }
             userTimeline.userState.botDisabled = false
+            botDefinition.botEnabledListener(action)
         }
 
         if (!userTimeline.userState.botDisabled) {
@@ -275,6 +276,7 @@ internal class Bot(
             // send choice always reactivate disable bot (is the intent is not a disabled intent)
             if (sendChoiceActivateBot && !botDefinition.isBotDisabledIntent(dialog.state.currentIntent)) {
                 userTimeline.userState.botDisabled = false
+                botDefinition.botEnabledListener(choice)
             }
         }
     }

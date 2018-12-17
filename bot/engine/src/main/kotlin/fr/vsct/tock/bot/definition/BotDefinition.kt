@@ -202,6 +202,11 @@ interface BotDefinition : I18nKeyProvider {
         intent != null && botEnabledStory?.isStarterIntent(intent) ?: false
 
     /**
+     *  Listener invoked when bot is enabled.
+     */
+    val botEnabledListener: (Action) -> Unit get() = {}
+
+    /**
      * Returns a [TestBehaviour]. Used in Integration Tests.
      */
     val testBehaviour: TestBehaviour get() = TestBehaviourBase()
