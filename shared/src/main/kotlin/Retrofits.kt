@@ -98,7 +98,7 @@ fun retrofitBuilderWithTimeoutAndLogger(
  * Create a basic auth interceptor.
  */
 fun basicAuthInterceptor(login: String, password: String): Interceptor {
-    val credential = Credentials.basic(login, password)
+    val credential = basicCredentialsHeader(login, password)
     return Interceptor { chain ->
         val original = chain.request()
 
@@ -109,6 +109,12 @@ fun basicAuthInterceptor(login: String, password: String): Interceptor {
         chain.proceed(request)
     }
 }
+
+/**
+ * Encode basic credential header.
+ */
+fun basicCredentialsHeader(login: String, password: String): String =
+    Credentials.basic(login, password)
 
 /**
  * Add jackson converter factory.

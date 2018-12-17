@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.engine
 import fr.vsct.tock.bot.engine.nlp.NlpProxyBotListener
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.listProperty
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.WebVerticle
@@ -107,8 +108,12 @@ internal class BotVerticle : WebVerticle() {
         }
     }
 
-    override fun protectedPath(): String {
-        return property("tock_bot_protected_path", "/admin")
+    override fun protectedPaths(): Set<String> {
+        //TODO remove deprecated tock_bot_protected_path property
+        val path = property("tock_bot_protected_path", "/admin")
+        val paths = listProperty("tock_bot_protected_paths", listOf("/admin"))
+
+        return (paths + path).map { it.trim() }.toSet()
     }
 
     private val nlpProxyOnBot = booleanProperty("nlp_proxy_on_bot", false)

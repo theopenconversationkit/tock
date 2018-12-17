@@ -116,7 +116,10 @@ abstract class WebVerticle : AbstractVerticle() {
 
     private val verticleName: String = this::class.simpleName!!
 
+    @Deprecated(message = "replace with protectedPaths method", replaceWith = ReplaceWith("protectedPaths"))
     protected open fun protectedPath(): String = rootPath
+
+    protected open fun protectedPaths(): Set<String> = setOf(protectedPath())
 
     abstract fun configure()
 
@@ -161,7 +164,7 @@ abstract class WebVerticle : AbstractVerticle() {
 
     protected fun addAuth(
         authProvider: AuthProvider = defaultAuthProvider(),
-        pathsToProtect: List<String> = listOf("${protectedPath()}/*")
+        pathsToProtect: Set<String> = protectedPaths().map { "$it/*" }.toSet()
     ) {
 
         val authHandler = BasicAuthHandler.create(authProvider)
