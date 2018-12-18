@@ -21,5 +21,5 @@ package fr.vsct.tock.bot.connector.messenger.model.send
  */
 enum class ButtonType {
 
-    web_url, postback, account_link, account_unlink
+    web_url, postback, account_link, account_unlink, phone_number
 }
