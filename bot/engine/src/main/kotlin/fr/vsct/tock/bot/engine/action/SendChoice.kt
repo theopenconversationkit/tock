@@ -80,6 +80,7 @@ class SendChoice(
         const val URL_PARAMETER = "_url"
         const val IMAGE_PARAMETER = "_image"
         const val EXIT_INTENT = "_exit"
+        const val PHONE_CALL_INTENT = "_phone_call"
         const val LOGIN_INTENT = "_login"
         const val LOGOUT_INTENT = "_logout"
         const val STEP_PARAMETER = "_step"
