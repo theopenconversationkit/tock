@@ -1,9 +1,11 @@
 - 2.0.0 December 2018
-    - External NLP demo server
     - Non-regression tests improvements
     - i18n key label improvement
     - Nlp & Admin API swagger documentation          
     - Cleanup and upgrade admin web interface
+    
+- 2.0.1 January 2019
+    - External NLP demo server
     
 - 19.3 March 2019
     - Conversational framework: allow to create a bot in the administration interface without IDE
