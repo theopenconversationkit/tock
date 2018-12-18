@@ -27,7 +27,7 @@ data class ParseResult(
      */
     val intent: String,
     /**
-     * the namespace of the selected intent.
+     * The namespace of the selected intent.
      */
     val intentNamespace: String,
     /**

@@ -89,6 +89,7 @@ open class AdminVerticle : WebVerticle() {
 
         initEncryptor()
 
+        //Retrieve all applications of the namespace
         blockingJsonGet("/applications") { context ->
             front.getApplications().filter {
                 it.namespace == context.organization
@@ -97,6 +98,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
+        //Retrieve application that matches given identifier
         blockingJsonGet("/application/:id") { context ->
             service.getApplicationWithIntents(context.pathId("id"))
                 ?.takeIf { it.namespace == context.organization }
@@ -183,6 +185,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
+        //Create or update application
         blockingJsonPost("/application", admin) { context, application: ApplicationWithIntents ->
             if (context.organization == application.namespace
                 && (application._id == null || context.organization == front.getApplicationById(application._id)?.namespace)
@@ -236,6 +239,7 @@ open class AdminVerticle : WebVerticle() {
             front.importSentences(context.organization, dump.copy(applicationName = context.path("name")))
         }
 
+        //Delete application that matches given identifier
         blockingDelete("/application/:id", admin) {
             val id: Id<ApplicationDefinition> = it.pathId("id")
             if (it.organization == front.getApplicationById(id)?.namespace) {

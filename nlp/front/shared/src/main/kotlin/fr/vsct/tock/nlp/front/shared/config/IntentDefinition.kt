@@ -41,7 +41,7 @@ data class IntentDefinition(
      */
     val applications: Set<Id<ApplicationDefinition>>,
     /**
-     * The [EntityDefinition] of this intent.
+     * The [EntityDefinition]s of this intent.
      */
     val entities: Set<EntityDefinition>,
     val entitiesRegexp: Map<Locale, LinkedHashSet<EntitiesRegexp>> = emptyMap(),

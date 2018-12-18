@@ -19,9 +19,15 @@ package fr.vsct.tock.nlp.core
 import java.util.Locale
 
 /**
- * Used to deal with entities with predefined values list.
+ * Used to deal with entities composed of a predefined list of values.
  */
 data class PredefinedValue(
+    /**
+     * The reference value.
+     */
     val value: String,
+    /**
+     * The list of possible values for each locale.
+     */
     val labels: Map<Locale, List<String>> = emptyMap()
 )

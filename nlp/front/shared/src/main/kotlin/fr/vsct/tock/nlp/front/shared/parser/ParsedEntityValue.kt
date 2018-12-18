@@ -33,32 +33,61 @@ import fr.vsct.tock.nlp.front.shared.value.ValueTransformer.wrapNullableValue
  *
  * A [probability] property is also added. It comes from [EntityRecognition]
  */
-data class ParsedEntityValue(override val start: Int,
-                             override val end: Int,
-                             val entity: Entity,
-                             val value: Value? = null,
-                             val evaluated: Boolean = false,
-                             val subEntities: List<ParsedEntityValue> = emptyList(),
-                             val probability: Double = 1.0,
-                             val mergeSupport: Boolean = false) : IntOpenRange {
+data class ParsedEntityValue(
+    /**
+     * Start (inclusive) text index of the entity.
+     */
+    override val start: Int,
+    /**
+     * End (exclusive) text index of the entity.
+     */
+    override val end: Int,
+    /**
+     * Entity definition.
+     */
+    val entity: Entity,
+    /**
+     * Current value if evaluated.
+     */
+    val value: Value? = null,
+    /**
+     * Is this entity has been evaluated ?
+     */
+    val evaluated: Boolean = false,
+    /**
+     * Sub entities if any.
+     */
+    val subEntities: List<ParsedEntityValue> = emptyList(),
+    /**
+     * Recognition probability.
+     */
+    val probability: Double = 1.0,
+    /**
+     * Does this entity value support merge with other values ?
+     */
+    val mergeSupport: Boolean = false
+) : IntOpenRange {
 
-    constructor(start: Int,
-                end: Int,
-                entity: Entity,
-                value: Any? = null,
-                evaluated: Boolean = false,
-                subEntities: List<ParsedEntityValue>,
-                probability: Double = 1.0,
-                mergeSupport: Boolean = false) :
+    constructor(
+        start: Int,
+        end: Int,
+        entity: Entity,
+        value: Any? = null,
+        evaluated: Boolean = false,
+        subEntities: List<ParsedEntityValue>,
+        probability: Double = 1.0,
+        mergeSupport: Boolean = false
+    ) :
             this(start, end, entity, wrapNullableValue(value), evaluated, subEntities, probability, mergeSupport)
 
     constructor(entityValue: EntityValue, probability: Double, mergeSupport: Boolean) : this(
-            entityValue.start,
-            entityValue.end,
-            entityValue.entity,
-            entityValue.value,
-            entityValue.evaluated,
-            entityValue.subEntities.map { ParsedEntityValue(it.value, it.probability, false) },
-            probability,
-            mergeSupport)
+        entityValue.start,
+        entityValue.end,
+        entityValue.entity,
+        entityValue.value,
+        entityValue.evaluated,
+        entityValue.subEntities.map { ParsedEntityValue(it.value, it.probability, false) },
+        probability,
+        mergeSupport
+    )
 }

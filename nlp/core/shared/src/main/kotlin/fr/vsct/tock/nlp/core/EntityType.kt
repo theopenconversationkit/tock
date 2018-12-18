@@ -25,7 +25,7 @@ data class EntityType(
      */
     val name: String,
     /**
-     * The sub entities of this entity.
+     * The sub entities of this entity if any.
      */
     val subEntities: List<Entity> = emptyList(),
     /**

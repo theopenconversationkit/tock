@@ -17,8 +17,14 @@
 package fr.vsct.tock.nlp.core
 
 /**
- *
+ * An entity definition.
  */
-data class Entity(val entityType: EntityType, val role: String) {
-
-}
+data class Entity(
+    /**
+     * Entity type definition.
+     */
+    val entityType: EntityType,
+    /**
+     * Role of the entity.
+     */
+    val role: String)

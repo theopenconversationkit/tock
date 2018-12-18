@@ -1,0 +1,185 @@
+openapi: "3.0.0"
+info:
+  description: "This is the Tock NLP ADMIN API. You can manage your model with it!"
+  version: "2.0.0"
+  title: "Tock NLP ADMIN API"
+  termsOfService: "https://voyages-sncf-technologies.github.io/tock/fr/"
+  license:
+    name: "Apache 2.0"
+    url: "http://www.apache.org/licenses/LICENSE-2.0.html"
+basePath: "/rest/admin"
+tags:
+  - name: "Application"
+    description: "Manage application models"
+schemes:
+  - "http"
+  - "https"
+paths:
+  /applications:
+    get:
+      tags:
+        - "Application"
+      summary: "Retrieve all applications of the namespace"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "successful operation"
+          content:
+            application/json:
+              schema:
+                type: "array"
+                items:
+                  $ref: "#/definitions/ApplicationWithIntents"
+  /application/{applicationId}:
+    get:
+      tags:
+        - "Application"
+      summary: "Retrieve application that matches given identifier"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "applicationId"
+          in: "path"
+          description: "Application identifier"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        200:
+          content:
+            application/json:
+              description: "successful operation"
+              schema:
+                $ref: "#/definitions/ApplicationWithIntents"
+    delete:
+      tags:
+        - "Application"
+      summary: "Delete application that matches given identifier"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - name: "applicationId"
+          in: "path"
+          description: "Application identifier"
+          required: true
+          schema:
+            type: "string"
+      responses:
+        200:
+          content:
+            application/json:
+              description: "successful operation"
+
+  /application:
+    post:
+      tags:
+        - "Application"
+      summary: "Create or update application"
+      consumes:
+        - "application/json"
+      produces:
+        - "application/json"
+      parameters:
+        - in: "body"
+          name: "body"
+          description: "Application content"
+          required: true
+          schema:
+            $ref: "#/definitions/ApplicationWithIntents"
+      responses:
+        200:
+          content:
+            application/json:
+              description: "successful operation"
+              schema:
+                $ref: "#/definitions/ApplicationWithIntents"
+
+definitions:
+  ApplicationWithIntents:
+    type: "object"
+    description: "An application with supported intents"
+    required: [ "_id", "name", "namespace", "intents", "supportedLocales", "nlpEngineType" ]
+    properties:
+      _id:
+        type: "string"
+        description: "The id of the app"
+      namespace:
+        type: "string"
+        description: "The namespace of the application"
+      applicationName:
+        type: "string"
+        description: "The name of the application"
+      intents:
+        type: "array"
+        description: "The intent definitions of the application"
+        items:
+          $ref: "#/definitions/IntentDefinition"
+      supportedLocales:
+        type: "array"
+        description: "The locales supported by the application"
+        items:
+          type: "string"
+      nlpEngineType:
+        type: "object"
+        description: "The current nlp engine used to build the model"
+        properties:
+          name:
+            type: "string"
+            description: "he unique name of nlp engine"
+      mergeEngineTypes:
+        type: "boolean"
+        description: "Is intent entity model and standalone entity models are used to find the better values ?"
+      useEntityModels:
+        type: "boolean"
+        description: "Is standalone entity models used? Useful for entity disambiguation"
+      supportSubEntities:
+        type: "boolean"
+        description: "Does this app support sub entities ?"
+
+  IntentDefinition:
+    type: "object"
+    description: "An intent definition"
+    required: [ "name", "namespace", "applications", "entities" ]
+    properties:
+      name:
+        type: "string"
+        description: "The name of the intent"
+      namespace:
+        type: "string"
+        description: "The namespace of the intent"
+      applications:
+        type: "array"
+        description: "The application ids using this intent"
+        items:
+          type: "string"
+      entities:
+        type: "array"
+        description: "The entity definitions of the intent"
+        items:
+          $ref: "#/definitions/EntityDefinition"
+
+  EntityDefinition:
+    type: "object"
+    description: "An entity definition"
+    required: [ "entityTypeName", "role"]
+    properties:
+      entityTypeName:
+        type: "string"
+        description: "The qualified name of the entity type"
+      role:
+        type: "string"
+        description: "The role"
+      atStartOfDay:
+        type: "boolean"
+        description: "To evaluate time for entity date types"
+
+externalDocs:
+  description: "Find out more about Tock"
+  url: "https://voyages-sncf-technologies.github.io/tock"

@@ -32,7 +32,7 @@ data class EntityDefinition(
      */
     val role: String = entityTypeName.name(),
     /**
-     * To evaluate time.
+     * To evaluate time for entity date types.
      */
     val atStartOfDay: Boolean? = null
 ) {

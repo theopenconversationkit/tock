@@ -17,12 +17,30 @@
 package fr.vsct.tock.nlp.core
 
 /**
- *
+ * An entity value.
  */
 data class EntityValue(
+        /**
+         * Start (inclusive) text index of the entity.
+         */
         override val start: Int,
+        /**
+         * End (exclusive) text index of the entity.
+         */
         override val end: Int,
+        /**
+         * Entity definition.
+         */
         val entity: Entity,
+        /**
+         * Current value if evaluated.
+         */
         val value: Any? = null,
+        /**
+         * Sub entities if any.
+         */
         val subEntities: List<EntityRecognition> = emptyList(),
+        /**
+         * Is this entity has been evaluated?
+         */
         val evaluated: Boolean = false) : IntOpenRange

@@ -18,9 +18,14 @@ package fr.vsct.tock.nlp.core
 
 
 /**
- *
+ * Nlp Engine type.
  */
-data class NlpEngineType(val name: String) {
+data class NlpEngineType(
+    /**
+     * The unique name of nlp engine.
+     */
+    val name: String
+) {
 
     companion object {
         val stanford = NlpEngineType("stanford")
