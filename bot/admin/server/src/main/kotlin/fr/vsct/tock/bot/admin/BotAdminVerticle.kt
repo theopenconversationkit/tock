@@ -50,6 +50,7 @@ import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.Translator.initTranslator
+import fr.vsct.tock.translator.Translator.transformOldLabels
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
@@ -334,7 +335,7 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingUploadPost("/i18n/import/json", botUser) { context, content ->
             val labels: List<I18nLabel> = mapper.readValue(content)
-            i18n.save(labels.filter { it.namespace == context.organization })
+            i18n.save(transformOldLabels(labels.filter { it.namespace == context.organization }))
         }
 
         blockingJsonGet("/connectorTypes", botUser) {
