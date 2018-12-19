@@ -267,8 +267,8 @@
 
 
   <li class="md-nav__item">
-    <a href="../api-nlp/" title="L'api NLP" class="md-nav__link">
-      L'api NLP
+    <a href="../api/" title="APIs de Tock" class="md-nav__link">
+      APIs de Tock
     </a>
   </li>
 
@@ -596,14 +596,14 @@ Il est désactivé par défaut.</p>
 <ol>
 <li>
 <p>Une clé va être générée à partir du texte passé en paramètre, en fonction du namespace (l'organisation du créateur du bot)
- et de la story dans laquelle est demandé ce libellé. Dans le cas ci-dessus, cela devrait ressembler à <code>app_arrivals_arrival_at_</code> où <em>app</em> est le namespace et 
+ et de la story dans laquelle est demandé ce libellé. Dans le cas ci-dessus, cela devrait ressembler à <code>app_arrivals_Arrival at {0}</code> où <em>app</em> est le namespace et 
 <em>arrivals</em> l'intention principale de la story.</p>
 </li>
 <li>
 <p>Tock vérifie ensuite si cette clé est déjà présente en base. </p>
 <ul>
-<li>Si c'est le cas, il utilise le libellé présent en base pour la locale demandée afin de trouver la traduction la plus appropriée (le connecteur ou le type d'interface peuvent également être pris en compte)</li>
-<li>Sinon, une clé est créée en base avec le libellé par défaut ("Arrival at {0}" dans notre exemple) utilisée pour la locale courante</li>
+<li>Si c'est le cas, il utilise le libellé présent en base pour la langue demandée afin de trouver la traduction la plus appropriée (le connecteur ou le type d'interface peuvent également être pris en compte)</li>
+<li>Sinon, une clé est créée en base avec le libellé par défaut ("Arrival at {0}" dans notre exemple) utilisée pour la langue courante</li>
 </ul>
 </li>
 <li>

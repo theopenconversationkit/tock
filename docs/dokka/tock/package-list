@@ -5,6 +5,7 @@ $dokka.location:fr.vsct.tock.bot.engine.dialog$setTo(fr.vsct.tock.nlp.api.client
 $dokka.location:fr.vsct.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.String, fr.vsct.tock.bot.engine.monitoring.RequestTimerData)fr.vsct.tock.bot.engine.monitoring/mu.-k-logger/log-error.html
 $dokka.location:fr.vsct.tock.bot.engine.monitoring$logError(mu.KLogger, kotlin.Throwable, fr.vsct.tock.bot.engine.monitoring.RequestTimerData)fr.vsct.tock.bot.engine.monitoring/mu.-k-logger/log-error.html
 $dokka.location:fr.vsct.tock.shared$addJacksonConverter(retrofit2.Retrofit.Builder, com.fasterxml.jackson.databind.ObjectMapper)fr.vsct.tock.shared/retrofit2.-retrofit.-builder/add-jackson-converter.html
+$dokka.location:fr.vsct.tock.shared$changeNamespace(kotlin.String, kotlin.String)fr.vsct.tock.shared/kotlin.-string/change-namespace.html
 $dokka.location:fr.vsct.tock.shared$create(retrofit2.Retrofit)fr.vsct.tock.shared/retrofit2.-retrofit/create.html
 $dokka.location:fr.vsct.tock.shared$debug(mu.KLogger, kotlin.Throwable)fr.vsct.tock.shared/mu.-k-logger/debug.html
 $dokka.location:fr.vsct.tock.shared$error(mu.KLogger, kotlin.Throwable)fr.vsct.tock.shared/mu.-k-logger/error.html

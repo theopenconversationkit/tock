@@ -93,7 +93,7 @@
 <p><a href="add-auth.html">addAuth</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">addAuth</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$addAuth(io.vertx.ext.auth.AuthProvider, kotlin.collections.List((kotlin.String)))/authProvider">authProvider</span><span class="symbol">:</span>&nbsp;<span class="identifier">AuthProvider</span>&nbsp;<span class="symbol">=</span>&nbsp;defaultAuthProvider()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$addAuth(io.vertx.ext.auth.AuthProvider, kotlin.collections.List((kotlin.String)))/pathsToProtect">pathsToProtect</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;listOf("${protectedPath()}/*")<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+<code><span class="keyword">fun </span><span class="identifier">addAuth</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$addAuth(io.vertx.ext.auth.AuthProvider, kotlin.collections.Set((kotlin.String)))/authProvider">authProvider</span><span class="symbol">:</span>&nbsp;<span class="identifier">AuthProvider</span>&nbsp;<span class="symbol">=</span>&nbsp;defaultAuthProvider()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$addAuth(io.vertx.ext.auth.AuthProvider, kotlin.collections.Set((kotlin.String)))/pathsToProtect">pathsToProtect</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;protectedPaths().map { "$it/*" }.toSet()<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -297,7 +297,14 @@
 <p><a href="protected-path.html">protectedPath</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">protectedPath</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><s><span class="identifier">protectedPath</span></s><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="protected-paths.html">protectedPaths</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">protectedPaths</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code></td>
 </tr>
 <tr>
 <td>

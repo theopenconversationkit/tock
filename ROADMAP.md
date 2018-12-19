@@ -1,9 +1,4 @@
-- 2.0.0 December 2018
-    - Non-regression tests improvements
-    - i18n key label improvement
-    - Nlp & Admin API swagger documentation          
-    - Cleanup and upgrade admin web interface
-    
+  
 - 2.0.1 January 2019
     - External NLP demo server
     
@@ -21,8 +16,13 @@
     - Conversational framework: support for other languages than Kotlin (using APIs & multi-platform Kotlin feature)
     - nodejs support sample 
     
-## Last releases    
-    
+## Latest releases    
+ 
+- 2.0.0 December 2018
+    - Non-regression tests improvements
+    - i18n key label improvement
+    - Nlp & Admin API swagger documentation          
+    - Cleanup and upgrade admin web interface    
     
 - 1.3.0 October 2018    
     - Agnostic web platform integration sample 

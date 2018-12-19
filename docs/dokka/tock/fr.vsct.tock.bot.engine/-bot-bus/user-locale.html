@@ -9,8 +9,10 @@
 <br/>
 <h1>userLocale</h1>
 <a name="fr.vsct.tock.bot.engine.BotBus$userLocale"></a>
-<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">userLocale</span><span class="symbol">: </span><a href="http://docs.oracle.com/javase/8/docs/api/java/util/Locale.html"><span class="identifier">Locale</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/BotBus.kt#L120">(source)</a>
+<code><span class="keyword">abstract</span> <span class="keyword">val </span><span class="identifier">userLocale</span><span class="symbol">: </span><a href="http://docs.oracle.com/javase/8/docs/api/java/util/Locale.html"><span class="identifier">Locale</span></a></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/BotBus.kt#L122">(source)</a>
 <p>Overrides <a href="../-i18n-translator/user-locale.html">I18nTranslator.userLocale</a></p>
-<p>The current user <a href="http://docs.oracle.com/javase/8/docs/api/java/util/Locale.html">Locale</a>.</p>
+<p>The current user <a href="http://docs.oracle.com/javase/8/docs/api/java/util/Locale.html">Locale</a>.
+Only supported app locales are returned.
+if the locale is not supported, returns the supported language or the default.</p>
 </BODY>
 </HTML>

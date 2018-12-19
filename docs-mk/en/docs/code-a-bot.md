@@ -14,14 +14,14 @@ With Maven:
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>bot-toolkit</artifactId>
-            <version>1.3.0</version>
+            <version>2.0.0</version>
         </dependency>
 ```
 
 With Gradle:
 
 ```gradle
-      compile 'fr.vsct.tock:bot-toolkit:1.3.0'
+      compile 'fr.vsct.tock:bot-toolkit:2.0.0'
 ```
 
 ## A Bot is a Set of Stories

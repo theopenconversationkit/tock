@@ -119,6 +119,7 @@ open class AdminVerticle : WebVerticle() {
                 ?.let { front.updateModelConfiguration(it.qualifiedName, NlpEngineType(context.path("engine")), conf) }
         }
 
+        //Retrieve full application dump that matches given identifier
         blockingJsonGet("/application/dump/:id", technicalAdmin) {
             val id: Id<ApplicationDefinition> = it.pathId("id")
             if (it.organization == front.getApplicationById(id)?.namespace) {
@@ -128,6 +129,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
+        //Retrieve sentences dump that matches given application identifier
         blockingJsonGet("/sentences/dump/:dumpType/:applicationId", admin) {
             val id: Id<ApplicationDefinition> = it.pathId("applicationId")
             if (it.organization == front.getApplicationById(id)?.namespace) {
@@ -158,6 +160,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
+        //Retrieve qualified sentences dump that matches given application identifier and intent
         blockingJsonGet("/sentences/dump/:dumpType/:applicationId/:intent", admin) {
             val id: Id<ApplicationDefinition> = it.pathId("applicationId")
             if (it.organization == front.getApplicationById(id)?.namespace) {
@@ -223,18 +226,22 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
+        //Upload a complete application model
         blockingUploadJsonPost("/dump/application", technicalAdmin) { context, dump: ApplicationDump ->
             front.import(context.organization, dump)
         }
 
+        //Upload a complete application model [sentences dump format]
         blockingUploadJsonPost("/dump/sentences", admin) { context, dump: SentencesDump ->
             front.importSentences(context.organization, dump)
         }
 
+        //Upload complete application dump and set specified name as application name
         blockingUploadJsonPost("/dump/application/:name", admin) { context, dump: ApplicationDump ->
             front.import(context.organization, dump, ApplicationImportConfiguration(context.path("name")))
         }
 
+        //Upload complete application dump [sentences dump format] and set specified name as application name
         blockingUploadJsonPost("/dump/sentences/:name", admin) { context, dump: SentencesDump ->
             front.importSentences(context.organization, dump.copy(applicationName = context.path("name")))
         }
@@ -249,6 +256,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
+        //Remove an intent from an application model. If the intent does not belong to an other model, delete the intent.
         blockingJsonDelete("/application/:appId/intent/:intentId") {
             val app = front.getApplicationById(it.pathId("appId"))
             val intentId: Id<IntentDefinition> = it.pathId("intentId")
@@ -259,6 +267,7 @@ open class AdminVerticle : WebVerticle() {
             }
         }
 
+        //Remove a entity role from intent of an application model.
         blockingJsonDelete("/application/:appId/intent/:intentId/entity/:entityType/:role") {
             val app = front.getApplicationById(it.pathId("appId"))
             val intentId: Id<IntentDefinition> = it.pathId("intentId")
@@ -643,6 +652,15 @@ open class AdminVerticle : WebVerticle() {
                                 verticleProperty("nlp_external_host", "localhost:8888")
                             )
                         )
+                    } else {
+                        context.fail(it.cause())
+                    }
+                }
+            }
+            router.get("/doc/admin.yaml").handler { context ->
+                context.vertx().fileSystem().readFile("$webRoot/doc/admin.yaml") {
+                    if (it.succeeded()) {
+                        context.response().end(it.result().toString(StandardCharsets.UTF_8))
                     } else {
                         context.fail(it.cause())
                     }

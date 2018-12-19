@@ -10,7 +10,7 @@ pages:
     - Getting Started: getting-started.md
     - Build NLP model: build-nlp-model.md
     - Evaluate the model: evaluate-the-model.md
-    - The NLP API: the-nlp-api.md
+    - Tock APIs: api.md
     - The Open Data Bot: the-open-data-bot.md
     - Code a bot: code-a-bot.md
     - Test the bot: test-the-bot.md

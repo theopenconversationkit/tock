@@ -263,6 +263,15 @@ Use property "tock_default_namespace" and as default value <a href="-d-e-f-a-u-l
 </tr>
 <tr>
 <td>
+<p><a href="basic-credentials-header.html">basicCredentialsHeader</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">basicCredentialsHeader</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared$basicCredentialsHeader(kotlin.String, kotlin.String)/login">login</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared$basicCredentialsHeader(kotlin.String, kotlin.String)/password">password</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code>
+<p>Encode basic credential header.</p>
+</td>
+</tr>
+<tr>
+<td>
 <p><a href="boolean-property.html">booleanProperty</a></p>
 </td>
 <td>
@@ -315,6 +324,15 @@ if the env or system property is not found, use the <a href="get-database.html#f
 <td>
 <code><span class="keyword">fun </span><span class="identifier">listProperty</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared$listProperty(kotlin.String, kotlin.collections.List((kotlin.String)), kotlin.String)/name">name</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared$listProperty(kotlin.String, kotlin.collections.List((kotlin.String)), kotlin.String)/defaultValue">defaultValue</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared$listProperty(kotlin.String, kotlin.collections.List((kotlin.String)), kotlin.String)/separator">separator</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a>&nbsp;<span class="symbol">=</span>&nbsp;","<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span></code>
 <p>Return an env or system List property.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="load-properties.html">loadProperties</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><span class="identifier">loadProperties</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared$loadProperties(kotlin.String)/fileInClasspath">fileInClasspath</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="http://docs.oracle.com/javase/8/docs/api/java/util/Properties.html"><span class="identifier">Properties</span></a></code>
+<p>Load a <a href="http://docs.oracle.com/javase/8/docs/api/java/util/Properties.html">Properties</a> for classpath.</p>
 </td>
 </tr>
 <tr>

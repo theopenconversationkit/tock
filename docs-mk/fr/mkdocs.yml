@@ -10,7 +10,7 @@ pages:
     - Pour commencer: pour-commencer.md
     - Construire le modèle: construire-le-modele.md
     - Evaluer la pertinence du modèle: evaluer-la-pertinence-du-modele.md
-    - L'api NLP: api-nlp.md
+    - APIs de Tock: api.md
     - Présentation du bot Open Data: presentation-du-bot-open-data.md
     - Développer un bot: developper-un-bot.md
     - Tester le bot: tester-le-bot.md
