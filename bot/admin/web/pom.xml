@@ -21,7 +21,7 @@
   <parent>
     <groupId>fr.vsct.tock</groupId>
     <artifactId>tock-bot-admin</artifactId>
-    <version>2.0.0-SNAPSHOT</version>
+    <version>2.0.0</version>
   </parent>
 
   <artifactId>tock-bot-admin-web</artifactId>
@@ -38,78 +38,24 @@
             <phase>validate</phase>
             <configuration>
               <target>
-                <symlink link="${project.basedir}/src/app/applications"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/applications"
-                         failonerror="false"
-                         overwrite="true"/>
-                <symlink link="${project.basedir}/src/app/archive"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/archive"
-                         failonerror="false"
-                         overwrite="true"/>
-                <symlink link="${project.basedir}/src/app/build"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/build"
-                         failonerror="false"
-                         overwrite="true"/>
-                <symlink link="${project.basedir}/src/app/core-nlp"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/core-nlp"
-                         failonerror="false"
-                         overwrite="true"/>
-                <symlink link="${project.basedir}/src/app/entities"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/entities"
-                         failonerror="false"
-                         overwrite="true"/>
-                <symlink link="${project.basedir}/src/app/inbox"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/inbox"
-                         failonerror="false"
-                         overwrite="true"/>
-                <symlink link="${project.basedir}/src/app/intents"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/intents"
-                         failonerror="false"
-                         overwrite="true"/>
-                <symlink link="${project.basedir}/src/app/logs"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/logs"
-                         failonerror="false"
-                         overwrite="true"/>
-                <symlink link="${project.basedir}/src/app/model"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/model"
-                         failonerror="false"
-                         overwrite="true"/>
-                <symlink link="${project.basedir}/src/app/nlp-tabs"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/nlp-tabs"
-                         failonerror="false"
-                         overwrite="true"/>
-                <symlink link="${project.basedir}/src/app/quality-nlp"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/quality-nlp"
-                         failonerror="false"
-                         overwrite="true"/>
-                <symlink link="${project.basedir}/src/app/scroll"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/scroll"
-                         failonerror="false"
-                         overwrite="true"/>
-                <symlink link="${project.basedir}/src/app/search"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/search"
-                         failonerror="false"
-                         overwrite="true"/>
-                <symlink link="${project.basedir}/src/app/sentence-analysis"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/sentence-analysis"
-                         failonerror="false"
-                         overwrite="true"/>
-                <symlink link="${project.basedir}/src/app/sentences-scroll"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/sentences-scroll"
-                         failonerror="false"
-                         overwrite="true"/>
-                <symlink link="${project.basedir}/src/app/shared-nlp"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/shared-nlp"
-                         failonerror="false"
-                         overwrite="true"/>
-                <symlink link="${project.basedir}/src/app/test-nlp"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/test-nlp"
-                         failonerror="false"
-                         overwrite="true"/>
-                <symlink link="${project.basedir}/src/app/try"
-                         resource="${project.basedir}/../../../nlp/admin/web/src/app/try"
-                         failonerror="false"
-                         overwrite="true"/>
+                <symlink link="${project.basedir}/src/app/applications" resource="${project.basedir}/../../../nlp/admin/web/src/app/applications" failonerror="false" overwrite="true" />
+                <symlink link="${project.basedir}/src/app/archive" resource="${project.basedir}/../../../nlp/admin/web/src/app/archive" failonerror="false" overwrite="true" />
+                <symlink link="${project.basedir}/src/app/build" resource="${project.basedir}/../../../nlp/admin/web/src/app/build" failonerror="false" overwrite="true" />
+                <symlink link="${project.basedir}/src/app/core-nlp" resource="${project.basedir}/../../../nlp/admin/web/src/app/core-nlp" failonerror="false" overwrite="true" />
+                <symlink link="${project.basedir}/src/app/entities" resource="${project.basedir}/../../../nlp/admin/web/src/app/entities" failonerror="false" overwrite="true" />
+                <symlink link="${project.basedir}/src/app/inbox" resource="${project.basedir}/../../../nlp/admin/web/src/app/inbox" failonerror="false" overwrite="true" />
+                <symlink link="${project.basedir}/src/app/intents" resource="${project.basedir}/../../../nlp/admin/web/src/app/intents" failonerror="false" overwrite="true" />
+                <symlink link="${project.basedir}/src/app/logs" resource="${project.basedir}/../../../nlp/admin/web/src/app/logs" failonerror="false" overwrite="true" />
+                <symlink link="${project.basedir}/src/app/model" resource="${project.basedir}/../../../nlp/admin/web/src/app/model" failonerror="false" overwrite="true" />
+                <symlink link="${project.basedir}/src/app/nlp-tabs" resource="${project.basedir}/../../../nlp/admin/web/src/app/nlp-tabs" failonerror="false" overwrite="true" />
+                <symlink link="${project.basedir}/src/app/quality-nlp" resource="${project.basedir}/../../../nlp/admin/web/src/app/quality-nlp" failonerror="false" overwrite="true" />
+                <symlink link="${project.basedir}/src/app/scroll" resource="${project.basedir}/../../../nlp/admin/web/src/app/scroll" failonerror="false" overwrite="true" />
+                <symlink link="${project.basedir}/src/app/search" resource="${project.basedir}/../../../nlp/admin/web/src/app/search" failonerror="false" overwrite="true" />
+                <symlink link="${project.basedir}/src/app/sentence-analysis" resource="${project.basedir}/../../../nlp/admin/web/src/app/sentence-analysis" failonerror="false" overwrite="true" />
+                <symlink link="${project.basedir}/src/app/sentences-scroll" resource="${project.basedir}/../../../nlp/admin/web/src/app/sentences-scroll" failonerror="false" overwrite="true" />
+                <symlink link="${project.basedir}/src/app/shared-nlp" resource="${project.basedir}/../../../nlp/admin/web/src/app/shared-nlp" failonerror="false" overwrite="true" />
+                <symlink link="${project.basedir}/src/app/test-nlp" resource="${project.basedir}/../../../nlp/admin/web/src/app/test-nlp" failonerror="false" overwrite="true" />
+                <symlink link="${project.basedir}/src/app/try" resource="${project.basedir}/../../../nlp/admin/web/src/app/try" failonerror="false" overwrite="true" />
               </target>
             </configuration>
             <goals>
