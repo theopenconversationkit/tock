@@ -155,7 +155,7 @@ internal object DatesMerge {
                     }
 
                     ValueDescriptor(
-                        if (oldDayOfWeek == newDayOfWeek) oldValue
+                        if (oldDayOfWeek == newDayOfWeek) oldValue.value
                         else if (oldDayOfWeek < newDayOfWeek || newDayOfWeek == 7)
                             DateEntityValue(
                                 oldValue.start().with(TemporalAdjusters.next(DayOfWeek.of(newDayOfWeek))),
