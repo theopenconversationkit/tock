@@ -652,8 +652,7 @@ en java. Cela inclut le support de <a href="https://docs.oracle.com/javase/10/do
 </pre></div>
 
 
-<p>mais pose problème si il est activé. En effet, les chiffres étant supprimés de la clé générée, le libellé traduit sera toujours
- le même quel que soit la valeur de la variable <em>nb</em> !</p>
+<p>mais pose problème si il est activé. En effet, un nouveau libellé sera créé pour chaque valeur différente de la variable <em>nb</em> !</p>
 <p>Si il est nécessaire d'envoyer des réponses "à ne pas traduire", utilisez 
 les méthodes <em>BotBus.sendRaw</em>, <em>BotBus.endRaw</em> ou <em>String.raw</em></p>
 <div class="codehilite"><pre><span></span>    <span class="n">send</span><span class="p">(</span><span class="s">&quot;There are $nb files&quot;</span><span class="p">.</span><span class="n">raw</span><span class="p">)</span> <span class="c1">//CORRECT </span>
