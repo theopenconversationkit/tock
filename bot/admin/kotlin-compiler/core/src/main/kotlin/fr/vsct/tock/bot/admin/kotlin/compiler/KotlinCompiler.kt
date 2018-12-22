@@ -39,6 +39,7 @@ import org.jetbrains.kotlin.codegen.KotlinCodegenFacade
 import org.jetbrains.kotlin.codegen.state.GenerationState
 import org.jetbrains.kotlin.config.CompilerConfiguration
 import org.jetbrains.kotlin.config.JVMConfigurationKeys
+import org.jetbrains.kotlin.config.LanguageVersionSettingsImpl
 import org.jetbrains.kotlin.container.ComponentProvider
 import org.jetbrains.kotlin.container.getService
 import org.jetbrains.kotlin.descriptors.ModuleDescriptor
@@ -169,7 +170,7 @@ internal object KotlinCompiler {
         fileName: String,
         searchForMain: Boolean
     ): String {
-        val mainFunctionDetector = MainFunctionDetector(bindingContext)
+        val mainFunctionDetector = MainFunctionDetector(bindingContext, LanguageVersionSettingsImpl.DEFAULT)
         for (file in files) {
             if (file.name.contains(fileName)) {
                 if (!searchForMain || mainFunctionDetector.hasMain(file.declarations)) {

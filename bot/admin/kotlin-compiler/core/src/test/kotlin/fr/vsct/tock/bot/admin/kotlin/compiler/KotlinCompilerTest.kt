@@ -64,7 +64,7 @@ class KotlinCompilerTest {
                         TextPosition(2, 27)
                     ),
                     "Unresolved reference: println",
-                    Severity.ERROR,
+                    Severity.INFO,
                     "ERROR"
                 ),
                 CompileError(
@@ -73,7 +73,7 @@ class KotlinCompilerTest {
                         TextPosition(2, 35)
                     ),
                     "Expecting '\"'",
-                    Severity.ERROR,
+                    Severity.INFO,
                     "red_wavy_line"
                 ),
                 CompileError(
@@ -82,7 +82,7 @@ class KotlinCompilerTest {
                         TextPosition(line = 2, ch = 35)
                     ),
                     "Expecting ')'",
-                    Severity.ERROR,
+                    Severity.INFO,
                     "red_wavy_line"
                 )
             )
@@ -95,7 +95,7 @@ class KotlinCompilerTest {
                         TextPosition(2, 35)
                     ),
                     "Expecting '\"'",
-                    Severity.ERROR,
+                    Severity.INFO,
                     "red_wavy_line"
                 ),
                 CompileError(
@@ -104,7 +104,7 @@ class KotlinCompilerTest {
                         TextPosition(2, 35)
                     ),
                     "Expecting ')'",
-                    Severity.ERROR,
+                    Severity.INFO,
                     "red_wavy_line"
                 )
             )

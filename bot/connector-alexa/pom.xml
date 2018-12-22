@@ -108,6 +108,13 @@
             <artifactId>mockk</artifactId>
             <scope>test</scope>
         </dependency>
+        <!-- workaround for mockk issue see https://github.com/mockk/mockk/issues/199 -->
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-codegen</artifactId>
+            <version>${vertx}</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 </project>
