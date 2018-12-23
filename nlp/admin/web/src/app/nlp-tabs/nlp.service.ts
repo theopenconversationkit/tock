@@ -64,7 +64,7 @@ export class NlpService implements OnDestroy {
   }
 
   removeState(application: Application, intent: Intent, state: string): Observable<boolean> {
-    return this.rest.delete(`/application/${application._id}/intent/${intent._id}/state/${state}`);
+    return this.rest.delete(`/application/${application._id}/intent/${intent._id}/state/${encodeURIComponent(state)}`);
   }
 
   removeSharedIntent(application: Application, intent: Intent, intentId: string): Observable<boolean> {
@@ -76,11 +76,11 @@ export class NlpService implements OnDestroy {
   }
 
   removeEntity(application: Application, intent: Intent, entity: EntityDefinition): Observable<boolean> {
-    return this.rest.delete(`/application/${application._id}/intent/${intent._id}/entity/${entity.entityTypeName}/${entity.role}`);
+    return this.rest.delete(`/application/${application._id}/intent/${intent._id}/entity/${encodeURIComponent(entity.entityTypeName)}/${encodeURIComponent(entity.role)}`);
   }
 
   removeSubEntity(application: Application, entityType: EntityType, entity: EntityDefinition): Observable<boolean> {
-    return this.rest.delete(`/application/${application._id}/entity/${entityType.name}/${entity.role}`);
+    return this.rest.delete(`/application/${application._id}/entity/${encodeURIComponent(entityType.name)}/${encodeURIComponent(entity.role)}`);
   }
 
   getEntityTypes(): Observable<EntityType[]> {
@@ -100,7 +100,7 @@ export class NlpService implements OnDestroy {
   }
 
   removeEntityType(entityType: EntityType): Observable<boolean> {
-    return this.rest.delete(`/entity-type/${entityType.name}`);
+    return this.rest.delete(`/entity-type/${encodeURIComponent(entityType.name)}`);
   }
 
   updateSentence(sentence: Sentence): Observable<Sentence> {

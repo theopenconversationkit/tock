@@ -16,7 +16,6 @@
 
 import {Injectable} from "@angular/core";
 import {RestService} from "../core-nlp/rest/rest.service";
-import {StateService} from "../core-nlp/state.service";
 import {BotIntent, BotIntentSearchQuery, CreateBotIntentRequest, UpdateBotIntentRequest} from "./model/bot-intent";
 import {Intent} from "../model/nlp";
 import {Observable} from "rxjs";
@@ -27,8 +26,7 @@ import {Feature} from "./model/feature";
 @Injectable()
 export class BotService {
 
-  constructor(private rest: RestService,
-              private state: StateService) {
+  constructor(private rest: RestService) {
   }
 
   newBotIntent(request: CreateBotIntentRequest): Observable<Intent> {
@@ -64,7 +62,7 @@ export class BotService {
   }
 
   deleteI18nLabel(label: I18nLabel): Observable<boolean> {
-    return this.rest.delete(`/i18n/${label._id}`);
+    return this.rest.delete(`/i18n/${encodeURIComponent(label._id)}`);
   }
 
   downloadI18nLabelsCsv(): Observable<Blob> {
@@ -84,19 +82,19 @@ export class BotService {
   }
 
   getFeatures(botId: string): Observable<Feature[]> {
-    return this.rest.get(`/feature/${botId}`, Feature.fromJSONArray);
+    return this.rest.get(`/feature/${encodeURIComponent(botId)}`, Feature.fromJSONArray);
   }
 
   toggleFeature(botId: string, category: string, name: string): Observable<boolean> {
-    return this.rest.post(`/feature/${botId}/toggle/${category}/${name}`);
+    return this.rest.post(`/feature/${encodeURIComponent(botId)}/toggle/${encodeURIComponent(category)}/${encodeURIComponent(name)}`);
   }
 
   addFeature(botId: string, enabled: boolean, category: string, name: string): Observable<boolean> {
-    return this.rest.post(`/feature/${botId}/add/${category}/${name}/${enabled}`);
+    return this.rest.post(`/feature/${encodeURIComponent(botId)}/add/${encodeURIComponent(category)}/${encodeURIComponent(name)}/${enabled}`);
   }
 
   deleteFeature(botId: string, category: string, name: string): Observable<boolean> {
-    return this.rest.delete(`/feature/${botId}/${category}/${name}`);
+    return this.rest.delete(`/feature/${encodeURIComponent(botId)}/${encodeURIComponent(category)}/${encodeURIComponent(name)}`);
   }
 
 }
