@@ -32,6 +32,7 @@ import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.Test
 import java.time.DayOfWeek
+import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.temporal.ChronoUnit
 import java.util.Locale
@@ -59,6 +60,16 @@ internal class DatesMergeTest {
                 DateEntityGrain.day
             ),
             "demain",
+            false,
+            12
+        )
+
+        val nextMonth = ValueDescriptor(
+            DateEntityValue(
+                referenceTime.plusMonths(1),
+                DateEntityGrain.day
+            ),
+            "le mois prochain",
             false,
             12
         )
@@ -217,14 +228,48 @@ internal class DatesMergeTest {
 
     @Test
     fun `merge with change day of month returns the new day of month with the right month`() {
-        val r = DatesMerge.merge(context, listOf(tomorrow.copy(initial = true), changeDayOfMonth))
-        assertEquals((tomorrow.value as DateEntityValue).date.month, (r?.value as DateEntityValue).date.month)
+        val r = DatesMerge.merge(context, listOf(nextMonth.copy(initial = true), changeDayOfMonth))
+        assertEquals((nextMonth.value as DateEntityValue).date.month, (r?.value as DateEntityValue).date.month)
         assertEquals(20, (r.value as DateEntityValue).date.dayOfMonth)
     }
 
     @Test
     fun `merge with change day of week returns the new day of week`() {
-        val r = DatesMerge.merge(context, listOf(tomorrow.copy(initial = true), changeDayOfWeek))
+        val r = DatesMerge.merge(context, listOf(nextMonth.copy(initial = true), changeDayOfWeek))
         assertEquals(DayOfWeek.THURSDAY, (r?.value as DateEntityValue).date.dayOfWeek)
+    }
+
+    @Test
+    fun `merge with change day of month returns the next month occurrence with the right month`() {
+        val referenceDate = ZonedDateTime.of(2000, 1, 25, 1, 1, 1, 1, ZoneId.systemDefault())
+        val context = EntityCallContextForEntity(
+            EntityType("duckling:datetime"),
+            Locale.FRENCH,
+            NlpEngineType.opennlp,
+            "test",
+            referenceDate
+        )
+        val tomorrow = ValueDescriptor(
+            DateEntityValue(
+                referenceDate.plusDays(1),
+                DateEntityGrain.day
+            ),
+            "demain",
+            false,
+            12
+        )
+
+        val r = DatesMerge.merge(
+            context, listOf(
+                tomorrow.copy(initial = true), changeDayOfMonth.copy(
+                    value = DateEntityValue(
+                        referenceDate.plusMonths(1).withDayOfMonth(20),
+                        DateEntityGrain.day
+                    )
+                )
+            )
+        )
+        assertEquals((tomorrow.value as DateEntityValue).date.month + 1, (r?.value as DateEntityValue).date.month)
+        assertEquals(20, (r.value as DateEntityValue).date.dayOfMonth)
     }
 }

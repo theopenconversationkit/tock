@@ -31,6 +31,7 @@ import mu.KotlinLogging
 import java.time.DayOfWeek
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
+import java.time.temporal.ChronoUnit
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 
@@ -119,8 +120,8 @@ internal object DatesMerge {
         try {
             if (hasToChangeDayInMonth(language, newValue)) {
                 val newValueContent = normalize(newValue.content!!)
-                return oldValue.start().run {
-                    ValueDescriptor(
+                oldValue.start().apply {
+                    val newResult = ValueDescriptor(
                         DateEntityValue(
                             ZonedDateTime.of(
                                 year,
@@ -137,11 +138,14 @@ internal object DatesMerge {
                         ),
                         oldValue.content ?: newValueContent
                     )
+                    if (newResult.start().truncatedTo(ChronoUnit.DAYS) >= referenceDateTime.truncatedTo(ChronoUnit.DAYS)) {
+                        return newResult
+                    }
                 }
             }
             if (hasToChangeDayInWeek(language, newValue)) {
                 val newValueContent = normalize(newValue.content!!)
-                return oldValue.start().run {
+                oldValue.start().apply {
                     val oldDayOfWeek = dayOfWeek.value
                     val newDayOfWeek = when {
                         newValueContent.contains("lundi") -> 1
@@ -154,7 +158,7 @@ internal object DatesMerge {
                         else -> oldDayOfWeek
                     }
 
-                    ValueDescriptor(
+                    val newResult = ValueDescriptor(
                         if (oldDayOfWeek == newDayOfWeek) oldValue.value
                         else if (oldDayOfWeek < newDayOfWeek || newDayOfWeek == 7)
                             DateEntityValue(
@@ -169,6 +173,10 @@ internal object DatesMerge {
                         ,
                         oldValue.content ?: newValueContent
                     )
+
+                    if (newResult.start().truncatedTo(ChronoUnit.DAYS) >= referenceDateTime.truncatedTo(ChronoUnit.DAYS)) {
+                        return newResult
+                    }
                 }
             }
             val mergeGrain = hasToAdd(language, newValue) ?: mergeGrain(language, oldValue, newValue)
