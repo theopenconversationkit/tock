@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.front.storage.mongo
 
+import com.mongodb.ReadPreference.secondaryPreferred
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.FindOneAndUpdateOptions
 import com.mongodb.client.model.IndexOptions
@@ -289,9 +290,10 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                     if (clientDevice.isNullOrBlank()) null else Query.context.clientDevice eq clientDevice,
                     if (clientId.isNullOrBlank()) null else Query.context.clientId eq clientId
                 )
-            val count = col.countDocuments(baseFilter)
+            val c = col.withReadPreference(secondaryPreferred())
+            val count = c.countDocuments(baseFilter)
             if (count > start) {
-                val list = col.find(baseFilter)
+                val list = c.find(baseFilter)
                     .descendingSort(Date)
                     .skip(start.toInt())
                     .limit(size)

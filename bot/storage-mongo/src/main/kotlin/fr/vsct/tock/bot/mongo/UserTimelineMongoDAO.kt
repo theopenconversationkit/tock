@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.mongo
 
 import com.github.salomonbrys.kodein.instance
+import com.mongodb.ReadPreference.secondaryPreferred
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.ReplaceOptions
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
@@ -432,9 +433,10 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     }.joinToString(",", "{$and:[", "]}").bson
                 )
             logger.debug("user search query: $filter")
-            val count = userTimelineCol.countDocuments(filter)
+            val c = userTimelineCol.withReadPreference(secondaryPreferred())
+            val count = c.countDocuments(filter)
             return if (count > start) {
-                val list = userTimelineCol.find(filter)
+                val list = c.find(filter)
                     .skip(start.toInt()).limit(size).descendingSort(LastUpdateDate).map { it.toUserReport() }.toList()
                 UserReportQueryResult(count, start, start + size, list)
             } else {
@@ -476,9 +478,10 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                 if (query.intentName.isNullOrBlank()) null else Stories.currentIntent.name_ eq query.intentName
             )
             logger.debug("dialog search query: $filter")
-            val count = dialogCol.countDocuments(filter)
+            val c = dialogCol.withReadPreference(secondaryPreferred())
+            val count = c.countDocuments(filter)
             return if (count > start) {
-                val list = dialogCol.find(filter)
+                val list = c.find(filter)
                     .skip(start.toInt())
                     .limit(size)
                     .descendingSort(LastUpdateDate)

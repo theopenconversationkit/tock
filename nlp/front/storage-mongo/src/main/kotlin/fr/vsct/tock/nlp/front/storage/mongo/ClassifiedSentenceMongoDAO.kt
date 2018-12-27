@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.front.storage.mongo
 
+import com.mongodb.ReadPreference.secondaryPreferred
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Collation
 import com.mongodb.client.model.ReplaceOptions
@@ -203,7 +204,7 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                     ApplicationId eq applicationId,
                     if (language == null) null else Language eq language,
                     if (search.isNullOrBlank()) null
-                    else if (query.onlyExactMatch) Text eq search
+                    else if (onlyExactMatch) Text eq search
                     else FullText.regex(search!!.trim(), "i"),
                     if (intentId == null) null else Classification_.intentId eq intentId,
                     if (status.isNotEmpty()) Status `in` status else if (notStatus != null) Status ne notStatus else null,
@@ -216,10 +217,12 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
                 )
 
             logger.debug { filterBase.json }
-            val count = col.countDocuments(filterBase)
+            //read secondary for long term operations
+            val c = if (onlyExactMatch) col else col.withReadPreference(secondaryPreferred())
+            val count = c.countDocuments(filterBase)
             logger.debug { "count : $count" }
             if (count > start) {
-                val list = col
+                val list = c
                     .find(filterBase)
                     .run {
                         if (query.sort.isEmpty()) {
