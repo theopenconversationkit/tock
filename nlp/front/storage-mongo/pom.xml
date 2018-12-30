@@ -76,6 +76,7 @@
                             <sourceDirs>
                                 <sourceDir>src/main/kotlin</sourceDir>
                                 <sourceDir>../shared/src/main/kotlin</sourceDir>
+                                <sourceDir>../../core/shared/src/main/kotlin</sourceDir>
                             </sourceDirs>
                             <annotationProcessorPaths>
                                 <annotationProcessorPath>
