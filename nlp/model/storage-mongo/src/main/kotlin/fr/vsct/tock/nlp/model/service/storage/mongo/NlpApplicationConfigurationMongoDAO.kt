@@ -24,7 +24,7 @@ import fr.vsct.tock.nlp.model.service.storage.mongo.NlpApplicationConfigurationC
 import fr.vsct.tock.nlp.model.service.storage.mongo.NlpApplicationConfigurationCol_.Companion.Date
 import fr.vsct.tock.nlp.model.service.storage.mongo.NlpApplicationConfigurationCol_.Companion.EngineType
 import org.litote.kmongo.Data
-import org.litote.kmongo.JacksonData
+import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.descending
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.ensureIndex

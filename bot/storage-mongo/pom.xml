@@ -109,6 +109,11 @@
                                     <artifactId>kmongo-annotation-processor</artifactId>
                                     <version>${kmongo}</version>
                                 </annotationProcessorPath>
+                                <annotationProcessorPath>
+                                    <groupId>org.litote.jackson</groupId>
+                                    <artifactId>jackson-generator</artifactId>
+                                    <version>${jackson-generator}</version>
+                                </annotationProcessorPath>
                             </annotationProcessorPaths>
                         </configuration>
                     </execution>

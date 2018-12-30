@@ -15,30 +15,40 @@ import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
-internal class I18nAlternativeIndex_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18nAlternativeIndex?>) : KPropertyPath<T, I18nAlternativeIndex?>(previous,property) {
+internal class I18nAlternativeIndex_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        I18nAlternativeIndex?>) : KPropertyPath<T, I18nAlternativeIndex?>(previous,property) {
     val labelId: KPropertyPath<T, Id<I18nLabel>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.translator.I18nLabel>?>(this,I18nAlternativeIndex::labelId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.translator.I18nLabel>?>(this,I18nAlternativeIndex::labelId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nAlternativeIndex::namespace)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nAlternativeIndex::namespace)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,I18nAlternativeIndex::locale)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.util.Locale?>(this,I18nAlternativeIndex::locale)
 
     val interfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.translator.UserInterfaceType?>(this,I18nAlternativeIndex::interfaceType)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                fr.vsct.tock.translator.UserInterfaceType?>(this,I18nAlternativeIndex::interfaceType)
 
     val connectorId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nAlternativeIndex::connectorId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nAlternativeIndex::connectorId)
 
     val contextId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nAlternativeIndex::contextId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nAlternativeIndex::contextId)
 
     val index: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,I18nAlternativeIndex::index)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,I18nAlternativeIndex::index)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,I18nAlternativeIndex::date)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,I18nAlternativeIndex::date)
+
     companion object {
         val LabelId: KProperty1<I18nAlternativeIndex, Id<I18nLabel>?>
             get() = I18nAlternativeIndex::labelId
@@ -58,58 +68,80 @@ internal class I18nAlternativeIndex_<T>(previous: KPropertyPath<T, *>?, property
             get() = I18nAlternativeIndex::date}
 }
 
-internal class I18nAlternativeIndex_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<I18nAlternativeIndex>?>) : KCollectionPropertyPath<T, I18nAlternativeIndex?, I18nAlternativeIndex_<T>>(previous,property) {
+internal class I18nAlternativeIndex_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        Collection<I18nAlternativeIndex>?>) : KCollectionPropertyPath<T, I18nAlternativeIndex?,
+        I18nAlternativeIndex_<T>>(previous,property) {
     val labelId: KPropertyPath<T, Id<I18nLabel>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.translator.I18nLabel>?>(this,I18nAlternativeIndex::labelId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.translator.I18nLabel>?>(this,I18nAlternativeIndex::labelId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nAlternativeIndex::namespace)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nAlternativeIndex::namespace)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,I18nAlternativeIndex::locale)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.util.Locale?>(this,I18nAlternativeIndex::locale)
 
     val interfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.translator.UserInterfaceType?>(this,I18nAlternativeIndex::interfaceType)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                fr.vsct.tock.translator.UserInterfaceType?>(this,I18nAlternativeIndex::interfaceType)
 
     val connectorId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nAlternativeIndex::connectorId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nAlternativeIndex::connectorId)
 
     val contextId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nAlternativeIndex::contextId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nAlternativeIndex::contextId)
 
     val index: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,I18nAlternativeIndex::index)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,I18nAlternativeIndex::index)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,I18nAlternativeIndex::date)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,I18nAlternativeIndex::date)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): I18nAlternativeIndex_<T> = I18nAlternativeIndex_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): I18nAlternativeIndex_<T> =
+            I18nAlternativeIndex_(this, customProperty(this, additionalPath))}
 
-internal class I18nAlternativeIndex_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, I18nAlternativeIndex>?>) : KMapPropertyPath<T, K, I18nAlternativeIndex?, I18nAlternativeIndex_<T>>(previous,property) {
+internal class I18nAlternativeIndex_Map<T, K>(previous: KPropertyPath<T, *>?, property:
+        KProperty1<*, Map<K, I18nAlternativeIndex>?>) : KMapPropertyPath<T, K,
+        I18nAlternativeIndex?, I18nAlternativeIndex_<T>>(previous,property) {
     val labelId: KPropertyPath<T, Id<I18nLabel>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.translator.I18nLabel>?>(this,I18nAlternativeIndex::labelId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.translator.I18nLabel>?>(this,I18nAlternativeIndex::labelId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nAlternativeIndex::namespace)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nAlternativeIndex::namespace)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,I18nAlternativeIndex::locale)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.util.Locale?>(this,I18nAlternativeIndex::locale)
 
     val interfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.translator.UserInterfaceType?>(this,I18nAlternativeIndex::interfaceType)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                fr.vsct.tock.translator.UserInterfaceType?>(this,I18nAlternativeIndex::interfaceType)
 
     val connectorId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nAlternativeIndex::connectorId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nAlternativeIndex::connectorId)
 
     val contextId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nAlternativeIndex::contextId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nAlternativeIndex::contextId)
 
     val index: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,I18nAlternativeIndex::index)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,I18nAlternativeIndex::index)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,I18nAlternativeIndex::date)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,I18nAlternativeIndex::date)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): I18nAlternativeIndex_<T> = I18nAlternativeIndex_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): I18nAlternativeIndex_<T> =
+            I18nAlternativeIndex_(this, customProperty(this, additionalPath))}

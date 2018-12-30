@@ -6,14 +6,15 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class ConnectorMessageColId_Serializer : StdSerializer<ConnectorMessageColId>(ConnectorMessageColId::class.java),
+internal class ConnectorMessageColId_Serializer :
+        StdSerializer<ConnectorMessageColId>(ConnectorMessageColId::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() = SimpleModule().addSerializer(ConnectorMessageColId::class.java, this)
 
     override fun serialize(
-            value: ConnectorMessageColId,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: ConnectorMessageColId,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("actionId")

@@ -17,33 +17,43 @@ import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
-class EntityTestError_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, EntityTestError?>) : KPropertyPath<T, EntityTestError?>(previous,property) {
+class EntityTestError_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, EntityTestError?>)
+        : KPropertyPath<T, EntityTestError?>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,EntityTestError::applicationId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,EntityTestError::applicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,EntityTestError::language)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.util.Locale?>(this,EntityTestError::language)
 
     val text: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,EntityTestError::text)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,EntityTestError::text)
 
     val intentId: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,EntityTestError::intentId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,EntityTestError::intentId)
 
     val lastAnalyse: ClassifiedEntity_Col<T>
         get() = ClassifiedEntity_Col(this,EntityTestError::lastAnalyse)
 
     val averageErrorProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,EntityTestError::averageErrorProbability)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Double?>(this,EntityTestError::averageErrorProbability)
 
     val count: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,EntityTestError::count)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,EntityTestError::count)
 
     val total: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,EntityTestError::total)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,EntityTestError::total)
 
     val firstDetectionDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,EntityTestError::firstDetectionDate)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,EntityTestError::firstDetectionDate)
+
     companion object {
         val ApplicationId: KProperty1<EntityTestError, Id<ApplicationDefinition>?>
             get() = EntityTestError::applicationId
@@ -65,64 +75,86 @@ class EntityTestError_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*
             get() = EntityTestError::firstDetectionDate}
 }
 
-class EntityTestError_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<EntityTestError>?>) : KCollectionPropertyPath<T, EntityTestError?, EntityTestError_<T>>(previous,property) {
+class EntityTestError_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        Collection<EntityTestError>?>) : KCollectionPropertyPath<T, EntityTestError?,
+        EntityTestError_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,EntityTestError::applicationId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,EntityTestError::applicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,EntityTestError::language)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.util.Locale?>(this,EntityTestError::language)
 
     val text: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,EntityTestError::text)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,EntityTestError::text)
 
     val intentId: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,EntityTestError::intentId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,EntityTestError::intentId)
 
     val lastAnalyse: ClassifiedEntity_Col<T>
         get() = ClassifiedEntity_Col(this,EntityTestError::lastAnalyse)
 
     val averageErrorProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,EntityTestError::averageErrorProbability)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Double?>(this,EntityTestError::averageErrorProbability)
 
     val count: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,EntityTestError::count)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,EntityTestError::count)
 
     val total: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,EntityTestError::total)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,EntityTestError::total)
 
     val firstDetectionDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,EntityTestError::firstDetectionDate)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,EntityTestError::firstDetectionDate)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): EntityTestError_<T> = EntityTestError_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): EntityTestError_<T> =
+            EntityTestError_(this, customProperty(this, additionalPath))}
 
-class EntityTestError_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, EntityTestError>?>) : KMapPropertyPath<T, K, EntityTestError?, EntityTestError_<T>>(previous,property) {
+class EntityTestError_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
+        EntityTestError>?>) : KMapPropertyPath<T, K, EntityTestError?,
+        EntityTestError_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,EntityTestError::applicationId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,EntityTestError::applicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,EntityTestError::language)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.util.Locale?>(this,EntityTestError::language)
 
     val text: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,EntityTestError::text)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,EntityTestError::text)
 
     val intentId: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,EntityTestError::intentId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,EntityTestError::intentId)
 
     val lastAnalyse: ClassifiedEntity_Col<T>
         get() = ClassifiedEntity_Col(this,EntityTestError::lastAnalyse)
 
     val averageErrorProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,EntityTestError::averageErrorProbability)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Double?>(this,EntityTestError::averageErrorProbability)
 
     val count: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,EntityTestError::count)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,EntityTestError::count)
 
     val total: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,EntityTestError::total)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,EntityTestError::total)
 
     val firstDetectionDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,EntityTestError::firstDetectionDate)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,EntityTestError::firstDetectionDate)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): EntityTestError_<T> = EntityTestError_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): EntityTestError_<T> =
+            EntityTestError_(this, customProperty(this, additionalPath))}

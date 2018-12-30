@@ -12,53 +12,169 @@ import fr.vsct.tock.bot.engine.message.Message
 import java.util.Locale
 import kotlin.String
 import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.MutableList
+import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.findParameterByName
+import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-class TestPlan_Deserializer : StdDeserializer<TestPlan>(TestPlan::class.java),
+internal class TestPlan_Deserializer : StdDeserializer<TestPlan>(TestPlan::class.java),
         JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(TestPlan::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): TestPlan {
         with(p) {
-        var dialogs: List<TestDialogReport>? = null
-        var name: String? = null
-        var applicationId: String? = null
-        var namespace: String? = null
-        var nlpModel: String? = null
-        var botApplicationConfigurationId: Id<BotApplicationConfiguration>? = null
-        var locale: Locale? = null
-        var startAction: Message? = null
-        var targetConnectorType: ConnectorType? = null
-        var _id: Id<TestPlan>? = null
-        while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-        nextToken() 
-        if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) { break } 
-        val fieldName = currentName
-        nextToken()
-        if(currentToken != JsonToken.VALUE_NULL) when (fieldName) {
-        "dialogs" -> dialogs = p.readValueAs(dialogs_reference)
-        "name" -> name = p.text
-        "applicationId" -> applicationId = p.text
-        "namespace" -> namespace = p.text
-        "nlpModel" -> nlpModel = p.text
-        "botApplicationConfigurationId" -> botApplicationConfigurationId = p.readValueAs(botApplicationConfigurationId_reference)
-        "locale" -> locale = p.readValueAs(Locale::class.java)
-        "startAction" -> startAction = p.readValueAs(Message::class.java)
-        "targetConnectorType" -> targetConnectorType = p.readValueAs(ConnectorType::class.java)
-        "_id" -> _id = p.readValueAs(_id_reference)
-        else -> if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) { p.skipChildren() } else { nextToken() }
-         }  }
-        return TestPlan(dialogs!!, name!!, applicationId!!, namespace!!, nlpModel!!, botApplicationConfigurationId!!, locale!!, startAction, targetConnectorType!!, _id!!)
-                }
+            var _dialogs_: MutableList<TestDialogReport>? = null
+            var _dialogs_set = false
+            var _name_: String? = null
+            var _name_set = false
+            var _applicationId_: String? = null
+            var _applicationId_set = false
+            var _namespace_: String? = null
+            var _namespace_set = false
+            var _nlpModel_: String? = null
+            var _nlpModel_set = false
+            var _botApplicationConfigurationId_: Id<BotApplicationConfiguration>? = null
+            var _botApplicationConfigurationId_set = false
+            var _locale_: Locale? = null
+            var _locale_set = false
+            var _startAction_: Message? = null
+            var _startAction_set = false
+            var _targetConnectorType_: ConnectorType? = null
+            var _targetConnectorType_set = false
+            var __id_: Id<TestPlan>? = null
+            var __id_set = false
+            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
+                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
+                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
+                        break } 
+                val fieldName = currentName
+                nextToken()
+                when (fieldName) { 
+                    "dialogs" -> {
+                            _dialogs_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_dialogs__reference);
+                            _dialogs_set = true
+                            }
+                    "name" -> {
+                            _name_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _name_set = true
+                            }
+                    "applicationId" -> {
+                            _applicationId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _applicationId_set = true
+                            }
+                    "namespace" -> {
+                            _namespace_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _namespace_set = true
+                            }
+                    "nlpModel" -> {
+                            _nlpModel_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _nlpModel_set = true
+                            }
+                    "botApplicationConfigurationId" -> {
+                            _botApplicationConfigurationId_ = if(currentToken ==
+                                    JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_botApplicationConfigurationId__reference);
+                            _botApplicationConfigurationId_set = true
+                            }
+                    "locale" -> {
+                            _locale_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Locale::class.java);
+                            _locale_set = true
+                            }
+                    "startAction" -> {
+                            _startAction_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Message::class.java);
+                            _startAction_set = true
+                            }
+                    "targetConnectorType" -> {
+                            _targetConnectorType_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(ConnectorType::class.java);
+                            _targetConnectorType_set = true
+                            }
+                    "_id" -> {
+                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(__id__reference);
+                            __id_set = true
+                            }
+                    else -> {
+                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
+                                    JsonToken.START_ARRAY)
+                            p.skipChildren()
+                            nextToken()
+                            }
+                    } 
+                } 
+            return if(_dialogs_set && _name_set && _applicationId_set && _namespace_set &&
+                    _nlpModel_set && _botApplicationConfigurationId_set && _locale_set &&
+                    _startAction_set && _targetConnectorType_set && __id_set)
+                    TestPlan(dialogs = _dialogs_!!, name = _name_!!, applicationId =
+                            _applicationId_!!, namespace = _namespace_!!, nlpModel = _nlpModel_!!,
+                            botApplicationConfigurationId = _botApplicationConfigurationId_!!,
+                            locale = _locale_!!, startAction = _startAction_, targetConnectorType =
+                            _targetConnectorType_!!, _id = __id_!!)
+                    else {
+                    val map = mutableMapOf<KParameter, Any?>()
+                    if(_dialogs_set)
+                    map[parameters.getValue("dialogs")] = _dialogs_
+                    if(_name_set)
+                    map[parameters.getValue("name")] = _name_
+                    if(_applicationId_set)
+                    map[parameters.getValue("applicationId")] = _applicationId_
+                    if(_namespace_set)
+                    map[parameters.getValue("namespace")] = _namespace_
+                    if(_nlpModel_set)
+                    map[parameters.getValue("nlpModel")] = _nlpModel_
+                    if(_botApplicationConfigurationId_set)
+                    map[parameters.getValue("botApplicationConfigurationId")] =
+                            _botApplicationConfigurationId_
+                    if(_locale_set)
+                    map[parameters.getValue("locale")] = _locale_
+                    if(_startAction_set)
+                    map[parameters.getValue("startAction")] = _startAction_
+                    if(_targetConnectorType_set)
+                    map[parameters.getValue("targetConnectorType")] = _targetConnectorType_
+                    if(__id_set)
+                    map[parameters.getValue("_id")] = __id_ 
+                    primaryConstructor.callBy(map) 
+                    }
+        } 
     }
+
     companion object {
-        val dialogs_reference: TypeReference<List<TestDialogReport>> =
-                object : TypeReference<List<TestDialogReport>>() {}
+        private val primaryConstructor: KFunction<TestPlan> by
+                lazy(LazyThreadSafetyMode.PUBLICATION) { TestPlan::class.primaryConstructor!! }
 
-        val botApplicationConfigurationId_reference: TypeReference<Id<BotApplicationConfiguration>> =
-                object : TypeReference<Id<BotApplicationConfiguration>>() {}
+        private val parameters: Map<String, KParameter> by lazy(LazyThreadSafetyMode.PUBLICATION) {
+                kotlin.collections.mapOf("dialogs" to
+                primaryConstructor.findParameterByName("dialogs")!!, "name" to
+                primaryConstructor.findParameterByName("name")!!, "applicationId" to
+                primaryConstructor.findParameterByName("applicationId")!!, "namespace" to
+                primaryConstructor.findParameterByName("namespace")!!, "nlpModel" to
+                primaryConstructor.findParameterByName("nlpModel")!!,
+                "botApplicationConfigurationId" to
+                primaryConstructor.findParameterByName("botApplicationConfigurationId")!!, "locale"
+                to primaryConstructor.findParameterByName("locale")!!, "startAction" to
+                primaryConstructor.findParameterByName("startAction")!!, "targetConnectorType" to
+                primaryConstructor.findParameterByName("targetConnectorType")!!, "_id" to
+                primaryConstructor.findParameterByName("_id")!!) }
 
-        val _id_reference: TypeReference<Id<TestPlan>> = object : TypeReference<Id<TestPlan>>() {}
+        private val _dialogs__reference: TypeReference<List<TestDialogReport>> = object :
+                TypeReference<List<TestDialogReport>>() {}
+
+        private val _botApplicationConfigurationId__reference:
+                TypeReference<Id<BotApplicationConfiguration>> = object :
+                TypeReference<Id<BotApplicationConfiguration>>() {}
+
+        private val __id__reference: TypeReference<Id<TestPlan>> = object :
+                TypeReference<Id<TestPlan>>() {}
     }
 }

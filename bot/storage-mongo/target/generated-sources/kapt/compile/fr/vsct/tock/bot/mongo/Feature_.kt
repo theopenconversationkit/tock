@@ -10,7 +10,8 @@ import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
-internal class Feature_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Feature?>) : KPropertyPath<T, Feature?>(previous,property) {
+internal class Feature_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Feature?>) :
+        KPropertyPath<T, Feature?>(previous,property) {
     val _id: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,Feature::_id)
 
@@ -25,6 +26,7 @@ internal class Feature_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
 
     val namespace: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,Feature::namespace)
+
     companion object {
         val _id: KProperty1<Feature, String?>
             get() = Feature::_id
@@ -38,7 +40,9 @@ internal class Feature_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<
             get() = Feature::namespace}
 }
 
-internal class Feature_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<Feature>?>) : KCollectionPropertyPath<T, Feature?, Feature_<T>>(previous,property) {
+internal class Feature_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        Collection<Feature>?>) : KCollectionPropertyPath<T, Feature?,
+        Feature_<T>>(previous,property) {
     val _id: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,Feature::_id)
 
@@ -55,9 +59,11 @@ internal class Feature_Col<T>(previous: KPropertyPath<T, *>?, property: KPropert
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,Feature::namespace)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): Feature_<T> = Feature_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): Feature_<T> = Feature_(this,
+            customProperty(this, additionalPath))}
 
-internal class Feature_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, Feature>?>) : KMapPropertyPath<T, K, Feature?, Feature_<T>>(previous,property) {
+internal class Feature_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
+        Feature>?>) : KMapPropertyPath<T, K, Feature?, Feature_<T>>(previous,property) {
     val _id: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,Feature::_id)
 
@@ -74,4 +80,5 @@ internal class Feature_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProp
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,Feature::namespace)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): Feature_<T> = Feature_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): Feature_<T> = Feature_(this,
+            customProperty(this, additionalPath))}

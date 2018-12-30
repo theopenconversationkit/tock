@@ -55,7 +55,7 @@ import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
-import org.litote.kmongo.JacksonData
+import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.and
 import org.litote.kmongo.ascending

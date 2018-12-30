@@ -6,14 +6,16 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-class StoryDefinitionConfiguration_Serializer : StdSerializer<StoryDefinitionConfiguration>(StoryDefinitionConfiguration::class.java),
+internal class StoryDefinitionConfiguration_Serializer :
+        StdSerializer<StoryDefinitionConfiguration>(StoryDefinitionConfiguration::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() = SimpleModule().addSerializer(StoryDefinitionConfiguration::class.java,
+            this)
 
     override fun serialize(
-            value: StoryDefinitionConfiguration,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: StoryDefinitionConfiguration,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("storyId")

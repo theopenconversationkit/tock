@@ -26,6 +26,8 @@ import java.util.concurrent.ConcurrentSkipListSet
 object BuiltInKeywordListener : NlpListener {
 
     val deleteKeyword = property("tock_bot_delete_keyword", "_delete_user_")
+    val enableKeyword = property("tock_bot_enable_keyword", "_enable_user_")
+    val disableKeyword = property("tock_bot_disable_keyword", "_disable_user_")
     val testContextKeyword = property("tock_bot_test_context_keyword", "_test_")
     val endTestContextKeyword = property("tock_bot_end_test_context_keyword", "_end_test_")
 
@@ -33,11 +35,13 @@ object BuiltInKeywordListener : NlpListener {
      * The keyword to listen.
      */
     val keywords: MutableSet<String> = ConcurrentSkipListSet<String>(
-            listOf(
-                    deleteKeyword,
-                    testContextKeyword,
-                    endTestContextKeyword
-            )
+        listOf(
+            deleteKeyword,
+            enableKeyword,
+            disableKeyword,
+            testContextKeyword,
+            endTestContextKeyword
+        )
     )
 
     /**

@@ -12,12 +12,16 @@ import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KMapSimplePropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
-class PredefinedValue_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, PredefinedValue?>) : KPropertyPath<T, PredefinedValue?>(previous,property) {
+class PredefinedValue_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, PredefinedValue?>)
+        : KPropertyPath<T, PredefinedValue?>(previous,property) {
     val value: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,PredefinedValue::value)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,PredefinedValue::value)
 
     val labels: KMapSimplePropertyPath<T, Locale?, List<String>?>
-        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, java.util.Locale?, kotlin.collections.List<kotlin.String>?>(this,PredefinedValue::labels)
+        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, java.util.Locale?,
+                kotlin.collections.List<kotlin.String>?>(this,PredefinedValue::labels)
+
     companion object {
         val Value: KProperty1<PredefinedValue, String?>
             get() = PredefinedValue::value
@@ -25,22 +29,32 @@ class PredefinedValue_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*
             get() = KMapSimplePropertyPath(null, PredefinedValue::labels)}
 }
 
-class PredefinedValue_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<PredefinedValue>?>) : KCollectionPropertyPath<T, PredefinedValue?, PredefinedValue_<T>>(previous,property) {
+class PredefinedValue_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        Collection<PredefinedValue>?>) : KCollectionPropertyPath<T, PredefinedValue?,
+        PredefinedValue_<T>>(previous,property) {
     val value: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,PredefinedValue::value)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,PredefinedValue::value)
 
     val labels: KMapSimplePropertyPath<T, Locale?, List<String>?>
-        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, java.util.Locale?, kotlin.collections.List<kotlin.String>?>(this,PredefinedValue::labels)
+        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, java.util.Locale?,
+                kotlin.collections.List<kotlin.String>?>(this,PredefinedValue::labels)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): PredefinedValue_<T> = PredefinedValue_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): PredefinedValue_<T> =
+            PredefinedValue_(this, customProperty(this, additionalPath))}
 
-class PredefinedValue_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, PredefinedValue>?>) : KMapPropertyPath<T, K, PredefinedValue?, PredefinedValue_<T>>(previous,property) {
+class PredefinedValue_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
+        PredefinedValue>?>) : KMapPropertyPath<T, K, PredefinedValue?,
+        PredefinedValue_<T>>(previous,property) {
     val value: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,PredefinedValue::value)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,PredefinedValue::value)
 
     val labels: KMapSimplePropertyPath<T, Locale?, List<String>?>
-        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, java.util.Locale?, kotlin.collections.List<kotlin.String>?>(this,PredefinedValue::labels)
+        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, java.util.Locale?,
+                kotlin.collections.List<kotlin.String>?>(this,PredefinedValue::labels)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): PredefinedValue_<T> = PredefinedValue_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): PredefinedValue_<T> =
+            PredefinedValue_(this, customProperty(this, additionalPath))}

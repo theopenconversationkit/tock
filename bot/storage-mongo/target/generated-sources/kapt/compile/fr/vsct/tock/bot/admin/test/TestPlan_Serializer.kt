@@ -6,14 +6,14 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-class TestPlan_Serializer : StdSerializer<TestPlan>(TestPlan::class.java),
+internal class TestPlan_Serializer : StdSerializer<TestPlan>(TestPlan::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() = SimpleModule().addSerializer(TestPlan::class.java, this)
 
     override fun serialize(
-            value: TestPlan,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: TestPlan,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("dialogs")
@@ -39,7 +39,8 @@ class TestPlan_Serializer : StdSerializer<TestPlan>(TestPlan::class.java),
         serializers.defaultSerializeValue(_locale_, gen)
         gen.writeFieldName("startAction")
         val _startAction_ = value.startAction
-        if(_startAction_ == null) { gen.writeNull() } else {serializers.defaultSerializeValue(_startAction_, gen)}
+        if(_startAction_ == null) { gen.writeNull() } else
+                {serializers.defaultSerializeValue(_startAction_, gen)}
         gen.writeFieldName("targetConnectorType")
         val _targetConnectorType_ = value.targetConnectorType
         serializers.defaultSerializeValue(_targetConnectorType_, gen)

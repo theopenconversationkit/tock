@@ -15,36 +15,45 @@ import org.litote.kmongo.property.KCollectionSimplePropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
-class TestPlan_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, TestPlan?>) : KPropertyPath<T, TestPlan?>(previous,property) {
+class TestPlan_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, TestPlan?>) :
+        KPropertyPath<T, TestPlan?>(previous,property) {
     val dialogs: KCollectionSimplePropertyPath<T, TestDialogReport?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.bot.admin.test.TestDialogReport?>(this,TestPlan::dialogs)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.bot.admin.test.TestDialogReport?>(this,TestPlan::dialogs)
 
     val name_: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,TestPlan::name)
 
     val applicationId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,TestPlan::applicationId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,TestPlan::applicationId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,TestPlan::namespace)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,TestPlan::namespace)
 
     val nlpModel: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,TestPlan::nlpModel)
 
     val botApplicationConfigurationId: KPropertyPath<T, Id<BotApplicationConfiguration>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration>?>(this,TestPlan::botApplicationConfigurationId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration>?>(this,TestPlan::botApplicationConfigurationId)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,TestPlan::locale)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.util.Locale?>(this,TestPlan::locale)
 
     val startAction: KPropertyPath<T, Message?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.bot.engine.message.Message?>(this,TestPlan::startAction)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                fr.vsct.tock.bot.engine.message.Message?>(this,TestPlan::startAction)
 
     val targetConnectorType: ConnectorType_<T>
         get() = ConnectorType_(this,TestPlan::targetConnectorType)
 
     val _id: KPropertyPath<T, Id<TestPlan>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlan>?>(this,TestPlan::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlan>?>(this,TestPlan::_id)
+
     companion object {
         val Dialogs: KCollectionSimplePropertyPath<TestPlan, TestDialogReport?>
             get() = KCollectionSimplePropertyPath(null, TestPlan::dialogs)
@@ -68,70 +77,89 @@ class TestPlan_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, TestP
             get() = TestPlan::_id}
 }
 
-class TestPlan_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<TestPlan>?>) : KCollectionPropertyPath<T, TestPlan?, TestPlan_<T>>(previous,property) {
+class TestPlan_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        Collection<TestPlan>?>) : KCollectionPropertyPath<T, TestPlan?,
+        TestPlan_<T>>(previous,property) {
     val dialogs: KCollectionSimplePropertyPath<T, TestDialogReport?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.bot.admin.test.TestDialogReport?>(this,TestPlan::dialogs)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.bot.admin.test.TestDialogReport?>(this,TestPlan::dialogs)
 
     val name_: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,TestPlan::name)
 
     val applicationId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,TestPlan::applicationId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,TestPlan::applicationId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,TestPlan::namespace)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,TestPlan::namespace)
 
     val nlpModel: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,TestPlan::nlpModel)
 
     val botApplicationConfigurationId: KPropertyPath<T, Id<BotApplicationConfiguration>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration>?>(this,TestPlan::botApplicationConfigurationId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration>?>(this,TestPlan::botApplicationConfigurationId)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,TestPlan::locale)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.util.Locale?>(this,TestPlan::locale)
 
     val startAction: KPropertyPath<T, Message?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.bot.engine.message.Message?>(this,TestPlan::startAction)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                fr.vsct.tock.bot.engine.message.Message?>(this,TestPlan::startAction)
 
     val targetConnectorType: ConnectorType_<T>
         get() = ConnectorType_(this,TestPlan::targetConnectorType)
 
     val _id: KPropertyPath<T, Id<TestPlan>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlan>?>(this,TestPlan::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlan>?>(this,TestPlan::_id)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): TestPlan_<T> = TestPlan_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): TestPlan_<T> = TestPlan_(this,
+            customProperty(this, additionalPath))}
 
-class TestPlan_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, TestPlan>?>) : KMapPropertyPath<T, K, TestPlan?, TestPlan_<T>>(previous,property) {
+class TestPlan_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, TestPlan>?>)
+        : KMapPropertyPath<T, K, TestPlan?, TestPlan_<T>>(previous,property) {
     val dialogs: KCollectionSimplePropertyPath<T, TestDialogReport?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.bot.admin.test.TestDialogReport?>(this,TestPlan::dialogs)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.bot.admin.test.TestDialogReport?>(this,TestPlan::dialogs)
 
     val name_: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,TestPlan::name)
 
     val applicationId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,TestPlan::applicationId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,TestPlan::applicationId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,TestPlan::namespace)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,TestPlan::namespace)
 
     val nlpModel: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,TestPlan::nlpModel)
 
     val botApplicationConfigurationId: KPropertyPath<T, Id<BotApplicationConfiguration>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration>?>(this,TestPlan::botApplicationConfigurationId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration>?>(this,TestPlan::botApplicationConfigurationId)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,TestPlan::locale)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.util.Locale?>(this,TestPlan::locale)
 
     val startAction: KPropertyPath<T, Message?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.bot.engine.message.Message?>(this,TestPlan::startAction)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                fr.vsct.tock.bot.engine.message.Message?>(this,TestPlan::startAction)
 
     val targetConnectorType: ConnectorType_<T>
         get() = ConnectorType_(this,TestPlan::targetConnectorType)
 
     val _id: KPropertyPath<T, Id<TestPlan>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlan>?>(this,TestPlan::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlan>?>(this,TestPlan::_id)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): TestPlan_<T> = TestPlan_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): TestPlan_<T> = TestPlan_(this,
+            customProperty(this, additionalPath))}

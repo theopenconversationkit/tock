@@ -6,14 +6,16 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-class NlpApplicationConfiguration_Serializer : StdSerializer<NlpApplicationConfiguration>(NlpApplicationConfiguration::class.java),
+internal class NlpApplicationConfiguration_Serializer :
+        StdSerializer<NlpApplicationConfiguration>(NlpApplicationConfiguration::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() = SimpleModule().addSerializer(NlpApplicationConfiguration::class.java,
+            this)
 
     override fun serialize(
-            value: NlpApplicationConfiguration,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: NlpApplicationConfiguration,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("tokenizerConfiguration")

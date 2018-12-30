@@ -14,27 +14,33 @@ import org.litote.kmongo.property.KCollectionSimplePropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
-internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, DialogCol?>) : KPropertyPath<T, DialogCol?>(previous,property) {
+internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, DialogCol?>) :
+        KPropertyPath<T, DialogCol?>(previous,property) {
     val playerIds: PlayerId_Col<T>
         get() = PlayerId_Col(this,DialogCol::playerIds)
 
     val _id: KPropertyPath<T, Id<Dialog>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,DialogCol::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,DialogCol::_id)
 
     val state: KPropertyPath<T, DialogCol.DialogStateMongoWrapper?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.bot.mongo.DialogCol.DialogStateMongoWrapper?>(this,DialogCol::state)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                fr.vsct.tock.bot.mongo.DialogCol.DialogStateMongoWrapper?>(this,DialogCol::state)
 
     val stories: StoryMongoWrapper_Col<T>
         get() = StoryMongoWrapper_Col(this,DialogCol::stories)
 
     val applicationIds: KCollectionSimplePropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, kotlin.String?>(this,DialogCol::applicationIds)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                kotlin.String?>(this,DialogCol::applicationIds)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,DialogCol::lastUpdateDate)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,DialogCol::lastUpdateDate)
 
     val groupId: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,DialogCol::groupId)
+
     companion object {
         val PlayerIds: PlayerId_Col<DialogCol>
             get() = PlayerId_Col<DialogCol>(null,DialogCol::playerIds)
@@ -52,52 +58,65 @@ internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty
             get() = DialogCol::groupId}
 }
 
-internal class DialogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<DialogCol>?>) : KCollectionPropertyPath<T, DialogCol?, DialogCol_<T>>(previous,property) {
+internal class DialogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        Collection<DialogCol>?>) : KCollectionPropertyPath<T, DialogCol?,
+        DialogCol_<T>>(previous,property) {
     val playerIds: PlayerId_Col<T>
         get() = PlayerId_Col(this,DialogCol::playerIds)
 
     val _id: KPropertyPath<T, Id<Dialog>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,DialogCol::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,DialogCol::_id)
 
     val state: KPropertyPath<T, DialogCol.DialogStateMongoWrapper?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.bot.mongo.DialogCol.DialogStateMongoWrapper?>(this,DialogCol::state)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                fr.vsct.tock.bot.mongo.DialogCol.DialogStateMongoWrapper?>(this,DialogCol::state)
 
     val stories: StoryMongoWrapper_Col<T>
         get() = StoryMongoWrapper_Col(this,DialogCol::stories)
 
     val applicationIds: KCollectionSimplePropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, kotlin.String?>(this,DialogCol::applicationIds)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                kotlin.String?>(this,DialogCol::applicationIds)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,DialogCol::lastUpdateDate)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,DialogCol::lastUpdateDate)
 
     val groupId: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,DialogCol::groupId)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): DialogCol_<T> = DialogCol_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): DialogCol_<T> = DialogCol_(this,
+            customProperty(this, additionalPath))}
 
-internal class DialogCol_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, DialogCol>?>) : KMapPropertyPath<T, K, DialogCol?, DialogCol_<T>>(previous,property) {
+internal class DialogCol_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
+        DialogCol>?>) : KMapPropertyPath<T, K, DialogCol?, DialogCol_<T>>(previous,property) {
     val playerIds: PlayerId_Col<T>
         get() = PlayerId_Col(this,DialogCol::playerIds)
 
     val _id: KPropertyPath<T, Id<Dialog>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,DialogCol::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,DialogCol::_id)
 
     val state: KPropertyPath<T, DialogCol.DialogStateMongoWrapper?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.bot.mongo.DialogCol.DialogStateMongoWrapper?>(this,DialogCol::state)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                fr.vsct.tock.bot.mongo.DialogCol.DialogStateMongoWrapper?>(this,DialogCol::state)
 
     val stories: StoryMongoWrapper_Col<T>
         get() = StoryMongoWrapper_Col(this,DialogCol::stories)
 
     val applicationIds: KCollectionSimplePropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, kotlin.String?>(this,DialogCol::applicationIds)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                kotlin.String?>(this,DialogCol::applicationIds)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,DialogCol::lastUpdateDate)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,DialogCol::lastUpdateDate)
 
     val groupId: KPropertyPath<T, String?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,DialogCol::groupId)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): DialogCol_<T> = DialogCol_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): DialogCol_<T> = DialogCol_(this,
+            customProperty(this, additionalPath))}

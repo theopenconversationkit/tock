@@ -14,24 +14,32 @@ import org.litote.kmongo.property.KCollectionSimplePropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
-class TestPlanExecution_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, TestPlanExecution?>) : KPropertyPath<T, TestPlanExecution?>(previous,property) {
+class TestPlanExecution_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        TestPlanExecution?>) : KPropertyPath<T, TestPlanExecution?>(previous,property) {
     val testPlanId: KPropertyPath<T, Id<TestPlan>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlan>?>(this,TestPlanExecution::testPlanId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlan>?>(this,TestPlanExecution::testPlanId)
 
     val dialogs: KCollectionSimplePropertyPath<T, DialogExecutionReport?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.bot.admin.test.DialogExecutionReport?>(this,TestPlanExecution::dialogs)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.bot.admin.test.DialogExecutionReport?>(this,TestPlanExecution::dialogs)
 
     val nbErrors: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,TestPlanExecution::nbErrors)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,TestPlanExecution::nbErrors)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,TestPlanExecution::date)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,TestPlanExecution::date)
 
     val duration: KPropertyPath<T, Duration?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Duration?>(this,TestPlanExecution::duration)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Duration?>(this,TestPlanExecution::duration)
 
     val _id: KPropertyPath<T, Id<TestPlanExecution>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlanExecution>?>(this,TestPlanExecution::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlanExecution>?>(this,TestPlanExecution::_id)
+
     companion object {
         val TestPlanId: KProperty1<TestPlanExecution, Id<TestPlan>?>
             get() = TestPlanExecution::testPlanId
@@ -47,46 +55,64 @@ class TestPlanExecution_<T>(previous: KPropertyPath<T, *>?, property: KProperty1
             get() = TestPlanExecution::_id}
 }
 
-class TestPlanExecution_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<TestPlanExecution>?>) : KCollectionPropertyPath<T, TestPlanExecution?, TestPlanExecution_<T>>(previous,property) {
+class TestPlanExecution_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        Collection<TestPlanExecution>?>) : KCollectionPropertyPath<T, TestPlanExecution?,
+        TestPlanExecution_<T>>(previous,property) {
     val testPlanId: KPropertyPath<T, Id<TestPlan>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlan>?>(this,TestPlanExecution::testPlanId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlan>?>(this,TestPlanExecution::testPlanId)
 
     val dialogs: KCollectionSimplePropertyPath<T, DialogExecutionReport?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.bot.admin.test.DialogExecutionReport?>(this,TestPlanExecution::dialogs)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.bot.admin.test.DialogExecutionReport?>(this,TestPlanExecution::dialogs)
 
     val nbErrors: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,TestPlanExecution::nbErrors)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,TestPlanExecution::nbErrors)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,TestPlanExecution::date)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,TestPlanExecution::date)
 
     val duration: KPropertyPath<T, Duration?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Duration?>(this,TestPlanExecution::duration)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Duration?>(this,TestPlanExecution::duration)
 
     val _id: KPropertyPath<T, Id<TestPlanExecution>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlanExecution>?>(this,TestPlanExecution::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlanExecution>?>(this,TestPlanExecution::_id)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): TestPlanExecution_<T> = TestPlanExecution_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): TestPlanExecution_<T> =
+            TestPlanExecution_(this, customProperty(this, additionalPath))}
 
-class TestPlanExecution_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, TestPlanExecution>?>) : KMapPropertyPath<T, K, TestPlanExecution?, TestPlanExecution_<T>>(previous,property) {
+class TestPlanExecution_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
+        TestPlanExecution>?>) : KMapPropertyPath<T, K, TestPlanExecution?,
+        TestPlanExecution_<T>>(previous,property) {
     val testPlanId: KPropertyPath<T, Id<TestPlan>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlan>?>(this,TestPlanExecution::testPlanId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlan>?>(this,TestPlanExecution::testPlanId)
 
     val dialogs: KCollectionSimplePropertyPath<T, DialogExecutionReport?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.bot.admin.test.DialogExecutionReport?>(this,TestPlanExecution::dialogs)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.bot.admin.test.DialogExecutionReport?>(this,TestPlanExecution::dialogs)
 
     val nbErrors: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,TestPlanExecution::nbErrors)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,TestPlanExecution::nbErrors)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,TestPlanExecution::date)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,TestPlanExecution::date)
 
     val duration: KPropertyPath<T, Duration?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Duration?>(this,TestPlanExecution::duration)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Duration?>(this,TestPlanExecution::duration)
 
     val _id: KPropertyPath<T, Id<TestPlanExecution>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlanExecution>?>(this,TestPlanExecution::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.test.TestPlanExecution>?>(this,TestPlanExecution::_id)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): TestPlanExecution_<T> = TestPlanExecution_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): TestPlanExecution_<T> =
+            TestPlanExecution_(this, customProperty(this, additionalPath))}

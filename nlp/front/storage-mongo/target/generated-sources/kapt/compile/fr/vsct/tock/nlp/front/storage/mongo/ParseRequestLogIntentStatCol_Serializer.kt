@@ -6,14 +6,17 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class ParseRequestLogIntentStatCol_Serializer : StdSerializer<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>(ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol::class.java),
+internal class ParseRequestLogIntentStatCol_Serializer :
+        StdSerializer<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>(ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() =
+            SimpleModule().addSerializer(ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol::class.java,
+            this)
 
     override fun serialize(
-            value: ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("applicationId")

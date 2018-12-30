@@ -13,33 +13,44 @@ import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KMapSimplePropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
-class ParseResult_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ParseResult?>) : KPropertyPath<T, ParseResult?>(previous,property) {
+class ParseResult_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ParseResult?>) :
+        KPropertyPath<T, ParseResult?>(previous,property) {
     val intent: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ParseResult::intent)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,ParseResult::intent)
 
     val intentNamespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ParseResult::intentNamespace)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,ParseResult::intentNamespace)
 
     val language: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,ParseResult::language)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.util.Locale?>(this,ParseResult::language)
 
     val entities: KCollectionSimplePropertyPath<T, ParsedEntityValue?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue?>(this,ParseResult::entities)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue?>(this,ParseResult::entities)
 
     val notRetainedEntities: KCollectionSimplePropertyPath<T, ParsedEntityValue?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue?>(this,ParseResult::notRetainedEntities)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue?>(this,ParseResult::notRetainedEntities)
 
     val intentProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ParseResult::intentProbability)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Double?>(this,ParseResult::intentProbability)
 
     val entitiesProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ParseResult::entitiesProbability)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Double?>(this,ParseResult::entitiesProbability)
 
     val retainedQuery: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ParseResult::retainedQuery)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,ParseResult::retainedQuery)
 
     val otherIntentsProbabilities: KMapSimplePropertyPath<T, String?, Double?>
-        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, kotlin.String?, kotlin.Double?>(this,ParseResult::otherIntentsProbabilities)
+        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, kotlin.String?,
+                kotlin.Double?>(this,ParseResult::otherIntentsProbabilities)
+
     companion object {
         val Intent: KProperty1<ParseResult, String?>
             get() = ParseResult::intent
@@ -61,64 +72,87 @@ class ParseResult_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Pa
             get() = KMapSimplePropertyPath(null, ParseResult::otherIntentsProbabilities)}
 }
 
-class ParseResult_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ParseResult>?>) : KCollectionPropertyPath<T, ParseResult?, ParseResult_<T>>(previous,property) {
+class ParseResult_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        Collection<ParseResult>?>) : KCollectionPropertyPath<T, ParseResult?,
+        ParseResult_<T>>(previous,property) {
     val intent: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ParseResult::intent)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,ParseResult::intent)
 
     val intentNamespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ParseResult::intentNamespace)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,ParseResult::intentNamespace)
 
     val language: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,ParseResult::language)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.util.Locale?>(this,ParseResult::language)
 
     val entities: KCollectionSimplePropertyPath<T, ParsedEntityValue?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue?>(this,ParseResult::entities)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue?>(this,ParseResult::entities)
 
     val notRetainedEntities: KCollectionSimplePropertyPath<T, ParsedEntityValue?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue?>(this,ParseResult::notRetainedEntities)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue?>(this,ParseResult::notRetainedEntities)
 
     val intentProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ParseResult::intentProbability)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Double?>(this,ParseResult::intentProbability)
 
     val entitiesProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ParseResult::entitiesProbability)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Double?>(this,ParseResult::entitiesProbability)
 
     val retainedQuery: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ParseResult::retainedQuery)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,ParseResult::retainedQuery)
 
     val otherIntentsProbabilities: KMapSimplePropertyPath<T, String?, Double?>
-        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, kotlin.String?, kotlin.Double?>(this,ParseResult::otherIntentsProbabilities)
+        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, kotlin.String?,
+                kotlin.Double?>(this,ParseResult::otherIntentsProbabilities)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): ParseResult_<T> = ParseResult_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): ParseResult_<T> =
+            ParseResult_(this, customProperty(this, additionalPath))}
 
-class ParseResult_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, ParseResult>?>) : KMapPropertyPath<T, K, ParseResult?, ParseResult_<T>>(previous,property) {
+class ParseResult_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
+        ParseResult>?>) : KMapPropertyPath<T, K, ParseResult?, ParseResult_<T>>(previous,property) {
     val intent: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ParseResult::intent)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,ParseResult::intent)
 
     val intentNamespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ParseResult::intentNamespace)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,ParseResult::intentNamespace)
 
     val language: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,ParseResult::language)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.util.Locale?>(this,ParseResult::language)
 
     val entities: KCollectionSimplePropertyPath<T, ParsedEntityValue?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue?>(this,ParseResult::entities)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue?>(this,ParseResult::entities)
 
     val notRetainedEntities: KCollectionSimplePropertyPath<T, ParsedEntityValue?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue?>(this,ParseResult::notRetainedEntities)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue?>(this,ParseResult::notRetainedEntities)
 
     val intentProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ParseResult::intentProbability)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Double?>(this,ParseResult::intentProbability)
 
     val entitiesProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,ParseResult::entitiesProbability)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Double?>(this,ParseResult::entitiesProbability)
 
     val retainedQuery: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ParseResult::retainedQuery)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,ParseResult::retainedQuery)
 
     val otherIntentsProbabilities: KMapSimplePropertyPath<T, String?, Double?>
-        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, kotlin.String?, kotlin.Double?>(this,ParseResult::otherIntentsProbabilities)
+        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, kotlin.String?,
+                kotlin.Double?>(this,ParseResult::otherIntentsProbabilities)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): ParseResult_<T> = ParseResult_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): ParseResult_<T> =
+            ParseResult_(this, customProperty(this, additionalPath))}

@@ -45,7 +45,7 @@ import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 import fr.vsct.tock.translator.UserInterfaceType.textChat
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
-import org.litote.kmongo.JacksonData
+import org.litote.jackson.data.JacksonData
 import java.time.Instant
 import java.time.Instant.now
 
@@ -192,7 +192,8 @@ internal data class DialogCol(
     }
 
     @Data(internal = true)
-    class StoryMongoWrapper(
+    @JacksonData(internal = true)
+    data class StoryMongoWrapper(
         val storyDefinitionId: String,
         var currentIntent: Intent?,
         val currentStep: String?,

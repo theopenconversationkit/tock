@@ -6,14 +6,14 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-class TestBuild_Serializer : StdSerializer<TestBuild>(TestBuild::class.java),
+internal class TestBuild_Serializer : StdSerializer<TestBuild>(TestBuild::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() = SimpleModule().addSerializer(TestBuild::class.java, this)
 
     override fun serialize(
-            value: TestBuild,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: TestBuild,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("applicationId")

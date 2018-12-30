@@ -21,7 +21,7 @@ import fr.vsct.tock.translator.I18nLocalizedLabel
 import fr.vsct.tock.translator.UserInterfaceType
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
-import org.litote.kmongo.JacksonData
+import org.litote.jackson.data.JacksonData
 import java.time.Instant
 import java.util.Locale
 

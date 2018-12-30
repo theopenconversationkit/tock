@@ -9,46 +9,125 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import java.time.Duration
 import java.time.Instant
 import kotlin.Int
+import kotlin.String
 import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.MutableList
+import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.findParameterByName
+import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-class TestPlanExecution_Deserializer : StdDeserializer<TestPlanExecution>(TestPlanExecution::class.java),
+internal class TestPlanExecution_Deserializer :
+        StdDeserializer<TestPlanExecution>(TestPlanExecution::class.java),
         JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(TestPlanExecution::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): TestPlanExecution {
         with(p) {
-        var testPlanId: Id<TestPlan>? = null
-        var dialogs: List<DialogExecutionReport>? = null
-        var nbErrors: Int? = null
-        var date: Instant? = null
-        var duration: Duration? = null
-        var _id: Id<TestPlanExecution>? = null
-        while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-        nextToken() 
-        if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) { break } 
-        val fieldName = currentName
-        nextToken()
-        if(currentToken != JsonToken.VALUE_NULL) when (fieldName) {
-        "testPlanId" -> testPlanId = p.readValueAs(testPlanId_reference)
-        "dialogs" -> dialogs = p.readValueAs(dialogs_reference)
-        "nbErrors" -> nbErrors = p.readValueAs(Int::class.java)
-        "date" -> date = p.readValueAs(Instant::class.java)
-        "duration" -> duration = p.readValueAs(Duration::class.java)
-        "_id" -> _id = p.readValueAs(_id_reference)
-        else -> if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) { p.skipChildren() } else { nextToken() }
-         }  }
-        return TestPlanExecution(testPlanId!!, dialogs!!, nbErrors!!, date!!, duration!!, _id!!) }
+            var _testPlanId_: Id<TestPlan>? = null
+            var _testPlanId_set = false
+            var _dialogs_: MutableList<DialogExecutionReport>? = null
+            var _dialogs_set = false
+            var _nbErrors_: Int? = null
+            var _nbErrors_set = false
+            var _date_: Instant? = null
+            var _date_set = false
+            var _duration_: Duration? = null
+            var _duration_set = false
+            var __id_: Id<TestPlanExecution>? = null
+            var __id_set = false
+            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
+                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
+                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
+                        break } 
+                val fieldName = currentName
+                nextToken()
+                when (fieldName) { 
+                    "testPlanId" -> {
+                            _testPlanId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_testPlanId__reference);
+                            _testPlanId_set = true
+                            }
+                    "dialogs" -> {
+                            _dialogs_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_dialogs__reference);
+                            _dialogs_set = true
+                            }
+                    "nbErrors" -> {
+                            _nbErrors_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Int::class.java);
+                            _nbErrors_set = true
+                            }
+                    "date" -> {
+                            _date_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Instant::class.java);
+                            _date_set = true
+                            }
+                    "duration" -> {
+                            _duration_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Duration::class.java);
+                            _duration_set = true
+                            }
+                    "_id" -> {
+                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(__id__reference);
+                            __id_set = true
+                            }
+                    else -> {
+                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
+                                    JsonToken.START_ARRAY)
+                            p.skipChildren()
+                            nextToken()
+                            }
+                    } 
+                } 
+            return if(_testPlanId_set && _dialogs_set && _nbErrors_set && _date_set && _duration_set
+                    && __id_set)
+                    TestPlanExecution(testPlanId = _testPlanId_!!, dialogs = _dialogs_!!, nbErrors =
+                            _nbErrors_!!, date = _date_!!, duration = _duration_!!, _id = __id_!!)
+                    else {
+                    val map = mutableMapOf<KParameter, Any?>()
+                    if(_testPlanId_set)
+                    map[parameters.getValue("testPlanId")] = _testPlanId_
+                    if(_dialogs_set)
+                    map[parameters.getValue("dialogs")] = _dialogs_
+                    if(_nbErrors_set)
+                    map[parameters.getValue("nbErrors")] = _nbErrors_
+                    if(_date_set)
+                    map[parameters.getValue("date")] = _date_
+                    if(_duration_set)
+                    map[parameters.getValue("duration")] = _duration_
+                    if(__id_set)
+                    map[parameters.getValue("_id")] = __id_ 
+                    primaryConstructor.callBy(map) 
+                    }
+        } 
     }
+
     companion object {
-        val testPlanId_reference: TypeReference<Id<TestPlan>> =
-                object : TypeReference<Id<TestPlan>>() {}
+        private val primaryConstructor: KFunction<TestPlanExecution> by
+                lazy(LazyThreadSafetyMode.PUBLICATION) {
+                TestPlanExecution::class.primaryConstructor!! }
 
-        val dialogs_reference: TypeReference<List<DialogExecutionReport>> =
-                object : TypeReference<List<DialogExecutionReport>>() {}
+        private val parameters: Map<String, KParameter> by lazy(LazyThreadSafetyMode.PUBLICATION) {
+                kotlin.collections.mapOf("testPlanId" to
+                primaryConstructor.findParameterByName("testPlanId")!!, "dialogs" to
+                primaryConstructor.findParameterByName("dialogs")!!, "nbErrors" to
+                primaryConstructor.findParameterByName("nbErrors")!!, "date" to
+                primaryConstructor.findParameterByName("date")!!, "duration" to
+                primaryConstructor.findParameterByName("duration")!!, "_id" to
+                primaryConstructor.findParameterByName("_id")!!) }
 
-        val _id_reference: TypeReference<Id<TestPlanExecution>> =
-                object : TypeReference<Id<TestPlanExecution>>() {}
+        private val _testPlanId__reference: TypeReference<Id<TestPlan>> = object :
+                TypeReference<Id<TestPlan>>() {}
+
+        private val _dialogs__reference: TypeReference<List<DialogExecutionReport>> = object :
+                TypeReference<List<DialogExecutionReport>>() {}
+
+        private val __id__reference: TypeReference<Id<TestPlanExecution>> = object :
+                TypeReference<Id<TestPlanExecution>>() {}
     }
 }

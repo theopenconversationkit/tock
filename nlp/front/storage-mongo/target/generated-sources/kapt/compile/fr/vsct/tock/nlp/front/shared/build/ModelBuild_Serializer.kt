@@ -6,14 +6,14 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-class ModelBuild_Serializer : StdSerializer<ModelBuild>(ModelBuild::class.java),
+internal class ModelBuild_Serializer : StdSerializer<ModelBuild>(ModelBuild::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() = SimpleModule().addSerializer(ModelBuild::class.java, this)
 
     override fun serialize(
-            value: ModelBuild,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: ModelBuild,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("applicationId")
@@ -27,7 +27,8 @@ class ModelBuild_Serializer : StdSerializer<ModelBuild>(ModelBuild::class.java),
         serializers.defaultSerializeValue(_type_, gen)
         gen.writeFieldName("intentId")
         val _intentId_ = value.intentId
-        if(_intentId_ == null) { gen.writeNull() } else {serializers.defaultSerializeValue(_intentId_, gen)}
+        if(_intentId_ == null) { gen.writeNull() } else
+                {serializers.defaultSerializeValue(_intentId_, gen)}
         gen.writeFieldName("entityTypeName")
         val _entityTypeName_ = value.entityTypeName
         if(_entityTypeName_ == null) { gen.writeNull() } else {gen.writeString(_entityTypeName_)}

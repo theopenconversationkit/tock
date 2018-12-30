@@ -6,14 +6,14 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-class IntentTestError_Serializer : StdSerializer<IntentTestError>(IntentTestError::class.java),
-        JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+internal class IntentTestError_Serializer :
+        StdSerializer<IntentTestError>(IntentTestError::class.java), JacksonModuleServiceLoader {
+    override fun module() = SimpleModule().addSerializer(IntentTestError::class.java, this)
 
     override fun serialize(
-            value: IntentTestError,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: IntentTestError,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("applicationId")

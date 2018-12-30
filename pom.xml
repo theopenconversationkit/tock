@@ -39,10 +39,12 @@
         <kotlin-logging>1.6.22</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>3.9.0</kmongo>
-        <fongo>2.2.0-RC2</fongo>
+        <kmongo>3.9.1</kmongo>
         <jackson>2.9.8</jackson>
         <jackson-module>2.9.8</jackson-module>
+        <jackson-module-loader>0.1.0</jackson-module-loader>
+        <jackson-data>0.1.0</jackson-data>
+        <jackson-generator>0.1.0</jackson-generator>
         <klaxon>4.0.5</klaxon>
         <vertx>3.6.2</vertx>
         <retrofit>2.5.0</retrofit>
@@ -248,9 +250,14 @@
                 <version>${kmongo}</version>
             </dependency>
             <dependency>
-                <groupId>org.litote.kmongo</groupId>
-                <artifactId>kmongo-jackson-modules-service-loader</artifactId>
-                <version>${kmongo}</version>
+                <groupId>org.litote.jackson</groupId>
+                <artifactId>jackson-data</artifactId>
+                <version>${jackson-data}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.litote.jackson</groupId>
+                <artifactId>jackson-module-loader</artifactId>
+                <version>${jackson-module-loader}</version>
             </dependency>
             <dependency>
                 <groupId>org.litote.kmongo</groupId>
@@ -454,12 +461,6 @@
                 <groupId>net.bytebuddy</groupId>
                 <artifactId>byte-buddy</artifactId>
                 <version>${byte-buddy}</version>
-                <scope>test</scope>
-            </dependency>
-            <dependency>
-                <groupId>com.github.fakemongo</groupId>
-                <artifactId>fongo</artifactId>
-                <version>${fongo}</version>
                 <scope>test</scope>
             </dependency>
         </dependencies>

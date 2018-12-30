@@ -6,14 +6,16 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-class BotApplicationConfiguration_Serializer : StdSerializer<BotApplicationConfiguration>(BotApplicationConfiguration::class.java),
+internal class BotApplicationConfiguration_Serializer :
+        StdSerializer<BotApplicationConfiguration>(BotApplicationConfiguration::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() = SimpleModule().addSerializer(BotApplicationConfiguration::class.java,
+            this)
 
     override fun serialize(
-            value: BotApplicationConfiguration,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: BotApplicationConfiguration,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("applicationId")
@@ -33,7 +35,8 @@ class BotApplicationConfiguration_Serializer : StdSerializer<BotApplicationConfi
         serializers.defaultSerializeValue(_connectorType_, gen)
         gen.writeFieldName("ownerConnectorType")
         val _ownerConnectorType_ = value.ownerConnectorType
-        if(_ownerConnectorType_ == null) { gen.writeNull() } else {serializers.defaultSerializeValue(_ownerConnectorType_, gen)}
+        if(_ownerConnectorType_ == null) { gen.writeNull() } else
+                {serializers.defaultSerializeValue(_ownerConnectorType_, gen)}
         gen.writeFieldName("name")
         val _name_ = value.name
         gen.writeString(_name_)

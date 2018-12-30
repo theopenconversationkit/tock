@@ -8,12 +8,12 @@ import org.litote.jackson.JacksonModuleServiceLoader
 
 internal class SnapshotCol_Serializer : StdSerializer<SnapshotCol>(SnapshotCol::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() = SimpleModule().addSerializer(SnapshotCol::class.java, this)
 
     override fun serialize(
-            value: SnapshotCol,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: SnapshotCol,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("_id")

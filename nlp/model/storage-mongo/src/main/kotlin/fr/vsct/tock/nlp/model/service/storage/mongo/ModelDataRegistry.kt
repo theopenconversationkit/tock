@@ -19,7 +19,7 @@ package fr.vsct.tock.nlp.model.service.storage.mongo
 import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration
 import fr.vsct.tock.nlp.core.configuration.NlpModelConfiguration
 import org.litote.kmongo.DataRegistry
-import org.litote.kmongo.JacksonDataRegistry
+import org.litote.jackson.data.JacksonDataRegistry
 
 @DataRegistry(
     []

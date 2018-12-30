@@ -32,7 +32,7 @@ import fr.vsct.tock.nlp.front.shared.test.EntityTestError
 import fr.vsct.tock.nlp.front.shared.test.IntentTestError
 import fr.vsct.tock.nlp.front.shared.test.TestBuild
 import org.litote.kmongo.DataRegistry
-import org.litote.kmongo.JacksonDataRegistry
+import org.litote.jackson.data.JacksonDataRegistry
 
 /**
  *
@@ -71,8 +71,8 @@ import org.litote.kmongo.JacksonDataRegistry
         ParseResult::class,
         QueryContext::class,
         IntentTestError::class,
-        TestBuild::class
-        //PredefinedValue::class
+        TestBuild::class,
+        PredefinedValue::class
     ]
 )
 internal object NlpDataRegistry

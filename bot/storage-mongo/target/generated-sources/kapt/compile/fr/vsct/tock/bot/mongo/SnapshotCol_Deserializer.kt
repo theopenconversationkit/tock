@@ -9,7 +9,14 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.Snapshot
 import java.time.Instant
+import kotlin.String
 import kotlin.collections.List
+import kotlin.collections.Map
+import kotlin.collections.MutableList
+import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.findParameterByName
+import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
@@ -19,26 +26,71 @@ internal class SnapshotCol_Deserializer : StdDeserializer<SnapshotCol>(SnapshotC
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): SnapshotCol {
         with(p) {
-        var _id: Id<Dialog>? = null
-        var snapshots: List<Snapshot>? = null
-        var lastUpdateDate: Instant? = null
-        while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-        nextToken() 
-        if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) { break } 
-        val fieldName = currentName
-        nextToken()
-        if(currentToken != JsonToken.VALUE_NULL) when (fieldName) {
-        "_id" -> _id = p.readValueAs(_id_reference)
-        "snapshots" -> snapshots = p.readValueAs(snapshots_reference)
-        "lastUpdateDate" -> lastUpdateDate = p.readValueAs(Instant::class.java)
-        else -> if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) { p.skipChildren() } else { nextToken() }
-         }  }
-        return SnapshotCol(_id!!, snapshots!!, lastUpdateDate!!) }
+            var __id_: Id<Dialog>? = null
+            var __id_set = false
+            var _snapshots_: MutableList<Snapshot>? = null
+            var _snapshots_set = false
+            var _lastUpdateDate_: Instant? = null
+            var _lastUpdateDate_set = false
+            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
+                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
+                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
+                        break } 
+                val fieldName = currentName
+                nextToken()
+                when (fieldName) { 
+                    "_id" -> {
+                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(__id__reference);
+                            __id_set = true
+                            }
+                    "snapshots" -> {
+                            _snapshots_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_snapshots__reference);
+                            _snapshots_set = true
+                            }
+                    "lastUpdateDate" -> {
+                            _lastUpdateDate_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Instant::class.java);
+                            _lastUpdateDate_set = true
+                            }
+                    else -> {
+                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
+                                    JsonToken.START_ARRAY)
+                            p.skipChildren()
+                            nextToken()
+                            }
+                    } 
+                } 
+            return if(__id_set && _snapshots_set && _lastUpdateDate_set)
+                    SnapshotCol(_id = __id_!!, snapshots = _snapshots_!!, lastUpdateDate =
+                            _lastUpdateDate_!!)
+                    else {
+                    val map = mutableMapOf<KParameter, Any?>()
+                    if(__id_set)
+                    map[parameters.getValue("_id")] = __id_
+                    if(_snapshots_set)
+                    map[parameters.getValue("snapshots")] = _snapshots_
+                    if(_lastUpdateDate_set)
+                    map[parameters.getValue("lastUpdateDate")] = _lastUpdateDate_ 
+                    primaryConstructor.callBy(map) 
+                    }
+        } 
     }
-    companion object {
-        val _id_reference: TypeReference<Id<Dialog>> = object : TypeReference<Id<Dialog>>() {}
 
-        val snapshots_reference: TypeReference<List<Snapshot>> =
-                object : TypeReference<List<Snapshot>>() {}
+    companion object {
+        private val primaryConstructor: KFunction<SnapshotCol> by
+                lazy(LazyThreadSafetyMode.PUBLICATION) { SnapshotCol::class.primaryConstructor!! }
+
+        private val parameters: Map<String, KParameter> by lazy(LazyThreadSafetyMode.PUBLICATION) {
+                kotlin.collections.mapOf("_id" to primaryConstructor.findParameterByName("_id")!!,
+                "snapshots" to primaryConstructor.findParameterByName("snapshots")!!,
+                "lastUpdateDate" to primaryConstructor.findParameterByName("lastUpdateDate")!!) }
+
+        private val __id__reference: TypeReference<Id<Dialog>> = object :
+                TypeReference<Id<Dialog>>() {}
+
+        private val _snapshots__reference: TypeReference<List<Snapshot>> = object :
+                TypeReference<List<Snapshot>>() {}
     }
 }

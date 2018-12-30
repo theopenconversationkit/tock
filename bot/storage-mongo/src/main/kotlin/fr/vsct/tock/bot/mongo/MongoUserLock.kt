@@ -28,7 +28,7 @@ import fr.vsct.tock.shared.longProperty
 import mu.KotlinLogging
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
-import org.litote.kmongo.JacksonData
+import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.and
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex

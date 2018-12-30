@@ -6,14 +6,17 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class StoryDefinitionConfigurationHistoryCol_Serializer : StdSerializer<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>(StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::class.java),
+internal class StoryDefinitionConfigurationHistoryCol_Serializer :
+        StdSerializer<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>(StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() =
+            SimpleModule().addSerializer(StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::class.java,
+            this)
 
     override fun serialize(
-            value: StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("conf")

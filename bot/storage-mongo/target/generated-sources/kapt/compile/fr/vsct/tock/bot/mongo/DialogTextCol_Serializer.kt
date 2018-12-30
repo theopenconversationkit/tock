@@ -8,12 +8,12 @@ import org.litote.jackson.JacksonModuleServiceLoader
 
 internal class DialogTextCol_Serializer : StdSerializer<DialogTextCol>(DialogTextCol::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() = SimpleModule().addSerializer(DialogTextCol::class.java, this)
 
     override fun serialize(
-            value: DialogTextCol,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: DialogTextCol,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("text")

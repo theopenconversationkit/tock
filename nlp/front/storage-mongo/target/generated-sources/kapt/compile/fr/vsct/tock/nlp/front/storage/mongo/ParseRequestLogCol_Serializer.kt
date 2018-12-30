@@ -6,14 +6,17 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class ParseRequestLogCol_Serializer : StdSerializer<ParseRequestLogMongoDAO.ParseRequestLogCol>(ParseRequestLogMongoDAO.ParseRequestLogCol::class.java),
+internal class ParseRequestLogCol_Serializer :
+        StdSerializer<ParseRequestLogMongoDAO.ParseRequestLogCol>(ParseRequestLogMongoDAO.ParseRequestLogCol::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() =
+            SimpleModule().addSerializer(ParseRequestLogMongoDAO.ParseRequestLogCol::class.java,
+            this)
 
     override fun serialize(
-            value: ParseRequestLogMongoDAO.ParseRequestLogCol,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: ParseRequestLogMongoDAO.ParseRequestLogCol,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("text")
@@ -27,7 +30,8 @@ internal class ParseRequestLogCol_Serializer : StdSerializer<ParseRequestLogMong
         serializers.defaultSerializeValue(_query_, gen)
         gen.writeFieldName("result")
         val _result_ = value.result
-        if(_result_ == null) { gen.writeNull() } else {serializers.defaultSerializeValue(_result_, gen)}
+        if(_result_ == null) { gen.writeNull() } else {serializers.defaultSerializeValue(_result_,
+                gen)}
         gen.writeFieldName("durationInMS")
         val _durationInMS_ = value.durationInMS
         gen.writeNumber(_durationInMS_)

@@ -8,12 +8,12 @@ import org.litote.jackson.JacksonModuleServiceLoader
 
 internal class ClientIdCol_Serializer : StdSerializer<ClientIdCol>(ClientIdCol::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() = SimpleModule().addSerializer(ClientIdCol::class.java, this)
 
     override fun serialize(
-            value: ClientIdCol,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: ClientIdCol,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("userIds")

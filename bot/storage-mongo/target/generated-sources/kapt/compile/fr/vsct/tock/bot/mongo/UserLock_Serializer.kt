@@ -6,14 +6,15 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class UserLock_Serializer : StdSerializer<MongoUserLock.UserLock>(MongoUserLock.UserLock::class.java),
+internal class UserLock_Serializer :
+        StdSerializer<MongoUserLock.UserLock>(MongoUserLock.UserLock::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() = SimpleModule().addSerializer(MongoUserLock.UserLock::class.java, this)
 
     override fun serialize(
-            value: MongoUserLock.UserLock,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: MongoUserLock.UserLock,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("_id")

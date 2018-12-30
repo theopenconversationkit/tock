@@ -27,44 +27,44 @@ import java.util.Locale
  * A NLP model build.
  */
 data class ModelBuild(
-        /**
-         * The application id of the model.
-         */
-        val applicationId: Id<ApplicationDefinition>,
-        /**
-         * The language of the model.
-         */
-        val language: Locale,
-        /**
-         * Type of build.
-         */
-        val type: ModelBuildType,
-        /**
-         * The optional intent id.
-         */
-        val intentId: Id<IntentDefinition>?,
-        /**
-         * The optional entity type name.
-         */
-        val entityTypeName: String?,
-        /**
-         * Number of sentences included in the model.
-         */
-        val nbSentences: Int,
-        /**
-         * Duration of the build.
-         */
-        val duration: Duration,
-        /**
-         * Is there an error during the build?
-         */
-        val error: Boolean,
-        /**
-         * Error message if there is an error.
-         */
-        val errorMessage: String?,
-        /**
-         * Date of the build.
-         */
-        val date: Instant) {
-}
+    /**
+     * The application id of the model.
+     */
+    val applicationId: Id<ApplicationDefinition>,
+    /**
+     * The language of the model.
+     */
+    val language: Locale,
+    /**
+     * Type of build.
+     */
+    val type: ModelBuildType,
+    /**
+     * The optional intent id.
+     */
+    val intentId: Id<IntentDefinition>?,
+    /**
+     * The optional entity type name.
+     */
+    val entityTypeName: String?,
+    /**
+     * Number of sentences included in the model.
+     */
+    val nbSentences: Int,
+    /**
+     * Duration of the build.
+     */
+    val duration: Duration,
+    /**
+     * Is there an error during the build?
+     */
+    val error: Boolean,
+    /**
+     * Error message if there is an error.
+     */
+    val errorMessage: String?,
+    /**
+     * Date of the build.
+     */
+    val date: Instant
+)

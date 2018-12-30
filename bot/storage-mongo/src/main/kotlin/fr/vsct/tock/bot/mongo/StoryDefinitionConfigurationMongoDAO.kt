@@ -28,7 +28,7 @@ import fr.vsct.tock.shared.watchSafely
 import mu.KotlinLogging
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
-import org.litote.kmongo.JacksonData
+import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.async.getCollectionOfName
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex

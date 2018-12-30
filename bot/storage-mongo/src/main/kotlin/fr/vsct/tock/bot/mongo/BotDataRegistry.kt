@@ -27,7 +27,7 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.I18nLabelStat
 import org.litote.kmongo.DataRegistry
-import org.litote.kmongo.JacksonDataRegistry
+import org.litote.jackson.data.JacksonDataRegistry
 
 /**
  *

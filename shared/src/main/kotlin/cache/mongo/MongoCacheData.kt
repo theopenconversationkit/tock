@@ -19,7 +19,7 @@ package fr.vsct.tock.shared.cache.mongo
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
-import org.litote.kmongo.JacksonData
+import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.newId
 import java.time.Instant
 

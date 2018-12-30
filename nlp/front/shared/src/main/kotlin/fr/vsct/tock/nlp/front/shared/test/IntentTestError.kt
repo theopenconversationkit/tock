@@ -34,6 +34,4 @@ data class IntentTestError(
     val count: Int,
     val total: Int = 1,
     val firstDetectionDate: Instant = Instant.now()
-) {
-
-}
+)

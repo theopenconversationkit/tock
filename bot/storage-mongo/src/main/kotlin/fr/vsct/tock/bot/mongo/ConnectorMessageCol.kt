@@ -21,7 +21,7 @@ import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
-import org.litote.kmongo.JacksonData
+import org.litote.jackson.data.JacksonData
 import java.time.Instant
 import java.time.Instant.now
 

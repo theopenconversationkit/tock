@@ -6,14 +6,14 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-class I18nLabel_Serializer : StdSerializer<I18nLabel>(I18nLabel::class.java),
+internal class I18nLabel_Serializer : StdSerializer<I18nLabel>(I18nLabel::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() = SimpleModule().addSerializer(I18nLabel::class.java, this)
 
     override fun serialize(
-            value: I18nLabel,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: I18nLabel,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("_id")

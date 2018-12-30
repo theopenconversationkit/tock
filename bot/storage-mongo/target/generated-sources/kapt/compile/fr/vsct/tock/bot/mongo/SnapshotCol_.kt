@@ -14,15 +14,20 @@ import org.litote.kmongo.property.KCollectionSimplePropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
-internal class SnapshotCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, SnapshotCol?>) : KPropertyPath<T, SnapshotCol?>(previous,property) {
+internal class SnapshotCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        SnapshotCol?>) : KPropertyPath<T, SnapshotCol?>(previous,property) {
     val _id: KPropertyPath<T, Id<Dialog>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,SnapshotCol::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,SnapshotCol::_id)
 
     val snapshots: KCollectionSimplePropertyPath<T, Snapshot?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.bot.engine.dialog.Snapshot?>(this,SnapshotCol::snapshots)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.bot.engine.dialog.Snapshot?>(this,SnapshotCol::snapshots)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,SnapshotCol::lastUpdateDate)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,SnapshotCol::lastUpdateDate)
+
     companion object {
         val _id: KProperty1<SnapshotCol, Id<Dialog>?>
             get() = SnapshotCol::_id
@@ -32,28 +37,39 @@ internal class SnapshotCol_<T>(previous: KPropertyPath<T, *>?, property: KProper
             get() = SnapshotCol::lastUpdateDate}
 }
 
-internal class SnapshotCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<SnapshotCol>?>) : KCollectionPropertyPath<T, SnapshotCol?, SnapshotCol_<T>>(previous,property) {
+internal class SnapshotCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        Collection<SnapshotCol>?>) : KCollectionPropertyPath<T, SnapshotCol?,
+        SnapshotCol_<T>>(previous,property) {
     val _id: KPropertyPath<T, Id<Dialog>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,SnapshotCol::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,SnapshotCol::_id)
 
     val snapshots: KCollectionSimplePropertyPath<T, Snapshot?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.bot.engine.dialog.Snapshot?>(this,SnapshotCol::snapshots)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.bot.engine.dialog.Snapshot?>(this,SnapshotCol::snapshots)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,SnapshotCol::lastUpdateDate)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,SnapshotCol::lastUpdateDate)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): SnapshotCol_<T> = SnapshotCol_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): SnapshotCol_<T> =
+            SnapshotCol_(this, customProperty(this, additionalPath))}
 
-internal class SnapshotCol_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, SnapshotCol>?>) : KMapPropertyPath<T, K, SnapshotCol?, SnapshotCol_<T>>(previous,property) {
+internal class SnapshotCol_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
+        SnapshotCol>?>) : KMapPropertyPath<T, K, SnapshotCol?, SnapshotCol_<T>>(previous,property) {
     val _id: KPropertyPath<T, Id<Dialog>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,SnapshotCol::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,SnapshotCol::_id)
 
     val snapshots: KCollectionSimplePropertyPath<T, Snapshot?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.bot.engine.dialog.Snapshot?>(this,SnapshotCol::snapshots)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.bot.engine.dialog.Snapshot?>(this,SnapshotCol::snapshots)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,SnapshotCol::lastUpdateDate)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,SnapshotCol::lastUpdateDate)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): SnapshotCol_<T> = SnapshotCol_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): SnapshotCol_<T> =
+            SnapshotCol_(this, customProperty(this, additionalPath))}

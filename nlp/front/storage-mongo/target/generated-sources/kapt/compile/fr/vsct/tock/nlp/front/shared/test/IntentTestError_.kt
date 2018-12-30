@@ -15,33 +15,44 @@ import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
-class IntentTestError_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, IntentTestError?>) : KPropertyPath<T, IntentTestError?>(previous,property) {
+class IntentTestError_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, IntentTestError?>)
+        : KPropertyPath<T, IntentTestError?>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,IntentTestError::applicationId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,IntentTestError::applicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,IntentTestError::language)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.util.Locale?>(this,IntentTestError::language)
 
     val text: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentTestError::text)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,IntentTestError::text)
 
     val currentIntent: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentTestError::currentIntent)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,IntentTestError::currentIntent)
 
     val wrongIntent: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentTestError::wrongIntent)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,IntentTestError::wrongIntent)
 
     val averageErrorProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,IntentTestError::averageErrorProbability)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Double?>(this,IntentTestError::averageErrorProbability)
 
     val count: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,IntentTestError::count)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,IntentTestError::count)
 
     val total: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,IntentTestError::total)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,IntentTestError::total)
 
     val firstDetectionDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,IntentTestError::firstDetectionDate)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,IntentTestError::firstDetectionDate)
+
     companion object {
         val ApplicationId: KProperty1<IntentTestError, Id<ApplicationDefinition>?>
             get() = IntentTestError::applicationId
@@ -63,64 +74,88 @@ class IntentTestError_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*
             get() = IntentTestError::firstDetectionDate}
 }
 
-class IntentTestError_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<IntentTestError>?>) : KCollectionPropertyPath<T, IntentTestError?, IntentTestError_<T>>(previous,property) {
+class IntentTestError_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        Collection<IntentTestError>?>) : KCollectionPropertyPath<T, IntentTestError?,
+        IntentTestError_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,IntentTestError::applicationId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,IntentTestError::applicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,IntentTestError::language)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.util.Locale?>(this,IntentTestError::language)
 
     val text: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentTestError::text)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,IntentTestError::text)
 
     val currentIntent: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentTestError::currentIntent)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,IntentTestError::currentIntent)
 
     val wrongIntent: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentTestError::wrongIntent)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,IntentTestError::wrongIntent)
 
     val averageErrorProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,IntentTestError::averageErrorProbability)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Double?>(this,IntentTestError::averageErrorProbability)
 
     val count: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,IntentTestError::count)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,IntentTestError::count)
 
     val total: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,IntentTestError::total)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,IntentTestError::total)
 
     val firstDetectionDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,IntentTestError::firstDetectionDate)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,IntentTestError::firstDetectionDate)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): IntentTestError_<T> = IntentTestError_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): IntentTestError_<T> =
+            IntentTestError_(this, customProperty(this, additionalPath))}
 
-class IntentTestError_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, IntentTestError>?>) : KMapPropertyPath<T, K, IntentTestError?, IntentTestError_<T>>(previous,property) {
+class IntentTestError_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
+        IntentTestError>?>) : KMapPropertyPath<T, K, IntentTestError?,
+        IntentTestError_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,IntentTestError::applicationId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,IntentTestError::applicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.util.Locale?>(this,IntentTestError::language)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.util.Locale?>(this,IntentTestError::language)
 
     val text: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentTestError::text)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,IntentTestError::text)
 
     val currentIntent: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentTestError::currentIntent)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,IntentTestError::currentIntent)
 
     val wrongIntent: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,IntentTestError::wrongIntent)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,IntentTestError::wrongIntent)
 
     val averageErrorProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Double?>(this,IntentTestError::averageErrorProbability)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Double?>(this,IntentTestError::averageErrorProbability)
 
     val count: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,IntentTestError::count)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,IntentTestError::count)
 
     val total: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,IntentTestError::total)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,IntentTestError::total)
 
     val firstDetectionDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,IntentTestError::firstDetectionDate)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,IntentTestError::firstDetectionDate)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): IntentTestError_<T> = IntentTestError_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): IntentTestError_<T> =
+            IntentTestError_(this, customProperty(this, additionalPath))}

@@ -6,14 +6,14 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-class QueryContext_Serializer : StdSerializer<QueryContext>(QueryContext::class.java),
+internal class QueryContext_Serializer : StdSerializer<QueryContext>(QueryContext::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() = SimpleModule().addSerializer(QueryContext::class.java, this)
 
     override fun serialize(
-            value: QueryContext,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: QueryContext,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("language")

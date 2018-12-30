@@ -6,14 +6,14 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-class Classification_Serializer : StdSerializer<Classification>(Classification::class.java),
-        JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+internal class Classification_Serializer :
+        StdSerializer<Classification>(Classification::class.java), JacksonModuleServiceLoader {
+    override fun module() = SimpleModule().addSerializer(Classification::class.java, this)
 
     override fun serialize(
-            value: Classification,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: Classification,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("intentId")

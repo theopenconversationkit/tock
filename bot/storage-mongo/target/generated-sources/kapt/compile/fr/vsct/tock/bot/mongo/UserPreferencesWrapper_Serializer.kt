@@ -6,14 +6,16 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class UserPreferencesWrapper_Serializer : StdSerializer<UserTimelineCol.UserPreferencesWrapper>(UserTimelineCol.UserPreferencesWrapper::class.java),
+internal class UserPreferencesWrapper_Serializer :
+        StdSerializer<UserTimelineCol.UserPreferencesWrapper>(UserTimelineCol.UserPreferencesWrapper::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() =
+            SimpleModule().addSerializer(UserTimelineCol.UserPreferencesWrapper::class.java, this)
 
     override fun serialize(
-            value: UserTimelineCol.UserPreferencesWrapper,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: UserTimelineCol.UserPreferencesWrapper,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("firstName")

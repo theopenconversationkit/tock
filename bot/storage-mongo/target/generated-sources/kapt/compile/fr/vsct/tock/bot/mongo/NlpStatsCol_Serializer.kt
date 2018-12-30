@@ -8,12 +8,12 @@ import org.litote.jackson.JacksonModuleServiceLoader
 
 internal class NlpStatsCol_Serializer : StdSerializer<NlpStatsCol>(NlpStatsCol::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() = SimpleModule().addSerializer(NlpStatsCol::class.java, this)
 
     override fun serialize(
-            value: NlpStatsCol,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: NlpStatsCol,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("_id")

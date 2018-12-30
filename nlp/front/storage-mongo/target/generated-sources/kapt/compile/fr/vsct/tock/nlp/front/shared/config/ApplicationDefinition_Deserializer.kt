@@ -11,58 +11,170 @@ import java.util.Locale
 import kotlin.Boolean
 import kotlin.String
 import kotlin.collections.Map
+import kotlin.collections.MutableMap
+import kotlin.collections.MutableSet
 import kotlin.collections.Set
+import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.findParameterByName
+import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-class ApplicationDefinition_Deserializer : StdDeserializer<ApplicationDefinition>(ApplicationDefinition::class.java),
+internal class ApplicationDefinition_Deserializer :
+        StdDeserializer<ApplicationDefinition>(ApplicationDefinition::class.java),
         JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(ApplicationDefinition::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): ApplicationDefinition {
         with(p) {
-        var name: String? = null
-        var namespace: String? = null
-        var intents: Set<Id<IntentDefinition>>? = null
-        var supportedLocales: Set<Locale>? = null
-        var intentStatesMap: Map<Id<IntentDefinition>, Set<String>>? = null
-        var nlpEngineType: NlpEngineType? = null
-        var mergeEngineTypes: Boolean? = null
-        var useEntityModels: Boolean? = null
-        var supportSubEntities: Boolean? = null
-        var _id: Id<ApplicationDefinition>? = null
-        while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-        nextToken() 
-        if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) { break } 
-        val fieldName = currentName
-        nextToken()
-        if(currentToken != JsonToken.VALUE_NULL) when (fieldName) {
-        "name" -> name = p.text
-        "namespace" -> namespace = p.text
-        "intents" -> intents = p.readValueAs(intents_reference)
-        "supportedLocales" -> supportedLocales = p.readValueAs(supportedLocales_reference)
-        "intentStatesMap" -> intentStatesMap = p.readValueAs(intentStatesMap_reference)
-        "nlpEngineType" -> nlpEngineType = p.readValueAs(NlpEngineType::class.java)
-        "mergeEngineTypes" -> mergeEngineTypes = p.readValueAs(Boolean::class.java)
-        "useEntityModels" -> useEntityModels = p.readValueAs(Boolean::class.java)
-        "supportSubEntities" -> supportSubEntities = p.readValueAs(Boolean::class.java)
-        "_id" -> _id = p.readValueAs(_id_reference)
-        else -> if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) { p.skipChildren() } else { nextToken() }
-         }  }
-        return ApplicationDefinition(name!!, namespace!!, intents!!, supportedLocales!!, intentStatesMap!!, nlpEngineType!!, mergeEngineTypes!!, useEntityModels!!, supportSubEntities!!, _id!!)
-                }
+            var _name_: String? = null
+            var _name_set = false
+            var _namespace_: String? = null
+            var _namespace_set = false
+            var _intents_: MutableSet<Id<IntentDefinition>>? = null
+            var _intents_set = false
+            var _supportedLocales_: MutableSet<Locale>? = null
+            var _supportedLocales_set = false
+            var _intentStatesMap_: MutableMap<Id<IntentDefinition>, Set<String>>? = null
+            var _intentStatesMap_set = false
+            var _nlpEngineType_: NlpEngineType? = null
+            var _nlpEngineType_set = false
+            var _mergeEngineTypes_: Boolean? = null
+            var _mergeEngineTypes_set = false
+            var _useEntityModels_: Boolean? = null
+            var _useEntityModels_set = false
+            var _supportSubEntities_: Boolean? = null
+            var _supportSubEntities_set = false
+            var __id_: Id<ApplicationDefinition>? = null
+            var __id_set = false
+            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
+                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
+                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
+                        break } 
+                val fieldName = currentName
+                nextToken()
+                when (fieldName) { 
+                    "name" -> {
+                            _name_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _name_set = true
+                            }
+                    "namespace" -> {
+                            _namespace_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _namespace_set = true
+                            }
+                    "intents" -> {
+                            _intents_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_intents__reference);
+                            _intents_set = true
+                            }
+                    "supportedLocales" -> {
+                            _supportedLocales_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_supportedLocales__reference);
+                            _supportedLocales_set = true
+                            }
+                    "intentStatesMap" -> {
+                            _intentStatesMap_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_intentStatesMap__reference);
+                            _intentStatesMap_set = true
+                            }
+                    "nlpEngineType" -> {
+                            _nlpEngineType_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(NlpEngineType::class.java);
+                            _nlpEngineType_set = true
+                            }
+                    "mergeEngineTypes" -> {
+                            _mergeEngineTypes_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Boolean::class.java);
+                            _mergeEngineTypes_set = true
+                            }
+                    "useEntityModels" -> {
+                            _useEntityModels_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Boolean::class.java);
+                            _useEntityModels_set = true
+                            }
+                    "supportSubEntities" -> {
+                            _supportSubEntities_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Boolean::class.java);
+                            _supportSubEntities_set = true
+                            }
+                    "_id" -> {
+                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(__id__reference);
+                            __id_set = true
+                            }
+                    else -> {
+                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
+                                    JsonToken.START_ARRAY)
+                            p.skipChildren()
+                            nextToken()
+                            }
+                    } 
+                } 
+            return if(_name_set && _namespace_set && _intents_set && _supportedLocales_set &&
+                    _intentStatesMap_set && _nlpEngineType_set && _mergeEngineTypes_set &&
+                    _useEntityModels_set && _supportSubEntities_set && __id_set)
+                    ApplicationDefinition(name = _name_!!, namespace = _namespace_!!, intents =
+                            _intents_!!, supportedLocales = _supportedLocales_!!, intentStatesMap =
+                            _intentStatesMap_!!, nlpEngineType = _nlpEngineType_!!, mergeEngineTypes
+                            = _mergeEngineTypes_!!, useEntityModels = _useEntityModels_!!,
+                            supportSubEntities = _supportSubEntities_!!, _id = __id_!!)
+                    else {
+                    val map = mutableMapOf<KParameter, Any?>()
+                    if(_name_set)
+                    map[parameters.getValue("name")] = _name_
+                    if(_namespace_set)
+                    map[parameters.getValue("namespace")] = _namespace_
+                    if(_intents_set)
+                    map[parameters.getValue("intents")] = _intents_
+                    if(_supportedLocales_set)
+                    map[parameters.getValue("supportedLocales")] = _supportedLocales_
+                    if(_intentStatesMap_set)
+                    map[parameters.getValue("intentStatesMap")] = _intentStatesMap_
+                    if(_nlpEngineType_set)
+                    map[parameters.getValue("nlpEngineType")] = _nlpEngineType_
+                    if(_mergeEngineTypes_set)
+                    map[parameters.getValue("mergeEngineTypes")] = _mergeEngineTypes_
+                    if(_useEntityModels_set)
+                    map[parameters.getValue("useEntityModels")] = _useEntityModels_
+                    if(_supportSubEntities_set)
+                    map[parameters.getValue("supportSubEntities")] = _supportSubEntities_
+                    if(__id_set)
+                    map[parameters.getValue("_id")] = __id_ 
+                    primaryConstructor.callBy(map) 
+                    }
+        } 
     }
+
     companion object {
-        val intents_reference: TypeReference<Set<Id<IntentDefinition>>> =
-                object : TypeReference<Set<Id<IntentDefinition>>>() {}
+        private val primaryConstructor: KFunction<ApplicationDefinition> by
+                lazy(LazyThreadSafetyMode.PUBLICATION) {
+                ApplicationDefinition::class.primaryConstructor!! }
 
-        val supportedLocales_reference: TypeReference<Set<Locale>> =
-                object : TypeReference<Set<Locale>>() {}
+        private val parameters: Map<String, KParameter> by lazy(LazyThreadSafetyMode.PUBLICATION) {
+                kotlin.collections.mapOf("name" to primaryConstructor.findParameterByName("name")!!,
+                "namespace" to primaryConstructor.findParameterByName("namespace")!!, "intents" to
+                primaryConstructor.findParameterByName("intents")!!, "supportedLocales" to
+                primaryConstructor.findParameterByName("supportedLocales")!!, "intentStatesMap" to
+                primaryConstructor.findParameterByName("intentStatesMap")!!, "nlpEngineType" to
+                primaryConstructor.findParameterByName("nlpEngineType")!!, "mergeEngineTypes" to
+                primaryConstructor.findParameterByName("mergeEngineTypes")!!, "useEntityModels" to
+                primaryConstructor.findParameterByName("useEntityModels")!!, "supportSubEntities" to
+                primaryConstructor.findParameterByName("supportSubEntities")!!, "_id" to
+                primaryConstructor.findParameterByName("_id")!!) }
 
-        val intentStatesMap_reference: TypeReference<Map<Id<IntentDefinition>, Set<String>>> =
-                object : TypeReference<Map<Id<IntentDefinition>, Set<String>>>() {}
+        private val _intents__reference: TypeReference<Set<Id<IntentDefinition>>> = object :
+                TypeReference<Set<Id<IntentDefinition>>>() {}
 
-        val _id_reference: TypeReference<Id<ApplicationDefinition>> =
-                object : TypeReference<Id<ApplicationDefinition>>() {}
+        private val _supportedLocales__reference: TypeReference<Set<Locale>> = object :
+                TypeReference<Set<Locale>>() {}
+
+        private val _intentStatesMap__reference: TypeReference<Map<Id<IntentDefinition>,
+                Set<String>>> = object : TypeReference<Map<Id<IntentDefinition>, Set<String>>>() {}
+
+        private val __id__reference: TypeReference<Id<ApplicationDefinition>> = object :
+                TypeReference<Id<ApplicationDefinition>>() {}
     }
 }

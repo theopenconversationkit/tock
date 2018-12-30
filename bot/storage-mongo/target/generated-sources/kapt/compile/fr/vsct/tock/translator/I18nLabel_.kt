@@ -12,24 +12,31 @@ import org.litote.kmongo.property.KCollectionSimplePropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
-class I18nLabel_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18nLabel?>) : KPropertyPath<T, I18nLabel?>(previous,property) {
+class I18nLabel_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18nLabel?>) :
+        KPropertyPath<T, I18nLabel?>(previous,property) {
     val _id: KPropertyPath<T, Id<I18nLabel>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.translator.I18nLabel>?>(this,I18nLabel::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.translator.I18nLabel>?>(this,I18nLabel::_id)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nLabel::namespace)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nLabel::namespace)
 
     val category: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nLabel::category)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nLabel::category)
 
     val i18n: KCollectionSimplePropertyPath<T, I18nLocalizedLabel?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.translator.I18nLocalizedLabel?>(this,I18nLabel::i18n)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.translator.I18nLocalizedLabel?>(this,I18nLabel::i18n)
 
     val defaultLabel: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nLabel::defaultLabel)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nLabel::defaultLabel)
 
     val version: KPropertyPath<T, Int?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,I18nLabel::version)
+
     companion object {
         val _id: KProperty1<I18nLabel, Id<I18nLabel>?>
             get() = I18nLabel::_id
@@ -45,46 +52,61 @@ class I18nLabel_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18n
             get() = I18nLabel::version}
 }
 
-class I18nLabel_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<I18nLabel>?>) : KCollectionPropertyPath<T, I18nLabel?, I18nLabel_<T>>(previous,property) {
+class I18nLabel_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        Collection<I18nLabel>?>) : KCollectionPropertyPath<T, I18nLabel?,
+        I18nLabel_<T>>(previous,property) {
     val _id: KPropertyPath<T, Id<I18nLabel>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.translator.I18nLabel>?>(this,I18nLabel::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.translator.I18nLabel>?>(this,I18nLabel::_id)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nLabel::namespace)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nLabel::namespace)
 
     val category: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nLabel::category)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nLabel::category)
 
     val i18n: KCollectionSimplePropertyPath<T, I18nLocalizedLabel?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.translator.I18nLocalizedLabel?>(this,I18nLabel::i18n)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.translator.I18nLocalizedLabel?>(this,I18nLabel::i18n)
 
     val defaultLabel: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nLabel::defaultLabel)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nLabel::defaultLabel)
 
     val version: KPropertyPath<T, Int?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,I18nLabel::version)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): I18nLabel_<T> = I18nLabel_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): I18nLabel_<T> = I18nLabel_(this,
+            customProperty(this, additionalPath))}
 
-class I18nLabel_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, I18nLabel>?>) : KMapPropertyPath<T, K, I18nLabel?, I18nLabel_<T>>(previous,property) {
+class I18nLabel_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
+        I18nLabel>?>) : KMapPropertyPath<T, K, I18nLabel?, I18nLabel_<T>>(previous,property) {
     val _id: KPropertyPath<T, Id<I18nLabel>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.translator.I18nLabel>?>(this,I18nLabel::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.translator.I18nLabel>?>(this,I18nLabel::_id)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nLabel::namespace)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nLabel::namespace)
 
     val category: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nLabel::category)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nLabel::category)
 
     val i18n: KCollectionSimplePropertyPath<T, I18nLocalizedLabel?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.translator.I18nLocalizedLabel?>(this,I18nLabel::i18n)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.translator.I18nLocalizedLabel?>(this,I18nLabel::i18n)
 
     val defaultLabel: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,I18nLabel::defaultLabel)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,I18nLabel::defaultLabel)
 
     val version: KPropertyPath<T, Int?>
         get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,I18nLabel::version)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): I18nLabel_<T> = I18nLabel_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): I18nLabel_<T> = I18nLabel_(this,
+            customProperty(this, additionalPath))}

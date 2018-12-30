@@ -6,14 +6,15 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-class EntityTypeDefinition_Serializer : StdSerializer<EntityTypeDefinition>(EntityTypeDefinition::class.java),
+internal class EntityTypeDefinition_Serializer :
+        StdSerializer<EntityTypeDefinition>(EntityTypeDefinition::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() = SimpleModule().addSerializer(EntityTypeDefinition::class.java, this)
 
     override fun serialize(
-            value: EntityTypeDefinition,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: EntityTypeDefinition,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("name")

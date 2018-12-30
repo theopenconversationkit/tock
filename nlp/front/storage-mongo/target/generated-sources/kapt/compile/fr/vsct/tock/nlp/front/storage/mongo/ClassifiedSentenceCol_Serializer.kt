@@ -6,14 +6,17 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class ClassifiedSentenceCol_Serializer : StdSerializer<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>(ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::class.java),
+internal class ClassifiedSentenceCol_Serializer :
+        StdSerializer<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>(ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() =
+            SimpleModule().addSerializer(ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::class.java,
+            this)
 
     override fun serialize(
-            value: ClassifiedSentenceMongoDAO.ClassifiedSentenceCol,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: ClassifiedSentenceMongoDAO.ClassifiedSentenceCol,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("text")
@@ -42,13 +45,16 @@ internal class ClassifiedSentenceCol_Serializer : StdSerializer<ClassifiedSenten
         serializers.defaultSerializeValue(_classification_, gen)
         gen.writeFieldName("lastIntentProbability")
         val _lastIntentProbability_ = value.lastIntentProbability
-        if(_lastIntentProbability_ == null) { gen.writeNull() } else {gen.writeNumber(_lastIntentProbability_)}
+        if(_lastIntentProbability_ == null) { gen.writeNull() } else
+                {gen.writeNumber(_lastIntentProbability_)}
         gen.writeFieldName("lastEntityProbability")
         val _lastEntityProbability_ = value.lastEntityProbability
-        if(_lastEntityProbability_ == null) { gen.writeNull() } else {gen.writeNumber(_lastEntityProbability_)}
+        if(_lastEntityProbability_ == null) { gen.writeNull() } else
+                {gen.writeNumber(_lastEntityProbability_)}
         gen.writeFieldName("lastUsage")
         val _lastUsage_ = value.lastUsage
-        if(_lastUsage_ == null) { gen.writeNull() } else {serializers.defaultSerializeValue(_lastUsage_, gen)}
+        if(_lastUsage_ == null) { gen.writeNull() } else
+                {serializers.defaultSerializeValue(_lastUsage_, gen)}
         gen.writeFieldName("usageCount")
         val _usageCount_ = value.usageCount
         if(_usageCount_ == null) { gen.writeNull() } else {gen.writeNumber(_usageCount_)}

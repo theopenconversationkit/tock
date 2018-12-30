@@ -8,12 +8,12 @@ import org.litote.jackson.JacksonModuleServiceLoader
 
 internal class Feature_Serializer : StdSerializer<Feature>(Feature::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+    override fun module() = SimpleModule().addSerializer(Feature::class.java, this)
 
     override fun serialize(
-            value: Feature,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: Feature,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("_id")

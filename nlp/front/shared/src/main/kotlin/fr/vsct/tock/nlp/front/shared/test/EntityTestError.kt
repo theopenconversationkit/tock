@@ -36,7 +36,4 @@ data class EntityTestError(
     val count: Int = 0,
     val total: Int = 1,
     val firstDetectionDate: Instant = Instant.now()
-) {
-
-
-}
+)

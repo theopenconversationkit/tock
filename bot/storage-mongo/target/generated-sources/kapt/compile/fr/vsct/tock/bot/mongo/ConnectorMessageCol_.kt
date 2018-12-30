@@ -12,15 +12,19 @@ import org.litote.kmongo.property.KCollectionSimplePropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
-internal class ConnectorMessageCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ConnectorMessageCol?>) : KPropertyPath<T, ConnectorMessageCol?>(previous,property) {
+internal class ConnectorMessageCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        ConnectorMessageCol?>) : KPropertyPath<T, ConnectorMessageCol?>(previous,property) {
     val _id: ConnectorMessageColId_<T>
         get() = ConnectorMessageColId_(this,ConnectorMessageCol::_id)
 
     val messages: KCollectionSimplePropertyPath<T, AnyValueWrapper?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.shared.jackson.AnyValueWrapper?>(this,ConnectorMessageCol::messages)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.shared.jackson.AnyValueWrapper?>(this,ConnectorMessageCol::messages)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,ConnectorMessageCol::date)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,ConnectorMessageCol::date)
+
     companion object {
         val _id: ConnectorMessageColId_<ConnectorMessageCol>
             get() = ConnectorMessageColId_<ConnectorMessageCol>(null,ConnectorMessageCol::_id)
@@ -30,28 +34,38 @@ internal class ConnectorMessageCol_<T>(previous: KPropertyPath<T, *>?, property:
             get() = ConnectorMessageCol::date}
 }
 
-internal class ConnectorMessageCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<ConnectorMessageCol>?>) : KCollectionPropertyPath<T, ConnectorMessageCol?, ConnectorMessageCol_<T>>(previous,property) {
+internal class ConnectorMessageCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        Collection<ConnectorMessageCol>?>) : KCollectionPropertyPath<T, ConnectorMessageCol?,
+        ConnectorMessageCol_<T>>(previous,property) {
     val _id: ConnectorMessageColId_<T>
         get() = ConnectorMessageColId_(this,ConnectorMessageCol::_id)
 
     val messages: KCollectionSimplePropertyPath<T, AnyValueWrapper?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.shared.jackson.AnyValueWrapper?>(this,ConnectorMessageCol::messages)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.shared.jackson.AnyValueWrapper?>(this,ConnectorMessageCol::messages)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,ConnectorMessageCol::date)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,ConnectorMessageCol::date)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): ConnectorMessageCol_<T> = ConnectorMessageCol_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): ConnectorMessageCol_<T> =
+            ConnectorMessageCol_(this, customProperty(this, additionalPath))}
 
-internal class ConnectorMessageCol_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, ConnectorMessageCol>?>) : KMapPropertyPath<T, K, ConnectorMessageCol?, ConnectorMessageCol_<T>>(previous,property) {
+internal class ConnectorMessageCol_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        Map<K, ConnectorMessageCol>?>) : KMapPropertyPath<T, K, ConnectorMessageCol?,
+        ConnectorMessageCol_<T>>(previous,property) {
     val _id: ConnectorMessageColId_<T>
         get() = ConnectorMessageColId_(this,ConnectorMessageCol::_id)
 
     val messages: KCollectionSimplePropertyPath<T, AnyValueWrapper?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.shared.jackson.AnyValueWrapper?>(this,ConnectorMessageCol::messages)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.shared.jackson.AnyValueWrapper?>(this,ConnectorMessageCol::messages)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, java.time.Instant?>(this,ConnectorMessageCol::date)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                java.time.Instant?>(this,ConnectorMessageCol::date)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): ConnectorMessageCol_<T> = ConnectorMessageCol_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): ConnectorMessageCol_<T> =
+            ConnectorMessageCol_(this, customProperty(this, additionalPath))}

@@ -11,45 +11,136 @@ import java.util.Locale
 import kotlin.Double
 import kotlin.Long
 import kotlin.String
+import kotlin.collections.Map
+import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.findParameterByName
+import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-internal class ParseRequestLogIntentStatCol_Deserializer : StdDeserializer<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>(ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol::class.java),
+internal class ParseRequestLogIntentStatCol_Deserializer :
+        StdDeserializer<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>(ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol::class.java),
         JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addDeserializer(ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol::class.java, this)
+    override fun module() =
+            SimpleModule().addDeserializer(ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol::class.java,
+            this)
 
-    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol {
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext):
+            ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol {
         with(p) {
-        var applicationId: Id<ApplicationDefinition>? = null
-        var language: Locale? = null
-        var intent1: String? = null
-        var intent2: String? = null
-        var averageDiff: Double? = null
-        var count: Long? = null
-        var _id: Id<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>? = null
-        while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-        nextToken() 
-        if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) { break } 
-        val fieldName = currentName
-        nextToken()
-        if(currentToken != JsonToken.VALUE_NULL) when (fieldName) {
-        "applicationId" -> applicationId = p.readValueAs(applicationId_reference)
-        "language" -> language = p.readValueAs(Locale::class.java)
-        "intent1" -> intent1 = p.text
-        "intent2" -> intent2 = p.text
-        "averageDiff" -> averageDiff = p.readValueAs(Double::class.java)
-        "count" -> count = p.readValueAs(Long::class.java)
-        "_id" -> _id = p.readValueAs(_id_reference)
-        else -> if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) { p.skipChildren() } else { nextToken() }
-         }  }
-        return ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol(applicationId!!, language!!, intent1!!, intent2!!, averageDiff!!, count!!, _id!!)
-                }
+            var _applicationId_: Id<ApplicationDefinition>? = null
+            var _applicationId_set = false
+            var _language_: Locale? = null
+            var _language_set = false
+            var _intent1_: String? = null
+            var _intent1_set = false
+            var _intent2_: String? = null
+            var _intent2_set = false
+            var _averageDiff_: Double? = null
+            var _averageDiff_set = false
+            var _count_: Long? = null
+            var _count_set = false
+            var __id_: Id<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>? = null
+            var __id_set = false
+            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
+                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
+                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
+                        break } 
+                val fieldName = currentName
+                nextToken()
+                when (fieldName) { 
+                    "applicationId" -> {
+                            _applicationId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_applicationId__reference);
+                            _applicationId_set = true
+                            }
+                    "language" -> {
+                            _language_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Locale::class.java);
+                            _language_set = true
+                            }
+                    "intent1" -> {
+                            _intent1_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _intent1_set = true
+                            }
+                    "intent2" -> {
+                            _intent2_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _intent2_set = true
+                            }
+                    "averageDiff" -> {
+                            _averageDiff_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Double::class.java);
+                            _averageDiff_set = true
+                            }
+                    "count" -> {
+                            _count_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Long::class.java);
+                            _count_set = true
+                            }
+                    "_id" -> {
+                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(__id__reference);
+                            __id_set = true
+                            }
+                    else -> {
+                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
+                                    JsonToken.START_ARRAY)
+                            p.skipChildren()
+                            nextToken()
+                            }
+                    } 
+                } 
+            return if(_applicationId_set && _language_set && _intent1_set && _intent2_set &&
+                    _averageDiff_set && _count_set && __id_set)
+                    ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol(applicationId =
+                            _applicationId_!!, language = _language_!!, intent1 = _intent1_!!,
+                            intent2 = _intent2_!!, averageDiff = _averageDiff_!!, count = _count_!!,
+                            _id = __id_!!)
+                    else {
+                    val map = mutableMapOf<KParameter, Any?>()
+                    if(_applicationId_set)
+                    map[parameters.getValue("applicationId")] = _applicationId_
+                    if(_language_set)
+                    map[parameters.getValue("language")] = _language_
+                    if(_intent1_set)
+                    map[parameters.getValue("intent1")] = _intent1_
+                    if(_intent2_set)
+                    map[parameters.getValue("intent2")] = _intent2_
+                    if(_averageDiff_set)
+                    map[parameters.getValue("averageDiff")] = _averageDiff_
+                    if(_count_set)
+                    map[parameters.getValue("count")] = _count_
+                    if(__id_set)
+                    map[parameters.getValue("_id")] = __id_ 
+                    primaryConstructor.callBy(map) 
+                    }
+        } 
     }
-    companion object {
-        val applicationId_reference: TypeReference<Id<ApplicationDefinition>> =
-                object : TypeReference<Id<ApplicationDefinition>>() {}
 
-        val _id_reference: TypeReference<Id<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>> =
-                object : TypeReference<Id<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>>() {}
+    companion object {
+        private val primaryConstructor:
+                KFunction<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol> by
+                lazy(LazyThreadSafetyMode.PUBLICATION) {
+                ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol::class.primaryConstructor!! }
+
+        private val parameters: Map<String, KParameter> by lazy(LazyThreadSafetyMode.PUBLICATION) {
+                kotlin.collections.mapOf("applicationId" to
+                primaryConstructor.findParameterByName("applicationId")!!, "language" to
+                primaryConstructor.findParameterByName("language")!!, "intent1" to
+                primaryConstructor.findParameterByName("intent1")!!, "intent2" to
+                primaryConstructor.findParameterByName("intent2")!!, "averageDiff" to
+                primaryConstructor.findParameterByName("averageDiff")!!, "count" to
+                primaryConstructor.findParameterByName("count")!!, "_id" to
+                primaryConstructor.findParameterByName("_id")!!) }
+
+        private val _applicationId__reference: TypeReference<Id<ApplicationDefinition>> = object :
+                TypeReference<Id<ApplicationDefinition>>() {}
+
+        private val __id__reference:
+                TypeReference<Id<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>> = object :
+                TypeReference<Id<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>>() {}
     }
 }

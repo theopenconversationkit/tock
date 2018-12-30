@@ -15,27 +15,36 @@ import org.litote.kmongo.property.KCollectionSimplePropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
-class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, StoryDefinitionConfiguration?>) : KPropertyPath<T, StoryDefinitionConfiguration?>(previous,property) {
+class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        StoryDefinitionConfiguration?>) : KPropertyPath<T,
+        StoryDefinitionConfiguration?>(previous,property) {
     val storyId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,StoryDefinitionConfiguration::storyId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,StoryDefinitionConfiguration::storyId)
 
     val botId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,StoryDefinitionConfiguration::botId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,StoryDefinitionConfiguration::botId)
 
     val intent: Intent_<T>
         get() = Intent_(this,StoryDefinitionConfiguration::intent)
 
     val currentType: KPropertyPath<T, AnswerConfigurationType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.bot.admin.answer.AnswerConfigurationType?>(this,StoryDefinitionConfiguration::currentType)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                fr.vsct.tock.bot.admin.answer.AnswerConfigurationType?>(this,StoryDefinitionConfiguration::currentType)
 
     val answers: KCollectionSimplePropertyPath<T, AnswerConfiguration?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.bot.admin.answer.AnswerConfiguration?>(this,StoryDefinitionConfiguration::answers)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.bot.admin.answer.AnswerConfiguration?>(this,StoryDefinitionConfiguration::answers)
 
     val version: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,StoryDefinitionConfiguration::version)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,StoryDefinitionConfiguration::version)
 
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration>?>(this,StoryDefinitionConfiguration::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration>?>(this,StoryDefinitionConfiguration::_id)
+
     companion object {
         val StoryId: KProperty1<StoryDefinitionConfiguration, String?>
             get() = StoryDefinitionConfiguration::storyId
@@ -45,7 +54,8 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
             get() = Intent_<StoryDefinitionConfiguration>(null,StoryDefinitionConfiguration::intent)
         val CurrentType: KProperty1<StoryDefinitionConfiguration, AnswerConfigurationType?>
             get() = StoryDefinitionConfiguration::currentType
-        val Answers: KCollectionSimplePropertyPath<StoryDefinitionConfiguration, AnswerConfiguration?>
+        val Answers: KCollectionSimplePropertyPath<StoryDefinitionConfiguration,
+                AnswerConfiguration?>
             get() = KCollectionSimplePropertyPath(null, StoryDefinitionConfiguration::answers)
         val Version: KProperty1<StoryDefinitionConfiguration, Int?>
             get() = StoryDefinitionConfiguration::version
@@ -53,52 +63,70 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
             get() = StoryDefinitionConfiguration::_id}
 }
 
-class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<StoryDefinitionConfiguration>?>) : KCollectionPropertyPath<T, StoryDefinitionConfiguration?, StoryDefinitionConfiguration_<T>>(previous,property) {
+class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        Collection<StoryDefinitionConfiguration>?>) : KCollectionPropertyPath<T,
+        StoryDefinitionConfiguration?, StoryDefinitionConfiguration_<T>>(previous,property) {
     val storyId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,StoryDefinitionConfiguration::storyId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,StoryDefinitionConfiguration::storyId)
 
     val botId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,StoryDefinitionConfiguration::botId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,StoryDefinitionConfiguration::botId)
 
     val intent: Intent_<T>
         get() = Intent_(this,StoryDefinitionConfiguration::intent)
 
     val currentType: KPropertyPath<T, AnswerConfigurationType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.bot.admin.answer.AnswerConfigurationType?>(this,StoryDefinitionConfiguration::currentType)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                fr.vsct.tock.bot.admin.answer.AnswerConfigurationType?>(this,StoryDefinitionConfiguration::currentType)
 
     val answers: KCollectionSimplePropertyPath<T, AnswerConfiguration?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.bot.admin.answer.AnswerConfiguration?>(this,StoryDefinitionConfiguration::answers)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.bot.admin.answer.AnswerConfiguration?>(this,StoryDefinitionConfiguration::answers)
 
     val version: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,StoryDefinitionConfiguration::version)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,StoryDefinitionConfiguration::version)
 
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration>?>(this,StoryDefinitionConfiguration::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration>?>(this,StoryDefinitionConfiguration::_id)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): StoryDefinitionConfiguration_<T> = StoryDefinitionConfiguration_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): StoryDefinitionConfiguration_<T>
+            = StoryDefinitionConfiguration_(this, customProperty(this, additionalPath))}
 
-class StoryDefinitionConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, StoryDefinitionConfiguration>?>) : KMapPropertyPath<T, K, StoryDefinitionConfiguration?, StoryDefinitionConfiguration_<T>>(previous,property) {
+class StoryDefinitionConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
+        Map<K, StoryDefinitionConfiguration>?>) : KMapPropertyPath<T, K,
+        StoryDefinitionConfiguration?, StoryDefinitionConfiguration_<T>>(previous,property) {
     val storyId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,StoryDefinitionConfiguration::storyId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,StoryDefinitionConfiguration::storyId)
 
     val botId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,StoryDefinitionConfiguration::botId)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.String?>(this,StoryDefinitionConfiguration::botId)
 
     val intent: Intent_<T>
         get() = Intent_(this,StoryDefinitionConfiguration::intent)
 
     val currentType: KPropertyPath<T, AnswerConfigurationType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, fr.vsct.tock.bot.admin.answer.AnswerConfigurationType?>(this,StoryDefinitionConfiguration::currentType)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                fr.vsct.tock.bot.admin.answer.AnswerConfigurationType?>(this,StoryDefinitionConfiguration::currentType)
 
     val answers: KCollectionSimplePropertyPath<T, AnswerConfiguration?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T, fr.vsct.tock.bot.admin.answer.AnswerConfiguration?>(this,StoryDefinitionConfiguration::answers)
+        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
+                fr.vsct.tock.bot.admin.answer.AnswerConfiguration?>(this,StoryDefinitionConfiguration::answers)
 
     val version: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,StoryDefinitionConfiguration::version)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                kotlin.Int?>(this,StoryDefinitionConfiguration::version)
 
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, org.litote.kmongo.Id<fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration>?>(this,StoryDefinitionConfiguration::_id)
+        get() = org.litote.kmongo.property.KPropertyPath<T,
+                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration>?>(this,StoryDefinitionConfiguration::_id)
 
     @Suppress("UNCHECKED_CAST")
-    override fun memberWithAdditionalPath(additionalPath: String): StoryDefinitionConfiguration_<T> = StoryDefinitionConfiguration_(this, customProperty(this, additionalPath))}
+    override fun memberWithAdditionalPath(additionalPath: String): StoryDefinitionConfiguration_<T>
+            = StoryDefinitionConfiguration_(this, customProperty(this, additionalPath))}

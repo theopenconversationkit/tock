@@ -48,6 +48,11 @@
                                     <artifactId>kmongo-annotation-processor</artifactId>
                                     <version>${kmongo}</version>
                                 </annotationProcessorPath>
+                                <annotationProcessorPath>
+                                    <groupId>org.litote.jackson</groupId>
+                                    <artifactId>jackson-generator</artifactId>
+                                    <version>${jackson-generator}</version>
+                                </annotationProcessorPath>
                             </annotationProcessorPaths>
                         </configuration>
                     </execution>
@@ -106,8 +111,12 @@
             <artifactId>kmongo-id-jackson</artifactId>
         </dependency>
         <dependency>
-            <groupId>org.litote.kmongo</groupId>
-            <artifactId>kmongo-jackson-modules-service-loader</artifactId>
+            <groupId>org.litote.jackson</groupId>
+            <artifactId>jackson-module-loader</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.litote.jackson</groupId>
+            <artifactId>jackson-data</artifactId>
         </dependency>
 
         <dependency>

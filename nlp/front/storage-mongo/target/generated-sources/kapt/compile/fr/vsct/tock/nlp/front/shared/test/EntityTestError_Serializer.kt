@@ -6,14 +6,14 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-class EntityTestError_Serializer : StdSerializer<EntityTestError>(EntityTestError::class.java),
-        JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(this)
+internal class EntityTestError_Serializer :
+        StdSerializer<EntityTestError>(EntityTestError::class.java), JacksonModuleServiceLoader {
+    override fun module() = SimpleModule().addSerializer(EntityTestError::class.java, this)
 
     override fun serialize(
-            value: EntityTestError,
-            gen: JsonGenerator,
-            serializers: SerializerProvider
+        value: EntityTestError,
+        gen: JsonGenerator,
+        serializers: SerializerProvider
     ) {
         gen.writeStartObject()
         gen.writeFieldName("applicationId")
@@ -27,7 +27,8 @@ class EntityTestError_Serializer : StdSerializer<EntityTestError>(EntityTestErro
         gen.writeString(_text_)
         gen.writeFieldName("intentId")
         val _intentId_ = value.intentId
-        if(_intentId_ == null) { gen.writeNull() } else {serializers.defaultSerializeValue(_intentId_, gen)}
+        if(_intentId_ == null) { gen.writeNull() } else
+                {serializers.defaultSerializeValue(_intentId_, gen)}
         gen.writeFieldName("lastAnalyse")
         val _lastAnalyse_ = value.lastAnalyse
         serializers.defaultSerializeValue(_lastAnalyse_, gen)
