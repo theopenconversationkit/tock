@@ -44,7 +44,7 @@
         <jackson-module>2.9.8</jackson-module>
         <jackson-module-loader>0.1.0</jackson-module-loader>
         <jackson-data>0.1.0</jackson-data>
-        <jackson-generator>0.1.0</jackson-generator>
+        <jackson-generator>0.2.0</jackson-generator>
         <klaxon>4.0.5</klaxon>
         <vertx>3.6.2</vertx>
         <retrofit>2.5.0</retrofit>

@@ -63,14 +63,14 @@
                             </sourceDirs>
                             <annotationProcessorPaths>
                                 <annotationProcessorPath>
-                                    <groupId>org.litote.kmongo</groupId>
-                                    <artifactId>kmongo-annotation-processor</artifactId>
-                                    <version>${kmongo}</version>
-                                </annotationProcessorPath>
-                                <annotationProcessorPath>
                                     <groupId>org.litote.jackson</groupId>
                                     <artifactId>jackson-generator</artifactId>
                                     <version>${jackson-generator}</version>
+                                </annotationProcessorPath>
+                                <annotationProcessorPath>
+                                    <groupId>org.litote.kmongo</groupId>
+                                    <artifactId>kmongo-annotation-processor</artifactId>
+                                    <version>${kmongo}</version>
                                 </annotationProcessorPath>
                             </annotationProcessorPaths>
                         </configuration>
