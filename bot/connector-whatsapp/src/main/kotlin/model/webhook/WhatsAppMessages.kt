@@ -28,7 +28,8 @@ import fr.vsct.tock.bot.connector.whatsapp.whatsAppConnectorType
 data class WhatsAppMessages(
     val messages: List<WhatsAppMessage> = emptyList(),
     val statuses: List<WhatsAppStatus> = emptyList(),
-    val errors: List<WhatsAppError> = emptyList()
+    val errors: List<WhatsAppError> = emptyList(),
+    val contacts: List<WhatsAppContact> = emptyList()
 ) : ConnectorMessage {
 
     @get:JsonIgnore

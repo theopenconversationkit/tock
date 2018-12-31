@@ -1,11 +1,16 @@
 {
+  "contacts": [
+    {
+      "profile": {
+        "name": "Kerry Fisher"
+      },
+      "wa_id": "16315551234"
+    }
+  ],
   "messages": [
     {
       "from": "16315555555",
       "id": "ABGGFlA5FpafAgo6tHcNmNjXmuSf",
-      "profile": {
-        "name": "Kerry Fisher"
-      },
       "timestamp": "1518694235",
       "text": {
         "body": "Hello this is an answer"

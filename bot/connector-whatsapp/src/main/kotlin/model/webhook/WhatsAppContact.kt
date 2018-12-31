@@ -16,14 +16,13 @@
 
 package fr.vsct.tock.bot.connector.whatsapp.model.webhook
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 /**
  *
  */
-data class WhatsAppVoiceMessage(
-    val voice: WhatsAppAttachment,
-    override val id: String,
-    override val from: String,
-    override val timestamp: String,
-    override val context: WhatsAppContext? = null,
-    override val groupId: String? = null
-) : WhatsAppMessage(WhatsAppMessageType.voice)
+data class WhatsAppContact(
+    val profile: WhatsAppProfile?,
+    @get:JsonProperty("wa_id")
+    val waId: String?
+)

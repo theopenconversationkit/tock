@@ -42,7 +42,6 @@ abstract class WhatsAppMessage(val type: WhatsAppMessageType) {
     abstract val from: String
     abstract val id: String
     abstract val timestamp: String
-    abstract val profile: WhatsAppProfile?
     abstract val context: WhatsAppContext?
     @get:JsonProperty("group_id")
     abstract val groupId: String?

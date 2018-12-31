@@ -39,8 +39,13 @@ class WhatsAppMessagesDeserializationTest {
                         WhatsAppTextBody("Hello this is an answer"),
                         "ABGGFlA5FpafAgo6tHcNmNjXmuSf",
                         "16315555555",
-                        "1518694235",
-                        WhatsAppProfile("Kerry Fisher")
+                        "1518694235"
+                    )
+                ),
+                contacts = listOf(
+                    WhatsAppContact(
+                        WhatsAppProfile("Kerry Fisher"),
+                        "16315551234"
                     )
                 )
             ),

@@ -26,7 +26,6 @@ data class WhatsAppSystemMessage(
     override val id: String,
     override val from: String,
     override val timestamp: String,
-    override val profile: WhatsAppProfile? = null,
     override val context: WhatsAppContext? = null,
     override val groupId: String? = null
 ) : WhatsAppMessage(WhatsAppMessageType.system)
