@@ -104,11 +104,11 @@
                                 <sourceDir>../../translator/core/src/main/kotlin</sourceDir>
                             </sourceDirs>
                             <annotationProcessorPaths>
-                                <annotationProcessorPath>
+                                <!--annotationProcessorPath>
                                     <groupId>org.litote.jackson</groupId>
                                     <artifactId>jackson-generator</artifactId>
                                     <version>${jackson-generator}</version>
-                                </annotationProcessorPath>
+                                </annotationProcessorPath-->
                                 <annotationProcessorPath>
                                     <groupId>org.litote.kmongo</groupId>
                                     <artifactId>kmongo-annotation-processor</artifactId>
