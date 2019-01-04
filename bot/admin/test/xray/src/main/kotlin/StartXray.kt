@@ -26,7 +26,7 @@ private val logger = KotlinLogging.logger {}
 fun main(args: Array<String>) {
     logger.info { "Start tests" }
     val result = XrayService().executePlans()
-    if (result.success == 0) {
+    if (result.total == 0) {
         logger.error { "No test played" }
         System.exit(1)
     } else if (result.success != result.total) {
