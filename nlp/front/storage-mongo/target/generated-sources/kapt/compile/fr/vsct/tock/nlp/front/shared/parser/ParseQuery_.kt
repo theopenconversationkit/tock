@@ -3,78 +3,82 @@ package fr.vsct.tock.nlp.front.shared.parser
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Collection
+import kotlin.collections.List
 import kotlin.collections.Map
+import kotlin.collections.Set
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KCollectionSimplePropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
+private val __Queries: KProperty1<ParseQuery, List<String>?>
+    get() = ParseQuery::queries
+private val __Namespace: KProperty1<ParseQuery, String?>
+    get() = ParseQuery::namespace
+private val __ApplicationName: KProperty1<ParseQuery, String?>
+    get() = ParseQuery::applicationName
+private val __Context: KProperty1<ParseQuery, QueryContext?>
+    get() = ParseQuery::context
+private val __State: KProperty1<ParseQuery, QueryState?>
+    get() = ParseQuery::state
+private val __IntentsSubset: KProperty1<ParseQuery, Set<IntentQualifier>?>
+    get() = ParseQuery::intentsSubset
 class ParseQuery_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ParseQuery?>) :
         KPropertyPath<T, ParseQuery?>(previous,property) {
     val queries: KCollectionSimplePropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                kotlin.String?>(this,ParseQuery::queries)
+        get() = KCollectionSimplePropertyPath<T, String?>(this,ParseQuery::queries)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,ParseQuery::namespace)
+        get() = KPropertyPath<T, String?>(this,__Namespace)
 
     val applicationName: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,ParseQuery::applicationName)
+        get() = KPropertyPath<T, String?>(this,__ApplicationName)
 
     val context: QueryContext_<T>
         get() = QueryContext_(this,ParseQuery::context)
 
     val state: KPropertyPath<T, QueryState?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.nlp.front.shared.parser.QueryState?>(this,ParseQuery::state)
+        get() = KPropertyPath<T, QueryState?>(this,__State)
 
     val intentsSubset: KCollectionSimplePropertyPath<T, IntentQualifier?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                fr.vsct.tock.nlp.front.shared.parser.IntentQualifier?>(this,ParseQuery::intentsSubset)
+        get() = KCollectionSimplePropertyPath<T, IntentQualifier?>(this,ParseQuery::intentsSubset)
 
     companion object {
         val Queries: KCollectionSimplePropertyPath<ParseQuery, String?>
-            get() = KCollectionSimplePropertyPath(null, ParseQuery::queries)
+            get() = KCollectionSimplePropertyPath(null, __Queries)
         val Namespace: KProperty1<ParseQuery, String?>
-            get() = ParseQuery::namespace
+            get() = __Namespace
         val ApplicationName: KProperty1<ParseQuery, String?>
-            get() = ParseQuery::applicationName
+            get() = __ApplicationName
         val Context: QueryContext_<ParseQuery>
-            get() = QueryContext_<ParseQuery>(null,ParseQuery::context)
+            get() = QueryContext_<ParseQuery>(null,__Context)
         val State: KProperty1<ParseQuery, QueryState?>
-            get() = ParseQuery::state
+            get() = __State
         val IntentsSubset: KCollectionSimplePropertyPath<ParseQuery, IntentQualifier?>
-            get() = KCollectionSimplePropertyPath(null, ParseQuery::intentsSubset)}
+            get() = KCollectionSimplePropertyPath(null, __IntentsSubset)}
 }
 
 class ParseQuery_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<ParseQuery>?>) : KCollectionPropertyPath<T, ParseQuery?,
         ParseQuery_<T>>(previous,property) {
     val queries: KCollectionSimplePropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                kotlin.String?>(this,ParseQuery::queries)
+        get() = KCollectionSimplePropertyPath<T, String?>(this,ParseQuery::queries)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,ParseQuery::namespace)
+        get() = KPropertyPath<T, String?>(this,__Namespace)
 
     val applicationName: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,ParseQuery::applicationName)
+        get() = KPropertyPath<T, String?>(this,__ApplicationName)
 
     val context: QueryContext_<T>
         get() = QueryContext_(this,ParseQuery::context)
 
     val state: KPropertyPath<T, QueryState?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.nlp.front.shared.parser.QueryState?>(this,ParseQuery::state)
+        get() = KPropertyPath<T, QueryState?>(this,__State)
 
     val intentsSubset: KCollectionSimplePropertyPath<T, IntentQualifier?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                fr.vsct.tock.nlp.front.shared.parser.IntentQualifier?>(this,ParseQuery::intentsSubset)
+        get() = KCollectionSimplePropertyPath<T, IntentQualifier?>(this,ParseQuery::intentsSubset)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseQuery_<T> =
@@ -83,27 +87,22 @@ class ParseQuery_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
 class ParseQuery_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
         ParseQuery>?>) : KMapPropertyPath<T, K, ParseQuery?, ParseQuery_<T>>(previous,property) {
     val queries: KCollectionSimplePropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                kotlin.String?>(this,ParseQuery::queries)
+        get() = KCollectionSimplePropertyPath<T, String?>(this,ParseQuery::queries)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,ParseQuery::namespace)
+        get() = KPropertyPath<T, String?>(this,__Namespace)
 
     val applicationName: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,ParseQuery::applicationName)
+        get() = KPropertyPath<T, String?>(this,__ApplicationName)
 
     val context: QueryContext_<T>
         get() = QueryContext_(this,ParseQuery::context)
 
     val state: KPropertyPath<T, QueryState?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.nlp.front.shared.parser.QueryState?>(this,ParseQuery::state)
+        get() = KPropertyPath<T, QueryState?>(this,__State)
 
     val intentsSubset: KCollectionSimplePropertyPath<T, IntentQualifier?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                fr.vsct.tock.nlp.front.shared.parser.IntentQualifier?>(this,ParseQuery::intentsSubset)
+        get() = KCollectionSimplePropertyPath<T, IntentQualifier?>(this,ParseQuery::intentsSubset)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseQuery_<T> =

@@ -27,10 +27,28 @@ internal class ParseResult_Serializer : StdSerializer<ParseResult>(ParseResult::
         serializers.defaultSerializeValue(_language_, gen)
         gen.writeFieldName("entities")
         val _entities_ = value.entities
-        serializers.defaultSerializeValue(_entities_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.List::class.java,
+                        serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_entities_, gen, serializers)
         gen.writeFieldName("notRetainedEntities")
         val _notRetainedEntities_ = value.notRetainedEntities
-        serializers.defaultSerializeValue(_notRetainedEntities_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.List::class.java,
+                        serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_notRetainedEntities_, gen, serializers)
         gen.writeFieldName("intentProbability")
         val _intentProbability_ = value.intentProbability
         gen.writeNumber(_intentProbability_)
@@ -42,7 +60,17 @@ internal class ParseResult_Serializer : StdSerializer<ParseResult>(ParseResult::
         gen.writeString(_retainedQuery_)
         gen.writeFieldName("otherIntentsProbabilities")
         val _otherIntentsProbabilities_ = value.otherIntentsProbabilities
-        serializers.defaultSerializeValue(_otherIntentsProbabilities_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructMapType(
+                kotlin.collections.Map::class.java,
+                        serializers.config.typeFactory.constructType(kotlin.String::class.java)
+                , serializers.config.typeFactory.constructType(kotlin.Double::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_otherIntentsProbabilities_, gen, serializers)
         gen.writeEndObject()
     }
 }

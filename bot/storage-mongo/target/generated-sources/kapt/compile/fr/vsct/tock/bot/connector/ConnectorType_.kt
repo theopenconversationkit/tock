@@ -10,31 +10,33 @@ import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
+private val __Id: KProperty1<ConnectorType, String?>
+    get() = ConnectorType::id
+private val __UserInterfaceType: KProperty1<ConnectorType, UserInterfaceType?>
+    get() = ConnectorType::userInterfaceType
 class ConnectorType_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ConnectorType?>) :
         KPropertyPath<T, ConnectorType?>(previous,property) {
     val id: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ConnectorType::id)
+        get() = KPropertyPath<T, String?>(this,__Id)
 
     val userInterfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.translator.UserInterfaceType?>(this,ConnectorType::userInterfaceType)
+        get() = KPropertyPath<T, UserInterfaceType?>(this,__UserInterfaceType)
 
     companion object {
         val Id: KProperty1<ConnectorType, String?>
-            get() = ConnectorType::id
+            get() = __Id
         val UserInterfaceType: KProperty1<ConnectorType, UserInterfaceType?>
-            get() = ConnectorType::userInterfaceType}
+            get() = __UserInterfaceType}
 }
 
 class ConnectorType_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<ConnectorType>?>) : KCollectionPropertyPath<T, ConnectorType?,
         ConnectorType_<T>>(previous,property) {
     val id: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ConnectorType::id)
+        get() = KPropertyPath<T, String?>(this,__Id)
 
     val userInterfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.translator.UserInterfaceType?>(this,ConnectorType::userInterfaceType)
+        get() = KPropertyPath<T, UserInterfaceType?>(this,__UserInterfaceType)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ConnectorType_<T> =
@@ -44,11 +46,10 @@ class ConnectorType_Map<T, K>(previous: KPropertyPath<T, *>?, property: KPropert
         ConnectorType>?>) : KMapPropertyPath<T, K, ConnectorType?,
         ConnectorType_<T>>(previous,property) {
     val id: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,ConnectorType::id)
+        get() = KPropertyPath<T, String?>(this,__Id)
 
     val userInterfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.translator.UserInterfaceType?>(this,ConnectorType::userInterfaceType)
+        get() = KPropertyPath<T, UserInterfaceType?>(this,__UserInterfaceType)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ConnectorType_<T> =

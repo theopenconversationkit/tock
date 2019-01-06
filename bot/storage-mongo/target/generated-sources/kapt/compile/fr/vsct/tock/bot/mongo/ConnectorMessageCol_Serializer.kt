@@ -22,7 +22,16 @@ internal class ConnectorMessageCol_Serializer :
         serializers.defaultSerializeValue(__id_, gen)
         gen.writeFieldName("messages")
         val _messages_ = value.messages
-        serializers.defaultSerializeValue(_messages_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.List::class.java,
+                        serializers.config.typeFactory.constructType(fr.vsct.tock.shared.jackson.AnyValueWrapper::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_messages_, gen, serializers)
         gen.writeFieldName("date")
         val _date_ = value.date
         serializers.defaultSerializeValue(_date_, gen)

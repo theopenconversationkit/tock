@@ -24,19 +24,69 @@ internal class IntentDefinition_Serializer :
         gen.writeString(_namespace_)
         gen.writeFieldName("applications")
         val _applications_ = value.applications
-        serializers.defaultSerializeValue(_applications_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.Set::class.java,
+                        serializers.config.typeFactory.constructType(org.litote.kmongo.Id::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_applications_, gen, serializers)
         gen.writeFieldName("entities")
         val _entities_ = value.entities
-        serializers.defaultSerializeValue(_entities_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.Set::class.java,
+                        serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.config.EntityDefinition::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_entities_, gen, serializers)
         gen.writeFieldName("entitiesRegexp")
         val _entitiesRegexp_ = value.entitiesRegexp
-        serializers.defaultSerializeValue(_entitiesRegexp_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructMapType(
+                kotlin.collections.Map::class.java,
+                        serializers.config.typeFactory.constructType(java.util.Locale::class.java)
+                , serializers.config.typeFactory.constructCollectionType(
+                java.util.LinkedHashSet::class.java,
+                        serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.core.EntitiesRegexp::class.java)
+                )
+
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_entitiesRegexp_, gen, serializers)
         gen.writeFieldName("mandatoryStates")
         val _mandatoryStates_ = value.mandatoryStates
-        serializers.defaultSerializeValue(_mandatoryStates_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.Set::class.java,
+                        serializers.config.typeFactory.constructType(kotlin.String::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_mandatoryStates_, gen, serializers)
         gen.writeFieldName("sharedIntents")
         val _sharedIntents_ = value.sharedIntents
-        serializers.defaultSerializeValue(_sharedIntents_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.Set::class.java,
+                        serializers.config.typeFactory.constructType(org.litote.kmongo.Id::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_sharedIntents_, gen, serializers)
         gen.writeFieldName("label")
         val _label_ = value.label
         if(_label_ == null) { gen.writeNull() } else {gen.writeString(_label_)}

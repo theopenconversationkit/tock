@@ -12,43 +12,43 @@ import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
+private val __Text: KProperty1<DialogTextCol, String?>
+    get() = DialogTextCol::text
+private val __DialogId: KProperty1<DialogTextCol, Id<Dialog>?>
+    get() = DialogTextCol::dialogId
+private val __Date: KProperty1<DialogTextCol, Instant?>
+    get() = DialogTextCol::date
 internal class DialogTextCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         DialogTextCol?>) : KPropertyPath<T, DialogTextCol?>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,DialogTextCol::text)
+        get() = KPropertyPath<T, String?>(this,__Text)
 
     val dialogId: KPropertyPath<T, Id<Dialog>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,DialogTextCol::dialogId)
+        get() = KPropertyPath<T, Id<Dialog>?>(this,__DialogId)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,DialogTextCol::date)
+        get() = KPropertyPath<T, Instant?>(this,__Date)
 
     companion object {
         val Text: KProperty1<DialogTextCol, String?>
-            get() = DialogTextCol::text
+            get() = __Text
         val DialogId: KProperty1<DialogTextCol, Id<Dialog>?>
-            get() = DialogTextCol::dialogId
+            get() = __DialogId
         val Date: KProperty1<DialogTextCol, Instant?>
-            get() = DialogTextCol::date}
+            get() = __Date}
 }
 
 internal class DialogTextCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<DialogTextCol>?>) : KCollectionPropertyPath<T, DialogTextCol?,
         DialogTextCol_<T>>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,DialogTextCol::text)
+        get() = KPropertyPath<T, String?>(this,__Text)
 
     val dialogId: KPropertyPath<T, Id<Dialog>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,DialogTextCol::dialogId)
+        get() = KPropertyPath<T, Id<Dialog>?>(this,__DialogId)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,DialogTextCol::date)
+        get() = KPropertyPath<T, Instant?>(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DialogTextCol_<T> =
@@ -58,16 +58,13 @@ internal class DialogTextCol_Map<T, K>(previous: KPropertyPath<T, *>?, property:
         Map<K, DialogTextCol>?>) : KMapPropertyPath<T, K, DialogTextCol?,
         DialogTextCol_<T>>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,DialogTextCol::text)
+        get() = KPropertyPath<T, String?>(this,__Text)
 
     val dialogId: KPropertyPath<T, Id<Dialog>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.bot.engine.dialog.Dialog>?>(this,DialogTextCol::dialogId)
+        get() = KPropertyPath<T, Id<Dialog>?>(this,__DialogId)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,DialogTextCol::date)
+        get() = KPropertyPath<T, Instant?>(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DialogTextCol_<T> =

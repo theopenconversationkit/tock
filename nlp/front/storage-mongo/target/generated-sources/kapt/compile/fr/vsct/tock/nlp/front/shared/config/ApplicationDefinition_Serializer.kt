@@ -25,13 +25,45 @@ internal class ApplicationDefinition_Serializer :
         gen.writeString(_namespace_)
         gen.writeFieldName("intents")
         val _intents_ = value.intents
-        serializers.defaultSerializeValue(_intents_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.Set::class.java,
+                        serializers.config.typeFactory.constructType(org.litote.kmongo.Id::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_intents_, gen, serializers)
         gen.writeFieldName("supportedLocales")
         val _supportedLocales_ = value.supportedLocales
-        serializers.defaultSerializeValue(_supportedLocales_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.Set::class.java,
+                        serializers.config.typeFactory.constructType(java.util.Locale::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_supportedLocales_, gen, serializers)
         gen.writeFieldName("intentStatesMap")
         val _intentStatesMap_ = value.intentStatesMap
-        serializers.defaultSerializeValue(_intentStatesMap_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructMapType(
+                kotlin.collections.Map::class.java,
+                        serializers.config.typeFactory.constructType(org.litote.kmongo.Id::class.java)
+                , serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.Set::class.java,
+                        serializers.config.typeFactory.constructType(kotlin.String::class.java)
+                )
+
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_intentStatesMap_, gen, serializers)
         gen.writeFieldName("nlpEngineType")
         val _nlpEngineType_ = value.nlpEngineType
         serializers.defaultSerializeValue(_nlpEngineType_, gen)

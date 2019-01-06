@@ -1,11 +1,13 @@
 package fr.vsct.tock.bot.mongo
 
+import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerId_
 import java.time.Instant
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.collections.Map
+import kotlin.collections.Set
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KCollectionPropertyPath
@@ -13,11 +15,28 @@ import org.litote.kmongo.property.KCollectionSimplePropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
+private val ___id: KProperty1<UserTimelineCol, Id<UserTimelineCol>?>
+    get() = UserTimelineCol::_id
+private val __PlayerId: KProperty1<UserTimelineCol, PlayerId?>
+    get() = UserTimelineCol::playerId
+private val __UserPreferences: KProperty1<UserTimelineCol, UserTimelineCol.UserPreferencesWrapper?>
+    get() = UserTimelineCol::userPreferences
+private val __UserState: KProperty1<UserTimelineCol, UserTimelineCol.UserStateWrapper?>
+    get() = UserTimelineCol::userState
+private val __TemporaryIds: KProperty1<UserTimelineCol, Set<String>?>
+    get() = UserTimelineCol::temporaryIds
+private val __ApplicationIds: KProperty1<UserTimelineCol, Set<String>?>
+    get() = UserTimelineCol::applicationIds
+private val __LastActionText: KProperty1<UserTimelineCol, String?>
+    get() = UserTimelineCol::lastActionText
+private val __LastUpdateDate: KProperty1<UserTimelineCol, Instant?>
+    get() = UserTimelineCol::lastUpdateDate
+private val __LastUserActionDate: KProperty1<UserTimelineCol, Instant?>
+    get() = UserTimelineCol::lastUserActionDate
 internal class UserTimelineCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         UserTimelineCol?>) : KPropertyPath<T, UserTimelineCol?>(previous,property) {
     val _id: KPropertyPath<T, Id<UserTimelineCol>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.bot.mongo.UserTimelineCol>?>(this,UserTimelineCol::_id)
+        get() = KPropertyPath<T, Id<UserTimelineCol>?>(this,___id)
 
     val playerId: PlayerId_<T>
         get() = PlayerId_(this,UserTimelineCol::playerId)
@@ -29,52 +48,46 @@ internal class UserTimelineCol_<T>(previous: KPropertyPath<T, *>?, property: KPr
         get() = UserStateWrapper_(this,UserTimelineCol::userState)
 
     val temporaryIds: KCollectionSimplePropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol::temporaryIds)
+        get() = KCollectionSimplePropertyPath<T, String?>(this,UserTimelineCol::temporaryIds)
 
     val applicationIds: KCollectionSimplePropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol::applicationIds)
+        get() = KCollectionSimplePropertyPath<T, String?>(this,UserTimelineCol::applicationIds)
 
     val lastActionText: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol::lastActionText)
+        get() = KPropertyPath<T, String?>(this,__LastActionText)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,UserTimelineCol::lastUpdateDate)
+        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
 
     val lastUserActionDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,UserTimelineCol::lastUserActionDate)
+        get() = KPropertyPath<T, Instant?>(this,__LastUserActionDate)
 
     companion object {
         val _id: KProperty1<UserTimelineCol, Id<UserTimelineCol>?>
-            get() = UserTimelineCol::_id
+            get() = ___id
         val PlayerId: PlayerId_<UserTimelineCol>
-            get() = PlayerId_<UserTimelineCol>(null,UserTimelineCol::playerId)
+            get() = PlayerId_<UserTimelineCol>(null,__PlayerId)
         val UserPreferences: UserPreferencesWrapper_<UserTimelineCol>
-            get() = UserPreferencesWrapper_<UserTimelineCol>(null,UserTimelineCol::userPreferences)
+            get() = UserPreferencesWrapper_<UserTimelineCol>(null,__UserPreferences)
         val UserState: UserStateWrapper_<UserTimelineCol>
-            get() = UserStateWrapper_<UserTimelineCol>(null,UserTimelineCol::userState)
+            get() = UserStateWrapper_<UserTimelineCol>(null,__UserState)
         val TemporaryIds: KCollectionSimplePropertyPath<UserTimelineCol, String?>
-            get() = KCollectionSimplePropertyPath(null, UserTimelineCol::temporaryIds)
+            get() = KCollectionSimplePropertyPath(null, __TemporaryIds)
         val ApplicationIds: KCollectionSimplePropertyPath<UserTimelineCol, String?>
-            get() = KCollectionSimplePropertyPath(null, UserTimelineCol::applicationIds)
+            get() = KCollectionSimplePropertyPath(null, __ApplicationIds)
         val LastActionText: KProperty1<UserTimelineCol, String?>
-            get() = UserTimelineCol::lastActionText
+            get() = __LastActionText
         val LastUpdateDate: KProperty1<UserTimelineCol, Instant?>
-            get() = UserTimelineCol::lastUpdateDate
+            get() = __LastUpdateDate
         val LastUserActionDate: KProperty1<UserTimelineCol, Instant?>
-            get() = UserTimelineCol::lastUserActionDate}
+            get() = __LastUserActionDate}
 }
 
 internal class UserTimelineCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<UserTimelineCol>?>) : KCollectionPropertyPath<T, UserTimelineCol?,
         UserTimelineCol_<T>>(previous,property) {
     val _id: KPropertyPath<T, Id<UserTimelineCol>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.bot.mongo.UserTimelineCol>?>(this,UserTimelineCol::_id)
+        get() = KPropertyPath<T, Id<UserTimelineCol>?>(this,___id)
 
     val playerId: PlayerId_<T>
         get() = PlayerId_(this,UserTimelineCol::playerId)
@@ -86,24 +99,19 @@ internal class UserTimelineCol_Col<T>(previous: KPropertyPath<T, *>?, property: 
         get() = UserStateWrapper_(this,UserTimelineCol::userState)
 
     val temporaryIds: KCollectionSimplePropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol::temporaryIds)
+        get() = KCollectionSimplePropertyPath<T, String?>(this,UserTimelineCol::temporaryIds)
 
     val applicationIds: KCollectionSimplePropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol::applicationIds)
+        get() = KCollectionSimplePropertyPath<T, String?>(this,UserTimelineCol::applicationIds)
 
     val lastActionText: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol::lastActionText)
+        get() = KPropertyPath<T, String?>(this,__LastActionText)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,UserTimelineCol::lastUpdateDate)
+        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
 
     val lastUserActionDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,UserTimelineCol::lastUserActionDate)
+        get() = KPropertyPath<T, Instant?>(this,__LastUserActionDate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): UserTimelineCol_<T> =
@@ -113,8 +121,7 @@ internal class UserTimelineCol_Map<T, K>(previous: KPropertyPath<T, *>?, propert
         Map<K, UserTimelineCol>?>) : KMapPropertyPath<T, K, UserTimelineCol?,
         UserTimelineCol_<T>>(previous,property) {
     val _id: KPropertyPath<T, Id<UserTimelineCol>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.bot.mongo.UserTimelineCol>?>(this,UserTimelineCol::_id)
+        get() = KPropertyPath<T, Id<UserTimelineCol>?>(this,___id)
 
     val playerId: PlayerId_<T>
         get() = PlayerId_(this,UserTimelineCol::playerId)
@@ -126,24 +133,19 @@ internal class UserTimelineCol_Map<T, K>(previous: KPropertyPath<T, *>?, propert
         get() = UserStateWrapper_(this,UserTimelineCol::userState)
 
     val temporaryIds: KCollectionSimplePropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol::temporaryIds)
+        get() = KCollectionSimplePropertyPath<T, String?>(this,UserTimelineCol::temporaryIds)
 
     val applicationIds: KCollectionSimplePropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol::applicationIds)
+        get() = KCollectionSimplePropertyPath<T, String?>(this,UserTimelineCol::applicationIds)
 
     val lastActionText: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol::lastActionText)
+        get() = KPropertyPath<T, String?>(this,__LastActionText)
 
     val lastUpdateDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,UserTimelineCol::lastUpdateDate)
+        get() = KPropertyPath<T, Instant?>(this,__LastUpdateDate)
 
     val lastUserActionDate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,UserTimelineCol::lastUserActionDate)
+        get() = KPropertyPath<T, Instant?>(this,__LastUserActionDate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): UserTimelineCol_<T> =

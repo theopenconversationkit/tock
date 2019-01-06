@@ -32,7 +32,16 @@ internal class StoryDefinitionConfiguration_Serializer :
         serializers.defaultSerializeValue(_currentType_, gen)
         gen.writeFieldName("answers")
         val _answers_ = value.answers
-        serializers.defaultSerializeValue(_answers_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.List::class.java,
+                        serializers.config.typeFactory.constructType(fr.vsct.tock.bot.admin.answer.AnswerConfiguration::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_answers_, gen, serializers)
         gen.writeFieldName("version")
         val _version_ = value.version
         gen.writeNumber(_version_)

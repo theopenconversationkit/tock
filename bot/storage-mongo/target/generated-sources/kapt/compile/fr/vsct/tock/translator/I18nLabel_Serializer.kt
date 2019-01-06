@@ -27,7 +27,16 @@ internal class I18nLabel_Serializer : StdSerializer<I18nLabel>(I18nLabel::class.
         gen.writeString(_category_)
         gen.writeFieldName("i18n")
         val _i18n_ = value.i18n
-        serializers.defaultSerializeValue(_i18n_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                java.util.LinkedHashSet::class.java,
+                        serializers.config.typeFactory.constructType(fr.vsct.tock.translator.I18nLocalizedLabel::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_i18n_, gen, serializers)
         gen.writeFieldName("defaultLabel")
         val _defaultLabel_ = value.defaultLabel
         if(_defaultLabel_ == null) { gen.writeNull() } else {gen.writeString(_defaultLabel_)}

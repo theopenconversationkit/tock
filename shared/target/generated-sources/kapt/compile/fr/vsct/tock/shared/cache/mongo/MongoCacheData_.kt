@@ -13,71 +13,73 @@ import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
+private val __Id: KProperty1<MongoCacheData, Id<*>?>
+    get() = MongoCacheData::id
+private val __Type: KProperty1<MongoCacheData, String?>
+    get() = MongoCacheData::type
+private val __S: KProperty1<MongoCacheData, String?>
+    get() = MongoCacheData::s
+private val __B: KProperty1<MongoCacheData, ByteArray?>
+    get() = MongoCacheData::b
+private val __A: KProperty1<MongoCacheData, AnyValueWrapper?>
+    get() = MongoCacheData::a
+private val __Date: KProperty1<MongoCacheData, Instant?>
+    get() = MongoCacheData::date
 internal class MongoCacheData_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         MongoCacheData?>) : KPropertyPath<T, MongoCacheData?>(previous,property) {
     val id: KPropertyPath<T, Id<*>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<*>?>(this,MongoCacheData::id)
+        get() = KPropertyPath<T, Id<*>?>(this,__Id)
 
     val type: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,MongoCacheData::type)
+        get() = KPropertyPath<T, String?>(this,__Type)
 
     val s: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,MongoCacheData::s)
+        get() = KPropertyPath<T, String?>(this,__S)
 
     val b: KPropertyPath<T, ByteArray?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.ByteArray?>(this,MongoCacheData::b)
+        get() = KPropertyPath<T, ByteArray?>(this,__B)
 
     val a: KPropertyPath<T, AnyValueWrapper?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.shared.jackson.AnyValueWrapper?>(this,MongoCacheData::a)
+        get() = KPropertyPath<T, AnyValueWrapper?>(this,__A)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,MongoCacheData::date)
+        get() = KPropertyPath<T, Instant?>(this,__Date)
 
     companion object {
         val Id: KProperty1<MongoCacheData, Id<*>?>
-            get() = MongoCacheData::id
+            get() = __Id
         val Type: KProperty1<MongoCacheData, String?>
-            get() = MongoCacheData::type
+            get() = __Type
         val S: KProperty1<MongoCacheData, String?>
-            get() = MongoCacheData::s
+            get() = __S
         val B: KProperty1<MongoCacheData, ByteArray?>
-            get() = MongoCacheData::b
+            get() = __B
         val A: KProperty1<MongoCacheData, AnyValueWrapper?>
-            get() = MongoCacheData::a
+            get() = __A
         val Date: KProperty1<MongoCacheData, Instant?>
-            get() = MongoCacheData::date}
+            get() = __Date}
 }
 
 internal class MongoCacheData_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<MongoCacheData>?>) : KCollectionPropertyPath<T, MongoCacheData?,
         MongoCacheData_<T>>(previous,property) {
     val id: KPropertyPath<T, Id<*>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<*>?>(this,MongoCacheData::id)
+        get() = KPropertyPath<T, Id<*>?>(this,__Id)
 
     val type: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,MongoCacheData::type)
+        get() = KPropertyPath<T, String?>(this,__Type)
 
     val s: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,MongoCacheData::s)
+        get() = KPropertyPath<T, String?>(this,__S)
 
     val b: KPropertyPath<T, ByteArray?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.ByteArray?>(this,MongoCacheData::b)
+        get() = KPropertyPath<T, ByteArray?>(this,__B)
 
     val a: KPropertyPath<T, AnyValueWrapper?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.shared.jackson.AnyValueWrapper?>(this,MongoCacheData::a)
+        get() = KPropertyPath<T, AnyValueWrapper?>(this,__A)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,MongoCacheData::date)
+        get() = KPropertyPath<T, Instant?>(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): MongoCacheData_<T> =
@@ -87,27 +89,22 @@ internal class MongoCacheData_Map<T, K>(previous: KPropertyPath<T, *>?, property
         Map<K, MongoCacheData>?>) : KMapPropertyPath<T, K, MongoCacheData?,
         MongoCacheData_<T>>(previous,property) {
     val id: KPropertyPath<T, Id<*>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<*>?>(this,MongoCacheData::id)
+        get() = KPropertyPath<T, Id<*>?>(this,__Id)
 
     val type: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,MongoCacheData::type)
+        get() = KPropertyPath<T, String?>(this,__Type)
 
     val s: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,MongoCacheData::s)
+        get() = KPropertyPath<T, String?>(this,__S)
 
     val b: KPropertyPath<T, ByteArray?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.ByteArray?>(this,MongoCacheData::b)
+        get() = KPropertyPath<T, ByteArray?>(this,__B)
 
     val a: KPropertyPath<T, AnyValueWrapper?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.shared.jackson.AnyValueWrapper?>(this,MongoCacheData::a)
+        get() = KPropertyPath<T, AnyValueWrapper?>(this,__A)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,MongoCacheData::date)
+        get() = KPropertyPath<T, Instant?>(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): MongoCacheData_<T> =

@@ -45,7 +45,17 @@ internal class BotApplicationConfiguration_Serializer :
         if(_baseUrl_ == null) { gen.writeNull() } else {gen.writeString(_baseUrl_)}
         gen.writeFieldName("parameters")
         val _parameters_ = value.parameters
-        serializers.defaultSerializeValue(_parameters_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructMapType(
+                kotlin.collections.Map::class.java,
+                        serializers.config.typeFactory.constructType(kotlin.String::class.java)
+                , serializers.config.typeFactory.constructType(kotlin.String::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_parameters_, gen, serializers)
         gen.writeFieldName("path")
         val _path_ = value.path
         if(_path_ == null) { gen.writeNull() } else {gen.writeString(_path_)}

@@ -33,7 +33,7 @@ import org.litote.kmongo.deleteMany
 /**
  *
  */
-abstract class AbstractTest {
+abstract class AbstractTest(val initDb : Boolean = true) {
 
     companion object {
 
@@ -45,17 +45,23 @@ abstract class AbstractTest {
 
     @BeforeEach
     fun before() {
-        tockInternalInjector = KodeinInjector()
-        tockInternalInjector.inject(Kodein {
-            import(sharedTestModule)
-            bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
-            bind<com.mongodb.async.client.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
-            bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
-            bind<FeatureDAO>() with provider { FeatureMongoDAO }
+        if(initDb) {
+            tockInternalInjector = KodeinInjector()
+            tockInternalInjector.inject(Kodein {
+                import(sharedTestModule)
+                bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
+                bind<com.mongodb.async.client.MongoDatabase>(MONGO_DATABASE) with provider {
+                    getAsyncDatabase(
+                        MONGO_DATABASE
+                    )
+                }
+                bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
+                bind<FeatureDAO>() with provider { FeatureMongoDAO }
+            }
+            )
+            UserTimelineMongoDAO.dialogCol.deleteMany()
+            UserTimelineMongoDAO.userTimelineCol.deleteMany()
         }
-        )
-        UserTimelineMongoDAO.dialogCol.deleteMany()
-        UserTimelineMongoDAO.userTimelineCol.deleteMany()
     }
 
 }

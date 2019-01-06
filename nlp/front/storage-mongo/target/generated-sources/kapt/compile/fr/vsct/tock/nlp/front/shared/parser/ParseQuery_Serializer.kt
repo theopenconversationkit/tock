@@ -18,7 +18,16 @@ internal class ParseQuery_Serializer : StdSerializer<ParseQuery>(ParseQuery::cla
         gen.writeStartObject()
         gen.writeFieldName("queries")
         val _queries_ = value.queries
-        serializers.defaultSerializeValue(_queries_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.List::class.java,
+                        serializers.config.typeFactory.constructType(kotlin.String::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_queries_, gen, serializers)
         gen.writeFieldName("namespace")
         val _namespace_ = value.namespace
         gen.writeString(_namespace_)
@@ -33,7 +42,16 @@ internal class ParseQuery_Serializer : StdSerializer<ParseQuery>(ParseQuery::cla
         serializers.defaultSerializeValue(_state_, gen)
         gen.writeFieldName("intentsSubset")
         val _intentsSubset_ = value.intentsSubset
-        serializers.defaultSerializeValue(_intentsSubset_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.Set::class.java,
+                        serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.parser.IntentQualifier::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_intentsSubset_, gen, serializers)
         gen.writeEndObject()
     }
 }

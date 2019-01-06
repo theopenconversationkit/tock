@@ -12,104 +12,104 @@ import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
+private val __FirstName: KProperty1<UserTimelineCol.UserPreferencesWrapper, String?>
+    get() = UserTimelineCol.UserPreferencesWrapper::firstName
+private val __LastName: KProperty1<UserTimelineCol.UserPreferencesWrapper, String?>
+    get() = UserTimelineCol.UserPreferencesWrapper::lastName
+private val __Email: KProperty1<UserTimelineCol.UserPreferencesWrapper, String?>
+    get() = UserTimelineCol.UserPreferencesWrapper::email
+private val __Timezone: KProperty1<UserTimelineCol.UserPreferencesWrapper, ZoneId?>
+    get() = UserTimelineCol.UserPreferencesWrapper::timezone
+private val __Locale: KProperty1<UserTimelineCol.UserPreferencesWrapper, Locale?>
+    get() = UserTimelineCol.UserPreferencesWrapper::locale
+private val __Picture: KProperty1<UserTimelineCol.UserPreferencesWrapper, String?>
+    get() = UserTimelineCol.UserPreferencesWrapper::picture
+private val __Gender: KProperty1<UserTimelineCol.UserPreferencesWrapper, String?>
+    get() = UserTimelineCol.UserPreferencesWrapper::gender
+private val __Test: KProperty1<UserTimelineCol.UserPreferencesWrapper, Boolean?>
+    get() = UserTimelineCol.UserPreferencesWrapper::test
+private val __Encrypted: KProperty1<UserTimelineCol.UserPreferencesWrapper, Boolean?>
+    get() = UserTimelineCol.UserPreferencesWrapper::encrypted
 internal class UserPreferencesWrapper_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         UserTimelineCol.UserPreferencesWrapper?>) : KPropertyPath<T,
         UserTimelineCol.UserPreferencesWrapper?>(previous,property) {
     val firstName: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol.UserPreferencesWrapper::firstName)
+        get() = KPropertyPath<T, String?>(this,__FirstName)
 
     val lastName: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol.UserPreferencesWrapper::lastName)
+        get() = KPropertyPath<T, String?>(this,__LastName)
 
     val email: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol.UserPreferencesWrapper::email)
+        get() = KPropertyPath<T, String?>(this,__Email)
 
     val timezone: KPropertyPath<T, ZoneId?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.ZoneId?>(this,UserTimelineCol.UserPreferencesWrapper::timezone)
+        get() = KPropertyPath<T, ZoneId?>(this,__Timezone)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.util.Locale?>(this,UserTimelineCol.UserPreferencesWrapper::locale)
+        get() = KPropertyPath<T, Locale?>(this,__Locale)
 
     val picture: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol.UserPreferencesWrapper::picture)
+        get() = KPropertyPath<T, String?>(this,__Picture)
 
     val gender: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol.UserPreferencesWrapper::gender)
+        get() = KPropertyPath<T, String?>(this,__Gender)
 
     val test: KPropertyPath<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Boolean?>(this,UserTimelineCol.UserPreferencesWrapper::test)
+        get() = KPropertyPath<T, Boolean?>(this,__Test)
 
     val encrypted: KPropertyPath<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Boolean?>(this,UserTimelineCol.UserPreferencesWrapper::encrypted)
+        get() = KPropertyPath<T, Boolean?>(this,__Encrypted)
 
     companion object {
         val FirstName: KProperty1<UserTimelineCol.UserPreferencesWrapper, String?>
-            get() = UserTimelineCol.UserPreferencesWrapper::firstName
+            get() = __FirstName
         val LastName: KProperty1<UserTimelineCol.UserPreferencesWrapper, String?>
-            get() = UserTimelineCol.UserPreferencesWrapper::lastName
+            get() = __LastName
         val Email: KProperty1<UserTimelineCol.UserPreferencesWrapper, String?>
-            get() = UserTimelineCol.UserPreferencesWrapper::email
+            get() = __Email
         val Timezone: KProperty1<UserTimelineCol.UserPreferencesWrapper, ZoneId?>
-            get() = UserTimelineCol.UserPreferencesWrapper::timezone
+            get() = __Timezone
         val Locale: KProperty1<UserTimelineCol.UserPreferencesWrapper, Locale?>
-            get() = UserTimelineCol.UserPreferencesWrapper::locale
+            get() = __Locale
         val Picture: KProperty1<UserTimelineCol.UserPreferencesWrapper, String?>
-            get() = UserTimelineCol.UserPreferencesWrapper::picture
+            get() = __Picture
         val Gender: KProperty1<UserTimelineCol.UserPreferencesWrapper, String?>
-            get() = UserTimelineCol.UserPreferencesWrapper::gender
+            get() = __Gender
         val Test: KProperty1<UserTimelineCol.UserPreferencesWrapper, Boolean?>
-            get() = UserTimelineCol.UserPreferencesWrapper::test
+            get() = __Test
         val Encrypted: KProperty1<UserTimelineCol.UserPreferencesWrapper, Boolean?>
-            get() = UserTimelineCol.UserPreferencesWrapper::encrypted}
+            get() = __Encrypted}
 }
 
 internal class UserPreferencesWrapper_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<UserTimelineCol.UserPreferencesWrapper>?>) : KCollectionPropertyPath<T,
         UserTimelineCol.UserPreferencesWrapper?, UserPreferencesWrapper_<T>>(previous,property) {
     val firstName: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol.UserPreferencesWrapper::firstName)
+        get() = KPropertyPath<T, String?>(this,__FirstName)
 
     val lastName: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol.UserPreferencesWrapper::lastName)
+        get() = KPropertyPath<T, String?>(this,__LastName)
 
     val email: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol.UserPreferencesWrapper::email)
+        get() = KPropertyPath<T, String?>(this,__Email)
 
     val timezone: KPropertyPath<T, ZoneId?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.ZoneId?>(this,UserTimelineCol.UserPreferencesWrapper::timezone)
+        get() = KPropertyPath<T, ZoneId?>(this,__Timezone)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.util.Locale?>(this,UserTimelineCol.UserPreferencesWrapper::locale)
+        get() = KPropertyPath<T, Locale?>(this,__Locale)
 
     val picture: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol.UserPreferencesWrapper::picture)
+        get() = KPropertyPath<T, String?>(this,__Picture)
 
     val gender: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol.UserPreferencesWrapper::gender)
+        get() = KPropertyPath<T, String?>(this,__Gender)
 
     val test: KPropertyPath<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Boolean?>(this,UserTimelineCol.UserPreferencesWrapper::test)
+        get() = KPropertyPath<T, Boolean?>(this,__Test)
 
     val encrypted: KPropertyPath<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Boolean?>(this,UserTimelineCol.UserPreferencesWrapper::encrypted)
+        get() = KPropertyPath<T, Boolean?>(this,__Encrypted)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): UserPreferencesWrapper_<T> =
@@ -119,40 +119,31 @@ internal class UserPreferencesWrapper_Map<T, K>(previous: KPropertyPath<T, *>?, 
         KProperty1<*, Map<K, UserTimelineCol.UserPreferencesWrapper>?>) : KMapPropertyPath<T, K,
         UserTimelineCol.UserPreferencesWrapper?, UserPreferencesWrapper_<T>>(previous,property) {
     val firstName: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol.UserPreferencesWrapper::firstName)
+        get() = KPropertyPath<T, String?>(this,__FirstName)
 
     val lastName: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol.UserPreferencesWrapper::lastName)
+        get() = KPropertyPath<T, String?>(this,__LastName)
 
     val email: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol.UserPreferencesWrapper::email)
+        get() = KPropertyPath<T, String?>(this,__Email)
 
     val timezone: KPropertyPath<T, ZoneId?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.ZoneId?>(this,UserTimelineCol.UserPreferencesWrapper::timezone)
+        get() = KPropertyPath<T, ZoneId?>(this,__Timezone)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.util.Locale?>(this,UserTimelineCol.UserPreferencesWrapper::locale)
+        get() = KPropertyPath<T, Locale?>(this,__Locale)
 
     val picture: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol.UserPreferencesWrapper::picture)
+        get() = KPropertyPath<T, String?>(this,__Picture)
 
     val gender: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,UserTimelineCol.UserPreferencesWrapper::gender)
+        get() = KPropertyPath<T, String?>(this,__Gender)
 
     val test: KPropertyPath<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Boolean?>(this,UserTimelineCol.UserPreferencesWrapper::test)
+        get() = KPropertyPath<T, Boolean?>(this,__Test)
 
     val encrypted: KPropertyPath<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Boolean?>(this,UserTimelineCol.UserPreferencesWrapper::encrypted)
+        get() = KPropertyPath<T, Boolean?>(this,__Encrypted)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): UserPreferencesWrapper_<T> =

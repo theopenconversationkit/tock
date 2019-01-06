@@ -15,53 +15,62 @@ import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
+private val __Text: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, String?>
+    get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::text
+private val __ApplicationId: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol,
+        Id<ApplicationDefinition>?>
+    get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::applicationId
+private val __Language: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Locale?>
+    get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::language
+private val __IntentProbability: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Double?>
+    get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::intentProbability
+private val __EntitiesProbability: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol,
+        Double?>
+    get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::entitiesProbability
+private val __LastUsage: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Instant?>
+    get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::lastUsage
+private val __Count: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Long?>
+    get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::count
 internal class ParseRequestLogStatCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         ParseRequestLogMongoDAO.ParseRequestLogStatCol?>) : KPropertyPath<T,
         ParseRequestLogMongoDAO.ParseRequestLogStatCol?>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::text)
+        get() = KPropertyPath<T, String?>(this,__Text)
 
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::applicationId)
+        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.util.Locale?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::language)
+        get() = KPropertyPath<T, Locale?>(this,__Language)
 
     val intentProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Double?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::intentProbability)
+        get() = KPropertyPath<T, Double?>(this,__IntentProbability)
 
     val entitiesProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Double?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::entitiesProbability)
+        get() = KPropertyPath<T, Double?>(this,__EntitiesProbability)
 
     val lastUsage: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::lastUsage)
+        get() = KPropertyPath<T, Instant?>(this,__LastUsage)
 
     val count: KPropertyPath<T, Long?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Long?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::count)
+        get() = KPropertyPath<T, Long?>(this,__Count)
 
     companion object {
         val Text: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, String?>
-            get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::text
+            get() = __Text
         val ApplicationId: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol,
                 Id<ApplicationDefinition>?>
-            get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::applicationId
+            get() = __ApplicationId
         val Language: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Locale?>
-            get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::language
+            get() = __Language
         val IntentProbability: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Double?>
-            get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::intentProbability
+            get() = __IntentProbability
         val EntitiesProbability: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Double?>
-            get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::entitiesProbability
+            get() = __EntitiesProbability
         val LastUsage: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Instant?>
-            get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::lastUsage
+            get() = __LastUsage
         val Count: KProperty1<ParseRequestLogMongoDAO.ParseRequestLogStatCol, Long?>
-            get() = ParseRequestLogMongoDAO.ParseRequestLogStatCol::count}
+            get() = __Count}
 }
 
 internal class ParseRequestLogStatCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -69,32 +78,25 @@ internal class ParseRequestLogStatCol_Col<T>(previous: KPropertyPath<T, *>?, pro
         ParseRequestLogMongoDAO.ParseRequestLogStatCol?,
         ParseRequestLogStatCol_<T>>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::text)
+        get() = KPropertyPath<T, String?>(this,__Text)
 
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::applicationId)
+        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.util.Locale?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::language)
+        get() = KPropertyPath<T, Locale?>(this,__Language)
 
     val intentProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Double?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::intentProbability)
+        get() = KPropertyPath<T, Double?>(this,__IntentProbability)
 
     val entitiesProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Double?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::entitiesProbability)
+        get() = KPropertyPath<T, Double?>(this,__EntitiesProbability)
 
     val lastUsage: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::lastUsage)
+        get() = KPropertyPath<T, Instant?>(this,__LastUsage)
 
     val count: KPropertyPath<T, Long?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Long?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::count)
+        get() = KPropertyPath<T, Long?>(this,__Count)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogStatCol_<T> =
@@ -105,32 +107,25 @@ internal class ParseRequestLogStatCol_Map<T, K>(previous: KPropertyPath<T, *>?, 
         KMapPropertyPath<T, K, ParseRequestLogMongoDAO.ParseRequestLogStatCol?,
         ParseRequestLogStatCol_<T>>(previous,property) {
     val text: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::text)
+        get() = KPropertyPath<T, String?>(this,__Text)
 
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::applicationId)
+        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.util.Locale?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::language)
+        get() = KPropertyPath<T, Locale?>(this,__Language)
 
     val intentProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Double?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::intentProbability)
+        get() = KPropertyPath<T, Double?>(this,__IntentProbability)
 
     val entitiesProbability: KPropertyPath<T, Double?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Double?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::entitiesProbability)
+        get() = KPropertyPath<T, Double?>(this,__EntitiesProbability)
 
     val lastUsage: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::lastUsage)
+        get() = KPropertyPath<T, Instant?>(this,__LastUsage)
 
     val count: KPropertyPath<T, Long?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Long?>(this,ParseRequestLogMongoDAO.ParseRequestLogStatCol::count)
+        get() = KPropertyPath<T, Long?>(this,__Count)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ParseRequestLogStatCol_<T> =

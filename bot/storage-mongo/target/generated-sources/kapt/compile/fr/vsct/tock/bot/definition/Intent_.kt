@@ -9,20 +9,22 @@ import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
+private val __Name: KProperty1<Intent, String?>
+    get() = Intent::name
 class Intent_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Intent?>) :
         KPropertyPath<T, Intent?>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,Intent::name)
+        get() = KPropertyPath<T, String?>(this,__Name)
 
     companion object {
         val Name: KProperty1<Intent, String?>
-            get() = Intent::name}
+            get() = __Name}
 }
 
 class Intent_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Collection<Intent>?>) :
         KCollectionPropertyPath<T, Intent?, Intent_<T>>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,Intent::name)
+        get() = KPropertyPath<T, String?>(this,__Name)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): Intent_<T> = Intent_(this,
@@ -31,7 +33,7 @@ class Intent_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Coll
 class Intent_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K, Intent>?>) :
         KMapPropertyPath<T, K, Intent?, Intent_<T>>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.String?>(this,Intent::name)
+        get() = KPropertyPath<T, String?>(this,__Name)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): Intent_<T> = Intent_(this,

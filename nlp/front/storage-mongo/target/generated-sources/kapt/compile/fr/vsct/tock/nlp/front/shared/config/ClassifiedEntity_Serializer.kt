@@ -30,7 +30,16 @@ internal class ClassifiedEntity_Serializer :
         gen.writeNumber(_end_)
         gen.writeFieldName("subEntities")
         val _subEntities_ = value.subEntities
-        serializers.defaultSerializeValue(_subEntities_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.List::class.java,
+                        serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_subEntities_, gen, serializers)
         gen.writeEndObject()
     }
 }

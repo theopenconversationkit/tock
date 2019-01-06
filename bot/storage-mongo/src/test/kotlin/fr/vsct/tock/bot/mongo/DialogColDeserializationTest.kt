@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.mongo
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.dialog.NextUserActionState
@@ -29,6 +30,8 @@ import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.bot.mongo.DialogCol.DialogStateMongoWrapper
 import fr.vsct.tock.bot.mongo.DialogCol.EntityStateValueWrapper
 import fr.vsct.tock.bot.mongo.DialogCol.SendChoiceMongoWrapper
+import fr.vsct.tock.bot.mongo.DialogCol.SendSentenceMongoWrapper
+import fr.vsct.tock.bot.mongo.DialogCol.StoryMongoWrapper
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.api.client.model.EntityType
 import fr.vsct.tock.nlp.api.client.model.NlpIntentQualifier
@@ -50,7 +53,7 @@ import kotlin.test.assertTrue
 /**
  *
  */
-class DialogColDeserializationTest : AbstractTest() {
+class DialogColDeserializationTest : AbstractTest(false) {
 
     class TestParamObfuscator : ParameterObfuscator {
         override fun obfuscate(parameters: Map<String, String>): Map<String, String> {
@@ -162,6 +165,17 @@ class DialogColDeserializationTest : AbstractTest() {
         }
         verify(exactly = 1) { testParameterObfuscator.obfuscate(parameters) }
         TockObfuscatorService.deregisterObfuscators()
+    }
+
+    @Test
+    fun `StoryMongoWrapper can be serialized and deserialized correctly`() {
+        val s = StoryMongoWrapper(
+            "a", null, null,
+            listOf(SendSentenceMongoWrapper(SendSentence(PlayerId("a"), "app", PlayerId("b"), "text")))
+        )
+        println(mapper.writeValueAsString(s))
+        val r = mapper.readValue<StoryMongoWrapper>(mapper.writeValueAsString(s))
+        assertEquals(s, r)
     }
 
 }

@@ -11,32 +11,37 @@ import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
+private val ___id: KProperty1<NlpStatsCol, NlpStatsColId?>
+    get() = NlpStatsCol::_id
+private val __Stats: KProperty1<NlpStatsCol, NlpCallStats?>
+    get() = NlpStatsCol::stats
+private val __AppNamespace: KProperty1<NlpStatsCol, String?>
+    get() = NlpStatsCol::appNamespace
+private val __Date: KProperty1<NlpStatsCol, Instant?>
+    get() = NlpStatsCol::date
 internal class NlpStatsCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         NlpStatsCol?>) : KPropertyPath<T, NlpStatsCol?>(previous,property) {
     val _id: NlpStatsColId_<T>
         get() = NlpStatsColId_(this,NlpStatsCol::_id)
 
     val stats: KPropertyPath<T, NlpCallStats?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.bot.engine.nlp.NlpCallStats?>(this,NlpStatsCol::stats)
+        get() = KPropertyPath<T, NlpCallStats?>(this,__Stats)
 
     val appNamespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,NlpStatsCol::appNamespace)
+        get() = KPropertyPath<T, String?>(this,__AppNamespace)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,NlpStatsCol::date)
+        get() = KPropertyPath<T, Instant?>(this,__Date)
 
     companion object {
         val _id: NlpStatsColId_<NlpStatsCol>
-            get() = NlpStatsColId_<NlpStatsCol>(null,NlpStatsCol::_id)
+            get() = NlpStatsColId_<NlpStatsCol>(null,___id)
         val Stats: KProperty1<NlpStatsCol, NlpCallStats?>
-            get() = NlpStatsCol::stats
+            get() = __Stats
         val AppNamespace: KProperty1<NlpStatsCol, String?>
-            get() = NlpStatsCol::appNamespace
+            get() = __AppNamespace
         val Date: KProperty1<NlpStatsCol, Instant?>
-            get() = NlpStatsCol::date}
+            get() = __Date}
 }
 
 internal class NlpStatsCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -46,16 +51,13 @@ internal class NlpStatsCol_Col<T>(previous: KPropertyPath<T, *>?, property: KPro
         get() = NlpStatsColId_(this,NlpStatsCol::_id)
 
     val stats: KPropertyPath<T, NlpCallStats?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.bot.engine.nlp.NlpCallStats?>(this,NlpStatsCol::stats)
+        get() = KPropertyPath<T, NlpCallStats?>(this,__Stats)
 
     val appNamespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,NlpStatsCol::appNamespace)
+        get() = KPropertyPath<T, String?>(this,__AppNamespace)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,NlpStatsCol::date)
+        get() = KPropertyPath<T, Instant?>(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): NlpStatsCol_<T> =
@@ -67,16 +69,13 @@ internal class NlpStatsCol_Map<T, K>(previous: KPropertyPath<T, *>?, property: K
         get() = NlpStatsColId_(this,NlpStatsCol::_id)
 
     val stats: KPropertyPath<T, NlpCallStats?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.bot.engine.nlp.NlpCallStats?>(this,NlpStatsCol::stats)
+        get() = KPropertyPath<T, NlpCallStats?>(this,__Stats)
 
     val appNamespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,NlpStatsCol::appNamespace)
+        get() = KPropertyPath<T, String?>(this,__AppNamespace)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,NlpStatsCol::date)
+        get() = KPropertyPath<T, Instant?>(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): NlpStatsCol_<T> =

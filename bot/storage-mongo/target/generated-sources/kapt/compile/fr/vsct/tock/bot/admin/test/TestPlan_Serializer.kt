@@ -18,7 +18,16 @@ internal class TestPlan_Serializer : StdSerializer<TestPlan>(TestPlan::class.jav
         gen.writeStartObject()
         gen.writeFieldName("dialogs")
         val _dialogs_ = value.dialogs
-        serializers.defaultSerializeValue(_dialogs_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.List::class.java,
+                        serializers.config.typeFactory.constructType(fr.vsct.tock.bot.admin.test.TestDialogReport::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_dialogs_, gen, serializers)
         gen.writeFieldName("name")
         val _name_ = value.name
         gen.writeString(_name_)

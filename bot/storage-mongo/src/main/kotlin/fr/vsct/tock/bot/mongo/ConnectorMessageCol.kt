@@ -32,7 +32,7 @@ internal data class ConnectorMessageColId(val actionId: Id<Action>, val dialogId
 /**
  *
  */
-@Data(internal = true)
+//@Data(internal = true)
 @JacksonData(internal = true)
 internal data class ConnectorMessageCol(
     val _id: ConnectorMessageColId,

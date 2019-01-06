@@ -1,5 +1,6 @@
 package fr.vsct.tock.bot.admin.bot
 
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.ConnectorType_
 import kotlin.String
 import kotlin.Suppress
@@ -12,24 +13,42 @@ import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KMapSimplePropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
+private val __ApplicationId: KProperty1<BotApplicationConfiguration, String?>
+    get() = BotApplicationConfiguration::applicationId
+private val __BotId: KProperty1<BotApplicationConfiguration, String?>
+    get() = BotApplicationConfiguration::botId
+private val __Namespace: KProperty1<BotApplicationConfiguration, String?>
+    get() = BotApplicationConfiguration::namespace
+private val __NlpModel: KProperty1<BotApplicationConfiguration, String?>
+    get() = BotApplicationConfiguration::nlpModel
+private val __ConnectorType: KProperty1<BotApplicationConfiguration, ConnectorType?>
+    get() = BotApplicationConfiguration::connectorType
+private val __OwnerConnectorType: KProperty1<BotApplicationConfiguration, ConnectorType?>
+    get() = BotApplicationConfiguration::ownerConnectorType
+private val __Name: KProperty1<BotApplicationConfiguration, String?>
+    get() = BotApplicationConfiguration::name
+private val __BaseUrl: KProperty1<BotApplicationConfiguration, String?>
+    get() = BotApplicationConfiguration::baseUrl
+private val __Parameters: KProperty1<BotApplicationConfiguration, Map<String, String>?>
+    get() = BotApplicationConfiguration::parameters
+private val __Path: KProperty1<BotApplicationConfiguration, String?>
+    get() = BotApplicationConfiguration::path
+private val ___id: KProperty1<BotApplicationConfiguration, Id<BotApplicationConfiguration>?>
+    get() = BotApplicationConfiguration::_id
 class BotApplicationConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         BotApplicationConfiguration?>) : KPropertyPath<T,
         BotApplicationConfiguration?>(previous,property) {
     val applicationId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::applicationId)
+        get() = KPropertyPath<T, String?>(this,__ApplicationId)
 
     val botId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::botId)
+        get() = KPropertyPath<T, String?>(this,__BotId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::namespace)
+        get() = KPropertyPath<T, String?>(this,__Namespace)
 
     val nlpModel: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::nlpModel)
+        get() = KPropertyPath<T, String?>(this,__NlpModel)
 
     val connectorType: ConnectorType_<T>
         get() = ConnectorType_(this,BotApplicationConfiguration::connectorType)
@@ -38,70 +57,60 @@ class BotApplicationConfiguration_<T>(previous: KPropertyPath<T, *>?, property: 
         get() = ConnectorType_(this,BotApplicationConfiguration::ownerConnectorType)
 
     val name_: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::name)
+        get() = KPropertyPath<T, String?>(this,__Name)
 
     val baseUrl: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::baseUrl)
+        get() = KPropertyPath<T, String?>(this,__BaseUrl)
 
     val parameters_: KMapSimplePropertyPath<T, String?, String?>
-        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, kotlin.String?,
-                kotlin.String?>(this,BotApplicationConfiguration::parameters)
+        get() = KMapSimplePropertyPath<T, String?,
+                String?>(this,BotApplicationConfiguration::parameters)
 
     val path_: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::path)
+        get() = KPropertyPath<T, String?>(this,__Path)
 
     val _id: KPropertyPath<T, Id<BotApplicationConfiguration>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration>?>(this,BotApplicationConfiguration::_id)
+        get() = KPropertyPath<T, Id<BotApplicationConfiguration>?>(this,___id)
 
     companion object {
         val ApplicationId: KProperty1<BotApplicationConfiguration, String?>
-            get() = BotApplicationConfiguration::applicationId
+            get() = __ApplicationId
         val BotId: KProperty1<BotApplicationConfiguration, String?>
-            get() = BotApplicationConfiguration::botId
+            get() = __BotId
         val Namespace: KProperty1<BotApplicationConfiguration, String?>
-            get() = BotApplicationConfiguration::namespace
+            get() = __Namespace
         val NlpModel: KProperty1<BotApplicationConfiguration, String?>
-            get() = BotApplicationConfiguration::nlpModel
+            get() = __NlpModel
         val ConnectorType: ConnectorType_<BotApplicationConfiguration>
-            get() =
-                    ConnectorType_<BotApplicationConfiguration>(null,BotApplicationConfiguration::connectorType)
+            get() = ConnectorType_<BotApplicationConfiguration>(null,__ConnectorType)
         val OwnerConnectorType: ConnectorType_<BotApplicationConfiguration>
-            get() =
-                    ConnectorType_<BotApplicationConfiguration>(null,BotApplicationConfiguration::ownerConnectorType)
+            get() = ConnectorType_<BotApplicationConfiguration>(null,__OwnerConnectorType)
         val Name: KProperty1<BotApplicationConfiguration, String?>
-            get() = BotApplicationConfiguration::name
+            get() = __Name
         val BaseUrl: KProperty1<BotApplicationConfiguration, String?>
-            get() = BotApplicationConfiguration::baseUrl
+            get() = __BaseUrl
         val Parameters: KMapSimplePropertyPath<BotApplicationConfiguration, String?, String?>
-            get() = KMapSimplePropertyPath(null, BotApplicationConfiguration::parameters)
+            get() = KMapSimplePropertyPath(null, __Parameters)
         val Path: KProperty1<BotApplicationConfiguration, String?>
-            get() = BotApplicationConfiguration::path
+            get() = __Path
         val _id: KProperty1<BotApplicationConfiguration, Id<BotApplicationConfiguration>?>
-            get() = BotApplicationConfiguration::_id}
+            get() = ___id}
 }
 
 class BotApplicationConfiguration_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<BotApplicationConfiguration>?>) : KCollectionPropertyPath<T,
         BotApplicationConfiguration?, BotApplicationConfiguration_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::applicationId)
+        get() = KPropertyPath<T, String?>(this,__ApplicationId)
 
     val botId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::botId)
+        get() = KPropertyPath<T, String?>(this,__BotId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::namespace)
+        get() = KPropertyPath<T, String?>(this,__Namespace)
 
     val nlpModel: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::nlpModel)
+        get() = KPropertyPath<T, String?>(this,__NlpModel)
 
     val connectorType: ConnectorType_<T>
         get() = ConnectorType_(this,BotApplicationConfiguration::connectorType)
@@ -110,24 +119,20 @@ class BotApplicationConfiguration_Col<T>(previous: KPropertyPath<T, *>?, propert
         get() = ConnectorType_(this,BotApplicationConfiguration::ownerConnectorType)
 
     val name_: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::name)
+        get() = KPropertyPath<T, String?>(this,__Name)
 
     val baseUrl: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::baseUrl)
+        get() = KPropertyPath<T, String?>(this,__BaseUrl)
 
     val parameters_: KMapSimplePropertyPath<T, String?, String?>
-        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, kotlin.String?,
-                kotlin.String?>(this,BotApplicationConfiguration::parameters)
+        get() = KMapSimplePropertyPath<T, String?,
+                String?>(this,BotApplicationConfiguration::parameters)
 
     val path_: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::path)
+        get() = KPropertyPath<T, String?>(this,__Path)
 
     val _id: KPropertyPath<T, Id<BotApplicationConfiguration>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration>?>(this,BotApplicationConfiguration::_id)
+        get() = KPropertyPath<T, Id<BotApplicationConfiguration>?>(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): BotApplicationConfiguration_<T> =
@@ -137,20 +142,16 @@ class BotApplicationConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, prop
         Map<K, BotApplicationConfiguration>?>) : KMapPropertyPath<T, K,
         BotApplicationConfiguration?, BotApplicationConfiguration_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::applicationId)
+        get() = KPropertyPath<T, String?>(this,__ApplicationId)
 
     val botId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::botId)
+        get() = KPropertyPath<T, String?>(this,__BotId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::namespace)
+        get() = KPropertyPath<T, String?>(this,__Namespace)
 
     val nlpModel: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::nlpModel)
+        get() = KPropertyPath<T, String?>(this,__NlpModel)
 
     val connectorType: ConnectorType_<T>
         get() = ConnectorType_(this,BotApplicationConfiguration::connectorType)
@@ -159,24 +160,20 @@ class BotApplicationConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, prop
         get() = ConnectorType_(this,BotApplicationConfiguration::ownerConnectorType)
 
     val name_: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::name)
+        get() = KPropertyPath<T, String?>(this,__Name)
 
     val baseUrl: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::baseUrl)
+        get() = KPropertyPath<T, String?>(this,__BaseUrl)
 
     val parameters_: KMapSimplePropertyPath<T, String?, String?>
-        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, kotlin.String?,
-                kotlin.String?>(this,BotApplicationConfiguration::parameters)
+        get() = KMapSimplePropertyPath<T, String?,
+                String?>(this,BotApplicationConfiguration::parameters)
 
     val path_: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,BotApplicationConfiguration::path)
+        get() = KPropertyPath<T, String?>(this,__Path)
 
     val _id: KPropertyPath<T, Id<BotApplicationConfiguration>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration>?>(this,BotApplicationConfiguration::_id)
+        get() = KPropertyPath<T, Id<BotApplicationConfiguration>?>(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): BotApplicationConfiguration_<T> =

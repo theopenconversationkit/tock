@@ -7,6 +7,7 @@ import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Collection
 import kotlin.collections.Map
+import kotlin.collections.Set
 import kotlin.reflect.KProperty1
 import org.litote.kmongo.Id
 import org.litote.kmongo.property.KCollectionPropertyPath
@@ -15,123 +16,132 @@ import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KMapSimplePropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
+private val __Name: KProperty1<IntentDefinition, String?>
+    get() = IntentDefinition::name
+private val __Namespace: KProperty1<IntentDefinition, String?>
+    get() = IntentDefinition::namespace
+private val __Applications: KProperty1<IntentDefinition, Set<Id<ApplicationDefinition>>?>
+    get() = IntentDefinition::applications
+private val __Entities: KProperty1<IntentDefinition, Set<EntityDefinition>?>
+    get() = IntentDefinition::entities
+private val __EntitiesRegexp: KProperty1<IntentDefinition, Map<Locale,
+        LinkedHashSet<EntitiesRegexp>>?>
+    get() = IntentDefinition::entitiesRegexp
+private val __MandatoryStates: KProperty1<IntentDefinition, Set<String>?>
+    get() = IntentDefinition::mandatoryStates
+private val __SharedIntents: KProperty1<IntentDefinition, Set<Id<IntentDefinition>>?>
+    get() = IntentDefinition::sharedIntents
+private val __Label: KProperty1<IntentDefinition, String?>
+    get() = IntentDefinition::label
+private val __Description: KProperty1<IntentDefinition, String?>
+    get() = IntentDefinition::description
+private val __Category: KProperty1<IntentDefinition, String?>
+    get() = IntentDefinition::category
+private val ___id: KProperty1<IntentDefinition, Id<IntentDefinition>?>
+    get() = IntentDefinition::_id
 class IntentDefinition_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         IntentDefinition?>) : KPropertyPath<T, IntentDefinition?>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::name)
+        get() = KPropertyPath<T, String?>(this,__Name)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::namespace)
+        get() = KPropertyPath<T, String?>(this,__Namespace)
 
     val applications: KCollectionSimplePropertyPath<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,IntentDefinition::applications)
+        get() = KCollectionSimplePropertyPath<T,
+                Id<ApplicationDefinition>?>(this,IntentDefinition::applications)
 
     val entities: EntityDefinition_Col<T>
         get() = EntityDefinition_Col(this,IntentDefinition::entities)
 
     val entitiesRegexp: KMapSimplePropertyPath<T, Locale?, LinkedHashSet<EntitiesRegexp>?>
-        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, java.util.Locale?,
-                java.util.LinkedHashSet<fr.vsct.tock.nlp.core.EntitiesRegexp>?>(this,IntentDefinition::entitiesRegexp)
+        get() = KMapSimplePropertyPath<T, Locale?,
+                LinkedHashSet<EntitiesRegexp>?>(this,IntentDefinition::entitiesRegexp)
 
     val mandatoryStates: KCollectionSimplePropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::mandatoryStates)
+        get() = KCollectionSimplePropertyPath<T, String?>(this,IntentDefinition::mandatoryStates)
 
     val sharedIntents: KCollectionSimplePropertyPath<T, Id<IntentDefinition>?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,IntentDefinition::sharedIntents)
+        get() = KCollectionSimplePropertyPath<T,
+                Id<IntentDefinition>?>(this,IntentDefinition::sharedIntents)
 
     val label: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::label)
+        get() = KPropertyPath<T, String?>(this,__Label)
 
     val description: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::description)
+        get() = KPropertyPath<T, String?>(this,__Description)
 
     val category: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::category)
+        get() = KPropertyPath<T, String?>(this,__Category)
 
     val _id: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,IntentDefinition::_id)
+        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,___id)
 
     companion object {
         val Name: KProperty1<IntentDefinition, String?>
-            get() = IntentDefinition::name
+            get() = __Name
         val Namespace: KProperty1<IntentDefinition, String?>
-            get() = IntentDefinition::namespace
+            get() = __Namespace
         val Applications: KCollectionSimplePropertyPath<IntentDefinition,
                 Id<ApplicationDefinition>?>
-            get() = KCollectionSimplePropertyPath(null, IntentDefinition::applications)
+            get() = KCollectionSimplePropertyPath(null, __Applications)
         val Entities: EntityDefinition_Col<IntentDefinition>
-            get() = EntityDefinition_Col<IntentDefinition>(null,IntentDefinition::entities)
+            get() = EntityDefinition_Col<IntentDefinition>(null,__Entities)
         val EntitiesRegexp: KMapSimplePropertyPath<IntentDefinition, Locale?,
                 LinkedHashSet<EntitiesRegexp>?>
-            get() = KMapSimplePropertyPath(null, IntentDefinition::entitiesRegexp)
+            get() = KMapSimplePropertyPath(null, __EntitiesRegexp)
         val MandatoryStates: KCollectionSimplePropertyPath<IntentDefinition, String?>
-            get() = KCollectionSimplePropertyPath(null, IntentDefinition::mandatoryStates)
+            get() = KCollectionSimplePropertyPath(null, __MandatoryStates)
         val SharedIntents: KCollectionSimplePropertyPath<IntentDefinition, Id<IntentDefinition>?>
-            get() = KCollectionSimplePropertyPath(null, IntentDefinition::sharedIntents)
+            get() = KCollectionSimplePropertyPath(null, __SharedIntents)
         val Label: KProperty1<IntentDefinition, String?>
-            get() = IntentDefinition::label
+            get() = __Label
         val Description: KProperty1<IntentDefinition, String?>
-            get() = IntentDefinition::description
+            get() = __Description
         val Category: KProperty1<IntentDefinition, String?>
-            get() = IntentDefinition::category
+            get() = __Category
         val _id: KProperty1<IntentDefinition, Id<IntentDefinition>?>
-            get() = IntentDefinition::_id}
+            get() = ___id}
 }
 
 class IntentDefinition_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<IntentDefinition>?>) : KCollectionPropertyPath<T, IntentDefinition?,
         IntentDefinition_<T>>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::name)
+        get() = KPropertyPath<T, String?>(this,__Name)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::namespace)
+        get() = KPropertyPath<T, String?>(this,__Namespace)
 
     val applications: KCollectionSimplePropertyPath<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,IntentDefinition::applications)
+        get() = KCollectionSimplePropertyPath<T,
+                Id<ApplicationDefinition>?>(this,IntentDefinition::applications)
 
     val entities: EntityDefinition_Col<T>
         get() = EntityDefinition_Col(this,IntentDefinition::entities)
 
     val entitiesRegexp: KMapSimplePropertyPath<T, Locale?, LinkedHashSet<EntitiesRegexp>?>
-        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, java.util.Locale?,
-                java.util.LinkedHashSet<fr.vsct.tock.nlp.core.EntitiesRegexp>?>(this,IntentDefinition::entitiesRegexp)
+        get() = KMapSimplePropertyPath<T, Locale?,
+                LinkedHashSet<EntitiesRegexp>?>(this,IntentDefinition::entitiesRegexp)
 
     val mandatoryStates: KCollectionSimplePropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::mandatoryStates)
+        get() = KCollectionSimplePropertyPath<T, String?>(this,IntentDefinition::mandatoryStates)
 
     val sharedIntents: KCollectionSimplePropertyPath<T, Id<IntentDefinition>?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,IntentDefinition::sharedIntents)
+        get() = KCollectionSimplePropertyPath<T,
+                Id<IntentDefinition>?>(this,IntentDefinition::sharedIntents)
 
     val label: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::label)
+        get() = KPropertyPath<T, String?>(this,__Label)
 
     val description: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::description)
+        get() = KPropertyPath<T, String?>(this,__Description)
 
     val category: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::category)
+        get() = KPropertyPath<T, String?>(this,__Category)
 
     val _id: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,IntentDefinition::_id)
+        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): IntentDefinition_<T> =
@@ -141,47 +151,40 @@ class IntentDefinition_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProp
         IntentDefinition>?>) : KMapPropertyPath<T, K, IntentDefinition?,
         IntentDefinition_<T>>(previous,property) {
     val name_: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::name)
+        get() = KPropertyPath<T, String?>(this,__Name)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::namespace)
+        get() = KPropertyPath<T, String?>(this,__Namespace)
 
     val applications: KCollectionSimplePropertyPath<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,IntentDefinition::applications)
+        get() = KCollectionSimplePropertyPath<T,
+                Id<ApplicationDefinition>?>(this,IntentDefinition::applications)
 
     val entities: EntityDefinition_Col<T>
         get() = EntityDefinition_Col(this,IntentDefinition::entities)
 
     val entitiesRegexp: KMapSimplePropertyPath<T, Locale?, LinkedHashSet<EntitiesRegexp>?>
-        get() = org.litote.kmongo.property.KMapSimplePropertyPath<T, java.util.Locale?,
-                java.util.LinkedHashSet<fr.vsct.tock.nlp.core.EntitiesRegexp>?>(this,IntentDefinition::entitiesRegexp)
+        get() = KMapSimplePropertyPath<T, Locale?,
+                LinkedHashSet<EntitiesRegexp>?>(this,IntentDefinition::entitiesRegexp)
 
     val mandatoryStates: KCollectionSimplePropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::mandatoryStates)
+        get() = KCollectionSimplePropertyPath<T, String?>(this,IntentDefinition::mandatoryStates)
 
     val sharedIntents: KCollectionSimplePropertyPath<T, Id<IntentDefinition>?>
-        get() = org.litote.kmongo.property.KCollectionSimplePropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,IntentDefinition::sharedIntents)
+        get() = KCollectionSimplePropertyPath<T,
+                Id<IntentDefinition>?>(this,IntentDefinition::sharedIntents)
 
     val label: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::label)
+        get() = KPropertyPath<T, String?>(this,__Label)
 
     val description: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::description)
+        get() = KPropertyPath<T, String?>(this,__Description)
 
     val category: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,IntentDefinition::category)
+        get() = KPropertyPath<T, String?>(this,__Category)
 
     val _id: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,IntentDefinition::_id)
+        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,___id)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): IntentDefinition_<T> =

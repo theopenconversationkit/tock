@@ -1,0 +1,164 @@
+package fr.vsct.tock.bot.mongo
+
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.JsonToken
+import com.fasterxml.jackson.core.type.TypeReference
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.module.SimpleModule
+import fr.vsct.tock.bot.engine.user.PlayerId
+import java.time.Instant
+import kotlin.String
+import kotlin.collections.Map
+import kotlin.collections.MutableSet
+import kotlin.collections.Set
+import kotlin.reflect.KFunction
+import kotlin.reflect.KParameter
+import kotlin.reflect.full.findParameterByName
+import kotlin.reflect.full.primaryConstructor
+import org.litote.jackson.JacksonModuleServiceLoader
+import org.litote.kmongo.Id
+
+internal class UserTimelineCol_Deserializer :
+        StdDeserializer<UserTimelineCol>(UserTimelineCol::class.java), JacksonModuleServiceLoader {
+    override fun module() = SimpleModule().addDeserializer(UserTimelineCol::class.java, this)
+
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): UserTimelineCol {
+        with(p) {
+            var __id_: Id<UserTimelineCol>? = null
+            var __id_set = false
+            var _playerId_: PlayerId? = null
+            var _playerId_set = false
+            var _userPreferences_: UserTimelineCol.UserPreferencesWrapper? = null
+            var _userPreferences_set = false
+            var _userState_: UserTimelineCol.UserStateWrapper? = null
+            var _userState_set = false
+            var _temporaryIds_: MutableSet<String>? = null
+            var _temporaryIds_set = false
+            var _applicationIds_: MutableSet<String>? = null
+            var _applicationIds_set = false
+            var _lastActionText_: String? = null
+            var _lastActionText_set = false
+            var _lastUpdateDate_: Instant? = null
+            var _lastUpdateDate_set = false
+            var _lastUserActionDate_: Instant? = null
+            var _lastUserActionDate_set = false
+            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
+                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
+                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
+                        break } 
+                val fieldName = currentName
+                nextToken()
+                when (fieldName) { 
+                    "_id" -> {
+                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(__id__reference);
+                            __id_set = true
+                            }
+                    "playerId" -> {
+                            _playerId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(PlayerId::class.java);
+                            _playerId_set = true
+                            }
+                    "userPreferences" -> {
+                            _userPreferences_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(UserTimelineCol.UserPreferencesWrapper::class.java);
+                            _userPreferences_set = true
+                            }
+                    "userState" -> {
+                            _userState_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(UserTimelineCol.UserStateWrapper::class.java);
+                            _userState_set = true
+                            }
+                    "temporaryIds" -> {
+                            _temporaryIds_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_temporaryIds__reference);
+                            _temporaryIds_set = true
+                            }
+                    "applicationIds" -> {
+                            _applicationIds_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_applicationIds__reference);
+                            _applicationIds_set = true
+                            }
+                    "lastActionText" -> {
+                            _lastActionText_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _lastActionText_set = true
+                            }
+                    "lastUpdateDate" -> {
+                            _lastUpdateDate_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Instant::class.java);
+                            _lastUpdateDate_set = true
+                            }
+                    "lastUserActionDate" -> {
+                            _lastUserActionDate_ = if(currentToken == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(Instant::class.java);
+                            _lastUserActionDate_set = true
+                            }
+                    else -> {
+                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
+                                    JsonToken.START_ARRAY)
+                            p.skipChildren()
+                            nextToken()
+                            }
+                    } 
+                } 
+            return if(__id_set && _playerId_set && _userPreferences_set && _userState_set &&
+                    _temporaryIds_set && _applicationIds_set && _lastActionText_set &&
+                    _lastUpdateDate_set && _lastUserActionDate_set)
+                    UserTimelineCol(_id = __id_!!, playerId = _playerId_!!, userPreferences =
+                            _userPreferences_!!, userState = _userState_!!, temporaryIds =
+                            _temporaryIds_!!, applicationIds = _applicationIds_!!, lastActionText =
+                            _lastActionText_, lastUpdateDate = _lastUpdateDate_!!,
+                            lastUserActionDate = _lastUserActionDate_!!)
+                    else {
+                    val map = mutableMapOf<KParameter, Any?>()
+                    if(__id_set)
+                    map[parameters.getValue("_id")] = __id_
+                    if(_playerId_set)
+                    map[parameters.getValue("playerId")] = _playerId_
+                    if(_userPreferences_set)
+                    map[parameters.getValue("userPreferences")] = _userPreferences_
+                    if(_userState_set)
+                    map[parameters.getValue("userState")] = _userState_
+                    if(_temporaryIds_set)
+                    map[parameters.getValue("temporaryIds")] = _temporaryIds_
+                    if(_applicationIds_set)
+                    map[parameters.getValue("applicationIds")] = _applicationIds_
+                    if(_lastActionText_set)
+                    map[parameters.getValue("lastActionText")] = _lastActionText_
+                    if(_lastUpdateDate_set)
+                    map[parameters.getValue("lastUpdateDate")] = _lastUpdateDate_
+                    if(_lastUserActionDate_set)
+                    map[parameters.getValue("lastUserActionDate")] = _lastUserActionDate_ 
+                    primaryConstructor.callBy(map) 
+                    }
+        } 
+    }
+
+    companion object {
+        private val primaryConstructor: KFunction<UserTimelineCol> by
+                lazy(LazyThreadSafetyMode.PUBLICATION) { UserTimelineCol::class.primaryConstructor!!
+                }
+
+        private val parameters: Map<String, KParameter> by lazy(LazyThreadSafetyMode.PUBLICATION) {
+                kotlin.collections.mapOf("_id" to primaryConstructor.findParameterByName("_id")!!,
+                "playerId" to primaryConstructor.findParameterByName("playerId")!!,
+                "userPreferences" to primaryConstructor.findParameterByName("userPreferences")!!,
+                "userState" to primaryConstructor.findParameterByName("userState")!!, "temporaryIds"
+                to primaryConstructor.findParameterByName("temporaryIds")!!, "applicationIds" to
+                primaryConstructor.findParameterByName("applicationIds")!!, "lastActionText" to
+                primaryConstructor.findParameterByName("lastActionText")!!, "lastUpdateDate" to
+                primaryConstructor.findParameterByName("lastUpdateDate")!!, "lastUserActionDate" to
+                primaryConstructor.findParameterByName("lastUserActionDate")!!) }
+
+        private val __id__reference: TypeReference<Id<UserTimelineCol>> = object :
+                TypeReference<Id<UserTimelineCol>>() {}
+
+        private val _temporaryIds__reference: TypeReference<Set<String>> = object :
+                TypeReference<Set<String>>() {}
+
+        private val _applicationIds__reference: TypeReference<Set<String>> = object :
+                TypeReference<Set<String>>() {}
+    }
+}

@@ -6,46 +6,40 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import com.fasterxml.jackson.databind.ser.std.StdSerializer
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class DialogCol_Serializer : StdSerializer<DialogCol>(DialogCol::class.java),
-        JacksonModuleServiceLoader {
-    override fun module() = SimpleModule().addSerializer(DialogCol::class.java, this)
+internal class UserTimelineCol_Serializer :
+        StdSerializer<UserTimelineCol>(UserTimelineCol::class.java), JacksonModuleServiceLoader {
+    override fun module() = SimpleModule().addSerializer(UserTimelineCol::class.java, this)
 
     override fun serialize(
-        value: DialogCol,
+        value: UserTimelineCol,
         gen: JsonGenerator,
         serializers: SerializerProvider
     ) {
         gen.writeStartObject()
-        gen.writeFieldName("playerIds")
-        val _playerIds_ = value.playerIds
-        serializers.findTypedValueSerializer(
-                serializers.config.typeFactory.constructCollectionType(
-                kotlin.collections.Set::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.bot.engine.user.PlayerId::class.java)
-                )
-                ,
-                true,
-                null
-                )
-                .serialize(_playerIds_, gen, serializers)
         gen.writeFieldName("_id")
         val __id_ = value._id
         serializers.defaultSerializeValue(__id_, gen)
-        gen.writeFieldName("state")
-        val _state_ = value.state
-        serializers.defaultSerializeValue(_state_, gen)
-        gen.writeFieldName("stories")
-        val _stories_ = value.stories
+        gen.writeFieldName("playerId")
+        val _playerId_ = value.playerId
+        serializers.defaultSerializeValue(_playerId_, gen)
+        gen.writeFieldName("userPreferences")
+        val _userPreferences_ = value.userPreferences
+        serializers.defaultSerializeValue(_userPreferences_, gen)
+        gen.writeFieldName("userState")
+        val _userState_ = value.userState
+        serializers.defaultSerializeValue(_userState_, gen)
+        gen.writeFieldName("temporaryIds")
+        val _temporaryIds_ = value.temporaryIds
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
-                kotlin.collections.List::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.bot.mongo.DialogCol.StoryMongoWrapper::class.java)
+                kotlin.collections.Set::class.java,
+                        serializers.config.typeFactory.constructType(kotlin.String::class.java)
                 )
                 ,
                 true,
                 null
                 )
-                .serialize(_stories_, gen, serializers)
+                .serialize(_temporaryIds_, gen, serializers)
         gen.writeFieldName("applicationIds")
         val _applicationIds_ = value.applicationIds
         serializers.findTypedValueSerializer(
@@ -58,12 +52,15 @@ internal class DialogCol_Serializer : StdSerializer<DialogCol>(DialogCol::class.
                 null
                 )
                 .serialize(_applicationIds_, gen, serializers)
+        gen.writeFieldName("lastActionText")
+        val _lastActionText_ = value.lastActionText
+        if(_lastActionText_ == null) { gen.writeNull() } else {gen.writeString(_lastActionText_)}
         gen.writeFieldName("lastUpdateDate")
         val _lastUpdateDate_ = value.lastUpdateDate
         serializers.defaultSerializeValue(_lastUpdateDate_, gen)
-        gen.writeFieldName("groupId")
-        val _groupId_ = value.groupId
-        if(_groupId_ == null) { gen.writeNull() } else {gen.writeString(_groupId_)}
+        gen.writeFieldName("lastUserActionDate")
+        val _lastUserActionDate_ = value.lastUserActionDate
+        serializers.defaultSerializeValue(_lastUserActionDate_, gen)
         gen.writeEndObject()
     }
 }

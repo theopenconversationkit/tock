@@ -13,81 +13,83 @@ import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
+private val __LabelId: KProperty1<I18nLabelStat, Id<I18nLabel>?>
+    get() = I18nLabelStat::labelId
+private val __Namespace: KProperty1<I18nLabelStat, String?>
+    get() = I18nLabelStat::namespace
+private val __Locale: KProperty1<I18nLabelStat, Locale?>
+    get() = I18nLabelStat::locale
+private val __InterfaceType: KProperty1<I18nLabelStat, UserInterfaceType?>
+    get() = I18nLabelStat::interfaceType
+private val __ConnectorId: KProperty1<I18nLabelStat, String?>
+    get() = I18nLabelStat::connectorId
+private val __Count: KProperty1<I18nLabelStat, Int?>
+    get() = I18nLabelStat::count
+private val __LastUpdate: KProperty1<I18nLabelStat, Instant?>
+    get() = I18nLabelStat::lastUpdate
 class I18nLabelStat_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, I18nLabelStat?>) :
         KPropertyPath<T, I18nLabelStat?>(previous,property) {
     val labelId: KPropertyPath<T, Id<I18nLabel>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.translator.I18nLabel>?>(this,I18nLabelStat::labelId)
+        get() = KPropertyPath<T, Id<I18nLabel>?>(this,__LabelId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,I18nLabelStat::namespace)
+        get() = KPropertyPath<T, String?>(this,__Namespace)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.util.Locale?>(this,I18nLabelStat::locale)
+        get() = KPropertyPath<T, Locale?>(this,__Locale)
 
     val interfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.translator.UserInterfaceType?>(this,I18nLabelStat::interfaceType)
+        get() = KPropertyPath<T, UserInterfaceType?>(this,__InterfaceType)
 
     val connectorId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,I18nLabelStat::connectorId)
+        get() = KPropertyPath<T, String?>(this,__ConnectorId)
 
     val count: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,I18nLabelStat::count)
+        get() = KPropertyPath<T, Int?>(this,__Count)
 
     val lastUpdate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,I18nLabelStat::lastUpdate)
+        get() = KPropertyPath<T, Instant?>(this,__LastUpdate)
 
     companion object {
         val LabelId: KProperty1<I18nLabelStat, Id<I18nLabel>?>
-            get() = I18nLabelStat::labelId
+            get() = __LabelId
         val Namespace: KProperty1<I18nLabelStat, String?>
-            get() = I18nLabelStat::namespace
+            get() = __Namespace
         val Locale: KProperty1<I18nLabelStat, Locale?>
-            get() = I18nLabelStat::locale
+            get() = __Locale
         val InterfaceType: KProperty1<I18nLabelStat, UserInterfaceType?>
-            get() = I18nLabelStat::interfaceType
+            get() = __InterfaceType
         val ConnectorId: KProperty1<I18nLabelStat, String?>
-            get() = I18nLabelStat::connectorId
+            get() = __ConnectorId
         val Count: KProperty1<I18nLabelStat, Int?>
-            get() = I18nLabelStat::count
+            get() = __Count
         val LastUpdate: KProperty1<I18nLabelStat, Instant?>
-            get() = I18nLabelStat::lastUpdate}
+            get() = __LastUpdate}
 }
 
 class I18nLabelStat_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<I18nLabelStat>?>) : KCollectionPropertyPath<T, I18nLabelStat?,
         I18nLabelStat_<T>>(previous,property) {
     val labelId: KPropertyPath<T, Id<I18nLabel>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.translator.I18nLabel>?>(this,I18nLabelStat::labelId)
+        get() = KPropertyPath<T, Id<I18nLabel>?>(this,__LabelId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,I18nLabelStat::namespace)
+        get() = KPropertyPath<T, String?>(this,__Namespace)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.util.Locale?>(this,I18nLabelStat::locale)
+        get() = KPropertyPath<T, Locale?>(this,__Locale)
 
     val interfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.translator.UserInterfaceType?>(this,I18nLabelStat::interfaceType)
+        get() = KPropertyPath<T, UserInterfaceType?>(this,__InterfaceType)
 
     val connectorId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,I18nLabelStat::connectorId)
+        get() = KPropertyPath<T, String?>(this,__ConnectorId)
 
     val count: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,I18nLabelStat::count)
+        get() = KPropertyPath<T, Int?>(this,__Count)
 
     val lastUpdate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,I18nLabelStat::lastUpdate)
+        get() = KPropertyPath<T, Instant?>(this,__LastUpdate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): I18nLabelStat_<T> =
@@ -97,31 +99,25 @@ class I18nLabelStat_Map<T, K>(previous: KPropertyPath<T, *>?, property: KPropert
         I18nLabelStat>?>) : KMapPropertyPath<T, K, I18nLabelStat?,
         I18nLabelStat_<T>>(previous,property) {
     val labelId: KPropertyPath<T, Id<I18nLabel>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.translator.I18nLabel>?>(this,I18nLabelStat::labelId)
+        get() = KPropertyPath<T, Id<I18nLabel>?>(this,__LabelId)
 
     val namespace: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,I18nLabelStat::namespace)
+        get() = KPropertyPath<T, String?>(this,__Namespace)
 
     val locale: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.util.Locale?>(this,I18nLabelStat::locale)
+        get() = KPropertyPath<T, Locale?>(this,__Locale)
 
     val interfaceType: KPropertyPath<T, UserInterfaceType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.translator.UserInterfaceType?>(this,I18nLabelStat::interfaceType)
+        get() = KPropertyPath<T, UserInterfaceType?>(this,__InterfaceType)
 
     val connectorId: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,I18nLabelStat::connectorId)
+        get() = KPropertyPath<T, String?>(this,__ConnectorId)
 
     val count: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Int?>(this,I18nLabelStat::count)
+        get() = KPropertyPath<T, Int?>(this,__Count)
 
     val lastUpdate: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,I18nLabelStat::lastUpdate)
+        get() = KPropertyPath<T, Instant?>(this,__LastUpdate)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): I18nLabelStat_<T> =

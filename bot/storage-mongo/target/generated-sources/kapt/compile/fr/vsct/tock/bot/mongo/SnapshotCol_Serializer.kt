@@ -21,7 +21,16 @@ internal class SnapshotCol_Serializer : StdSerializer<SnapshotCol>(SnapshotCol::
         serializers.defaultSerializeValue(__id_, gen)
         gen.writeFieldName("snapshots")
         val _snapshots_ = value.snapshots
-        serializers.defaultSerializeValue(_snapshots_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.List::class.java,
+                        serializers.config.typeFactory.constructType(fr.vsct.tock.bot.engine.dialog.Snapshot::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_snapshots_, gen, serializers)
         gen.writeFieldName("lastUpdateDate")
         val _lastUpdateDate_ = value.lastUpdateDate
         serializers.defaultSerializeValue(_lastUpdateDate_, gen)

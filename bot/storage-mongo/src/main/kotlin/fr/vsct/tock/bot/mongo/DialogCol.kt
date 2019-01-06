@@ -252,7 +252,7 @@ internal data class DialogCol(
     }
 
     @JsonTypeName(value = "sentence")
-    class SendSentenceMongoWrapper(
+    data class SendSentenceMongoWrapper(
         val text: String?,
         val customMessage: Boolean = false
     ) : ActionMongoWrapper() {

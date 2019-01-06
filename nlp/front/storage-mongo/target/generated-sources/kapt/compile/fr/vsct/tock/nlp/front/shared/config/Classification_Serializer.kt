@@ -21,7 +21,16 @@ internal class Classification_Serializer :
         serializers.defaultSerializeValue(_intentId_, gen)
         gen.writeFieldName("entities")
         val _entities_ = value.entities
-        serializers.defaultSerializeValue(_entities_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.List::class.java,
+                        serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_entities_, gen, serializers)
         gen.writeEndObject()
     }
 }

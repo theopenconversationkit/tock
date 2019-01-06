@@ -31,7 +31,16 @@ internal class EntityTestError_Serializer :
                 {serializers.defaultSerializeValue(_intentId_, gen)}
         gen.writeFieldName("lastAnalyse")
         val _lastAnalyse_ = value.lastAnalyse
-        serializers.defaultSerializeValue(_lastAnalyse_, gen)
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.List::class.java,
+                        serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity::class.java)
+                )
+                ,
+                true,
+                null
+                )
+                .serialize(_lastAnalyse_, gen, serializers)
         gen.writeFieldName("averageErrorProbability")
         val _averageErrorProbability_ = value.averageErrorProbability
         gen.writeNumber(_averageErrorProbability_)

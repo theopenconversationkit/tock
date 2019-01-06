@@ -1,5 +1,6 @@
 package fr.vsct.tock.bot.mongo
 
+import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration_
 import java.time.Instant
 import kotlin.Boolean
@@ -12,6 +13,18 @@ import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
+private val __Conf:
+        KProperty1<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol,
+        StoryDefinitionConfiguration?>
+    get() = StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::conf
+private val __Deleted:
+        KProperty1<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol,
+        Boolean?>
+    get() = StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::deleted
+private val __Date:
+        KProperty1<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol,
+        Instant?>
+    get() = StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::date
 internal class StoryDefinitionConfigurationHistoryCol_<T>(previous: KPropertyPath<T, *>?, property:
         KProperty1<*, StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol?>)
         : KPropertyPath<T,
@@ -22,28 +35,24 @@ internal class StoryDefinitionConfigurationHistoryCol_<T>(previous: KPropertyPat
                 StoryDefinitionConfiguration_(this,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::conf)
 
     val deleted: KPropertyPath<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Boolean?>(this,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::deleted)
+        get() = KPropertyPath<T, Boolean?>(this,__Deleted)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::date)
+        get() = KPropertyPath<T, Instant?>(this,__Date)
 
     companion object {
         val Conf:
                 StoryDefinitionConfiguration_<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>
             get() =
-                    StoryDefinitionConfiguration_<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>(null,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::conf)
+                    StoryDefinitionConfiguration_<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>(null,__Conf)
         val Deleted:
                 KProperty1<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol,
                 Boolean?>
-            get() =
-                    StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::deleted
+            get() = __Deleted
         val Date:
                 KProperty1<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol,
                 Instant?>
-            get() =
-                    StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::date}
+            get() = __Date}
 }
 
 internal class StoryDefinitionConfigurationHistoryCol_Col<T>(previous: KPropertyPath<T, *>?,
@@ -57,12 +66,10 @@ internal class StoryDefinitionConfigurationHistoryCol_Col<T>(previous: KProperty
                 StoryDefinitionConfiguration_(this,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::conf)
 
     val deleted: KPropertyPath<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Boolean?>(this,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::deleted)
+        get() = KPropertyPath<T, Boolean?>(this,__Deleted)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::date)
+        get() = KPropertyPath<T, Instant?>(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String):
@@ -80,12 +87,10 @@ internal class StoryDefinitionConfigurationHistoryCol_Map<T, K>(previous: KPrope
                 StoryDefinitionConfiguration_(this,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::conf)
 
     val deleted: KPropertyPath<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Boolean?>(this,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::deleted)
+        get() = KPropertyPath<T, Boolean?>(this,__Deleted)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::date)
+        get() = KPropertyPath<T, Instant?>(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String):

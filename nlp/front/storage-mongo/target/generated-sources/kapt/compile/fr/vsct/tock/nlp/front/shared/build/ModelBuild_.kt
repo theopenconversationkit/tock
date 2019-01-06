@@ -17,111 +17,113 @@ import org.litote.kmongo.property.KCollectionPropertyPath
 import org.litote.kmongo.property.KMapPropertyPath
 import org.litote.kmongo.property.KPropertyPath
 
+private val __ApplicationId: KProperty1<ModelBuild, Id<ApplicationDefinition>?>
+    get() = ModelBuild::applicationId
+private val __Language: KProperty1<ModelBuild, Locale?>
+    get() = ModelBuild::language
+private val __Type: KProperty1<ModelBuild, ModelBuildType?>
+    get() = ModelBuild::type
+private val __IntentId: KProperty1<ModelBuild, Id<IntentDefinition>?>
+    get() = ModelBuild::intentId
+private val __EntityTypeName: KProperty1<ModelBuild, String?>
+    get() = ModelBuild::entityTypeName
+private val __NbSentences: KProperty1<ModelBuild, Int?>
+    get() = ModelBuild::nbSentences
+private val __Duration: KProperty1<ModelBuild, Duration?>
+    get() = ModelBuild::duration
+private val __Error: KProperty1<ModelBuild, Boolean?>
+    get() = ModelBuild::error
+private val __ErrorMessage: KProperty1<ModelBuild, String?>
+    get() = ModelBuild::errorMessage
+private val __Date: KProperty1<ModelBuild, Instant?>
+    get() = ModelBuild::date
 class ModelBuild_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, ModelBuild?>) :
         KPropertyPath<T, ModelBuild?>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,ModelBuild::applicationId)
+        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.util.Locale?>(this,ModelBuild::language)
+        get() = KPropertyPath<T, Locale?>(this,__Language)
 
     val type: KPropertyPath<T, ModelBuildType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.nlp.front.shared.build.ModelBuildType?>(this,ModelBuild::type)
+        get() = KPropertyPath<T, ModelBuildType?>(this,__Type)
 
     val intentId: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,ModelBuild::intentId)
+        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,__IntentId)
 
     val entityTypeName: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,ModelBuild::entityTypeName)
+        get() = KPropertyPath<T, String?>(this,__EntityTypeName)
 
     val nbSentences: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Int?>(this,ModelBuild::nbSentences)
+        get() = KPropertyPath<T, Int?>(this,__NbSentences)
 
     val duration: KPropertyPath<T, Duration?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Duration?>(this,ModelBuild::duration)
+        get() = KPropertyPath<T, Duration?>(this,__Duration)
 
     val error: KPropertyPath<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Boolean?>(this,ModelBuild::error)
+        get() = KPropertyPath<T, Boolean?>(this,__Error)
 
     val errorMessage: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,ModelBuild::errorMessage)
+        get() = KPropertyPath<T, String?>(this,__ErrorMessage)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,ModelBuild::date)
+        get() = KPropertyPath<T, Instant?>(this,__Date)
 
     companion object {
         val ApplicationId: KProperty1<ModelBuild, Id<ApplicationDefinition>?>
-            get() = ModelBuild::applicationId
+            get() = __ApplicationId
         val Language: KProperty1<ModelBuild, Locale?>
-            get() = ModelBuild::language
+            get() = __Language
         val Type: KProperty1<ModelBuild, ModelBuildType?>
-            get() = ModelBuild::type
+            get() = __Type
         val IntentId: KProperty1<ModelBuild, Id<IntentDefinition>?>
-            get() = ModelBuild::intentId
+            get() = __IntentId
         val EntityTypeName: KProperty1<ModelBuild, String?>
-            get() = ModelBuild::entityTypeName
+            get() = __EntityTypeName
         val NbSentences: KProperty1<ModelBuild, Int?>
-            get() = ModelBuild::nbSentences
+            get() = __NbSentences
         val Duration: KProperty1<ModelBuild, Duration?>
-            get() = ModelBuild::duration
+            get() = __Duration
         val Error: KProperty1<ModelBuild, Boolean?>
-            get() = ModelBuild::error
+            get() = __Error
         val ErrorMessage: KProperty1<ModelBuild, String?>
-            get() = ModelBuild::errorMessage
+            get() = __ErrorMessage
         val Date: KProperty1<ModelBuild, Instant?>
-            get() = ModelBuild::date}
+            get() = __Date}
 }
 
 class ModelBuild_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
         Collection<ModelBuild>?>) : KCollectionPropertyPath<T, ModelBuild?,
         ModelBuild_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,ModelBuild::applicationId)
+        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.util.Locale?>(this,ModelBuild::language)
+        get() = KPropertyPath<T, Locale?>(this,__Language)
 
     val type: KPropertyPath<T, ModelBuildType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.nlp.front.shared.build.ModelBuildType?>(this,ModelBuild::type)
+        get() = KPropertyPath<T, ModelBuildType?>(this,__Type)
 
     val intentId: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,ModelBuild::intentId)
+        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,__IntentId)
 
     val entityTypeName: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,ModelBuild::entityTypeName)
+        get() = KPropertyPath<T, String?>(this,__EntityTypeName)
 
     val nbSentences: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Int?>(this,ModelBuild::nbSentences)
+        get() = KPropertyPath<T, Int?>(this,__NbSentences)
 
     val duration: KPropertyPath<T, Duration?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Duration?>(this,ModelBuild::duration)
+        get() = KPropertyPath<T, Duration?>(this,__Duration)
 
     val error: KPropertyPath<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Boolean?>(this,ModelBuild::error)
+        get() = KPropertyPath<T, Boolean?>(this,__Error)
 
     val errorMessage: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,ModelBuild::errorMessage)
+        get() = KPropertyPath<T, String?>(this,__ErrorMessage)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,ModelBuild::date)
+        get() = KPropertyPath<T, Instant?>(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ModelBuild_<T> =
@@ -130,43 +132,34 @@ class ModelBuild_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
 class ModelBuild_Map<T, K>(previous: KPropertyPath<T, *>?, property: KProperty1<*, Map<K,
         ModelBuild>?>) : KMapPropertyPath<T, K, ModelBuild?, ModelBuild_<T>>(previous,property) {
     val applicationId: KPropertyPath<T, Id<ApplicationDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition>?>(this,ModelBuild::applicationId)
+        get() = KPropertyPath<T, Id<ApplicationDefinition>?>(this,__ApplicationId)
 
     val language: KPropertyPath<T, Locale?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.util.Locale?>(this,ModelBuild::language)
+        get() = KPropertyPath<T, Locale?>(this,__Language)
 
     val type: KPropertyPath<T, ModelBuildType?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                fr.vsct.tock.nlp.front.shared.build.ModelBuildType?>(this,ModelBuild::type)
+        get() = KPropertyPath<T, ModelBuildType?>(this,__Type)
 
     val intentId: KPropertyPath<T, Id<IntentDefinition>?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                org.litote.kmongo.Id<fr.vsct.tock.nlp.front.shared.config.IntentDefinition>?>(this,ModelBuild::intentId)
+        get() = KPropertyPath<T, Id<IntentDefinition>?>(this,__IntentId)
 
     val entityTypeName: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,ModelBuild::entityTypeName)
+        get() = KPropertyPath<T, String?>(this,__EntityTypeName)
 
     val nbSentences: KPropertyPath<T, Int?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.Int?>(this,ModelBuild::nbSentences)
+        get() = KPropertyPath<T, Int?>(this,__NbSentences)
 
     val duration: KPropertyPath<T, Duration?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Duration?>(this,ModelBuild::duration)
+        get() = KPropertyPath<T, Duration?>(this,__Duration)
 
     val error: KPropertyPath<T, Boolean?>
-        get() = org.litote.kmongo.property.KPropertyPath<T, kotlin.Boolean?>(this,ModelBuild::error)
+        get() = KPropertyPath<T, Boolean?>(this,__Error)
 
     val errorMessage: KPropertyPath<T, String?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                kotlin.String?>(this,ModelBuild::errorMessage)
+        get() = KPropertyPath<T, String?>(this,__ErrorMessage)
 
     val date: KPropertyPath<T, Instant?>
-        get() = org.litote.kmongo.property.KPropertyPath<T,
-                java.time.Instant?>(this,ModelBuild::date)
+        get() = KPropertyPath<T, Instant?>(this,__Date)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): ModelBuild_<T> =

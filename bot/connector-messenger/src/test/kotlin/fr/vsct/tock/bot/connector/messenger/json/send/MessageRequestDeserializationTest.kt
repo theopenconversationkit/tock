@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.connector.messenger.json.send
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
+import fr.vsct.tock.bot.connector.messenger.model.UserProfile
 import fr.vsct.tock.bot.connector.messenger.model.send.Attachment
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentMessage
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType
@@ -186,6 +187,12 @@ class MessageRequestDeserializationTest {
         )
 
         assertEquals(output, mapper.readValue(mapper.writeValueAsString(output)))
+    }
+
+    @Test
+    fun `UserProfile deserialization is ok`() {
+        val p =mapper.readValue<UserProfile>("""{"first_name":"Simone","last_name":"En Gare","profile_pic":"https:\/\/platform-lookaside.fbsbx.com\/platform\/profilepic\/?psid=1107678927&width=1024&ext=1549209201&hash=AeQ5_frOwCI51K21","id":"1107678927"}""")
+        println(p)
     }
 
 }
