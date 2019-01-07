@@ -49,6 +49,7 @@ import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
 import mu.KotlinLogging
+import java.time.Duration
 
 class WhatsAppConnector(
     val applicationId: String,
@@ -108,7 +109,12 @@ class WhatsAppConnector(
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         if (event is Action) {
             SendActionConverter.toBotMessage(event)
-                ?.also { client.sendMessage(it) }
+                ?.also {
+                    val delay = Duration.ofMillis(delayInMs)
+                    executor.executeBlocking(delay) {
+                        client.sendMessage(it)
+                    }
+                }
         }
     }
 
