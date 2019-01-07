@@ -24,4 +24,7 @@ import fr.vsct.tock.bot.connector.ConnectorType
  */
 internal const val ROCKET_CHAT_CONNECTOR_TYPE_ID = "rocket"
 
+/**
+ * The RocketChat connector type.
+ */
 val rocketChatConnectorType = ConnectorType(ROCKET_CHAT_CONNECTOR_TYPE_ID)

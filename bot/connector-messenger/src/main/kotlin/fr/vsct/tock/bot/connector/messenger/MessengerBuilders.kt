@@ -64,12 +64,41 @@ private val logger = KotlinLogging.logger {}
 internal const val MESSENGER_CONNECTOR_TYPE_ID = "messenger"
 
 /**
- * The messenger connector type.
+ * The Messenger connector type.
  */
 val messengerConnectorType = ConnectorType(MESSENGER_CONNECTOR_TYPE_ID)
 
 /**
+ * Sends a Messenger message only if the [ConnectorType] of the current [BotBus] is [messengerConnectorType].
+ */
+fun BotBus.sendToMessenger(
+    messageProvider: () -> MessengerConnectorMessage,
+    delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
+): BotBus {
+    if (targetConnectorType == messengerConnectorType) {
+        withMessenger(messageProvider)
+        send(delay)
+    }
+    return this
+}
+
+/**
+ * Sends a Messenger message as last bot answer, only if the [ConnectorType] of the current [BotBus] is [messengerConnectorType].
+ */
+fun BotBus.endForMessenger(
+    messageProvider: () -> MessengerConnectorMessage,
+    delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
+): BotBus {
+    if (targetConnectorType == messengerConnectorType) {
+        withMessenger(messageProvider)
+        end(delay)
+    }
+    return this
+}
+
+/**
  * Adds a Messenger [ConnectorMessage] if the current connector is Messenger.
+ * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
 fun BotBus.withMessenger(messageProvider: () -> MessengerConnectorMessage): BotBus {
     return withMessage(messengerConnectorType, messageProvider)
@@ -79,21 +108,21 @@ fun BotBus.withMessenger(messageProvider: () -> MessengerConnectorMessage): BotB
  * Creates a button template [https://developers.facebook.com/docs/messenger-platform/send-api-reference/button-template]
  */
 fun I18nTranslator.buttonsTemplate(text: CharSequence, vararg actions: UserAction): AttachmentMessage =
-        buttonsTemplate(text, actions.toList())
+    buttonsTemplate(text, actions.toList())
 
 /**
  * Creates a button template [https://developers.facebook.com/docs/messenger-platform/send-api-reference/button-template]
  */
 fun I18nTranslator.buttonsTemplate(text: CharSequence, actions: List<UserAction> = emptyList()): AttachmentMessage {
     return AttachmentMessage(
-            Attachment(
-                    AttachmentType.template,
-                    ButtonPayload(
-                            translate(text).toString(),
-                            extractButtons(actions)
-                    )
-            ),
-            extractQuickReplies(actions.toList())
+        Attachment(
+            AttachmentType.template,
+            ButtonPayload(
+                translate(text).toString(),
+                extractButtons(actions)
+            )
+        ),
+        extractQuickReplies(actions.toList())
     )
 }
 
@@ -101,35 +130,35 @@ fun I18nTranslator.buttonsTemplate(text: CharSequence, actions: List<UserAction>
  * Creates a media template [https://developers.facebook.com/docs/messenger-platform/send-messages/template/media]
  */
 fun mediaTemplate(
-        mediaUrl: String,
-        mediaType: MediaType = MediaType.image,
-        sharable: Boolean = false,
-        vararg actions: UserAction
+    mediaUrl: String,
+    mediaType: MediaType = MediaType.image,
+    sharable: Boolean = false,
+    vararg actions: UserAction
 ): AttachmentMessage = mediaTemplate(mediaUrl, mediaType, sharable, actions.toList())
 
 /**
  * Creates a media template [https://developers.facebook.com/docs/messenger-platform/send-messages/template/media]
  */
 fun mediaTemplate(
-        mediaUrl: String,
-        mediaType: MediaType = MediaType.image,
-        sharable: Boolean = false,
-        actions: List<UserAction> = emptyList()
+    mediaUrl: String,
+    mediaType: MediaType = MediaType.image,
+    sharable: Boolean = false,
+    actions: List<UserAction> = emptyList()
 ): AttachmentMessage {
     return AttachmentMessage(
-            Attachment(
-                    AttachmentType.template,
-                    MediaPayload(
-                            listOf(
-                                    MediaElement(
-                                            mediaType,
-                                            mediaUrl,
-                                            extractButtons(actions).run { if (isEmpty()) null else this })
-                            ),
-                            sharable
-                    )
-            ),
-            extractQuickReplies(actions)
+        Attachment(
+            AttachmentType.template,
+            MediaPayload(
+                listOf(
+                    MediaElement(
+                        mediaType,
+                        mediaUrl,
+                        extractButtons(actions).run { if (isEmpty()) null else this })
+                ),
+                sharable
+            )
+        ),
+        extractQuickReplies(actions)
     )
 }
 
@@ -139,11 +168,11 @@ fun mediaTemplate(
  * or a classic list element if there is between 2 and 4.
  */
 fun flexibleListTemplate(
-        elements: List<Element>,
-        topElementStyle: ListElementStyle? = null,
-        vararg actions: UserAction
+    elements: List<Element>,
+    topElementStyle: ListElementStyle? = null,
+    vararg actions: UserAction
 ): AttachmentMessage =
-        flexibleListTemplate(elements, topElementStyle, actions.toList())
+    flexibleListTemplate(elements, topElementStyle, actions.toList())
 
 /**
  * ListTemplate does not support list with exactly one element.
@@ -151,9 +180,9 @@ fun flexibleListTemplate(
  * or a classic list element if there is between 2 and 4.
  */
 fun flexibleListTemplate(
-        elements: List<Element>,
-        topElementStyle: ListElementStyle? = null,
-        actions: List<UserAction> = emptyList()
+    elements: List<Element>,
+    topElementStyle: ListElementStyle? = null,
+    actions: List<UserAction> = emptyList()
 ): AttachmentMessage {
     return if (elements.size == 1) {
         genericTemplate(elements, *actions.filterIsInstance(QuickReply::class.java).toTypedArray())
@@ -166,25 +195,25 @@ fun flexibleListTemplate(
  * Creates a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
  */
 fun listTemplate(
-        e1: Element,
-        e2: Element,
-        e3: Element? = null,
-        e4: Element? = null,
-        topElementStyle: ListElementStyle? = null,
-        vararg actions: UserAction
+    e1: Element,
+    e2: Element,
+    e3: Element? = null,
+    e4: Element? = null,
+    topElementStyle: ListElementStyle? = null,
+    vararg actions: UserAction
 ): AttachmentMessage =
-        listTemplate(e1, e2, e3, e4, topElementStyle, actions.toList())
+    listTemplate(e1, e2, e3, e4, topElementStyle, actions.toList())
 
 /**
  * Creates a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
  */
 fun listTemplate(
-        e1: Element,
-        e2: Element,
-        e3: Element? = null,
-        e4: Element? = null,
-        topElementStyle: ListElementStyle? = null,
-        actions: List<UserAction> = emptyList()
+    e1: Element,
+    e2: Element,
+    e3: Element? = null,
+    e4: Element? = null,
+    topElementStyle: ListElementStyle? = null,
+    actions: List<UserAction> = emptyList()
 ): AttachmentMessage {
     return listTemplate(listOfNotNull(e1, e2, e3, e4), topElementStyle, actions)
 }
@@ -193,42 +222,42 @@ fun listTemplate(
  * Creates a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
  */
 fun listTemplate(
-        elements: List<Element>,
-        topElementStyle: ListElementStyle? = null,
-        vararg actions: UserAction
+    elements: List<Element>,
+    topElementStyle: ListElementStyle? = null,
+    vararg actions: UserAction
 ): AttachmentMessage = listTemplate(elements, topElementStyle, actions.toList())
 
 /**
  * Creates a [list template](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
  */
 fun listTemplate(
-        elements: List<Element>,
-        topElementStyle: ListElementStyle? = null,
-        actions: List<UserAction> = emptyList()
+    elements: List<Element>,
+    topElementStyle: ListElementStyle? = null,
+    actions: List<UserAction> = emptyList()
 ): AttachmentMessage {
     if (elements.size < 2 || elements.size > 4) {
         error("must have at least 2 elements and at most 4")
     }
     if (topElementStyle != ListElementStyle.compact
-            && elements.any { it.imageUrl == null }
+        && elements.any { it.imageUrl == null }
     ) {
         error("imageUrl of elements may not be null with large element style")
     }
 
     return AttachmentMessage(
-            Attachment(
-                    AttachmentType.template,
-                    ListPayload(
-                            elements,
-                            topElementStyle,
-                            extractButtons(actions)
-                                    .run {
-                                        if (isEmpty()) null
-                                        else if (size > 1) error("only one button max")
-                                        else this
-                                    })
-            ),
-            extractQuickReplies(actions)
+        Attachment(
+            AttachmentType.template,
+            ListPayload(
+                elements,
+                topElementStyle,
+                extractButtons(actions)
+                    .run {
+                        if (isEmpty()) null
+                        else if (size > 1) error("only one button max")
+                        else this
+                    })
+        ),
+        extractQuickReplies(actions)
     )
 }
 
@@ -248,13 +277,13 @@ fun genericTemplate(elements: List<Element>, vararg quickReplies: QuickReply): A
     }
 
     return AttachmentMessage(
-            Attachment(
-                    AttachmentType.template,
-                    GenericPayload(
-                            elements
-                    )
-            ),
-            quickReplies.run { if (isEmpty()) null else toList() }
+        Attachment(
+            AttachmentType.template,
+            GenericPayload(
+                elements
+            )
+        ),
+        quickReplies.run { if (isEmpty()) null else toList() }
     )
 }
 
@@ -262,19 +291,19 @@ fun genericTemplate(elements: List<Element>, vararg quickReplies: QuickReply): A
  * Creates an [attachment](https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
 fun BotBus.attachment(
-        attachmentUrl: String,
-        type: AttachmentType,
-        vararg quickReplies: QuickReply
+    attachmentUrl: String,
+    type: AttachmentType,
+    vararg quickReplies: QuickReply
 ): AttachmentMessage =
-        attachment(attachmentUrl, type, quickReplies.toList())
+    attachment(attachmentUrl, type, quickReplies.toList())
 
 /**
  * Creates an [attachment](https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
 fun BotBus.attachment(
-        attachmentUrl: String,
-        type: AttachmentType,
-        quickReplies: List<QuickReply>
+    attachmentUrl: String,
+    type: AttachmentType,
+    quickReplies: List<QuickReply>
 ): AttachmentMessage {
     return when (type) {
         AttachmentType.image -> cachedAttachment(attachmentUrl, AttachmentType.image, quickReplies = quickReplies)
@@ -288,18 +317,18 @@ fun BotBus.attachment(
 }
 
 private fun BotBus.cachedAttachment(
-        attachmentUrl: String,
-        type: AttachmentType,
-        useCache: Boolean = MessengerConfiguration.reuseAttachmentByDefault,
-        quickReplies: List<QuickReply>
+    attachmentUrl: String,
+    type: AttachmentType,
+    useCache: Boolean = MessengerConfiguration.reuseAttachmentByDefault,
+    quickReplies: List<QuickReply>
 ): AttachmentMessage {
 
     return AttachmentMessage(
-            Attachment(
-                    type,
-                    UrlPayload.getUrlPayload(applicationId, attachmentUrl, useCache && !userPreferences.test)
-            ),
-            quickReplies.run { if (isEmpty()) null else this }
+        Attachment(
+            type,
+            UrlPayload.getUrlPayload(applicationId, attachmentUrl, useCache && !userPreferences.test)
+        ),
+        quickReplies.run { if (isEmpty()) null else this }
     )
 }
 
@@ -307,58 +336,58 @@ private fun BotBus.cachedAttachment(
  * Creates an [image] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
 fun BotBus.image(imageUrl: String, vararg quickReplies: QuickReply): AttachmentMessage =
-        image(imageUrl, quickReplies.toList())
+    image(imageUrl, quickReplies.toList())
 
 /**
  * Creates an [image] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
 fun BotBus.image(imageUrl: String, quickReplies: List<QuickReply>): AttachmentMessage =
-        cachedAttachment(imageUrl, AttachmentType.image, quickReplies = quickReplies)
+    cachedAttachment(imageUrl, AttachmentType.image, quickReplies = quickReplies)
 
 /**
  * Creates an [audio file] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
 fun BotBus.audio(audioUrl: String, vararg quickReplies: QuickReply): AttachmentMessage =
-        audio(audioUrl, quickReplies.toList())
+    audio(audioUrl, quickReplies.toList())
 
 /**
  * Creates an [audio file] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
 fun BotBus.audio(audioUrl: String, quickReplies: List<QuickReply>): AttachmentMessage =
-        cachedAttachment(audioUrl, AttachmentType.audio, quickReplies = quickReplies.toList())
+    cachedAttachment(audioUrl, AttachmentType.audio, quickReplies = quickReplies.toList())
 
 /**
  * Creates a [video] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
 fun BotBus.video(videoUrl: String, vararg quickReplies: QuickReply): AttachmentMessage =
-        video(videoUrl, quickReplies.toList())
+    video(videoUrl, quickReplies.toList())
 
 /**
  * Creates a [video] as attachment (https://developers.facebook.com/docs/messenger-platform/reference/send-api/#attachment).
  */
 fun BotBus.video(videoUrl: String, quickReplies: List<QuickReply>): AttachmentMessage =
-        cachedAttachment(videoUrl, AttachmentType.video, quickReplies = quickReplies)
+    cachedAttachment(videoUrl, AttachmentType.video, quickReplies = quickReplies)
 
 /**
  * Creates a text with quick replies.
  */
 fun I18nTranslator.text(text: CharSequence, vararg quickReplies: QuickReply): TextMessage =
-        text(text, quickReplies.toList())
+    text(text, quickReplies.toList())
 
 /**
  * Creates a text with quick replies.
  */
 fun I18nTranslator.text(text: CharSequence, quickReplies: List<QuickReply>): TextMessage =
-        TextMessage(translate(text).toString(), quickReplies)
+    TextMessage(translate(text).toString(), quickReplies)
 
 /**
  * Creates a [generic element](https://developers.facebook.com/docs/messenger-platform/send-messages/template/generic).
  */
 fun I18nTranslator.genericElement(
-        title: CharSequence,
-        subtitle: CharSequence? = null,
-        imageUrl: String? = null,
-        buttons: List<Button>? = null
+    title: CharSequence,
+    subtitle: CharSequence? = null,
+    imageUrl: String? = null,
+    buttons: List<Button>? = null
 ): Element {
     val t = translate(title)
     val s = translateAndReturnBlankAsNull(subtitle)
@@ -372,10 +401,10 @@ fun I18nTranslator.genericElement(
         error("Number of buttons > 3 : $buttons")
     }
     return Element(
-            t.toString(),
-            imageUrl,
-            s,
-            buttons
+        t.toString(),
+        imageUrl,
+        s,
+        buttons
     )
 }
 
@@ -383,10 +412,10 @@ fun I18nTranslator.genericElement(
  * Creates a [list element](https://developers.facebook.com/docs/messenger-platform/send-messages/template/list).
  */
 fun I18nTranslator.listElement(
-        title: CharSequence,
-        subtitle: CharSequence? = null,
-        imageUrl: String? = null,
-        button: Button? = null
+    title: CharSequence,
+    subtitle: CharSequence? = null,
+    imageUrl: String? = null,
+    button: Button? = null
 ): Element {
     val t = translate(title)
     val s = translateAndReturnBlankAsNull(subtitle)
@@ -398,10 +427,10 @@ fun I18nTranslator.listElement(
         logger.warn { "subtitle $s has more than 80 chars" }
     }
     return Element(
-            t.toString(),
-            imageUrl,
-            s,
-            if (button == null) null else listOf(button)
+        t.toString(),
+        imageUrl,
+        s,
+        if (button == null) null else listOf(button)
     )
 }
 
@@ -424,121 +453,121 @@ fun locationQuickReply(): QuickReply = LocationQuickReply()
  * This quick reply will not be used as payload, but the [textToSend] will we parsed by the NLP engine.
  */
 fun I18nTranslator.nlpQuickReply(
-        title: CharSequence,
-        textToSend: CharSequence = title,
-        imageUrl: String? = null
+    title: CharSequence,
+    textToSend: CharSequence = title,
+    imageUrl: String? = null
 ): QuickReply =
-        TextQuickReply(
-                translate(title).toString(),
-                SendChoice.encodeNlpChoiceId(translate(textToSend).toString()),
-                imageUrl
-        )
+    TextQuickReply(
+        translate(title).toString(),
+        SendChoice.encodeNlpChoiceId(translate(textToSend).toString()),
+        imageUrl
+    )
 
 /**
  * Creates a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies)
  * from an [I18nTranslator].
  */
 fun I18nTranslator.standaloneQuickReply(
-        /**
-         * The title of the quick reply.
-         */
-        title: CharSequence,
-        /**
-         * The target intent.
-         */
-        targetIntent: IntentAware,
-        /**
-         * The custom parameters.
-         */
-        parameters: Parameters = Parameters(),
-        /**
-         * The target step.
-         */
-        step: StoryStep<out StoryHandlerDefinition>? = null,
-        /**
-         * The image url of the quick reply.
-         */
-        imageUrl: String? = null,
-        /**
-         * The current step of the bus.
-         */
-        busStep: StoryStep<out StoryHandlerDefinition>? = null,
-        /**
-         * The current intent of the bus.
-         */
-        currentIntent: Intent? = null
+    /**
+     * The title of the quick reply.
+     */
+    title: CharSequence,
+    /**
+     * The target intent.
+     */
+    targetIntent: IntentAware,
+    /**
+     * The custom parameters.
+     */
+    parameters: Parameters = Parameters(),
+    /**
+     * The target step.
+     */
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    /**
+     * The image url of the quick reply.
+     */
+    imageUrl: String? = null,
+    /**
+     * The current step of the bus.
+     */
+    busStep: StoryStep<out StoryHandlerDefinition>? = null,
+    /**
+     * The current intent of the bus.
+     */
+    currentIntent: Intent? = null
 ): QuickReply =
-        quickReply(title, targetIntent, imageUrl, step, parameters.toMap()) { intent, s, params ->
-            SendChoice.encodeChoiceId(intent, s, params, busStep, currentIntent)
-        }
+    quickReply(title, targetIntent, imageUrl, step, parameters.toMap()) { intent, s, params ->
+        SendChoice.encodeChoiceId(intent, s, params, busStep, currentIntent)
+    }
 
 /**
  * Creates a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
  */
 fun BotBus.quickReply(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        parameters: Parameters
+    title: CharSequence,
+    targetIntent: IntentAware,
+    parameters: Parameters
 ): QuickReply =
-        quickReply(title, targetIntent, null, step, parameters)
+    quickReply(title, targetIntent, null, step, parameters)
 
 /**
  * Creates a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
  */
 fun BotBus.quickReply(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        imageUrl: String? = null,
-        step: StoryStep<out StoryHandlerDefinition>? = null,
-        parameters: Parameters
+    title: CharSequence,
+    targetIntent: IntentAware,
+    imageUrl: String? = null,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    parameters: Parameters
 ): QuickReply =
-        quickReply(title, targetIntent, imageUrl, step, parameters.toMap())
+    quickReply(title, targetIntent, imageUrl, step, parameters.toMap())
 
 /**
  * Create a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
  */
 fun BotBus.quickReply(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        imageUrl: String? = null,
-        step: StoryStep<out StoryHandlerDefinition>? = null,
-        vararg parameters: Pair<String, String>
+    title: CharSequence,
+    targetIntent: IntentAware,
+    imageUrl: String? = null,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    vararg parameters: Pair<String, String>
 ): QuickReply =
-        quickReply(title, targetIntent.wrappedIntent(), imageUrl, step, parameters.toMap())
+    quickReply(title, targetIntent.wrappedIntent(), imageUrl, step, parameters.toMap())
 
 /**
  * Creates a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
  */
 fun BotBus.quickReply(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        imageUrl: String? = null,
-        step: StoryStep<out StoryHandlerDefinition>? = null,
-        parameters: Collection<Pair<String, String>>
+    title: CharSequence,
+    targetIntent: IntentAware,
+    imageUrl: String? = null,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    parameters: Collection<Pair<String, String>>
 ): QuickReply =
-        quickReply(title, targetIntent, imageUrl, step, parameters.toMap())
+    quickReply(title, targetIntent, imageUrl, step, parameters.toMap())
 
 /**
  * Creates a [quick reply](https://developers.facebook.com/docs/messenger-platform/send-messages/quick-replies).
  */
 fun BotBus.quickReply(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        imageUrl: String? = null,
-        step: StoryStep<out StoryHandlerDefinition>? = null,
-        parameters: Map<String, String>
+    title: CharSequence,
+    targetIntent: IntentAware,
+    imageUrl: String? = null,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    parameters: Map<String, String>
 ): QuickReply =
-        quickReply(title, targetIntent, imageUrl, step, parameters) { intent, s, params ->
-            SendChoice.encodeChoiceId(this, intent, s, params)
-        }
+    quickReply(title, targetIntent, imageUrl, step, parameters) { intent, s, params ->
+        SendChoice.encodeChoiceId(this, intent, s, params)
+    }
 
 private fun I18nTranslator.quickReply(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        imageUrl: String? = null,
-        step: StoryStep<out StoryHandlerDefinition>? = null,
-        parameters: Map<String, String>,
-        payloadEncoder: (IntentAware, StoryStep<out StoryHandlerDefinition>?, Map<String, String>) -> String
+    title: CharSequence,
+    targetIntent: IntentAware,
+    imageUrl: String? = null,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    parameters: Map<String, String>,
+    payloadEncoder: (IntentAware, StoryStep<out StoryHandlerDefinition>?, Map<String, String>) -> String
 ): QuickReply {
     val t = translate(title)
     if (t.length > 20) {
@@ -556,95 +585,95 @@ private fun I18nTranslator.quickReply(
  * from an [I18nTranslator].
  */
 fun I18nTranslator.standalonePostbackButton(
-        /**
-         * The title of the button.
-         */
-        title: CharSequence,
-        /**
-         * The target intent.
-         */
-        targetIntent: IntentAware,
-        /**
-         * The custom parameters.
-         */
-        parameters: Parameters = Parameters(),
-        /**
-         * The target step.
-         */
-        step: StoryStep<out StoryHandlerDefinition>? = null,
-        /**
-         * The current step of the bus.
-         */
-        busStep: StoryStep<out StoryHandlerDefinition>? = null,
-        /**
-         * The current intent of the bus.
-         */
-        currentIntent: Intent? = null
+    /**
+     * The title of the button.
+     */
+    title: CharSequence,
+    /**
+     * The target intent.
+     */
+    targetIntent: IntentAware,
+    /**
+     * The custom parameters.
+     */
+    parameters: Parameters = Parameters(),
+    /**
+     * The target step.
+     */
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    /**
+     * The current step of the bus.
+     */
+    busStep: StoryStep<out StoryHandlerDefinition>? = null,
+    /**
+     * The current intent of the bus.
+     */
+    currentIntent: Intent? = null
 ): PostbackButton =
-        postbackButton(
-                title,
-                targetIntent,
-                step,
-                parameters.toMap()
-        ) { intent, s, params ->
-            SendChoice.encodeChoiceId(intent, s, params, busStep, currentIntent)
-        }
+    postbackButton(
+        title,
+        targetIntent,
+        step,
+        parameters.toMap()
+    ) { intent, s, params ->
+        SendChoice.encodeChoiceId(intent, s, params, busStep, currentIntent)
+    }
 
 /**
  * Creates a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
  */
 fun BotBus.postbackButton(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        vararg parameters: Pair<String, String>
+    title: CharSequence,
+    targetIntent: IntentAware,
+    vararg parameters: Pair<String, String>
 ): PostbackButton =
-        postbackButton(title, targetIntent, null, *parameters)
+    postbackButton(title, targetIntent, null, *parameters)
 
 /**
  * Creates a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
  */
 fun BotBus.postbackButton(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        parameters: Parameters
+    title: CharSequence,
+    targetIntent: IntentAware,
+    parameters: Parameters
 ): PostbackButton =
-        postbackButton(title, targetIntent, null, parameters)
+    postbackButton(title, targetIntent, null, parameters)
 
 /**
  * Creates a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
  */
 fun BotBus.postbackButton(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>? = null,
-        parameters: Parameters
+    title: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    parameters: Parameters
 ): PostbackButton =
-        postbackButton(title, targetIntent, step, *parameters.toArray())
+    postbackButton(title, targetIntent, step, *parameters.toArray())
 
 /**
  * Creates a [postback button](https://developers.facebook.com/docs/messenger-platform/send-messages/buttons#postback).
  */
 fun BotBus.postbackButton(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>? = null,
-        vararg parameters: Pair<String, String>
+    title: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    vararg parameters: Pair<String, String>
 ): PostbackButton =
-        postbackButton(
-                title,
-                targetIntent,
-                step,
-                parameters.toMap()
-        ) { intent, s, params ->
-            SendChoice.encodeChoiceId(this, intent, s, params)
-        }
+    postbackButton(
+        title,
+        targetIntent,
+        step,
+        parameters.toMap()
+    ) { intent, s, params ->
+        SendChoice.encodeChoiceId(this, intent, s, params)
+    }
 
 private fun I18nTranslator.postbackButton(
-        title: CharSequence,
-        targetIntent: IntentAware,
-        step: StoryStep<out StoryHandlerDefinition>? = null,
-        parameters: Map<String, String>,
-        payloadEncoder: (IntentAware, StoryStep<out StoryHandlerDefinition>?, Map<String, String>) -> String
+    title: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    parameters: Map<String, String>,
+    payloadEncoder: (IntentAware, StoryStep<out StoryHandlerDefinition>?, Map<String, String>) -> String
 ): PostbackButton {
     val t = translate(title)
     if (t.length > 20) {
@@ -658,8 +687,8 @@ private fun I18nTranslator.postbackButton(
 }
 
 fun I18nTranslator.callToButton(
-        title: CharSequence,
-        phoneNumber: String
+    title: CharSequence,
+    phoneNumber: String
 ): CallButton {
     val t = translate(title)
     if (t.length > 20) {
@@ -684,79 +713,79 @@ fun I18nTranslator.urlButton(title: CharSequence, url: String): UrlButton {
  * usually sent later by [MessengerConnector.send] or [MessengerConnector.sendOptInEvent].
  */
 fun standaloneMessengerAnswer(
-        playerId: PlayerId,
-        applicationId: String,
-        recipientId: PlayerId,
-        text: String,
-        lastAnswer: Boolean = true,
-        /** Significance deals with the notification level. */
-        priority: ActionPriority = ActionPriority.normal,
-        /** tag deals with type of message notification. */
-        notificationType: ActionNotificationType? = null
+    playerId: PlayerId,
+    applicationId: String,
+    recipientId: PlayerId,
+    text: String,
+    lastAnswer: Boolean = true,
+    /** Significance deals with the notification level. */
+    priority: ActionPriority = ActionPriority.normal,
+    /** tag deals with type of message notification. */
+    notificationType: ActionNotificationType? = null
 ): SendSentence =
-        SendSentence(
-                playerId,
-                applicationId,
-                recipientId,
-                text,
-                metadata = ActionMetadata(
-                        lastAnswer,
-                        priority,
-                        notificationType
-                )
+    SendSentence(
+        playerId,
+        applicationId,
+        recipientId,
+        text,
+        metadata = ActionMetadata(
+            lastAnswer,
+            priority,
+            notificationType
         )
+    )
 
 /**
  * Used to generate a [MessengerConnectorMessage] event,
  * usually sent later by [MessengerConnector.send] or [MessengerConnector.sendOptInEvent].
  */
 fun standaloneMessengerAnswer(
-        playerId: PlayerId,
-        applicationId: String,
-        recipientId: PlayerId,
-        lastAnswer: Boolean = true,
-        /** Significance deals with the notification level. */
-        priority: ActionPriority = ActionPriority.normal,
-        /** tag deals with type of message notification. */
-        notificationType: ActionNotificationType? = null,
-        messageProvider: () -> MessengerConnectorMessage
+    playerId: PlayerId,
+    applicationId: String,
+    recipientId: PlayerId,
+    lastAnswer: Boolean = true,
+    /** Significance deals with the notification level. */
+    priority: ActionPriority = ActionPriority.normal,
+    /** tag deals with type of message notification. */
+    notificationType: ActionNotificationType? = null,
+    messageProvider: () -> MessengerConnectorMessage
 ): SendSentence =
-        SendSentence(
-                playerId,
-                applicationId,
-                recipientId,
-                null,
-                messages = mutableListOf(messageProvider()),
-                metadata = ActionMetadata(
-                        lastAnswer,
-                        priority,
-                        notificationType
-                )
+    SendSentence(
+        playerId,
+        applicationId,
+        recipientId,
+        null,
+        messages = mutableListOf(messageProvider()),
+        metadata = ActionMetadata(
+            lastAnswer,
+            priority,
+            notificationType
         )
+    )
 
 /**
  * Used to generate multiple [MessengerConnectorMessage] events,
  * usually sent later by [MessengerConnector.send] or [MessengerConnector.sendOptInEvent].
  */
 fun standaloneMessengerAnswers(
-        playerId: PlayerId,
-        applicationId: String,
-        recipientId: PlayerId,
-        /** Significance deals with the notification level. */
-        priority: ActionPriority = ActionPriority.normal,
-        /** tag deals with type of message notification. */
-        notificationType: ActionNotificationType? = null,
-        messagesProvider: () -> List<MessengerConnectorMessage>
+    playerId: PlayerId,
+    applicationId: String,
+    recipientId: PlayerId,
+    /** Significance deals with the notification level. */
+    priority: ActionPriority = ActionPriority.normal,
+    /** tag deals with type of message notification. */
+    notificationType: ActionNotificationType? = null,
+    messagesProvider: () -> List<MessengerConnectorMessage>
 ): List<SendSentence> =
-        messagesProvider().run {
-            mapIndexed { i, m ->
-                standaloneMessengerAnswer(
-                        playerId,
-                        applicationId,
-                        recipientId,
-                        i == size - 1,
-                        priority,
-                        notificationType
-                ) { m }
-            }
+    messagesProvider().run {
+        mapIndexed { i, m ->
+            standaloneMessengerAnswer(
+                playerId,
+                applicationId,
+                recipientId,
+                i == size - 1,
+                priority,
+                notificationType
+            ) { m }
         }
+    }

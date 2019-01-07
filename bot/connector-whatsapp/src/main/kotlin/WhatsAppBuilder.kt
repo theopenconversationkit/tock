@@ -24,15 +24,50 @@ import fr.vsct.tock.bot.engine.BotBus
 
 internal const val WHATS_APP_CONNECTOR_TYPE_ID = "whatsapp"
 
+/**
+ * The WhatsApp connector type.
+ */
 val whatsAppConnectorType = ConnectorType(WHATS_APP_CONNECTOR_TYPE_ID)
 
 /**
- * Adds a Messenger [ConnectorMessage] if the current connector is Messenger.
+ * Sends an WhatsApp message only if the [ConnectorType] of the current [BotBus] is [whatsAppConnectorType].
+ */
+fun BotBus.sendToWhatsApp(
+    messageProvider: () -> WhatsAppBotMessage,
+    delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
+): BotBus {
+    if (targetConnectorType == whatsAppConnectorType) {
+        withWhatsApp(messageProvider)
+        send(delay)
+    }
+    return this
+}
+
+/**
+ * Sends an WhatsApp message as last bot answer, only if the [ConnectorType] of the current [BotBus] is [whatsAppConnectorType].
+ */
+fun BotBus.endForWhatsApp(
+    messageProvider: () -> WhatsAppBotMessage,
+    delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
+): BotBus {
+    if (targetConnectorType == whatsAppConnectorType) {
+        withWhatsApp(messageProvider)
+        end(delay)
+    }
+    return this
+}
+
+/**
+ * Adds a WhatsApp [ConnectorMessage] if the current connector is WhatsApp.
+ * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
 fun BotBus.withWhatsApp(messageProvider: () -> WhatsAppBotMessage): BotBus {
     return withMessage(whatsAppConnectorType, messageProvider)
 }
 
+/**
+ * Creates a [WhatsAppBotImageMessage].
+ */
 fun BotBus.whatsAppImage(
     byteImages: ByteArray,
     contentType: String = "image/png",

@@ -60,14 +60,44 @@ internal const val GA_CONNECTOR_TYPE_ID = "ga"
 val gaConnectorType = ConnectorType(GA_CONNECTOR_TYPE_ID, textAndVoiceAssistant)
 
 /**
- * Add a [ConnectorMessage] for Google Assistant.
+ * Sends a Google Assistant message only if the [ConnectorType] of the current [BotBus] is [gaConnectorType].
+ */
+fun BotBus.sendToGoogleAssistant(
+    messageProvider: () -> GAResponseConnectorMessage,
+    delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
+): BotBus {
+    if (targetConnectorType == gaConnectorType) {
+        withGoogleAssistant(messageProvider)
+        send(delay)
+    }
+    return this
+}
+
+/**
+ * Sends a Google Assistant message as last bot answer, only if the [ConnectorType] of the current [BotBus] is [gaConnectorType].
+ */
+fun BotBus.endForGoogleAssistant(
+    messageProvider: () -> GAResponseConnectorMessage,
+    delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
+): BotBus {
+    if (targetConnectorType == gaConnectorType) {
+        withGoogleAssistant(messageProvider)
+        end(delay)
+    }
+    return this
+}
+
+/**
+ * Adds a Google Assistant [ConnectorMessage] if the current connector is Google Assistant.
+ * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
 fun BotBus.withGoogleAssistant(messageProvider: () -> GAResponseConnectorMessage): BotBus {
     return withMessage(gaConnectorType, messageProvider)
 }
 
 /**
- * Add a [ConnectorMessage] for Google Assistant - voice only.
+ * If the device supports audio, adds a Google Assistant [ConnectorMessage] if the current connector is Google Assistant.
+ * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
 fun BotBus.withGoogleVoiceAssistant(messageProvider: () -> GAResponseConnectorMessage): BotBus {
     if (userInterfaceType != textChat) {
