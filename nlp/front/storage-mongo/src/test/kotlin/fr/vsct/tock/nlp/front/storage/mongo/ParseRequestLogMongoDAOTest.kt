@@ -114,7 +114,7 @@ internal class ParseRequestLogMongoDAOTest : AbstractTest() {
         ParseRequestLogMongoDAO.save(log)
         val intentStatCol = intentStatsCol.findOne()
         assertNotNull(intentStatCol)
-        assertEquals(intentStatCol!!.intent1, "test")
+        assertEquals(intentStatCol.intent1, "test")
         assertEquals(intentStatCol.intent2, "test2")
         assertEquals(intentStatCol.averageDiff, 0.6)
         assertEquals(intentStatCol.count, 1)
@@ -126,7 +126,7 @@ internal class ParseRequestLogMongoDAOTest : AbstractTest() {
         ParseRequestLogMongoDAO.save(log2)
         val intentStatCol2 = intentStatsCol.findOne()
         assertNotNull(intentStatCol2)
-        assertEquals(intentStatCol2!!.averageDiff, (0.6+0.5)/2)
+        assertEquals(intentStatCol2.averageDiff, (0.6+0.5)/2)
         assertEquals(intentStatCol2.count, 2)
     }
 

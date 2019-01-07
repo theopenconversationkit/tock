@@ -43,7 +43,7 @@ data class XrayPrecondition(val preconditionKey: String, val condition: String?)
     }
 
     fun supportConf(conf: String): Boolean {
-        return condition.isNullOrBlank() || condition?.split(",")?.contains(conf) ?: true
+        return condition.isNullOrBlank() || condition.split(",").contains(conf)
     }
 
     fun findUserInterface(): UserInterfaceType? {
