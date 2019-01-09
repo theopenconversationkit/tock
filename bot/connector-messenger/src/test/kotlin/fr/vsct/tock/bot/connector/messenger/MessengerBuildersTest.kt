@@ -32,6 +32,7 @@ import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.shared.tockInternalInjector
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.verify
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.assertThrows
@@ -52,6 +53,7 @@ class MessengerBuildersTest {
             })
         }
 
+        every { bus.targetConnectorType } returns messengerConnectorType
         every { bus.applicationId } returns "appId"
         every { bus.userPreferences } returns UserPreferences()
         every { bus.translate(allAny()) } answers { firstArg() ?: "" }
@@ -105,5 +107,29 @@ class MessengerBuildersTest {
                 )
             ), bus.audio("http://test")
         )
+    }
+
+    @Test
+    fun testSendToMessenger() {
+        bus.sendToMessenger { buttonsTemplate("Button") }
+
+        verify { bus.withMessage(any()) }
+        verify { bus.send(any<Long>()) }
+    }
+
+    @Test
+    fun testSendToMessengerWithDelay() {
+        bus.sendToMessenger(10) { buttonsTemplate("Button") }
+
+        verify { bus.withMessage(any()) }
+        verify { bus.send(10) }
+    }
+
+    @Test
+    fun testEndForMessenger() {
+        bus.endForMessenger { buttonsTemplate("Button") }
+
+        verify { bus.withMessage(any()) }
+        verify { bus.end(any<Long>()) }
     }
 }

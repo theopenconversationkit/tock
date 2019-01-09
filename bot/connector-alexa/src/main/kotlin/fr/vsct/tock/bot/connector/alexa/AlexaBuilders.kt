@@ -35,11 +35,11 @@ val alexaConnectorType = ConnectorType(ALEXA_CONNECTOR_TYPE_ID, UserInterfaceTyp
 * Sends an Alexa message only if the [ConnectorType] of the current [BotBus] is [alexaConnectorType].
 */
 fun BotBus.sendToAlexa(
-    messageProvider: () -> AlexaMessage,
+    messageProvider: BotBus.() -> AlexaMessage,
     delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
 ): BotBus {
     if (targetConnectorType == alexaConnectorType) {
-        withAlexa(messageProvider)
+        withMessage(messageProvider(this))
         send(delay)
     }
     return this
@@ -49,11 +49,11 @@ fun BotBus.sendToAlexa(
  * Sends an Alexa message as last bot answer, only if the [ConnectorType] of the current [BotBus] is [alexaConnectorType].
  */
 fun BotBus.endForAlexa(
-    messageProvider: () -> AlexaMessage,
+    messageProvider: BotBus.() -> AlexaMessage,
     delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
 ): BotBus {
     if (targetConnectorType == alexaConnectorType) {
-        withAlexa(messageProvider)
+        withMessage(messageProvider(this))
         end(delay)
     }
     return this

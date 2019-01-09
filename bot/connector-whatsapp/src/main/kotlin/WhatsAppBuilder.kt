@@ -33,11 +33,11 @@ val whatsAppConnectorType = ConnectorType(WHATS_APP_CONNECTOR_TYPE_ID)
  * Sends an WhatsApp message only if the [ConnectorType] of the current [BotBus] is [whatsAppConnectorType].
  */
 fun BotBus.sendToWhatsApp(
-    messageProvider: () -> WhatsAppBotMessage,
+    messageProvider: BotBus.() -> WhatsAppBotMessage,
     delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
 ): BotBus {
     if (targetConnectorType == whatsAppConnectorType) {
-        withWhatsApp(messageProvider)
+        withMessage(messageProvider(this))
         send(delay)
     }
     return this
@@ -47,11 +47,11 @@ fun BotBus.sendToWhatsApp(
  * Sends an WhatsApp message as last bot answer, only if the [ConnectorType] of the current [BotBus] is [whatsAppConnectorType].
  */
 fun BotBus.endForWhatsApp(
-    messageProvider: () -> WhatsAppBotMessage,
+    messageProvider: BotBus.() -> WhatsAppBotMessage,
     delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
 ): BotBus {
     if (targetConnectorType == whatsAppConnectorType) {
-        withWhatsApp(messageProvider)
+        withMessage(messageProvider(this))
         end(delay)
     }
     return this

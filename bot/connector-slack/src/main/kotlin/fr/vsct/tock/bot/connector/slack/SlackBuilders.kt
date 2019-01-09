@@ -37,11 +37,11 @@ val slackConnectorType = ConnectorType(SLACK_CONNECTOR_TYPE_ID)
  * Sends a Slack message only if the [ConnectorType] of the current [BotBus] is [slackConnectorType].
  */
 fun BotBus.sendToSlack(
-    messageProvider: () -> SlackConnectorMessage,
-    delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
+    delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
+    messageProvider: BotBus.() -> SlackConnectorMessage
 ): BotBus {
     if (targetConnectorType == slackConnectorType) {
-        withSlack(messageProvider)
+        withMessage(messageProvider(this))
         send(delay)
     }
     return this
@@ -51,11 +51,11 @@ fun BotBus.sendToSlack(
  * Sends a Slack message as last bot answer, only if the [ConnectorType] of the current [BotBus] is [slackConnectorType].
  */
 fun BotBus.endForSlack(
-    messageProvider: () -> SlackConnectorMessage,
-    delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
+    delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
+    messageProvider: BotBus.() -> SlackConnectorMessage
 ): BotBus {
     if (targetConnectorType == slackConnectorType) {
-        withSlack(messageProvider)
+        withMessage(messageProvider(this))
         end(delay)
     }
     return this

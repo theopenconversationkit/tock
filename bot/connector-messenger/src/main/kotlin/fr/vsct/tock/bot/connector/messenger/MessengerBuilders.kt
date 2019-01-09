@@ -72,11 +72,11 @@ val messengerConnectorType = ConnectorType(MESSENGER_CONNECTOR_TYPE_ID)
  * Sends a Messenger message only if the [ConnectorType] of the current [BotBus] is [messengerConnectorType].
  */
 fun BotBus.sendToMessenger(
-    messageProvider: () -> MessengerConnectorMessage,
-    delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
+    delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
+    messageProvider: BotBus.() -> MessengerConnectorMessage
 ): BotBus {
     if (targetConnectorType == messengerConnectorType) {
-        withMessenger(messageProvider)
+        withMessage(messageProvider(this))
         send(delay)
     }
     return this
@@ -86,11 +86,11 @@ fun BotBus.sendToMessenger(
  * Sends a Messenger message as last bot answer, only if the [ConnectorType] of the current [BotBus] is [messengerConnectorType].
  */
 fun BotBus.endForMessenger(
-    messageProvider: () -> MessengerConnectorMessage,
-    delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
+    delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
+    messageProvider: BotBus.() -> MessengerConnectorMessage
 ): BotBus {
     if (targetConnectorType == messengerConnectorType) {
-        withMessenger(messageProvider)
+        withMessage(messageProvider(this))
         end(delay)
     }
     return this

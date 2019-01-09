@@ -27,7 +27,7 @@ import kotlin.test.assertEquals
 
 class SlackBuildersTest {
 
-    val bus: BotBus = mockk<BotBus>(relaxed = true)
+    val bus: BotBus = mockk(relaxed = true)
 
     @BeforeEach
     fun init() {

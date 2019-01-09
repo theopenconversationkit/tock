@@ -435,6 +435,18 @@ interface BotBus : I18nTranslator {
     }
 
     /**
+     * Sends messages provided by [messageProvider] as last bot answer.
+     */
+    fun end(
+        delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
+        messageProvider: BotBus.() -> BotBus
+    ): BotBus {
+        messageProvider.invoke(this)
+        end(delay)
+        return this
+    }
+
+    /**
      * Sends i18nText.
      */
     fun send(
@@ -457,6 +469,18 @@ interface BotBus : I18nTranslator {
      */
     fun send(delay: Long = botDefinition.defaultDelay(currentAnswerIndex)): BotBus {
         return sendRawText(null, delay)
+    }
+
+    /**
+     * Sends messages provided by [messageProvider].
+     */
+    fun send(
+        delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
+        messageProvider: BotBus.() -> BotBus
+    ): BotBus {
+        messageProvider.invoke(this)
+        send(delay)
+        return this
     }
 
     /**
@@ -489,7 +513,7 @@ interface BotBus : I18nTranslator {
     /**
      * Adds the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.
      */
-    fun withMessage(message: ConnectorMessage): BotBus = withMessage(message.connectorType, { message })
+    fun withMessage(message: ConnectorMessage): BotBus = withMessage(message.connectorType) { message }
 
     /**
      * Adds the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.

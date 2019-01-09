@@ -63,11 +63,11 @@ val gaConnectorType = ConnectorType(GA_CONNECTOR_TYPE_ID, textAndVoiceAssistant)
  * Sends a Google Assistant message only if the [ConnectorType] of the current [BotBus] is [gaConnectorType].
  */
 fun BotBus.sendToGoogleAssistant(
-    messageProvider: () -> GAResponseConnectorMessage,
+    messageProvider: BotBus.() -> GAResponseConnectorMessage,
     delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
 ): BotBus {
     if (targetConnectorType == gaConnectorType) {
-        withGoogleAssistant(messageProvider)
+        withMessage(messageProvider(this))
         send(delay)
     }
     return this
@@ -77,11 +77,11 @@ fun BotBus.sendToGoogleAssistant(
  * Sends a Google Assistant message as last bot answer, only if the [ConnectorType] of the current [BotBus] is [gaConnectorType].
  */
 fun BotBus.endForGoogleAssistant(
-    messageProvider: () -> GAResponseConnectorMessage,
+    messageProvider: BotBus.() -> GAResponseConnectorMessage,
     delay: Long = botDefinition.defaultDelay(currentAnswerIndex)
 ): BotBus {
     if (targetConnectorType == gaConnectorType) {
-        withGoogleAssistant(messageProvider)
+        withMessage(messageProvider(this))
         end(delay)
     }
     return this

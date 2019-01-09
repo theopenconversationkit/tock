@@ -26,6 +26,7 @@ import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.TestStoryDefinition.test
 import fr.vsct.tock.bot.engine.action.Action
@@ -133,6 +134,7 @@ abstract class BotEngineTest {
         })
 
         every { connector.loadProfile(any(), any()) } returns null
+        every { connector.connectorType } returns ConnectorType("1")
     }
 
     @AfterEach

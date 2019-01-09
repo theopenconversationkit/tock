@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.engine
 
+import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotAnswerInterceptor
 import fr.vsct.tock.bot.engine.BotRepository.registerBotAnswerInterceptor
@@ -33,6 +34,7 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.translator.I18nLabelValue
 import io.mockk.every
+import io.mockk.mockk
 import io.mockk.verify
 import org.junit.jupiter.api.Test
 import java.util.Locale
@@ -46,7 +48,7 @@ import kotlin.test.assertNull
 class BotBusTest : BotEngineTest() {
 
     @BeforeTest
-    fun init(){
+    fun init() {
         BotRepository.botAnswerInterceptors.clear()
     }
 
@@ -150,21 +152,47 @@ class BotBusTest : BotEngineTest() {
     }
 
     @Test
-    fun `GIVEN no botAnswerInterceptor configured WHEN bot handle THEN connector send no altered message`(){
+    fun `GIVEN no botAnswerInterceptor configured WHEN bot handle THEN connector send no altered message`() {
         bot.handle(userAction, userTimeline, connectorController, connectorData)
-        verify { connector.send(match {param -> param is SendSentence && param.stringText == "StoryHandlerTest" },any(), any()) }
+        verify {
+            connector.send(
+                match { param -> param is SendSentence && param.stringText == "StoryHandlerTest" },
+                any(),
+                any()
+            )
+        }
     }
 
     @Test
-    fun `GIVEN botAnswerInterceptor configured WHEN bot handle THEN connector send a new message`(){
+    fun `GIVEN botAnswerInterceptor configured WHEN bot handle THEN connector send a new message`() {
         registerBotAnswerInterceptor(SimpleBotAnswerInterceptor())
         bot.handle(userAction, userTimeline, connectorController, connectorData)
-        verify { connector.send(match {param -> param is SendSentence && param.stringText == "new response" },any(), any()) }
+        verify {
+            connector.send(
+                match { param -> param is SendSentence && param.stringText == "new response" },
+                any(),
+                any()
+            )
+        }
     }
 
-    class SimpleBotAnswerInterceptor:BotAnswerInterceptor{
+    class SimpleBotAnswerInterceptor : BotAnswerInterceptor {
         override fun handle(action: Action, bus: BotBus): Action {
             return Sentence("new response").toAction(PlayerId(""), "applicationId", PlayerId(""))
         }
+    }
+
+    @Test
+    fun `send with custom messages is ok`() {
+        val messageProvider1: ConnectorMessage = mockk()
+        every { messageProvider1.connectorType } returns ConnectorType("1")
+        val messageProvider2: ConnectorMessage = mockk()
+        every { messageProvider2.connectorType } returns ConnectorType("2")
+        bus.send {
+            bus.withMessage(messageProvider1)
+            bus.withMessage(messageProvider2)
+        }
+
+        verify { connector.send(any(), any(), any()) }
     }
 }
