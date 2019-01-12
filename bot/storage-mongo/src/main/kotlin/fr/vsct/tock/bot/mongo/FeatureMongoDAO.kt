@@ -27,17 +27,18 @@ import fr.vsct.tock.bot.mongo.Feature_.Companion._id
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.shared.error
-import fr.vsct.tock.shared.watchSafely
 import mu.KotlinLogging
 import org.bson.BsonString
-import org.litote.kmongo.Data
 import org.litote.jackson.data.JacksonData
-import org.litote.kmongo.async.getCollection
+import org.litote.kmongo.Data
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
+import org.litote.kmongo.reactivestreams.forEach
+import org.litote.kmongo.reactivestreams.getCollection
+import org.litote.kmongo.reactivestreams.watchIndefinitely
 import org.litote.kmongo.save
 import java.util.concurrent.ConcurrentHashMap
 
@@ -71,10 +72,11 @@ internal object FeatureMongoDAO : FeatureDAO {
 
     init {
         try {
-            asyncCol.find().forEach({
-                features[it._id] = it.enabled
-            }) { _, t -> if (t != null) logger.error(t) }
-            asyncCol.watchSafely({ it.fullDocument(UPDATE_LOOKUP) }, listener)
+            asyncCol.find().forEach { it, t ->
+                if (t != null) logger.error(t)
+                else if (it != null) features[it._id] = it.enabled
+            }
+            asyncCol.watchIndefinitely(UPDATE_LOOKUP, listener = listener)
         } catch (e: Exception) {
             logger.error(e)
         }

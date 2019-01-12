@@ -34,7 +34,7 @@ internal const val MONGO_DATABASE: String = "tock_front_mongo_db"
 
 val frontMongoModule = Kodein.Module {
     bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
-    bind<com.mongodb.async.client.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
+    bind<com.mongodb.reactivestreams.client.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
     bind<ApplicationDefinitionDAO>() with provider { ApplicationDefinitionMongoDAO }
     bind<IntentDefinitionDAO>() with provider { IntentDefinitionMongoDAO }
     bind<EntityTypeDefinitionDAO>() with provider { EntityTypeDefinitionMongoDAO }

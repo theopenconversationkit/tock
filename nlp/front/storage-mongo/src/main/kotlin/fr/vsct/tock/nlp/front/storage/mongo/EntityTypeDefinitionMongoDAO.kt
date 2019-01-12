@@ -25,15 +25,15 @@ import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition_.Companion.Name
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition_.Companion.PredefinedValues
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.asyncDatabase
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
-import fr.vsct.tock.shared.watchSafely
 import org.litote.kmongo.and
-import org.litote.kmongo.async.getCollection
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.pull
 import org.litote.kmongo.pullByFilter
+import org.litote.kmongo.reactivestreams.getCollection
+import org.litote.kmongo.reactivestreams.watchIndefinitely
 import org.litote.kmongo.replaceOneWithFilter
 import java.util.Locale
 
@@ -52,7 +52,7 @@ internal object EntityTypeDefinitionMongoDAO : EntityTypeDefinitionDAO {
     }
 
     override fun listenEntityTypeChanges(listener: () -> Unit) {
-        asyncCol.watchSafely { listener() }
+        asyncCol.watchIndefinitely { listener() }
     }
 
     override fun save(entityType: EntityTypeDefinition) {

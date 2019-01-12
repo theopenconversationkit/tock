@@ -29,7 +29,7 @@ internal const val MONGO_DATABASE: String = "tock_model_mongo_db"
 
 val modelMongoModule = Kodein.Module {
     bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
-    bind<com.mongodb.async.client.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
+    bind<com.mongodb.reactivestreams.client.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
     bind<NlpEngineModelDAO>() with provider { NlpEngineModelMongoDAO }
     bind<NlpApplicationConfigurationDAO>() with provider { NlpApplicationConfigurationMongoDAO }
 }

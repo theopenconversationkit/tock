@@ -27,7 +27,7 @@ import io.mockk.mockk
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.KFlapdoodle
-import org.litote.kmongo.async.KFlapdoodleAsync
+import org.litote.kmongo.reactivestreams.KFlapdoodleReactiveStreams
 import java.time.Duration
 import java.util.concurrent.Callable
 import java.util.concurrent.Executors
@@ -56,14 +56,14 @@ val sharedTestModule = Kodein.Module {
         logger.trace("sync mongo driver is not present in classpath")
     }
     try {
-        bind<com.mongodb.async.client.MongoClient>() with singleton {
+        bind<com.mongodb.reactivestreams.client.MongoClient>() with singleton {
             try {
                 //init kmongo configuration for persistence tests
                 TockKMongoConfiguration.configure()
-                KFlapdoodleAsync.mongoClient
+                KFlapdoodleReactiveStreams.mongoClient
             } catch (t: Throwable) {
                 logger.trace("error during KMongo configuration", t)
-                mockk<com.mongodb.async.client.MongoClient>(relaxed = true)
+                mockk<com.mongodb.reactivestreams.client.MongoClient>(relaxed = true)
             }
         }
     } catch (t: Throwable) {

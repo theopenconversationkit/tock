@@ -73,7 +73,7 @@ val sharedModule = Kodein.Module {
         logger.warn { e.message }
     }
     try {
-        bind<com.mongodb.async.client.MongoClient>() with singleton { asyncMongoClient }
+        bind<com.mongodb.reactivestreams.client.MongoClient>() with singleton { asyncMongoClient }
     } catch (e: Exception) {
         logger.warn { e.message }
     }

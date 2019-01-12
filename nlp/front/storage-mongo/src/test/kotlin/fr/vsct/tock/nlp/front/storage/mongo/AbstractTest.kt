@@ -39,7 +39,7 @@ abstract class AbstractTest {
         tockInternalInjector.inject(Kodein {
             import(sharedTestModule)
             bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
-            bind<com.mongodb.async.client.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
+            bind<com.mongodb.reactivestreams.client.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
             bind<EntityTypeDefinitionDAO>() with provider { EntityTypeDefinitionMongoDAO }
         }
         )

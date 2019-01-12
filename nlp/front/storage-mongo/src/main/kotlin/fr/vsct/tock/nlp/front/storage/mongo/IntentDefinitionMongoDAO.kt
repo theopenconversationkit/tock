@@ -26,9 +26,7 @@ import fr.vsct.tock.nlp.front.shared.config.IntentDefinition_.Companion.Name
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition_.Companion.Namespace
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.asyncDatabase
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
-import fr.vsct.tock.shared.watchSafely
 import org.litote.kmongo.Id
-import org.litote.kmongo.async.getCollection
 import org.litote.kmongo.contains
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
@@ -37,6 +35,8 @@ import org.litote.kmongo.eq
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
+import org.litote.kmongo.reactivestreams.getCollection
+import org.litote.kmongo.reactivestreams.watchIndefinitely
 import org.litote.kmongo.save
 
 /**
@@ -56,7 +56,7 @@ internal object IntentDefinitionMongoDAO : IntentDefinitionDAO {
     }
 
     override fun listenIntentDefinitionChanges(listener: () -> Unit) {
-        asyncCol.watchSafely { listener() }
+        asyncCol.watchIndefinitely { listener() }
     }
 
     override fun getIntentsByApplicationId(applicationId: Id<ApplicationDefinition>): List<IntentDefinition> {

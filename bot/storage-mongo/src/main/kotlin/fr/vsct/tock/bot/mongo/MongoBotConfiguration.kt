@@ -26,7 +26,7 @@ import fr.vsct.tock.shared.listProperty
  */
 internal object MongoBotConfiguration {
     val database: MongoDatabase by injector.instance(MONGO_DATABASE)
-    val asyncDatabase: com.mongodb.async.client.MongoDatabase by injector.instance(MONGO_DATABASE)
+    val asyncDatabase: com.mongodb.reactivestreams.client.MongoDatabase by injector.instance(MONGO_DATABASE)
     private val encryptedFlags = listProperty("tock_bot_encrypted_flags", emptyList()).toSet()
 
     fun hasToEncryptFlag(flag: String): Boolean {
