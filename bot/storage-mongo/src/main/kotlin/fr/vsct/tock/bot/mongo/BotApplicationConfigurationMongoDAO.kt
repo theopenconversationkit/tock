@@ -23,6 +23,7 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.BotId
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Namespace
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.NlpModel
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.watch
 import mu.KotlinLogging
 import org.bson.types.ObjectId
 import org.litote.kmongo.Id
@@ -36,7 +37,6 @@ import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.json
 import org.litote.kmongo.reactivestreams.getCollectionOfName
-import org.litote.kmongo.reactivestreams.watchIndefinitely
 import org.litote.kmongo.save
 
 /**
@@ -56,7 +56,7 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
     }
 
     override fun listenChanges(listener: () -> Unit) {
-        asyncCol.watchIndefinitely { listener() }
+        asyncCol.watch { listener() }
     }
 
     override fun getConfigurationById(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration? {

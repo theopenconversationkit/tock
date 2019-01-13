@@ -29,6 +29,7 @@ import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.longProperty
+import fr.vsct.tock.shared.watch
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.I18nLabelStat
@@ -55,7 +56,6 @@ import org.litote.kmongo.getCollection
 import org.litote.kmongo.inc
 import org.litote.kmongo.include
 import org.litote.kmongo.reactivestreams.getCollection
-import org.litote.kmongo.reactivestreams.watchIndefinitely
 import org.litote.kmongo.save
 import org.litote.kmongo.set
 import org.litote.kmongo.toId
@@ -99,7 +99,7 @@ internal object I18nMongoDAO : I18nDAO {
         label.copy(i18n = sortLocalizedLabels(label.i18n), version = label.version + 1)
 
     override fun listenI18n(listener: (Id<I18nLabel>) -> Unit) {
-        asyncCol.watchIndefinitely {
+        asyncCol.watch {
             listener((it.documentKey["_id"] as BsonString).value.toId())
         }
     }

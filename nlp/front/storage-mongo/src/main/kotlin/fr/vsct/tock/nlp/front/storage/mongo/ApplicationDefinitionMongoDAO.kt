@@ -23,6 +23,7 @@ import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition_.Companion.Nam
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition_.Companion.Namespace
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.asyncDatabase
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
+import fr.vsct.tock.shared.watch
 import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureUniqueIndex
@@ -31,7 +32,6 @@ import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.reactivestreams.getCollection
-import org.litote.kmongo.reactivestreams.watchIndefinitely
 import org.litote.kmongo.save
 
 /**
@@ -49,7 +49,7 @@ internal object ApplicationDefinitionMongoDAO : ApplicationDefinitionDAO {
     }
 
     override fun listenApplicationDefinitionChanges(listener: () -> Unit) {
-        asyncCol.watchIndefinitely { listener() }
+        asyncCol.watch { listener() }
     }
 
     override fun deleteApplicationById(id: Id<ApplicationDefinition>) {

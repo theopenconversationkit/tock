@@ -33,9 +33,9 @@ import fr.vsct.tock.nlp.model.service.storage.NlpEngineModelDAO
 import fr.vsct.tock.nlp.model.service.storage.NlpModelStream
 import fr.vsct.tock.nlp.model.service.storage.mongo.MongoModelConfiguration.asyncDatabase
 import fr.vsct.tock.nlp.model.service.storage.mongo.MongoModelConfiguration.database
+import fr.vsct.tock.shared.watch
 import mu.KotlinLogging
 import org.litote.kmongo.ensureIndex
-import org.litote.kmongo.reactivestreams.watchIndefinitely
 import java.io.InputStream
 import java.time.Instant
 
@@ -177,7 +177,7 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
     }
 
     override fun listenEntityModelChanges(listener: (String) -> Unit) {
-        asyncEntityCol.watchIndefinitely(FullDocument.UPDATE_LOOKUP) {
+        asyncEntityCol.watch(FullDocument.UPDATE_LOOKUP) {
             val id = it.fullDocument?.get("filename") as? String
             if (id != null) {
                 listener.invoke(id)
@@ -186,7 +186,7 @@ internal object NlpEngineModelMongoDAO : NlpEngineModelDAO {
     }
 
     override fun listenIntentModelChanges(listener: (String) -> Unit) {
-        asyncIntentCol.watchIndefinitely(FullDocument.UPDATE_LOOKUP) {
+        asyncIntentCol.watch(FullDocument.UPDATE_LOOKUP) {
             val id = it.fullDocument?.get("filename") as? String
             if (id != null) {
                 listener.invoke(id)

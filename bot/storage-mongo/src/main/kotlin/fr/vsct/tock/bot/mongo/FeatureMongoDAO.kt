@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.mongo.Feature_.Companion._id
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.watch
 import mu.KotlinLogging
 import org.bson.BsonString
 import org.litote.jackson.data.JacksonData
@@ -38,7 +39,6 @@ import org.litote.kmongo.findOne
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.reactivestreams.forEach
 import org.litote.kmongo.reactivestreams.getCollection
-import org.litote.kmongo.reactivestreams.watchIndefinitely
 import org.litote.kmongo.save
 import java.util.concurrent.ConcurrentHashMap
 
@@ -76,7 +76,7 @@ internal object FeatureMongoDAO : FeatureDAO {
                 if (t != null) logger.error(t)
                 else if (it != null) features[it._id] = it.enabled
             }
-            asyncCol.watchIndefinitely(UPDATE_LOOKUP, listener = listener)
+            asyncCol.watch(UPDATE_LOOKUP, listener = listener)
         } catch (e: Exception) {
             logger.error(e)
         }

@@ -24,6 +24,7 @@ import fr.vsct.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Conf
 import fr.vsct.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Date
+import fr.vsct.tock.shared.watch
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
@@ -37,7 +38,6 @@ import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.getCollectionOfName
 import org.litote.kmongo.reactivestreams.getCollectionOfName
-import org.litote.kmongo.reactivestreams.watchIndefinitely
 import org.litote.kmongo.save
 import java.time.Instant
 
@@ -69,7 +69,7 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
     }
 
     override fun listenChanges(listener: () -> Unit) {
-        asyncCol.watchIndefinitely { listener() }
+        asyncCol.watch { listener() }
     }
 
     override fun getStoryDefinitionById(id: Id<StoryDefinitionConfiguration>): StoryDefinitionConfiguration? {

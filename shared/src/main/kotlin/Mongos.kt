@@ -30,7 +30,10 @@ import com.mongodb.ConnectionString
 import com.mongodb.MongoClient
 import com.mongodb.MongoClientSettings
 import com.mongodb.client.MongoDatabase
+import com.mongodb.client.model.changestream.ChangeStreamDocument
+import com.mongodb.client.model.changestream.FullDocument
 import com.mongodb.connection.netty.NettyStreamFactoryFactory
+import com.mongodb.reactivestreams.client.MongoCollection
 import de.undercouch.bson4jackson.types.Decimal128
 import fr.vsct.tock.shared.jackson.addDeserializer
 import fr.vsct.tock.shared.jackson.addSerializer
@@ -39,6 +42,7 @@ import mu.KotlinLogging
 import org.litote.kmongo.KMongo
 import org.litote.kmongo.id.IdGenerator
 import org.litote.kmongo.id.ObjectIdToStringGenerator
+import org.litote.kmongo.reactivestreams.watchIndefinitely
 import org.litote.kmongo.util.CollectionNameFormatter
 import org.litote.kmongo.util.KMongoConfiguration
 import org.litote.kmongo.util.KMongoConfiguration.registerBsonModule
@@ -160,3 +164,16 @@ fun getAsyncDatabase(databaseNameProperty: String): com.mongodb.reactivestreams.
 
 private fun formatDatabase(databaseNameProperty: String): String =
     property(databaseNameProperty, databaseNameProperty).replace("_mongo_db", "")
+
+inline fun <reified T : Any> MongoCollection<T>.watch(
+    fullDocument: FullDocument = FullDocument.DEFAULT,
+    noinline listener: (ChangeStreamDocument<T>) -> Unit
+) {
+    watchIndefinitely(
+        fullDocument = fullDocument,
+        subscribeListener = { (KotlinLogging.logger {}).info { "Subscribe stream" } },
+        errorListener = { (KotlinLogging.logger {}).error(it) },
+        reopenListener = { (KotlinLogging.logger {}).warn { "Reopen stream" } },
+        listener = listener
+    )
+}
