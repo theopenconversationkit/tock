@@ -58,6 +58,9 @@ private val internalVertx: Vertx by lazy {
     injector.provideOrDefault<VertxProvider> { TockVertxProvider }.vertx()
 }
 
+//used to avoid name collisions
+internal val sharedVertx : Vertx get() = vertx
+
 /**
  * The Tock [Vertx] entry point instance.
  */

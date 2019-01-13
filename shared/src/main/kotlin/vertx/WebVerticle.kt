@@ -95,11 +95,11 @@ abstract class WebVerticle : AbstractVerticle() {
     private data class BooleanResponse(val success: Boolean = true)
 
     protected val router: Router by lazy {
-        Router.router(vertx)
+        Router.router(sharedVertx)
     }
 
     protected val server: HttpServer by lazy {
-        vertx.createHttpServer(
+        sharedVertx.createHttpServer(
             HttpServerOptions()
                 .setCompressionSupported(verticleBooleanProperty("tock_vertx_compression_supported", true))
                 .setDecompressionSupported(verticleBooleanProperty("tock_vertx_compression_supported", true))
@@ -501,7 +501,7 @@ abstract class WebVerticle : AbstractVerticle() {
      * Execute blocking code using [Vertx.executeBlocking].
      */
     protected fun RoutingContext.executeBlocking(handler: (RoutingContext) -> Unit) {
-        vertx.executeBlocking<Unit>({
+        sharedVertx.executeBlocking<Unit>({
             try {
                 handler.invoke(this)
                 it.succeeded()
