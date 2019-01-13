@@ -30,6 +30,7 @@ import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.security.RequestFilter
 import fr.vsct.tock.shared.vertx.blocking
 import mu.KotlinLogging
 import java.util.Locale
@@ -37,7 +38,12 @@ import java.util.Locale
 /**
  *
  */
-class RestConnector(val applicationId: String, val path: String) : ConnectorBase(ConnectorType.rest) {
+class RestConnector(
+    val applicationId: String,
+    private val path: String,
+    private val requestFilter: RequestFilter
+) :
+    ConnectorBase(ConnectorType.rest) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -49,6 +55,10 @@ class RestConnector(val applicationId: String, val path: String) : ConnectorBase
             logger.info { "deploy rest connector to $path" }
             controller.registerServices(path) { router ->
                 router.post("$path/:locale").blocking { context ->
+                    if (!requestFilter.accept(context.request())) {
+                        context.response().setStatusCode(403).end()
+                        return@blocking
+                    }
                     val message: MessageRequest = mapper.readValue(context.bodyAsString)
                     val action = message.message.toAction(
                         PlayerId(message.userId, PlayerType.user),

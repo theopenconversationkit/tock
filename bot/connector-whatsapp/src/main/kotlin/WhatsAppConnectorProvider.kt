@@ -38,7 +38,8 @@ internal object WhatsAppConnectorProvider : ConnectorProvider {
                 path,
                 parameters.getValue(WHATS_APP_URL),
                 parameters.getValue(LOGIN),
-                parameters.getValue(PASSWORD)
+                parameters.getValue(PASSWORD),
+                createRequestFilter(connectorConfiguration)
             )
         }
     }
@@ -62,7 +63,7 @@ internal object WhatsAppConnectorProvider : ConnectorProvider {
                     PASSWORD,
                     true
                 )
-            ),
+            ) + ConnectorTypeConfiguration.commonSecurityFields(),
             resourceAsString("/whatsapp.svg")
         )
 

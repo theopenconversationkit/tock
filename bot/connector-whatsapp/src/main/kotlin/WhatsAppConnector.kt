@@ -48,15 +48,17 @@ import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.security.RequestFilter
 import mu.KotlinLogging
 import java.time.Duration
 
 class WhatsAppConnector(
     val applicationId: String,
-    val path: String,
+    private val path: String,
     url: String,
     login: String,
-    password: String
+    password: String,
+    private val requestFilter: RequestFilter
 ) : ConnectorBase(whatsAppConnectorType) {
 
     companion object {
@@ -70,6 +72,11 @@ class WhatsAppConnector(
         controller.registerServices(path) { router ->
 
             router.post(path).handler { context ->
+                if (!requestFilter.accept(context.request())) {
+                    context.response().setStatusCode(403).end()
+                    return@handler
+                }
+
                 val requestTimerData = BotRepository.requestTimer.start("whatsapp_webhook")
                 try {
                     val body = context.bodyAsString

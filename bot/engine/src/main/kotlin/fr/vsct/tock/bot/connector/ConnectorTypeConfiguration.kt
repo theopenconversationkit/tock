@@ -43,6 +43,33 @@ data class ConnectorTypeConfiguration(
          */
         val connectorConfigurations: Set<ConnectorTypeConfiguration> =
             ServiceLoader.load(ConnectorProvider::class.java).map { it.configuration() }.toSet()
+
+        /**
+         * Common allowed ips field.
+         */
+        internal const val ALLOWED_IPS_FIELD = "AllowedIPs"
+
+        /**
+         * Common X_Auth_Token field.
+         */
+        internal const val X_AUTH_TOKEN_FIELD = "X-Auth-Token"
+
+        /**
+         * Returns common security fields.
+         */
+        fun commonSecurityFields(): List<ConnectorTypeConfigurationField> =
+            listOf(
+                ConnectorTypeConfigurationField(
+                    "Allowed IPs",
+                    ALLOWED_IPS_FIELD,
+                    false
+                ),
+                ConnectorTypeConfigurationField(
+                    "X-Auth-Token Restriction",
+                    X_AUTH_TOKEN_FIELD,
+                    false
+                )
+            )
     }
 
 }

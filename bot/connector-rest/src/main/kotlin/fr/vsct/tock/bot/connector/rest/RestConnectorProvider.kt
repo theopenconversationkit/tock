@@ -20,6 +20,7 @@ import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorConfiguration
 import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.ConnectorTypeConfiguration
 
 
 /**
@@ -32,7 +33,8 @@ internal object RestConnectorProvider : ConnectorProvider {
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         return RestConnector(
             connectorConfiguration.connectorId,
-            connectorConfiguration.path
+            connectorConfiguration.path,
+            createRequestFilter(connectorConfiguration)
         )
     }
 
@@ -43,6 +45,12 @@ internal object RestConnectorProvider : ConnectorProvider {
                         "rest connector must have an owner connector type"
                     else null
                 )
+
+    override fun configuration(): ConnectorTypeConfiguration =
+        ConnectorTypeConfiguration(
+            ConnectorType.rest,
+            ConnectorTypeConfiguration.commonSecurityFields()
+        )
 
 }
 

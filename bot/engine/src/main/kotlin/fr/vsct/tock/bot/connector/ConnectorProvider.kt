@@ -16,6 +16,10 @@
 
 package fr.vsct.tock.bot.connector
 
+import fr.vsct.tock.bot.connector.ConnectorTypeConfiguration.Companion.ALLOWED_IPS_FIELD
+import fr.vsct.tock.bot.connector.ConnectorTypeConfiguration.Companion.X_AUTH_TOKEN_FIELD
+import fr.vsct.tock.shared.security.RequestFilter
+
 /**
  * To provide a new [Connector] from a [ConnectorConfiguration].
  * The implementation is loaded at runtime to list all available connectors, using the java [java.util.ServiceLoader]
@@ -55,5 +59,14 @@ interface ConnectorProvider {
      * Describes the configuration parameters of the [connectorType].
      */
     fun configuration(): ConnectorTypeConfiguration = ConnectorTypeConfiguration(connectorType)
+
+    /**
+     * Creates a [RequestFilter] from the current configuration.
+     */
+    fun createRequestFilter(connectorConfiguration: ConnectorConfiguration): RequestFilter =
+        fr.vsct.tock.shared.security.createRequestFilter(
+            connectorConfiguration.parameters[ALLOWED_IPS_FIELD]?.split(",")?.toSet(),
+            connectorConfiguration.parameters[X_AUTH_TOKEN_FIELD]
+        )
 
 }
