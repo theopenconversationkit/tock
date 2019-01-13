@@ -89,7 +89,8 @@ internal class BotVerticle : WebVerticle() {
     fun unregisterServices(installer: ServiceInstaller) {
         if (secondaryInstallers.contains(installer)) {
             secondaryInstallers.remove(installer)
-        } else {
+        }
+        if (handlers[installer.serviceId] == installer) {
             handlers.remove(installer.serviceId)
                 ?.also {
                     val s = secondaryInstallers.find {

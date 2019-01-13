@@ -82,7 +82,7 @@ internal class TockConnectorController constructor(
 
     val connectorType: ConnectorType get() = connector.connectorType
 
-    private var serviceInstallers: MutableList<BotVerticle.ServiceInstaller> = CopyOnWriteArrayList()
+    private val serviceInstallers: MutableList<BotVerticle.ServiceInstaller> = CopyOnWriteArrayList()
 
     override fun handle(event: Event, data: ConnectorData) {
         val callback = data.callback
