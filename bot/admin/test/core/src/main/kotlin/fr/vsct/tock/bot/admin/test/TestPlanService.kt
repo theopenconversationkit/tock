@@ -211,8 +211,11 @@ object TestPlanService {
     private fun ClientMessage.deepEquals(message: ClientMessage): Boolean {
         return if (message is ClientSentence && this is ClientSentence) {
             message.copy(
+                text = message.text?.trim(),
                 messages = message.messages.map { it.copy(connectorType = ClientConnectorType.none) }.toMutableList()
-            ) == copy(messages = messages.map { it.copy(connectorType = ClientConnectorType.none) }.toMutableList())
+            ) == copy(
+                text = text?.trim(),
+                messages = messages.map { it.copy(connectorType = ClientConnectorType.none) }.toMutableList())
         } else {
             message == this
         }
