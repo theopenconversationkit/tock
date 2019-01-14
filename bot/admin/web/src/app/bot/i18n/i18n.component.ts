@@ -22,6 +22,8 @@ import {MatSnackBar, PageEvent} from "@angular/material";
 import {saveAs} from "file-saver";
 import {FileItem, FileUploader, ParsedResponseHeaders} from "ng2-file-upload";
 import {I18nController} from "./i18n-label.component";
+import {Subject} from "rxjs";
+import {debounceTime, distinctUntilChanged} from "rxjs/operators";
 
 @Component({
   selector: 'tock-i18n',
@@ -50,6 +52,8 @@ export class I18nComponent extends I18nController implements OnInit {
   pageSize: number = 5;
   pageSizeOptions = [5, 10, 25, 100];
 
+  private searchUpdated: Subject<string> = new Subject<string>();
+
   constructor(public state: StateService,
               private botService: BotService,
               private snackBar: MatSnackBar) {
@@ -65,6 +69,7 @@ export class I18nComponent extends I18nController implements OnInit {
         this.refresh();
       };
     this.state.currentApplicationEmitter.subscribe(_ => this.load());
+    this.searchUpdated.asObservable().pipe(debounceTime(200)).pipe(distinctUntilChanged()).subscribe(v => this.filterImpl(v));
   }
 
   controller(): I18nController {
@@ -151,6 +156,10 @@ export class I18nComponent extends I18nController implements OnInit {
   }
 
   filter(value: string) {
+    this.searchUpdated.next(value);
+  }
+
+  private filterImpl(value: string) {
     const hideNotValidated = this.filterOption == "validated";
     const hideValidated = this.filterOption == "not_validated";
     const v = value ? value.trim().toLowerCase() : "";
