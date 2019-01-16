@@ -31,11 +31,13 @@ internal object SendActionConverter {
     fun toBotMessage(action: Action): WhatsAppBotMessage? {
         return if (action is SendSentence) {
             action.message(whatsAppConnectorType) as? WhatsAppBotMessage
-                    ?: WhatsAppBotTextMessage(
-                        WhatsAppTextBody(action.stringText!!),
-                        individual,
-                        action.recipientId.id
-                    )
+                    ?: action.stringText?.let { text ->
+                        WhatsAppBotTextMessage(
+                            WhatsAppTextBody(text),
+                            individual,
+                            action.recipientId.id
+                        )
+                    } ?: error("null text in action $action")
         } else {
             null
         }
