@@ -436,13 +436,18 @@ interface BotBus : I18nTranslator {
 
     /**
      * Sends messages provided by [messageProvider] as last bot answer.
+     * if [messageProvider] returns a [CharSequence] send it as text. Else call simply end().
      */
     fun end(
         delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
-        messageProvider: BotBus.() -> BotBus
-    ): BotBus {
-        messageProvider.invoke(this)
-        end(delay)
+        messageProvider: BotBus.() -> Any?
+    ): Any? {
+        val r = messageProvider(this)
+        if (r is CharSequence) {
+            end(r, delay)
+        } else {
+            end(delay)
+        }
         return this
     }
 
@@ -473,13 +478,18 @@ interface BotBus : I18nTranslator {
 
     /**
      * Sends messages provided by [messageProvider].
+     * if [messageProvider] returns a [CharSequence] send it as text. Else call simply send().
      */
     fun send(
         delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
-        messageProvider: BotBus.() -> BotBus
+        messageProvider: BotBus.() -> Any?
     ): BotBus {
-        messageProvider.invoke(this)
-        send(delay)
+        val r = messageProvider(this)
+        if (r is CharSequence) {
+            send(r, delay)
+        } else {
+            send(delay)
+        }
         return this
     }
 

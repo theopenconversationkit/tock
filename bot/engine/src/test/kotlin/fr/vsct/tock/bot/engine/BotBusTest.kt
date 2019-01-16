@@ -195,4 +195,17 @@ class BotBusTest : BotEngineTest() {
 
         verify { connector.send(any(), any(), any()) }
     }
+
+    @Test
+    fun `send with text is ok`() {
+        val messageProvider1: ConnectorMessage = mockk()
+        every { messageProvider1.connectorType } returns ConnectorType("1")
+        val messageProvider2: ConnectorMessage = mockk()
+        every { messageProvider2.connectorType } returns ConnectorType("2")
+        bus.send {
+            "message"
+        }
+
+        verify { connector.send(and(ofType<SendSentence>(), match { it.stringText == "message" }), any(), any()) }
+    }
 }
