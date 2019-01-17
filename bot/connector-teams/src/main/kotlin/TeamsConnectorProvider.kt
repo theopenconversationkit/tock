@@ -27,7 +27,7 @@ import fr.vsct.tock.shared.resourceAsString
 /**
  *
  */
-object TeamsConnectorProvider : ConnectorProvider {
+internal object TeamsConnectorProvider : ConnectorProvider {
 
     override val connectorType: ConnectorType get() = teamsConnectorType
 
