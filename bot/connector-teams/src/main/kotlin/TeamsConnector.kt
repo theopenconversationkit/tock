@@ -17,16 +17,24 @@
 package fr.vsct.tock.bot.connector.teams
 
 import com.fasterxml.jackson.module.kotlin.readValue
+import com.github.salomonbrys.kodein.instance
+import com.microsoft.bot.schema.models.Activity
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
+import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.monitoring.logError
+import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.PlayerType
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
+import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
 import mu.KotlinLogging
+import java.time.Duration
 
 /**
  *
@@ -40,35 +48,33 @@ class TeamsConnector(
         private val logger = KotlinLogging.logger {}
     }
 
+    private val client = TeamsClient()
+    private val executor: Executor by injector.instance()
+
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
 
-            router.post(path).handler { context ->
-                if (!requestFilter.accept(context.request())) {
-                    context.response().setStatusCode(403).end()
-                    return@handler
-                }
-
-                val requestTimerData = BotRepository.requestTimer.start("whatsapp_webhook")
+            router.post(path).handler {context ->
+                val requestTimerData = BotRepository.requestTimer.start("teams handler")
                 try {
+                    //TODO: check authenticity of messenger via applicationId + password
                     val body = context.bodyAsString
-                    logger.debug { "WhatsApp request input : $body" }
-                    val messages: WhatsAppMessages = mapper.readValue(body)
-                    messages.messages.forEach { m ->
-                        executor.executeBlocking {
-                            val e = WebhookActionConverter.toEvent(m, applicationId, client)
-                            if (e != null) {
-                                controller.handle(
-                                    e,
-                                    ConnectorData(
-                                        WhatsAppConnectorCallback(
-                                            applicationId,
-                                            if (m.groupId == null) individual else group
-                                        ),
-                                        groupId = m.groupId
-                                    )
+                    println(body)
+                    val activity: Activity = mapper.readValue(body)
+                    executor.executeBlocking {
+                        val e: Event? = SendSentence(
+                                PlayerId("toto"),
+                                applicationId,
+                                PlayerId(applicationId, PlayerType.bot),
+                                activity.text()
+                        )
+                        if (e != null) {
+                            controller.handle(
+                                e,
+                                ConnectorData(
+                                        TeamsConnectorCallback(applicationId, activity)
                                 )
-                            }
+                            )
                         }
                     }
                 } catch (e: Exception) {
@@ -86,6 +92,12 @@ class TeamsConnector(
     }
 
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        if (event is SendSentence && callback is TeamsConnectorCallback) {
+
+            val delay = Duration.ofMillis(delayInMs)
+            executor.executeBlocking(delay) {
+                client.sendMessage(callback.activity, event)
+            }
+        }
     }
 }
