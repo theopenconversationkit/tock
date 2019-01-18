@@ -40,15 +40,17 @@ import java.time.Duration
  *
  */
 class TeamsConnector(
-    val applicationId: String,
-    private val path: String
+    val connectorId: String,
+    private val path: String,
+    private val appId: String,
+    private val appPassword: String
 ) : ConnectorBase(teamsConnectorType) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    private val client = TeamsClient()
+    private val client = TeamsClient(appId, appPassword)
     private val executor: Executor by injector.instance()
 
     override fun register(controller: ConnectorController) {
@@ -64,15 +66,15 @@ class TeamsConnector(
                     executor.executeBlocking {
                         val e: Event? = SendSentence(
                             PlayerId(activity.from().id()),
-                            applicationId,
-                            PlayerId(applicationId, PlayerType.bot),
+                            connectorId,
+                            PlayerId(connectorId, PlayerType.bot),
                             activity.text()
                         )
                         if (e != null) {
                             controller.handle(
                                 e,
                                 ConnectorData(
-                                    TeamsConnectorCallback(applicationId, activity)
+                                    TeamsConnectorCallback(connectorId, activity)
                                 )
                             )
                         }

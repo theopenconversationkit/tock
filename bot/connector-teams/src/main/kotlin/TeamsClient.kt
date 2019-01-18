@@ -20,7 +20,10 @@ import java.time.Instant
 import java.time.temporal.ChronoUnit
 
 
-class TeamsClient {
+class TeamsClient(
+    appId: String,
+    password: String
+) {
 
 
     @Volatile
