@@ -29,13 +29,18 @@ import fr.vsct.tock.shared.resourceAsString
  */
 internal object TeamsConnectorProvider : ConnectorProvider {
 
+    private const val APP_ID = "appId"
+    private const val PASSWORD = "password"
+
     override val connectorType: ConnectorType get() = teamsConnectorType
 
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
             return TeamsConnector(
                 connectorId,
-                path
+                path,
+                parameters.getValue(APP_ID),
+                parameters.getValue(PASSWORD)
             )
         }
     }
@@ -43,7 +48,18 @@ internal object TeamsConnectorProvider : ConnectorProvider {
     override fun configuration(): ConnectorTypeConfiguration =
         ConnectorTypeConfiguration(
             teamsConnectorType,
-            emptyList(),
+            listOf(
+                ConnectorTypeConfigurationField(
+                    "appId",
+                    APP_ID,
+                    true
+                ),
+                ConnectorTypeConfigurationField(
+                    "password",
+                    PASSWORD,
+                    true
+                )
+            ),
             resourceAsString("/teams.svg")
         )
 
