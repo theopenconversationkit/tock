@@ -14,29 +14,30 @@ import mu.KotlinLogging
 import okhttp3.Interceptor
 import okhttp3.Response
 import retrofit2.Call
-import retrofit2.http.Body
-import retrofit2.http.Field
-import retrofit2.http.FormUrlEncoded
-import retrofit2.http.Headers
-import retrofit2.http.POST
-import retrofit2.http.Path
+import retrofit2.http.*
+import java.io.IOException
+import java.time.Instant
+import java.time.temporal.ChronoUnit
 
 
 class TeamsClient {
 
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
+
+    @Volatile
+    private var token: String? = null
+    @Volatile
+    private var instantTokenValidity: Instant? = null
 
     private val loginApi: LoginMicrosoftOnline
-    private val connectorApi: AnswerTheQuestionPlease
-    private val customInterceptor = CustomInterceptor()
+    private val connectorApi: ConnectorMicrosoftApi
+    private val logger = KotlinLogging.logger {}
+    private val customIntercpetor = CustomInterceptor()
     //copy root mapper and set property naming strategy
     private val teamsMapper = mapper.copy().setPropertyNamingStrategy(SNAKE_CASE)
 
     init {
         loginApi = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_teams_request_timeout_ms", 30000),
+            longProperty("tock_whatsapp_request_timeout_ms", 30000),
             logger
         )
             .baseUrl("https://login.microsoftonline.com")
@@ -45,11 +46,11 @@ class TeamsClient {
             .create()
 
         connectorApi = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_teams_request_timeout_ms", 30000),
+            longProperty("tock_whatsapp_request_timeout_ms", 30000),
             logger,
-            interceptors = listOf(customInterceptor)
+            interceptors = listOf(customIntercpetor)
         )
-            .baseUrl("https://smba.trafficmanager.net")
+            .baseUrl("https://smba.trafficmanager.net/emea/")
             .addJacksonConverter(teamsMapper)
             .build()
             .create()
@@ -57,17 +58,13 @@ class TeamsClient {
 
     fun sendMessage(callbackActivity: Activity, event: SendSentence) {
         //construct request
-        var url = "/v3/conversations/${callbackActivity.conversation().id()}/activities/${callbackActivity.id()}"
+        val url = "${callbackActivity.serviceUrl()}/v3/conversations/${callbackActivity.conversation().id()}/activities/${callbackActivity.id()}"
 
         //get token
-        val response = loginApi.login(
-            clientId = "92427410-7ddc-4112-b2b8-e5a4f9b7fd7c", clientSecret = "bdiwPM7:;]ysgNSEYK9182("
-        ).execute()
-        val token = response.body()?.accessToken
+        checkToken()
 
         logger.debug { token }
         //TODO: intercept error
-        //TODO: check token validity before asking for a new one
 
         //construct callbackActivity
         val activity = Activity()
@@ -79,17 +76,38 @@ class TeamsClient {
             .withReplyToId(callbackActivity.id())
 
         //send the message
-        customInterceptor.token = token!!
-        customInterceptor.url = callbackActivity.serviceUrl()
-        val messageResponse =
-            connectorApi.postResponse(callbackActivity.conversation().id(), callbackActivity.id(), activity).execute()
-        logger.debug { "MESSAGE SENT" }
+        customIntercpetor.token = this.token!!
+        customIntercpetor.url = callbackActivity.serviceUrl()
+        val messageResponse = connectorApi.postResponse(
+                url,
+                activity).execute()
+        logger.debug { "response sent !" }
     }
 
+    private fun isTokenExpired() : Boolean {
+        if (Instant.now().isAfter(instantTokenValidity?.minus(10, ChronoUnit.SECONDS))) {
+            return true
+        }
+        return false
+    }
 
-    data class LoginResponse(val tokenType: String, val expiresIn: Int, val extExpiresIn: Int, val accessToken: String)
+    fun checkToken() {
+        if (this.token == null || isTokenExpired()) {
+            println("token not valid, need a new one")
+            val response = loginApi.login(
+                    //TODO: Move those parameters to Admin responsability
+                    clientId = "92427410-7ddc-4112-b2b8-e5a4f9b7fd7c", clientSecret = "bdiwPM7:;]ysgNSEYK9182("
+            ).execute()
+            token = response.body()?.accessToken
+            //instantTokenValidity = Instant.now().plus(response.body()?.expiresIn!!, ChronoUnit.SECONDS)
+            instantTokenValidity = Instant.now().plus(60, ChronoUnit.SECONDS)
+        } else {
+            println("same old token")
+        }
+    }
+
+    data class LoginResponse(val tokenType: String, val expiresIn: Long, val extExpiresIn: Long, val accessToken: String)
     data class MessageResponse(val id: String)
-
 
     private interface LoginMicrosoftOnline {
 
@@ -101,45 +119,41 @@ class TeamsClient {
             @Field("client_id") clientId: String,
             @Field("client_secret") clientSecret: String,
             @Field("scope") scope: String = "https://api.botframework.com/.default"
-        ): Call<LoginResponse>
+        ) : Call<LoginResponse>
     }
 
-    private interface AnswerTheQuestionPlease {
+    private interface ConnectorMicrosoftApi {
 
-        @POST("/emea/v3/conversations/{conversationId}/activities/{activityId}")
+        @POST
         @Headers("Content-Type: application/json")
         fun postResponse(
-            @Path("conversationId") conversationId: String,
-            @Path("activityId") activityId: String,
+            @Url url: String,
             @Body activity: Activity
-        ): Call<MessageResponse>
+        ) : Call<MessageResponse>
 
     }
 
-    private class CustomInterceptor : Interceptor {
+
+    inner class CustomInterceptor : Interceptor {
 
         var token: String = ""
         var url: String = ""
 
+        @Throws(IOException::class)
         override fun intercept(chain: Interceptor.Chain): Response {
             var request = chain.request()
-            println("Before : " + request.url().toString())
-//            if (!request.url().toString().contains(url)) {
-//                println("Not the same url")
-//                val newUrl = HttpUrl.parse(url)
-//                request = request.newBuilder()
-//                        .addHeader("Authorization", "Bearer $token")
-//                        .url(newUrl)
-//                        .build()
-//            }
-            logger.debug { "After : " + request.url() }
             request = request.newBuilder()
-                .addHeader("Authorization", "Bearer $token")
-                .build()
-            //Here you can rewrite/modify the response
+                        .addHeader("Authorization", "Bearer $token")
+                        .build()
             val response = chain.proceed(request)
-            logger.debug { response.code() }
-            logger.debug { response.message() }
+            logger.debug("Response sent to Teams : ${response.code()} - ${response.message()}")
+
+//            GlobalScope.launch {
+//                println("checking token")
+//                checkToken()
+//            }
+
+
             return response
         }
     }
