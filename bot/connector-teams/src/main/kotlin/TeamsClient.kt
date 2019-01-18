@@ -60,10 +60,9 @@ class TeamsClient {
         //construct request
         val url = "${callbackActivity.serviceUrl()}/v3/conversations/${callbackActivity.conversation().id()}/activities/${callbackActivity.id()}"
 
-        //get token
-        checkToken()
+        //get token the first time, the next times is handle by the interceptor
+        if (token == null) getToken()
 
-        logger.debug { token }
         //TODO: intercept error
 
         //construct callbackActivity
@@ -81,7 +80,6 @@ class TeamsClient {
         val messageResponse = connectorApi.postResponse(
                 url,
                 activity).execute()
-        logger.debug { "response sent !" }
     }
 
     private fun isTokenExpired() : Boolean {
@@ -91,19 +89,19 @@ class TeamsClient {
         return false
     }
 
-    fun checkToken() {
+    private fun checkToken() {
         if (this.token == null || isTokenExpired()) {
-            println("token not valid, need a new one")
-            val response = loginApi.login(
-                    //TODO: Move those parameters to Admin responsability
-                    clientId = "92427410-7ddc-4112-b2b8-e5a4f9b7fd7c", clientSecret = "bdiwPM7:;]ysgNSEYK9182("
-            ).execute()
-            token = response.body()?.accessToken
-            //instantTokenValidity = Instant.now().plus(response.body()?.expiresIn!!, ChronoUnit.SECONDS)
-            instantTokenValidity = Instant.now().plus(60, ChronoUnit.SECONDS)
-        } else {
-            println("same old token")
+            getToken()
         }
+    }
+
+    private fun getToken() {
+        val response = loginApi.login(
+                //TODO: Move those parameters to Admin responsability
+                clientId = "92427410-7ddc-4112-b2b8-e5a4f9b7fd7c", clientSecret = "bdiwPM7:;]ysgNSEYK9182("
+        ).execute()
+        token = response.body()?.accessToken
+        instantTokenValidity = Instant.now().plus(response.body()?.expiresIn!!, ChronoUnit.SECONDS)
     }
 
     data class LoginResponse(val tokenType: String, val expiresIn: Long, val extExpiresIn: Long, val accessToken: String)
@@ -141,18 +139,14 @@ class TeamsClient {
 
         @Throws(IOException::class)
         override fun intercept(chain: Interceptor.Chain): Response {
+            checkToken()
+
             var request = chain.request()
             request = request.newBuilder()
                         .addHeader("Authorization", "Bearer $token")
                         .build()
             val response = chain.proceed(request)
             logger.debug("Response sent to Teams : ${response.code()} - ${response.message()}")
-
-//            GlobalScope.launch {
-//                println("checking token")
-//                checkToken()
-//            }
-
 
             return response
         }
