@@ -1,9 +1,9 @@
 package fr.vsct.tock.bot.connector.teams
 
-import com.fasterxml.jackson.databind.PropertyNamingStrategy
+//import retrofit2.create
+import com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE
 import com.microsoft.bot.schema.models.Activity
 import com.microsoft.bot.schema.models.ActivityTypes
-import com.sun.corba.se.spi.presentation.rmi.StubAdapter
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.create
@@ -12,41 +12,47 @@ import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 import okhttp3.Interceptor
-import okhttp3.OkHttpClient
 import okhttp3.Response
 import retrofit2.Call
-//import retrofit2.create
-import retrofit2.http.*
-import java.io.IOException
-import com.sun.corba.se.spi.presentation.rmi.StubAdapter.request
-import okhttp3.HttpUrl
-import retrofit2.HttpException
+import retrofit2.http.Body
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
+import retrofit2.http.Headers
+import retrofit2.http.POST
+import retrofit2.http.Path
 
 
 class TeamsClient {
 
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     private val loginApi: LoginMicrosoftOnline
     private val connectorApi: AnswerTheQuestionPlease
-    private val logger = KotlinLogging.logger {}
-    private val customIntercpetor = CustomInterceptor()
+    private val customInterceptor = CustomInterceptor()
+    //copy root mapper and set property naming strategy
+    private val teamsMapper = mapper.copy().setPropertyNamingStrategy(SNAKE_CASE)
 
     init {
         loginApi = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_whatsapp_request_timeout_ms", 30000),
-            logger)
-                .baseUrl("https://login.microsoftonline.com")
-                .addJacksonConverter(mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE))
-                .build()
-                .create()
+            longProperty("tock_teams_request_timeout_ms", 30000),
+            logger
+        )
+            .baseUrl("https://login.microsoftonline.com")
+            .addJacksonConverter(teamsMapper)
+            .build()
+            .create()
 
         connectorApi = retrofitBuilderWithTimeoutAndLogger(
-                longProperty("tock_whatsapp_request_timeout_ms", 30000),
-                logger,
-                interceptors = listOf(customIntercpetor))
-                .baseUrl("https://smba.trafficmanager.net")
-                .addJacksonConverter(mapper.setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE))
-                .build()
-                .create()
+            longProperty("tock_teams_request_timeout_ms", 30000),
+            logger,
+            interceptors = listOf(customInterceptor)
+        )
+            .baseUrl("https://smba.trafficmanager.net")
+            .addJacksonConverter(teamsMapper)
+            .build()
+            .create()
     }
 
     fun sendMessage(callbackActivity: Activity, event: SendSentence) {
@@ -55,34 +61,34 @@ class TeamsClient {
 
         //get token
         val response = loginApi.login(
-                clientId = "92427410-7ddc-4112-b2b8-e5a4f9b7fd7c", clientSecret = "bdiwPM7:;]ysgNSEYK9182("
+            clientId = "92427410-7ddc-4112-b2b8-e5a4f9b7fd7c", clientSecret = "bdiwPM7:;]ysgNSEYK9182("
         ).execute()
         val token = response.body()?.accessToken
 
-        println(token)
+        logger.debug { token }
         //TODO: intercept error
         //TODO: check token validity before asking for a new one
 
         //construct callbackActivity
         val activity = Activity()
-                .withType(ActivityTypes.MESSAGE)
-                .withText(event.stringText)
-                .withRecipient(callbackActivity.from())
-                .withFrom(callbackActivity.recipient())
-                .withConversation(callbackActivity.conversation())
-                .withReplyToId(callbackActivity.id())
+            .withType(ActivityTypes.MESSAGE)
+            .withText(event.stringText)
+            .withRecipient(callbackActivity.from())
+            .withFrom(callbackActivity.recipient())
+            .withConversation(callbackActivity.conversation())
+            .withReplyToId(callbackActivity.id())
 
         //send the message
-        customIntercpetor.token = token!!
-        customIntercpetor.url = callbackActivity.serviceUrl()
-        val messageResponse = connectorApi.postResponse(callbackActivity.conversation().id(), callbackActivity.id(), activity).execute()
-        println("MESSAGE SENT")
+        customInterceptor.token = token!!
+        customInterceptor.url = callbackActivity.serviceUrl()
+        val messageResponse =
+            connectorApi.postResponse(callbackActivity.conversation().id(), callbackActivity.id(), activity).execute()
+        logger.debug { "MESSAGE SENT" }
     }
 
 
     data class LoginResponse(val tokenType: String, val expiresIn: Int, val extExpiresIn: Int, val accessToken: String)
     data class MessageResponse(val id: String)
-
 
 
     private interface LoginMicrosoftOnline {
@@ -95,7 +101,7 @@ class TeamsClient {
             @Field("client_id") clientId: String,
             @Field("client_secret") clientSecret: String,
             @Field("scope") scope: String = "https://api.botframework.com/.default"
-        ) : Call<LoginResponse>
+        ): Call<LoginResponse>
     }
 
     private interface AnswerTheQuestionPlease {
@@ -103,10 +109,10 @@ class TeamsClient {
         @POST("/emea/v3/conversations/{conversationId}/activities/{activityId}")
         @Headers("Content-Type: application/json")
         fun postResponse(
-                @Path("conversationId") conversationId: String,
-                @Path("activityId") activityId: String,
-                @Body activity: Activity
-        ) : Call<MessageResponse>
+            @Path("conversationId") conversationId: String,
+            @Path("activityId") activityId: String,
+            @Body activity: Activity
+        ): Call<MessageResponse>
 
     }
 
@@ -115,7 +121,6 @@ class TeamsClient {
         var token: String = ""
         var url: String = ""
 
-        @Throws(IOException::class)
         override fun intercept(chain: Interceptor.Chain): Response {
             var request = chain.request()
             println("Before : " + request.url().toString())
@@ -127,14 +132,14 @@ class TeamsClient {
 //                        .url(newUrl)
 //                        .build()
 //            }
-            println("After : " + request.url().toString())
+            logger.debug { "After : " + request.url() }
             request = request.newBuilder()
-                        .addHeader("Authorization", "Bearer $token")
-                        .build()
+                .addHeader("Authorization", "Bearer $token")
+                .build()
             //Here you can rewrite/modify the response
             val response = chain.proceed(request)
-            println(response.code())
-            println(response.message())
+            logger.debug { response.code() }
+            logger.debug { response.message() }
             return response
         }
     }
