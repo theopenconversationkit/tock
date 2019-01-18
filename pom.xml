@@ -234,6 +234,11 @@
                 <artifactId>vertx-auth-common</artifactId>
                 <version>${vertx}</version>
             </dependency>
+            <dependency>
+                <groupId>io.vertx</groupId>
+                <artifactId>vertx-auth-jwt</artifactId>
+                <version>${vertx}</version>
+            </dependency>
 
             <dependency>
                 <groupId>org.litote.kmongo</groupId>

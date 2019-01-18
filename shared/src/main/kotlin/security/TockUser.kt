@@ -34,14 +34,17 @@ data class TockUser(
 ) : AbstractUser() {
 
     override fun doIsPermitted(permissionOrRole: String, handler: Handler<AsyncResult<Boolean>>) {
-        handler.handle(Future.succeededFuture(roles.contains(permissionOrRole)))
-    }
+        if (roles.contains(permissionOrRole)) {
+            handler.handle(Future.succeededFuture(true))
+        }  else
+            handler.handle(Future.failedFuture("Unauthorized"))
+        }
 
-    override fun setAuthProvider(authProvider: AuthProvider) {
-        //do nothing
-    }
+        override fun setAuthProvider(authProvider: AuthProvider) {
+            //do nothing
+        }
 
-    override fun principal(): JsonObject {
-        return JsonObject().put("username", user)
+        override fun principal(): JsonObject {
+            return JsonObject().put("username", user)
+        }
     }
-}

@@ -85,7 +85,7 @@ abstract class WebVerticle : AbstractVerticle() {
 
     private data class AuthenticateRequest(val email: String, val password: String)
 
-    private data class AuthenticateResponse(
+    protected data class AuthenticateResponse(
         val authenticated: Boolean,
         val email: String? = null,
         val organization: String? = null,
@@ -162,7 +162,7 @@ abstract class WebVerticle : AbstractVerticle() {
         server.close { e -> logger.info { "$verticleName stopped result : ${e.succeeded()}" } }
     }
 
-    protected fun addAuth(
+    open fun addAuth(
         authProvider: AuthProvider = defaultAuthProvider(),
         pathsToProtect: Set<String> = protectedPaths().map { "$it/*" }.toSet()
     ) {

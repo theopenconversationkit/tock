@@ -51,6 +51,10 @@
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-nlp-front-ioc</artifactId>
         </dependency>
+        <dependency>
+            <groupId>io.vertx</groupId>
+            <artifactId>vertx-auth-jwt</artifactId>
+        </dependency>
     </dependencies>
 
 </project>
