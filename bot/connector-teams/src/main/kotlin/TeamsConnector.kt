@@ -54,8 +54,8 @@ class TeamsConnector(
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
 
-            router.post(path).handler {context ->
-                val requestTimerData = BotRepository.requestTimer.start("teams handler")
+            router.post(path).handler { context ->
+                val requestTimerData = BotRepository.requestTimer.start("teams_webhook")
                 try {
                     //TODO: check authenticity of messenger via applicationId + password
                     val body = context.bodyAsString
@@ -63,16 +63,16 @@ class TeamsConnector(
                     val activity: Activity = mapper.readValue(body)
                     executor.executeBlocking {
                         val e: Event? = SendSentence(
-                                PlayerId("toto"),
-                                applicationId,
-                                PlayerId(applicationId, PlayerType.bot),
-                                activity.text()
+                            PlayerId(activity.from().id()),
+                            applicationId,
+                            PlayerId(applicationId, PlayerType.bot),
+                            activity.text()
                         )
                         if (e != null) {
                             controller.handle(
                                 e,
                                 ConnectorData(
-                                        TeamsConnectorCallback(applicationId, activity)
+                                    TeamsConnectorCallback(applicationId, activity)
                                 )
                             )
                         }
