@@ -24,7 +24,8 @@ class TeamsClient(
     appId: String,
     password: String
 ) {
-
+    private val appId: String = appId
+    private val password: String = password
 
     @Volatile
     private var token: String? = null
@@ -101,7 +102,7 @@ class TeamsClient(
     private fun getToken() {
         val response = loginApi.login(
                 //TODO: Move those parameters to Admin responsability
-                clientId = "92427410-7ddc-4112-b2b8-e5a4f9b7fd7c", clientSecret = "bdiwPM7:;]ysgNSEYK9182("
+                clientId = appId, clientSecret = password
         ).execute()
         token = response.body()?.accessToken
         instantTokenValidity = Instant.now().plus(response.body()?.expiresIn!!, ChronoUnit.SECONDS)
