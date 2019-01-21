@@ -1,6 +1,7 @@
 package fr.vsct.tock.bot.connector.teams
 
 //import retrofit2.create
+import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE
 import com.microsoft.bot.schema.models.Activity
 import com.microsoft.bot.schema.models.ActivityTypes
@@ -16,28 +17,28 @@ import okhttp3.Response
 import retrofit2.Call
 import retrofit2.http.*
 import java.io.IOException
+import java.time.Clock
 import java.time.Instant
+import java.time.ZoneId
 import java.time.temporal.ChronoUnit
 
 
 class TeamsClient(
-    appId: String,
-    password: String
+        private val appId: String,
+        private val password: String
 ) {
-    private val appId: String = appId
-    private val password: String = password
 
     @Volatile
-    private var token: String? = null
+    var token: String? = null
     @Volatile
     private var instantTokenValidity: Instant? = null
 
-    private val loginApi: LoginMicrosoftOnline
+    var loginApi: LoginMicrosoftOnline
     private val connectorApi: ConnectorMicrosoftApi
     private val logger = KotlinLogging.logger {}
     private val customIntercpetor = CustomInterceptor()
     //copy root mapper and set property naming strategy
-    private val teamsMapper = mapper.copy().setPropertyNamingStrategy(SNAKE_CASE)
+    val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(SNAKE_CASE)
 
     init {
         loginApi = retrofitBuilderWithTimeoutAndLogger(
@@ -60,14 +61,13 @@ class TeamsClient(
             .create()
     }
 
+    @Throws(IOException::class)
     fun sendMessage(callbackActivity: Activity, event: SendSentence) {
         //construct request
         val url = "${callbackActivity.serviceUrl()}/v3/conversations/${callbackActivity.conversation().id()}/activities/${callbackActivity.id()}"
 
         //get token the first time, the next times is handle by the interceptor
         if (token == null) getToken()
-
-        //TODO: intercept error
 
         //construct callbackActivity
         val activity = Activity()
@@ -84,16 +84,22 @@ class TeamsClient(
         val messageResponse = connectorApi.postResponse(
                 url,
                 activity).execute()
+        if (!messageResponse.isSuccessful) {
+            logger.warn {
+                "Microsoft Login Api Error : ${messageResponse.code()} // ${messageResponse.errorBody()}"
+            }
+        }
     }
 
-    private fun isTokenExpired() : Boolean {
-        if (Instant.now().isAfter(instantTokenValidity?.minus(10, ChronoUnit.SECONDS))) {
+    fun isTokenExpired() : Boolean {
+        if (Instant.now(Clock.system(ZoneId.of("Europe/Paris"))).isAfter(instantTokenValidity?.minus(10, ChronoUnit.SECONDS))) {
             return true
         }
         return false
     }
 
-    private fun checkToken() {
+
+    fun checkToken() {
         if (this.token == null || isTokenExpired()) {
             getToken()
         }
@@ -101,17 +107,16 @@ class TeamsClient(
 
     private fun getToken() {
         val response = loginApi.login(
-                //TODO: Move those parameters to Admin responsability
                 clientId = appId, clientSecret = password
         ).execute()
-        token = response.body()?.accessToken
-        instantTokenValidity = Instant.now().plus(response.body()?.expiresIn!!, ChronoUnit.SECONDS)
+        token = response.body()?.accessToken ?: throw IOException()
+        instantTokenValidity = Instant.now(Clock.system(ZoneId.of("Europe/Paris"))).plus(response.body()?.expiresIn!!, ChronoUnit.SECONDS)
     }
 
     data class LoginResponse(val tokenType: String, val expiresIn: Long, val extExpiresIn: Long, val accessToken: String)
     data class MessageResponse(val id: String)
 
-    private interface LoginMicrosoftOnline {
+    interface LoginMicrosoftOnline {
 
         @Headers("Host:login.microsoftonline.com", "Content-Type:application/x-www-form-urlencoded")
         @POST("/botframework.com/oauth2/v2.0/token")
