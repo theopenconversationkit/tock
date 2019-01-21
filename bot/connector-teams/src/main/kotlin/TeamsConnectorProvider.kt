@@ -37,10 +37,10 @@ internal object TeamsConnectorProvider : ConnectorProvider {
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
             return TeamsConnector(
-                connectorId,
-                path,
-                parameters.getValue(APP_ID),
-                parameters.getValue(PASSWORD)
+                    connectorId = connectorId,
+                    path = path,
+                    appId = parameters.getValue(APP_ID),
+                    appPassword = parameters.getValue(PASSWORD)
             )
         }
     }

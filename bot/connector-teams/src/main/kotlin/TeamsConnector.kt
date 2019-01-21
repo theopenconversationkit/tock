@@ -40,10 +40,10 @@ import java.time.Duration
  *
  */
 class TeamsConnector(
-    val connectorId: String,
+    private val connectorId: String,
     private val path: String,
-    private val appId: String,
-    private val appPassword: String
+    appId: String,
+    appPassword: String
 ) : ConnectorBase(teamsConnectorType) {
 
     companion object {
@@ -59,7 +59,7 @@ class TeamsConnector(
             router.post(path).handler { context ->
                 val requestTimerData = BotRepository.requestTimer.start("teams_webhook")
                 try {
-                    //TODO: check authenticity of messenger via applicationId + password
+                    checkBotConnectorAutenticity(context.request().getHeader("Authorization"))
                     val body = context.bodyAsString
                     println(body)
                     val activity: Activity = mapper.readValue(body)
@@ -102,4 +102,10 @@ class TeamsConnector(
             }
         }
     }
+
+    private fun checkBotConnectorAutenticity(autorisationHeader: String) {
+        println(autorisationHeader)
+        //TODO: see https://docs.microsoft.com/en-us/azure/bot-service/rest-api/bot-framework-rest-connector-authentication?view=azure-bot-service-4.0#connector-to-bot
+    }
+
 }
