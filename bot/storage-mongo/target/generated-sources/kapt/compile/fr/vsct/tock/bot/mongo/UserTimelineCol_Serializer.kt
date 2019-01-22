@@ -33,9 +33,8 @@ internal class UserTimelineCol_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.Set::class.java,
-                        serializers.config.typeFactory.constructType(kotlin.String::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(kotlin.String::class.java)
+                ),
                 true,
                 null
                 )
@@ -45,16 +44,17 @@ internal class UserTimelineCol_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.Set::class.java,
-                        serializers.config.typeFactory.constructType(kotlin.String::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(kotlin.String::class.java)
+                ),
                 true,
                 null
                 )
                 .serialize(_applicationIds_, gen, serializers)
         gen.writeFieldName("lastActionText")
         val _lastActionText_ = value.lastActionText
-        if(_lastActionText_ == null) { gen.writeNull() } else {gen.writeString(_lastActionText_)}
+        if(_lastActionText_ == null) { gen.writeNull() } else {
+                gen.writeString(_lastActionText_)
+                }
         gen.writeFieldName("lastUpdateDate")
         val _lastUpdateDate_ = value.lastUpdateDate
         serializers.defaultSerializeValue(_lastUpdateDate_, gen)

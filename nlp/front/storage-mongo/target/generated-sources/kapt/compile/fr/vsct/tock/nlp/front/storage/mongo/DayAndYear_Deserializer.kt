@@ -3,7 +3,7 @@ package fr.vsct.tock.nlp.front.storage.mongo
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import kotlin.Int
 import kotlin.String
@@ -14,8 +14,7 @@ import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class DayAndYear_Deserializer :
-        StdDeserializer<ParseRequestLogMongoDAO.DayAndYear>(ParseRequestLogMongoDAO.DayAndYear::class.java),
+internal class DayAndYear_Deserializer : JsonDeserializer<ParseRequestLogMongoDAO.DayAndYear>(),
         JacksonModuleServiceLoader {
     override fun module() =
             SimpleModule().addDeserializer(ParseRequestLogMongoDAO.DayAndYear::class.java, this)
@@ -24,34 +23,37 @@ internal class DayAndYear_Deserializer :
             ParseRequestLogMongoDAO.DayAndYear {
         with(p) {
             var _dayOfYear_: Int? = null
-            var _dayOfYear_set = false
+            var _dayOfYear_set : Boolean = false
             var _year_: Int? = null
-            var _year_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _year_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "dayOfYear" -> {
-                            _dayOfYear_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Int::class.java);
+                            _dayOfYear_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.intValue;
                             _dayOfYear_set = true
                             }
                     "year" -> {
-                            _year_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Int::class.java);
+                            _year_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.intValue;
                             _year_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_dayOfYear_set && _year_set)
                     ParseRequestLogMongoDAO.DayAndYear(dayOfYear = _dayOfYear_!!, year = _year_!!)
                     else {

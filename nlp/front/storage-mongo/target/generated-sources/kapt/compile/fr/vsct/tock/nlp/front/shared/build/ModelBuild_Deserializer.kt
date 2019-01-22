@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
@@ -22,97 +22,100 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-internal class ModelBuild_Deserializer : StdDeserializer<ModelBuild>(ModelBuild::class.java),
-        JacksonModuleServiceLoader {
+internal class ModelBuild_Deserializer : JsonDeserializer<ModelBuild>(), JacksonModuleServiceLoader
+        {
     override fun module() = SimpleModule().addDeserializer(ModelBuild::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): ModelBuild {
         with(p) {
             var _applicationId_: Id<ApplicationDefinition>? = null
-            var _applicationId_set = false
+            var _applicationId_set : Boolean = false
             var _language_: Locale? = null
-            var _language_set = false
+            var _language_set : Boolean = false
             var _type_: ModelBuildType? = null
-            var _type_set = false
+            var _type_set : Boolean = false
             var _intentId_: Id<IntentDefinition>? = null
-            var _intentId_set = false
+            var _intentId_set : Boolean = false
             var _entityTypeName_: String? = null
-            var _entityTypeName_set = false
+            var _entityTypeName_set : Boolean = false
             var _nbSentences_: Int? = null
-            var _nbSentences_set = false
+            var _nbSentences_set : Boolean = false
             var _duration_: Duration? = null
-            var _duration_set = false
+            var _duration_set : Boolean = false
             var _error_: Boolean? = null
-            var _error_set = false
+            var _error_set : Boolean = false
             var _errorMessage_: String? = null
-            var _errorMessage_set = false
+            var _errorMessage_set : Boolean = false
             var _date_: Instant? = null
-            var _date_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _date_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "applicationId" -> {
-                            _applicationId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _applicationId_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_applicationId__reference);
                             _applicationId_set = true
                             }
                     "language" -> {
-                            _language_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _language_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Locale::class.java);
                             _language_set = true
                             }
                     "type" -> {
-                            _type_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _type_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(ModelBuildType::class.java);
                             _type_set = true
                             }
                     "intentId" -> {
-                            _intentId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _intentId_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_intentId__reference);
                             _intentId_set = true
                             }
                     "entityTypeName" -> {
-                            _entityTypeName_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _entityTypeName_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _entityTypeName_set = true
                             }
                     "nbSentences" -> {
-                            _nbSentences_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Int::class.java);
+                            _nbSentences_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.intValue;
                             _nbSentences_set = true
                             }
                     "duration" -> {
-                            _duration_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _duration_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Duration::class.java);
                             _duration_set = true
                             }
                     "error" -> {
-                            _error_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Boolean::class.java);
+                            _error_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
                             _error_set = true
                             }
                     "errorMessage" -> {
-                            _errorMessage_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _errorMessage_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _errorMessage_set = true
                             }
                     "date" -> {
-                            _date_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _date_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Instant::class.java);
                             _date_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_applicationId_set && _language_set && _type_set && _intentId_set &&
                     _entityTypeName_set && _nbSentences_set && _duration_set && _error_set &&
                     _errorMessage_set && _date_set)

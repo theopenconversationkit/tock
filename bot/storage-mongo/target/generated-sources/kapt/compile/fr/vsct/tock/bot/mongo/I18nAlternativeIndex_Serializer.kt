@@ -31,7 +31,9 @@ internal class I18nAlternativeIndex_Serializer :
         serializers.defaultSerializeValue(_interfaceType_, gen)
         gen.writeFieldName("connectorId")
         val _connectorId_ = value.connectorId
-        if(_connectorId_ == null) { gen.writeNull() } else {gen.writeString(_connectorId_)}
+        if(_connectorId_ == null) { gen.writeNull() } else {
+                gen.writeString(_connectorId_)
+                }
         gen.writeFieldName("contextId")
         val _contextId_ = value.contextId
         gen.writeString(_contextId_)

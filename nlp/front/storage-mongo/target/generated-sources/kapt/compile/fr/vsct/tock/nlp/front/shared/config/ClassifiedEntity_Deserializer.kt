@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import kotlin.Int
 import kotlin.String
@@ -17,63 +17,65 @@ import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class ClassifiedEntity_Deserializer :
-        StdDeserializer<ClassifiedEntity>(ClassifiedEntity::class.java), JacksonModuleServiceLoader
-        {
+internal class ClassifiedEntity_Deserializer : JsonDeserializer<ClassifiedEntity>(),
+        JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(ClassifiedEntity::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): ClassifiedEntity {
         with(p) {
             var _type_: String? = null
-            var _type_set = false
+            var _type_set : Boolean = false
             var _role_: String? = null
-            var _role_set = false
+            var _role_set : Boolean = false
             var _start_: Int? = null
-            var _start_set = false
+            var _start_set : Boolean = false
             var _end_: Int? = null
-            var _end_set = false
+            var _end_set : Boolean = false
             var _subEntities_: MutableList<ClassifiedEntity>? = null
-            var _subEntities_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _subEntities_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "type" -> {
-                            _type_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _type_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _type_set = true
                             }
                     "role" -> {
-                            _role_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _role_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _role_set = true
                             }
                     "start" -> {
-                            _start_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Int::class.java);
+                            _start_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.intValue;
                             _start_set = true
                             }
                     "end" -> {
-                            _end_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Int::class.java);
+                            _end_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.intValue;
                             _end_set = true
                             }
                     "subEntities" -> {
-                            _subEntities_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _subEntities_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_subEntities__reference);
                             _subEntities_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_type_set && _role_set && _start_set && _end_set && _subEntities_set)
                     ClassifiedEntity(type = _type_!!, role = _role_!!, start = _start_!!, end =
                             _end_!!, subEntities = _subEntities_!!)

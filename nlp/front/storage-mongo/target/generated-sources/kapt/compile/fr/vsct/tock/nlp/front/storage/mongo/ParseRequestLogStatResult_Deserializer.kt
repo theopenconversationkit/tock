@@ -3,7 +3,7 @@ package fr.vsct.tock.nlp.front.storage.mongo
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import kotlin.Double
 import kotlin.Int
@@ -16,7 +16,7 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 
 internal class ParseRequestLogStatResult_Deserializer :
-        StdDeserializer<ParseRequestLogMongoDAO.ParseRequestLogStatResult>(ParseRequestLogMongoDAO.ParseRequestLogStatResult::class.java),
+        JsonDeserializer<ParseRequestLogMongoDAO.ParseRequestLogStatResult>(),
         JacksonModuleServiceLoader {
     override fun module() =
             SimpleModule().addDeserializer(ParseRequestLogMongoDAO.ParseRequestLogStatResult::class.java,
@@ -26,62 +26,65 @@ internal class ParseRequestLogStatResult_Deserializer :
             ParseRequestLogMongoDAO.ParseRequestLogStatResult {
         with(p) {
             var __id_: ParseRequestLogMongoDAO.DayAndYear? = null
-            var __id_set = false
+            var __id_set : Boolean = false
             var _error_: Int? = null
-            var _error_set = false
+            var _error_set : Boolean = false
             var _count_: Int? = null
-            var _count_set = false
+            var _count_set : Boolean = false
             var _duration_: Double? = null
-            var _duration_set = false
+            var _duration_set : Boolean = false
             var _intentProbability_: Double? = null
-            var _intentProbability_set = false
+            var _intentProbability_set : Boolean = false
             var _entitiesProbability_: Double? = null
-            var _entitiesProbability_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _entitiesProbability_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "_id" -> {
-                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(ParseRequestLogMongoDAO.DayAndYear::class.java);
                             __id_set = true
                             }
                     "error" -> {
-                            _error_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Int::class.java);
+                            _error_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.intValue;
                             _error_set = true
                             }
                     "count" -> {
-                            _count_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Int::class.java);
+                            _count_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.intValue;
                             _count_set = true
                             }
                     "duration" -> {
-                            _duration_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Double::class.java);
+                            _duration_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.doubleValue;
                             _duration_set = true
                             }
                     "intentProbability" -> {
-                            _intentProbability_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Double::class.java);
+                            _intentProbability_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.doubleValue;
                             _intentProbability_set = true
                             }
                     "entitiesProbability" -> {
-                            _entitiesProbability_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Double::class.java);
+                            _entitiesProbability_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.doubleValue;
                             _entitiesProbability_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(__id_set && _error_set && _count_set && _duration_set &&
                     _intentProbability_set && _entitiesProbability_set)
                     ParseRequestLogMongoDAO.ParseRequestLogStatResult(_id = __id_!!, error =

@@ -24,7 +24,9 @@ internal class EntityDefinition_Serializer :
         gen.writeString(_role_)
         gen.writeFieldName("atStartOfDay")
         val _atStartOfDay_ = value.atStartOfDay
-        if(_atStartOfDay_ == null) { gen.writeNull() } else {gen.writeBoolean(_atStartOfDay_)}
+        if(_atStartOfDay_ == null) { gen.writeNull() } else {
+                gen.writeBoolean(_atStartOfDay_)
+                }
         gen.writeEndObject()
     }
 }

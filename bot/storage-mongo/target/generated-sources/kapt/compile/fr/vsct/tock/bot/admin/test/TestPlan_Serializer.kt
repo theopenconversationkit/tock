@@ -21,9 +21,8 @@ internal class TestPlan_Serializer : StdSerializer<TestPlan>(TestPlan::class.jav
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.List::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.bot.admin.test.TestDialogReport::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.bot.admin.test.TestDialogReport::class.java)
+                ),
                 true,
                 null
                 )
@@ -48,8 +47,9 @@ internal class TestPlan_Serializer : StdSerializer<TestPlan>(TestPlan::class.jav
         serializers.defaultSerializeValue(_locale_, gen)
         gen.writeFieldName("startAction")
         val _startAction_ = value.startAction
-        if(_startAction_ == null) { gen.writeNull() } else
-                {serializers.defaultSerializeValue(_startAction_, gen)}
+        if(_startAction_ == null) { gen.writeNull() } else {
+                serializers.defaultSerializeValue(_startAction_, gen)
+                }
         gen.writeFieldName("targetConnectorType")
         val _targetConnectorType_ = value.targetConnectorType
         serializers.defaultSerializeValue(_targetConnectorType_, gen)

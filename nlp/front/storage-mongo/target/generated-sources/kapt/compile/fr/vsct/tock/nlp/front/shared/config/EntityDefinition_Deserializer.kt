@@ -3,7 +3,7 @@ package fr.vsct.tock.nlp.front.shared.config
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import kotlin.Boolean
 import kotlin.String
@@ -14,49 +14,51 @@ import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class EntityDefinition_Deserializer :
-        StdDeserializer<EntityDefinition>(EntityDefinition::class.java), JacksonModuleServiceLoader
-        {
+internal class EntityDefinition_Deserializer : JsonDeserializer<EntityDefinition>(),
+        JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(EntityDefinition::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): EntityDefinition {
         with(p) {
             var _entityTypeName_: String? = null
-            var _entityTypeName_set = false
+            var _entityTypeName_set : Boolean = false
             var _role_: String? = null
-            var _role_set = false
+            var _role_set : Boolean = false
             var _atStartOfDay_: Boolean? = null
-            var _atStartOfDay_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _atStartOfDay_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "entityTypeName" -> {
-                            _entityTypeName_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _entityTypeName_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _entityTypeName_set = true
                             }
                     "role" -> {
-                            _role_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _role_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _role_set = true
                             }
                     "atStartOfDay" -> {
-                            _atStartOfDay_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _atStartOfDay_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.booleanValue;
                             _atStartOfDay_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_entityTypeName_set && _role_set && _atStartOfDay_set)
                     EntityDefinition(entityTypeName = _entityTypeName_!!, role = _role_!!,
                             atStartOfDay = _atStartOfDay_)

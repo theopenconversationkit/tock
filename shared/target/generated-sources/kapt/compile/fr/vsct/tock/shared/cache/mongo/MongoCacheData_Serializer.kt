@@ -24,13 +24,19 @@ internal class MongoCacheData_Serializer :
         gen.writeString(_type_)
         gen.writeFieldName("s")
         val _s_ = value.s
-        if(_s_ == null) { gen.writeNull() } else {gen.writeString(_s_)}
+        if(_s_ == null) { gen.writeNull() } else {
+                gen.writeString(_s_)
+                }
         gen.writeFieldName("b")
         val _b_ = value.b
-        if(_b_ == null) { gen.writeNull() } else {serializers.defaultSerializeValue(_b_, gen)}
+        if(_b_ == null) { gen.writeNull() } else {
+                serializers.defaultSerializeValue(_b_, gen)
+                }
         gen.writeFieldName("a")
         val _a_ = value.a
-        if(_a_ == null) { gen.writeNull() } else {serializers.defaultSerializeValue(_a_, gen)}
+        if(_a_ == null) { gen.writeNull() } else {
+                serializers.defaultSerializeValue(_a_, gen)
+                }
         gen.writeFieldName("date")
         val _date_ = value.date
         serializers.defaultSerializeValue(_date_, gen)

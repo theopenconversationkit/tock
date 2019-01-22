@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.Classification
@@ -23,7 +23,7 @@ import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
 internal class ClassifiedSentenceCol_Deserializer :
-        StdDeserializer<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>(ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::class.java),
+        JsonDeserializer<ClassifiedSentenceMongoDAO.ClassifiedSentenceCol>(),
         JacksonModuleServiceLoader {
     override fun module() =
             SimpleModule().addDeserializer(ClassifiedSentenceMongoDAO.ClassifiedSentenceCol::class.java,
@@ -33,111 +33,114 @@ internal class ClassifiedSentenceCol_Deserializer :
             ClassifiedSentenceMongoDAO.ClassifiedSentenceCol {
         with(p) {
             var _text_: String? = null
-            var _text_set = false
+            var _text_set : Boolean = false
             var _fullText_: String? = null
-            var _fullText_set = false
+            var _fullText_set : Boolean = false
             var _language_: Locale? = null
-            var _language_set = false
+            var _language_set : Boolean = false
             var _applicationId_: Id<ApplicationDefinition>? = null
-            var _applicationId_set = false
+            var _applicationId_set : Boolean = false
             var _creationDate_: Instant? = null
-            var _creationDate_set = false
+            var _creationDate_set : Boolean = false
             var _updateDate_: Instant? = null
-            var _updateDate_set = false
+            var _updateDate_set : Boolean = false
             var _status_: ClassifiedSentenceStatus? = null
-            var _status_set = false
+            var _status_set : Boolean = false
             var _classification_: Classification? = null
-            var _classification_set = false
+            var _classification_set : Boolean = false
             var _lastIntentProbability_: Double? = null
-            var _lastIntentProbability_set = false
+            var _lastIntentProbability_set : Boolean = false
             var _lastEntityProbability_: Double? = null
-            var _lastEntityProbability_set = false
+            var _lastEntityProbability_set : Boolean = false
             var _lastUsage_: Instant? = null
-            var _lastUsage_set = false
+            var _lastUsage_set : Boolean = false
             var _usageCount_: Long? = null
-            var _usageCount_set = false
+            var _usageCount_set : Boolean = false
             var _unknownCount_: Long? = null
-            var _unknownCount_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _unknownCount_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "text" -> {
-                            _text_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _text_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _text_set = true
                             }
                     "fullText" -> {
-                            _fullText_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _fullText_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _fullText_set = true
                             }
                     "language" -> {
-                            _language_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _language_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Locale::class.java);
                             _language_set = true
                             }
                     "applicationId" -> {
-                            _applicationId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _applicationId_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_applicationId__reference);
                             _applicationId_set = true
                             }
                     "creationDate" -> {
-                            _creationDate_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _creationDate_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Instant::class.java);
                             _creationDate_set = true
                             }
                     "updateDate" -> {
-                            _updateDate_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _updateDate_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Instant::class.java);
                             _updateDate_set = true
                             }
                     "status" -> {
-                            _status_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _status_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(ClassifiedSentenceStatus::class.java);
                             _status_set = true
                             }
                     "classification" -> {
-                            _classification_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _classification_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Classification::class.java);
                             _classification_set = true
                             }
                     "lastIntentProbability" -> {
-                            _lastIntentProbability_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _lastIntentProbability_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.doubleValue;
                             _lastIntentProbability_set = true
                             }
                     "lastEntityProbability" -> {
-                            _lastEntityProbability_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _lastEntityProbability_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.doubleValue;
                             _lastEntityProbability_set = true
                             }
                     "lastUsage" -> {
-                            _lastUsage_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _lastUsage_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Instant::class.java);
                             _lastUsage_set = true
                             }
                     "usageCount" -> {
-                            _usageCount_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _usageCount_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.longValue;
                             _usageCount_set = true
                             }
                     "unknownCount" -> {
-                            _unknownCount_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _unknownCount_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.longValue;
                             _unknownCount_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_text_set && _fullText_set && _language_set && _applicationId_set &&
                     _creationDate_set && _updateDate_set && _status_set && _classification_set &&
                     _lastIntentProbability_set && _lastEntityProbability_set && _lastUsage_set &&

@@ -23,19 +23,21 @@ internal class StoryMongoWrapper_Serializer :
         gen.writeString(_storyDefinitionId_)
         gen.writeFieldName("currentIntent")
         val _currentIntent_ = value.currentIntent
-        if(_currentIntent_ == null) { gen.writeNull() } else
-                {serializers.defaultSerializeValue(_currentIntent_, gen)}
+        if(_currentIntent_ == null) { gen.writeNull() } else {
+                serializers.defaultSerializeValue(_currentIntent_, gen)
+                }
         gen.writeFieldName("currentStep")
         val _currentStep_ = value.currentStep
-        if(_currentStep_ == null) { gen.writeNull() } else {gen.writeString(_currentStep_)}
+        if(_currentStep_ == null) { gen.writeNull() } else {
+                gen.writeString(_currentStep_)
+                }
         gen.writeFieldName("actions")
         val _actions_ = value.actions
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.List::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.bot.mongo.DialogCol.ActionMongoWrapper::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.bot.mongo.DialogCol.ActionMongoWrapper::class.java)
+                ),
                 true,
                 null
                 )

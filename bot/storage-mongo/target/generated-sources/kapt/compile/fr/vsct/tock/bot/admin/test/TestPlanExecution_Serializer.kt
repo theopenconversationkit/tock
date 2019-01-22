@@ -25,9 +25,8 @@ internal class TestPlanExecution_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.List::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.bot.admin.test.DialogExecutionReport::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.bot.admin.test.DialogExecutionReport::class.java)
+                ),
                 true,
                 null
                 )

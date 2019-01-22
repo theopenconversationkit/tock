@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import java.time.Instant
@@ -17,48 +17,51 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-internal class DialogTextCol_Deserializer :
-        StdDeserializer<DialogTextCol>(DialogTextCol::class.java), JacksonModuleServiceLoader {
+internal class DialogTextCol_Deserializer : JsonDeserializer<DialogTextCol>(),
+        JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(DialogTextCol::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): DialogTextCol {
         with(p) {
             var _text_: String? = null
-            var _text_set = false
+            var _text_set : Boolean = false
             var _dialogId_: Id<Dialog>? = null
-            var _dialogId_set = false
+            var _dialogId_set : Boolean = false
             var _date_: Instant? = null
-            var _date_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _date_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "text" -> {
-                            _text_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _text_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _text_set = true
                             }
                     "dialogId" -> {
-                            _dialogId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _dialogId_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_dialogId__reference);
                             _dialogId_set = true
                             }
                     "date" -> {
-                            _date_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _date_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Instant::class.java);
                             _date_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_text_set && _dialogId_set && _date_set)
                     DialogTextCol(text = _text_!!, dialogId = _dialogId_!!, date = _date_!!)
                     else {

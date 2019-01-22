@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import java.util.LinkedHashSet
 import kotlin.Int
@@ -17,69 +17,71 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-internal class I18nLabel_Deserializer : StdDeserializer<I18nLabel>(I18nLabel::class.java),
-        JacksonModuleServiceLoader {
+internal class I18nLabel_Deserializer : JsonDeserializer<I18nLabel>(), JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(I18nLabel::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): I18nLabel {
         with(p) {
             var __id_: Id<I18nLabel>? = null
-            var __id_set = false
+            var __id_set : Boolean = false
             var _namespace_: String? = null
-            var _namespace_set = false
+            var _namespace_set : Boolean = false
             var _category_: String? = null
-            var _category_set = false
+            var _category_set : Boolean = false
             var _i18n_: LinkedHashSet<I18nLocalizedLabel>? = null
-            var _i18n_set = false
+            var _i18n_set : Boolean = false
             var _defaultLabel_: String? = null
-            var _defaultLabel_set = false
+            var _defaultLabel_set : Boolean = false
             var _version_: Int? = null
-            var _version_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _version_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "_id" -> {
-                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
                             __id_set = true
                             }
                     "namespace" -> {
-                            _namespace_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _namespace_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _namespace_set = true
                             }
                     "category" -> {
-                            _category_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _category_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _category_set = true
                             }
                     "i18n" -> {
-                            _i18n_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _i18n_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_i18n__reference);
                             _i18n_set = true
                             }
                     "defaultLabel" -> {
-                            _defaultLabel_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _defaultLabel_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _defaultLabel_set = true
                             }
                     "version" -> {
-                            _version_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Int::class.java);
+                            _version_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.intValue;
                             _version_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(__id_set && _namespace_set && _category_set && _i18n_set && _defaultLabel_set
                     && _version_set)
                     I18nLabel(_id = __id_!!, namespace = _namespace_!!, category = _category_!!,

@@ -24,7 +24,9 @@ internal class QueryContext_Serializer : StdSerializer<QueryContext>(QueryContex
         gen.writeString(_clientId_)
         gen.writeFieldName("clientDevice")
         val _clientDevice_ = value.clientDevice
-        if(_clientDevice_ == null) { gen.writeNull() } else {gen.writeString(_clientDevice_)}
+        if(_clientDevice_ == null) { gen.writeNull() } else {
+                gen.writeString(_clientDevice_)
+                }
         gen.writeFieldName("dialogId")
         val _dialogId_ = value.dialogId
         gen.writeString(_dialogId_)

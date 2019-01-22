@@ -28,9 +28,8 @@ internal class EntityTypeDefinition_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.List::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.config.EntityDefinition::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.config.EntityDefinition::class.java)
+                ),
                 true,
                 null
                 )
@@ -40,9 +39,8 @@ internal class EntityTypeDefinition_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.List::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.core.PredefinedValue::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.core.PredefinedValue::class.java)
+                ),
                 true,
                 null
                 )

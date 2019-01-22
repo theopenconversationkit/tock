@@ -24,7 +24,9 @@ internal class PlayerId_Serializer : StdSerializer<PlayerId>(PlayerId::class.jav
         serializers.defaultSerializeValue(_type_, gen)
         gen.writeFieldName("clientId")
         val _clientId_ = value.clientId
-        if(_clientId_ == null) { gen.writeNull() } else {gen.writeString(_clientId_)}
+        if(_clientId_ == null) { gen.writeNull() } else {
+                gen.writeString(_clientId_)
+                }
         gen.writeEndObject()
     }
 }

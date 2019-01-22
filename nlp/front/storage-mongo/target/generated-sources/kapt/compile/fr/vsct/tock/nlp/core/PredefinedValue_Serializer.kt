@@ -24,14 +24,12 @@ internal class PredefinedValue_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructMapType(
                 kotlin.collections.Map::class.java,
-                        serializers.config.typeFactory.constructType(java.util.Locale::class.java)
-                , serializers.config.typeFactory.constructCollectionType(
+                serializers.config.typeFactory.constructType(java.util.Locale::class.java),
+                serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.List::class.java,
-                        serializers.config.typeFactory.constructType(kotlin.String::class.java)
+                serializers.config.typeFactory.constructType(kotlin.String::class.java)
                 )
-
-                )
-                ,
+                ),
                 true,
                 null
                 )
