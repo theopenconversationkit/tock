@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import java.time.Instant
 import kotlin.Boolean
@@ -17,49 +17,51 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-internal class UserLock_Deserializer :
-        StdDeserializer<MongoUserLock.UserLock>(MongoUserLock.UserLock::class.java),
+internal class UserLock_Deserializer : JsonDeserializer<MongoUserLock.UserLock>(),
         JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(MongoUserLock.UserLock::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): MongoUserLock.UserLock {
         with(p) {
             var __id_: Id<MongoUserLock.UserLock>? = null
-            var __id_set = false
+            var __id_set : Boolean = false
             var _locked_: Boolean? = null
-            var _locked_set = false
+            var _locked_set : Boolean = false
             var _date_: Instant? = null
-            var _date_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _date_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "_id" -> {
-                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
                             __id_set = true
                             }
                     "locked" -> {
-                            _locked_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Boolean::class.java);
+                            _locked_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
                             _locked_set = true
                             }
                     "date" -> {
-                            _date_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _date_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Instant::class.java);
                             _date_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(__id_set && _locked_set && _date_set)
                     MongoUserLock.UserLock(_id = __id_!!, locked = _locked_!!, date = _date_!!)
                     else {

@@ -3,7 +3,7 @@ package fr.vsct.tock.nlp.model.service.storage.mongo
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.nlp.core.NlpEngineType
 import fr.vsct.tock.nlp.core.configuration.NlpApplicationConfiguration
@@ -17,7 +17,7 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 
 internal class NlpApplicationConfigurationCol_Deserializer :
-        StdDeserializer<NlpApplicationConfigurationMongoDAO.NlpApplicationConfigurationCol>(NlpApplicationConfigurationMongoDAO.NlpApplicationConfigurationCol::class.java),
+        JsonDeserializer<NlpApplicationConfigurationMongoDAO.NlpApplicationConfigurationCol>(),
         JacksonModuleServiceLoader {
     override fun module() =
             SimpleModule().addDeserializer(NlpApplicationConfigurationMongoDAO.NlpApplicationConfigurationCol::class.java,
@@ -27,48 +27,51 @@ internal class NlpApplicationConfigurationCol_Deserializer :
             NlpApplicationConfigurationMongoDAO.NlpApplicationConfigurationCol {
         with(p) {
             var _applicationName_: String? = null
-            var _applicationName_set = false
+            var _applicationName_set : Boolean = false
             var _engineType_: NlpEngineType? = null
-            var _engineType_set = false
+            var _engineType_set : Boolean = false
             var _configuration_: NlpApplicationConfiguration? = null
-            var _configuration_set = false
+            var _configuration_set : Boolean = false
             var _date_: Instant? = null
-            var _date_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _date_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "applicationName" -> {
-                            _applicationName_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _applicationName_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _applicationName_set = true
                             }
                     "engineType" -> {
-                            _engineType_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _engineType_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(NlpEngineType::class.java);
                             _engineType_set = true
                             }
                     "configuration" -> {
-                            _configuration_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _configuration_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(NlpApplicationConfiguration::class.java);
                             _configuration_set = true
                             }
                     "date" -> {
-                            _date_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _date_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Instant::class.java);
                             _date_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_applicationName_set && _engineType_set && _configuration_set && _date_set)
                     NlpApplicationConfigurationMongoDAO.NlpApplicationConfigurationCol(applicationName
                             = _applicationName_!!, engineType = _engineType_!!, configuration =

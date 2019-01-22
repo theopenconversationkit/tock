@@ -28,9 +28,8 @@ internal class ApplicationDefinition_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.Set::class.java,
-                        serializers.config.typeFactory.constructType(org.litote.kmongo.Id::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(org.litote.kmongo.Id::class.java)
+                ),
                 true,
                 null
                 )
@@ -40,9 +39,8 @@ internal class ApplicationDefinition_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.Set::class.java,
-                        serializers.config.typeFactory.constructType(java.util.Locale::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(java.util.Locale::class.java)
+                ),
                 true,
                 null
                 )
@@ -52,14 +50,12 @@ internal class ApplicationDefinition_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructMapType(
                 kotlin.collections.Map::class.java,
-                        serializers.config.typeFactory.constructType(org.litote.kmongo.Id::class.java)
-                , serializers.config.typeFactory.constructCollectionType(
+                serializers.config.typeFactory.constructType(org.litote.kmongo.Id::class.java),
+                serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.Set::class.java,
-                        serializers.config.typeFactory.constructType(kotlin.String::class.java)
+                serializers.config.typeFactory.constructType(kotlin.String::class.java)
                 )
-
-                )
-                ,
+                ),
                 true,
                 null
                 )

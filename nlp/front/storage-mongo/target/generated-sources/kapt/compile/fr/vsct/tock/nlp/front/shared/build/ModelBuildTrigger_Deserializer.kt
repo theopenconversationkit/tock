@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import kotlin.Boolean
@@ -17,49 +17,51 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-internal class ModelBuildTrigger_Deserializer :
-        StdDeserializer<ModelBuildTrigger>(ModelBuildTrigger::class.java),
+internal class ModelBuildTrigger_Deserializer : JsonDeserializer<ModelBuildTrigger>(),
         JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(ModelBuildTrigger::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): ModelBuildTrigger {
         with(p) {
             var _applicationId_: Id<ApplicationDefinition>? = null
-            var _applicationId_set = false
+            var _applicationId_set : Boolean = false
             var _all_: Boolean? = null
-            var _all_set = false
+            var _all_set : Boolean = false
             var _onlyIfModelNotExists_: Boolean? = null
-            var _onlyIfModelNotExists_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _onlyIfModelNotExists_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "applicationId" -> {
-                            _applicationId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _applicationId_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_applicationId__reference);
                             _applicationId_set = true
                             }
                     "all" -> {
-                            _all_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Boolean::class.java);
+                            _all_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
                             _all_set = true
                             }
                     "onlyIfModelNotExists" -> {
-                            _onlyIfModelNotExists_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Boolean::class.java);
+                            _onlyIfModelNotExists_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
                             _onlyIfModelNotExists_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_applicationId_set && _all_set && _onlyIfModelNotExists_set)
                     ModelBuildTrigger(applicationId = _applicationId_!!, all = _all_!!,
                             onlyIfModelNotExists = _onlyIfModelNotExists_!!)

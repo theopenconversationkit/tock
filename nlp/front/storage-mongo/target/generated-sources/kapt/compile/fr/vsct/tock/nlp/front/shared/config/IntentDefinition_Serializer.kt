@@ -27,9 +27,8 @@ internal class IntentDefinition_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.Set::class.java,
-                        serializers.config.typeFactory.constructType(org.litote.kmongo.Id::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(org.litote.kmongo.Id::class.java)
+                ),
                 true,
                 null
                 )
@@ -39,9 +38,8 @@ internal class IntentDefinition_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.Set::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.config.EntityDefinition::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.config.EntityDefinition::class.java)
+                ),
                 true,
                 null
                 )
@@ -51,14 +49,12 @@ internal class IntentDefinition_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructMapType(
                 kotlin.collections.Map::class.java,
-                        serializers.config.typeFactory.constructType(java.util.Locale::class.java)
-                , serializers.config.typeFactory.constructCollectionType(
+                serializers.config.typeFactory.constructType(java.util.Locale::class.java),
+                serializers.config.typeFactory.constructCollectionType(
                 java.util.LinkedHashSet::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.core.EntitiesRegexp::class.java)
+                serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.core.EntitiesRegexp::class.java)
                 )
-
-                )
-                ,
+                ),
                 true,
                 null
                 )
@@ -68,9 +64,8 @@ internal class IntentDefinition_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.Set::class.java,
-                        serializers.config.typeFactory.constructType(kotlin.String::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(kotlin.String::class.java)
+                ),
                 true,
                 null
                 )
@@ -80,22 +75,27 @@ internal class IntentDefinition_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.Set::class.java,
-                        serializers.config.typeFactory.constructType(org.litote.kmongo.Id::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(org.litote.kmongo.Id::class.java)
+                ),
                 true,
                 null
                 )
                 .serialize(_sharedIntents_, gen, serializers)
         gen.writeFieldName("label")
         val _label_ = value.label
-        if(_label_ == null) { gen.writeNull() } else {gen.writeString(_label_)}
+        if(_label_ == null) { gen.writeNull() } else {
+                gen.writeString(_label_)
+                }
         gen.writeFieldName("description")
         val _description_ = value.description
-        if(_description_ == null) { gen.writeNull() } else {gen.writeString(_description_)}
+        if(_description_ == null) { gen.writeNull() } else {
+                gen.writeString(_description_)
+                }
         gen.writeFieldName("category")
         val _category_ = value.category
-        if(_category_ == null) { gen.writeNull() } else {gen.writeString(_category_)}
+        if(_category_ == null) { gen.writeNull() } else {
+                gen.writeString(_category_)
+                }
         gen.writeFieldName("_id")
         val __id_ = value._id
         serializers.defaultSerializeValue(__id_, gen)

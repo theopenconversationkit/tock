@@ -21,9 +21,8 @@ internal class DialogCol_Serializer : StdSerializer<DialogCol>(DialogCol::class.
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.Set::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.bot.engine.user.PlayerId::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.bot.engine.user.PlayerId::class.java)
+                ),
                 true,
                 null
                 )
@@ -39,9 +38,8 @@ internal class DialogCol_Serializer : StdSerializer<DialogCol>(DialogCol::class.
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.List::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.bot.mongo.DialogCol.StoryMongoWrapper::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.bot.mongo.DialogCol.StoryMongoWrapper::class.java)
+                ),
                 true,
                 null
                 )
@@ -51,9 +49,8 @@ internal class DialogCol_Serializer : StdSerializer<DialogCol>(DialogCol::class.
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.Set::class.java,
-                        serializers.config.typeFactory.constructType(kotlin.String::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(kotlin.String::class.java)
+                ),
                 true,
                 null
                 )
@@ -63,7 +60,9 @@ internal class DialogCol_Serializer : StdSerializer<DialogCol>(DialogCol::class.
         serializers.defaultSerializeValue(_lastUpdateDate_, gen)
         gen.writeFieldName("groupId")
         val _groupId_ = value.groupId
-        if(_groupId_ == null) { gen.writeNull() } else {gen.writeString(_groupId_)}
+        if(_groupId_ == null) { gen.writeNull() } else {
+                gen.writeString(_groupId_)
+                }
         gen.writeEndObject()
     }
 }

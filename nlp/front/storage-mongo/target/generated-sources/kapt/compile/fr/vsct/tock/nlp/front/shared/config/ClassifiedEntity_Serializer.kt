@@ -33,9 +33,8 @@ internal class ClassifiedEntity_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.List::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity::class.java)
+                ),
                 true,
                 null
                 )

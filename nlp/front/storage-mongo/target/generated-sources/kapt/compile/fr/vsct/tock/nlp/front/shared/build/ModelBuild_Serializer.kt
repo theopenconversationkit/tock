@@ -27,11 +27,14 @@ internal class ModelBuild_Serializer : StdSerializer<ModelBuild>(ModelBuild::cla
         serializers.defaultSerializeValue(_type_, gen)
         gen.writeFieldName("intentId")
         val _intentId_ = value.intentId
-        if(_intentId_ == null) { gen.writeNull() } else
-                {serializers.defaultSerializeValue(_intentId_, gen)}
+        if(_intentId_ == null) { gen.writeNull() } else {
+                serializers.defaultSerializeValue(_intentId_, gen)
+                }
         gen.writeFieldName("entityTypeName")
         val _entityTypeName_ = value.entityTypeName
-        if(_entityTypeName_ == null) { gen.writeNull() } else {gen.writeString(_entityTypeName_)}
+        if(_entityTypeName_ == null) { gen.writeNull() } else {
+                gen.writeString(_entityTypeName_)
+                }
         gen.writeFieldName("nbSentences")
         val _nbSentences_ = value.nbSentences
         gen.writeNumber(_nbSentences_)
@@ -43,7 +46,9 @@ internal class ModelBuild_Serializer : StdSerializer<ModelBuild>(ModelBuild::cla
         gen.writeBoolean(_error_)
         gen.writeFieldName("errorMessage")
         val _errorMessage_ = value.errorMessage
-        if(_errorMessage_ == null) { gen.writeNull() } else {gen.writeString(_errorMessage_)}
+        if(_errorMessage_ == null) { gen.writeNull() } else {
+                gen.writeString(_errorMessage_)
+                }
         gen.writeFieldName("date")
         val _date_ = value.date
         serializers.defaultSerializeValue(_date_, gen)

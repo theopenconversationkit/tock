@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.bot.connector.ConnectorType
 import kotlin.String
@@ -18,8 +18,7 @@ import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
 internal class BotApplicationConfiguration_Deserializer :
-        StdDeserializer<BotApplicationConfiguration>(BotApplicationConfiguration::class.java),
-        JacksonModuleServiceLoader {
+        JsonDeserializer<BotApplicationConfiguration>(), JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(BotApplicationConfiguration::class.java,
             this)
 
@@ -27,97 +26,100 @@ internal class BotApplicationConfiguration_Deserializer :
             BotApplicationConfiguration {
         with(p) {
             var _applicationId_: String? = null
-            var _applicationId_set = false
+            var _applicationId_set : Boolean = false
             var _botId_: String? = null
-            var _botId_set = false
+            var _botId_set : Boolean = false
             var _namespace_: String? = null
-            var _namespace_set = false
+            var _namespace_set : Boolean = false
             var _nlpModel_: String? = null
-            var _nlpModel_set = false
+            var _nlpModel_set : Boolean = false
             var _connectorType_: ConnectorType? = null
-            var _connectorType_set = false
+            var _connectorType_set : Boolean = false
             var _ownerConnectorType_: ConnectorType? = null
-            var _ownerConnectorType_set = false
+            var _ownerConnectorType_set : Boolean = false
             var _name_: String? = null
-            var _name_set = false
+            var _name_set : Boolean = false
             var _baseUrl_: String? = null
-            var _baseUrl_set = false
+            var _baseUrl_set : Boolean = false
             var _parameters_: MutableMap<String, String>? = null
-            var _parameters_set = false
+            var _parameters_set : Boolean = false
             var _path_: String? = null
-            var _path_set = false
+            var _path_set : Boolean = false
             var __id_: Id<BotApplicationConfiguration>? = null
-            var __id_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var __id_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "applicationId" -> {
-                            _applicationId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _applicationId_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _applicationId_set = true
                             }
                     "botId" -> {
-                            _botId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _botId_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _botId_set = true
                             }
                     "namespace" -> {
-                            _namespace_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _namespace_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _namespace_set = true
                             }
                     "nlpModel" -> {
-                            _nlpModel_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _nlpModel_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _nlpModel_set = true
                             }
                     "connectorType" -> {
-                            _connectorType_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _connectorType_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(ConnectorType::class.java);
                             _connectorType_set = true
                             }
                     "ownerConnectorType" -> {
-                            _ownerConnectorType_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _ownerConnectorType_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(ConnectorType::class.java);
                             _ownerConnectorType_set = true
                             }
                     "name" -> {
-                            _name_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _name_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _name_set = true
                             }
                     "baseUrl" -> {
-                            _baseUrl_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _baseUrl_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _baseUrl_set = true
                             }
                     "parameters" -> {
-                            _parameters_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _parameters_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_parameters__reference);
                             _parameters_set = true
                             }
                     "path" -> {
-                            _path_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _path_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _path_set = true
                             }
                     "_id" -> {
-                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
                             __id_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_applicationId_set && _botId_set && _namespace_set && _nlpModel_set &&
                     _connectorType_set && _ownerConnectorType_set && _name_set && _baseUrl_set &&
                     _parameters_set && _path_set && __id_set)

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import kotlin.String
 import kotlin.collections.List
@@ -17,41 +17,44 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-internal class Classification_Deserializer :
-        StdDeserializer<Classification>(Classification::class.java), JacksonModuleServiceLoader {
+internal class Classification_Deserializer : JsonDeserializer<Classification>(),
+        JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(Classification::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): Classification {
         with(p) {
             var _intentId_: Id<IntentDefinition>? = null
-            var _intentId_set = false
+            var _intentId_set : Boolean = false
             var _entities_: MutableList<ClassifiedEntity>? = null
-            var _entities_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _entities_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "intentId" -> {
-                            _intentId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _intentId_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_intentId__reference);
                             _intentId_set = true
                             }
                     "entities" -> {
-                            _entities_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _entities_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_entities__reference);
                             _entities_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_intentId_set && _entities_set)
                     Classification(intentId = _intentId_!!, entities = _entities_!!)
                     else {

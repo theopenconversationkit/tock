@@ -3,7 +3,7 @@ package fr.vsct.tock.bot.mongo
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.bot.engine.nlp.NlpCallStats
 import java.time.Instant
@@ -15,55 +15,58 @@ import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class NlpStatsCol_Deserializer : StdDeserializer<NlpStatsCol>(NlpStatsCol::class.java),
+internal class NlpStatsCol_Deserializer : JsonDeserializer<NlpStatsCol>(),
         JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(NlpStatsCol::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): NlpStatsCol {
         with(p) {
             var __id_: NlpStatsColId? = null
-            var __id_set = false
+            var __id_set : Boolean = false
             var _stats_: NlpCallStats? = null
-            var _stats_set = false
+            var _stats_set : Boolean = false
             var _appNamespace_: String? = null
-            var _appNamespace_set = false
+            var _appNamespace_set : Boolean = false
             var _date_: Instant? = null
-            var _date_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _date_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "_id" -> {
-                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(NlpStatsColId::class.java);
                             __id_set = true
                             }
                     "stats" -> {
-                            _stats_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _stats_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(NlpCallStats::class.java);
                             _stats_set = true
                             }
                     "appNamespace" -> {
-                            _appNamespace_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _appNamespace_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _appNamespace_set = true
                             }
                     "date" -> {
-                            _date_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _date_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Instant::class.java);
                             _date_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(__id_set && _stats_set && _appNamespace_set && _date_set)
                     NlpStatsCol(_id = __id_!!, stats = _stats_!!, appNamespace = _appNamespace_!!,
                             date = _date_!!)

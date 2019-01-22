@@ -20,13 +20,19 @@ internal class UserPreferencesWrapper_Serializer :
         gen.writeStartObject()
         gen.writeFieldName("firstName")
         val _firstName_ = value.firstName
-        if(_firstName_ == null) { gen.writeNull() } else {gen.writeString(_firstName_)}
+        if(_firstName_ == null) { gen.writeNull() } else {
+                gen.writeString(_firstName_)
+                }
         gen.writeFieldName("lastName")
         val _lastName_ = value.lastName
-        if(_lastName_ == null) { gen.writeNull() } else {gen.writeString(_lastName_)}
+        if(_lastName_ == null) { gen.writeNull() } else {
+                gen.writeString(_lastName_)
+                }
         gen.writeFieldName("email")
         val _email_ = value.email
-        if(_email_ == null) { gen.writeNull() } else {gen.writeString(_email_)}
+        if(_email_ == null) { gen.writeNull() } else {
+                gen.writeString(_email_)
+                }
         gen.writeFieldName("timezone")
         val _timezone_ = value.timezone
         serializers.defaultSerializeValue(_timezone_, gen)
@@ -35,10 +41,14 @@ internal class UserPreferencesWrapper_Serializer :
         serializers.defaultSerializeValue(_locale_, gen)
         gen.writeFieldName("picture")
         val _picture_ = value.picture
-        if(_picture_ == null) { gen.writeNull() } else {gen.writeString(_picture_)}
+        if(_picture_ == null) { gen.writeNull() } else {
+                gen.writeString(_picture_)
+                }
         gen.writeFieldName("gender")
         val _gender_ = value.gender
-        if(_gender_ == null) { gen.writeNull() } else {gen.writeString(_gender_)}
+        if(_gender_ == null) { gen.writeNull() } else {
+                gen.writeString(_gender_)
+                }
         gen.writeFieldName("test")
         val _test_ = value.test
         gen.writeBoolean(_test_)

@@ -3,7 +3,7 @@ package fr.vsct.tock.nlp.core.configuration
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import java.util.Properties
 import kotlin.String
@@ -14,35 +14,37 @@ import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class NlpModelConfiguration_Deserializer :
-        StdDeserializer<NlpModelConfiguration>(NlpModelConfiguration::class.java),
+internal class NlpModelConfiguration_Deserializer : JsonDeserializer<NlpModelConfiguration>(),
         JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(NlpModelConfiguration::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): NlpModelConfiguration {
         with(p) {
             var _properties_: Properties? = null
-            var _properties_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _properties_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "properties" -> {
-                            _properties_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _properties_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Properties::class.java);
                             _properties_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_properties_set)
                     NlpModelConfiguration(properties = _properties_!!)
                     else {

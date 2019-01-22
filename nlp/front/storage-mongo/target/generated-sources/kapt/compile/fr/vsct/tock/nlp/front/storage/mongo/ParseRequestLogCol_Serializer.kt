@@ -30,8 +30,9 @@ internal class ParseRequestLogCol_Serializer :
         serializers.defaultSerializeValue(_query_, gen)
         gen.writeFieldName("result")
         val _result_ = value.result
-        if(_result_ == null) { gen.writeNull() } else {serializers.defaultSerializeValue(_result_,
-                gen)}
+        if(_result_ == null) { gen.writeNull() } else {
+                serializers.defaultSerializeValue(_result_, gen)
+                }
         gen.writeFieldName("durationInMS")
         val _durationInMS_ = value.durationInMS
         gen.writeNumber(_durationInMS_)

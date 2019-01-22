@@ -30,7 +30,9 @@ internal class I18nLabelStat_Serializer : StdSerializer<I18nLabelStat>(I18nLabel
         serializers.defaultSerializeValue(_interfaceType_, gen)
         gen.writeFieldName("connectorId")
         val _connectorId_ = value.connectorId
-        if(_connectorId_ == null) { gen.writeNull() } else {gen.writeString(_connectorId_)}
+        if(_connectorId_ == null) { gen.writeNull() } else {
+                gen.writeString(_connectorId_)
+                }
         gen.writeFieldName("count")
         val _count_ = value.count
         gen.writeNumber(_count_)

@@ -27,16 +27,16 @@ internal class EntityTestError_Serializer :
         gen.writeString(_text_)
         gen.writeFieldName("intentId")
         val _intentId_ = value.intentId
-        if(_intentId_ == null) { gen.writeNull() } else
-                {serializers.defaultSerializeValue(_intentId_, gen)}
+        if(_intentId_ == null) { gen.writeNull() } else {
+                serializers.defaultSerializeValue(_intentId_, gen)
+                }
         gen.writeFieldName("lastAnalyse")
         val _lastAnalyse_ = value.lastAnalyse
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.List::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity::class.java)
+                ),
                 true,
                 null
                 )

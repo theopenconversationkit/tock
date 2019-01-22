@@ -21,9 +21,8 @@ internal class ParseQuery_Serializer : StdSerializer<ParseQuery>(ParseQuery::cla
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.List::class.java,
-                        serializers.config.typeFactory.constructType(kotlin.String::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(kotlin.String::class.java)
+                ),
                 true,
                 null
                 )
@@ -45,9 +44,8 @@ internal class ParseQuery_Serializer : StdSerializer<ParseQuery>(ParseQuery::cla
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.Set::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.parser.IntentQualifier::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.parser.IntentQualifier::class.java)
+                ),
                 true,
                 null
                 )

@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.bot.admin.answer.AnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
@@ -22,8 +22,7 @@ import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
 internal class StoryDefinitionConfiguration_Deserializer :
-        StdDeserializer<StoryDefinitionConfiguration>(StoryDefinitionConfiguration::class.java),
-        JacksonModuleServiceLoader {
+        JsonDeserializer<StoryDefinitionConfiguration>(), JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(StoryDefinitionConfiguration::class.java,
             this)
 
@@ -31,69 +30,72 @@ internal class StoryDefinitionConfiguration_Deserializer :
             StoryDefinitionConfiguration {
         with(p) {
             var _storyId_: String? = null
-            var _storyId_set = false
+            var _storyId_set : Boolean = false
             var _botId_: String? = null
-            var _botId_set = false
+            var _botId_set : Boolean = false
             var _intent_: Intent? = null
-            var _intent_set = false
+            var _intent_set : Boolean = false
             var _currentType_: AnswerConfigurationType? = null
-            var _currentType_set = false
+            var _currentType_set : Boolean = false
             var _answers_: MutableList<AnswerConfiguration>? = null
-            var _answers_set = false
+            var _answers_set : Boolean = false
             var _version_: Int? = null
-            var _version_set = false
+            var _version_set : Boolean = false
             var __id_: Id<StoryDefinitionConfiguration>? = null
-            var __id_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var __id_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "storyId" -> {
-                            _storyId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _storyId_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _storyId_set = true
                             }
                     "botId" -> {
-                            _botId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _botId_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _botId_set = true
                             }
                     "intent" -> {
-                            _intent_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _intent_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Intent::class.java);
                             _intent_set = true
                             }
                     "currentType" -> {
-                            _currentType_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _currentType_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(AnswerConfigurationType::class.java);
                             _currentType_set = true
                             }
                     "answers" -> {
-                            _answers_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _answers_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_answers__reference);
                             _answers_set = true
                             }
                     "version" -> {
-                            _version_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Int::class.java);
+                            _version_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.intValue;
                             _version_set = true
                             }
                     "_id" -> {
-                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
                             __id_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_storyId_set && _botId_set && _intent_set && _currentType_set && _answers_set
                     && _version_set && __id_set)
                     StoryDefinitionConfiguration(storyId = _storyId_!!, botId = _botId_!!, intent =

@@ -35,9 +35,8 @@ internal class StoryDefinitionConfiguration_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.List::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.bot.admin.answer.AnswerConfiguration::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.bot.admin.answer.AnswerConfiguration::class.java)
+                ),
                 true,
                 null
                 )

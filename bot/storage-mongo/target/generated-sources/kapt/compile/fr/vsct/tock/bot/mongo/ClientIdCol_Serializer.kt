@@ -21,9 +21,8 @@ internal class ClientIdCol_Serializer : StdSerializer<ClientIdCol>(ClientIdCol::
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.Set::class.java,
-                        serializers.config.typeFactory.constructType(kotlin.String::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(kotlin.String::class.java)
+                ),
                 true,
                 null
                 )
