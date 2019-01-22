@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.connector.ConnectorType
@@ -21,98 +21,100 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-internal class TestPlan_Deserializer : StdDeserializer<TestPlan>(TestPlan::class.java),
-        JacksonModuleServiceLoader {
+internal class TestPlan_Deserializer : JsonDeserializer<TestPlan>(), JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(TestPlan::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): TestPlan {
         with(p) {
             var _dialogs_: MutableList<TestDialogReport>? = null
-            var _dialogs_set = false
+            var _dialogs_set : Boolean = false
             var _name_: String? = null
-            var _name_set = false
+            var _name_set : Boolean = false
             var _applicationId_: String? = null
-            var _applicationId_set = false
+            var _applicationId_set : Boolean = false
             var _namespace_: String? = null
-            var _namespace_set = false
+            var _namespace_set : Boolean = false
             var _nlpModel_: String? = null
-            var _nlpModel_set = false
+            var _nlpModel_set : Boolean = false
             var _botApplicationConfigurationId_: Id<BotApplicationConfiguration>? = null
-            var _botApplicationConfigurationId_set = false
+            var _botApplicationConfigurationId_set : Boolean = false
             var _locale_: Locale? = null
-            var _locale_set = false
+            var _locale_set : Boolean = false
             var _startAction_: Message? = null
-            var _startAction_set = false
+            var _startAction_set : Boolean = false
             var _targetConnectorType_: ConnectorType? = null
-            var _targetConnectorType_set = false
+            var _targetConnectorType_set : Boolean = false
             var __id_: Id<TestPlan>? = null
-            var __id_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var __id_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "dialogs" -> {
-                            _dialogs_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _dialogs_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_dialogs__reference);
                             _dialogs_set = true
                             }
                     "name" -> {
-                            _name_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _name_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _name_set = true
                             }
                     "applicationId" -> {
-                            _applicationId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _applicationId_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _applicationId_set = true
                             }
                     "namespace" -> {
-                            _namespace_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _namespace_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _namespace_set = true
                             }
                     "nlpModel" -> {
-                            _nlpModel_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _nlpModel_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _nlpModel_set = true
                             }
                     "botApplicationConfigurationId" -> {
-                            _botApplicationConfigurationId_ = if(currentToken ==
-                                    JsonToken.VALUE_NULL) null
+                            _botApplicationConfigurationId_ = if(_token_ == JsonToken.VALUE_NULL)
+                                    null
                              else p.readValueAs(_botApplicationConfigurationId__reference);
                             _botApplicationConfigurationId_set = true
                             }
                     "locale" -> {
-                            _locale_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _locale_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Locale::class.java);
                             _locale_set = true
                             }
                     "startAction" -> {
-                            _startAction_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _startAction_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Message::class.java);
                             _startAction_set = true
                             }
                     "targetConnectorType" -> {
-                            _targetConnectorType_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _targetConnectorType_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(ConnectorType::class.java);
                             _targetConnectorType_set = true
                             }
                     "_id" -> {
-                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
                             __id_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_dialogs_set && _name_set && _applicationId_set && _namespace_set &&
                     _nlpModel_set && _botApplicationConfigurationId_set && _locale_set &&
                     _startAction_set && _targetConnectorType_set && __id_set)

@@ -3,7 +3,7 @@ package fr.vsct.tock.bot.mongo
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import java.time.Instant
@@ -17,7 +17,7 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 
 internal class StoryDefinitionConfigurationHistoryCol_Deserializer :
-        StdDeserializer<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>(StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::class.java),
+        JsonDeserializer<StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol>(),
         JacksonModuleServiceLoader {
     override fun module() =
             SimpleModule().addDeserializer(StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol::class.java,
@@ -27,41 +27,44 @@ internal class StoryDefinitionConfigurationHistoryCol_Deserializer :
             StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol {
         with(p) {
             var _conf_: StoryDefinitionConfiguration? = null
-            var _conf_set = false
+            var _conf_set : Boolean = false
             var _deleted_: Boolean? = null
-            var _deleted_set = false
+            var _deleted_set : Boolean = false
             var _date_: Instant? = null
-            var _date_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _date_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "conf" -> {
-                            _conf_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _conf_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(StoryDefinitionConfiguration::class.java);
                             _conf_set = true
                             }
                     "deleted" -> {
-                            _deleted_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Boolean::class.java);
+                            _deleted_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
                             _deleted_set = true
                             }
                     "date" -> {
-                            _date_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _date_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Instant::class.java);
                             _date_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_conf_set && _deleted_set && _date_set)
                     StoryDefinitionConfigurationMongoDAO.StoryDefinitionConfigurationHistoryCol(conf
                             = _conf_!!, deleted = _deleted_!!, date = _date_!!)

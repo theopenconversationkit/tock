@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import java.time.Duration
@@ -20,83 +20,85 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-internal class TestBuild_Deserializer : StdDeserializer<TestBuild>(TestBuild::class.java),
-        JacksonModuleServiceLoader {
+internal class TestBuild_Deserializer : JsonDeserializer<TestBuild>(), JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(TestBuild::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): TestBuild {
         with(p) {
             var _applicationId_: Id<ApplicationDefinition>? = null
-            var _applicationId_set = false
+            var _applicationId_set : Boolean = false
             var _language_: Locale? = null
-            var _language_set = false
+            var _language_set : Boolean = false
             var _startDate_: Instant? = null
-            var _startDate_set = false
+            var _startDate_set : Boolean = false
             var _buildModelDuration_: Duration? = null
-            var _buildModelDuration_set = false
+            var _buildModelDuration_set : Boolean = false
             var _testSentencesDuration_: Duration? = null
-            var _testSentencesDuration_set = false
+            var _testSentencesDuration_set : Boolean = false
             var _nbSentencesInModel_: Int? = null
-            var _nbSentencesInModel_set = false
+            var _nbSentencesInModel_set : Boolean = false
             var _nbSentencesTested_: Int? = null
-            var _nbSentencesTested_set = false
+            var _nbSentencesTested_set : Boolean = false
             var _nbErrors_: Int? = null
-            var _nbErrors_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _nbErrors_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "applicationId" -> {
-                            _applicationId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _applicationId_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_applicationId__reference);
                             _applicationId_set = true
                             }
                     "language" -> {
-                            _language_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _language_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Locale::class.java);
                             _language_set = true
                             }
                     "startDate" -> {
-                            _startDate_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _startDate_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Instant::class.java);
                             _startDate_set = true
                             }
                     "buildModelDuration" -> {
-                            _buildModelDuration_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _buildModelDuration_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Duration::class.java);
                             _buildModelDuration_set = true
                             }
                     "testSentencesDuration" -> {
-                            _testSentencesDuration_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _testSentencesDuration_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Duration::class.java);
                             _testSentencesDuration_set = true
                             }
                     "nbSentencesInModel" -> {
-                            _nbSentencesInModel_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Int::class.java);
+                            _nbSentencesInModel_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.intValue;
                             _nbSentencesInModel_set = true
                             }
                     "nbSentencesTested" -> {
-                            _nbSentencesTested_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Int::class.java);
+                            _nbSentencesTested_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.intValue;
                             _nbSentencesTested_set = true
                             }
                     "nbErrors" -> {
-                            _nbErrors_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Int::class.java);
+                            _nbErrors_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.intValue;
                             _nbErrors_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_applicationId_set && _language_set && _startDate_set &&
                     _buildModelDuration_set && _testSentencesDuration_set && _nbSentencesInModel_set
                     && _nbSentencesTested_set && _nbErrors_set)

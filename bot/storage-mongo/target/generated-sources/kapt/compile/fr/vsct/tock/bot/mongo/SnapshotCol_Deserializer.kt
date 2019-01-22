@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.Snapshot
@@ -20,48 +20,51 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-internal class SnapshotCol_Deserializer : StdDeserializer<SnapshotCol>(SnapshotCol::class.java),
+internal class SnapshotCol_Deserializer : JsonDeserializer<SnapshotCol>(),
         JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(SnapshotCol::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): SnapshotCol {
         with(p) {
             var __id_: Id<Dialog>? = null
-            var __id_set = false
+            var __id_set : Boolean = false
             var _snapshots_: MutableList<Snapshot>? = null
-            var _snapshots_set = false
+            var _snapshots_set : Boolean = false
             var _lastUpdateDate_: Instant? = null
-            var _lastUpdateDate_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _lastUpdateDate_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "_id" -> {
-                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
                             __id_set = true
                             }
                     "snapshots" -> {
-                            _snapshots_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _snapshots_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_snapshots__reference);
                             _snapshots_set = true
                             }
                     "lastUpdateDate" -> {
-                            _lastUpdateDate_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _lastUpdateDate_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Instant::class.java);
                             _lastUpdateDate_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(__id_set && _snapshots_set && _lastUpdateDate_set)
                     SnapshotCol(_id = __id_!!, snapshots = _snapshots_!!, lastUpdateDate =
                             _lastUpdateDate_!!)

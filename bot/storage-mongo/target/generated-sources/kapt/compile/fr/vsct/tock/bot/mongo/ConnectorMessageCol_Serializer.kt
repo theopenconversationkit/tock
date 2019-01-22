@@ -25,9 +25,8 @@ internal class ConnectorMessageCol_Serializer :
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.List::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.shared.jackson.AnyValueWrapper::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.shared.jackson.AnyValueWrapper::class.java)
+                ),
                 true,
                 null
                 )

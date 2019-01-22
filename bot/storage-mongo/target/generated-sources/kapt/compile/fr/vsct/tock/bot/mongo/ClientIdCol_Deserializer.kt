@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import kotlin.String
 import kotlin.collections.Map
@@ -17,41 +17,44 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-internal class ClientIdCol_Deserializer : StdDeserializer<ClientIdCol>(ClientIdCol::class.java),
+internal class ClientIdCol_Deserializer : JsonDeserializer<ClientIdCol>(),
         JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(ClientIdCol::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): ClientIdCol {
         with(p) {
             var _userIds_: MutableSet<String>? = null
-            var _userIds_set = false
+            var _userIds_set : Boolean = false
             var __id_: Id<ClientIdCol>? = null
-            var __id_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var __id_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "userIds" -> {
-                            _userIds_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _userIds_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_userIds__reference);
                             _userIds_set = true
                             }
                     "_id" -> {
-                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
                             __id_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_userIds_set && __id_set)
                     ClientIdCol(userIds = _userIds_!!, _id = __id_!!)
                     else {

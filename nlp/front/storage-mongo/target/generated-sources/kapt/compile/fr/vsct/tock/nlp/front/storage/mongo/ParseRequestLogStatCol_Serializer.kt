@@ -30,12 +30,14 @@ internal class ParseRequestLogStatCol_Serializer :
         serializers.defaultSerializeValue(_language_, gen)
         gen.writeFieldName("intentProbability")
         val _intentProbability_ = value.intentProbability
-        if(_intentProbability_ == null) { gen.writeNull() } else
-                {gen.writeNumber(_intentProbability_)}
+        if(_intentProbability_ == null) { gen.writeNull() } else {
+                gen.writeNumber(_intentProbability_)
+                }
         gen.writeFieldName("entitiesProbability")
         val _entitiesProbability_ = value.entitiesProbability
-        if(_entitiesProbability_ == null) { gen.writeNull() } else
-                {gen.writeNumber(_entitiesProbability_)}
+        if(_entitiesProbability_ == null) { gen.writeNull() } else {
+                gen.writeNumber(_entitiesProbability_)
+                }
         gen.writeFieldName("lastUsage")
         val _lastUsage_ = value.lastUsage
         serializers.defaultSerializeValue(_lastUsage_, gen)

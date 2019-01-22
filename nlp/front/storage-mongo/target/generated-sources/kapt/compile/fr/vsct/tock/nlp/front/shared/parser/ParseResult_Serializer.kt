@@ -30,9 +30,8 @@ internal class ParseResult_Serializer : StdSerializer<ParseResult>(ParseResult::
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.List::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue::class.java)
+                ),
                 true,
                 null
                 )
@@ -42,9 +41,8 @@ internal class ParseResult_Serializer : StdSerializer<ParseResult>(ParseResult::
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.List::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.nlp.front.shared.parser.ParsedEntityValue::class.java)
+                ),
                 true,
                 null
                 )
@@ -63,10 +61,9 @@ internal class ParseResult_Serializer : StdSerializer<ParseResult>(ParseResult::
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructMapType(
                 kotlin.collections.Map::class.java,
-                        serializers.config.typeFactory.constructType(kotlin.String::class.java)
-                , serializers.config.typeFactory.constructType(kotlin.Double::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(kotlin.String::class.java),
+                serializers.config.typeFactory.constructType(kotlin.Double::class.java)
+                ),
                 true,
                 null
                 )

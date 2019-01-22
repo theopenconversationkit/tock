@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import java.util.Locale
 import kotlin.String
@@ -17,41 +17,44 @@ import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class PredefinedValue_Deserializer :
-        StdDeserializer<PredefinedValue>(PredefinedValue::class.java), JacksonModuleServiceLoader {
+internal class PredefinedValue_Deserializer : JsonDeserializer<PredefinedValue>(),
+        JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(PredefinedValue::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): PredefinedValue {
         with(p) {
             var _value_: String? = null
-            var _value_set = false
+            var _value_set : Boolean = false
             var _labels_: MutableMap<Locale, List<String>>? = null
-            var _labels_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _labels_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "value" -> {
-                            _value_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _value_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _value_set = true
                             }
                     "labels" -> {
-                            _labels_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _labels_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_labels__reference);
                             _labels_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_value_set && _labels_set)
                     PredefinedValue(value = _value_!!, labels = _labels_!!)
                     else {

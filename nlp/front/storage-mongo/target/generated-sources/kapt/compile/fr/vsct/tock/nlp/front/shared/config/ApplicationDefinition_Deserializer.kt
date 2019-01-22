@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.nlp.core.NlpEngineType
 import java.util.Locale
@@ -21,98 +21,100 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-internal class ApplicationDefinition_Deserializer :
-        StdDeserializer<ApplicationDefinition>(ApplicationDefinition::class.java),
+internal class ApplicationDefinition_Deserializer : JsonDeserializer<ApplicationDefinition>(),
         JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(ApplicationDefinition::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): ApplicationDefinition {
         with(p) {
             var _name_: String? = null
-            var _name_set = false
+            var _name_set : Boolean = false
             var _namespace_: String? = null
-            var _namespace_set = false
+            var _namespace_set : Boolean = false
             var _intents_: MutableSet<Id<IntentDefinition>>? = null
-            var _intents_set = false
+            var _intents_set : Boolean = false
             var _supportedLocales_: MutableSet<Locale>? = null
-            var _supportedLocales_set = false
+            var _supportedLocales_set : Boolean = false
             var _intentStatesMap_: MutableMap<Id<IntentDefinition>, Set<String>>? = null
-            var _intentStatesMap_set = false
+            var _intentStatesMap_set : Boolean = false
             var _nlpEngineType_: NlpEngineType? = null
-            var _nlpEngineType_set = false
+            var _nlpEngineType_set : Boolean = false
             var _mergeEngineTypes_: Boolean? = null
-            var _mergeEngineTypes_set = false
+            var _mergeEngineTypes_set : Boolean = false
             var _useEntityModels_: Boolean? = null
-            var _useEntityModels_set = false
+            var _useEntityModels_set : Boolean = false
             var _supportSubEntities_: Boolean? = null
-            var _supportSubEntities_set = false
+            var _supportSubEntities_set : Boolean = false
             var __id_: Id<ApplicationDefinition>? = null
-            var __id_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var __id_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "name" -> {
-                            _name_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _name_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _name_set = true
                             }
                     "namespace" -> {
-                            _namespace_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _namespace_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _namespace_set = true
                             }
                     "intents" -> {
-                            _intents_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _intents_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_intents__reference);
                             _intents_set = true
                             }
                     "supportedLocales" -> {
-                            _supportedLocales_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _supportedLocales_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_supportedLocales__reference);
                             _supportedLocales_set = true
                             }
                     "intentStatesMap" -> {
-                            _intentStatesMap_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _intentStatesMap_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_intentStatesMap__reference);
                             _intentStatesMap_set = true
                             }
                     "nlpEngineType" -> {
-                            _nlpEngineType_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _nlpEngineType_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(NlpEngineType::class.java);
                             _nlpEngineType_set = true
                             }
                     "mergeEngineTypes" -> {
-                            _mergeEngineTypes_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Boolean::class.java);
+                            _mergeEngineTypes_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
                             _mergeEngineTypes_set = true
                             }
                     "useEntityModels" -> {
-                            _useEntityModels_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Boolean::class.java);
+                            _useEntityModels_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
                             _useEntityModels_set = true
                             }
                     "supportSubEntities" -> {
-                            _supportSubEntities_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Boolean::class.java);
+                            _supportSubEntities_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
                             _supportSubEntities_set = true
                             }
                     "_id" -> {
-                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
                             __id_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_name_set && _namespace_set && _intents_set && _supportedLocales_set &&
                     _intentStatesMap_set && _nlpEngineType_set && _mergeEngineTypes_set &&
                     _useEntityModels_set && _supportSubEntities_set && __id_set)

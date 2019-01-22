@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import java.time.Instant
@@ -18,49 +18,51 @@ import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class ConnectorMessageCol_Deserializer :
-        StdDeserializer<ConnectorMessageCol>(ConnectorMessageCol::class.java),
+internal class ConnectorMessageCol_Deserializer : JsonDeserializer<ConnectorMessageCol>(),
         JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(ConnectorMessageCol::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): ConnectorMessageCol {
         with(p) {
             var __id_: ConnectorMessageColId? = null
-            var __id_set = false
+            var __id_set : Boolean = false
             var _messages_: MutableList<AnyValueWrapper>? = null
-            var _messages_set = false
+            var _messages_set : Boolean = false
             var _date_: Instant? = null
-            var _date_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _date_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "_id" -> {
-                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(ConnectorMessageColId::class.java);
                             __id_set = true
                             }
                     "messages" -> {
-                            _messages_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _messages_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_messages__reference);
                             _messages_set = true
                             }
                     "date" -> {
-                            _date_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _date_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Instant::class.java);
                             _date_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(__id_set && _messages_set && _date_set)
                     ConnectorMessageCol(_id = __id_!!, messages = _messages_!!, date = _date_!!)
                     else {

@@ -3,7 +3,7 @@ package fr.vsct.tock.nlp.core.configuration
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import kotlin.String
 import kotlin.collections.Map
@@ -14,8 +14,7 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 
 internal class NlpApplicationConfiguration_Deserializer :
-        StdDeserializer<NlpApplicationConfiguration>(NlpApplicationConfiguration::class.java),
-        JacksonModuleServiceLoader {
+        JsonDeserializer<NlpApplicationConfiguration>(), JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(NlpApplicationConfiguration::class.java,
             this)
 
@@ -23,41 +22,44 @@ internal class NlpApplicationConfiguration_Deserializer :
             NlpApplicationConfiguration {
         with(p) {
             var _tokenizerConfiguration_: NlpModelConfiguration? = null
-            var _tokenizerConfiguration_set = false
+            var _tokenizerConfiguration_set : Boolean = false
             var _intentConfiguration_: NlpModelConfiguration? = null
-            var _intentConfiguration_set = false
+            var _intentConfiguration_set : Boolean = false
             var _entityConfiguration_: NlpModelConfiguration? = null
-            var _entityConfiguration_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _entityConfiguration_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "tokenizerConfiguration" -> {
-                            _tokenizerConfiguration_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _tokenizerConfiguration_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(NlpModelConfiguration::class.java);
                             _tokenizerConfiguration_set = true
                             }
                     "intentConfiguration" -> {
-                            _intentConfiguration_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _intentConfiguration_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(NlpModelConfiguration::class.java);
                             _intentConfiguration_set = true
                             }
                     "entityConfiguration" -> {
-                            _entityConfiguration_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _entityConfiguration_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(NlpModelConfiguration::class.java);
                             _entityConfiguration_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_tokenizerConfiguration_set && _intentConfiguration_set &&
                     _entityConfiguration_set)
                     NlpApplicationConfiguration(tokenizerConfiguration = _tokenizerConfiguration_!!,

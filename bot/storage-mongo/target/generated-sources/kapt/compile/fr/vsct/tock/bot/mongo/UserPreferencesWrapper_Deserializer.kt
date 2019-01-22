@@ -3,7 +3,7 @@ package fr.vsct.tock.bot.mongo
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import java.time.ZoneId
 import java.util.Locale
@@ -17,8 +17,7 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 
 internal class UserPreferencesWrapper_Deserializer :
-        StdDeserializer<UserTimelineCol.UserPreferencesWrapper>(UserTimelineCol.UserPreferencesWrapper::class.java),
-        JacksonModuleServiceLoader {
+        JsonDeserializer<UserTimelineCol.UserPreferencesWrapper>(), JacksonModuleServiceLoader {
     override fun module() =
             SimpleModule().addDeserializer(UserTimelineCol.UserPreferencesWrapper::class.java, this)
 
@@ -26,83 +25,86 @@ internal class UserPreferencesWrapper_Deserializer :
             UserTimelineCol.UserPreferencesWrapper {
         with(p) {
             var _firstName_: String? = null
-            var _firstName_set = false
+            var _firstName_set : Boolean = false
             var _lastName_: String? = null
-            var _lastName_set = false
+            var _lastName_set : Boolean = false
             var _email_: String? = null
-            var _email_set = false
+            var _email_set : Boolean = false
             var _timezone_: ZoneId? = null
-            var _timezone_set = false
+            var _timezone_set : Boolean = false
             var _locale_: Locale? = null
-            var _locale_set = false
+            var _locale_set : Boolean = false
             var _picture_: String? = null
-            var _picture_set = false
+            var _picture_set : Boolean = false
             var _gender_: String? = null
-            var _gender_set = false
+            var _gender_set : Boolean = false
             var _test_: Boolean? = null
-            var _test_set = false
+            var _test_set : Boolean = false
             var _encrypted_: Boolean? = null
-            var _encrypted_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _encrypted_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "firstName" -> {
-                            _firstName_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _firstName_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _firstName_set = true
                             }
                     "lastName" -> {
-                            _lastName_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _lastName_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _lastName_set = true
                             }
                     "email" -> {
-                            _email_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _email_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _email_set = true
                             }
                     "timezone" -> {
-                            _timezone_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _timezone_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(ZoneId::class.java);
                             _timezone_set = true
                             }
                     "locale" -> {
-                            _locale_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _locale_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Locale::class.java);
                             _locale_set = true
                             }
                     "picture" -> {
-                            _picture_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _picture_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _picture_set = true
                             }
                     "gender" -> {
-                            _gender_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _gender_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _gender_set = true
                             }
                     "test" -> {
-                            _test_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Boolean::class.java);
+                            _test_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
                             _test_set = true
                             }
                     "encrypted" -> {
-                            _encrypted_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Boolean::class.java);
+                            _encrypted_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
                             _encrypted_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_firstName_set && _lastName_set && _email_set && _timezone_set && _locale_set
                     && _picture_set && _gender_set && _test_set && _encrypted_set)
                     UserTimelineCol.UserPreferencesWrapper(firstName = _firstName_, lastName =

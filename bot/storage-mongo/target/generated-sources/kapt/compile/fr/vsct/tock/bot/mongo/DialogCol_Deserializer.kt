@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -22,76 +22,78 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-internal class DialogCol_Deserializer : StdDeserializer<DialogCol>(DialogCol::class.java),
-        JacksonModuleServiceLoader {
+internal class DialogCol_Deserializer : JsonDeserializer<DialogCol>(), JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(DialogCol::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): DialogCol {
         with(p) {
             var _playerIds_: MutableSet<PlayerId>? = null
-            var _playerIds_set = false
+            var _playerIds_set : Boolean = false
             var __id_: Id<Dialog>? = null
-            var __id_set = false
+            var __id_set : Boolean = false
             var _state_: DialogCol.DialogStateMongoWrapper? = null
-            var _state_set = false
+            var _state_set : Boolean = false
             var _stories_: MutableList<DialogCol.StoryMongoWrapper>? = null
-            var _stories_set = false
+            var _stories_set : Boolean = false
             var _applicationIds_: MutableSet<String>? = null
-            var _applicationIds_set = false
+            var _applicationIds_set : Boolean = false
             var _lastUpdateDate_: Instant? = null
-            var _lastUpdateDate_set = false
+            var _lastUpdateDate_set : Boolean = false
             var _groupId_: String? = null
-            var _groupId_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _groupId_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "playerIds" -> {
-                            _playerIds_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _playerIds_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_playerIds__reference);
                             _playerIds_set = true
                             }
                     "_id" -> {
-                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
                             __id_set = true
                             }
                     "state" -> {
-                            _state_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _state_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(DialogCol.DialogStateMongoWrapper::class.java);
                             _state_set = true
                             }
                     "stories" -> {
-                            _stories_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _stories_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_stories__reference);
                             _stories_set = true
                             }
                     "applicationIds" -> {
-                            _applicationIds_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _applicationIds_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_applicationIds__reference);
                             _applicationIds_set = true
                             }
                     "lastUpdateDate" -> {
-                            _lastUpdateDate_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _lastUpdateDate_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Instant::class.java);
                             _lastUpdateDate_set = true
                             }
                     "groupId" -> {
-                            _groupId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _groupId_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _groupId_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_playerIds_set && __id_set && _state_set && _stories_set &&
                     _applicationIds_set && _lastUpdateDate_set && _groupId_set)
                     DialogCol(playerIds = _playerIds_!!, _id = __id_!!, state = _state_!!, stories =

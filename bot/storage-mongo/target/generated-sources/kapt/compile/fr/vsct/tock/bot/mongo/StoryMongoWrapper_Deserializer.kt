@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.bot.definition.Intent
 import kotlin.String
@@ -17,8 +17,7 @@ import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class StoryMongoWrapper_Deserializer :
-        StdDeserializer<DialogCol.StoryMongoWrapper>(DialogCol.StoryMongoWrapper::class.java),
+internal class StoryMongoWrapper_Deserializer : JsonDeserializer<DialogCol.StoryMongoWrapper>(),
         JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(DialogCol.StoryMongoWrapper::class.java,
             this)
@@ -27,48 +26,51 @@ internal class StoryMongoWrapper_Deserializer :
             DialogCol.StoryMongoWrapper {
         with(p) {
             var _storyDefinitionId_: String? = null
-            var _storyDefinitionId_set = false
+            var _storyDefinitionId_set : Boolean = false
             var _currentIntent_: Intent? = null
-            var _currentIntent_set = false
+            var _currentIntent_set : Boolean = false
             var _currentStep_: String? = null
-            var _currentStep_set = false
+            var _currentStep_set : Boolean = false
             var _actions_: MutableList<DialogCol.ActionMongoWrapper>? = null
-            var _actions_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _actions_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "storyDefinitionId" -> {
-                            _storyDefinitionId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _storyDefinitionId_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _storyDefinitionId_set = true
                             }
                     "currentIntent" -> {
-                            _currentIntent_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _currentIntent_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Intent::class.java);
                             _currentIntent_set = true
                             }
                     "currentStep" -> {
-                            _currentStep_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _currentStep_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _currentStep_set = true
                             }
                     "actions" -> {
-                            _actions_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _actions_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_actions__reference);
                             _actions_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_storyDefinitionId_set && _currentIntent_set && _currentStep_set &&
                     _actions_set)
                     DialogCol.StoryMongoWrapper(storyDefinitionId = _storyDefinitionId_!!,

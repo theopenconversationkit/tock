@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.nlp.core.EntitiesRegexp
 import java.util.LinkedHashSet
@@ -21,105 +21,107 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-internal class IntentDefinition_Deserializer :
-        StdDeserializer<IntentDefinition>(IntentDefinition::class.java), JacksonModuleServiceLoader
-        {
+internal class IntentDefinition_Deserializer : JsonDeserializer<IntentDefinition>(),
+        JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(IntentDefinition::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): IntentDefinition {
         with(p) {
             var _name_: String? = null
-            var _name_set = false
+            var _name_set : Boolean = false
             var _namespace_: String? = null
-            var _namespace_set = false
+            var _namespace_set : Boolean = false
             var _applications_: MutableSet<Id<ApplicationDefinition>>? = null
-            var _applications_set = false
+            var _applications_set : Boolean = false
             var _entities_: MutableSet<EntityDefinition>? = null
-            var _entities_set = false
+            var _entities_set : Boolean = false
             var _entitiesRegexp_: MutableMap<Locale, LinkedHashSet<EntitiesRegexp>>? = null
-            var _entitiesRegexp_set = false
+            var _entitiesRegexp_set : Boolean = false
             var _mandatoryStates_: MutableSet<String>? = null
-            var _mandatoryStates_set = false
+            var _mandatoryStates_set : Boolean = false
             var _sharedIntents_: MutableSet<Id<IntentDefinition>>? = null
-            var _sharedIntents_set = false
+            var _sharedIntents_set : Boolean = false
             var _label_: String? = null
-            var _label_set = false
+            var _label_set : Boolean = false
             var _description_: String? = null
-            var _description_set = false
+            var _description_set : Boolean = false
             var _category_: String? = null
-            var _category_set = false
+            var _category_set : Boolean = false
             var __id_: Id<IntentDefinition>? = null
-            var __id_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var __id_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "name" -> {
-                            _name_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _name_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _name_set = true
                             }
                     "namespace" -> {
-                            _namespace_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _namespace_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _namespace_set = true
                             }
                     "applications" -> {
-                            _applications_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _applications_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_applications__reference);
                             _applications_set = true
                             }
                     "entities" -> {
-                            _entities_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _entities_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_entities__reference);
                             _entities_set = true
                             }
                     "entitiesRegexp" -> {
-                            _entitiesRegexp_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _entitiesRegexp_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_entitiesRegexp__reference);
                             _entitiesRegexp_set = true
                             }
                     "mandatoryStates" -> {
-                            _mandatoryStates_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _mandatoryStates_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_mandatoryStates__reference);
                             _mandatoryStates_set = true
                             }
                     "sharedIntents" -> {
-                            _sharedIntents_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _sharedIntents_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_sharedIntents__reference);
                             _sharedIntents_set = true
                             }
                     "label" -> {
-                            _label_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _label_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _label_set = true
                             }
                     "description" -> {
-                            _description_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _description_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _description_set = true
                             }
                     "category" -> {
-                            _category_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _category_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _category_set = true
                             }
                     "_id" -> {
-                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
                             __id_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_name_set && _namespace_set && _applications_set && _entities_set &&
                     _entitiesRegexp_set && _mandatoryStates_set && _sharedIntents_set && _label_set
                     && _description_set && _category_set && __id_set)

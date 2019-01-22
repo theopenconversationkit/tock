@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import java.util.Locale
@@ -20,7 +20,7 @@ import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
 internal class ParseRequestLogIntentStatCol_Deserializer :
-        StdDeserializer<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>(ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol::class.java),
+        JsonDeserializer<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>(),
         JacksonModuleServiceLoader {
     override fun module() =
             SimpleModule().addDeserializer(ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol::class.java,
@@ -30,69 +30,72 @@ internal class ParseRequestLogIntentStatCol_Deserializer :
             ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol {
         with(p) {
             var _applicationId_: Id<ApplicationDefinition>? = null
-            var _applicationId_set = false
+            var _applicationId_set : Boolean = false
             var _language_: Locale? = null
-            var _language_set = false
+            var _language_set : Boolean = false
             var _intent1_: String? = null
-            var _intent1_set = false
+            var _intent1_set : Boolean = false
             var _intent2_: String? = null
-            var _intent2_set = false
+            var _intent2_set : Boolean = false
             var _averageDiff_: Double? = null
-            var _averageDiff_set = false
+            var _averageDiff_set : Boolean = false
             var _count_: Long? = null
-            var _count_set = false
+            var _count_set : Boolean = false
             var __id_: Id<ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol>? = null
-            var __id_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var __id_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "applicationId" -> {
-                            _applicationId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _applicationId_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_applicationId__reference);
                             _applicationId_set = true
                             }
                     "language" -> {
-                            _language_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _language_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Locale::class.java);
                             _language_set = true
                             }
                     "intent1" -> {
-                            _intent1_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _intent1_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _intent1_set = true
                             }
                     "intent2" -> {
-                            _intent2_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _intent2_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _intent2_set = true
                             }
                     "averageDiff" -> {
-                            _averageDiff_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Double::class.java);
+                            _averageDiff_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.doubleValue;
                             _averageDiff_set = true
                             }
                     "count" -> {
-                            _count_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Long::class.java);
+                            _count_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.longValue;
                             _count_set = true
                             }
                     "_id" -> {
-                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
                             __id_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_applicationId_set && _language_set && _intent1_set && _intent2_set &&
                     _averageDiff_set && _count_set && __id_set)
                     ParseRequestLogMongoDAO.ParseRequestLogIntentStatCol(applicationId =

@@ -24,9 +24,8 @@ internal class SnapshotCol_Serializer : StdSerializer<SnapshotCol>(SnapshotCol::
         serializers.findTypedValueSerializer(
                 serializers.config.typeFactory.constructCollectionType(
                 kotlin.collections.List::class.java,
-                        serializers.config.typeFactory.constructType(fr.vsct.tock.bot.engine.dialog.Snapshot::class.java)
-                )
-                ,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.bot.engine.dialog.Snapshot::class.java)
+                ),
                 true,
                 null
                 )

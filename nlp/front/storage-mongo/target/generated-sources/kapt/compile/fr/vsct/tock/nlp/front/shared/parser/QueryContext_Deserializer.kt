@@ -3,7 +3,7 @@ package fr.vsct.tock.nlp.front.shared.parser
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import java.time.ZoneId
 import java.time.ZonedDateTime
@@ -17,97 +17,100 @@ import kotlin.reflect.full.findParameterByName
 import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 
-internal class QueryContext_Deserializer : StdDeserializer<QueryContext>(QueryContext::class.java),
+internal class QueryContext_Deserializer : JsonDeserializer<QueryContext>(),
         JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(QueryContext::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): QueryContext {
         with(p) {
             var _language_: Locale? = null
-            var _language_set = false
+            var _language_set : Boolean = false
             var _clientId_: String? = null
-            var _clientId_set = false
+            var _clientId_set : Boolean = false
             var _clientDevice_: String? = null
-            var _clientDevice_set = false
+            var _clientDevice_set : Boolean = false
             var _dialogId_: String? = null
-            var _dialogId_set = false
+            var _dialogId_set : Boolean = false
             var _referenceDate_: ZonedDateTime? = null
-            var _referenceDate_set = false
+            var _referenceDate_set : Boolean = false
             var _referenceTimezone_: ZoneId? = null
-            var _referenceTimezone_set = false
+            var _referenceTimezone_set : Boolean = false
             var _test_: Boolean? = null
-            var _test_set = false
+            var _test_set : Boolean = false
             var _registerQuery_: Boolean? = null
-            var _registerQuery_set = false
+            var _registerQuery_set : Boolean = false
             var _checkExistingQuery_: Boolean? = null
-            var _checkExistingQuery_set = false
+            var _checkExistingQuery_set : Boolean = false
             var _increaseQueryCounter_: Boolean? = null
-            var _increaseQueryCounter_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var _increaseQueryCounter_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "language" -> {
-                            _language_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _language_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(Locale::class.java);
                             _language_set = true
                             }
                     "clientId" -> {
-                            _clientId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _clientId_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _clientId_set = true
                             }
                     "clientDevice" -> {
-                            _clientDevice_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _clientDevice_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _clientDevice_set = true
                             }
                     "dialogId" -> {
-                            _dialogId_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _dialogId_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _dialogId_set = true
                             }
                     "referenceDate" -> {
-                            _referenceDate_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _referenceDate_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(ZonedDateTime::class.java);
                             _referenceDate_set = true
                             }
                     "referenceTimezone" -> {
-                            _referenceTimezone_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _referenceTimezone_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(ZoneId::class.java);
                             _referenceTimezone_set = true
                             }
                     "test" -> {
-                            _test_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Boolean::class.java);
+                            _test_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
                             _test_set = true
                             }
                     "registerQuery" -> {
-                            _registerQuery_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Boolean::class.java);
+                            _registerQuery_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
                             _registerQuery_set = true
                             }
                     "checkExistingQuery" -> {
-                            _checkExistingQuery_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Boolean::class.java);
+                            _checkExistingQuery_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
                             _checkExistingQuery_set = true
                             }
                     "increaseQueryCounter" -> {
-                            _increaseQueryCounter_ = if(currentToken == JsonToken.VALUE_NULL) null
-                             else p.readValueAs(Boolean::class.java);
+                            _increaseQueryCounter_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
                             _increaseQueryCounter_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_language_set && _clientId_set && _clientDevice_set && _dialogId_set &&
                     _referenceDate_set && _referenceTimezone_set && _test_set && _registerQuery_set
                     && _checkExistingQuery_set && _increaseQueryCounter_set)

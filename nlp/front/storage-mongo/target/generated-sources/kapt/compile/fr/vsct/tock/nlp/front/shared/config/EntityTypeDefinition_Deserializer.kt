@@ -4,7 +4,7 @@ import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.core.type.TypeReference
 import com.fasterxml.jackson.databind.DeserializationContext
-import com.fasterxml.jackson.databind.deser.std.StdDeserializer
+import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.nlp.core.PredefinedValue
 import kotlin.String
@@ -18,63 +18,65 @@ import kotlin.reflect.full.primaryConstructor
 import org.litote.jackson.JacksonModuleServiceLoader
 import org.litote.kmongo.Id
 
-internal class EntityTypeDefinition_Deserializer :
-        StdDeserializer<EntityTypeDefinition>(EntityTypeDefinition::class.java),
+internal class EntityTypeDefinition_Deserializer : JsonDeserializer<EntityTypeDefinition>(),
         JacksonModuleServiceLoader {
     override fun module() = SimpleModule().addDeserializer(EntityTypeDefinition::class.java, this)
 
     override fun deserialize(p: JsonParser, ctxt: DeserializationContext): EntityTypeDefinition {
         with(p) {
             var _name_: String? = null
-            var _name_set = false
+            var _name_set : Boolean = false
             var _description_: String? = null
-            var _description_set = false
+            var _description_set : Boolean = false
             var _subEntities_: MutableList<EntityDefinition>? = null
-            var _subEntities_set = false
+            var _subEntities_set : Boolean = false
             var _predefinedValues_: MutableList<PredefinedValue>? = null
-            var _predefinedValues_set = false
+            var _predefinedValues_set : Boolean = false
             var __id_: Id<EntityTypeDefinition>? = null
-            var __id_set = false
-            while (currentToken != JsonToken.END_OBJECT && currentToken != JsonToken.END_ARRAY) { 
-                if(currentToken != JsonToken.FIELD_NAME) { nextToken() }
-                if (currentToken == JsonToken.END_OBJECT || currentToken == JsonToken.END_ARRAY) {
-                        break } 
-                val fieldName = currentName
-                nextToken()
-                when (fieldName) { 
+            var __id_set : Boolean = false
+            var _token_ : JsonToken? = currentToken
+            while (_token_?.isStructEnd != true) { 
+                if(_token_ != JsonToken.FIELD_NAME) {
+                        _token_ = nextToken()
+                        if (_token_?.isStructEnd == true) break
+                        }
+
+                val _fieldName_ = currentName
+                _token_ = nextToken()
+                when (_fieldName_) { 
                     "name" -> {
-                            _name_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _name_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _name_set = true
                             }
                     "description" -> {
-                            _description_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _description_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.text;
                             _description_set = true
                             }
                     "subEntities" -> {
-                            _subEntities_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _subEntities_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_subEntities__reference);
                             _subEntities_set = true
                             }
                     "predefinedValues" -> {
-                            _predefinedValues_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            _predefinedValues_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(_predefinedValues__reference);
                             _predefinedValues_set = true
                             }
                     "_id" -> {
-                            __id_ = if(currentToken == JsonToken.VALUE_NULL) null
+                            __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
                             __id_set = true
                             }
                     else -> {
-                            if (currentToken == JsonToken.START_OBJECT || currentToken ==
-                                    JsonToken.START_ARRAY)
+                            if (_token_?.isStructStart == true)
                             p.skipChildren()
                             nextToken()
                             }
                     } 
-                } 
+                _token_ = currentToken
+                        } 
             return if(_name_set && _description_set && _subEntities_set && _predefinedValues_set &&
                     __id_set)
                     EntityTypeDefinition(name = _name_!!, description = _description_!!, subEntities
