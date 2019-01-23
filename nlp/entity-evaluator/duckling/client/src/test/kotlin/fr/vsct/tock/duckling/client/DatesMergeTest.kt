@@ -140,6 +140,16 @@ internal class DatesMergeTest {
             2
         )
 
+        val changeDayOfWeek2 = ValueDescriptor(
+            DateEntityValue(
+                referenceTime.plusDays(2).withHour(20),
+                DateEntityGrain.hour
+            ),
+            "vendredi",
+            false,
+            2
+        )
+
         val inThreeDays =
             DateEntityValue(
                 referenceTime.plusDays(3),
@@ -236,7 +246,9 @@ internal class DatesMergeTest {
     @Test
     fun `merge with change day of week returns the new day of week`() {
         val r = DatesMerge.merge(context, listOf(nextMonth.copy(initial = true), changeDayOfWeek))
-        assertEquals(DayOfWeek.THURSDAY, (r?.value as DateEntityValue).date.dayOfWeek)
+        val date = (r?.value as DateEntityValue).date
+        assertEquals(DayOfWeek.THURSDAY, date.dayOfWeek)
+        assertEquals(date.truncatedTo(ChronoUnit.DAYS), date)
     }
 
     @Test

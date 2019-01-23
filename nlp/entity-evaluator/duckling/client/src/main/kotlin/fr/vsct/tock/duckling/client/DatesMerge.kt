@@ -31,7 +31,7 @@ import mu.KotlinLogging
 import java.time.DayOfWeek
 import java.time.ZonedDateTime
 import java.time.ZonedDateTime.now
-import java.time.temporal.ChronoUnit
+import java.time.temporal.ChronoUnit.DAYS
 import java.time.temporal.TemporalAdjusters
 import java.util.Locale
 
@@ -138,7 +138,7 @@ internal object DatesMerge {
                         ),
                         oldValue.content ?: newValueContent
                     )
-                    if (newResult.start().truncatedTo(ChronoUnit.DAYS) >= referenceDateTime.truncatedTo(ChronoUnit.DAYS)) {
+                    if (newResult.start().truncatedTo(DAYS) >= referenceDateTime.truncatedTo(DAYS)) {
                         return newResult
                     }
                 }
@@ -162,19 +162,25 @@ internal object DatesMerge {
                         if (oldDayOfWeek == newDayOfWeek) oldValue.value
                         else if (oldDayOfWeek < newDayOfWeek || newDayOfWeek == 7)
                             DateEntityValue(
-                                oldValue.start().with(TemporalAdjusters.next(DayOfWeek.of(newDayOfWeek))),
+                                oldValue
+                                    .start()
+                                    .with(TemporalAdjusters.next(DayOfWeek.of(newDayOfWeek)))
+                                    .truncatedTo(DAYS),
                                 day
                             )
                         else
                             DateEntityValue(
-                                oldValue.start().with(TemporalAdjusters.previous(DayOfWeek.of(newDayOfWeek))),
+                                oldValue
+                                    .start()
+                                    .with(TemporalAdjusters.previous(DayOfWeek.of(newDayOfWeek)))
+                                    .truncatedTo(DAYS),
                                 day
                             )
                         ,
                         oldValue.content ?: newValueContent
                     )
 
-                    if (newResult.start().truncatedTo(ChronoUnit.DAYS) >= referenceDateTime.truncatedTo(ChronoUnit.DAYS)) {
+                    if (newResult.start().truncatedTo(DAYS) >= referenceDateTime.truncatedTo(DAYS)) {
                         return newResult
                     }
                 }
