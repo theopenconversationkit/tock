@@ -98,7 +98,7 @@ internal class LogbackConfigurator : ContextAwareBase(), Configurator {
             }
 
             loggerContext.getLogger(Logger.ROOT_LOGGER_NAME).apply {
-                level = Level.DEBUG
+                level = if (devEnvironment) Level.DEBUG else Level.INFO
                 addAppender(appender)
             }
         }
