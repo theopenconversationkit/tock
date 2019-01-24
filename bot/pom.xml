@@ -43,7 +43,9 @@
         <module>connector-teams</module>
         <module>storage-mongo</module>
 
+        <module>toolkit-base</module>
         <module>toolkit</module>
+        <module>test-base</module>
         <module>test</module>
 
         <module>admin</module>
@@ -54,6 +56,11 @@
             <dependency>
                 <groupId>fr.vsct.tock</groupId>
                 <artifactId>tock-bot-engine-jackson</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
+                <artifactId>bot-toolkit-base</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

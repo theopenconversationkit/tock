@@ -25,11 +25,12 @@ import fr.vsct.tock.bot.engine.action.ActionPriority
  *
  */
 internal data class BusMockData(
-        var currentDelay: Long = 0,
-        val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf(),
-        val contextMap: MutableMap<String, Any> = mutableMapOf(),
-        var priority: ActionPriority = ActionPriority.normal,
-        var notificationType: ActionNotificationType? = null) {
+    var currentDelay: Long = 0,
+    val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf(),
+    val contextMap: MutableMap<String, Any> = mutableMapOf(),
+    var priority: ActionPriority = ActionPriority.normal,
+    var notificationType: ActionNotificationType? = null
+) {
 
     fun clear() {
         connectorMessages.clear()

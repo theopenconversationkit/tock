@@ -16,10 +16,8 @@
 
 package fr.vsct.tock.bot.test
 
-import currentTestContext
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.messenger.messengerConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.Parameters
@@ -52,7 +50,7 @@ data class BotBusMockContext(
     var botDefinition: BotDefinition,
     var i18nProvider: I18nKeyProvider,
     var userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
-    var connectorType: ConnectorType = messengerConnectorType,
+    var connectorType: ConnectorType = defaultTestConnectorType,
     val testContext: TestContext = currentTestContext,
     val snapshots: MutableList<Snapshot> = mutableListOf()
 ) {
@@ -66,7 +64,7 @@ data class BotBusMockContext(
         action: Action = SendSentence(userId, applicationId, botId, ""),
         userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
         userPreferences: UserPreferences = UserPreferences(),
-        connectorType: ConnectorType = messengerConnectorType,
+        connectorType: ConnectorType = defaultTestConnectorType,
         testContext: TestContext = currentTestContext
     )
             : this(
@@ -90,7 +88,7 @@ data class BotBusMockContext(
         action: Action = SendSentence(userId, applicationId, botId, ""),
         userInterfaceType: UserInterfaceType = UserInterfaceType.textChat,
         userPreferences: UserPreferences = UserPreferences(),
-        connectorType: ConnectorType = messengerConnectorType,
+        connectorType: ConnectorType = defaultTestConnectorType,
         testContext: TestContext = currentTestContext
     )
             : this(

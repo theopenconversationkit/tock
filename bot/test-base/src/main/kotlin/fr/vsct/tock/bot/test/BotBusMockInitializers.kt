@@ -16,7 +16,6 @@
 
 package fr.vsct.tock.bot.test
 
-import currentTestContext
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.StoryDefinition

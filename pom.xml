@@ -15,7 +15,8 @@
   ~ limitations under the License.
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
     <modelVersion>4.0.0</modelVersion>
 
     <groupId>fr.vsct.tock</groupId>
@@ -35,7 +36,7 @@
 
         <slf4j>1.7.25</slf4j>
         <logback>1.2.3</logback>
-        
+
         <kotlin-logging>1.6.22</kotlin-logging>
 
         <kodein>4.1.0</kodein>
@@ -60,7 +61,7 @@
         <httpclient>4.5.6</httpclient>
 
         <junit-jupiter>5.3.2</junit-jupiter>
-        
+
         <mockk>1.8.13.kotlin13</mockk>
         <byte-buddy>1.9.6</byte-buddy>
 
@@ -205,6 +206,11 @@
             <dependency>
                 <groupId>fr.vsct.tock</groupId>
                 <artifactId>tock-bot-engine</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
+                <artifactId>bot-test-base</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>
@@ -637,7 +643,7 @@
             <name>Apache License, Version 2.0</name>
             <url>https://www.apache.org/licenses/LICENSE-2.0.txt</url>
             <distribution>repo</distribution>
-            <comments />
+            <comments/>
         </license>
     </licenses>
 

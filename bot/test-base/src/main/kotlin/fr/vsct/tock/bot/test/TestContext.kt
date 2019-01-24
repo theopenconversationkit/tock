@@ -26,7 +26,6 @@ import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.admin.test.TestPlanDAO
 import fr.vsct.tock.bot.admin.user.UserReportDAO
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.connector.messenger.messengerConnectorType
 import fr.vsct.tock.bot.definition.BotAnswerInterceptor
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.StoryDefinition
@@ -42,8 +41,6 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.translator.I18nDAO
 import io.mockk.mockkClass
-import testModules
-import testTranslatorModule
 import java.util.Locale
 import kotlin.reflect.KClass
 
@@ -196,7 +193,7 @@ open class TestContext {
      */
     open fun defaultConnectorType(): ConnectorType =
         if (isInitialized()) botBusMockContext.connectorType
-        else messengerConnectorType
+        else defaultTestConnectorType
 
     /**
      * Default [Locale] if none is provided.

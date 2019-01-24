@@ -14,8 +14,9 @@
  * limitations under the License.
  */
 
+package fr.vsct.tock.bot.test
+
 import com.github.salomonbrys.kodein.Kodein
-import fr.vsct.tock.bot.test.TestContext
 import fr.vsct.tock.translator.TranslatorEngine
 import fr.vsct.tock.translator.noop.noOpTranslatorModule
 
