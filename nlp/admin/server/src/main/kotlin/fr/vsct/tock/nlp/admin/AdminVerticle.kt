@@ -52,23 +52,16 @@ import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.namespace
-import fr.vsct.tock.shared.security.AWSJWTAuthHandlerImpl
-import fr.vsct.tock.shared.security.AWSJWTAuthProviderImpl
 import fr.vsct.tock.shared.security.TockUserRole.admin
 import fr.vsct.tock.shared.security.TockUserRole.technicalAdmin
+import fr.vsct.tock.shared.security.auth.TockAuthProvider
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.vertx.core.Handler
 import io.vertx.core.http.HttpMethod.GET
-import io.vertx.ext.auth.AuthProvider
-import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.ext.web.RoutingContext
-import io.vertx.ext.web.handler.CookieHandler
-import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.handler.StaticHandler
-import io.vertx.ext.web.handler.UserSessionHandler
-import io.vertx.ext.web.sstore.LocalSessionStore
 import mu.KLogger
 import mu.KotlinLogging
 import org.litote.kmongo.Id
@@ -80,16 +73,15 @@ import java.util.Locale
  *
  */
 open class AdminVerticle : WebVerticle() {
-    val ssoAuthEnabled = booleanProperty("SSO_AUTH_ENABLED", false)
 
     override val logger: KLogger = KotlinLogging.logger {}
 
     override val rootPath: String = "/rest/admin"
-    override fun authProvider(): AuthProvider? =
-        if (ssoAuthEnabled) AWSJWTAuthProviderImpl(vertx) else defaultAuthProvider()
 
     //TODO remove this flag when the new platform is set
     private val OLD_ENTITY_TYPE_BEHAVIOUR = booleanProperty("tock_nlp_admin_old_entity_type_behaviour", false)
+
+    override fun authProvider(): TockAuthProvider = defaultAuthProvider()
 
     open fun configureServices() {
         val front = FrontClient
@@ -702,48 +694,4 @@ open class AdminVerticle : WebVerticle() {
         return { it.response().end() }
     }
 
-    override fun addAuth(
-        authProvider: AuthProvider,
-        pathsToProtect: Set<String>
-    ) {
-
-        if (!ssoAuthEnabled) {
-            super.addAuth(authProvider, pathsToProtect)
-        } else {
-            if (authProvider as JWTAuth? != null) {
-                val authHandler = AWSJWTAuthHandlerImpl(authProvider, null)
-                val cookieHandler = CookieHandler.create()
-                val https = !devEnvironment && booleanProperty("tock_https_env", true)
-                val sessionHandler = SessionHandler.create(LocalSessionStore.create(vertx))
-                    .setSessionTimeout(6 * 60 * 60 * 1000 /*6h*/)
-                    .setNagHttps(https)
-                    .setCookieHttpOnlyFlag(https)
-                    .setCookieSecureFlag(https)
-                    .setSessionCookieName("tock-session")
-                val userSessionHandler = UserSessionHandler.create(authProvider)
-
-                (setOf("/*")).forEach { protectedPath ->
-                    router.route(protectedPath).handler(cookieHandler)
-                    router.route(protectedPath).handler(sessionHandler)
-                    router.route(protectedPath).handler(userSessionHandler)
-                }
-
-                (setOf("/*")).forEach { protectedPath ->
-                    router.route(protectedPath).handler(authHandler)
-                }
-            }
-            router.post(logoutPath).handler {
-                it.clearUser()
-                it.success()
-            }
-
-            router.post(authenticatePath).handler { context ->
-                context.endJson(
-                    AuthenticateResponse(
-                        true
-                    )
-                )
-            }
-        }
-    }
 }

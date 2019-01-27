@@ -1,4 +1,20 @@
-package fr.vsct.tock.shared.security
+/*
+ * Copyright (C) 2017 VSCT
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package fr.vsct.tock.shared.security.auth
 
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future
@@ -10,12 +26,13 @@ import io.vertx.ext.web.handler.impl.JWTAuthHandlerImpl
 import mu.KLogger
 import mu.KotlinLogging
 
-class AWSJWTAuthHandlerImpl(authProvider: JWTAuth, skip: String?) : JWTAuthHandlerImpl(authProvider, skip) {
+internal class AWSJWTAuthHandler(authProvider: JWTAuth, skip: String?) : JWTAuthHandlerImpl(authProvider, skip) {
 
     private val skip: String? = null
     val logger: KLogger = KotlinLogging.logger {}
 
     private val options: JsonObject? = JsonObject()
+
     override fun parseCredentials(context: RoutingContext, handler: Handler<AsyncResult<JsonObject>>) {
 
         if (skip != null && context.normalisedPath().startsWith(skip)) {
@@ -29,14 +46,11 @@ class AWSJWTAuthHandlerImpl(authProvider: JWTAuth, skip: String?) : JWTAuthHandl
                 return@parseAuthorization
             }
             val jwtToken = context.request().getHeader("x-amzn-oidc-data")
-            logger.info { jwtToken }
+            logger.trace { "jwtToken:$jwtToken" }
 
             handler.handle(
                 Future.succeededFuture(
-                    JsonObject().put("jwt",jwtToken).put(
-                        "options",
-                        options
-                    )
+                    JsonObject().put("jwt", jwtToken).put("options", options)
                 )
             )
         }

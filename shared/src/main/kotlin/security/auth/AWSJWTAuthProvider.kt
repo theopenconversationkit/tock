@@ -1,9 +1,29 @@
-package fr.vsct.tock.shared.security
+/*
+ * Copyright (C) 2017 VSCT
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package fr.vsct.tock.shared.security.auth
 
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.io.BaseEncoding
+import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.property
+import fr.vsct.tock.shared.security.TockUser
+import fr.vsct.tock.shared.security.TockUserRole
+import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future
 import io.vertx.core.Handler
@@ -15,8 +35,11 @@ import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.ext.auth.jwt.JWTAuthOptions
 import io.vertx.ext.auth.jwt.impl.JWTUser
 import io.vertx.ext.jwt.JWTOptions
+import io.vertx.ext.web.handler.CookieHandler
+import io.vertx.ext.web.handler.SessionHandler
+import io.vertx.ext.web.handler.UserSessionHandler
 
-class AWSJWTAuthProviderImpl(val vertx: Vertx) : JWTAuth {
+internal class AWSJWTAuthProvider(val vertx: Vertx) : JWTAuth, TockAuthProvider {
 
     companion object {
         private val AWS_PUBLIC_KEY_LABEL = "awsPublicKey"
@@ -29,8 +52,27 @@ class AWSJWTAuthProviderImpl(val vertx: Vertx) : JWTAuth {
         private var jwtAuthProvider: JWTAuth? = null
     }
 
-    override fun authenticate(authInfo: JsonObject, resultHandler: Handler<AsyncResult<User>>) {
+    override val sessionCookieName: String get() = "tock-sso-session"
 
+    override fun protectPaths(
+        verticle: WebVerticle,
+        pathsToProtect: Set<String>,
+        cookieHandler: CookieHandler,
+        sessionHandler: SessionHandler,
+        userSessionHandler: UserSessionHandler
+    ) {
+        val authHandler = AWSJWTAuthHandler(this, null)
+        with(verticle) {
+            router.route("/*").handler(cookieHandler)
+            router.route("/*").handler(sessionHandler)
+            router.route("/*").handler(userSessionHandler)
+            router.route("/*").handler(authHandler)
+
+            router.get("$basePath/user").handler { it.response().end(mapper.writeValueAsString(it.user())) }
+        }
+    }
+
+    override fun authenticate(authInfo: JsonObject, resultHandler: Handler<AsyncResult<User>>) {
         jwtAuthProvider = getJwtAuthProvider(authInfo)
 
         jwtAuthProvider?.authenticate(authInfo) {
@@ -41,19 +83,19 @@ class AWSJWTAuthProviderImpl(val vertx: Vertx) : JWTAuth {
                     val customRole = token.getString("custom:roles")
                     val customName = token.getString("email")
                     val (namespace, roleName) = parseCustomRole(customRole)
-                    var user = TockUser(customName, namespace, TockUserRole.values().map { it.toString() }.toSet())
-                    user.isAuthorized(roleName) { result ->
-                        if (result.succeeded()) {
-                            resultHandler.handle(Future.succeededFuture(user))
+                    val u = TockUser(customName, namespace, TockUserRole.values().map { it.toString() }.toSet())
+                    u.isAuthorized(roleName) { result ->
+                        if (result.result()) {
+                            resultHandler.handle(Future.succeededFuture(u))
                         } else {
-                                resultHandler.handle(Future.failedFuture("Unauthorized."))
+                            resultHandler.handle(Future.failedFuture("Unauthorized."))
                         }
                     }
                 } else {
                     resultHandler.handle(Future.failedFuture("Unauthorized"))
                 }
             } else {
-                if(authInfo.getBoolean("retry")== null) {
+                if (authInfo.getBoolean("retry") == null) {
                     publicKeyCache.invalidate(AWS_PUBLIC_KEY_LABEL)
                     this.authenticate(authInfo.put("retry", true), resultHandler)
                 }

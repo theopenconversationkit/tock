@@ -31,9 +31,9 @@ import fr.vsct.tock.nlp.front.shared.parser.ParseQuery
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.namespace
+import fr.vsct.tock.shared.security.auth.TockAuthProvider
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.WebVerticle
-import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
@@ -51,7 +51,7 @@ class NlpVerticle : WebVerticle() {
 
     override val logger: KLogger = KotlinLogging.logger {}
 
-    override fun authProvider(): AuthProvider? {
+    override fun authProvider(): TockAuthProvider? {
         return if (protectPath) defaultAuthProvider() else super.authProvider()
     }
 

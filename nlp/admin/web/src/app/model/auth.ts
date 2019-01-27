@@ -21,6 +21,15 @@ export class User {
               public organization: string,
               public roles: UserRole[]) {
   }
+
+  static fromJSON(json: any): User {
+    const value = Object.create(User.prototype);
+    const result = Object.assign(value, json, {
+      roles: json.roles.map(r => UserRole[r])
+    });
+
+    return result;
+  }
 }
 
 export class AuthenticateRequest {
