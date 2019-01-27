@@ -26,13 +26,12 @@ import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.property
-import fr.vsct.tock.shared.security.PropertyBasedAuthProvider
 import fr.vsct.tock.shared.security.TockUser
 import fr.vsct.tock.shared.security.TockUserRole
-import fr.vsct.tock.shared.security.TockUserRole.admin
-import fr.vsct.tock.shared.security.TockUserRole.botUser
 import fr.vsct.tock.shared.security.TockUserRole.nlpUser
-import fr.vsct.tock.shared.security.TockUserRole.technicalAdmin
+import fr.vsct.tock.shared.security.auth.AWSJWTAuthProvider
+import fr.vsct.tock.shared.security.auth.PropertyBasedAuthProvider
+import fr.vsct.tock.shared.security.auth.TockAuthProvider
 import io.vertx.core.AbstractVerticle
 import io.vertx.core.AsyncResult
 import io.vertx.core.Future
@@ -45,12 +44,9 @@ import io.vertx.core.http.HttpMethod.PUT
 import io.vertx.core.http.HttpServer
 import io.vertx.core.http.HttpServerOptions
 import io.vertx.core.http.HttpServerResponse
-import io.vertx.core.json.JsonObject
-import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.web.FileUpload
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
-import io.vertx.ext.web.handler.BasicAuthHandler
 import io.vertx.ext.web.handler.BodyHandler
 import io.vertx.ext.web.handler.CookieHandler
 import io.vertx.ext.web.handler.CorsHandler
@@ -81,20 +77,11 @@ abstract class WebVerticle : AbstractVerticle() {
         fun badRequest(message: String): Nothing = throw BadRequestException(message)
     }
 
-    open protected val logger: KLogger = KotlinLogging.logger {}
-
-    private data class AuthenticateRequest(val email: String, val password: String)
-
-    private data class AuthenticateResponse(
-        val authenticated: Boolean,
-        val email: String? = null,
-        val organization: String? = null,
-        val roles: List<TockUserRole> = emptyList()
-    )
+    protected open val logger: KLogger = KotlinLogging.logger {}
 
     private data class BooleanResponse(val success: Boolean = true)
 
-    protected val router: Router by lazy {
+    val router: Router by lazy {
         Router.router(sharedVertx)
     }
 
@@ -106,13 +93,13 @@ abstract class WebVerticle : AbstractVerticle() {
         )
     }
 
-    protected open val basePath: String = "/rest"
+    open val basePath: String = "/rest"
 
     protected open val rootPath: String = ""
 
-    protected open val authenticatePath: String get() = "$basePath/authenticate"
+    open val authenticatePath: String get() = "$basePath/authenticate"
 
-    protected open val logoutPath: String get() = "$basePath/logout"
+    open val logoutPath: String get() = "$basePath/logout"
 
     private val verticleName: String = this::class.simpleName!!
 
@@ -162,12 +149,11 @@ abstract class WebVerticle : AbstractVerticle() {
         server.close { e -> logger.info { "$verticleName stopped result : ${e.succeeded()}" } }
     }
 
-    protected fun addAuth(
-        authProvider: AuthProvider = defaultAuthProvider(),
+    fun addAuth(
+        authProvider: TockAuthProvider = defaultAuthProvider(),
         pathsToProtect: Set<String> = protectedPaths().map { "$it/*" }.toSet()
     ) {
 
-        val authHandler = BasicAuthHandler.create(authProvider)
         val cookieHandler = CookieHandler.create()
         val https = !devEnvironment && booleanProperty("tock_https_env", true)
         val sessionHandler = SessionHandler.create(LocalSessionStore.create(vertx))
@@ -175,68 +161,24 @@ abstract class WebVerticle : AbstractVerticle() {
             .setNagHttps(https)
             .setCookieHttpOnlyFlag(https)
             .setCookieSecureFlag(https)
-            .setSessionCookieName("tock-session")
+            .setSessionCookieName(authProvider.sessionCookieName)
         val userSessionHandler = UserSessionHandler.create(authProvider)
 
-        (pathsToProtect + logoutPath + authenticatePath).forEach { protectedPath ->
-            router.route(protectedPath).handler(cookieHandler)
-            router.route(protectedPath).handler(sessionHandler)
-            router.route(protectedPath).handler(userSessionHandler)
-        }
-
-        pathsToProtect.forEach { protectedPath ->
-            router.route(protectedPath).handler(authHandler)
-        }
-
-        router.post(authenticatePath).handler { context ->
-            val request = mapper.readValue<AuthenticateRequest>(context.bodyAsString)
-            val authInfo = JsonObject().put("username", request.email).put("password", request.password)
-            authProvider.authenticate(authInfo) {
-                if (it.succeeded()) {
-                    val user = it.result()
-                    context.setUser(user)
-                    context.isAuthorized(nlpUser) { nlpUserResult ->
-                        context.isAuthorized(botUser) { botUserResult ->
-                            context.isAuthorized(admin) { adminResult ->
-                                context.isAuthorized(technicalAdmin) { technicalAdminResult ->
-                                    context.endJson(
-                                        AuthenticateResponse(
-                                            true,
-                                            request.email,
-                                            (user as TockUser).namespace,
-                                            listOfNotNull(
-                                                if (nlpUserResult.result()) nlpUser else null,
-                                                if (botUserResult.result()) botUser else null,
-                                                if (adminResult.result()) admin else null,
-                                                if (technicalAdminResult.result()) technicalAdmin else null
-                                            )
-                                        )
-                                    )
-                                }
-                            }
-                        }
-                    }
-                } else {
-                    context.endJson(AuthenticateResponse(false))
-                }
-            }
-        }
-
-        router.post(logoutPath).handler {
-            it.clearUser()
-            it.success()
-        }
+        authProvider.protectPaths(this, pathsToProtect, cookieHandler, sessionHandler, userSessionHandler)
     }
 
     /**
      * The auth provider provided by default.
      */
-    protected open fun defaultAuthProvider(): AuthProvider = PropertyBasedAuthProvider
+    protected open fun defaultAuthProvider(): TockAuthProvider =
+        if (booleanProperty("tock_aws_jwt_enabled", false))
+            AWSJWTAuthProvider(sharedVertx)
+        else PropertyBasedAuthProvider
 
     /**
      * By default there is no auth provider - ie nothing is protected.
      */
-    protected open fun authProvider(): AuthProvider? = null
+    protected open fun authProvider(): TockAuthProvider? = null
 
     /**
      * The default role of a service.
@@ -246,7 +188,7 @@ abstract class WebVerticle : AbstractVerticle() {
 
     protected open fun startServer(startFuture: Future<Void>) {
         val port = verticleIntProperty("port", 8080)
-        server.requestHandler { r -> router.accept(r) }
+        server.requestHandler { r -> router.handle(r) }
             .listen(
                 port
             ) { r ->
@@ -309,7 +251,7 @@ abstract class WebVerticle : AbstractVerticle() {
         register(method, path, role, basePath) { it.executeBlocking(handler) }
     }
 
-    protected fun RoutingContext.isAuthorized(
+    fun RoutingContext.isAuthorized(
         role: TockUserRole,
         resultHandler: (AsyncResult<Boolean>) -> Unit
     ) = user()?.isAuthorized(role.name, resultHandler)

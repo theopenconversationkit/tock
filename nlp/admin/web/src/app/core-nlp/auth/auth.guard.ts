@@ -23,6 +23,7 @@ import {environment} from "../../../environments/environment";
 export class AuthGuard implements CanActivate, CanActivateChild {
 
   private autologin = environment.autologin;
+  private ssologin = environment.ssologin;
 
   constructor(private authService: AuthService, private router: Router) {
   }
@@ -38,12 +39,17 @@ export class AuthGuard implements CanActivate, CanActivateChild {
 
   private checkLogin(url: string): boolean {
     const login = this.authService.isLoggedIn();
-    if (!login && this.autologin) {
-      this.autologin = false;
-      this.authService.authenticate(environment.default_user, environment.default_password).subscribe(_ =>
-        this.router.navigateByUrl(url)
-      );
-      return false;
+    if (!login) {
+      if (this.ssologin || document.cookie.indexOf("tock-sso-session=") !== -1) {
+        this.authService.loadUser().subscribe(u => this.router.navigateByUrl(url));
+        return false;
+      } else if (this.autologin) {
+        this.autologin = false;
+        this.authService.authenticate(environment.default_user, environment.default_password).subscribe(_ =>
+          this.router.navigateByUrl(url)
+        );
+        return false;
+      }
     }
 
     if (login) {

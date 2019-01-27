@@ -17,7 +17,7 @@
 import {Injectable} from "@angular/core";
 import {AuthListener} from "./auth.listener";
 import {Router} from "@angular/router";
-import {AuthenticateRequest, AuthenticateResponse} from "../../model/auth";
+import {AuthenticateRequest, AuthenticateResponse, User} from "../../model/auth";
 import {Observable} from "rxjs";
 import {RestService} from "../rest/rest.service";
 
@@ -25,6 +25,7 @@ import {RestService} from "../rest/rest.service";
 export class AuthService {
 
   private logged: boolean;
+  private sso: boolean;
   private redirectUrl: string;
   private authListeners: AuthListener[] = [];
 
@@ -43,16 +44,26 @@ export class AuthService {
     return this.logged;
   }
 
+  isSSO() : boolean {
+    return this.sso;
+  }
+
   addListener(listener: AuthListener) {
     this.authListeners.push(listener);
   }
 
-  login(password: string, response: AuthenticateResponse): boolean {
-    if (response.authenticated) {
+  private login(response: AuthenticateResponse): boolean {
+    return this.logUser(response.toUser());
+  }
+
+  private logUser(user: User): boolean {
+    if (user.roles) {
       this.logged = true;
-      this.authListeners.forEach(l => l.login(response.toUser()));
+      this.authListeners.forEach(l => l.login(user));
+      return true
+    } else {
+      return false
     }
-    return response.authenticated;
   }
 
   logout() {
@@ -68,6 +79,11 @@ export class AuthService {
     return this.rest.postNotAuthenticated(
       '/authenticate',
       new AuthenticateRequest(email, password),
-      (j => this.login(password, AuthenticateResponse.fromJSON(j))));
+      (j => this.login(AuthenticateResponse.fromJSON(j))));
+  }
+
+  loadUser(): Observable<boolean> {
+    this.sso = true;
+    return this.rest.getNotAuthenticated("/user", (j => this.logUser(User.fromJSON(j))))
   }
 }

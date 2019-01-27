@@ -21,10 +21,10 @@ import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.listProperty
 import fr.vsct.tock.shared.property
+import fr.vsct.tock.shared.security.auth.TockAuthProvider
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.WebVerticle
 import fr.vsct.tock.translator.Translator.initTranslator
-import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.web.Route
 import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
@@ -73,7 +73,7 @@ internal class BotVerticle : WebVerticle() {
     @Volatile
     private var initialized: Boolean = false
 
-    override fun authProvider(): AuthProvider? = defaultAuthProvider()
+    override fun authProvider(): TockAuthProvider? = defaultAuthProvider()
 
     fun registerServices(serviceIdentifier: String, installer: (Router) -> Unit): ServiceInstaller {
         return ServiceInstaller(serviceIdentifier, installer).also {

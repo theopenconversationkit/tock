@@ -91,6 +91,12 @@ export class RestService {
       catchError(e => RestService.handleError(this, e)),);
   }
 
+  getNotAuthenticated<T>(path: string, parseFunction: (value: any) => T): Observable<T> {
+    return this.http.get(`${this.notAuthenticatedUrl}${path}`, {headers: this.headers(), withCredentials: true}).pipe(
+      map((res: string) => parseFunction(res || {})),
+      catchError(e => RestService.handleError(this, e)),);
+  }
+
   postNotAuthenticated<I, O>(path: string, value?: I, parseFunction?: (value: any) => O): Observable<O> {
     return this.http.post(
       `${this.notAuthenticatedUrl}${path}`,

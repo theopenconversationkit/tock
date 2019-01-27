@@ -54,12 +54,12 @@ import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.security.TockUserRole.admin
 import fr.vsct.tock.shared.security.TockUserRole.technicalAdmin
+import fr.vsct.tock.shared.security.auth.TockAuthProvider
 import fr.vsct.tock.shared.security.initEncryptor
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.netty.handler.codec.http.HttpHeaderNames
 import io.vertx.core.Handler
 import io.vertx.core.http.HttpMethod.GET
-import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.StaticHandler
 import mu.KLogger
@@ -78,10 +78,10 @@ open class AdminVerticle : WebVerticle() {
 
     override val rootPath: String = "/rest/admin"
 
-    override fun authProvider(): AuthProvider? = defaultAuthProvider()
-
     //TODO remove this flag when the new platform is set
     private val OLD_ENTITY_TYPE_BEHAVIOUR = booleanProperty("tock_nlp_admin_old_entity_type_behaviour", false)
+
+    override fun authProvider(): TockAuthProvider = defaultAuthProvider()
 
     open fun configureServices() {
         val front = FrontClient
@@ -693,4 +693,5 @@ open class AdminVerticle : WebVerticle() {
     override fun healthcheck(): (RoutingContext) -> Unit {
         return { it.response().end() }
     }
+
 }
