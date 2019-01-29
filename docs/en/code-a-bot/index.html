@@ -639,13 +639,13 @@ developed in <a href="https://kotlinlang.org/">Kotlin</a>.</p>
 <div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>fr.vsct.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>bot-toolkit<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>2.0.0<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;version&gt;</span>2.0.1<span class="nt">&lt;/version&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 
 
 <p>With Gradle:</p>
-<div class="codehilite"><pre><span></span>      compile &#39;fr.vsct.tock:bot-toolkit:2.0.0&#39;
+<div class="codehilite"><pre><span></span>      compile &#39;fr.vsct.tock:bot-toolkit:2.0.1&#39;
 </pre></div>
 
 
@@ -749,19 +749,20 @@ in the web administration interface: Configuration -&gt; Bot Configurations -&gt
 <p>Here is the beginning of the definition of the <em>search</em> story :</p>
 <div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">storyDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
         <span class="s">&quot;search&quot;</span><span class="p">,</span>
-        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
-        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">otherStarterIntents</span> <span class="p">=</span> <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
+        <span class="n">secondaryIntents</span> <span class="p">=</span> <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
 
 <span class="p">}</span>
 </pre></div>
 
 
 <p>The story <strong>search</strong> defines a secondary <em>starter</em> intent (<em>indicate_origin</em>)
-and a simple secondary intention (<em>indicate_location</em>).</p>
-<p>A secondary <em>starter</em> intent is similar in every respect to the main intention:
-as soon as the NLP model detects this intention, it will execute the story <em>search</em>, regardless of the context.</p>
-<p>For a simple secondary intention, on the other hand, the story will be executed only if the current story of the context
-is <em>already</em> the <strong>search</strong> story . Several different stories can therefore share the same secondary intentions.</p>
+and a simple secondary intent (<em>indicate_location</em>).</p>
+<p>A secondary <em>starter</em> intent is similar in every respect to the main intent:
+as soon as the intent is detected, if the current story does not contain <em>indicate_origin</em> as secondary intent,
+the story <em>search</em> is called.</p>
+<p>For a <em>classic</em> secondary intent, on the other hand, the story will be executed only if the current story of the context
+is <em>already</em> the <strong>search</strong> story. Different stories can therefore share the same secondary intents.</p>
 <h3 id="handle-entities">Handle Entities<a class="headerlink" href="#handle-entities" title="Permanent link">&para;</a></h3>
 <p>To retrieve entity values, it is good practice to define Kotlin <strong>extensions</strong>.
 For example here is the code used to retrieve the <em>destination</em> entity:</p>
@@ -1150,7 +1151,7 @@ in the classpath, containing the class name :</p>
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            Copyright &copy; 2018 VSCT
+            Copyright &copy; 2018/2019 VSCT
           </div>
         
         powered by

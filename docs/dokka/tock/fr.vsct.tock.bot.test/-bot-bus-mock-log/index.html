@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.test</a>&nbsp;/&nbsp;<a href="./index.html">BotBusMockLog</a><br/>
 <br/>
 <h1>BotBusMockLog</h1>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">BotBusMockLog</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/test/src/main/kotlin/fr/vsct/tock/bot/test/BotBusMockLog.kt#L36">(source)</a>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">BotBusMockLog</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/test-base/src/main/kotlin/fr/vsct/tock/bot/test/BotBusMockLog.kt#L28">(source)</a>
 <p>The actions sent by the mocked bus.</p>
 <h3>Constructors</h3>
 <table>
@@ -52,15 +52,6 @@
 <tbody>
 <tr>
 <td>
-<p><a href="alexa.html">alexa</a></p>
-</td>
-<td>
-<code><span class="keyword">fun </span><span class="identifier">alexa</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector.alexa/-alexa-message/index.html"><span class="identifier">AlexaMessage</span></a><span class="symbol">?</span></code>
-<p>The Alexa message if any.</p>
-</td>
-</tr>
-<tr>
-<td>
 <p><a href="assert.html">assert</a></p>
 </td>
 <td>
@@ -90,15 +81,6 @@
 </tr>
 <tr>
 <td>
-<p><a href="ga.html">ga</a></p>
-</td>
-<td>
-<code><span class="keyword">fun </span><span class="identifier">ga</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector.ga/-g-a-response-connector-message/index.html"><span class="identifier">GAResponseConnectorMessage</span></a><span class="symbol">?</span></code>
-<p>The Google Assistant message if any.</p>
-</td>
-</tr>
-<tr>
-<td>
 <p><a href="message.html">message</a></p>
 </td>
 <td>
@@ -108,29 +90,52 @@
 </tr>
 <tr>
 <td>
-<p><a href="messenger.html">messenger</a></p>
-</td>
-<td>
-<code><span class="keyword">fun </span><span class="identifier">messenger</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector.messenger.model/-messenger-connector-message/index.html"><span class="identifier">MessengerConnectorMessage</span></a><span class="symbol">?</span></code>
-<p>The Messenger message if any.</p>
-</td>
-</tr>
-<tr>
-<td>
-<p><a href="slack.html">slack</a></p>
-</td>
-<td>
-<code><span class="keyword">fun </span><span class="identifier">slack</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector.slack.model/-slack-connector-message/index.html"><span class="identifier">SlackConnectorMessage</span></a><span class="symbol">?</span></code>
-<p>The Slack message if any.</p>
-</td>
-</tr>
-<tr>
-<td>
 <p><a href="text.html">text</a></p>
 </td>
 <td>
 <code><span class="keyword">fun </span><span class="identifier">text</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code>
 <p>The text message if any.</p>
+</td>
+</tr>
+</tbody>
+</table>
+<h3>Extension Functions</h3>
+<table>
+<tbody>
+<tr>
+<td>
+<p><a href="../alexa.html">alexa</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="./index.html"><span class="identifier">BotBusMockLog</span></a><span class="symbol">.</span><span class="identifier">alexa</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector.alexa/-alexa-message/index.html"><span class="identifier">AlexaMessage</span></a><span class="symbol">?</span></code>
+<p>The Alexa message if any.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../ga.html">ga</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="./index.html"><span class="identifier">BotBusMockLog</span></a><span class="symbol">.</span><span class="identifier">ga</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector.ga/-g-a-response-connector-message/index.html"><span class="identifier">GAResponseConnectorMessage</span></a><span class="symbol">?</span></code>
+<p>The Google Assistant message if any.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../messenger.html">messenger</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="./index.html"><span class="identifier">BotBusMockLog</span></a><span class="symbol">.</span><span class="identifier">messenger</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector.messenger.model/-messenger-connector-message/index.html"><span class="identifier">MessengerConnectorMessage</span></a><span class="symbol">?</span></code>
+<p>The Messenger message if any.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="../slack.html">slack</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="./index.html"><span class="identifier">BotBusMockLog</span></a><span class="symbol">.</span><span class="identifier">slack</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.bot.connector.slack.model/-slack-connector-message/index.html"><span class="identifier">SlackConnectorMessage</span></a><span class="symbol">?</span></code>
+<p>The Slack message if any.</p>
 </td>
 </tr>
 </tbody>

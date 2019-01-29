@@ -26,7 +26,7 @@ markdown_extensions:
   - admonition
   - codehilite(guess_lang=false)
   - toc(permalink=true)
-copyright: 'Copyright &copy; 2018 VSCT'
+copyright: 'Copyright &copy; 2018/2019 VSCT'
 extra:
   social:
     - type: 'github'

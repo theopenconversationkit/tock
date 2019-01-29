@@ -57,7 +57,7 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </td>
 <td>
 <code><span class="keyword">val </span><span class="identifier">messengerConnectorType</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code>
-<p>The messenger connector type.</p>
+<p>The Messenger connector type.</p>
 </td>
 </tr>
 </tbody>
@@ -101,6 +101,15 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </td>
 <td>
 <code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.engine/-i18n-translator/index.html"><span class="identifier">I18nTranslator</span></a><span class="symbol">.</span><span class="identifier">callToButton</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger$callToButton(fr.vsct.tock.bot.engine.I18nTranslator, kotlin.CharSequence, kotlin.String)/title">title</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger$callToButton(fr.vsct.tock.bot.engine.I18nTranslator, kotlin.CharSequence, kotlin.String)/phoneNumber">phoneNumber</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.connector.messenger.model.send/-call-button/index.html"><span class="identifier">CallButton</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="end-for-messenger.html">endForMessenger</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="identifier">endForMessenger</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger$endForMessenger(fr.vsct.tock.bot.engine.BotBus, kotlin.Long, kotlin.Function1((fr.vsct.tock.bot.engine.BotBus, fr.vsct.tock.bot.connector.messenger.model.MessengerConnectorMessage)))/delay">delay</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;botDefinition.defaultDelay(currentAnswerIndex)<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger$endForMessenger(fr.vsct.tock.bot.engine.BotBus, kotlin.Long, kotlin.Function1((fr.vsct.tock.bot.engine.BotBus, fr.vsct.tock.bot.connector.messenger.model.MessengerConnectorMessage)))/messageProvider">messageProvider</span><span class="symbol">:</span>&nbsp;<a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="../fr.vsct.tock.bot.connector.messenger.model/-messenger-connector-message/index.html"><span class="identifier">MessengerConnectorMessage</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a></code>
+<p>Sends a Messenger message as last bot answer, only if the <a href="../fr.vsct.tock.bot.connector/-connector-type/index.html">ConnectorType</a> of the current <a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html">BotBus</a> is <a href="messenger-connector-type.html">messengerConnectorType</a>.</p>
+</td>
 </tr>
 <tr>
 <td>
@@ -238,6 +247,15 @@ or a classic list element if there is between 2 and 4.</p>
 </tr>
 <tr>
 <td>
+<p><a href="send-to-messenger.html">sendToMessenger</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="identifier">sendToMessenger</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger$sendToMessenger(fr.vsct.tock.bot.engine.BotBus, kotlin.Long, kotlin.Function1((fr.vsct.tock.bot.engine.BotBus, fr.vsct.tock.bot.connector.messenger.model.MessengerConnectorMessage)))/delay">delay</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;botDefinition.defaultDelay(currentAnswerIndex)<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger$sendToMessenger(fr.vsct.tock.bot.engine.BotBus, kotlin.Long, kotlin.Function1((fr.vsct.tock.bot.engine.BotBus, fr.vsct.tock.bot.connector.messenger.model.MessengerConnectorMessage)))/messageProvider">messageProvider</span><span class="symbol">:</span>&nbsp;<a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="../fr.vsct.tock.bot.connector.messenger.model/-messenger-connector-message/index.html"><span class="identifier">MessengerConnectorMessage</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a></code>
+<p>Sends a Messenger message only if the <a href="../fr.vsct.tock.bot.connector/-connector-type/index.html">ConnectorType</a> of the current <a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html">BotBus</a> is <a href="messenger-connector-type.html">messengerConnectorType</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
 <p><a href="standalone-messenger-answer.html">standaloneMessengerAnswer</a></p>
 </td>
 <td>
@@ -314,7 +332,8 @@ from an <a href="../fr.vsct.tock.bot.engine/-i18n-translator/index.html">I18nTra
 </td>
 <td>
 <code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="identifier">withMessenger</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.messenger$withMessenger(fr.vsct.tock.bot.engine.BotBus, kotlin.Function0((fr.vsct.tock.bot.connector.messenger.model.MessengerConnectorMessage)))/messageProvider">messageProvider</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="../fr.vsct.tock.bot.connector.messenger.model/-messenger-connector-message/index.html"><span class="identifier">MessengerConnectorMessage</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a></code>
-<p>Adds a Messenger <a href="../fr.vsct.tock.bot.connector/-connector-message/index.html">ConnectorMessage</a> if the current connector is Messenger.</p>
+<p>Adds a Messenger <a href="../fr.vsct.tock.bot.connector/-connector-message/index.html">ConnectorMessage</a> if the current connector is Messenger.
+You need to call <a href="../fr.vsct.tock.bot.engine/-bot-bus/send.html">BotBus.send</a> or <a href="../fr.vsct.tock.bot.engine/-bot-bus/end.html">BotBus.end</a> later to send this message.</p>
 </td>
 </tr>
 </tbody>

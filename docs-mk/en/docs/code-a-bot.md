@@ -14,14 +14,14 @@ With Maven:
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>bot-toolkit</artifactId>
-            <version>2.0.0</version>
+            <version>2.0.1</version>
         </dependency>
 ```
 
 With Gradle:
 
 ```gradle
-      compile 'fr.vsct.tock:bot-toolkit:2.0.0'
+      compile 'fr.vsct.tock:bot-toolkit:2.0.1'
 ```
 
 ## A Bot is a Set of Stories
@@ -143,20 +143,21 @@ Here is the beginning of the definition of the *search* story :
 ```kotlin
 val search = storyDef<SearchDef>(
         "search",
-        setOf(indicate_origin),
-        setOf(indicate_location)) {
+        otherStarterIntents = setOf(indicate_origin),
+        secondaryIntents = setOf(indicate_location)) {
    
 }
 ``` 
 
 The story **search** defines a secondary *starter* intent (*indicate_origin*)
-and a simple secondary intention (*indicate_location*).
+and a simple secondary intent (*indicate_location*).
 
-A secondary *starter* intent is similar in every respect to the main intention:
-as soon as the NLP model detects this intention, it will execute the story *search*, regardless of the context.
+A secondary *starter* intent is similar in every respect to the main intent:
+as soon as the intent is detected, if the current story does not contain *indicate_origin* as secondary intent,
+the story *search* is called.
 
-For a simple secondary intention, on the other hand, the story will be executed only if the current story of the context
-is *already* the **search** story . Several different stories can therefore share the same secondary intentions.
+For a *classic* secondary intent, on the other hand, the story will be executed only if the current story of the context
+is *already* the **search** story. Different stories can therefore share the same secondary intents.
 
 ### Handle Entities
 

@@ -18,14 +18,14 @@ Avec Maven :
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>bot-toolkit</artifactId>
-            <version>2.0.0</version>
+            <version>2.0.1</version>
         </dependency>
 ```
 
 ou Gradle :
 
 ```gradle
-      compile 'fr.vsct.tock:bot-toolkit:2.0.0'
+      compile 'fr.vsct.tock:bot-toolkit:2.0.1'
 ```
 
 ## Un bot est un ensemble de Stories
@@ -146,8 +146,8 @@ Voici le début de la définition de la story *search* :
 ```kotlin
 val search = storyDef<SearchDef>(
         "search",
-        setOf(indicate_origin),
-        setOf(indicate_location)) {
+        otherStarterIntents = setOf(indicate_origin),
+        secondaryIntents = setOf(indicate_location)) {
    
 }
 ``` 
@@ -156,7 +156,8 @@ La story *search* définit une intention secondaire *"de démarrage"* (*indicate
 et une intention secondaire simple (*indicate_location*)
 
 Une intention secondaire *"de démarrage"* est semblable en tout point à une intention principale : 
-dès que le modèle NLP détecte cette intention, il va exécuter la story *search*, quel que soit le contexte.
+dès que cette intention est détectée, la story *search* va être exécutée, 
+si la story courante ne possède pas cette intention en tant qu'intention secondaire.
 
 Pour une intention secondaire simple, par contre, la story ne sera exécutée que si la story courante du contexte 
 est *déjà* la story search. Plusieurs story différentes peuvent donc partager les mêmes intentions secondaires.

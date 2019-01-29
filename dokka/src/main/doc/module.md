@@ -78,6 +78,10 @@ Messenger connector "send" model
 
 Messenger connector "webhook" model	
 
+# Package fr.vsct.tock.bot.connector.rocketchat
+
+Rocketchat connector implementation
+
 # Package fr.vsct.tock.bot.connector.slack
 
 [SlackConnector] implementation
@@ -88,7 +92,27 @@ Slack connector model
 
 # Package fr.vsct.tock.bot.connector.slack.model.old
 
-Old Slack connector model - will be removed in 2.0
+Old Slack connector model - will be removed in 19.3
+
+# Package fr.vsct.tock.bot.connector.teams
+
+Teams connector implementation
+
+# Package fr.vsct.tock.bot.connector.whatsapp
+
+WhatsApp connector implementation
+
+# Package fr.vsct.tock.bot.connector.whatsapp.model.common
+
+Common WhatsApp model
+
+# Package fr.vsct.tock.bot.connector.whatsapp.model.send
+
+"Send" WhatsApp model
+
+# Package fr.vsct.tock.bot.connector.whatsapp.model.webhook
+
+"Webhook" WhatsApp model
 
 # Package fr.vsct.tock.bot.definition
 
@@ -161,6 +185,10 @@ Jackson configuration and extension methods
 # Package fr.vsct.tock.shared.security
 
 User definition and encryption methods
+
+# Package fr.vsct.tock.shared.security.auth
+
+Web authentication methods 
 
 # Package fr.vsct.tock.shared.vertx
 

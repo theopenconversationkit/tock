@@ -642,13 +642,13 @@ via l'interface d'administration. </p>
 <div class="codehilite"><pre><span></span>        <span class="nt">&lt;dependency&gt;</span>
             <span class="nt">&lt;groupId&gt;</span>fr.vsct.tock<span class="nt">&lt;/groupId&gt;</span>
             <span class="nt">&lt;artifactId&gt;</span>bot-toolkit<span class="nt">&lt;/artifactId&gt;</span>
-            <span class="nt">&lt;version&gt;</span>2.0.0<span class="nt">&lt;/version&gt;</span>
+            <span class="nt">&lt;version&gt;</span>2.0.1<span class="nt">&lt;/version&gt;</span>
         <span class="nt">&lt;/dependency&gt;</span>
 </pre></div>
 
 
 <p>ou Gradle :</p>
-<div class="codehilite"><pre><span></span>      compile &#39;fr.vsct.tock:bot-toolkit:2.0.0&#39;
+<div class="codehilite"><pre><span></span>      compile &#39;fr.vsct.tock:bot-toolkit:2.0.1&#39;
 </pre></div>
 
 
@@ -751,8 +751,8 @@ dans l'interface d'administration du bot, du menu Configuration -&gt; Bot Config
 <p>Voici le début de la définition de la story <em>search</em> :</p>
 <div class="codehilite"><pre><span></span><span class="k">val</span> <span class="py">search</span> <span class="p">=</span> <span class="n">storyDef</span><span class="p">&lt;</span><span class="n">SearchDef</span><span class="p">&gt;(</span>
         <span class="s">&quot;search&quot;</span><span class="p">,</span>
-        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
-        <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
+        <span class="n">otherStarterIntents</span> <span class="p">=</span> <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_origin</span><span class="p">),</span>
+        <span class="n">secondaryIntents</span> <span class="p">=</span> <span class="n">setOf</span><span class="p">(</span><span class="n">indicate_location</span><span class="p">))</span> <span class="p">{</span>
 
 <span class="p">}</span>
 </pre></div>
@@ -761,7 +761,8 @@ dans l'interface d'administration du bot, du menu Configuration -&gt; Bot Config
 <p>La story <em>search</em> définit une intention secondaire <em>"de démarrage"</em> (<em>indicate_origin</em>) 
 et une intention secondaire simple (<em>indicate_location</em>)</p>
 <p>Une intention secondaire <em>"de démarrage"</em> est semblable en tout point à une intention principale : 
-dès que le modèle NLP détecte cette intention, il va exécuter la story <em>search</em>, quel que soit le contexte.</p>
+dès que cette intention est détectée, la story <em>search</em> va être exécutée, 
+si la story courante ne possède pas cette intention en tant qu'intention secondaire.</p>
 <p>Pour une intention secondaire simple, par contre, la story ne sera exécutée que si la story courante du contexte 
 est <em>déjà</em> la story search. Plusieurs story différentes peuvent donc partager les mêmes intentions secondaires.</p>
 <h3 id="manipuler-les-entites">Manipuler les entités<a class="headerlink" href="#manipuler-les-entites" title="Permanent link">&para;</a></h3>
@@ -1150,7 +1151,7 @@ dans le classpath, contenant le nom de la classe :</p>
       <div class="md-footer-copyright">
         
           <div class="md-footer-copyright__highlight">
-            Copyright &copy; 2018 VSCT
+            Copyright &copy; 2018/2019 VSCT
           </div>
         
         powered by

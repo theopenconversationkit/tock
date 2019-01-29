@@ -117,6 +117,15 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<p><a href="end-for-google-assistant.html">endForGoogleAssistant</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="identifier">endForGoogleAssistant</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.ga$endForGoogleAssistant(fr.vsct.tock.bot.engine.BotBus, kotlin.Function1((fr.vsct.tock.bot.engine.BotBus, fr.vsct.tock.bot.connector.ga.GAResponseConnectorMessage)), kotlin.Long)/messageProvider">messageProvider</span><span class="symbol">:</span>&nbsp;<a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="-g-a-response-connector-message/index.html"><span class="identifier">GAResponseConnectorMessage</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.ga$endForGoogleAssistant(fr.vsct.tock.bot.engine.BotBus, kotlin.Function1((fr.vsct.tock.bot.engine.BotBus, fr.vsct.tock.bot.connector.ga.GAResponseConnectorMessage)), kotlin.Long)/delay">delay</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;botDefinition.defaultDelay(currentAnswerIndex)<span class="symbol">)</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a></code>
+<p>Sends a Google Assistant message as last bot answer, only if the <a href="../fr.vsct.tock.bot.connector/-connector-type/index.html">ConnectorType</a> of the current <a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html">BotBus</a> is <a href="ga-connector-type.html">gaConnectorType</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
 <p><a href="expected-intent-for-carousel.html">expectedIntentForCarousel</a></p>
 </td>
 <td>
@@ -537,6 +546,15 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<p><a href="send-to-google-assistant.html">sendToGoogleAssistant</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="identifier">sendToGoogleAssistant</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.ga$sendToGoogleAssistant(fr.vsct.tock.bot.engine.BotBus, kotlin.Function1((fr.vsct.tock.bot.engine.BotBus, fr.vsct.tock.bot.connector.ga.GAResponseConnectorMessage)), kotlin.Long)/messageProvider">messageProvider</span><span class="symbol">:</span>&nbsp;<a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="-g-a-response-connector-message/index.html"><span class="identifier">GAResponseConnectorMessage</span></a><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.ga$sendToGoogleAssistant(fr.vsct.tock.bot.engine.BotBus, kotlin.Function1((fr.vsct.tock.bot.engine.BotBus, fr.vsct.tock.bot.connector.ga.GAResponseConnectorMessage)), kotlin.Long)/delay">delay</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;botDefinition.defaultDelay(currentAnswerIndex)<span class="symbol">)</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a></code>
+<p>Sends a Google Assistant message only if the <a href="../fr.vsct.tock.bot.connector/-connector-type/index.html">ConnectorType</a> of the current <a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html">BotBus</a> is <a href="ga-connector-type.html">gaConnectorType</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
 <p><a href="simple-response.html">simpleResponse</a></p>
 </td>
 <td>
@@ -559,7 +577,8 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </td>
 <td>
 <code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="identifier">withGoogleAssistant</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.ga$withGoogleAssistant(fr.vsct.tock.bot.engine.BotBus, kotlin.Function0((fr.vsct.tock.bot.connector.ga.GAResponseConnectorMessage)))/messageProvider">messageProvider</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="-g-a-response-connector-message/index.html"><span class="identifier">GAResponseConnectorMessage</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a></code>
-<p>Add a <a href="../fr.vsct.tock.bot.connector/-connector-message/index.html">ConnectorMessage</a> for Google Assistant.</p>
+<p>Adds a Google Assistant <a href="../fr.vsct.tock.bot.connector/-connector-message/index.html">ConnectorMessage</a> if the current connector is Google Assistant.
+You need to call <a href="../fr.vsct.tock.bot.engine/-bot-bus/send.html">BotBus.send</a> or <a href="../fr.vsct.tock.bot.engine/-bot-bus/end.html">BotBus.end</a> later to send this message.</p>
 </td>
 </tr>
 <tr>
@@ -568,7 +587,8 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </td>
 <td>
 <code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="identifier">withGoogleVoiceAssistant</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.ga$withGoogleVoiceAssistant(fr.vsct.tock.bot.engine.BotBus, kotlin.Function0((fr.vsct.tock.bot.connector.ga.GAResponseConnectorMessage)))/messageProvider">messageProvider</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="-g-a-response-connector-message/index.html"><span class="identifier">GAResponseConnectorMessage</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a></code>
-<p>Add a <a href="../fr.vsct.tock.bot.connector/-connector-message/index.html">ConnectorMessage</a> for Google Assistant - voice only.</p>
+<p>If the device supports audio, adds a Google Assistant <a href="../fr.vsct.tock.bot.connector/-connector-message/index.html">ConnectorMessage</a> if the current connector is Google Assistant.
+You need to call <a href="../fr.vsct.tock.bot.engine/-bot-bus/send.html">BotBus.send</a> or <a href="../fr.vsct.tock.bot.engine/-bot-bus/end.html">BotBus.end</a> later to send this message.</p>
 </td>
 </tr>
 </tbody>

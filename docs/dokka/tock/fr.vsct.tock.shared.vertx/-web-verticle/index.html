@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.shared.vertx</a>&nbsp;/&nbsp;<a href="./index.html">WebVerticle</a><br/>
 <br/>
 <h1>WebVerticle</h1>
-<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">WebVerticle</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">AbstractVerticle</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/shared/src/main/kotlin/vertx/WebVerticle.kt#L74">(source)</a>
+<code><span class="keyword">abstract</span> <span class="keyword">class </span><span class="identifier">WebVerticle</span>&nbsp;<span class="symbol">:</span>&nbsp;<span class="identifier">AbstractVerticle</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/shared/src/main/kotlin/vertx/WebVerticle.kt#L70">(source)</a>
 <p>Base class for web Tock <a href="#">io.vertx.core.Verticle</a>s. Provides utility methods.</p>
 <h3>Constructors</h3>
 <table>
@@ -40,6 +40,15 @@
 </td>
 <td>
 <code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">basePath</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="healthcheck-path.html">healthcheckPath</a></p>
+</td>
+<td>
+<code><span class="keyword">open</span> <span class="keyword">val </span><span class="identifier">healthcheckPath</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span></code>
+<p>If not null, add a <a href="healthcheck.html">healthcheck</a> for this verticle.</p>
+</td>
 </tr>
 <tr>
 <td>
@@ -93,7 +102,7 @@
 <p><a href="add-auth.html">addAuth</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><span class="identifier">addAuth</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$addAuth(io.vertx.ext.auth.AuthProvider, kotlin.collections.Set((kotlin.String)))/authProvider">authProvider</span><span class="symbol">:</span>&nbsp;<span class="identifier">AuthProvider</span>&nbsp;<span class="symbol">=</span>&nbsp;defaultAuthProvider()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$addAuth(io.vertx.ext.auth.AuthProvider, kotlin.collections.Set((kotlin.String)))/pathsToProtect">pathsToProtect</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;protectedPaths().map { "$it/*" }.toSet()<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
+<code><span class="keyword">fun </span><span class="identifier">addAuth</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$addAuth(fr.vsct.tock.shared.security.auth.TockAuthProvider, kotlin.collections.Set((kotlin.String)))/authProvider">authProvider</span><span class="symbol">:</span>&nbsp;<a href="../../fr.vsct.tock.shared.security.auth/-tock-auth-provider/index.html"><span class="identifier">TockAuthProvider</span></a>&nbsp;<span class="symbol">=</span>&nbsp;defaultAuthProvider()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.shared.vertx.WebVerticle$addAuth(fr.vsct.tock.shared.security.auth.TockAuthProvider, kotlin.collections.Set((kotlin.String)))/pathsToProtect">pathsToProtect</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-set/index.html"><span class="identifier">Set</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;protectedPaths().map { "$it/*" }.toSet()<span class="symbol">)</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-unit/index.html"><span class="identifier">Unit</span></a></code></td>
 </tr>
 <tr>
 <td>
@@ -107,7 +116,7 @@
 <p><a href="auth-provider.html">authProvider</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">authProvider</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">AuthProvider</span><span class="symbol">?</span></code>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">authProvider</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.shared.security.auth/-tock-auth-provider/index.html"><span class="identifier">TockAuthProvider</span></a><span class="symbol">?</span></code>
 <p>By default there is no auth provider - ie nothing is protected.</p>
 </td>
 </tr>
@@ -219,7 +228,7 @@
 <p><a href="default-auth-provider.html">defaultAuthProvider</a></p>
 </td>
 <td>
-<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">defaultAuthProvider</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><span class="identifier">AuthProvider</span></code>
+<code><span class="keyword">open</span> <span class="keyword">fun </span><span class="identifier">defaultAuthProvider</span><span class="symbol">(</span><span class="symbol">)</span><span class="symbol">: </span><a href="../../fr.vsct.tock.shared.security.auth/-tock-auth-provider/index.html"><span class="identifier">TockAuthProvider</span></a></code>
 <p>The auth provider provided by default.</p>
 </td>
 </tr>

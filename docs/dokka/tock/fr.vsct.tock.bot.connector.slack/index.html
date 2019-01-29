@@ -52,7 +52,9 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 <p><a href="slack-connector-type.html">slackConnectorType</a></p>
 </td>
 <td>
-<code><span class="keyword">val </span><span class="identifier">slackConnectorType</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code></td>
+<code><span class="keyword">val </span><span class="identifier">slackConnectorType</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.connector/-connector-type/index.html"><span class="identifier">ConnectorType</span></a></code>
+<p>The Slack connector type.</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -89,10 +91,28 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 </tr>
 <tr>
 <td>
+<p><a href="end-for-slack.html">endForSlack</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="identifier">endForSlack</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.slack$endForSlack(fr.vsct.tock.bot.engine.BotBus, kotlin.Long, kotlin.Function1((fr.vsct.tock.bot.engine.BotBus, fr.vsct.tock.bot.connector.slack.model.SlackConnectorMessage)))/delay">delay</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;botDefinition.defaultDelay(currentAnswerIndex)<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.slack$endForSlack(fr.vsct.tock.bot.engine.BotBus, kotlin.Long, kotlin.Function1((fr.vsct.tock.bot.engine.BotBus, fr.vsct.tock.bot.connector.slack.model.SlackConnectorMessage)))/messageProvider">messageProvider</span><span class="symbol">:</span>&nbsp;<a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="../fr.vsct.tock.bot.connector.slack.model/-slack-connector-message/index.html"><span class="identifier">SlackConnectorMessage</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a></code>
+<p>Sends a Slack message as last bot answer, only if the <a href="../fr.vsct.tock.bot.connector/-connector-type/index.html">ConnectorType</a> of the current <a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html">BotBus</a> is <a href="slack-connector-type.html">slackConnectorType</a>.</p>
+</td>
+</tr>
+<tr>
+<td>
 <p><a href="multi-line-message.html">multiLineMessage</a></p>
 </td>
 <td>
 <code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.engine/-i18n-translator/index.html"><span class="identifier">I18nTranslator</span></a><span class="symbol">.</span><span class="identifier">multiLineMessage</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.slack$multiLineMessage(fr.vsct.tock.bot.engine.I18nTranslator, kotlin.collections.List((kotlin.CharSequence)), kotlin.String)/lines">lines</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-char-sequence/index.html"><span class="identifier">CharSequence</span></a><span class="symbol">&gt;</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.slack$multiLineMessage(fr.vsct.tock.bot.engine.I18nTranslator, kotlin.collections.List((kotlin.CharSequence)), kotlin.String)/channel">channel</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-string/index.html"><span class="identifier">String</span></a><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">)</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.connector.slack.model/-slack-message-out/index.html"><span class="identifier">SlackMessageOut</span></a></code></td>
+</tr>
+<tr>
+<td>
+<p><a href="send-to-slack.html">sendToSlack</a></p>
+</td>
+<td>
+<code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="identifier">sendToSlack</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.slack$sendToSlack(fr.vsct.tock.bot.engine.BotBus, kotlin.Long, kotlin.Function1((fr.vsct.tock.bot.engine.BotBus, fr.vsct.tock.bot.connector.slack.model.SlackConnectorMessage)))/delay">delay</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-long/index.html"><span class="identifier">Long</span></a>&nbsp;<span class="symbol">=</span>&nbsp;botDefinition.defaultDelay(currentAnswerIndex)<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.connector.slack$sendToSlack(fr.vsct.tock.bot.engine.BotBus, kotlin.Long, kotlin.Function1((fr.vsct.tock.bot.engine.BotBus, fr.vsct.tock.bot.connector.slack.model.SlackConnectorMessage)))/messageProvider">messageProvider</span><span class="symbol">:</span>&nbsp;<a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="../fr.vsct.tock.bot.connector.slack.model/-slack-connector-message/index.html"><span class="identifier">SlackConnectorMessage</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a></code>
+<p>Sends a Slack message only if the <a href="../fr.vsct.tock.bot.connector/-connector-type/index.html">ConnectorType</a> of the current <a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html">BotBus</a> is <a href="slack-connector-type.html">slackConnectorType</a>.</p>
+</td>
 </tr>
 <tr>
 <td>
@@ -106,7 +126,10 @@ with a single not optional <a href="#">StoryHandlerDefinitionBase</a> argument.<
 <p><a href="with-slack.html">withSlack</a></p>
 </td>
 <td>
-<code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="identifier">withSlack</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.slack$withSlack(fr.vsct.tock.bot.engine.BotBus, kotlin.Function0((fr.vsct.tock.bot.connector.slack.model.SlackConnectorMessage)))/messageProvider">messageProvider</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="../fr.vsct.tock.bot.connector.slack.model/-slack-connector-message/index.html"><span class="identifier">SlackConnectorMessage</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a></code></td>
+<code><span class="keyword">fun </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a><span class="symbol">.</span><span class="identifier">withSlack</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.connector.slack$withSlack(fr.vsct.tock.bot.engine.BotBus, kotlin.Function0((fr.vsct.tock.bot.connector.slack.model.SlackConnectorMessage)))/messageProvider">messageProvider</span><span class="symbol">:</span>&nbsp;<span class="symbol">(</span><span class="symbol">)</span>&nbsp;<span class="symbol">-&gt;</span>&nbsp;<a href="../fr.vsct.tock.bot.connector.slack.model/-slack-connector-message/index.html"><span class="identifier">SlackConnectorMessage</span></a><span class="symbol">)</span><span class="symbol">: </span><a href="../fr.vsct.tock.bot.engine/-bot-bus/index.html"><span class="identifier">BotBus</span></a></code>
+<p>Adds a Slack <a href="../fr.vsct.tock.bot.connector/-connector-message/index.html">ConnectorMessage</a> if the current connector is Slack.
+You need to call <a href="../fr.vsct.tock.bot.engine/-bot-bus/send.html">BotBus.send</a> or <a href="../fr.vsct.tock.bot.engine/-bot-bus/end.html">BotBus.end</a> later to send this message.</p>
+</td>
 </tr>
 </tbody>
 </table>

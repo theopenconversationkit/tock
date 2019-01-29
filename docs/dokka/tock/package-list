@@ -19,7 +19,6 @@ $dokka.location:fr.vsct.tock.shared$provideOrDefault(com.github.salomonbrys.kode
 $dokka.location:fr.vsct.tock.shared$toList(kotlin.collections.Iterator((fr.vsct.tock.shared.toList.T)))fr.vsct.tock.shared/kotlin.collections.-iterator/to-list.html
 $dokka.location:fr.vsct.tock.shared$toSet(java.util.Enumeration((fr.vsct.tock.shared.toSet.T)))fr.vsct.tock.shared/java.util.-enumeration/to-set.html
 $dokka.location:fr.vsct.tock.shared$warn(mu.KLogger, kotlin.Throwable)fr.vsct.tock.shared/mu.-k-logger/warn.html
-$dokka.location:fr.vsct.tock.shared$watchSafely(com.mongodb.async.client.MongoCollection((fr.vsct.tock.shared.watchSafely.T)), kotlin.Function1((com.mongodb.async.client.ChangeStreamIterable((fr.vsct.tock.shared.watchSafely.T)), )), kotlin.Function1((com.mongodb.client.model.changestream.ChangeStreamDocument((fr.vsct.tock.shared.watchSafely.T)), kotlin.Unit)))fr.vsct.tock.shared/com.mongodb.async.client.-mongo-collection/watch-safely.html
 $dokka.location:fr.vsct.tock.shared$withNamespace(kotlin.String, kotlin.String)fr.vsct.tock.shared/kotlin.-string/with-namespace.html
 $dokka.location:fr.vsct.tock.shared$withoutNamespace(kotlin.String, kotlin.String)fr.vsct.tock.shared/kotlin.-string/without-namespace.html
 $dokka.location:fr.vsct.tock.shared.jackson$addDeserializer(com.fasterxml.jackson.databind.module.SimpleModule, kotlin.reflect.KClass((fr.vsct.tock.shared.jackson.addDeserializer.T)), com.fasterxml.jackson.databind.JsonDeserializer((fr.vsct.tock.shared.jackson.addDeserializer.T)))fr.vsct.tock.shared.jackson/com.fasterxml.jackson.databind.module.-simple-module/add-deserializer.html
@@ -49,9 +48,15 @@ fr.vsct.tock.bot.connector.messenger.model.attachment
 fr.vsct.tock.bot.connector.messenger.model.handover
 fr.vsct.tock.bot.connector.messenger.model.send
 fr.vsct.tock.bot.connector.messenger.model.webhook
+fr.vsct.tock.bot.connector.rocketchat
 fr.vsct.tock.bot.connector.slack
 fr.vsct.tock.bot.connector.slack.model
 fr.vsct.tock.bot.connector.slack.model.old
+fr.vsct.tock.bot.connector.teams
+fr.vsct.tock.bot.connector.whatsapp
+fr.vsct.tock.bot.connector.whatsapp.model.common
+fr.vsct.tock.bot.connector.whatsapp.model.send
+fr.vsct.tock.bot.connector.whatsapp.model.webhook
 fr.vsct.tock.bot.definition
 fr.vsct.tock.bot.engine
 fr.vsct.tock.bot.engine.action
@@ -70,4 +75,5 @@ fr.vsct.tock.shared
 fr.vsct.tock.shared.cache
 fr.vsct.tock.shared.jackson
 fr.vsct.tock.shared.security
+fr.vsct.tock.shared.security.auth
 fr.vsct.tock.shared.vertx
