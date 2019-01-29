@@ -40,7 +40,7 @@ export class AuthGuard implements CanActivate, CanActivateChild {
   private checkLogin(url: string): boolean {
     const login = this.authService.isLoggedIn();
     if (!login) {
-      if (this.ssologin || document.cookie.indexOf("tock-sso-session=") !== -1) {
+      if (this.ssologin || document.cookie.indexOf("tock-sso=") !== -1) {
         this.authService.loadUser().subscribe(u => this.router.navigateByUrl(url));
         return false;
       } else if (this.autologin) {

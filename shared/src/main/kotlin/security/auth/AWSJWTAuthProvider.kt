@@ -35,6 +35,7 @@ import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.ext.auth.jwt.JWTAuthOptions
 import io.vertx.ext.auth.jwt.impl.JWTUser
 import io.vertx.ext.jwt.JWTOptions
+import io.vertx.ext.web.Cookie
 import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.CookieHandler
 import io.vertx.ext.web.handler.SessionHandler
@@ -67,6 +68,18 @@ internal class AWSJWTAuthProvider(val vertx: Vertx) : JWTAuth, TockAuthProvider 
         }
     }
 
+    private object AddSSOCookieHandler : Handler<RoutingContext> {
+
+        override fun handle(c: RoutingContext) {
+            val cookie = Cookie.cookie("tock-sso", "1")
+            cookie.path = "/"
+            // Don't set max age - it's a session cookie
+            c.addCookie(cookie)
+            c.next()
+        }
+    }
+
+
     override val sessionCookieName: String get() = "tock-sso-session"
 
     override fun protectPaths(
@@ -82,6 +95,7 @@ internal class AWSJWTAuthProvider(val vertx: Vertx) : JWTAuth, TockAuthProvider 
             router.route("/*").handler(ExceptPathHandler(healthcheckPath, sessionHandler))
             router.route("/*").handler(ExceptPathHandler(healthcheckPath, userSessionHandler))
             router.route("/*").handler(ExceptPathHandler(healthcheckPath, authHandler))
+            router.route("/*").handler(AddSSOCookieHandler)
 
             router.get("$basePath/user").handler { it.response().end(mapper.writeValueAsString(it.user())) }
         }
