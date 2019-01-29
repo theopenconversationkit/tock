@@ -19,6 +19,7 @@ package fr.vsct.tock.shared.security.auth
 import com.google.common.cache.Cache
 import com.google.common.cache.CacheBuilder
 import com.google.common.io.BaseEncoding
+import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.security.TockUser
@@ -137,7 +138,7 @@ internal class AWSJWTAuthProvider(val vertx: Vertx) : JWTAuth, TockAuthProvider 
      *  TODO a workaround
      */
     private fun parseCustomRole(customRole: String): Pair<String, String> {
-        return Pair("OUIBOT", "technicalAdmin")
+        return Pair(defaultNamespace, "technicalAdmin")
     }
 
     private fun getJwtAuthProvider(authInfo: JsonObject): JWTAuth? {
