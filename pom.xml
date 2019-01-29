@@ -32,7 +32,7 @@
         <sourceDirectory>${project.basedir}/src/main/kotlin</sourceDirectory>
         <testSourceDirectory>${project.basedir}/src/test/kotlin</testSourceDirectory>
 
-        <kotlin>1.3.10</kotlin>
+        <kotlin>1.3.20</kotlin>
 
         <slf4j>1.7.25</slf4j>
         <logback>1.2.3</logback>
@@ -40,41 +40,41 @@
         <kotlin-logging>1.6.22</kotlin-logging>
 
         <kodein>4.1.0</kodein>
-        <kmongo>3.9.2-SNAPSHOT</kmongo>
+        <kmongo>3.9.2</kmongo>
         <jackson>2.9.8</jackson>
         <jackson-module>2.9.8</jackson-module>
         <jackson-module-loader>0.1.0</jackson-module-loader>
         <jackson-data>0.1.0</jackson-data>
         <jackson-generator>0.3.1</jackson-generator>
-        <klaxon>4.0.5</klaxon>
+        <klaxon>5.0.4</klaxon>
         <vertx>3.6.2</vertx>
         <retrofit>2.5.0</retrofit>
         <okhttp>3.11.0</okhttp>
         <guava>27.0.1-jre</guava>
-        <google-auth>1.27.0</google-auth>
+        <google-auth>1.28.0</google-auth>
         <jasypt>1.9.2</jasypt>
         <commons-csv>1.6</commons-csv>
         <emoji>5.0</emoji>
         <commons-codec>1.11</commons-codec>
         <commons-lang>3.8.1</commons-lang>
         <json>20180813</json>
-        <httpclient>4.5.6</httpclient>
+        <httpclient>4.5.7</httpclient>
 
         <junit-jupiter>5.3.2</junit-jupiter>
 
-        <mockk>1.8.13.kotlin13</mockk>
-        <byte-buddy>1.9.6</byte-buddy>
+        <mockk>1.9</mockk>
+        <byte-buddy>1.9.8</byte-buddy>
 
-        <plugin.surefire>2.22.0</plugin.surefire>
+        <plugin.surefire>3.0.0-M3</plugin.surefire>
         <plugin.source>3.0.1</plugin.source>
         <plugin.release>2.5.3</plugin.release>
         <plugin.gpg>1.6</plugin.gpg>
         <plugin.nexus-staging>1.6.8</plugin.nexus-staging>
         <plugin.dokka>0.9.17</plugin.dokka>
-        <plugin.assembly>3.1.0</plugin.assembly>
+        <plugin.assembly>3.1.1</plugin.assembly>
         <plugin.frontend>1.6</plugin.frontend>
         <plugin.clean>3.1.0</plugin.clean>
-        <plugin.jar>3.1.0</plugin.jar>
+        <plugin.jar>3.1.1</plugin.jar>
         <plugin.ant>1.8</plugin.ant>
 
         <kotlin.compiler.jvmTarget>1.8</kotlin.compiler.jvmTarget>

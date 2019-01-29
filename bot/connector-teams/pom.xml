@@ -30,7 +30,7 @@
 
     <properties>
         <microsoft.bot>4.0.0-a1</microsoft.bot>
-        <mockwebserver>3.11.0</mockwebserver>
+        <mockwebserver>3.12.1</mockwebserver>
     </properties>
 
     <dependencies>
