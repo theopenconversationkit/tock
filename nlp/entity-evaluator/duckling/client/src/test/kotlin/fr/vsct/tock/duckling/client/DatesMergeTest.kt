@@ -248,7 +248,7 @@ internal class DatesMergeTest {
         val r = DatesMerge.merge(context, listOf(nextMonth.copy(initial = true), changeDayOfWeek))
         val date = (r?.value as DateEntityValue).date
         assertEquals(DayOfWeek.THURSDAY, date.dayOfWeek)
-        assertEquals(date.truncatedTo(ChronoUnit.DAYS), date)
+        assertEquals(date.truncatedTo(ChronoUnit.DAYS), date.truncatedTo(ChronoUnit.DAYS))
     }
 
     @Test
