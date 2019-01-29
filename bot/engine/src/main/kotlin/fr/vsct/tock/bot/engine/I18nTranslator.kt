@@ -62,7 +62,7 @@ interface I18nTranslator : I18nKeyProvider {
         } else if (text is TranslatedString || text is RawString) {
             text
         } else {
-            return translate(i18n(text!!, args.toList()))
+            return translate(i18n(text, args.toList()))
         }
     }
 

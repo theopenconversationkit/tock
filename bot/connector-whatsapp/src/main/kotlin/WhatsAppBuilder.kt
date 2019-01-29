@@ -17,9 +17,11 @@ package fr.vsct.tock.bot.connector.whatsapp
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.whatsapp.model.common.WhatsAppTextBody
 import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotAttachment
 import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotImageMessage
 import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotMessage
+import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotTextMessage
 import fr.vsct.tock.bot.engine.BotBus
 
 internal const val WHATS_APP_CONNECTOR_TYPE_ID = "whatsapp"
@@ -64,6 +66,18 @@ fun BotBus.endForWhatsApp(
 fun BotBus.withWhatsApp(messageProvider: () -> WhatsAppBotMessage): BotBus {
     return withMessage(whatsAppConnectorType, messageProvider)
 }
+
+/**
+ * Creates a [WhatsAppBotTextMessage].
+ */
+fun BotBus.whatsAppText(
+    text: CharSequence
+): WhatsAppBotTextMessage =
+    WhatsAppBotTextMessage(
+        WhatsAppTextBody(translate(text).toString()),
+        (connectorData.callback as WhatsAppConnectorCallback).recipientType,
+        userId.id
+    )
 
 /**
  * Creates a [WhatsAppBotImageMessage].
