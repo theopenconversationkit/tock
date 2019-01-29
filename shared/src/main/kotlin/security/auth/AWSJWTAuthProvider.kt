@@ -35,6 +35,7 @@ import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.ext.auth.jwt.JWTAuthOptions
 import io.vertx.ext.auth.jwt.impl.JWTUser
 import io.vertx.ext.jwt.JWTOptions
+import io.vertx.ext.web.RoutingContext
 import io.vertx.ext.web.handler.CookieHandler
 import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.handler.UserSessionHandler
@@ -52,6 +53,20 @@ internal class AWSJWTAuthProvider(val vertx: Vertx) : JWTAuth, TockAuthProvider 
         private var jwtAuthProvider: JWTAuth? = null
     }
 
+    private class ExceptPathHandler(
+        val healthcheckPath: String?,
+        val handler: Handler<RoutingContext>
+    ) : Handler<RoutingContext> {
+
+        override fun handle(c: RoutingContext) {
+            if (c.request().path() == healthcheckPath) {
+                c.next()
+            } else {
+                handler.handle(c)
+            }
+        }
+    }
+
     override val sessionCookieName: String get() = "tock-sso-session"
 
     override fun protectPaths(
@@ -63,10 +78,10 @@ internal class AWSJWTAuthProvider(val vertx: Vertx) : JWTAuth, TockAuthProvider 
     ) {
         val authHandler = AWSJWTAuthHandler(this, null)
         with(verticle) {
-            router.route("/*").handler(cookieHandler)
-            router.route("/*").handler(sessionHandler)
-            router.route("/*").handler(userSessionHandler)
-            router.route("/*").handler(authHandler)
+            router.route("/*").handler(ExceptPathHandler(healthcheckPath, cookieHandler))
+            router.route("/*").handler(ExceptPathHandler(healthcheckPath, sessionHandler))
+            router.route("/*").handler(ExceptPathHandler(healthcheckPath, userSessionHandler))
+            router.route("/*").handler(ExceptPathHandler(healthcheckPath, authHandler))
 
             router.get("$basePath/user").handler { it.response().end(mapper.writeValueAsString(it.user())) }
         }

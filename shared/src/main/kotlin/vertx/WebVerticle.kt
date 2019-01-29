@@ -103,6 +103,11 @@ abstract class WebVerticle : AbstractVerticle() {
 
     private val verticleName: String = this::class.simpleName!!
 
+    /**
+     * If not null, add a [healthcheck()] for this verticle.
+     */
+    open val healthcheckPath: String? get() = "$rootPath/healthcheck"
+
     @Deprecated(message = "replace with protectedPaths method", replaceWith = ReplaceWith("protectedPaths"))
     protected open fun protectedPath(): String = rootPath
 
@@ -122,7 +127,7 @@ abstract class WebVerticle : AbstractVerticle() {
                         addAuth(p)
                     }
 
-                    router.get("$rootPath/healthcheck").handler(healthcheck())
+                    healthcheckPath?.let { router.get(it).handler(healthcheck()) }
                     configure()
 
                     it.complete()
