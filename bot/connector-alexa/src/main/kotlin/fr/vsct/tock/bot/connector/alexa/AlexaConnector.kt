@@ -79,8 +79,13 @@ class AlexaConnector internal constructor(
     )
 
     override fun register(controller: ConnectorController) {
-        controller.registerServices(path, { router ->
+        controller.registerServices(path) { router ->
             logger.info("deploy rest alexa services for root path $path ")
+
+            //healthcheck
+            router.get("$path/healthcheck").handler {
+                it.response().end()
+            }
 
             router.post(path).blockingHandler { context ->
                 try {
@@ -89,7 +94,7 @@ class AlexaConnector internal constructor(
                     context.fail(e)
                 }
             }
-        })
+        }
     }
 
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {

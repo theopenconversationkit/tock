@@ -135,6 +135,12 @@ class MessengerConnector internal constructor(
                 registerCheckWebhook()
             }
 
+            //healthcheck
+            router.get("$path/healthcheck").blockingHandler {
+                if (!client.healthcheck()) it.response().statusCode = 503
+                it.response().end()
+            }
+
             //see https://developers.facebook.com/docs/graph-api/webhooks
             router.get(path).handler { context ->
                 try {
