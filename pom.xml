@@ -50,6 +50,8 @@
         <vertx>3.6.2</vertx>
         <retrofit>2.5.0</retrofit>
         <okhttp>3.11.0</okhttp>
+        <okhttp-signpost>1.1.0</okhttp-signpost>
+        <signpost-core>1.2.1.2</signpost-core>
         <circuitbreaker>0.13.2</circuitbreaker>
         <guava>27.0.1-jre</guava>
         <google-auth>1.28.0</google-auth>

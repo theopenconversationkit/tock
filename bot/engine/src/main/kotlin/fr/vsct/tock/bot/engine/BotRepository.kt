@@ -261,6 +261,7 @@ object BotRepository {
             controller.unregisterServices()
             if (controller is TockConnectorController) {
                 StoryConfigurationMonitor.unmonitor(controller.bot)
+                TockConnectorController.unregister(controller.connector, controller.bot, verticle)
             }
         }
     }
