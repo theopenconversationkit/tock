@@ -69,14 +69,19 @@ fun BotBus.withWhatsApp(messageProvider: () -> WhatsAppBotMessage): BotBus {
 
 /**
  * Creates a [WhatsAppBotTextMessage].
+ *
+ * @param text the text sent
+ * @param previewUrl is preview mode is used?
  */
 fun BotBus.whatsAppText(
-    text: CharSequence
+    text: CharSequence,
+    previewUrl: Boolean = false
 ): WhatsAppBotTextMessage =
     WhatsAppBotTextMessage(
         WhatsAppTextBody(translate(text).toString()),
         (connectorData.callback as WhatsAppConnectorCallback).recipientType,
-        userId.id
+        userId.id,
+        previewUrl
     )
 
 /**
