@@ -45,6 +45,11 @@
         </dependency>
 
         <dependency>
+            <groupId>fr.vsct.tock</groupId>
+            <artifactId>bot-toolkit</artifactId>
+            <scope>provided</scope>
+        </dependency>
+        <dependency>
             <groupId>org.jetbrains.kotlin</groupId>
             <artifactId>kotlin-test-junit5</artifactId>
             <scope>provided</scope>

@@ -23,6 +23,8 @@ import fr.vsct.tock.bot.connector.messenger.messengerConnectorType
 import fr.vsct.tock.bot.connector.messenger.model.MessengerConnectorMessage
 import fr.vsct.tock.bot.connector.slack.model.SlackConnectorMessage
 import fr.vsct.tock.bot.connector.slack.slackConnectorType
+import fr.vsct.tock.bot.connector.whatsapp.model.send.WhatsAppBotMessage
+import fr.vsct.tock.bot.connector.whatsapp.whatsAppConnectorType
 
 /**
  * The Messenger message if any.
@@ -44,3 +46,8 @@ fun BotBusMockLog.slack(): SlackConnectorMessage? = message(slackConnectorType) 
  * The Alexa message if any.
  */
 fun BotBusMockLog.alexa(): AlexaMessage? = message(alexaConnectorType) as? AlexaMessage
+
+/**
+ * The WhatsApp message if any.
+ */
+fun BotBusMockLog.whatsapp(): WhatsAppBotMessage? = message(whatsAppConnectorType) as? WhatsAppBotMessage
