@@ -18,6 +18,8 @@ package fr.vsct.tock.shared
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import fr.vsct.tock.shared.jackson.mapper
+import io.github.resilience4j.circuitbreaker.CircuitBreaker
+import io.github.resilience4j.retrofit.CircuitBreakerCallAdapter
 import mu.KLogger
 import mu.KotlinLogging
 import okhttp3.Credentials
@@ -75,7 +77,11 @@ fun retrofitBuilderWithTimeoutAndLogger(
     /**
      * Gzip the request for servers that support it.
      */
-    requestGZipEncoding: Boolean = false
+    requestGZipEncoding: Boolean = false,
+    /**
+     * Add a circuit breaker facility.
+     */
+    circuitBreaker: Boolean = false
 ): Retrofit.Builder = OkHttpClient.Builder()
     .readTimeout(ms, MILLISECONDS)
     .connectTimeout(ms, MILLISECONDS)
@@ -92,6 +98,10 @@ fun retrofitBuilderWithTimeoutAndLogger(
     .build()
     .let {
         Retrofit.Builder().client(it)
+            .apply {
+                takeIf { circuitBreaker }
+                    ?.addCallAdapterFactory(CircuitBreakerCallAdapter.of(CircuitBreaker.ofDefaults(logger.name)))
+            }
     }
 
 /**

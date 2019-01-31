@@ -48,6 +48,10 @@
             <artifactId>converter-jackson</artifactId>
         </dependency>
         <dependency>
+            <groupId>io.github.resilience4j</groupId>
+            <artifactId>resilience4j-retrofit</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.squareup.okhttp3</groupId>
             <artifactId>logging-interceptor</artifactId>
         </dependency>

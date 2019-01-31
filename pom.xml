@@ -50,6 +50,7 @@
         <vertx>3.6.2</vertx>
         <retrofit>2.5.0</retrofit>
         <okhttp>3.11.0</okhttp>
+        <circuitbreaker>0.13.2</circuitbreaker>
         <guava>27.0.1-jre</guava>
         <google-auth>1.28.0</google-auth>
         <jasypt>1.9.2</jasypt>
@@ -342,6 +343,11 @@
                 <groupId>com.squareup.retrofit2</groupId>
                 <artifactId>converter-jackson</artifactId>
                 <version>${retrofit}</version>
+            </dependency>
+            <dependency>
+                <groupId>io.github.resilience4j</groupId>
+                <artifactId>resilience4j-retrofit</artifactId>
+                <version>${circuitbreaker}</version>
             </dependency>
             <dependency>
                 <groupId>com.squareup.okhttp3</groupId>

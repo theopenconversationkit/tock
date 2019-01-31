@@ -62,7 +62,10 @@ internal object DucklingClient {
     private val jacksonConverterFactory: JacksonConverterFactory = JacksonConverterFactory.create(mapper)
 
     init {
-        val retrofit = retrofitBuilderWithTimeoutAndLogger(longProperty("tock_duckling_request_timeout_ms", 5000), logger)
+        val retrofit = retrofitBuilderWithTimeoutAndLogger(
+            longProperty("tock_duckling_request_timeout_ms", 1000),
+            logger,
+            circuitBreaker = true)
                 .baseUrl("${property("nlp_duckling_url", "http://localhost:8889")}/")
                 .addConverterFactory(RawJsonBodyConverterFactory)
                 .build()

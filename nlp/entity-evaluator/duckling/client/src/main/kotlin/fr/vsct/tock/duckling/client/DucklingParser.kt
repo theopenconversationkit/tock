@@ -55,14 +55,13 @@ internal object DucklingParser : EntityEvaluator, EntityTypeClassifier, Parser {
     private val logger = KotlinLogging.logger {}
     private val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSXXX")
 
-    val ducklingAveragePertinence: Double = 0.8
-
+    private const val ducklingAveragePertinence: Double = 0.8
 
     override fun classifyEntities(context: EntityCallContext, text: String): List<EntityTypeRecognition> {
         return DucklingParser.classify(context, text)
     }
 
-    fun classify(context: EntityCallContext, text: String): List<EntityTypeRecognition> {
+    private fun classify(context: EntityCallContext, text: String): List<EntityTypeRecognition> {
         return when (context) {
             is EntityCallContextForIntent -> classifyForIntent(context, text)
             is EntityCallContextForEntity -> TODO()
@@ -95,7 +94,7 @@ internal object DucklingParser : EntityEvaluator, EntityTypeClassifier, Parser {
         }
     }
 
-    fun classify(
+    private fun classify(
         entityTypeMap: Map<String, EntityType>,
         language: String,
         dimensions: Set<String>,
@@ -162,27 +161,31 @@ internal object DucklingParser : EntityEvaluator, EntityTypeClassifier, Parser {
     private fun parseDimension(parseResult: JSONValue, dimension: String): List<ValueWithRange> {
         return when (dimension) {
             timeDucklingDimension -> parseDate(parseResult)
-            "number" -> parseSimple(parseResult, dimension, { NumberValue(it[":value"].number()) })
-            "ordinal" -> parseSimple(parseResult, dimension, { OrdinalValue(it[":value"].number()) })
+            "number" -> parseSimple(parseResult, dimension) { NumberValue(it[":value"].number()) }
+            "ordinal" -> parseSimple(parseResult, dimension) { OrdinalValue(it[":value"].number()) }
             "distance" -> parseSimple(
                 parseResult,
-                dimension,
-                { DistanceValue(it[":value"].number(), it[":unit"].string()) })
-            "temperature" -> parseSimple(
-                parseResult,
-                dimension,
-                { TemperatureValue(it[":value"].number(), TemperatureUnit.valueOf(it[":unit"].string())) })
+                dimension
+            ) { DistanceValue(it[":value"].number(), it[":unit"].string()) }
+            "temperature" -> {
+                parseSimple(
+                    parseResult,
+                    dimension
+                ) { TemperatureValue(it[":value"].number(), TemperatureUnit.valueOf(it[":unit"].string())) }
+            }
             "volume" -> parseSimple(
                 parseResult,
-                dimension,
-                { VolumeValue(it[":value"].number(), it[":unit"].string()) })
-            "amount-of-money" -> parseSimple(
-                parseResult,
-                dimension,
-                { AmountOfMoneyValue(it[":value"].number(), it[":unit"].string()) })
-            "url" -> parseSimple(parseResult, dimension, { UrlValue(it[":value"].string()) })
-            "email" -> parseSimple(parseResult, dimension, { EmailValue(it[":value"].string()) })
-            "phone-number" -> parseSimple(parseResult, dimension, { PhoneNumberValue(it[":value"].string()) })
+                dimension
+            ) { VolumeValue(it[":value"].number(), it[":unit"].string()) }
+            "amount-of-money" -> {
+                parseSimple(
+                    parseResult,
+                    dimension
+                ) { AmountOfMoneyValue(it[":value"].number(), it[":unit"].string()) }
+            }
+            "url" -> parseSimple(parseResult, dimension) { UrlValue(it[":value"].string()) }
+            "email" -> parseSimple(parseResult, dimension) { EmailValue(it[":value"].string()) }
+            "phone-number" -> parseSimple(parseResult, dimension) { PhoneNumberValue(it[":value"].string()) }
             //TODO duration
             else -> TODO("Not yet supported yet : $dimension")
         }
