@@ -39,6 +39,11 @@
             <artifactId>tock-bot-engine-jackson</artifactId>
         </dependency>
         <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>6.8</version>
+        </dependency>
+        <dependency>
             <groupId>com.microsoft.bot.schema</groupId>
             <artifactId>botbuilder-schema</artifactId>
             <version>${microsoft.bot}</version>
