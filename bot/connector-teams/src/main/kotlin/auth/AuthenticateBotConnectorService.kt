@@ -11,9 +11,6 @@ import com.nimbusds.jose.crypto.RSASSAVerifier
 import com.nimbusds.jose.jwk.ECKey
 import com.nimbusds.jose.jwk.RSAKey
 import com.nimbusds.jwt.SignedJWT
-import fr.vsct.tock.bot.connector.teams.auth.AuthenticateBotConnectorService.Companion.AUTHORIZATION_HEADER
-import fr.vsct.tock.bot.connector.teams.auth.AuthenticateBotConnectorService.Companion.BEARER_PREFIX
-import fr.vsct.tock.bot.engine.nlp.NlpProxyBotListener.logger
 import fr.vsct.tock.shared.Level
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.create
@@ -41,9 +38,9 @@ class AuthenticateBotConnectorService(private val headers: MultiMap, private val
     private val logger = KotlinLogging.logger {}
     internal val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
 
-    @Volatile lateinit var id_token_signing_alg_values_supported: List<String>
-    @Volatile lateinit var jwks_uri: String
-    @Volatile lateinit var microsoftValidSigningKeys: MicrosoftValidSigningKeys
+    @Volatile var id_token_signing_alg_values_supported: List<String>? = null
+    @Volatile var jwks_uri: String? = null
+    @Volatile var microsoftValidSigningKeys: MicrosoftValidSigningKeys? = null
 
     init {
         microsoftOpenIdMetadataApi = retrofitBuilderWithTimeoutAndLogger(
@@ -75,15 +72,15 @@ class AuthenticateBotConnectorService(private val headers: MultiMap, private val
     }
 
     fun isRequestFromConnectorBotService(): Boolean {
-        if (!isKeysNotSetted() || !isKeyExpired()) {
+        if (!isKeysSetted() || !isKeyExpired()) {
             getOpenIdMetadata()
             getJWK()
         }
         return isTokenValid()
     }
 
-    private fun isKeysNotSetted(): Boolean {
-        return false
+    private fun isKeysSetted(): Boolean {
+        return microsoftValidSigningKeys != null
     }
 
     private fun isKeyExpired(): Boolean {
@@ -101,7 +98,7 @@ class AuthenticateBotConnectorService(private val headers: MultiMap, private val
     internal fun getJWK() {
         logger.debug("Getting jwks keys")
         microsoftValidSigningKeys = microsoftJwksApi.getJwk(
-            jwks_uri
+            jwks_uri!!
         ).execute().body() ?: throw IOException("Error : Unable to get JWK signatures")
     }
 
@@ -145,7 +142,7 @@ class AuthenticateBotConnectorService(private val headers: MultiMap, private val
     }
 
     private fun checkSignature(signedJWT: SignedJWT) {
-        microsoftValidSigningKeys.keys.forEach {
+        microsoftValidSigningKeys!!.keys.forEach {
             if (it.endorsements?.contains(activity.channelId()) == true && (it.kid == signedJWT.header.keyID)) {
                 val algo = it.kty
                 val verifier: JWSVerifier = when (algo) {
@@ -184,10 +181,10 @@ class AuthenticateBotConnectorService(private val headers: MultiMap, private val
         val kty: String,
         val use: String,
         val kid: String,
-        val x5t: String,
+        val x5t: String?,
         val n: String,
         val e: String,
-        val x5c: List<String>,
+        val x5c: List<String>?,
         val endorsements: List<String>?
     ) : Serializable {
 

@@ -1,20 +1,32 @@
 package fr.vsct.tock.bot.connector.teams.auth
 
 import com.microsoft.bot.schema.models.Activity
+import com.nimbusds.jose.JWSAlgorithm
+import com.nimbusds.jose.JWSHeader
+import com.nimbusds.jose.JWSObject
+import com.nimbusds.jose.Payload
+import com.nimbusds.jose.crypto.RSASSASigner
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import io.vertx.core.MultiMap
 import io.vertx.core.http.CaseInsensitiveHeaders
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
+import java.util.UUID
+import com.nimbusds.jose.jwk.KeyUse
+import com.nimbusds.jose.jwk.gen.RSAKeyGenerator
+import net.minidev.json.JSONObject
+import net.minidev.json.parser.JSONParser
+
 
 class AuthenticateBotConnectorServiceTest {
 
-    private val activity = Activity().withChannelId("msteams")
+    private val activity = Activity().withChannelId("msteams").withServiceUrl("https://serviceurl")
 
     @Test
     fun getOpenidMetadataDocumentDeserializeWell() {
@@ -29,14 +41,18 @@ class AuthenticateBotConnectorServiceTest {
             .create()
         val mockResponse = MockResponse()
             .addHeader("Content-Type", "application/json")
-            .setBody("{\"issuer\":\"https://api.botframework.com\",\"authorization_endpoint\":\"https://invalid.botframework.com\",\"jwks_uri\":\"https://login.botframework.com/v1/.well-known/keys\",\"id_token_signing_alg_values_supported\":[\"RS256\"],\"token_endpoint_auth_methods_supported\":[\"private_key_jwt\"]}")
+            .setBody("{\"issuer\":\"https://api.botframework.com\"," +
+                "\"authorization_endpoint\":\"https://invalid.botframework.com\"," +
+                "\"jwks_uri\":\"https://login.botframework.com/v1/.well-known/keys\"," +
+                "\"id_token_signing_alg_values_supported\":[\"RS256\"]," +
+                "\"token_endpoint_auth_methods_supported\":[\"private_key_jwt\"]}")
             .setResponseCode(200)
         server.enqueue(mockResponse)
 
         authenticateBotConnectorService.getOpenIdMetadata()
 
         assertEquals(authenticateBotConnectorService.jwks_uri, "https://login.botframework.com/v1/.well-known/keys")
-        assertTrue(authenticateBotConnectorService.id_token_signing_alg_values_supported.contains("RS256"))
+        assertTrue(authenticateBotConnectorService.id_token_signing_alg_values_supported!!.contains("RS256"))
 
         server.shutdown()
     }
@@ -74,11 +90,79 @@ class AuthenticateBotConnectorServiceTest {
         authenticateBotConnectorService.getOpenIdMetadata()
         authenticateBotConnectorService.getJWK()
 
-        assertEquals(authenticateBotConnectorService.microsoftValidSigningKeys.keys.size, 19)
+        assertEquals(authenticateBotConnectorService.microsoftValidSigningKeys!!.keys.size, 19)
 
         server.shutdown()
     }
 
+    @Test
+    fun tokenMustBeValid() {
 
+        val appId = "fakeAppId"
+
+        val jwk = RSAKeyGenerator(2048)
+            .keyUse(KeyUse.SIGNATURE) // indicate the intended use of the key
+            .keyID(UUID.randomUUID().toString()) // give the key a unique ID
+            .generate()
+        val rsaKey = jwk.toPublicJWK().toJSONObject().appendField("endorsements", arrayListOf("msteams"))
+        val jsonPayload: JSONObject = JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
+            "{\"iss\":\"https://api.botframework.com\"," +
+                "\"iat\":1549029399," +
+                "\"nbf\":1549029399" +
+                ",\"exp\":1580565407," +
+                "\"aud\":\"$appId\"," +
+                "\"sub\":\"test\"," +
+                "\"serviceurl\": \"https://serviceurl\"}") as JSONObject
+        val jwsObject = JWSObject(
+            JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
+            Payload(jsonPayload)
+        )
+        val jwks = "{\"keys\":[${rsaKey.toJSONString()}]}"
+        jwsObject.sign(RSASSASigner(jwk))
+        val token = jwsObject.serialize()
+        val bearerAuthorization= "Bearer $token"
+
+        val headers: MultiMap = CaseInsensitiveHeaders().add("Authorization", bearerAuthorization )
+        val authenticateBotConnectorService = AuthenticateBotConnectorService(headers, appId, activity)
+
+
+        val server = MockWebServer()
+
+        authenticateBotConnectorService.microsoftOpenIdMetadataApi = retrofitBuilderWithTimeoutAndLogger(
+            longProperty("tock_microsoft_request_timeout", 5000)
+        )
+            .baseUrl("http://${server.hostName}:${server.port}/")
+            .addJacksonConverter(authenticateBotConnectorService.teamsMapper)
+            .build()
+            .create()
+        val mockResponse = MockResponse()
+            .addHeader("Content-Type", "application/json")
+            .setBody("{\"issuer\":\"https://api.botframework.com\"," +
+                "\"authorization_endpoint\":\"https://invalid.botframework.com\"," +
+                "\"jwks_uri\":\"http://${server.hostName}:${server.port}/\"," +
+                "\"id_token_signing_alg_values_supported\":[\"RS256\"]," +
+                "\"token_endpoint_auth_methods_supported\":[\"private_key_jwt\"]}")
+            .setResponseCode(200)
+
+        authenticateBotConnectorService.microsoftJwksApi  = retrofitBuilderWithTimeoutAndLogger(
+            longProperty("tock_microsoft_request_timeout", 5000)
+        )
+            .baseUrl("http://${server.hostName}:${server.port}/")
+            .addJacksonConverter(authenticateBotConnectorService.teamsMapper)
+            .build()
+            .create()
+        val mockResponseFromJks = MockResponse()
+            .addHeader("Content-Type", "application/json")
+            .setBody(jwks)
+            .setResponseCode(200)
+
+        server.enqueue(mockResponse)
+        server.enqueue(mockResponseFromJks)
+
+        assert(authenticateBotConnectorService.isRequestFromConnectorBotService())
+
+        server.shutdown()
+
+    }
 
 }
