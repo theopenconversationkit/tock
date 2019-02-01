@@ -22,6 +22,8 @@ import com.microsoft.bot.schema.models.Activity
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
+import fr.vsct.tock.bot.connector.teams.auth.AuthenticateBotConnectorService
+import fr.vsct.tock.bot.connector.teams.auth.ForbiddenException
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -42,7 +44,7 @@ import java.time.Duration
 internal class TeamsConnector(
     private val connectorId: String,
     private val path: String,
-    appId: String,
+    val appId: String,
     appPassword: String
 ) : ConnectorBase(teamsConnectorType) {
 
@@ -64,10 +66,12 @@ internal class TeamsConnector(
             router.post(path).handler { context ->
                 val requestTimerData = BotRepository.requestTimer.start("teams_webhook")
                 try {
-                    checkBotConnectorSignature(context.request().getHeader("Authorization"))
                     val body = context.bodyAsString
                     logger.debug { body }
                     val activity: Activity = mapper.readValue(body)
+                    println("Before check")
+                    val value = AuthenticateBotConnectorService(context.request().headers(), appId, activity).isRequestFromConnectorBotService()
+                    println("after check : $value")
                     executor.executeBlocking {
                         val e: Event? = SendSentence(
                             PlayerId(activity.from().id()),
@@ -86,7 +90,11 @@ internal class TeamsConnector(
                             logger.warn { "null event for $body" }
                         }
                     }
-                } catch (e: Exception) {
+                } catch (e: ForbiddenException) {
+                    context.fail(403)
+                    logger.logError(e, requestTimerData)
+                }
+                catch (e: Exception) {
                     logger.logError(e, requestTimerData)
                 } finally {
                     try {
@@ -109,10 +117,4 @@ internal class TeamsConnector(
             }
         }
     }
-
-    private fun checkBotConnectorSignature(authHeader: String) {
-        logger.debug { authHeader }
-        //TODO: see https://docs.microsoft.com/en-us/azure/bot-service/rest-api/bot-framework-rest-connector-authentication?view=azure-bot-service-4.0#connector-to-bot
-    }
-
 }
