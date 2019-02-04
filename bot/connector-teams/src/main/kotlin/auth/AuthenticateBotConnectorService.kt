@@ -127,7 +127,7 @@ class AuthenticateBotConnectorService(private val headers: MultiMap, private val
                 throw ForbiddenException("ServiceUrl in token Authorization and in activity doesn't match")
             }
         } catch (e: Exception) {
-            logger.error("Unvalid JWT in Authorization Header")
+            logger.error("Unvalid JWT in Authorization Header : ${e.message}")
             throw ForbiddenException("Unvalid JWT in Authorization Header : ${e.message}")
         }
         return true
