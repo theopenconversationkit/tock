@@ -54,6 +54,9 @@ internal class TeamsConnector(
 
     private val client = TeamsClient(appId, appPassword)
     private val executor: Executor by injector.instance()
+    private val authenticateBotConnectorService = AuthenticateBotConnectorService(appId)
+
+    private var responseSent = false
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
@@ -67,11 +70,8 @@ internal class TeamsConnector(
                 val requestTimerData = BotRepository.requestTimer.start("teams_webhook")
                 try {
                     val body = context.bodyAsString
-                    logger.debug { body }
                     val activity: Activity = mapper.readValue(body)
-                    println("Before check")
-                    val value = AuthenticateBotConnectorService(context.request().headers(), appId, activity).isRequestFromConnectorBotService()
-                    println("after check : $value")
+                    authenticateBotConnectorService.isRequestFromConnectorBotService(context.request().headers(), activity)
                     executor.executeBlocking {
                         val e: Event? = SendSentence(
                             PlayerId(activity.from().id()),
@@ -92,17 +92,20 @@ internal class TeamsConnector(
                     }
                 } catch (e: ForbiddenException) {
                     context.fail(403)
-                    logger.logError(e, requestTimerData)
-                }
-                catch (e: Exception) {
+                    responseSent = true
+                    logger.logError(e.message!!, requestTimerData)
+                } catch (e: Exception) {
                     logger.logError(e, requestTimerData)
                 } finally {
-                    try {
-                        BotRepository.requestTimer.end(requestTimerData)
-                        context.response().end()
-                    } catch (e: Throwable) {
-                        logger.error(e)
+                    BotRepository.requestTimer.end(requestTimerData)
+                    if (!responseSent) {
+                        try {
+                            context.response().end()
+                        } catch (e: Throwable) {
+                            logger.error(e)
+                        }
                     }
+                    responseSent = false
                 }
             }
         }

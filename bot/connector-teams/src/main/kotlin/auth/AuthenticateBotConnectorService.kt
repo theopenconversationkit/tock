@@ -2,6 +2,8 @@ package fr.vsct.tock.bot.connector.teams.auth
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
+import com.google.common.cache.Cache
+import com.google.common.cache.CacheBuilder
 import com.google.gson.Gson
 import com.microsoft.bot.schema.models.Activity
 import com.nimbusds.jose.JOSEException
@@ -26,11 +28,11 @@ import java.io.IOException
 import java.io.Serializable
 import java.time.Instant
 import java.util.*
+import java.util.concurrent.TimeUnit
 
 
 @Suppress("PropertyName")
-class AuthenticateBotConnectorService(private val headers: MultiMap, private val appId: String, private val activity: Activity) {
-
+class AuthenticateBotConnectorService(private val appId: String) {
 
     internal var microsoftOpenIdMetadataApi: MicrosoftOpenIdMetadataApi
     internal var microsoftJwksApi: MicrosoftJwksApi
@@ -39,8 +41,10 @@ class AuthenticateBotConnectorService(private val headers: MultiMap, private val
     internal val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
 
     @Volatile var id_token_signing_alg_values_supported: List<String>? = null
-    @Volatile var jwks_uri: String? = null
-    @Volatile var microsoftValidSigningKeys: MicrosoftValidSigningKeys? = null
+    @Volatile internal var cacheKeys: Cache<String, MicrosoftValidSigningKeys> = CacheBuilder.newBuilder()
+        .maximumSize(1)
+        .expireAfterWrite(1, TimeUnit.DAYS)
+        .build()
 
     init {
         microsoftOpenIdMetadataApi = retrofitBuilderWithTimeoutAndLogger(
@@ -71,35 +75,8 @@ class AuthenticateBotConnectorService(private val headers: MultiMap, private val
         const val BEARER_PREFIX = "Bearer "
     }
 
-    fun isRequestFromConnectorBotService(): Boolean {
-        if (!isKeysSetted() || !isKeyExpired()) {
-            getOpenIdMetadata()
-            getJWK()
-        }
-        return isTokenValid()
-    }
-
-    private fun isKeysSetted(): Boolean {
-        return microsoftValidSigningKeys != null
-    }
-
-    private fun isKeyExpired(): Boolean {
-        return false
-    }
-
-    internal fun getOpenIdMetadata() {
-        logger.debug { "Getting openidMetadata" }
-        val microsoftOpenidMetadata = microsoftOpenIdMetadataApi.getMicrosoftOpenIdMetadata().execute()
-        val response = microsoftOpenidMetadata.body()
-        id_token_signing_alg_values_supported = response?.idTokenSigningAlgValuesSupported ?: throw IOException("Error : Unable to get OpenidMetadata")
-        jwks_uri = response.jwksUri
-    }
-
-    internal fun getJWK() {
-        logger.debug("Getting jwks keys")
-        microsoftValidSigningKeys = microsoftJwksApi.getJwk(
-            jwks_uri!!
-        ).execute().body() ?: throw IOException("Error : Unable to get JWK signatures")
+    fun isRequestFromConnectorBotService(headers: MultiMap, activity: Activity): Boolean {
+        return isTokenValid(headers, activity)
     }
 
     /**
@@ -112,7 +89,7 @@ class AuthenticateBotConnectorService(private val headers: MultiMap, private val
      * The token has a valid cryptographic signature, with a key listed in the OpenID keys document that was retrieved in Step 3, using the signing algorithm that is specified in the id_token_signing_alg_values_supported property of the Open ID Metadata document that was retrieved in Step 2.
      * The token contains a "serviceUrl" claim with value that matches the servieUrl property at the root of the Activity object of the incoming request.    *
      */
-    internal fun isTokenValid(): Boolean {
+    private fun isTokenValid(headers: MultiMap, activity: Activity): Boolean {
         logger.debug("Validating token from incoming request...")
         val authorizationHeader = headers[AUTHORIZATION_HEADER]
         try {
@@ -122,7 +99,7 @@ class AuthenticateBotConnectorService(private val headers: MultiMap, private val
             if (signedJWT.jwtClaimsSet.issuer != ISSUER) throw ForbiddenException("Issuer is not valid")
             if (!signedJWT.jwtClaimsSet.audience.contains(appId)) throw ForbiddenException("Audience is not valid")
             checkValidity(signedJWT)
-            checkSignature(signedJWT)
+            checkSignature(signedJWT, activity)
             if ((signedJWT.jwtClaimsSet.getClaim("serviceurl") ?: throw ForbiddenException("Token doesn't contains any serviceUrl Claims")) != activity.serviceUrl()) {
                 throw ForbiddenException("ServiceUrl in token Authorization and in activity doesn't match")
             }
@@ -141,8 +118,10 @@ class AuthenticateBotConnectorService(private val headers: MultiMap, private val
         if (now.before(notBefore)) throw ForbiddenException("Authorization header is not valid yet")
     }
 
-    private fun checkSignature(signedJWT: SignedJWT) {
-        microsoftValidSigningKeys!!.keys.forEach {
+    private fun checkSignature(signedJWT: SignedJWT, activity: Activity) {
+        cacheKeys.get("jwks_uri") {
+            getJWK()
+        }!!.keys.forEach {
             if (it.endorsements?.contains(activity.channelId()) == true && (it.kid == signedJWT.header.keyID)) {
                 val algo = it.kty
                 val verifier: JWSVerifier = when (algo) {
@@ -157,6 +136,17 @@ class AuthenticateBotConnectorService(private val headers: MultiMap, private val
             }
         }
         throw JOSEException("Signature verification unsuccessfull")
+    }
+
+
+    private fun getJWK(): MicrosoftValidSigningKeys {
+        logger.debug("Getting new jwks")
+        val microsoftOpenidMetadata = microsoftOpenIdMetadataApi.getMicrosoftOpenIdMetadata().execute()
+        val response = microsoftOpenidMetadata.body()
+        id_token_signing_alg_values_supported = response?.idTokenSigningAlgValuesSupported ?: throw IOException("Error : Unable to get OpenidMetadata")
+        return microsoftJwksApi.getJwk(
+            response.jwksUri
+        ).execute().body() ?: throw IOException("Error : Unable to get JWK signatures")
     }
 
     data class MicrosoftOpenidMetadata(
