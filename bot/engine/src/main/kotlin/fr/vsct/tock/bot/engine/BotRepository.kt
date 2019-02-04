@@ -257,6 +257,7 @@ object BotRepository {
         logger.debug { "uninstall $conf" }
         val controller = connectorControllerMap.remove(conf)
         if (controller != null) {
+            logger.debug { "unregister $conf" }
             controller.unregisterServices()
             if (controller is TockConnectorController) {
                 StoryConfigurationMonitor.unmonitor(controller.bot)

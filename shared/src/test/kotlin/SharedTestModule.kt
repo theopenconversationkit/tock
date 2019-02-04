@@ -23,7 +23,10 @@ import com.github.salomonbrys.kodein.singleton
 import com.mongodb.MongoClient
 import fr.vsct.tock.shared.cache.TockCache
 import fr.vsct.tock.shared.vertx.VertxProvider
+import io.mockk.clearMocks
+import io.mockk.every
 import io.mockk.mockk
+import io.vertx.core.Vertx
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.KFlapdoodle
@@ -35,12 +38,27 @@ import java.util.concurrent.Executors
 private val logger = KotlinLogging.logger {}
 
 /**
+ * Mocked vertx.
+ */
+val mockedVertx: Vertx by lazy { mockk<Vertx>(relaxed = true) }
+
+/**
  * Shared test module to be imported by tests using Ioc.
  */
 val sharedTestModule = Kodein.Module {
     bind<Executor>() with provider { TestExecutor }
     bind<TockCache>() with provider { NoOpCache }
-    bind<VertxProvider>() with provider { mockk<VertxProvider>(relaxed = true) }
+
+    try {
+        clearMocks(mockedVertx)
+        val vertxProvider = mockk<VertxProvider>()
+        every { vertxProvider.vertx() } returns mockedVertx
+        bind<VertxProvider>() with singleton { vertxProvider }
+    } catch (e: Throwable) {
+        //vertx not in classpath : ignore
+        logger.trace("vertx is not present in classpath")
+    }
+
     try {
         bind<MongoClient>() with singleton {
             try {
