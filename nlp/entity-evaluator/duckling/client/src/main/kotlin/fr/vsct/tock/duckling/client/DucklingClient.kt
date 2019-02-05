@@ -63,7 +63,7 @@ internal object DucklingClient {
 
     init {
         val retrofit = retrofitBuilderWithTimeoutAndLogger(
-            longProperty("tock_duckling_request_timeout_ms", 1000),
+            longProperty("tock_duckling_request_timeout_ms", 4000),
             logger,
             circuitBreaker = true)
                 .baseUrl("${property("nlp_duckling_url", "http://localhost:8889")}/")
