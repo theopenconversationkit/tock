@@ -31,12 +31,18 @@
     <properties>
         <microsoft.bot>4.0.0-a1</microsoft.bot>
         <mockwebserver>3.12.1</mockwebserver>
+        <nimbus-jose-jwt.version>6.8</nimbus-jose-jwt.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-engine-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>com.nimbusds</groupId>
+            <artifactId>nimbus-jose-jwt</artifactId>
+            <version>${nimbus-jose-jwt.version}</version>
         </dependency>
         <dependency>
             <groupId>com.microsoft.bot.schema</groupId>
