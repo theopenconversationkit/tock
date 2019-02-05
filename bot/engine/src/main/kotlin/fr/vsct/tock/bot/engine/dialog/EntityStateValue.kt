@@ -17,8 +17,12 @@
 package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.user.UserTimelineDAO
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
+import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.provide
+import org.litote.kmongo.Id
 import java.time.Instant
 import java.time.Instant.now
 
@@ -26,9 +30,30 @@ import java.time.Instant.now
  * EntityStateValue is the current value of an entity with its history.
  */
 data class EntityStateValue(
-    private var _value: EntityValue?,
-    private val _history: MutableList<ArchivedEntityValue> = mutableListOf(),
-    private var _lastUpdate: Instant = now()) {
+    /**
+     * The current value.
+     */
+    private var currentValue: EntityValue?,
+    /**
+     * The current history.
+     */
+    private val currentHistory: MutableList<ArchivedEntityValue> = mutableListOf(),
+    /**
+     * The initial update date of the state.
+     */
+    private val initialUpdate: Instant = now(),
+    /**
+     * State value id if any.
+     */
+    val stateValueId: Id<EntityStateValue>? = null,
+    /**
+     * Old action map in order to retrieve lazily the history.
+     */
+    private val oldActionsMap: Map<Id<Action>, Action> = emptyMap()
+) {
+
+    private var updated: Instant = initialUpdate
+    private var loaded: Boolean = stateValueId == null
 
     internal constructor(action: Action, entityValue: EntityValue)
             : this(entityValue, mutableListOf(ArchivedEntityValue(entityValue, action)))
@@ -37,7 +62,7 @@ data class EntityStateValue(
 
     init {
         if (value != null) {
-            _history.add(ArchivedEntityValue(value, null, _lastUpdate))
+            currentHistory.add(ArchivedEntityValue(value, null, updated))
         }
     }
 
@@ -46,36 +71,61 @@ data class EntityStateValue(
     }
 
     internal fun changeValue(newValue: EntityValue?, action: Action? = null): EntityStateValue {
-        _lastUpdate = now()
-        _value = newValue
+        updated = now()
+        currentValue = newValue
         //do not change history if previous value is exactly the same
-        if (_history.lastOrNull()?.entityValue != newValue) {
-            _history.add(ArchivedEntityValue(newValue, action, _lastUpdate))
+        if (currentHistory.lastOrNull()?.entityValue != newValue) {
+            currentHistory.add(ArchivedEntityValue(newValue, action, updated))
         }
 
         return this
     }
 
-    /**
-     * Current entity's value
-     */
-    val value: EntityValue? get() = _value?.copy()
+    private fun checkLoadedValue() {
+        if (!loaded) {
+            loaded = true
+            val old =
+                stateValueId?.let {
+                    injector.provide<UserTimelineDAO>().getArchivedEntityValues(stateValueId, oldActionsMap)
+                        .run { if (isEmpty()) emptyList() else subList(0, size - 1) }
+                }
+                        ?: emptyList()
+            currentHistory.addAll(0, old)
+        }
+    }
 
     /**
-     * Returns previous values for this entity.
+     * Current entity value
+     */
+    val value: EntityValue? get() = currentValue?.copy()
+
+    /**
+     * Previous values for this entity.
      */
     val previousValues: List<ArchivedEntityValue>
-        get() = _history.run { if (isEmpty()) emptyList() else subList(0, size - 1) }
+        get() {
+            checkLoadedValue()
+            return currentHistory.run { if (isEmpty()) emptyList() else subList(0, size - 1) }
+        }
 
     /**
      * Entity's all history. First is older. Last in current value.
      * Could be empty if there is no history and current value is null.
      */
-    val history: List<ArchivedEntityValue> get() = _history.toList()
+    val history: List<ArchivedEntityValue>
+        get() {
+            checkLoadedValue()
+            return currentHistory.toList()
+        }
 
     /**
      * The last update date of the value.
      */
-    val lastUpdate: Instant get() = _lastUpdate
+    val lastUpdate: Instant get() = updated
+
+    /**
+     * Is this state has been updated un current [BotBus]?
+     */
+    val hasBeanUpdatedInBus: Boolean get() = initialUpdate != updated
 
 }

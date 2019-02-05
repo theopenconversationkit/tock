@@ -83,8 +83,7 @@ class DialogColDeserializationTest : AbstractTest(false) {
                         1,
                         Entity(EntityType("type"), "role"),
                         "content"
-                    ),
-                    emptyList()
+                    )
                 )
             ),
             emptyMap(),

@@ -172,7 +172,7 @@ class NlpTest : BotEngineTest() {
                 if (entityToMerge.entityRole == entityWithMergeSupport.role) {
                     NlpEntityMergeContext(
                         entityWithMergeSupport.role,
-                        customInitialValue.copy(),
+                        EntityStateValue(customInitialValue.value),
                         entityToMerge.newValues
                     )
                 } else {

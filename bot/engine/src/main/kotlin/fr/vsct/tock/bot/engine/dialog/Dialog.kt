@@ -86,5 +86,9 @@ data class Dialog(
      */
     val snapshots: List<Snapshot> by lazy { injector.provide<UserTimelineDAO>().getSnapshots(id) }
 
+    /**
+     * Current number of actions in dialog history.
+     */
+    val actionsSize: Int get() = stories.sumBy { it.actions.size }
 
 }

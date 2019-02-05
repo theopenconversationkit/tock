@@ -17,7 +17,10 @@
 package fr.vsct.tock.bot.engine.user
 
 import fr.vsct.tock.bot.definition.StoryDefinition
+import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.Snapshot
 import org.litote.kmongo.Id
 import java.time.Instant
@@ -94,4 +97,15 @@ interface UserTimelineDAO {
      * Returns the last story id of the specified user, if any.
      */
     fun getLastStoryId(playerId: PlayerId): String?
+
+    /**
+     * Returns the archived values for the state id.
+     *
+     * @param stateValueId the state id
+     * @param oldActionsMap the option action map in order to retrieve the action of archived entity values.
+     */
+    fun getArchivedEntityValues(
+        stateValueId: Id<EntityStateValue>,
+        oldActionsMap: Map<Id<Action>, Action> = emptyMap()
+    ): List<ArchivedEntityValue>
 }

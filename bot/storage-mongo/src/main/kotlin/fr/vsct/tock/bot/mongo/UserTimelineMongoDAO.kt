@@ -32,7 +32,9 @@ import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
+import fr.vsct.tock.bot.engine.dialog.EntityStateValue
 import fr.vsct.tock.bot.engine.dialog.Snapshot
 import fr.vsct.tock.bot.engine.nlp.NlpCallStats
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -121,6 +123,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     private val connectorMessageCol = database.getCollection<ConnectorMessageCol>("connector_message")
     private val nlpStatsCol = database.getCollection<NlpStatsCol>("action_nlp_stats")
     private val snapshotCol = database.getCollection<SnapshotCol>("dialog_snapshot")
+    private val archivedEntityValuesCol = database.getCollection<ArchivedEntityValuesCol>("archived_entity_values")
 
     init {
         userTimelineCol.ensureUniqueIndex(UserTimelineCol_.PlayerId.id)
@@ -173,8 +176,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         userTimelineCol.save(newTimeline)
         logger.debug { "timeline saved $userTimeline" }
         // create a new dialog if actions number limit reached
-        val lastDialog = userTimeline.dialogs.lastOrNull()
-        if (lastDialog != null && lastDialog.allActions().size > maxActionsByDialog) {
+        val lastDialog = userTimeline.currentDialog
+        if (lastDialog != null && lastDialog.actionsSize > maxActionsByDialog) {
             userTimeline.dialogs.add(Dialog.initFromDialog(lastDialog))
         }
         for (dialog in userTimeline.dialogs) {
@@ -202,6 +205,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             }
             for (dialog in userTimeline.dialogs) {
                 addSnapshot(dialog)
+                addArchivedValues(dialog)
 
                 dialog.allActions().forEach {
                     when (it) {
@@ -549,8 +553,21 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
     }
 
+    private fun addArchivedValues(dialog: Dialog) {
+        dialog.state.entityValues.values.filter { it.hasBeanUpdatedInBus }
+            .forEach {
+                logger.debug { "save archived values for $it" }
+                archivedEntityValuesCol.save(ArchivedEntityValuesCol(it.previousValues, it.stateValueId))
+            }
+    }
+
     override fun getSnapshots(dialogId: Id<Dialog>): List<Snapshot> {
-        return snapshotCol.findOneById(dialogId)?.snapshots ?: emptyList()
+        return try {
+            snapshotCol.findOneById(dialogId)?.snapshots ?: emptyList()
+        } catch (e: Exception) {
+            logger.error(e)
+            emptyList()
+        }
     }
 
     override fun getLastStoryId(playerId: PlayerId): String? {
@@ -559,6 +576,21 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         } catch (e: Exception) {
             logger.error(e)
             null
+        }
+    }
+
+    override fun getArchivedEntityValues(
+        stateValueId: Id<EntityStateValue>,
+        oldActionsMap: Map<Id<Action>, Action>
+    ): List<ArchivedEntityValue> {
+        logger.debug { "load archived values for $stateValueId" }
+        return try {
+            archivedEntityValuesCol.findOneById(stateValueId)
+                ?.values?.map { it.toArchivedEntityValue(oldActionsMap) }
+                    ?: emptyList()
+        } catch (e: Exception) {
+            logger.error(e)
+            emptyList()
         }
     }
 }

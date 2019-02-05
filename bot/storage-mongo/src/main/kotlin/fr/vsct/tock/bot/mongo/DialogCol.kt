@@ -30,7 +30,6 @@ import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendLocation
 import fr.vsct.tock.bot.engine.action.SendSentence
-import fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.dialog.DialogState
 import fr.vsct.tock.bot.engine.dialog.EntityStateValue
@@ -43,9 +42,10 @@ import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 import fr.vsct.tock.translator.UserInterfaceType.textChat
+import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
-import org.litote.jackson.data.JacksonData
+import org.litote.kmongo.newId
 import java.time.Instant
 import java.time.Instant.now
 
@@ -155,38 +155,23 @@ internal data class DialogCol(
 
     data class EntityStateValueWrapper(
         val value: EntityValue?,
-        val history: List<ArchivedEntityValueWrapper>,
-        val lastUpdate: Instant = now()
+        val lastUpdate: Instant = now(),
+        val id: Id<EntityStateValue> = newId()
     ) {
 
         constructor(value: EntityStateValue) : this(
             value.value,
-            value.history.map { ArchivedEntityValueWrapper(it) },
-            value.lastUpdate
+            value.lastUpdate,
+            value.stateValueId ?: newId()
         )
 
         fun toEntityStateValue(actionsMap: Map<Id<Action>, Action>): EntityStateValue {
             return EntityStateValue(
                 value,
-                history.map { it.toArchivedEntityValue(actionsMap) }.toMutableList(),
-                lastUpdate
-            )
-        }
-    }
-
-    class ArchivedEntityValueWrapper(
-        val entityValue: EntityValue?,
-        val actionId: Id<Action>?,
-        val date: Instant = Instant.now()
-    ) {
-
-        constructor(value: ArchivedEntityValue) : this(value.entityValue, value.action?.toActionId(), value.date)
-
-        fun toArchivedEntityValue(actionsMap: Map<Id<Action>, Action>): ArchivedEntityValue {
-            return ArchivedEntityValue(
-                entityValue,
-                actionsMap.get(actionId ?: ""),
-                date
+                mutableListOf(),
+                lastUpdate,
+                id,
+                actionsMap
             )
         }
     }
