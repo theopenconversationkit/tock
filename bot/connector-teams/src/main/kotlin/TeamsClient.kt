@@ -92,7 +92,7 @@ internal class TeamsClient(
     }
 
     fun isTokenExpired(): Boolean {
-        println {"IS TOKEN EXPIRED"}
+        logger.debug { "IS TOKEN EXPIRED" }
         if (Instant.now().isAfter(
                 tokenExpiration?.minus(
                     10,

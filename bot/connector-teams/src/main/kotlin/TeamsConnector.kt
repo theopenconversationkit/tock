@@ -71,7 +71,10 @@ internal class TeamsConnector(
                 try {
                     val body = context.bodyAsString
                     val activity: Activity = mapper.readValue(body)
-                    authenticateBotConnectorService.isRequestFromConnectorBotService(context.request().headers(), activity)
+                    authenticateBotConnectorService.checkRequestFromConnectorBotService(
+                        context.request().headers(),
+                        activity
+                    )
                     executor.executeBlocking {
                         val e: Event? = SendSentence(
                             PlayerId(activity.from().id()),

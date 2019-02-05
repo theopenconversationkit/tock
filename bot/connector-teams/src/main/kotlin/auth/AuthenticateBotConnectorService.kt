@@ -1,3 +1,18 @@
+/*
+ * Copyright (C) 2017 VSCT
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
 package fr.vsct.tock.bot.connector.teams.auth
 
 import com.fasterxml.jackson.databind.ObjectMapper
@@ -27,21 +42,23 @@ import retrofit2.http.Url
 import java.io.IOException
 import java.io.Serializable
 import java.time.Instant
-import java.util.*
+import java.util.Date
 import java.util.concurrent.TimeUnit
 
 
 @Suppress("PropertyName")
-class AuthenticateBotConnectorService(private val appId: String) {
+internal class AuthenticateBotConnectorService(private val appId: String) {
 
-    internal var microsoftOpenIdMetadataApi: MicrosoftOpenIdMetadataApi
-    internal var microsoftJwksApi: MicrosoftJwksApi
+    var microsoftOpenIdMetadataApi: MicrosoftOpenIdMetadataApi
+    var microsoftJwksApi: MicrosoftJwksApi
 
     private val logger = KotlinLogging.logger {}
-    internal val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+    val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
 
-    @Volatile var id_token_signing_alg_values_supported: List<String>? = null
-    @Volatile internal var cacheKeys: Cache<String, MicrosoftValidSigningKeys> = CacheBuilder.newBuilder()
+    @Volatile
+    private var tokenIds: List<String>? = null
+    @Volatile
+    var cacheKeys: Cache<String, MicrosoftValidSigningKeys> = CacheBuilder.newBuilder()
         .maximumSize(1)
         .expireAfterWrite(1, TimeUnit.DAYS)
         .build()
@@ -75,12 +92,13 @@ class AuthenticateBotConnectorService(private val appId: String) {
         const val BEARER_PREFIX = "Bearer "
     }
 
-    fun isRequestFromConnectorBotService(headers: MultiMap, activity: Activity): Boolean {
-        return isTokenValid(headers, activity)
+    fun checkRequestFromConnectorBotService(headers: MultiMap, activity: Activity) {
+        checkTokenValidity(headers, activity)
     }
 
     /**
      * @see https://docs.microsoft.com/en-us/azure/bot-service/rest-api/bot-framework-rest-connector-authentication?view=azure-bot-service-4.0#connector-to-bot
+     *
      * The token was sent in the HTTP Authorization header with "Bearer" scheme.
      * The token is valid JSON that conforms to the JWT standard.
      * The token contains an "issuer" claim with value of https://api.botframework.com.
@@ -89,7 +107,7 @@ class AuthenticateBotConnectorService(private val appId: String) {
      * The token has a valid cryptographic signature, with a key listed in the OpenID keys document that was retrieved in Step 3, using the signing algorithm that is specified in the id_token_signing_alg_values_supported property of the Open ID Metadata document that was retrieved in Step 2.
      * The token contains a "serviceUrl" claim with value that matches the servieUrl property at the root of the Activity object of the incoming request.    *
      */
-    private fun isTokenValid(headers: MultiMap, activity: Activity): Boolean {
+    private fun checkTokenValidity(headers: MultiMap, activity: Activity) {
         logger.debug("Validating token from incoming request...")
         val authorizationHeader = headers[AUTHORIZATION_HEADER]
         try {
@@ -100,14 +118,15 @@ class AuthenticateBotConnectorService(private val appId: String) {
             if (!signedJWT.jwtClaimsSet.audience.contains(appId)) throw ForbiddenException("Audience is not valid")
             checkValidity(signedJWT)
             checkSignature(signedJWT, activity)
-            if ((signedJWT.jwtClaimsSet.getClaim("serviceurl") ?: throw ForbiddenException("Token doesn't contains any serviceUrl Claims")) != activity.serviceUrl()) {
+            if ((signedJWT.jwtClaimsSet.getClaim("serviceurl")
+                        ?: throw ForbiddenException("Token doesn't contains any serviceUrl Claims")) != activity.serviceUrl()
+            ) {
                 throw ForbiddenException("ServiceUrl in token Authorization and in activity doesn't match")
             }
         } catch (e: Exception) {
             logger.error("Unvalid JWT in Authorization Header : ${e.message}")
             throw ForbiddenException("Unvalid JWT in Authorization Header : ${e.message}")
         }
-        return true
     }
 
     private fun checkValidity(signedJWT: SignedJWT) {
@@ -121,13 +140,13 @@ class AuthenticateBotConnectorService(private val appId: String) {
     private fun checkSignature(signedJWT: SignedJWT, activity: Activity) {
         cacheKeys.get("jwks_uri") {
             getJWK()
-        }!!.keys.forEach {
+        }?.keys?.forEach {
             if (it.endorsements?.contains(activity.channelId()) == true && (it.kid == signedJWT.header.keyID)) {
                 val algo = it.kty
                 val verifier: JWSVerifier = when (algo) {
                     "RSA" -> RSASSAVerifier(RSAKey.parse(it.toString()))
                     "EC" -> ECDSAVerifier(ECKey.parse(it.toString()))
-                    else  -> throw ForbiddenException("$algo is not a supported algorithm")
+                    else -> throw ForbiddenException("$algo is not a supported algorithm")
                 }
                 if (signedJWT.verify(verifier)) {
                     logger.debug("the token received from botconnector is good")
@@ -143,7 +162,8 @@ class AuthenticateBotConnectorService(private val appId: String) {
         logger.debug("Getting new jwks")
         val microsoftOpenidMetadata = microsoftOpenIdMetadataApi.getMicrosoftOpenIdMetadata().execute()
         val response = microsoftOpenidMetadata.body()
-        id_token_signing_alg_values_supported = response?.idTokenSigningAlgValuesSupported ?: throw IOException("Error : Unable to get OpenidMetadata")
+        tokenIds =
+            response?.idTokenSigningAlgValuesSupported ?: throw IOException("Error : Unable to get OpenidMetadata")
         return microsoftJwksApi.getJwk(
             response.jwksUri
         ).execute().body() ?: throw IOException("Error : Unable to get JWK signatures")
