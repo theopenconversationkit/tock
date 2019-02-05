@@ -55,6 +55,7 @@ import fr.vsct.tock.bot.mongo.UserTimelineCol_.Companion.TemporaryIds
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
+import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import fr.vsct.tock.shared.longProperty
 import mu.KotlinLogging
@@ -101,6 +102,8 @@ import java.util.concurrent.TimeUnit.DAYS
  *
  */
 internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogReportDAO {
+
+    private val maxActionsByDialog = intProperty("tock_bot_max_actions_by_dialog", 1000)
 
     //wrapper to workaround the 1024 chars limit for String indexes
     private fun textKey(text: String): String =
@@ -169,8 +172,12 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         logger.debug { "create new timeline $userTimeline" }
         userTimelineCol.save(newTimeline)
         logger.debug { "timeline saved $userTimeline" }
+        // create a new dialog if actions number limit reached
+        val lastDialog = userTimeline.dialogs.lastOrNull()
+        if (lastDialog != null && lastDialog.allActions().size > maxActionsByDialog) {
+            userTimeline.dialogs.add(Dialog.initFromDialog(lastDialog))
+        }
         for (dialog in userTimeline.dialogs) {
-            //TODO if dialog updated
             val dialogToSave = DialogCol(dialog, newTimeline)
             logger.debug { "dialog to save created $userTimeline" }
             try {
@@ -181,6 +188,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             }
             logger.debug { "dialog saved $userTimeline" }
         }
+
         executor.executeBlocking {
             if (userTimeline.playerId.clientId != null) {
                 clientIdCol.updateOneById(

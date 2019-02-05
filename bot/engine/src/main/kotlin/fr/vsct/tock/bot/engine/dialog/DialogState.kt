@@ -25,27 +25,43 @@ import fr.vsct.tock.nlp.entity.Value
  * The [Dialog] state.
  */
 data class DialogState(
+    /**
+     * The current [Intent] of the dialog, can be null.
+     */
+    var currentIntent: Intent? = null,
+    /**
+     * The current entity values (with their history).
+     */
+    val entityValues: MutableMap<String, EntityStateValue> = mutableMapOf(),
+    /**
+     * The context of the dialog, a versatile map.
+     */
+    val context: MutableMap<String, Any> = mutableMapOf(),
+    /**
+     * The current [UserLocation] if any.
+     */
+    var userLocation: UserLocation? = null,
+    /**
+     * The [NextUserActionState] if any.
+     * If not null, it will be applied to the next user action, with NLP custom qualifiers.
+     */
+    var nextActionState: NextUserActionState? = null
+) {
+
+    companion object {
         /**
-         * The current [Intent] of the dialog, can be null.
+         * Init a new state from the specified state.
          */
-        var currentIntent: Intent? = null,
-        /**
-         * The current entity values (with their history).
-         */
-        val entityValues: MutableMap<String, EntityStateValue> = mutableMapOf(),
-        /**
-         * The context of the dialog, a versatile map.
-         */
-        val context: MutableMap<String, Any> = mutableMapOf(),
-        /**
-         * The current [UserLocation] if any.
-         */
-        var userLocation: UserLocation? = null,
-        /**
-         * The [NextUserActionState] if any.
-         * If not null, it will be applied to the next user action, with NLP custom qualifiers.
-         */
-        var nextActionState: NextUserActionState? = null) {
+        fun initFromDialogState(dialog: DialogState): DialogState {
+            return DialogState(
+                dialog.currentIntent,
+                dialog.entityValues.map { it.key to EntityStateValue(it.value.value) }.toMap().toMutableMap(),
+                dialog.context,
+                dialog.userLocation,
+                dialog.nextActionState
+            )
+        }
+    }
 
     /**
      * Updates persistent context value.

@@ -31,15 +31,40 @@ import java.time.Instant
  * The dialog has a (current) [state].
  */
 data class Dialog(
+    /**
+     * The players of the dialog.
+     */
     val playerIds: Set<PlayerId>,
+    /**
+     * The id of the dialog.
+     */
     var id: Id<Dialog> = newId(),
+    /**
+     * The state of the dialog.
+     */
     val state: DialogState = DialogState(),
+    /**
+     * The history of stories in the dialog.
+     */
     val stories: MutableList<Story> = mutableListOf(),
     /**
      * An optional group identifier.
      */
-    val groupId:String? = null
+    val groupId: String? = null
 ) {
+
+    companion object {
+        /**
+         * Init a new dialog from the specified dialog.
+         */
+        fun initFromDialog(dialog: Dialog): Dialog {
+            return Dialog(
+                dialog.playerIds,
+                state = DialogState.initFromDialogState(dialog.state),
+                stories = listOfNotNull(dialog.stories.lastOrNull()).toMutableList()
+            )
+        }
+    }
 
     /**
      * The last update date.
@@ -60,4 +85,6 @@ data class Dialog(
      * The [Snapshots] of the dialog.
      */
     val snapshots: List<Snapshot> by lazy { injector.provide<UserTimelineDAO>().getSnapshots(id) }
+
+
 }
