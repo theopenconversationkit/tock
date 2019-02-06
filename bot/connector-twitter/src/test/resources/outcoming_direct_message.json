@@ -1,0 +1,22 @@
+{
+  "event": {
+    "type": "message_create",
+    "id": "1090603081203679236",
+    "created_timestamp": "1548855011641",
+    "message_create": {
+      "target": {
+        "recipient_id": "1090334520887386112"
+      },
+      "sender_id": "14235326",
+      "message_data": {
+        "text": "Bienvenue chez le Bot Open Data Sncf! :)",
+        "entities": {
+          "hashtags": [],
+          "symbols": [],
+          "user_mentions": [],
+          "urls": []
+        }
+      }
+    }
+  }
+}
