@@ -14,8 +14,6 @@
  * limitations under the License.
  */
 
-import {SentenceStatus} from "./nlp";
-
 export class User {
   constructor(public email: string,
               public organization: string,
@@ -25,7 +23,9 @@ export class User {
   static fromJSON(json: any): User {
     const value = Object.create(User.prototype);
     const result = Object.assign(value, json, {
-      roles: json.roles.map(r => UserRole[r])
+      roles: json.roles.map(r => UserRole[r]),
+      //fallback to namespace
+      organization: json.organization ? json.organization : json.namespace
     });
 
     return result;
