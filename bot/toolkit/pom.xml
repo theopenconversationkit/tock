@@ -56,6 +56,10 @@
         </dependency>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
+            <artifactId>tock-bot-connector-twitter</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-connector-whatsapp</artifactId>
         </dependency>
         <dependency>

@@ -39,6 +39,7 @@
         <module>connector-slack</module>
         <module>connector-alexa</module>
         <module>connector-rocketchat</module>
+        <module>connector-twitter</module>
         <module>connector-whatsapp</module>
         <module>connector-teams</module>
         <module>storage-mongo</module>
@@ -49,6 +50,7 @@
         <module>test</module>
 
         <module>admin</module>
+
     </modules>
 
     <dependencyManagement>
@@ -91,6 +93,11 @@
             <dependency>
                 <groupId>fr.vsct.tock</groupId>
                 <artifactId>tock-bot-connector-slack</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
+                <artifactId>tock-bot-connector-twitter</artifactId>
                 <version>${project.version}</version>
             </dependency>
             <dependency>

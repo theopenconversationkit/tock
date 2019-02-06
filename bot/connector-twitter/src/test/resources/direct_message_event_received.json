@@ -1,0 +1,53 @@
+{
+  "for_user_id": "14235326",
+  "direct_message_events": [
+    {
+      "type": "message_create",
+      "id": "1090001495532191748",
+      "created_timestamp": "1548711582440",
+      "message_create": {
+        "target": {
+          "recipient_id": "14235326"
+        },
+        "sender_id": "707685546848550916",
+        "message_data": {
+          "text": "Plouf",
+          "entities": {
+            "hashtags": [],
+            "symbols": [],
+            "user_mentions": [],
+            "urls": []
+          }
+        }
+      }
+    }
+  ],
+  "users": {
+    "707685546848550916": {
+      "id": "707685546848550916",
+      "created_timestamp": "1457560357426",
+      "name": "Virginie",
+      "screen_name": "virginie_buchin",
+      "protected": false,
+      "verified": false,
+      "followers_count": 7,
+      "friends_count": 26,
+      "statuses_count": 3,
+      "profile_image_url": "http:\/\/abs.twimg.com\/sticky\/default_profile_images\/default_profile_normal.png",
+      "profile_image_url_https": "https:\/\/abs.twimg.com\/sticky\/default_profile_images\/default_profile_normal.png"
+    },
+    "14235326": {
+      "id": "14235326",
+      "created_timestamp": "1206626473000",
+      "name": "LE BESCOND Erwan",
+      "screen_name": "bagou",
+      "protected": false,
+      "verified": false,
+      "followers_count": 86,
+      "friends_count": 104,
+      "statuses_count": 229,
+      "profile_image_url": "http:\/\/pbs.twimg.com\/profile_images\/378800000245800156\/bbe387dd6a6d46f22a228a259b355df5_normal.jpeg",
+      "profile_image_url_https": "https:\/\/pbs.twimg.com\/profile_images\/378800000245800156\/bbe387dd6a6d46f22a228a259b355df5_normal.jpeg"
+    }
+  }
+}

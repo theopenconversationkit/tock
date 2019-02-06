@@ -50,10 +50,10 @@ import java.util.concurrent.CopyOnWriteArrayList
  *
  */
 internal class TockConnectorController constructor(
-    val bot: Bot,
-    override val connector: Connector,
-    private val verticle: BotVerticle,
-    override val botDefinition: BotDefinition = bot.botDefinition
+        val bot: Bot,
+        override val connector: Connector,
+        private val verticle: BotVerticle,
+        override val botDefinition: BotDefinition = bot.botDefinition
 ) : ConnectorController {
 
     companion object {
@@ -65,15 +65,27 @@ internal class TockConnectorController constructor(
         private val audioNlpFileLimit = intProperty("tock_bot_audio_nlp_max_size", 1024 * 1024)
 
         internal fun register(
-            connector: Connector,
-            bot: Bot,
-            verticle: BotVerticle
+                connector: Connector,
+                bot: Bot,
+                verticle: BotVerticle
         ): TockConnectorController =
-            TockConnectorController(bot, connector, verticle)
-                .apply {
-                    logger.info { "Register connector $connector for bot $bot" }
-                    connector.register(this)
-                }
+                TockConnectorController(bot, connector, verticle)
+                        .apply {
+                            logger.info { "Register connector $connector for bot $bot" }
+                            connector.register(this)
+                        }
+
+        internal fun unregister(
+                connector: Connector,
+                bot: Bot,
+                verticle: BotVerticle
+        ) =
+                TockConnectorController(bot, connector, verticle)
+                        .apply {
+                            logger.info { "Unregister connector $connector for bot $bot" }
+                            connector.unregister(this)
+                        }
+
     }
 
     private val executor: Executor by injector.instance()
@@ -108,10 +120,10 @@ internal class TockConnectorController constructor(
                 val text = stt.parse(bytes, userTimeline.userPreferences.locale)
                 if (text != null) {
                     return SendSentence(
-                        action.playerId,
-                        action.applicationId,
-                        action.recipientId,
-                        text
+                            action.playerId,
+                            action.applicationId,
+                            action.recipientId,
+                            text
                     )
                 }
             }
@@ -131,11 +143,11 @@ internal class TockConnectorController constructor(
                     callback.userLocked(action)
 
                     val userTimeline =
-                        userTimelineDAO.loadWithLastValidDialog(
-                            action.playerId,
-                            data.priorUserId,
-                            data.groupId
-                        ) { bot.botDefinition.findStoryDefinition(it) }
+                            userTimelineDAO.loadWithLastValidDialog(
+                                    action.playerId,
+                                    data.priorUserId,
+                                    data.groupId
+                            ) { bot.botDefinition.findStoryDefinition(it) }
 
                     val transformedAction = tryToParseVoiceAudio(action, userTimeline)
 
@@ -170,11 +182,11 @@ internal class TockConnectorController constructor(
         val callback = data.callback
         return try {
             val userTimeline =
-                userTimelineDAO.loadWithLastValidDialog(
-                    action.playerId,
-                    data.priorUserId,
-                    data.groupId
-                ) { bot.botDefinition.findStoryDefinition(it) }
+                    userTimelineDAO.loadWithLastValidDialog(
+                            action.playerId,
+                            data.priorUserId,
+                            data.groupId
+                    ) { bot.botDefinition.findStoryDefinition(it) }
             bot.support(action, userTimeline, this, data)
         } catch (t: Throwable) {
             callback.exceptionThrown(action, t)
