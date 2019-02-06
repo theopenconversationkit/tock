@@ -61,7 +61,16 @@ data class Dialog(
             return Dialog(
                 dialog.playerIds,
                 state = DialogState.initFromDialogState(dialog.state),
-                stories = listOfNotNull(dialog.stories.lastOrNull()).toMutableList()
+                stories = listOfNotNull(
+                    dialog.stories.lastOrNull()?.run {
+                        val s = copy()
+                        s.actions.clear()
+                        if (!actions.isEmpty()) {
+                            s.actions.addAll(actions.takeLast(5))
+                        }
+                        s
+                    }
+                ).toMutableList()
             )
         }
     }
