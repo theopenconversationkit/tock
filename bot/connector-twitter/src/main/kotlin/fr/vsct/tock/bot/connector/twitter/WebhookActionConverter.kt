@@ -16,8 +16,10 @@
 
 package fr.vsct.tock.bot.connector.twitter
 
+import fr.vsct.tock.bot.connector.twitter.model.OptionsResponse
 import fr.vsct.tock.bot.connector.twitter.model.incoming.DirectMessageIncomingEvent
 import fr.vsct.tock.bot.connector.twitter.model.incoming.IncomingEvent
+import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerType
@@ -32,13 +34,46 @@ internal object WebhookActionConverter {
             is DirectMessageIncomingEvent -> {
                 // Ignore all application event
                 if (incomingEvent.apps == null || !incomingEvent.apps.containsKey(applicationId)) {
+
                     incomingEvent.directMessages.firstOrNull()?.let {
-                        SendSentence(
-                            incomingEvent.playerId(PlayerType.user),
-                            applicationId,
-                            incomingEvent.recipientId(PlayerType.bot),
-                            it.messageCreated.messageData.text
-                        )
+
+                        return if (it.messageCreated.messageData.quickReplyResponse != null) {
+                            when (it.messageCreated.messageData.quickReplyResponse) {
+                                is OptionsResponse -> {
+                                    SendChoice.decodeChoiceId(it.messageCreated.messageData.quickReplyResponse.metadata)
+                                        .let { (intentName, parameters) ->
+                                            if (parameters.containsKey(SendChoice.NLP)) {
+                                                SendSentence(
+                                                    incomingEvent.playerId(PlayerType.user),
+                                                    applicationId,
+                                                    incomingEvent.recipientId(PlayerType.bot),
+                                                    parameters[SendChoice.NLP]
+                                                )
+                                            } else {
+                                                SendChoice(
+                                                    incomingEvent.playerId(PlayerType.user),
+                                                    applicationId,
+                                                    incomingEvent.recipientId(PlayerType.bot),
+                                                    intentName,
+                                                    parameters
+                                                )
+                                            }
+                                        }
+
+                                }
+                                else -> {
+                                    logger.debug { "unknown quick reply response type $incomingEvent" }
+                                    null
+                                }
+                            }
+                        } else {
+                            SendSentence(
+                                incomingEvent.playerId(PlayerType.user),
+                                applicationId,
+                                incomingEvent.recipientId(PlayerType.bot),
+                                it.messageCreated.messageData.text
+                            )
+                        }
                     }
                 } else {
                     logger.debug { "ignore event $incomingEvent from applicationId $applicationId" }

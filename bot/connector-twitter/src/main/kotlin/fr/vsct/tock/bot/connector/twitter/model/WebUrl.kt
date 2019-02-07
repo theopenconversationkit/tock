@@ -17,12 +17,11 @@
 package fr.vsct.tock.bot.connector.twitter.model
 
 import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonTypeName
 
-data class MessageData(
-    val text: String,
-    val entities: Entities? = null,
-    val ctas: List<CTA>? = null,
-    @JsonProperty("quick_reply") val quickReply: QuickReply? = null,
-    @JsonProperty("quick_reply_response") val quickReplyResponse: QuickReplyResponse? = null
-
-)
+@JsonTypeName("web_url")
+data class WebUrl(
+    val label: String,
+    val url: String,
+    @JsonProperty("tco_url") val tcoUrl: String? = null
+) : CTA()

@@ -51,3 +51,37 @@ val greetings = story("hello") { bus ->
     }
 }
 ```
+
+#### Quick replies
+```kotlin
+val greetings = story("hello") { bus ->
+    end {
+        resetDialogState()
+        withTwitter {
+            directMessageWithOptions(
+                "hello",
+                option("option 1", "description option 1", intent1),
+                option("option 2", "description option 2", intent2)
+            )
+        }
+    }
+}
+```
+
+#### URL Button
+```kotlin
+val greetings = story("hello") { bus ->
+    end {
+        resetDialogState()
+        withTwitter {
+            directMessageWithButtons("Hello !",
+                webUrl(
+                    "label",
+                    "http://oui.sncf"
+                )
+            )
+        }
+    }
+}
+```
+

@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.connector.twitter
 
 import fr.vsct.tock.bot.connector.twitter.model.AccessToken
 import fr.vsct.tock.bot.connector.twitter.model.RequestToken
+import fr.vsct.tock.bot.connector.twitter.model.User
 import fr.vsct.tock.bot.connector.twitter.model.Webhook
 import fr.vsct.tock.bot.connector.twitter.model.outcoming.OutcomingEvent
 import fr.vsct.tock.shared.addJacksonConverter
@@ -42,7 +43,6 @@ import java.net.URLDecoder
 import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-import javax.xml.crypto.dsig.SignatureMethod
 
 enum class GrantType(val grantType: String) {
     CLIENT_CREDENTIALS("client_credentials")
@@ -52,11 +52,11 @@ enum class GrantType(val grantType: String) {
  * Twitter client
  */
 internal class TwitterClient(
-        val environment: String,
-        val consumerKey: String,
-        val consumerSecret: String,
-        token: String? = null,
-        secret: String? = null
+    val environment: String,
+    val consumerKey: String,
+    val consumerSecret: String,
+    token: String? = null,
+    secret: String? = null
 ) {
 
     private val BASE_URL = "https://api.twitter.com"
@@ -75,6 +75,16 @@ internal class TwitterClient(
 
     }
 
+    /**
+     * @see https://developer.twitter.com/en/docs/accounts-and-users/follow-search-get-users/overview
+     *
+     */
+    interface UserApi {
+
+        @GET("/1.1/users/show.json")
+        fun user(@Query("user_id") userId: String): Call<User>
+
+    }
 
     /***
      * @see https://developer.twitter.com/en/docs/accounts-and-users/subscribe-account-activity/api-reference/aaa-premium#get-account-activity-all-env-name-subscriptions
@@ -126,6 +136,8 @@ internal class TwitterClient(
 
     private val directMessageApi: DirectMessageApi
 
+    private val userApi: UserApi
+
     init {
 
         val accountActivityApiConsumer = OkHttpOAuthConsumer(consumerKey, consumerSecret)
@@ -134,24 +146,38 @@ internal class TwitterClient(
         }
 
         accountActivityApi = retrofitBuilderWithTimeoutAndLogger(
-                longProperty("tock_twitter_request_timeout_ms", 30000),
-                logger,
-                interceptors = listOf(SigningInterceptor(accountActivityApiConsumer))
+            longProperty("tock_twitter_request_timeout_ms", 30000),
+            logger,
+            interceptors = listOf(SigningInterceptor(accountActivityApiConsumer))
         )
-                .baseUrl(BASE_URL)
-                .addJacksonConverter()
-                .build()
-                .create()
+            .baseUrl(BASE_URL)
+            .addJacksonConverter()
+            .build()
+            .create()
 
         directMessageApi = retrofitBuilderWithTimeoutAndLogger(
-                longProperty("tock_twitter_request_timeout_ms", 30000),
-                logger,
-                interceptors = listOf(SigningInterceptor(accountActivityApiConsumer))
+            longProperty("tock_twitter_request_timeout_ms", 30000),
+            logger,
+            interceptors = listOf(SigningInterceptor(accountActivityApiConsumer))
         )
-                .baseUrl(BASE_URL)
-                .addJacksonConverter()
-                .build()
-                .create()
+            .baseUrl(BASE_URL)
+            .addJacksonConverter()
+            .build()
+            .create()
+
+        userApi = retrofitBuilderWithTimeoutAndLogger(
+            longProperty("tock_twitter_request_timeout_ms", 30000),
+            logger,
+            interceptors = listOf(SigningInterceptor(accountActivityApiConsumer))
+        )
+            .baseUrl(BASE_URL)
+            .addJacksonConverter()
+            .build()
+            .create()
+    }
+
+    private fun defaultUser(): User {
+        return User("", "", "", Date().time, "", "", false, false, 0, 0, "", "", 0, "", "")
     }
 
     private fun Response<*>.logError() {
@@ -184,14 +210,14 @@ internal class TwitterClient(
         oAuthApiConsumer.setAdditionalParameters(httpParameters)
 
         val oAuthApi: OAuthApi = retrofitBuilderWithTimeoutAndLogger(
-                longProperty("tock_twitter_request_timeout_ms", 30000),
-                logger,
-                interceptors = listOf(SigningInterceptor(oAuthApiConsumer))
+            longProperty("tock_twitter_request_timeout_ms", 30000),
+            logger,
+            interceptors = listOf(SigningInterceptor(oAuthApiConsumer))
         )
-                .baseUrl(BASE_URL)
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .build()
-                .create()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .build()
+            .create()
 
         return try {
             val response = oAuthApi.requestToken().execute()
@@ -200,9 +226,9 @@ internal class TwitterClient(
                     logger.info { it }
                     val queryPairs = splitQuery(it)
                     RequestToken(
-                            queryPairs.get("oauth_token") ?: "",
-                            queryPairs.get("oauth_token_secret") ?: "",
-                            queryPairs.get("oauth_callback_confirmed")?.toBoolean() ?: false
+                        queryPairs.get("oauth_token") ?: "",
+                        queryPairs.get("oauth_token_secret") ?: "",
+                        queryPairs.get("oauth_callback_confirmed")?.toBoolean() ?: false
                     )
                 }
             } else {
@@ -240,14 +266,14 @@ internal class TwitterClient(
         oAuthApiConsumer.setAdditionalParameters(httpParameters)
 
         val oAuthApi: OAuthApi = retrofitBuilderWithTimeoutAndLogger(
-                longProperty("tock_twitter_request_timeout_ms", 30000),
-                logger,
-                interceptors = listOf(SigningInterceptor(oAuthApiConsumer))
+            longProperty("tock_twitter_request_timeout_ms", 30000),
+            logger,
+            interceptors = listOf(SigningInterceptor(oAuthApiConsumer))
         )
-                .baseUrl(BASE_URL)
-                .addConverterFactory(ScalarsConverterFactory.create())
-                .build()
-                .create()
+            .baseUrl(BASE_URL)
+            .addConverterFactory(ScalarsConverterFactory.create())
+            .build()
+            .create()
 
         return try {
             val response = oAuthApi.accessToken().execute()
@@ -256,10 +282,10 @@ internal class TwitterClient(
                     logger.info { it }
                     val queryPairs = splitQuery(it)
                     AccessToken(
-                            queryPairs["oauth_token"] ?: "",
-                            queryPairs["oauth_token_secret"] ?: "",
-                            queryPairs.get("user_id") ?: "",
-                            queryPairs["screen_name"] ?: ""
+                        queryPairs["oauth_token"] ?: "",
+                        queryPairs["oauth_token_secret"] ?: "",
+                        queryPairs.get("user_id") ?: "",
+                        queryPairs["screen_name"] ?: ""
                     )
                 }
             } else {
@@ -371,6 +397,31 @@ internal class TwitterClient(
     }
 
     /**
+     * Returns a variety of information about the user specified by the required user_id
+     *
+     * @return a user profile
+     */
+    fun user(userId: String): User {
+        return try {
+            val response = userApi.user(userId).execute()
+            if (response.isSuccessful) {
+                response.body()?.let {
+                    logger.info { it }
+                    it
+                } ?: defaultUser()
+            } else {
+                response.logError()
+                defaultUser()
+            }
+        } catch (e: Exception) {
+            //log and ignore
+            logger.error(e)
+            defaultUser()
+        }
+
+    }
+
+    /**
      * Returns all environments, webhook URLs and their statuses for the authenticating app. Currently, only one webhook URL can be registered to each environment.
      * We mark a URL as invalid if it fails the daily validation check. In order to re-enable the URL, call the update endpoint.
      *
@@ -416,8 +467,8 @@ internal class TwitterClient(
 
     fun b64HmacSHA256(payload: String): String {
         val signingKey = SecretKeySpec(
-                consumerSecret.toByteArray(),
-                "HmacSHA256"
+            consumerSecret.toByteArray(),
+            "HmacSHA256"
         )
 
         val mac = Mac.getInstance("HmacSHA256")
