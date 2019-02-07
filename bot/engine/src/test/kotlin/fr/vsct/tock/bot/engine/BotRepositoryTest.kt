@@ -216,9 +216,9 @@ class BotRepositoryTest : BotEngineTest() {
         every { botConfDAO.listenChanges(captureLambda()) } answers {
             //first configure the verticle
             verticleSlot.captured.configure()
-            //then check path is /1
-            assertEquals(1, verticleSlot.captured.router.routes.size)
-            assertEquals("/1", verticleSlot.captured.router.routes.first().path)
+            //then check path is healthcheck + /1
+            assertEquals(2, verticleSlot.captured.router.routes.size)
+            assertEquals("/1", verticleSlot.captured.router.routes[1].path)
             //then call the update
             listenChangesCalled = true
             lambda<() -> Unit>().invoke()
@@ -236,7 +236,7 @@ class BotRepositoryTest : BotEngineTest() {
         }
         every { connector.register(capture(controllerSlot)) } answers {
             controllerSlot.captured.registerServices(
-                "a",
+                "/a",
                 if (listenChangesCalled) installer2 else installer1
             )
         }
@@ -245,7 +245,7 @@ class BotRepositoryTest : BotEngineTest() {
         BotRepository.installBots(emptyList())
 
         //check verticle contains installer2 route (and so unregister has been called on installer1)
-        assertEquals(1, verticleSlot.captured.router.routes.size)
-        assertEquals("/2", verticleSlot.captured.router.routes.first().path)
+        assertEquals(2, verticleSlot.captured.router.routes.size)
+        assertEquals("/2", verticleSlot.captured.router.routes[1].path)
     }
 }

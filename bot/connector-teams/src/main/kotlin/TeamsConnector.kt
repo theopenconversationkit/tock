@@ -61,11 +61,6 @@ internal class TeamsConnector(
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
 
-            //healthcheck
-            router.get("$path/healthcheck").handler {
-                it.response().end()
-            }
-
             router.post(path).handler { context ->
                 val requestTimerData = BotRepository.requestTimer.start("teams_webhook")
                 try {

@@ -70,7 +70,7 @@ data class ConnectorConfiguration(
         botApplicationConfiguration: BotApplicationConfiguration
     ) : this(
         botApplicationConfiguration.applicationId,
-        botApplicationConfiguration.path ?: base?.path ?: "",
+        botApplicationConfiguration.path ?: base?.path ?: "/",
         botApplicationConfiguration.connectorType,
         botApplicationConfiguration.name,
         botApplicationConfiguration.baseUrl,

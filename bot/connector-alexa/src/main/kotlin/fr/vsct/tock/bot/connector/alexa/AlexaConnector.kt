@@ -82,11 +82,6 @@ class AlexaConnector internal constructor(
         controller.registerServices(path) { router ->
             logger.info("deploy rest alexa services for root path $path ")
 
-            //healthcheck
-            router.get("$path/healthcheck").handler {
-                it.response().end()
-            }
-
             router.post(path).blockingHandler { context ->
                 try {
                     handleRequest(controller, context)

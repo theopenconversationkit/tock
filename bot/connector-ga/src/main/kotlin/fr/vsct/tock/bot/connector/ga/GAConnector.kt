@@ -62,11 +62,6 @@ class GAConnector internal constructor(
         controller.registerServices(path) { router ->
             logger.info("deploy rest google assistant services for root path $path ")
 
-            //healthcheck
-            router.get("$path/healthcheck").handler {
-                it.response().end()
-            }
-
             router.post(path).handler { context ->
                 try {
                     if (isValidToken(context)) {

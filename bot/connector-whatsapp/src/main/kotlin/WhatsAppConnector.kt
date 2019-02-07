@@ -70,12 +70,6 @@ class WhatsAppConnector(
 
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
-
-            //healthcheck
-            router.get("$path/healthcheck").handler {
-                it.response().end()
-            }
-
             router.post(path).handler { context ->
                 if (!requestFilter.accept(context.request())) {
                     context.response().setStatusCode(403).end()

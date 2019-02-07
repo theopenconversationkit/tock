@@ -86,7 +86,7 @@ class MessengerConnector internal constructor(
     val appToken: String,
     val token: String,
     val verifyToken: String?,
-    val client: MessengerClient,
+    internal val client: MessengerClient,
     @Volatile
     private var subscriptionCheck: Boolean = webhookSubscriptionCheckEnabled
 ) : ConnectorBase(MessengerConnectorProvider.connectorType) {
@@ -133,12 +133,6 @@ class MessengerConnector internal constructor(
             if (webhookSubscriptionCheckEnabled) {
                 logger.info { "Subscribe to automatic webhook check" }
                 registerCheckWebhook()
-            }
-
-            //healthcheck
-            router.get("$path/healthcheck").blockingHandler {
-                if (!client.healthcheck()) it.response().statusCode = 503
-                it.response().end()
             }
 
             //see https://developers.facebook.com/docs/graph-api/webhooks
