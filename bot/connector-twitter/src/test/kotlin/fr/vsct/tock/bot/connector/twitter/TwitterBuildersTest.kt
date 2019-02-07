@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.connector.twitter
 import com.github.salomonbrys.kodein.Kodein
 import com.github.salomonbrys.kodein.KodeinInjector
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.sharedTestModule
 import fr.vsct.tock.shared.tockInternalInjector
@@ -40,9 +41,10 @@ class TwitterBuildersTest {
 
         every { bus.targetConnectorType } returns twitterConnectorType
         every { bus.applicationId } returns "appId"
+        every { bus.userId } returns PlayerId("userId")
+        every { bus.botId } returns PlayerId("botId")
         every { bus.userPreferences } returns UserPreferences()
         every { bus.translate(allAny()) } answers { firstArg() ?: "" }
     }
-
 
 }

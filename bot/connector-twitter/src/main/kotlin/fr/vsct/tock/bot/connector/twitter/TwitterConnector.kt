@@ -29,12 +29,17 @@ import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.monitoring.logError
+import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.shared.Executor
+import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
 import mu.KotlinLogging
+import org.apache.commons.lang3.LocaleUtils
 import java.time.Duration
+import java.time.ZoneOffset
 
 internal class TwitterConnector internal constructor(
     val applicationId: String,
@@ -50,6 +55,32 @@ internal class TwitterConnector internal constructor(
     }
 
     private val executor: Executor by injector.instance()
+
+    override fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences {
+
+        try {
+            val userProfile = client.user(userId.id)
+            logger.debug { "User profile : $userProfile for $userId" }
+            return UserPreferences(
+                userProfile.screenName,
+                "",
+                null,
+                ZoneOffset.of(userProfile.utcOffset ?: "Z"),
+                userProfile.lang?.let {
+                    try {
+                        LocaleUtils.toLocale(it)
+                    } catch (e: Exception) {
+                        logger.error(e)
+                        null
+                    }
+                } ?: defaultLocale,
+                userProfile.profileImageUrlHttps)
+        } catch (e: Exception) {
+            logger.error(e)
+        }
+        return UserPreferences()
+
+    }
 
     /**
      * Registers the connector for the specified controller.

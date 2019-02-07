@@ -20,6 +20,8 @@ import com.fasterxml.jackson.annotation.JsonProperty
 
 data class User(
     val id: String,
+    val lang: String?,
+    val location: String?,
     @JsonProperty("created_timestamp") val created: Long,
     val name: String,
     @JsonProperty("screen_name") val screenName: String,
@@ -27,7 +29,9 @@ data class User(
     val verified: Boolean,
     @JsonProperty("followers_count") val followersCount: Int,
     @JsonProperty("friends_count") val friendsCount: Int,
-    @JsonProperty("statuses_count") val statusesCount: Int,
     @JsonProperty("profile_image_url") val profileImageUrl: String,
-    @JsonProperty("profile_image_url_https") val profileImageUrlHttps: String
+    @JsonProperty("profile_image_url_https") val profileImageUrlHttps: String,
+    @JsonProperty("statuses_count") val statusesCount: Int,
+    @JsonProperty("time_zone") val timeZone: String?,
+    @JsonProperty("utc_offset") val utcOffset: String?
 )

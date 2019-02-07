@@ -84,6 +84,8 @@ internal class IncomingEventDeserializationTest {
             users = mapOf(
                 "user1" to User(
                     id = "id",
+                    lang = "fr",
+                    location = "",
                     created = Date().time,
                     name = "name",
                     screenName = "screenName",
@@ -93,10 +95,14 @@ internal class IncomingEventDeserializationTest {
                     friendsCount = 100,
                     statusesCount = 100,
                     profileImageUrl = "profileImageUrl",
-                    profileImageUrlHttps = "profileImageUrlHttps"
+                    profileImageUrlHttps = "profileImageUrlHttps",
+                    timeZone = "",
+                    utcOffset = ""
                 ),
                 "user2" to User(
                     id = "id",
+                    lang = "fr",
+                    location = "",
                     created = Date().time,
                     name = "name",
                     screenName = "screenName",
@@ -106,7 +112,9 @@ internal class IncomingEventDeserializationTest {
                     friendsCount = 100,
                     statusesCount = 100,
                     profileImageUrl = "profileImageUrl",
-                    profileImageUrlHttps = "profileImageUrlHttps"
+                    profileImageUrlHttps = "profileImageUrlHttps",
+                    timeZone = "",
+                    utcOffset = ""
                 )
 
             )
