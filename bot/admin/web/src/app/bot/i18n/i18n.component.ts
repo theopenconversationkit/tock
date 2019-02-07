@@ -34,7 +34,7 @@ export class I18nComponent extends I18nController implements OnInit {
 
   originalI18n: I18nLabel[];
   i18n: I18nLabel[];
-  filteredI18n: I18nLabel[];
+  filteredI18n: I18nLabel[] = [];
   filterString: string = "";
   filterOption: string = "";
   loading: boolean = false;
@@ -103,7 +103,7 @@ export class I18nComponent extends I18nController implements OnInit {
           return a.category.localeCompare(b.category);
         }
       );
-      this.filter(this.filterString);
+      this.filterImpl(this.filterString);
     });
   }
 
@@ -144,15 +144,15 @@ export class I18nComponent extends I18nController implements OnInit {
   }
 
   onSelectedCategoryChange() {
-    this.filter(this.filterString);
+    this.filterImpl(this.filterString);
   }
 
   onNotUsedFromChange() {
-    this.filter(this.filterString);
+    this.filterImpl(this.filterString);
   }
 
   filterValidatedChange() {
-    this.filter(this.filterString);
+    this.filterImpl(this.filterString);
   }
 
   filter(value: string) {
@@ -171,7 +171,6 @@ export class I18nComponent extends I18nController implements OnInit {
         && (this.selectedCategory === this.doNotFilterByCategory || i.category === this.selectedCategory)
         && (this.notUsedFrom == -1 || !i.lastUpdate || i.lastUpdate.getTime() < notUsedFromDate)
     });
-
     this.setCategoryOnFirstItem(this.filteredI18n);
   }
 
