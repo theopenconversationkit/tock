@@ -49,9 +49,14 @@ import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.test.TestErrorQuery
 import fr.vsct.tock.shared.BUILTIN_ENTITY_EVALUATOR_NAMESPACE
 import fr.vsct.tock.shared.booleanProperty
+import fr.vsct.tock.shared.defaultNamespace
 import fr.vsct.tock.shared.devEnvironment
+import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.namespace
+import fr.vsct.tock.shared.property
+import fr.vsct.tock.shared.security.TockUser
+import fr.vsct.tock.shared.security.TockUserRole
 import fr.vsct.tock.shared.security.TockUserRole.admin
 import fr.vsct.tock.shared.security.TockUserRole.technicalAdmin
 import fr.vsct.tock.shared.security.auth.TockAuthProvider
@@ -633,6 +638,20 @@ open class AdminVerticle : WebVerticle() {
                 )
             } else {
                 unauthorized()
+            }
+        }
+
+        if (devEnvironment) {
+            router.get("/rest/user").handler {
+                it.response().end(
+                    mapper.writeValueAsString(
+                        TockUser(
+                            property("tock_user", "admin@app.com"),
+                            defaultNamespace,
+                            TockUserRole.values().map { r -> r.name }.toSet()
+                        )
+                    )
+                )
             }
         }
 

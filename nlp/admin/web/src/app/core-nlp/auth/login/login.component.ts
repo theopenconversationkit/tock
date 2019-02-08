@@ -25,6 +25,7 @@ import {Router} from "@angular/router";
 })
 export class LoginComponent implements OnInit {
 
+  displayLogin:boolean = false;
   email: string;
   password: string;
   errorMessage: string;
@@ -34,6 +35,11 @@ export class LoginComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    if (this.authService.isSSO()) {
+      this.router.navigateByUrl("/");
+    } else {
+      this.displayLogin = true;
+    }
   }
 
   onSubmit() {

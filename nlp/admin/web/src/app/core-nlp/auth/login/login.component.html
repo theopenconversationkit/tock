@@ -14,7 +14,7 @@
   ~ limitations under the License.
   -->
 
-<mat-card class="">
+<mat-card *ngIf="displayLogin">
   <mat-card-title>Authentication</mat-card-title>
   <mat-card-content>
     <mat-spinner *ngIf="sendLogin" class="spinner"></mat-spinner>

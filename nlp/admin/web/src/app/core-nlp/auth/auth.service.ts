@@ -20,12 +20,13 @@ import {Router} from "@angular/router";
 import {AuthenticateRequest, AuthenticateResponse, User} from "../../model/auth";
 import {Observable} from "rxjs";
 import {RestService} from "../rest/rest.service";
+import {environment} from "../../../environments/environment";
 
 @Injectable()
 export class AuthService {
 
+  private ssologin = environment.ssologin;
   private logged: boolean;
-  private sso: boolean;
   private redirectUrl: string;
   private authListeners: AuthListener[] = [];
 
@@ -44,8 +45,8 @@ export class AuthService {
     return this.logged;
   }
 
-  isSSO() : boolean {
-    return this.sso;
+  isSSO(): boolean {
+    return this.ssologin || document.cookie.indexOf("tock-sso=") !== -1;
   }
 
   addListener(listener: AuthListener) {
@@ -83,7 +84,6 @@ export class AuthService {
   }
 
   loadUser(): Observable<boolean> {
-    this.sso = true;
     return this.rest.getNotAuthenticated("/user", (j => this.logUser(User.fromJSON(j))))
   }
 }
