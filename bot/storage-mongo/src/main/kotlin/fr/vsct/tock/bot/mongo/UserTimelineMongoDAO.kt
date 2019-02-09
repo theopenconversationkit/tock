@@ -126,6 +126,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
     private val archivedEntityValuesCol = database.getCollection<ArchivedEntityValuesCol>("archived_entity_values")
 
     init {
+        val ttlIndexOptions = IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
+
         userTimelineCol.ensureUniqueIndex(UserTimelineCol_.PlayerId.id)
         userTimelineCol.ensureIndex(LastUpdateDate)
         userTimelineCol.ensureIndex(TemporaryIds)
@@ -133,7 +135,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         dialogCol.ensureIndex(DialogCol_.PlayerIds.clientId)
         dialogCol.ensureIndex(
             DialogCol_.LastUpdateDate,
-            indexOptions = IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
+            indexOptions = ttlIndexOptions
         )
         dialogCol.ensureIndex(
             orderBy(
@@ -149,21 +151,25 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         dialogTextCol.ensureUniqueIndex(Text, DialogId)
         dialogTextCol.ensureIndex(
             Date,
-            indexOptions = IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
+            indexOptions = ttlIndexOptions
         )
         connectorMessageCol.ensureIndex(
             "{date:1}",
-            IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
+            ttlIndexOptions
         )
         connectorMessageCol.ensureIndex("{'_id.dialogId':1}")
         nlpStatsCol.ensureIndex(
             Date,
-            indexOptions = IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
+            indexOptions = ttlIndexOptions
         )
         nlpStatsCol.ensureIndex(NlpStatsCol_._id.actionId, AppNamespace)
         snapshotCol.ensureIndex(
             SnapshotCol_.LastUpdateDate,
-            indexOptions = IndexOptions().expireAfter(longProperty("tock_bot_dialog_index_ttl_days", 7), DAYS)
+            indexOptions = ttlIndexOptions
+        )
+        archivedEntityValuesCol.ensureIndex(
+            ArchivedEntityValuesCol_.LastUpdateDate,
+            indexOptions = ttlIndexOptions
         )
     }
 

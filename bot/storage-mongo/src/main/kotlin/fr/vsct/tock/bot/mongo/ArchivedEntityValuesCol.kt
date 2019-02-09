@@ -34,7 +34,8 @@ import java.time.Instant
 @JacksonData(internal = true)
 internal data class ArchivedEntityValuesCol(
     val _id: Id<ArchivedEntityValuesCol>,
-    val values: List<ArchivedEntityValueWrapper>
+    val values: List<ArchivedEntityValueWrapper>,
+    val lastUpdateDate: Instant = Instant.now()
 ) {
 
     constructor(values: List<ArchivedEntityValue>, id: Id<EntityStateValue>?)
