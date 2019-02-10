@@ -26,10 +26,10 @@ import fr.vsct.tock.shared.intProperty
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.property
-import fr.vsct.tock.shared.security.TockUser
 import fr.vsct.tock.shared.security.TockUserRole
 import fr.vsct.tock.shared.security.TockUserRole.nlpUser
 import fr.vsct.tock.shared.security.auth.AWSJWTAuthProvider
+import fr.vsct.tock.shared.security.auth.GithubOAuthProvider
 import fr.vsct.tock.shared.security.auth.PropertyBasedAuthProvider
 import fr.vsct.tock.shared.security.auth.TockAuthProvider
 import io.vertx.core.AbstractVerticle
@@ -63,6 +63,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.EnumSet
+import kotlin.LazyThreadSafetyMode.PUBLICATION
 
 /**
  * Base class for web Tock [io.vertx.core.Verticle]s. Provides utility methods.
@@ -108,6 +109,10 @@ abstract class WebVerticle : AbstractVerticle() {
      */
     open val healthcheckPath: String? get() = "$rootPath/healthcheck"
 
+    private val cachedAuthProvider: TockAuthProvider? by lazy(PUBLICATION) {
+        authProvider()
+    }
+
     @Deprecated(message = "replace with protectedPaths method", replaceWith = ReplaceWith("protectedPaths"))
     protected open fun protectedPath(): String = rootPath
 
@@ -123,7 +128,7 @@ abstract class WebVerticle : AbstractVerticle() {
                 try {
                     router.route().handler(bodyHandler())
                     addDevCorsHandler()
-                    authProvider()?.also { p ->
+                    cachedAuthProvider?.also { p ->
                         addAuth(p)
                     }
 
@@ -178,6 +183,8 @@ abstract class WebVerticle : AbstractVerticle() {
     protected open fun defaultAuthProvider(): TockAuthProvider =
         if (booleanProperty("tock_aws_jwt_enabled", false))
             AWSJWTAuthProvider(sharedVertx)
+        else if (booleanProperty("tock_github_oauth_enabled", false))
+            GithubOAuthProvider(sharedVertx)
         else PropertyBasedAuthProvider
 
     /**
@@ -189,7 +196,7 @@ abstract class WebVerticle : AbstractVerticle() {
      * The default role of a service.
      */
     protected open fun defaultRole(): TockUserRole? =
-        if (authProvider() == null) null else nlpUser
+        if (cachedAuthProvider == null) null else nlpUser
 
     protected open fun startServer(startFuture: Future<Void>) {
         val port = verticleIntProperty("port", 8080)
@@ -502,7 +509,7 @@ abstract class WebVerticle : AbstractVerticle() {
     fun <T> RoutingContext.queryId(name: String): Id<T>? = firstQueryParam(name)?.toId()
 
     val RoutingContext.organization: String
-        get() = (this.user() as TockUser).namespace
+        get() = cachedAuthProvider?.toTockUser(this)?.namespace ?: "none"
 
     fun HttpServerResponse.endJson(result: Any?) {
         if (result == null) {

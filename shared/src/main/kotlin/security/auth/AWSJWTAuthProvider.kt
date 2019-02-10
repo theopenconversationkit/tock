@@ -16,11 +16,8 @@
 
 package fr.vsct.tock.shared.security.auth
 
-import com.google.common.cache.Cache
-import com.google.common.cache.CacheBuilder
 import com.google.common.io.BaseEncoding
 import fr.vsct.tock.shared.defaultNamespace
-import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.security.TockUser
 import fr.vsct.tock.shared.security.TockUserRole
@@ -36,71 +33,21 @@ import io.vertx.ext.auth.jwt.JWTAuth
 import io.vertx.ext.auth.jwt.JWTAuthOptions
 import io.vertx.ext.auth.jwt.impl.JWTUser
 import io.vertx.ext.jwt.JWTOptions
-import io.vertx.ext.web.Cookie
-import io.vertx.ext.web.RoutingContext
-import io.vertx.ext.web.handler.CookieHandler
-import io.vertx.ext.web.handler.SessionHandler
-import io.vertx.ext.web.handler.UserSessionHandler
+import io.vertx.ext.web.handler.AuthHandler
 
-internal class AWSJWTAuthProvider(val vertx: Vertx) : JWTAuth, TockAuthProvider {
+internal class AWSJWTAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx), JWTAuth {
 
     companion object {
-        private val AWS_PUBLIC_KEY_LABEL = "awsPublicKey"
         private val jwtAlgorithm = property("jwt_algorithm", "ES256")
-        private val publicKeyCache: Cache<String, String> =
-            CacheBuilder
-                .newBuilder()
-                .maximumSize(1)
-                .build()
-        private var jwtAuthProvider: JWTAuth? = null
     }
 
-    private class ExceptPathHandler(
-        val healthcheckPath: String?,
-        val handler: Handler<RoutingContext>
-    ) : Handler<RoutingContext> {
+    //cached values
+    @Volatile
+    private var publicKey: String? = null
+    @Volatile
+    private var jwtAuthProvider: JWTAuth? = null
 
-        override fun handle(c: RoutingContext) {
-            if (c.request().path() == healthcheckPath) {
-                c.next()
-            } else {
-                handler.handle(c)
-            }
-        }
-    }
-
-    private object AddSSOCookieHandler : Handler<RoutingContext> {
-
-        override fun handle(c: RoutingContext) {
-            val cookie = Cookie.cookie("tock-sso", "1")
-            cookie.path = "/"
-            // Don't set max age - it's a session cookie
-            c.addCookie(cookie)
-            c.next()
-        }
-    }
-
-
-    override val sessionCookieName: String get() = "tock-sso-session"
-
-    override fun protectPaths(
-        verticle: WebVerticle,
-        pathsToProtect: Set<String>,
-        cookieHandler: CookieHandler,
-        sessionHandler: SessionHandler,
-        userSessionHandler: UserSessionHandler
-    ) {
-        val authHandler = AWSJWTAuthHandler(this, null)
-        with(verticle) {
-            router.route("/*").handler(ExceptPathHandler(healthcheckPath, cookieHandler))
-            router.route("/*").handler(ExceptPathHandler(healthcheckPath, sessionHandler))
-            router.route("/*").handler(ExceptPathHandler(healthcheckPath, userSessionHandler))
-            router.route("/*").handler(ExceptPathHandler(healthcheckPath, authHandler))
-            router.route("/*").handler(AddSSOCookieHandler)
-
-            router.get("$basePath/user").handler { it.response().end(mapper.writeValueAsString(it.user())) }
-        }
-    }
+    override fun createAuthHandler(verticle: WebVerticle): AuthHandler = AWSJWTAuthHandler(this, null)
 
     override fun authenticate(authInfo: JsonObject, resultHandler: Handler<AsyncResult<User>>) {
         jwtAuthProvider = getJwtAuthProvider(authInfo)
@@ -114,24 +61,18 @@ internal class AWSJWTAuthProvider(val vertx: Vertx) : JWTAuth, TockAuthProvider 
                     val customName = token.getString("email")
                     val (namespace, roleName) = parseCustomRole(customRole)
                     val u = TockUser(customName, namespace, TockUserRole.values().map { it.toString() }.toSet())
-                    u.isAuthorized(roleName) { result ->
-                        if (result.result()) {
-                            resultHandler.handle(Future.succeededFuture(u))
-                        } else {
-                            resultHandler.handle(Future.failedFuture("Unauthorized."))
-                        }
-                    }
+                    resultHandler.handle(Future.succeededFuture(u))
                 } else {
                     resultHandler.handle(Future.failedFuture("Unauthorized"))
                 }
             } else {
                 if (authInfo.getBoolean("retry") == null) {
-                    publicKeyCache.invalidate(AWS_PUBLIC_KEY_LABEL)
+                    publicKey = null
                     this.authenticate(authInfo.put("retry", true), resultHandler)
                 }
                 resultHandler.handle(Future.failedFuture("Unauthorized"))
             }
-        }
+        } ?: resultHandler.handle(Future.failedFuture("no jwt provider"))
     }
 
     /**
@@ -143,7 +84,6 @@ internal class AWSJWTAuthProvider(val vertx: Vertx) : JWTAuth, TockAuthProvider 
 
     private fun getJwtAuthProvider(authInfo: JsonObject): JWTAuth? {
 
-        val publicKey = publicKeyCache.getIfPresent("awsPublicKey")
         return if (publicKey == null) {
             val segments = authInfo.getString("jwt").split("\\.".toRegex())
             if (segments.size == 3) {
@@ -152,12 +92,9 @@ internal class AWSJWTAuthProvider(val vertx: Vertx) : JWTAuth, TockAuthProvider 
                 val kid = header.getString("kid")
                 val newPublicKey = RetrofitAWSPublicKeyClient.getPublicKey(kid)
                 if (newPublicKey != null) {
-                    publicKeyCache.put(
-                        AWS_PUBLIC_KEY_LABEL,
-                        newPublicKey.replace("-----BEGIN PUBLIC KEY-----\n", "").replace(
-                            "\n-----END PUBLIC KEY-----\n",
-                            ""
-                        )
+                    publicKey = newPublicKey.replace("-----BEGIN PUBLIC KEY-----\n", "").replace(
+                        "\n-----END PUBLIC KEY-----\n",
+                        ""
                     )
                     JWTAuth.create(
                         vertx, JWTAuthOptions(
@@ -169,10 +106,7 @@ internal class AWSJWTAuthProvider(val vertx: Vertx) : JWTAuth, TockAuthProvider 
                                                 .put("algorithm", jwtAlgorithm)
                                                 .put(
                                                     "publicKey",
-                                                    newPublicKey.replace(
-                                                        "-----BEGIN PUBLIC KEY-----\n",
-                                                        ""
-                                                    ).replace("\n-----END PUBLIC KEY-----\n", "")
+                                                    publicKey
                                                 )
                                         )
                                 )
@@ -184,6 +118,7 @@ internal class AWSJWTAuthProvider(val vertx: Vertx) : JWTAuth, TockAuthProvider 
     }
 
     override fun generateToken(claims: JsonObject?, options: JWTOptions?): String {
+        //do nothing
         return ""
     }
 }

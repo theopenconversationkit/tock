@@ -16,8 +16,11 @@
 
 package fr.vsct.tock.shared.security.auth
 
+import fr.vsct.tock.shared.security.TockUser
 import fr.vsct.tock.shared.vertx.WebVerticle
 import io.vertx.ext.auth.AuthProvider
+import io.vertx.ext.web.RoutingContext
+import io.vertx.ext.web.handler.AuthHandler
 import io.vertx.ext.web.handler.CookieHandler
 import io.vertx.ext.web.handler.SessionHandler
 import io.vertx.ext.web.handler.UserSessionHandler
@@ -34,6 +37,7 @@ interface TockAuthProvider : AuthProvider {
 
     /**
      * Protect paths for the specified verticle.
+     * @return the [AuthHandler].
      */
     fun protectPaths(
         verticle: WebVerticle,
@@ -41,5 +45,7 @@ interface TockAuthProvider : AuthProvider {
         cookieHandler: CookieHandler,
         sessionHandler: SessionHandler,
         userSessionHandler: UserSessionHandler
-    )
+    ): AuthHandler
+
+    fun toTockUser(context: RoutingContext): TockUser = context.user() as TockUser
 }

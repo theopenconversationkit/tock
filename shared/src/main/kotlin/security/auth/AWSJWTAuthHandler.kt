@@ -29,7 +29,7 @@ import mu.KotlinLogging
 internal class AWSJWTAuthHandler(authProvider: JWTAuth, skip: String?) : JWTAuthHandlerImpl(authProvider, skip) {
 
     private val skip: String? = null
-    val logger: KLogger = KotlinLogging.logger {}
+    private val logger: KLogger = KotlinLogging.logger {}
 
     private val options: JsonObject? = JsonObject()
 

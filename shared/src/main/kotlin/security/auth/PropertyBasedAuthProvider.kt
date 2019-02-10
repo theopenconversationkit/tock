@@ -36,6 +36,7 @@ import io.vertx.core.Handler
 import io.vertx.core.json.JsonObject
 import io.vertx.ext.auth.AuthProvider
 import io.vertx.ext.auth.User
+import io.vertx.ext.web.handler.AuthHandler
 import io.vertx.ext.web.handler.BasicAuthHandler
 import io.vertx.ext.web.handler.CookieHandler
 import io.vertx.ext.web.handler.SessionHandler
@@ -68,7 +69,7 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
         cookieHandler: CookieHandler,
         sessionHandler: SessionHandler,
         userSessionHandler: UserSessionHandler
-    ) {
+    ): AuthHandler {
         val authHandler = BasicAuthHandler.create(this)
         with(verticle) {
             (pathsToProtect + logoutPath + authenticatePath).forEach { protectedPath ->
@@ -120,6 +121,8 @@ internal object PropertyBasedAuthProvider : TockAuthProvider {
                 it.success()
             }
         }
+
+        return authHandler
     }
 
     override fun authenticate(authInfo: JsonObject, resultHandler: Handler<AsyncResult<User>>) {
