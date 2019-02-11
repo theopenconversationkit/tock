@@ -38,11 +38,13 @@ import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
+import fr.vsct.tock.shared.BUILTIN_ENTITY_EVALUATOR_NAMESPACE
 import fr.vsct.tock.shared.changeNamespace
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.name
+import fr.vsct.tock.shared.namespace
 import fr.vsct.tock.shared.provide
 import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 import fr.vsct.tock.shared.withoutNamespace
@@ -62,7 +64,9 @@ object ApplicationCodecService : ApplicationCodec {
 
     override fun export(applicationId: Id<ApplicationDefinition>, dumpType: DumpType): ApplicationDump {
         val app = config.getApplicationById(applicationId)!!
-        val entities = config.getEntityTypes()
+        val entities = config.getEntityTypes().filter {
+            it.name.namespace() == app.namespace || it.name.namespace() == BUILTIN_ENTITY_EVALUATOR_NAMESPACE
+        }
         val intents = config.getIntentsByApplicationId(applicationId)
         val sentences = config.getSentences(intents.map { it._id }.toSet())
         return ApplicationDump(app, entities, intents, sentences)
