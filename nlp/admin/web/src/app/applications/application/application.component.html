@@ -16,13 +16,13 @@
 
 <mat-card>
   <mat-card-title>
-    <span *ngIf="applications.length !== 0">NLP Application <span *ngIf="application && application?.name?.length !== 0">"{{application?.name}}"</span></span>
+    <span *ngIf="applications.length !== 0">NLU Application <span *ngIf="application && application?.name?.length !== 0">"{{application?.name}}"</span></span>
   </mat-card-title>
   <mat-card-content *ngIf="application">
     <mat-card>
       <mat-form-field>
-        <input matInput placeholder="New application name" [(ngModel)]="application.name"
-               (keyup.enter)="saveApplication()">
+        <input #appName name="appName" matInput placeholder="New application name" [(ngModel)]="application.name"
+               (keyup.enter)="saveApplication()" autofocus>
       </mat-form-field>
       <mat-checkbox class="separator" [(ngModel)]="application.mergeEngineTypes" matTooltip="If selected, this option uses built-in entity models (like dates) in conjunction with standard NER">Use entity models</mat-checkbox>
       <mat-checkbox class="separator" *ngIf="!application.mergeEngineTypes" [(ngModel)]="application.useEntityModels" matTooltip="If selected, built-in entity models results are provided only for info and potential entity disambiguation">Entity disambiguation only</mat-checkbox>
@@ -51,7 +51,7 @@
       </mat-card-actions>
     </mat-card>
     <mat-card>
-      <label for="engines">NLP engine:&nbsp;</label>
+      <label for="engines">NLU engine:&nbsp;</label>
       <mat-radio-group id="engines" [(ngModel)]="nlpEngineType" (change)="changeNlpEngine($event.value)">
         <mat-radio-button class="engine-type" *ngFor="let engine of state.supportedNlpEngines" [value]="engine.name">
           {{engine.name}}
@@ -71,7 +71,7 @@
     <button *ngIf="applications.length !== 0" (click)="cancel()" mat-button>Cancel</button>
     <button *ngIf="!newApplication" mat-raised-button (click)="deleteApplication()" color="warn">Delete Application
     </button>
-    <button *ngIf="newApplication" mat-raised-button (click)="saveApplication()" color="primary">Create new Application
+    <button *ngIf="newApplication" mat-raised-button (click)="saveApplication()" color="primary"><mat-icon>create_new_folder</mat-icon> Create new Application
     </button>
     <button *ngIf="!newApplication" mat-raised-button (click)="saveApplication()" color="primary">Update Application
     </button>

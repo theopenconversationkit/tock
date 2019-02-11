@@ -16,8 +16,8 @@
 
 <mat-card class="applications-applications">
   <mat-card-title>
-    <span *ngIf="state.applications.length === 0">Welcome! Please create your first NLP Application</span>
-    <span *ngIf="state.applications.length !== 0">NLP Applications</span>
+    <span *ngIf="state.applications.length === 0">Welcome! Please create your first NLU Application</span>
+    <span *ngIf="state.applications.length !== 0">NLU Applications</span>
   </mat-card-title>
 
   <mat-card-content>
@@ -52,7 +52,7 @@
     <button (click)="showUploadDumpPanel()" mat-button>
       Upload Dump
     </button>
-    <button mat-raised-button routerLink="create" color="primary">Create New
+    <button mat-raised-button routerLink="create" color="primary"><mat-icon>create_new_folder</mat-icon> Create New
       Application
     </button>
   </mat-card-actions>

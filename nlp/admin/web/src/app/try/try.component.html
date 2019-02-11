@@ -20,7 +20,8 @@
       <input matInput placeholder="Write some text" #tryIt (keyup.enter)="onTry(tryIt.value)">
     </mat-form-field>
     <button mat-raised-button (click)="onTry(tryIt.value)" color="primary">GO</button>
-    <button mat-raised-button (click)="advanced = true" class="advanced">Advanced</button>
+    &nbsp;
+    <button mat-button (click)="advanced = true">Advanced Options</button>
     <mat-card *ngIf="advanced">
       <mat-card-content>
         <mat-form-field>
@@ -29,7 +30,7 @@
         <mat-checkbox [(ngModel)]="skipCache" matTooltip="Force NLP model query (skip cache)">skip cache</mat-checkbox>
       </mat-card-content>
       <mat-card-actions>
-        <button mat-raised-button (click)="advanced = false">Hide advanced parameters</button>
+        <button mat-raised-button (click)="advanced = false">Hide Advanced Options</button>
       </mat-card-actions>
     </mat-card>
   </mat-card-content>

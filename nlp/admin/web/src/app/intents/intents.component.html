@@ -15,7 +15,7 @@
   -->
 
 <mat-card>
-  <mat-card-subtitle>The <span class="default_category">default</span> intent category is expanded by default.</mat-card-subtitle>
+  <mat-card-subtitle *ngIf="treeControl && treeControl.dataNodes.length !== 0">The <span class="default_category">default</span> intent category is expanded by default.</mat-card-subtitle>
   <mat-card-content>
     <mat-tree [treeControl]="treeControl" [dataSource]="intentsCategories">
       <mat-tree-node *matTreeNodeDef="let node" class="tree" [class.tree-open]="treeControl.isExpanded(node)">
