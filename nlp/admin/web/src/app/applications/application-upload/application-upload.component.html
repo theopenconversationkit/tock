@@ -22,15 +22,15 @@
 
       <p>
         <mat-radio-group [(ngModel)]="type">
-          <mat-radio-button *ngIf="state.hasRole(UserRole.technicalAdmin)" value="application">
+          <mat-radio-button *ngIf="state.hasRole(UserRole.technicalAdmin)" value="application" class="dump-type">
             Application Dump
           </mat-radio-button>
-          <mat-radio-button value="sentences">
+          <mat-radio-button value="sentences" class="dump-type">
             Sentences Dump
           </mat-radio-button>
         </mat-radio-group>
       </p>
-      <ul>
+      <ul class="mention">
         <li *ngIf="state.hasRole(UserRole.technicalAdmin)">The "Application Dump" format is an internal format, useful to copy application data across environments.
         </li>
         <li>The "Sentences Dump" format is an agnostic format, used to share data with other systems.</li>
@@ -39,14 +39,11 @@
         <mat-form-field id="applicationName">
           <input matInput [(ngModel)]="configuration.newApplicationName" placeholder="Target Application Name">
         </mat-form-field>
-        (If empty, application name in dump will be used)
+        <span class="mention">(If empty, application name in dump will be used)</span>
       </p>
       <p>
-        <label for="file">Please select a dump file:</label>
+        <label for="file" class="file-label">Please select a dump file:</label>
         <input id="file" type="file" ng2FileSelect [uploader]="uploader"/>
-      </p>
-      <p>
-        Only new data will be imported. No existing data will be overridden.
       </p>
     </div>
     <div *ngIf="report">
