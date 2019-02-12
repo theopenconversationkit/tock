@@ -73,6 +73,7 @@ import org.litote.kmongo.aggregate
 import org.litote.kmongo.and
 import org.litote.kmongo.bson
 import org.litote.kmongo.contains
+import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.descending
 import org.litote.kmongo.descendingSort
 import org.litote.kmongo.ensureIndex
@@ -371,6 +372,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
     override fun removeClient(clientId: String) {
         clientIdCol.findOneById(clientId)?.userIds?.forEach { remove(PlayerId(it)) }
+        clientIdCol.deleteOneById(clientId)
     }
 
     override fun loadWithoutDialogs(userId: PlayerId): UserTimeline {
