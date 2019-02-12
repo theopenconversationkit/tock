@@ -224,10 +224,6 @@ object ApplicationCodecService : ApplicationCodec {
                     .groupBy { it.qualifiedName }
                     .mapValues { it.value.first() }
                     .toMutableMap()
-            val sentencesMap = config
-                .getSentences(intentsByNameMap.values.map { it._id }.toSet())
-                .groupBy { it.text }
-                .toMutableMap()
 
             dump.sentences.forEach { s ->
                 val language = s.language ?: dump.language
@@ -252,12 +248,6 @@ object ApplicationCodecService : ApplicationCodec {
                                         val i = intent.copy(applications = intent.applications + appId)
                                         config.save(i)
                                         intentsByNameMap[intent.qualifiedName] = i
-                                        config.getSentences(setOf(i._id))
-                                            .forEach { sentence ->
-                                                sentencesMap.compute(
-                                                    sentence.text
-                                                ) { _, v -> (v ?: emptyList()) + sentence }
-                                            }
                                         i
                                     } else {
                                         IntentDefinition(
