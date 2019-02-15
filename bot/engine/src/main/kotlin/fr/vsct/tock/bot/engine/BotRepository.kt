@@ -74,6 +74,8 @@ object BotRepository {
     private val connectorControllerMap: MutableMap<BotApplicationConfiguration, ConnectorController> =
         ConcurrentHashMap()
 
+    @Volatile
+    private var botsInstalled: Boolean = false
 
     /**
      * Request timer for connectors.
@@ -81,15 +83,40 @@ object BotRepository {
     @Volatile
     var requestTimer: RequestTimer = object : RequestTimer {}
 
+    @Volatile
+    private var realHealthCheckHandler: (RoutingContext) -> Unit = {
+        if (!botsInstalled) {
+            it.response().setStatusCode(500).end()
+        } else {
+            executor.executeBlocking {
+                it.response().setStatusCode(if (nlpClient.healthcheck()) 200 else 500).end()
+            }
+        }
+    }
+
     /**
      * healthcheck handler to answer to GET /healthcheck.
      */
-    @Volatile
-    var healthcheckHandler: (RoutingContext) -> Unit = {
-        executor.executeBlocking {
-            it.response().setStatusCode(if (nlpClient.healthcheck()) 200 else 500).end()
+    var healthcheckHandler: (RoutingContext) -> Unit
+        get() = realHealthCheckHandler
+        set(h) {
+            realHealthCheckHandler = {
+                if (!botsInstalled) {
+                    it.response().setStatusCode(500).end()
+                } else {
+                    try {
+                        h.invoke(it)
+                    } catch (t: Throwable) {
+                        logger.error(t)
+                        try {
+                            it.response().setStatusCode(500).end()
+                        } catch (t: Throwable) {
+                            logger.error(t)
+                        }
+                    }
+                }
+            }
         }
-    }
 
     private val verticle by lazy { BotVerticle() }
 
@@ -176,7 +203,19 @@ object BotRepository {
         }
 
         //deploy verticle
-        vertx.deployVerticle(verticle)
+        if (botsInstalled) {
+            logger.warn { "bot already installed - try to configure new confs" }
+            verticle.configure()
+        } else {
+            vertx.deployVerticle(verticle) {
+                if (it.succeeded()) {
+                    logger.info { "Bots installed" }
+                    botsInstalled = true
+                } else {
+                    logger.error("Bots installation failure", it.cause() ?: IllegalArgumentException())
+                }
+            }
+        }
 
         //listen future changes
         botConfigurationDAO.listenChanges { executor.executeBlocking { checkBotConfigurations() } }

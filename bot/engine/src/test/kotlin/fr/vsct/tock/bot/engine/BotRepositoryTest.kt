@@ -33,6 +33,9 @@ import io.mockk.invoke
 import io.mockk.mockk
 import io.mockk.slot
 import io.mockk.verify
+import io.vertx.core.AsyncResult
+import io.vertx.core.Future
+import io.vertx.core.Handler
 import io.vertx.ext.web.Router
 import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
@@ -199,7 +202,10 @@ class BotRepositoryTest : BotEngineTest() {
         })
 
         val verticleSlot: CapturingSlot<BotVerticle> = slot()
-        every { mockedVertx.deployVerticle(capture(verticleSlot)) } returns Unit
+        val completionHandlerSlot: CapturingSlot<Handler<AsyncResult<String>>> = slot()
+        every { mockedVertx.deployVerticle(capture(verticleSlot), capture(completionHandlerSlot)) } answers {
+            completionHandlerSlot.captured.handle(Future.succeededFuture())
+        }
 
         val appSlot: CapturingSlot<BotApplicationConfiguration> = slot()
         every { botConfDAO.save(capture(appSlot)) } answers { appSlot.captured }
