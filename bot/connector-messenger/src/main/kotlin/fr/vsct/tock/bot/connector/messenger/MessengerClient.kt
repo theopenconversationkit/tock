@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.connector.messenger
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.connector.ConnectorException
+import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.UserProfile
 import fr.vsct.tock.bot.connector.messenger.model.attachment.AttachmentRequest
@@ -56,7 +57,6 @@ import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
-import java.lang.Exception
 
 /**
  * Messenger client.
@@ -285,8 +285,12 @@ internal class MessengerClient(val secretKey: String) {
                 return response.body() ?: throwError(request, "null body")
             }
         } catch (e: Exception) {
-            logger.logError(e, requestTimerData)
-            throwError(request, e.message ?: "")
+            requestTimer.throwable(e, requestTimerData)
+            if (e is ConnectorMessage) {
+                throw e
+            } else {
+                throwError(request, e.message ?: "")
+            }
         } finally {
             requestTimer.end(requestTimerData)
         }
