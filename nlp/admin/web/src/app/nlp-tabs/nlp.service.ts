@@ -119,6 +119,10 @@ export class NlpService implements OnDestroy {
     return this.rest.post("/logs/search", query, LogsResult.fromJSON)
   }
 
+  exportLogs(application: Application, locale: string): Observable<Blob> {
+    return this.rest.get(`/logs/${application._id}/${locale}/export`, (r => new Blob([r], {type: 'text/csv'})));
+  }
+
   getSentencesDump(application: Application, query: SearchQuery, full: boolean): Observable<Blob> {
     return this.rest.post(`/sentences/dump/${full ? 'full/' : ''}${application._id}`, query, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }

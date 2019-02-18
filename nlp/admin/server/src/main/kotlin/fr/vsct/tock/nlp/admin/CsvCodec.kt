@@ -14,34 +14,19 @@
  * limitations under the License.
  */
 
-.search {
-  height:100%;
-  width:90%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top:20px;
-  text-align:center;
-}
+package fr.vsct.tock.nlp.admin
 
-.log {
-  width:90%;
-  margin-left: auto;
-  margin-right: auto;
-  text-align:center;
-  margin-bottom: 10px;
-}
+import fr.vsct.tock.shared.property
+import org.apache.commons.csv.CSVFormat
+import org.apache.commons.csv.CSVPrinter
 
-.search-input {
-  width:40%;
-  font-size: large;
-}
+/**
+ * Csv utilities.
+ */
+object CsvCodec {
 
-.intentProbability {
-  font-style: italic;
-  font-size: x-small;
-}
+    private val s = property("tock_csv_delimiter", ";")
 
-.button {
-  vertical-align: text-top;
-  margin: auto;
+    fun csvFormat(): CSVFormat = CSVFormat.DEFAULT.withDelimiter(s[0]).withTrim(true)
+    fun newPrinter(sb: StringBuilder): CSVPrinter = CSVPrinter(sb, csvFormat())
 }

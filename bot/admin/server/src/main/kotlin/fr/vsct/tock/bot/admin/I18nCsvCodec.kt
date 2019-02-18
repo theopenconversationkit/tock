@@ -17,16 +17,15 @@
 package fr.vsct.tock.bot.admin
 
 import com.github.salomonbrys.kodein.instance
+import fr.vsct.tock.nlp.admin.CsvCodec
+import fr.vsct.tock.nlp.admin.CsvCodec.csvFormat
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
-import fr.vsct.tock.shared.property
 import fr.vsct.tock.translator.I18nDAO
 import fr.vsct.tock.translator.I18nLabel
 import fr.vsct.tock.translator.I18nLocalizedLabel
 import fr.vsct.tock.translator.UserInterfaceType
 import mu.KotlinLogging
-import org.apache.commons.csv.CSVFormat
-import org.apache.commons.csv.CSVPrinter
 import org.litote.kmongo.toId
 import java.io.StringReader
 import java.util.Locale
@@ -38,14 +37,11 @@ object I18nCsvCodec {
 
     private val logger = KotlinLogging.logger {}
 
-    private val s = property("tock_csv_delimiter", ";")
     private val i18nDAO: I18nDAO  by injector.instance()
-
-    private fun csvFormat(): CSVFormat = CSVFormat.DEFAULT.withDelimiter(s[0]).withTrim(true)
 
     fun exportCsv(namespace: String): String {
         val sb = StringBuilder()
-        val printer = CSVPrinter(sb, csvFormat())
+        val printer = CsvCodec.newPrinter(sb)
         printer.printRecord(
             "Label",
             "Category",

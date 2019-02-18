@@ -129,8 +129,8 @@ object AdminService {
         return LogsReport(
             query.start,
             result,
-            applicationId,
-            { front.getIntentIdByQualifiedName(it.withNamespace(query.namespace)) })
+            applicationId
+        ) { front.getIntentIdByQualifiedName(it.withNamespace(query.namespace)) }
     }
 
     fun searchTestIntentErrors(query: TestErrorQuery, encryptSentences: Boolean): IntentTestErrorQueryResultReport {

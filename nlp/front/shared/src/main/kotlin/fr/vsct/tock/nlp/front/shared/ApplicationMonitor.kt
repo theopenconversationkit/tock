@@ -16,11 +16,15 @@
 
 package fr.vsct.tock.nlp.front.shared
 
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestExportLog
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogIntentStat
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQueryResult
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogStat
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogStatQuery
+import org.litote.kmongo.Id
+import java.util.Locale
 
 /**
  *
@@ -32,4 +36,6 @@ interface ApplicationMonitor {
     fun stats(query: ParseRequestLogStatQuery): List<ParseRequestLogStat>
 
     fun intentStats(query: ParseRequestLogStatQuery): List<ParseRequestLogIntentStat>
+
+    fun export(applicationId: Id<ApplicationDefinition>, language: Locale): List<ParseRequestExportLog>
 }

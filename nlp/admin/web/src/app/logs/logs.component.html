@@ -27,12 +27,15 @@
 
 <div *ngIf="total !== -1">
   <h1 *ngIf="total === 0">{{title}} is empty!
-    <button mat-button (click)="refresh()">
+    <button mat-button (click)="refresh()" matTooltip="Refresh">
       <mat-icon>refresh</mat-icon>
     </button>
   </h1>
   <h1 *ngIf="total !== 0"><span *ngIf="total > 10">Estimated</span> {{title}} size : {{total}}
-    <button mat-button (click)="refresh()">
+    <button mat-icon-button class="button" (click)="downloadDump()" matTooltip="Download a minimal csv dump of the logs">
+      <mat-icon>cloud_download</mat-icon>
+    </button>
+    <button mat-icon-button class="button" (click)="refresh()">
       <mat-icon>refresh</mat-icon>
     </button>
   </h1>

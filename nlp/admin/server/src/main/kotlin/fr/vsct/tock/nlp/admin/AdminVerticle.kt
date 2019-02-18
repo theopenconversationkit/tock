@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.nlp.admin
 
+import fr.vsct.tock.nlp.admin.CsvCodec.newPrinter
 import fr.vsct.tock.nlp.admin.model.ApplicationScopedQuery
 import fr.vsct.tock.nlp.admin.model.ApplicationWithIntents
 import fr.vsct.tock.nlp.admin.model.CreateEntityQuery
@@ -381,6 +382,23 @@ open class AdminVerticle : WebVerticle() {
         { context, s: LogsQuery ->
             if (context.organization == s.namespace) {
                 service.searchLogs(s)
+            } else {
+                unauthorized()
+            }
+        }
+
+        blockingJsonGet("/logs/:appId/:locale/export")
+        { context ->
+            val app = front.getApplicationById(context.pathId("appId"))!!
+            if (context.organization == app.namespace) {
+                val sb = StringBuilder()
+                val p = newPrinter(sb)
+
+                front.export(app._id, Locale(context.pathParam("locale")))
+                    .forEach {
+                        p.printRecord(it.date, it.intent, it.text)
+                    }
+                sb
             } else {
                 unauthorized()
             }

@@ -23,6 +23,7 @@ import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.ReturnDocument.AFTER
 import fr.vsct.tock.nlp.front.service.storage.ParseRequestLogDAO
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
+import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestExportLog
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLog
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogIntentStat
 import fr.vsct.tock.nlp.front.shared.monitoring.ParseRequestLogQuery
@@ -53,9 +54,10 @@ import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogStatResult_.Companion
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.name
 import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
+import org.bson.Document
+import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
-import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.aggregate
 import org.litote.kmongo.and
 import org.litote.kmongo.ascending
@@ -68,12 +70,15 @@ import org.litote.kmongo.document
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
+import org.litote.kmongo.excludeId
+import org.litote.kmongo.fields
 import org.litote.kmongo.findOne
 import org.litote.kmongo.from
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.group
 import org.litote.kmongo.gte
 import org.litote.kmongo.inc
+import org.litote.kmongo.include
 import org.litote.kmongo.lte
 import org.litote.kmongo.match
 import org.litote.kmongo.newId
@@ -83,9 +88,11 @@ import org.litote.kmongo.save
 import org.litote.kmongo.set
 import org.litote.kmongo.sort
 import org.litote.kmongo.sum
+import org.litote.kmongo.withDocumentClass
 import org.litote.kmongo.year
 import java.time.Instant
 import java.time.LocalDate
+import java.util.Date
 import java.util.Locale
 import java.util.concurrent.TimeUnit
 
@@ -292,18 +299,35 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                 )
             val c = col.withReadPreference(secondaryPreferred())
             val count = c.countDocuments(baseFilter)
-            if (count > start) {
+            return if (count > start) {
                 val list = c.find(baseFilter)
                     .descendingSort(Date)
                     .skip(start.toInt())
                     .limit(size)
 
-                return ParseRequestLogQueryResult(count, list.map { it.toRequest() }.toList())
+                ParseRequestLogQueryResult(count, list.map { it.toRequest() }.toList())
             } else {
-                return ParseRequestLogQueryResult(0, emptyList())
+                ParseRequestLogQueryResult(0, emptyList())
             }
         }
     }
+
+    override fun export(applicationId: Id<ApplicationDefinition>, language: Locale): List<ParseRequestExportLog> =
+        col.withReadPreference(secondaryPreferred())
+            .withDocumentClass<Document>()
+            .find(and(ApplicationId eq applicationId, Query.context.language eq language))
+            .descendingSort(Date)
+            .projection(fields(include(Query.queries, Result.intent, Result.intentNamespace, Date), excludeId()))
+            .map {
+                @Suppress("UNCHECKED_CAST")
+                ParseRequestExportLog(
+                    ((it["query"] as Document)["queries"] as List<String>).first(),
+                    (it["result"] as? Document)?.getString("intent")
+                        ?.let { intent -> (it["result"] as Document).getString("intentNamespace") + ":" + intent },
+                    (it["date"] as Date).toInstant()
+                )
+            }
+            .toList()
 
     override fun stats(query: ParseRequestLogStatQuery): List<ParseRequestLogStat> {
         return with(query) {

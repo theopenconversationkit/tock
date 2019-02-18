@@ -14,34 +14,11 @@
  * limitations under the License.
  */
 
-.search {
-  height:100%;
-  width:90%;
-  margin-left: auto;
-  margin-right: auto;
-  margin-top:20px;
-  text-align:center;
-}
+package fr.vsct.tock.nlp.front.shared.monitoring
 
-.log {
-  width:90%;
-  margin-left: auto;
-  margin-right: auto;
-  text-align:center;
-  margin-bottom: 10px;
-}
+import java.time.Instant
 
-.search-input {
-  width:40%;
-  font-size: large;
-}
-
-.intentProbability {
-  font-style: italic;
-  font-size: x-small;
-}
-
-.button {
-  vertical-align: text-top;
-  margin: auto;
-}
+/**
+ * A minimal export log.
+ */
+data class ParseRequestExportLog(val text: String, val intent: String? = null, val date: Instant)

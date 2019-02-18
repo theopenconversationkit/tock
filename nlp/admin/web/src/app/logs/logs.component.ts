@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 
+import {saveAs} from "file-saver";
 import {Component, Inject} from "@angular/core";
 import {Log, LogsQuery, PaginatedResult} from "../model/nlp";
 import {ScrollComponent} from "../scroll/scroll.component";
@@ -21,7 +22,7 @@ import {StateService} from "../core-nlp/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
 import {PaginatedQuery, SearchMark} from "../model/commons";
 import {Observable} from "rxjs";
-import {MAT_DIALOG_DATA, MatDialog, MatDialogRef} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatSnackBar} from "@angular/material";
 import {ApplicationConfig} from "../core-nlp/application.config";
 import {Router} from "@angular/router";
 
@@ -39,7 +40,8 @@ export class LogsComponent extends ScrollComponent<Log> {
               private nlp: NlpService,
               private dialog: MatDialog,
               private config: ApplicationConfig,
-              private router: Router) {
+              private router: Router,
+              private snackBar: MatSnackBar) {
     super(state);
   }
 
@@ -86,6 +88,18 @@ export class LogsComponent extends ScrollComponent<Log> {
         response: log.responseDetails()
       }
     })
+  }
+
+  downloadDump() {
+    setTimeout(_ => {
+      this.nlp.exportLogs(
+        this.state.currentApplication,
+        this.state.currentLocale)
+        .subscribe(blob => {
+          saveAs(blob, this.state.currentApplication.name + "_" + this.state.currentLocale + "_logs.csv");
+          this.snackBar.open(`Export provided`, "Dump", {duration: 1000});
+        })
+    }, 1);
   }
 }
 
