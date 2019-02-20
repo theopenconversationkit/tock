@@ -198,12 +198,13 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
     internal val col: MongoCollection<ParseRequestLogCol> by lazy {
         val c = database.getCollection<ParseRequestLogCol>("parse_request_log")
         c.ensureIndex(Query.context.language, ApplicationId)
+        c.ensureIndex(Query.context.language, ApplicationId, Query.context.test)
         c.ensureIndex(Query.context.language, ApplicationId, Text)
         c.ensureIndex(
             Date,
             indexOptions = IndexOptions().expireAfter(longProperty("tock_nlp_log_index_ttl_days", 7), TimeUnit.DAYS)
         )
-        c
+        c.withReadPreference(secondaryPreferred())
     }
 
     internal val statsCol: MongoCollection<ParseRequestLogStatCol> by lazy {
@@ -289,6 +290,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                 and(
                     ApplicationId eq applicationId,
                     Query.context.language eq language,
+                    Query.context.test eq false,
                     if (search.isNullOrBlank()) null
                     else if (query.onlyExactMatch) Text eq search
                     else Text.regex(search!!.trim(), "i"),
@@ -297,10 +299,9 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                     if (clientDevice.isNullOrBlank()) null else Query.context.clientDevice eq clientDevice,
                     if (clientId.isNullOrBlank()) null else Query.context.clientId eq clientId
                 )
-            val c = col.withReadPreference(secondaryPreferred())
-            val count = c.countDocuments(baseFilter)
+            val count = col.countDocuments(baseFilter)
             return if (count > start) {
-                val list = c.find(baseFilter)
+                val list = col.find(baseFilter)
                     .descendingSort(Date)
                     .skip(start.toInt())
                     .limit(size)
@@ -313,9 +314,8 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
     }
 
     override fun export(applicationId: Id<ApplicationDefinition>, language: Locale): List<ParseRequestExportLog> =
-        col.withReadPreference(secondaryPreferred())
-            .withDocumentClass<Document>()
-            .find(and(ApplicationId eq applicationId, Query.context.language eq language))
+        col.withDocumentClass<Document>()
+            .find(and(ApplicationId eq applicationId, Query.context.language eq language, Query.context.test eq false))
             .descendingSort(Date)
             .projection(fields(include(Query.queries, Result.intent, Result.intentNamespace, Date), excludeId()))
             .map {
@@ -336,6 +336,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                     and(
                         ApplicationId eq applicationId,
                         Query.context.language eq language,
+                        Query.context.test eq false,
                         if (intent == null) null else Result.intent eq intent
                     )
                 ),

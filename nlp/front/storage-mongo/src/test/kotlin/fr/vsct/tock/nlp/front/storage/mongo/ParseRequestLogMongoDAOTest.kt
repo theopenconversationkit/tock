@@ -16,6 +16,8 @@
 
 package fr.vsct.tock.nlp.front.storage.mongo
 
+import com.mongodb.ReadPreference
+import com.mongodb.ReadPreference.*
 import com.mongodb.client.MongoCollection
 import fr.vsct.tock.nlp.core.Entity
 import fr.vsct.tock.nlp.core.EntityType
@@ -95,14 +97,14 @@ internal class ParseRequestLogMongoDAOTest : AbstractTest() {
     @Test
     fun `save persists log and create a stat if one does not exist`() {
         ParseRequestLogMongoDAO.save(log)
-        assertEquals(log, col.findOne()?.toRequest())
+        assertEquals(log, col.withReadPreference(primary()).findOne()?.toRequest())
         assertEquals(ParseRequestLogStatCol(log), statsCol.findOne())
     }
 
     @Test
     fun `save persists log and increment a stat if one already exists`() {
         ParseRequestLogMongoDAO.save(log)
-        assertEquals(log, col.findOne()?.toRequest())
+        assertEquals(log, col.withReadPreference(primary()).findOne()?.toRequest())
         assertEquals(ParseRequestLogStatCol(log), statsCol.findOne())
         ParseRequestLogMongoDAO.save(log)
         assertEquals(1, statsCol.countDocuments())
