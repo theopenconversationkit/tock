@@ -66,7 +66,7 @@ export class BotService {
   }
 
   downloadI18nLabelsCsv(): Observable<Blob> {
-    return this.rest.get("/i18n/export/csv", (r => new Blob([r], {type: 'text/csv'})))
+    return this.rest.get("/i18n/export/csv", (r => new Blob([r], {type: 'text/csv;charset=utf-8'})))
   }
 
   downloadI18nLabelsJson(): Observable<Blob> {
