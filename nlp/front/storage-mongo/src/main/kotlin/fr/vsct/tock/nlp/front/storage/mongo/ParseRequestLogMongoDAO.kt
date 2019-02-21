@@ -290,10 +290,12 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
                 and(
                     ApplicationId eq applicationId,
                     Query.context.language eq language,
-                    Query.context.test eq false,
-                    if (search.isNullOrBlank()) null
-                    else if (query.onlyExactMatch) Text eq search
-                    else Text.regex(search!!.trim(), "i"),
+                    if (query.displayTests) null else Query.context.test eq false,
+                    when {
+                        search.isNullOrBlank() -> null
+                        query.onlyExactMatch -> Text eq search
+                        else -> Text.regex(search!!.trim(), "i")
+                    },
                     if (searchMark == null) null else Date lte searchMark!!.date,
                     if (sinceDate == null) null else Date gte sinceDate,
                     if (clientDevice.isNullOrBlank()) null else Query.context.clientDevice eq clientDevice,

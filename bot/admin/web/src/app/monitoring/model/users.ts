@@ -30,7 +30,8 @@ export class UserSearchQuery extends PaginatedQuery {
               public name?: String,
               public from?: Date,
               public to?: Date,
-              public flags?: string[]) {
+              public flags?: string[],
+              public displayTests?:boolean) {
     super(namespace, applicationName, language, start, size)
   }
 }

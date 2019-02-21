@@ -21,6 +21,7 @@
       <mat-form-field class="search-input">
         <input matInput placeholder="Search Logs" [(ngModel)]="text" (keyup.enter)="refresh()">
       </mat-form-field>
+      <mat-slide-toggle [(ngModel)]="test" (change)="refresh()">Display tests</mat-slide-toggle>
       <button mat-button (click)="refresh()">GO</button>
     </mat-card-content>
   </mat-card>

@@ -27,7 +27,8 @@ data class UserSearchQuery(
         val name: String?,
         val from: ZonedDateTime?,
         val to: ZonedDateTime?,
-        val flags: Set<String> = emptySet()) : PaginatedQuery() {
+        val flags: Set<String> = emptySet(),
+        val displayTests:Boolean = false) : PaginatedQuery() {
 
     fun toUserReportQuery(): UserReportQuery {
         return UserReportQuery(
@@ -39,6 +40,7 @@ data class UserSearchQuery(
                 name,
                 from,
                 to,
-                flags.map { it to null }.toMap())
+                flags.map { it to null }.toMap(),
+                displayTests)
     }
 }

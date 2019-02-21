@@ -38,7 +38,7 @@ import {BotSharedService} from "../../shared/bot-shared.service";
 })
 export class DialogsComponent extends ScrollComponent<DialogReport> {
 
-  filter: DialogFilter;
+  filter: DialogFilter = new DialogFilter(true, false);
   state: StateService;
   connectorTypes: ConnectorType[] = [];
 
@@ -61,14 +61,15 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
       )
   }
 
+  waitAndRefresh() {
+    setTimeout(_ => this.refresh());
+  }
+
   search(query: PaginatedQuery): Observable<PaginatedResult<DialogReport>> {
     return this.route.queryParams.pipe(mergeMap(params => {
-      if (!this.filter) {
-        this.filter = new DialogFilter(true);
-        this.filter.dialogId = params["dialogId"];
-        this.filter.text = params["text"];
-        this.filter.intentName = params["intentName"];
-      }
+      this.filter.dialogId = params["dialogId"];
+      this.filter.text = params["text"];
+      this.filter.intentName = params["intentName"];
       return this.monitoring.dialogs(this.buildDialogQuery(query));
     }));
   }
@@ -94,7 +95,8 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
       this.filter.dialogId,
       this.filter.text,
       this.filter.intentName,
-      this.filter.connectorType);
+      this.filter.connectorType,
+      this.filter.displayTests);
   }
 
   addDialogToTestPlan(planId: string, dialog: DialogReport) {
@@ -110,9 +112,10 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
 
 export class DialogFilter {
   constructor(public exactMatch: boolean,
+              public displayTests: boolean,
               public dialogId?: string,
               public text?: string,
               public intentName?: string,
-              public connectorType?:ConnectorType) {
+              public connectorType?: ConnectorType) {
   }
 }

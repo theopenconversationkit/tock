@@ -63,6 +63,9 @@ internal class DialogCol_Serializer : StdSerializer<DialogCol>(DialogCol::class.
         if(_groupId_ == null) { gen.writeNull() } else {
                 gen.writeString(_groupId_)
                 }
+        gen.writeFieldName("test")
+        val _test_ = value.test
+        gen.writeBoolean(_test_)
         gen.writeEndObject()
     }
 }

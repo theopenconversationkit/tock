@@ -9,6 +9,7 @@ import com.fasterxml.jackson.databind.module.SimpleModule
 import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.user.PlayerId
 import java.time.Instant
+import kotlin.Boolean
 import kotlin.String
 import kotlin.collections.List
 import kotlin.collections.Map
@@ -41,6 +42,8 @@ internal class DialogCol_Deserializer : JsonDeserializer<DialogCol>(), JacksonMo
             var _lastUpdateDate_set : Boolean = false
             var _groupId_: String? = null
             var _groupId_set : Boolean = false
+            var _test_: Boolean? = null
+            var _test_set : Boolean = false
             var _token_ : JsonToken? = currentToken
             while (_token_?.isStructEnd != true) { 
                 if(_token_ != JsonToken.FIELD_NAME) {
@@ -86,6 +89,11 @@ internal class DialogCol_Deserializer : JsonDeserializer<DialogCol>(), JacksonMo
                              else p.text;
                             _groupId_set = true
                             }
+                    "test" -> {
+                            _test_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.booleanValue;
+                            _test_set = true
+                            }
                     else -> {
                             if (_token_?.isStructStart == true)
                             p.skipChildren()
@@ -95,10 +103,10 @@ internal class DialogCol_Deserializer : JsonDeserializer<DialogCol>(), JacksonMo
                 _token_ = currentToken
                         } 
             return if(_playerIds_set && __id_set && _state_set && _stories_set &&
-                    _applicationIds_set && _lastUpdateDate_set && _groupId_set)
+                    _applicationIds_set && _lastUpdateDate_set && _groupId_set && _test_set)
                     DialogCol(playerIds = _playerIds_!!, _id = __id_!!, state = _state_!!, stories =
                             _stories_!!, applicationIds = _applicationIds_!!, lastUpdateDate =
-                            _lastUpdateDate_!!, groupId = _groupId_)
+                            _lastUpdateDate_!!, groupId = _groupId_, test = _test_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_playerIds_set)
@@ -114,7 +122,9 @@ internal class DialogCol_Deserializer : JsonDeserializer<DialogCol>(), JacksonMo
                     if(_lastUpdateDate_set)
                     map[parameters.getValue("lastUpdateDate")] = _lastUpdateDate_
                     if(_groupId_set)
-                    map[parameters.getValue("groupId")] = _groupId_ 
+                    map[parameters.getValue("groupId")] = _groupId_
+                    if(_test_set)
+                    map[parameters.getValue("test")] = _test_ 
                     primaryConstructor.callBy(map) 
                     }
         } 
@@ -132,7 +142,8 @@ internal class DialogCol_Deserializer : JsonDeserializer<DialogCol>(), JacksonMo
                 primaryConstructor.findParameterByName("stories")!!, "applicationIds" to
                 primaryConstructor.findParameterByName("applicationIds")!!, "lastUpdateDate" to
                 primaryConstructor.findParameterByName("lastUpdateDate")!!, "groupId" to
-                primaryConstructor.findParameterByName("groupId")!!) }
+                primaryConstructor.findParameterByName("groupId")!!, "test" to
+                primaryConstructor.findParameterByName("test")!!) }
 
         private val _playerIds__reference: TypeReference<Set<PlayerId>> = object :
                 TypeReference<Set<PlayerId>>() {}

@@ -35,6 +35,7 @@ export class LogsComponent extends ScrollComponent<Log> {
 
   title: string = "Logs";
   text: string;
+  test: boolean = false;
 
   constructor(state: StateService,
               private nlp: NlpService,
@@ -61,7 +62,8 @@ export class LogsComponent extends ScrollComponent<Log> {
       query.start,
       query.size,
       query.searchMark,
-      this.text));
+      this.text,
+      this.test));
   }
 
 

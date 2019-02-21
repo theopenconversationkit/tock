@@ -34,7 +34,7 @@ import {PaginatedQuery} from "../../model/commons";
 })
 export class UserTimelinesComponent extends ScrollComponent<UserReport> {
 
-  filter: UserFilter = new UserFilter([]);
+  filter: UserFilter = new UserFilter([], false);
 
   constructor(state: StateService,
               private monitoring: MonitoringService,
@@ -66,11 +66,15 @@ export class UserTimelinesComponent extends ScrollComponent<UserReport> {
   }
 
   changeBefore() {
-    setTimeout(_ => this.refresh() );
+    this.waitAndRefresh();
   }
 
   changeAfter() {
-    setTimeout(_ => this.refresh() );
+    this.waitAndRefresh();
+  }
+
+  waitAndRefresh() {
+    setTimeout(_ => this.refresh());
   }
 
   search(query: PaginatedQuery): Observable<PaginatedResult<UserReport>> {
@@ -91,7 +95,8 @@ export class UserTimelinesComponent extends ScrollComponent<UserReport> {
       null,
       this.filter.from,
       this.filter.to,
-      this.filter.flags);
+      this.filter.flags,
+      this.filter.displayTests);
   }
 
 
@@ -135,6 +140,7 @@ export class UserTimelinesComponent extends ScrollComponent<UserReport> {
 
 export class UserFilter {
   constructor(public flags: string[],
+              public displayTests: boolean,
               public from?: Date,
               public to?: Date) {
   }

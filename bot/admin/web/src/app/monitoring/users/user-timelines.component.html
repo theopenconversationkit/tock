@@ -24,13 +24,15 @@
         <mat-datepicker-toggle matSuffix [for]="after"></mat-datepicker-toggle>
       </mat-form-field>
       <mat-datepicker #after (selectedChanged)="changeAfter()"></mat-datepicker>
-
+      &nbsp;
       <mat-form-field>
         <input matInput [matDatepicker]="before" placeholder="Modified before" [(ngModel)]="filter.to"
                (dateChange)="changeBefore()">
         <mat-datepicker-toggle matSuffix [for]="before"></mat-datepicker-toggle>
       </mat-form-field>
       <mat-datepicker #before (selectedChanged)="changeBefore()"></mat-datepicker>
+      &nbsp;
+      <mat-slide-toggle class="test" [(ngModel)]="filter.displayTests" (change)="waitAndRefresh()">Display tests</mat-slide-toggle>
       &nbsp;
       <mat-chip-list *ngIf="filter.flags.length !== 0">
               <mat-chip *ngFor="let f of filter.flags"

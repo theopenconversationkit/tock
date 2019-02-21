@@ -40,6 +40,8 @@
           <mat-option value="unknown">Unknown</mat-option>
         </mat-select>
       </mat-form-field>
+      &nbsp;
+      <mat-slide-toggle class="test" [(ngModel)]="filter.displayTests" (change)="waitAndRefresh()">Display tests</mat-slide-toggle>
       <button mat-button (click)="refresh()">GO</button>
     </mat-card-content>
   </mat-card>

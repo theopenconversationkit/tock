@@ -25,14 +25,19 @@ import java.util.Locale
 /**
  *
  */
-data class ParseRequestLogQuery(val applicationId: Id<ApplicationDefinition>,
-                                val language: Locale,
-                                val start: Long = 0,
-                                val size: Int = 1,
-                                val search: String? = null,
-                                val onlyExactMatch: Boolean = false,
-                                val searchMark: SearchMark? = null,
-                                val clientDevice: String? = null,
-                                val clientId: String? = null,
-                                val sinceDate: Instant? = null) {
-}
+data class ParseRequestLogQuery(
+    val applicationId: Id<ApplicationDefinition>,
+    val language: Locale,
+    val start: Long = 0,
+    val size: Int = 1,
+    val search: String? = null,
+    val onlyExactMatch: Boolean = false,
+    val searchMark: SearchMark? = null,
+    val clientDevice: String? = null,
+    val clientId: String? = null,
+    val sinceDate: Instant? = null,
+    /**
+     * Display test logs.
+     */
+    val displayTests: Boolean = false
+)

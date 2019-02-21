@@ -641,8 +641,7 @@ export class ClassifiedEntity {
   static sort(entityA: ClassifiedEntity, entityB: ClassifiedEntity): number {
     if (entityA.start < entityB.start) {
       return -1
-    }
-    else if (entityA.start > entityB.start) {
+    } else if (entityA.start > entityB.start) {
       return 1;
     }
     return 0;
@@ -755,7 +754,8 @@ export class LogsQuery extends PaginatedQuery {
               public start: number,
               public size: number,
               public searchMark?: SearchMark,
-              public search?: string) {
+              public search?: string,
+              public test?: boolean) {
     super(namespace, applicationName, language, start, size, searchMark)
   }
 }

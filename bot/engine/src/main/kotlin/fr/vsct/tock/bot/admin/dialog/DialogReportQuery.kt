@@ -24,16 +24,22 @@ import java.util.Locale
 /**
  * Query for dialogs.
  */
-data class DialogReportQuery(val namespace: String,
-                             val nlpModel: String,
-                             val language: Locale? = null,
-                             val start: Long = 0,
-                             val size: Int = 1,
-                             val playerId: PlayerId? = null,
-                             val text: String? = null,
-                             val dialogId: String? = null,
-                             val intentName: String? = null,
-                             val exactMatch:Boolean = false,
-                             val from: ZonedDateTime? = null,
-                             val to: ZonedDateTime? = null,
-                             val connectorType:ConnectorType? = null)
+data class DialogReportQuery(
+    val namespace: String,
+    val nlpModel: String,
+    val language: Locale? = null,
+    val start: Long = 0,
+    val size: Int = 1,
+    val playerId: PlayerId? = null,
+    val text: String? = null,
+    val dialogId: String? = null,
+    val intentName: String? = null,
+    val exactMatch: Boolean = false,
+    val from: ZonedDateTime? = null,
+    val to: ZonedDateTime? = null,
+    val connectorType: ConnectorType? = null,
+    /**
+     * Display test dialogs.
+     */
+    val displayTests: Boolean = false
+)

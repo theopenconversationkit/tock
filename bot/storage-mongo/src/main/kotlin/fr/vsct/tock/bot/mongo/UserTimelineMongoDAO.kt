@@ -149,6 +149,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         dialogCol.ensureIndex(DialogCol_.GroupId)
 
         dialogTextCol.ensureIndex(Text)
+        dialogTextCol.ensureIndex(Text)
         dialogTextCol.ensureUniqueIndex(Text, DialogId)
         dialogTextCol.ensureIndex(
             Date,
@@ -433,7 +434,13 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             val applicationsIds =
                 botConfiguration
                     .getConfigurationsByNamespaceAndNlpModel(query.namespace, query.nlpModel)
-                    .map { it.applicationId }
+                    .flatMap {
+                        listOfNotNull(
+                            it.applicationId,
+                            //special messenger connector fix
+                            it.parameters["pageId"]
+                        )
+                    }
                     .distinct()
             val filter =
                 and(
@@ -450,7 +457,8 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                                 "{$or:[{'$key.expirationDate':{$gt:${now().json}}},{'$key.expirationDate':{$type:10}}]}"
                             )
                         }
-                    }.joinToString(",", "{$and:[", "]}").bson
+                    }.joinToString(",", "{$and:[", "]}").bson,
+                    if (query.displayTests) null else UserTimelineCol_.UserPreferences.test eq false
                 )
             logger.debug("user search query: $filter")
             val c = userTimelineCol.withReadPreference(secondaryPreferred())
@@ -470,7 +478,13 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             val applicationsIds =
                 botConfiguration
                     .getConfigurationsByNamespaceAndNlpModel(query.namespace, query.nlpModel)
-                    .map { it.applicationId }
+                    .flatMap {
+                        listOfNotNull(
+                            it.applicationId,
+                            //special messenger connector fix
+                            it.parameters["pageId"]
+                        )
+                    }
                     .distinct()
             val dialogIds = if (query.text.isNullOrBlank()) {
                 emptySet()
@@ -489,6 +503,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             }
             val filter = and(
                 DialogCol_.ApplicationIds `in` applicationsIds.filter { it.isNotEmpty() },
+                if (query.playerId != null || query.displayTests) null else DialogCol_.Test eq false,
                 if (query.playerId == null) null else PlayerIds.id eq query.playerId!!.id,
                 if (query.dialogId == null) null else _id eq query.dialogId!!.toId(),
                 if (dialogIds.isEmpty()) null else _id `in` dialogIds,

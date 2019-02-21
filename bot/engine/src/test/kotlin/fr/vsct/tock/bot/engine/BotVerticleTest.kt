@@ -22,7 +22,7 @@ import kotlin.test.assertFalse
 /**
  *
  */
-class BotVerticleTest {
+class BotVerticleTest : BotEngineTest() {
 
     @Test
     fun `unregisterRouter activates secondary router if one exists`() {

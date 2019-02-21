@@ -4,6 +4,7 @@ import fr.vsct.tock.bot.engine.dialog.Dialog
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerId_Col
 import java.time.Instant
+import kotlin.Boolean
 import kotlin.String
 import kotlin.Suppress
 import kotlin.collections.Collection
@@ -31,6 +32,8 @@ private val __LastUpdateDate: KProperty1<DialogCol, Instant?>
     get() = DialogCol::lastUpdateDate
 private val __GroupId: KProperty1<DialogCol, String?>
     get() = DialogCol::groupId
+private val __Test: KProperty1<DialogCol, Boolean?>
+    get() = DialogCol::test
 internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*, DialogCol?>) :
         KPropertyPath<T, DialogCol?>(previous,property) {
     val playerIds: PlayerId_Col<T>
@@ -54,6 +57,9 @@ internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty
     val groupId: KPropertyPath<T, String?>
         get() = KPropertyPath<T, String?>(this,__GroupId)
 
+    val test: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath<T, Boolean?>(this,__Test)
+
     companion object {
         val PlayerIds: PlayerId_Col<DialogCol>
             get() = PlayerId_Col<DialogCol>(null,__PlayerIds)
@@ -68,7 +74,9 @@ internal class DialogCol_<T>(previous: KPropertyPath<T, *>?, property: KProperty
         val LastUpdateDate: KProperty1<DialogCol, Instant?>
             get() = __LastUpdateDate
         val GroupId: KProperty1<DialogCol, String?>
-            get() = __GroupId}
+            get() = __GroupId
+        val Test: KProperty1<DialogCol, Boolean?>
+            get() = __Test}
 }
 
 internal class DialogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -94,6 +102,9 @@ internal class DialogCol_Col<T>(previous: KPropertyPath<T, *>?, property: KPrope
 
     val groupId: KPropertyPath<T, String?>
         get() = KPropertyPath<T, String?>(this,__GroupId)
+
+    val test: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath<T, Boolean?>(this,__Test)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DialogCol_<T> = DialogCol_(this,
@@ -121,6 +132,9 @@ internal class DialogCol_Map<T, K>(previous: KPropertyPath<T, *>?, property: KPr
 
     val groupId: KPropertyPath<T, String?>
         get() = KPropertyPath<T, String?>(this,__GroupId)
+
+    val test: KPropertyPath<T, Boolean?>
+        get() = KPropertyPath<T, Boolean?>(this,__Test)
 
     @Suppress("UNCHECKED_CAST")
     override fun memberWithAdditionalPath(additionalPath: String): DialogCol_<T> = DialogCol_(this,

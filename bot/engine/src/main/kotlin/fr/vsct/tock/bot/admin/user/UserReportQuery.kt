@@ -23,14 +23,17 @@ import java.util.Locale
  *
  */
 data class UserReportQuery(
-        val namespace: String,
-        val nlpModel: String,
-        val language: Locale,
-        val start: Long = 0,
-        val size: Int = 1,
-        val name: String? = null,
-        val from: ZonedDateTime? = null,
-        val to: ZonedDateTime? = null,
-        val flags: Map<String, String?> = emptyMap()
-) {
-}
+    val namespace: String,
+    val nlpModel: String,
+    val language: Locale,
+    val start: Long = 0,
+    val size: Int = 1,
+    val name: String? = null,
+    val from: ZonedDateTime? = null,
+    val to: ZonedDateTime? = null,
+    val flags: Map<String, String?> = emptyMap(),
+    /**
+     * Display test users.
+     */
+    val displayTests: Boolean = false
+)
