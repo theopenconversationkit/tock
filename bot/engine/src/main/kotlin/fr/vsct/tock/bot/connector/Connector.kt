@@ -16,6 +16,9 @@
 
 package fr.vsct.tock.bot.connector
 
+import fr.vsct.tock.bot.definition.IntentAware
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
+import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -54,6 +57,18 @@ interface Connector {
      * @param delayInMs the optional delay
      */
     fun send(event: Event, callback: ConnectorCallback, delayInMs: Long = 0)
+
+    /**
+     * Sends a [SendNotification] to the connector.
+     */
+    fun notify(
+        controller: ConnectorController,
+        recipientId: PlayerId,
+        intent: IntentAware,
+        step: StoryStep<out StoryHandlerDefinition>? = null,
+        parameters: Map<String, String> = emptyMap()
+    ): Unit =
+        throw UnsupportedOperationException()
 
     /**
      * Load user preferences - default implementation returns null.

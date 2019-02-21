@@ -20,6 +20,9 @@ import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorCallbackBase
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.definition.BotDefinition
+import fr.vsct.tock.bot.definition.IntentAware
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
+import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -39,6 +42,16 @@ interface ConnectorController {
      * The connector used by the controller.
      */
     val connector: Connector
+
+    /**
+     * Sends a [SendNotification] to the connector.
+     */
+    fun notify(
+        recipientId: PlayerId,
+        intent: IntentAware,
+        step: StoryStep<out StoryHandlerDefinition>? = null,
+        parameters: Map<String, String> = emptyMap()): Unit =
+        connector.notify(this, recipientId, intent, step, parameters)
 
     /**
      * Handles an event sent by the connector. the primary goal of this controller.

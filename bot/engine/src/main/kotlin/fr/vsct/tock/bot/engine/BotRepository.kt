@@ -25,12 +25,16 @@ import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotAnswerInterceptor
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
+import fr.vsct.tock.bot.definition.IntentAware
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryHandlerListener
+import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.config.StoryConfigurationMonitor
 import fr.vsct.tock.bot.engine.monitoring.RequestTimer
 import fr.vsct.tock.bot.engine.nlp.BuiltInKeywordListener
 import fr.vsct.tock.bot.engine.nlp.NlpController
 import fr.vsct.tock.bot.engine.nlp.NlpListener
+import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.nlp.api.client.NlpClient
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.defaultLocale
@@ -119,6 +123,23 @@ object BotRepository {
         }
 
     private val verticle by lazy { BotVerticle() }
+
+    /**
+     * Sends a notification to the connector.
+     * A [BotBus] is created and the corresponding story is called.
+     */
+    fun notify(
+        applicationId: String,
+        recipientId: PlayerId,
+        intent: IntentAware,
+        step: StoryStep<out StoryHandlerDefinition>? = null,
+        parameters: Map<String, String> = emptyMap()
+    ) {
+        val conf = connectorControllerMap.keys.firstOrNull { it.applicationId == applicationId }
+                ?: error("unknown application $applicationId")
+        connectorControllerMap.getValue(conf).notify(recipientId, intent, step, parameters)
+    }
+
 
     /**
      * Registers a new [ConnectorProvider].

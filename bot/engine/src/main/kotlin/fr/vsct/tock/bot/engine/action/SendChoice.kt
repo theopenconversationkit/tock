@@ -26,6 +26,7 @@ import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.message.Choice
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.shared.mapNotNullValues
 import fr.vsct.tock.shared.security.StringObfuscatorMode
 import fr.vsct.tock.shared.security.TockObfuscatorService
 import org.litote.kmongo.Id
@@ -55,7 +56,7 @@ class SendChoice(
         applicationId: String,
         recipientId: PlayerId,
         intentName: String,
-        step: StoryStep<out StoryHandlerDefinition>,
+        step: StoryStep<out StoryHandlerDefinition>?,
         parameters: Map<String, String> = emptyMap(),
         id: Id<Action> = newId(),
         date: Instant = Instant.now(),
@@ -67,7 +68,7 @@ class SendChoice(
                 applicationId,
                 recipientId,
                 intentName,
-                parameters + (STEP_PARAMETER to step.name),
+                parameters + mapNotNullValues(STEP_PARAMETER to step?.name),
                 id,
                 date,
                 state,

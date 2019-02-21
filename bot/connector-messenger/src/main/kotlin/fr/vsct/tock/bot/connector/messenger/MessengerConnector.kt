@@ -44,9 +44,13 @@ import fr.vsct.tock.bot.connector.messenger.model.send.SenderAction.typing_off
 import fr.vsct.tock.bot.connector.messenger.model.send.SenderAction.typing_on
 import fr.vsct.tock.bot.connector.messenger.model.send.UrlPayload
 import fr.vsct.tock.bot.connector.messenger.model.webhook.CallbackRequest
+import fr.vsct.tock.bot.definition.IntentAware
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
+import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotRepository.requestTimer
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.event.MarkSeenEvent
 import fr.vsct.tock.bot.engine.event.TypingOffEvent
@@ -619,5 +623,27 @@ class MessengerConnector internal constructor(
                 logger.error("Error when running webhook subscription", e)
             }
         }
+    }
+
+    override fun notify(
+        controller: ConnectorController,
+        recipientId: PlayerId,
+        intent: IntentAware,
+        step: StoryStep<out StoryHandlerDefinition>?,
+        parameters: Map<String, String>
+    ) {
+        controller.handle(
+            SendChoice(
+                recipientId,
+                applicationId,
+                PlayerId(pageId, bot),
+                intent.wrappedIntent().name,
+                step,
+                parameters
+            ),
+            ConnectorData(
+                MessengerConnectorCallback(applicationId)
+            )
+        )
     }
 }
