@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.connector
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
+import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -59,7 +60,14 @@ interface Connector {
     fun send(event: Event, callback: ConnectorCallback, delayInMs: Long = 0)
 
     /**
-     * Sends a [SendNotification] to the connector.
+     * Sends a notification to the connector.
+     * A [BotBus] is created and the corresponding story is called.
+     *
+     * @param applicationId the configuration connector id
+     * @param recipientId the recipient identifier
+     * @param intent the notification intent
+     * @param step the optional step target
+     * @param parameters the optional parameters
      */
     fun notify(
         controller: ConnectorController,
@@ -68,7 +76,7 @@ interface Connector {
         step: StoryStep<out StoryHandlerDefinition>? = null,
         parameters: Map<String, String> = emptyMap()
     ): Unit =
-        throw UnsupportedOperationException()
+        throw UnsupportedOperationException("Connector does not support notification")
 
     /**
      * Load user preferences - default implementation returns null.

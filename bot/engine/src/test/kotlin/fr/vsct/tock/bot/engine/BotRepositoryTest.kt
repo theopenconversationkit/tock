@@ -23,8 +23,10 @@ import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.BotProvider
+import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.engine.BotRepository.botProviders
 import fr.vsct.tock.bot.engine.BotRepository.connectorProviders
+import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.shared.defaultLocale
 import fr.vsct.tock.shared.mockedVertx
 import io.mockk.CapturingSlot
@@ -253,5 +255,44 @@ class BotRepositoryTest : BotEngineTest() {
         //check verticle contains installer2 route (and so unregister has been called on installer1)
         assertEquals(2, verticleSlot.captured.router.routes.size)
         assertEquals("/2", verticleSlot.captured.router.routes[1].path)
+    }
+
+    @Test
+    fun `notify calls connector notify method`() {
+        val connectorType = ConnectorType("test")
+        val botId = botDefinition.botId
+        val connector: Connector = mockk(relaxed = true)
+        val botConfs = listOf(
+            BotApplicationConfiguration(
+                connectorType.id,
+                botId,
+                botDefinition.namespace,
+                botDefinition.nlpModelName,
+                connectorType,
+                parameters = mapOf("test" to "test")
+            )
+        )
+
+        every { botConfDAO.getConfigurations() } answers { botConfs }
+
+        val connectorProvider = object : ConnectorProvider {
+            override val connectorType: ConnectorType = connectorType
+            override fun connector(connectorConfiguration: ConnectorConfiguration): Connector = connector
+        }
+        BotRepository.registerConnectorProvider(connectorProvider)
+        BotRepository.registerBotProvider(object : BotProvider {
+            override fun botDefinition(): BotDefinition = botDefinition
+        })
+
+        val appSlot: CapturingSlot<BotApplicationConfiguration> = slot()
+        every { botConfDAO.save(capture(appSlot)) } answers { appSlot.captured }
+
+        BotRepository.installBots(emptyList())
+
+        val intent = Intent("a")
+        val recipientId = PlayerId("user")
+        BotRepository.notify("test", recipientId, intent)
+
+        verify { connector.notify(any(), recipientId, intent, null, any()) }
     }
 }
