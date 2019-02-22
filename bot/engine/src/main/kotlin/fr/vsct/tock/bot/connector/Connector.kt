@@ -81,9 +81,12 @@ interface Connector {
     /**
      * Load user preferences - default implementation returns null.
      */
-    fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? {
-        //default implementation returns null
-        return null
-    }
+    fun loadProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? = null
+
+    /**
+     * Refresh user preferences - default implementation returns null.
+     * Only not null values are taken into account.
+     */
+    fun refreshProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? = null
 
 }

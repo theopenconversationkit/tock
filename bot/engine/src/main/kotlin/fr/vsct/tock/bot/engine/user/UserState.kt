@@ -35,7 +35,11 @@ data class UserState(
 
     companion object {
         private const val PROFILE_LOADED_FLAG = "tock_profile_loaded"
+        private const val PROFILE_REFRESHED_FLAG = "tock_profile_refreshed"
         private const val BOT_DISABLED_FLAG = "tock_bot_disabled"
+
+        private val refreshDuration = longProperty("tock_bot_refresh_profil_duration_in_minutes", 60 * 24 * 5)
+        private val disabledDuration = longProperty("tock_bot_disabled_duration_in_minutes", 60 * 24 * 5)
     }
 
     /**
@@ -53,13 +57,25 @@ data class UserState(
             else removeFlag(PROFILE_LOADED_FLAG)
         }
 
+    internal var profileRefreshed: Boolean
+        get() = getFlag(PROFILE_REFRESHED_FLAG)?.toBoolean() ?: false
+        set(value) {
+            if (value)
+                setFlag(
+                    PROFILE_REFRESHED_FLAG,
+                    refreshDuration,
+                    value.toString()
+                )
+            else removeFlag(PROFILE_REFRESHED_FLAG)
+        }
+
     var botDisabled: Boolean
         get() = getFlag(BOT_DISABLED_FLAG)?.toBoolean() ?: false
         set(value) {
             if (value)
                 setFlag(
                     BOT_DISABLED_FLAG,
-                    longProperty("tock_bot_disabled_duration_in_minutes", 60 * 24 * 5),
+                    disabledDuration,
                     value.toString()
                 )
             else removeFlag(BOT_DISABLED_FLAG)

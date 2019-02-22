@@ -292,7 +292,14 @@ internal class Bot(
                 val pref = connector.loadProfile(connectorData, userTimeline.playerId)
                 if (pref != null) {
                     userState.profileLoaded = true
+                    userState.profileRefreshed = true
                     userPreferences.fillWith(pref)
+                }
+            } else if (!userState.profileRefreshed) {
+                userState.profileRefreshed = true
+                val pref = connector.refreshProfile(connectorData, userTimeline.playerId)
+                if (pref != null) {
+                    userPreferences.refreshWith(pref)
                 }
             }
             action.state.testEvent = userPreferences.test

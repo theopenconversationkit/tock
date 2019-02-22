@@ -73,4 +73,18 @@ data class UserPreferences(
         test = userPref.test
     }
 
+    /**
+     * Refresh the current [UserPreferences] with the specified [UserPreferences].
+     * Only not null values are taken into account.
+     */
+    fun refreshWith(userPref: UserPreferences) {
+        userPref.firstName?.also { firstName = it }
+        userPref.lastName?.also { lastName = it }
+        userPref.email?.also { email = it }
+        timezone = userPref.timezone
+        locale = userPref.locale
+        userPref.picture?.also { picture = it }
+        userPref.gender?.also { gender = it }
+    }
+
 }

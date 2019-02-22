@@ -559,6 +559,17 @@ class MessengerConnector internal constructor(
         return UserPreferences()
     }
 
+    override fun refreshProfile(callback: ConnectorCallback, userId: PlayerId): UserPreferences? =
+        loadProfile(callback, userId).run {
+            //refresh only picture, locale & timezone
+            if (picture != null) {
+                UserPreferences(locale = locale, timezone = timezone, picture = picture)
+            } else {
+                null
+            }
+        }
+
+
     private fun getToken(event: Event): String = getToken(event.applicationId)
 
     private fun getToken(appId: String): String =

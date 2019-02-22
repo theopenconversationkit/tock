@@ -225,6 +225,10 @@ internal class TockConnectorController constructor(
         return connector.loadProfile(data.callback, playerId)
     }
 
+    fun refreshProfile(data: ConnectorData, playerId: PlayerId): UserPreferences? {
+        return connector.refreshProfile(data.callback, playerId)
+    }
+
     fun startTypingInAnswerTo(action: Action, data: ConnectorData) {
         connector.send(TypingOnEvent(action.playerId, action.applicationId), data.callback)
     }
