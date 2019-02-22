@@ -431,17 +431,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
     override fun search(query: UserReportQuery): UserReportQueryResult {
         with(query) {
-            val applicationsIds =
-                botConfiguration
-                    .getConfigurationsByNamespaceAndNlpModel(query.namespace, query.nlpModel)
-                    .flatMap {
-                        listOfNotNull(
-                            it.applicationId,
-                            //special messenger connector fix
-                            it.parameters["pageId"]
-                        )
-                    }
-                    .distinct()
+            val applicationsIds = getApplicationIds(query.namespace, query.nlpModel)
             val filter =
                 and(
                     ApplicationIds `in` applicationsIds.filter { it.isNotEmpty() },
@@ -473,19 +463,24 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         }
     }
 
+    private fun getApplicationIds(namespace: String, nlpModel: String): Set<String> =
+        botConfiguration
+            .getConfigurationsByNamespaceAndNlpModel(namespace, nlpModel)
+            .asSequence()
+            .flatMap {
+                sequenceOf(
+                    it.applicationId,
+                    //special messenger connector fix
+                    it.parameters["pageId"],
+                    it.parameters["appId"]
+                ).filterNotNull()
+            }
+            .toSet()
+
+
     override fun search(query: DialogReportQuery): DialogReportQueryResult {
         with(query) {
-            val applicationsIds =
-                botConfiguration
-                    .getConfigurationsByNamespaceAndNlpModel(query.namespace, query.nlpModel)
-                    .flatMap {
-                        listOfNotNull(
-                            it.applicationId,
-                            //special messenger connector fix
-                            it.parameters["pageId"]
-                        )
-                    }
-                    .distinct()
+            val applicationsIds = getApplicationIds(query.namespace, query.nlpModel)
             val dialogIds = if (query.text.isNullOrBlank()) {
                 emptySet()
             } else {
