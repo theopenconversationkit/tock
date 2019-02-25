@@ -22,7 +22,7 @@ Enable "Read, write, and direct messages" permission
 
 https://developer.twitter.com/en/account/environments
 
-### Configure connector
+## Configure connector
 
 You will be given:
 
@@ -37,6 +37,31 @@ You will be given:
 Access token is associated to your developer account by default.
 
 * Then you can configure your connector for your bot: go to the Configuration -> Bot Configurations menu in the Tock Bot administration interface, and create a new configuration.
+
+## Create a webhook and validate it (using twurl)
+
+### Install `twurl` on your machine
+* See https://github.com/twitter/twurl for details
+* Get the bot URL 
+
+### Authorize twurl using your app
+
+    twurl authorize --consumer-key xxxxxxxxx --consumer-secret yyyyyyyy
+
+### Registering a webhook in "develop" environment
+
+    twurl -X POST "/1.1/account_activity/all/develop/webhooks.json?url=https://botUrl/aiv-twitter"
+
+### List webhooks in "develop" environment
+
+    twurl "/1.1/account_activity/all/develop/webhooks.json"
+
+    [{"id":"1234","url":"https://botUrl/aiv-twitter","valid":true,"created_timestamp":"2019-02-25 10:59:12 +0000"}]
+
+
+### Subscribe current twitter account on "develop" environment
+
+    twurl -X POST "/1.1/account_activity/all/develop/subscriptions.json"
 
 ### How to use
 ##### Simple message:

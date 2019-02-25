@@ -157,16 +157,6 @@ internal class TwitterConnector internal constructor(
                 }
             }
 
-            executor.executeBlocking(Duration.ofSeconds(5)) {
-                if (!alreadyRegistred()) {
-                    if (registerWebhook()) {
-                        subscribeAccount()
-                    }
-                } else {
-                    subscribeAccount()
-                }
-            }
-
         }
     }
 
@@ -178,73 +168,6 @@ internal class TwitterConnector internal constructor(
         val existingWebhooks = client.webhooks()
         existingWebhooks.find { webhook: Webhook -> webhook.url == url }?.let {
             client.unregisterWebhook(it.id)
-        }
-    }
-
-    private fun webhook(): Webhook? {
-        return client.webhooks().find { it.url == url }
-    }
-
-    /**
-     * Check if connector endpoint is already registered in Twitter
-     *
-     * @return boolean true if webhook exists in Twitter
-     */
-    private fun alreadyRegistred(): Boolean {
-        val result = (webhook() != null)
-        if (result)
-            logger.info { "Twitter webhook already registered $url" }
-        return result
-    }
-
-    /**
-     * Check if a webhook configuration is subscribed to the provided user’s events
-     *
-     * @return boolean true if webhook is subscribed
-     */
-    private fun alreadySubcribe(): Boolean {
-        val result = client.subscriptions()
-        return if (result) {
-            logger.info { "Twitter webhook already subscribed to the provided user's event" }
-            true
-        } else {
-            logger.info { "Twitter webhook not subscribed to the provided user's event" }
-            false
-        }
-    }
-
-    /**
-     * Register connector endpoint as webhook in Twitter
-     *
-     * @return boolean true if success
-     */
-    private fun registerWebhook(): Boolean {
-        logger.info { "Twitter webhook register $url" }
-        return if (client.registerWebhook(url) != null) {
-            logger.info { "Twitter webhook register $url success" }
-            true
-        } else {
-            logger.error { "Twitter webhook register $url failed" }
-            false
-        }
-    }
-
-    /**
-     * Subscribe default account (application owner)
-     *
-     */
-    private fun subscribeAccount(): Boolean {
-        return if (alreadySubcribe()) {
-            true
-        } else {
-            logger.info { "Twitter subscribe defaultAccount" }
-            if (client.subscribe()) {
-                logger.info { "Twitter defaultAccount subscription success" }
-                true
-            } else {
-                logger.error { "Twitter webhook register $url failed" }
-                false
-            }
         }
     }
 
