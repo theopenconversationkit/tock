@@ -1,6 +1,7 @@
 package fr.vsct.tock.bot.connector.teams
 
 import com.microsoft.bot.schema.models.Activity
+import fr.vsct.tock.bot.connector.teams.messages.TeamsBotTextMessage
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.nlp.NlpProxyBotListener.logger
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -110,7 +111,7 @@ class TeamsClientTest {
             Activity::class.java
         )
 
-        teamsClient.sendMessage(activity, SendSentence(PlayerId("0"), "0", PlayerId("0"), "plop"))
+        teamsClient.sendMessage(activity, TeamsBotTextMessage( "plop"))
 
         assertFalse(teamsClient.isTokenExpired())
         Thread.sleep(1000)
