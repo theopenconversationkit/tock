@@ -105,8 +105,8 @@ internal object TockKMongoConfiguration {
         }
     }
 
-    fun configure() {
-        logger.debug("KMongo Tock configuration loaded")
+    fun configure(async: Boolean = false) {
+        logger.debug("KMongo Tock ${if (async) "async" else ""} configuration loaded")
     }
 }
 
@@ -129,7 +129,7 @@ internal val mongoClient: MongoClient by lazy {
  * The async [MongoClient] of Tock.
  */
 internal val asyncMongoClient: com.mongodb.reactivestreams.client.MongoClient by lazy {
-    TockKMongoConfiguration.configure()
+    TockKMongoConfiguration.configure(true)
     org.litote.kmongo.reactivestreams.KMongo.createClient(
         MongoClientSettings.builder()
             .applyConnectionString(mongoUrl)
