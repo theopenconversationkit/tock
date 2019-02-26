@@ -2,9 +2,16 @@ package fr.vsct.tock.bot.connector.teams
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE
+import com.microsoft.bot.schema.models.ActionTypes
 import com.microsoft.bot.schema.models.Activity
 import com.microsoft.bot.schema.models.ActivityTypes
-import fr.vsct.tock.bot.engine.action.SendSentence
+import com.microsoft.bot.schema.models.Attachment
+import com.microsoft.bot.schema.models.CardAction
+import com.microsoft.bot.schema.models.TextFormatTypes
+import com.microsoft.bot.schema.models.ThumbnailCard
+import fr.vsct.tock.bot.connector.teams.messages.MarkdownHelper.activeLink
+import fr.vsct.tock.bot.connector.teams.messages.TeamsBotMessage
+import fr.vsct.tock.bot.connector.teams.messages.TeamsCardAction
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.jackson.mapper
@@ -62,7 +69,7 @@ internal class TeamsClient(
             .create()
     }
 
-    fun sendMessage(callbackActivity: Activity, event: SendSentence) {
+    fun sendMessage(callbackActivity: Activity, event: TeamsBotMessage) {
         //construct request
         val url =
             "${callbackActivity.serviceUrl()}/v3/conversations/${callbackActivity.conversation().id()}/activities/${callbackActivity.id()}"
@@ -73,8 +80,10 @@ internal class TeamsClient(
         //construct callbackActivity
         val activity = Activity()
             .withType(ActivityTypes.MESSAGE)
-            .withText(event.stringText)
+            .withText(activeLink(event.text))
+            .withTextFormat(TextFormatTypes.MARKDOWN)
             .withRecipient(callbackActivity.from())
+            .withAttachments(getAttachment(event))
             .withFrom(callbackActivity.recipient())
             .withConversation(callbackActivity.conversation())
             .withReplyToId(callbackActivity.id())
@@ -89,6 +98,22 @@ internal class TeamsClient(
                 "Microsoft Login Api Error : ${messageResponse.code()} // ${messageResponse.errorBody()}"
             }
         }
+    }
+
+    private fun getAttachment(event: TeamsBotMessage): MutableList<Attachment>? {
+        val adapativeCard = mutableListOf<Attachment>()
+
+        when (event) {
+            is TeamsCardAction -> {
+                val card = ThumbnailCard().withTitle(event.actionTitle).withButtons(event.buttons)
+                adapativeCard.add(Attachment()
+                    .withContentType("application/vnd.microsoft.card.thumbnail")
+                    .withContent(card)
+                )
+            }
+        }
+
+        return adapativeCard
     }
 
     fun isTokenExpired(): Boolean {

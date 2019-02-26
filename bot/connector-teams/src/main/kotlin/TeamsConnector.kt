@@ -24,6 +24,7 @@ import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.teams.auth.AuthenticateBotConnectorService
 import fr.vsct.tock.bot.connector.teams.auth.ForbiddenException
+import fr.vsct.tock.bot.connector.teams.messages.SendActionConverter
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -112,9 +113,11 @@ internal class TeamsConnector(
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         if (event is SendSentence && callback is TeamsConnectorCallback) {
 
+            var teamsMessage = SendActionConverter.toActivity(event)
+
             val delay = Duration.ofMillis(delayInMs)
             executor.executeBlocking(delay) {
-                client.sendMessage(callback.activity, event)
+                client.sendMessage(callback.activity, teamsMessage)
             }
         }
     }
