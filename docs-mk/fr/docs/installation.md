@@ -79,16 +79,16 @@ quand le besoin s'en fait sentir.
 Tock supporte plusieurs systèmes d'authentification pour l'interface d'administration. 
 Il utilise les librairies [vert.x](https://vertx.io/docs/vertx-auth-common/java/) correspondantes. 
 
-Voici les systèmes correspondants :  
+Voici les systèmes disponibles par défaut :  
 
 - Un modèle "par propriété", qui est utilisé par défaut. 
 Le code est disponible ici : [PropertyBasedAuthProvider](https://github.com/voyages-sncf-technologies/tock/blob/master/shared/src/main/kotlin/security/auth/PropertyBasedAuthProvider.kt#L61)
 
-- Un modèle OAuth2 dont un exemple est donné par le [GithubOAuthProvider](https://github.com/voyages-sncf-technologies/tock/blob/master/shared/src/main/kotlin/security/auth/GithubOAuthProvider.kt)
+- Un modèle OAuth2 dont un exemple est donné par la classe [GithubOAuthProvider](https://github.com/voyages-sncf-technologies/tock/blob/master/shared/src/main/kotlin/security/auth/GithubOAuthProvider.kt)
 
 - Un modèle basé sur un token JWT pour une configuration Aws: [AWSJWTAuthProvider](https://github.com/voyages-sncf-technologies/tock/blob/master/shared/src/main/kotlin/security/auth/AWSJWTAuthProvider.kt)    
 
-Si ces modèles ne correspondent pas à vos besoin, il est relativement simple d'en développer d'autres
+Si ces modèles ne correspondent pas à votre besoin, il est relativement simple d'en développer d'autres
 en se basant sur les exemples ci-dessus. N'hésitez pas à contribuer au projet et à nous contacter pour toute question!
 
 ## Encryption et Obfuscation
@@ -97,7 +97,7 @@ en se basant sur les exemples ci-dessus. N'hésitez pas à contribuer au projet 
 
 Il est recommandé de déployer vos MongoDB [en mode encrypté](https://docs.mongodb.com/manual/tutorial/configure-encryption/).
 
-Vous pouvez cependant ajouter une encryption facultative de certains champs en base de données.
+Vous pouvez cependant ajouter une encryption applicative facultative de certains champs en base de données.
 
 C'est le rôle de la propriété `tock_encrypt_pass` qui vous permet d'indiquer un mot de passe
 permettant d'encrypter et de décrypter ces champs - par défaut Tock encrypte toutes les données utilisateurs
