@@ -474,6 +474,91 @@
             "location": "/contribuer/#code-conventions", 
             "text": "Le format \u00e0 suivre est d\u00e9crit dans les  Kotlin Code Conventions", 
             "title": "Code conventions"
+        }, 
+        {
+            "location": "/installation/", 
+            "text": "Installer et configurer Tock en production\n\n\nComposants\n\n\nTock est compos\u00e9 par d\u00e9faut de plusieurs images dockers et d'une base de donn\u00e9e, \nMongoDB\n.\n\n\nUn exemple de configuration compl\u00e8te sous forme de fichier \ndocker-compose\n (docker-compose n'\u00e9tant pas forc\u00e9ment adapt\u00e9 \u00e0 la production)\nest disponible dans le projet \ntock-docker\n : \n\ndocker-compose-bot-open-data.yml\n\n\nMongoDB\n\n\nLa base Mongo doit \u00eatre configur\u00e9e \"en replica set\", c'est \u00e0 dire avec au minimum 3 instances d\u00e9ploy\u00e9es.\nC'est obligatoire car Tock utilise la fonctionnalit\u00e9 des \nChange Streams\n\nqui a comme pr\u00e9-requis l'installation en replica set.\n\n\nIl s'agit \u00e9galement d'une bonne pratique afin d'assurer une haute disponibilit\u00e9 de la base de donn\u00e9es. \n\n\nUn \ntutoriel d'installation en replica set\n\n est disponible sur le site de MongoDB.\n\n\nListe et r\u00f4les des images dockers\n\n\nVoici les images composants Tock. \nAucune de ces images ne doit \u00eatre expos\u00e9e \u00e0 l'ext\u00e9rieur par d\u00e9faut.\n\n\n\n\ntock/bot_admin\n : l'interface d'administration de Tock.  \n\n\ntock/kotlin_compiler\n: Une image docker facultative \nqui permet de compiler les scripts du bot via l'interface d'administration.\n\n\ntock/build_worker\n: L'image docker qui permet de reconstruire\nles mod\u00e8les NLP quand cela se r\u00e9v\u00e8le n\u00e9cessaire.\n\n\ntock/nlp_api\n Permet au bot d'analyser les phrases \u00e0 partir des mod\u00e8les\nconstruits via l'interface d'administration.\n\n\ntock/duckling\n Permet d'analyser et de valoriser les dates\net les types primitifs en utilisant le projet \nduckling\n.\n\n\n\n\nEnfin bien entendu, il est n\u00e9cessaire d'installer une image repr\u00e9sentant le bot lui-m\u00eame,\nimage qui doit \u00eatre accessible de l'ext\u00e9rieur.\n\n\nUn exemple de configuration de cette derni\u00e8re image se trouve dans le fichier \n\ndocker-compose-bot-open-data.yml\n.\n\n\nRecommandations\n\n\nConfiguration minimale requise\n\n\nLe param\u00e8tre principal \u00e0 surveiller est la m\u00e9moire vive disponible.\n\n\nEn particulier, plus vos mod\u00e8les sont importants, plus il sera n\u00e9cessaire d'augmenter la m\u00e9moire pour reconstruire les mod\u00e8les\ndans l'image \ntock/build_worker\n.\n\n\nPour donner un ordre de grandeur, un mod\u00e8le de 50000 phrases avec plusieurs intentions comportant une vingtaine d'entit\u00e9s chaque\nn\u00e9cessitera de provisionner environ 8Go de RAM pour l'image \ntock/build_worker\n.\n\n\nCependant des mod\u00e8les importants, mais avec peu d'entit\u00e9s, tiennent facilement en 1Go de RAM.\n\n\nConfiguration de la m\u00e9moire des JVMs\n\n\nPour garantir que les instances dockers ne d\u00e9passent pas la m\u00e9moire disponible, il est recommand\u00e9\nde limiter la m\u00e9moire disponible pour la JVM en suivant l'exemple suivant:\n\n\nJAVA_ARGS=-Xmx1g -XX:MaxMetaspaceSize=256m\n\n\n\n\n\nHaute disponibilit\u00e9\n\n\nAutant il est important de s'assurer qu'une seule instance est install\u00e9e pour \ntock/build_worker\n\n- une seule instance est \u00e9galement recommand\u00e9e pour \ntock/bot_admin\n et \ntock/kotlin_compiler\n -,\nautant il est recommand\u00e9 d'installer plusieurs instances du bot mais \u00e9galement de \ntock/nlp_api\n et de \ntock/duckling\n\nafin de s'assurer d'une haute disponibilit\u00e9.\n\n\nA forte charge - nous avons exp\u00e9riment\u00e9 plus de 80 req/s sur nos propres bots - \nle facteur limitant devient la base de donn\u00e9es MongoDB, qu'il faut alors redimensionner en cons\u00e9quence\nquand le besoin s'en fait sentir.\n\n\nAuthentification\n\n\nTock supporte plusieurs syst\u00e8mes d'authentification pour l'interface d'administration. \nIl utilise les librairies \nvert.x\n correspondantes. \n\n\nVoici les syst\u00e8mes correspondants :  \n\n\n\n\n\n\nUn mod\u00e8le \"par propri\u00e9t\u00e9\", qui est utilis\u00e9 par d\u00e9faut. \nLe code est disponible ici : \nPropertyBasedAuthProvider\n\n\n\n\n\n\nUn mod\u00e8le OAuth2 dont un exemple est donn\u00e9 par le \nGithubOAuthProvider\n\n\n\n\n\n\nUn mod\u00e8le bas\u00e9 sur un token JWT pour une configuration Aws: \nAWSJWTAuthProvider\n    \n\n\n\n\n\n\nSi ces mod\u00e8les ne correspondent pas \u00e0 vos besoin, il est relativement simple d'en d\u00e9velopper d'autres\nen se basant sur les exemples ci-dessus. N'h\u00e9sitez pas \u00e0 contribuer au projet et \u00e0 nous contacter pour toute question!\n\n\nEncryption et Obfuscation\n\n\nEncryption\n\n\nIl est recommand\u00e9 de d\u00e9ployer vos MongoDB \nen mode encrypt\u00e9\n.\n\n\nVous pouvez cependant ajouter une encryption facultative de certains champs en base de donn\u00e9es.\n\n\nC'est le r\u00f4le de la propri\u00e9t\u00e9 \ntock_encrypt_pass\n qui vous permet d'indiquer un mot de passe\npermettant d'encrypter et de d\u00e9crypter ces champs - par d\u00e9faut Tock encrypte toutes les donn\u00e9es utilisateurs\njug\u00e9es sensibles si ce mot de passe est sp\u00e9cifi\u00e9. Pour plus de d\u00e9tails, consultez le \ncode source\n.\n\n\nObfuscation\n\n\nPar ailleurs, il peut \u00eatre souhaitable que certaines phrases soient affich\u00e9es dans les logs\n ou dans l'interface d'administration de mani\u00e8re \nobfusqu\u00e9e\n. \n Tock met \u00e0 disposition un syst\u00e8me bas\u00e9 sur les expressions r\u00e9guli\u00e8res dont l'interface de base\n est \nStringObfuscator\n.\n\n\nMonitoring\n\n\nLogs\n\n\nTock utilise \nSLF4J\n. \n\n\nLigne de vie\n\n\nL'url \n/healthcheck\n renvoie une code HTTP 200 si tout est correct. \nPour certaines images, ce chemin peut ne pas \u00eatre pr\u00e9sent \u00e0 la racine. \nPar exemple, la loigne de vie est localis\u00e9e par d\u00e9faut dans \n/rest/admin/healthcheck\n pour \ntock/admin\n \net dans \n/rest/nlp/healthcheck\n pour \ntock/nlp_api\n  \n\n\nContact\n\n\nPour toute question ou remarque, n'h\u00e9sitez pas \u00e0 nous contacter sur \ngitter\n.", 
+            "title": "Installation de Tock"
+        }, 
+        {
+            "location": "/installation/#installer-et-configurer-tock-en-production", 
+            "text": "", 
+            "title": "Installer et configurer Tock en production"
+        }, 
+        {
+            "location": "/installation/#composants", 
+            "text": "Tock est compos\u00e9 par d\u00e9faut de plusieurs images dockers et d'une base de donn\u00e9e,  MongoDB .  Un exemple de configuration compl\u00e8te sous forme de fichier  docker-compose  (docker-compose n'\u00e9tant pas forc\u00e9ment adapt\u00e9 \u00e0 la production)\nest disponible dans le projet  tock-docker  :  docker-compose-bot-open-data.yml", 
+            "title": "Composants"
+        }, 
+        {
+            "location": "/installation/#mongodb", 
+            "text": "La base Mongo doit \u00eatre configur\u00e9e \"en replica set\", c'est \u00e0 dire avec au minimum 3 instances d\u00e9ploy\u00e9es.\nC'est obligatoire car Tock utilise la fonctionnalit\u00e9 des  Change Streams \nqui a comme pr\u00e9-requis l'installation en replica set.  Il s'agit \u00e9galement d'une bonne pratique afin d'assurer une haute disponibilit\u00e9 de la base de donn\u00e9es.   Un  tutoriel d'installation en replica set \n est disponible sur le site de MongoDB.", 
+            "title": "MongoDB"
+        }, 
+        {
+            "location": "/installation/#liste-et-roles-des-images-dockers", 
+            "text": "Voici les images composants Tock. \nAucune de ces images ne doit \u00eatre expos\u00e9e \u00e0 l'ext\u00e9rieur par d\u00e9faut.   tock/bot_admin  : l'interface d'administration de Tock.    tock/kotlin_compiler : Une image docker facultative \nqui permet de compiler les scripts du bot via l'interface d'administration.  tock/build_worker : L'image docker qui permet de reconstruire\nles mod\u00e8les NLP quand cela se r\u00e9v\u00e8le n\u00e9cessaire.  tock/nlp_api  Permet au bot d'analyser les phrases \u00e0 partir des mod\u00e8les\nconstruits via l'interface d'administration.  tock/duckling  Permet d'analyser et de valoriser les dates\net les types primitifs en utilisant le projet  duckling .   Enfin bien entendu, il est n\u00e9cessaire d'installer une image repr\u00e9sentant le bot lui-m\u00eame,\nimage qui doit \u00eatre accessible de l'ext\u00e9rieur.  Un exemple de configuration de cette derni\u00e8re image se trouve dans le fichier  docker-compose-bot-open-data.yml .", 
+            "title": "Liste et r\u00f4les des images dockers"
+        }, 
+        {
+            "location": "/installation/#recommandations", 
+            "text": "", 
+            "title": "Recommandations"
+        }, 
+        {
+            "location": "/installation/#configuration-minimale-requise", 
+            "text": "Le param\u00e8tre principal \u00e0 surveiller est la m\u00e9moire vive disponible.  En particulier, plus vos mod\u00e8les sont importants, plus il sera n\u00e9cessaire d'augmenter la m\u00e9moire pour reconstruire les mod\u00e8les\ndans l'image  tock/build_worker .  Pour donner un ordre de grandeur, un mod\u00e8le de 50000 phrases avec plusieurs intentions comportant une vingtaine d'entit\u00e9s chaque\nn\u00e9cessitera de provisionner environ 8Go de RAM pour l'image  tock/build_worker .  Cependant des mod\u00e8les importants, mais avec peu d'entit\u00e9s, tiennent facilement en 1Go de RAM.", 
+            "title": "Configuration minimale requise"
+        }, 
+        {
+            "location": "/installation/#configuration-de-la-memoire-des-jvms", 
+            "text": "Pour garantir que les instances dockers ne d\u00e9passent pas la m\u00e9moire disponible, il est recommand\u00e9\nde limiter la m\u00e9moire disponible pour la JVM en suivant l'exemple suivant:  JAVA_ARGS=-Xmx1g -XX:MaxMetaspaceSize=256m", 
+            "title": "Configuration de la m\u00e9moire des JVMs"
+        }, 
+        {
+            "location": "/installation/#haute-disponibilite", 
+            "text": "Autant il est important de s'assurer qu'une seule instance est install\u00e9e pour  tock/build_worker \n- une seule instance est \u00e9galement recommand\u00e9e pour  tock/bot_admin  et  tock/kotlin_compiler  -,\nautant il est recommand\u00e9 d'installer plusieurs instances du bot mais \u00e9galement de  tock/nlp_api  et de  tock/duckling \nafin de s'assurer d'une haute disponibilit\u00e9.  A forte charge - nous avons exp\u00e9riment\u00e9 plus de 80 req/s sur nos propres bots - \nle facteur limitant devient la base de donn\u00e9es MongoDB, qu'il faut alors redimensionner en cons\u00e9quence\nquand le besoin s'en fait sentir.", 
+            "title": "Haute disponibilit\u00e9"
+        }, 
+        {
+            "location": "/installation/#authentification", 
+            "text": "Tock supporte plusieurs syst\u00e8mes d'authentification pour l'interface d'administration. \nIl utilise les librairies  vert.x  correspondantes.   Voici les syst\u00e8mes correspondants :      Un mod\u00e8le \"par propri\u00e9t\u00e9\", qui est utilis\u00e9 par d\u00e9faut. \nLe code est disponible ici :  PropertyBasedAuthProvider    Un mod\u00e8le OAuth2 dont un exemple est donn\u00e9 par le  GithubOAuthProvider    Un mod\u00e8le bas\u00e9 sur un token JWT pour une configuration Aws:  AWSJWTAuthProvider         Si ces mod\u00e8les ne correspondent pas \u00e0 vos besoin, il est relativement simple d'en d\u00e9velopper d'autres\nen se basant sur les exemples ci-dessus. N'h\u00e9sitez pas \u00e0 contribuer au projet et \u00e0 nous contacter pour toute question!", 
+            "title": "Authentification"
+        }, 
+        {
+            "location": "/installation/#encryption-et-obfuscation", 
+            "text": "", 
+            "title": "Encryption et Obfuscation"
+        }, 
+        {
+            "location": "/installation/#encryption", 
+            "text": "Il est recommand\u00e9 de d\u00e9ployer vos MongoDB  en mode encrypt\u00e9 .  Vous pouvez cependant ajouter une encryption facultative de certains champs en base de donn\u00e9es.  C'est le r\u00f4le de la propri\u00e9t\u00e9  tock_encrypt_pass  qui vous permet d'indiquer un mot de passe\npermettant d'encrypter et de d\u00e9crypter ces champs - par d\u00e9faut Tock encrypte toutes les donn\u00e9es utilisateurs\njug\u00e9es sensibles si ce mot de passe est sp\u00e9cifi\u00e9. Pour plus de d\u00e9tails, consultez le  code source .", 
+            "title": "Encryption"
+        }, 
+        {
+            "location": "/installation/#obfuscation", 
+            "text": "Par ailleurs, il peut \u00eatre souhaitable que certaines phrases soient affich\u00e9es dans les logs\n ou dans l'interface d'administration de mani\u00e8re  obfusqu\u00e9e . \n Tock met \u00e0 disposition un syst\u00e8me bas\u00e9 sur les expressions r\u00e9guli\u00e8res dont l'interface de base\n est  StringObfuscator .", 
+            "title": "Obfuscation"
+        }, 
+        {
+            "location": "/installation/#monitoring", 
+            "text": "", 
+            "title": "Monitoring"
+        }, 
+        {
+            "location": "/installation/#logs", 
+            "text": "Tock utilise  SLF4J .", 
+            "title": "Logs"
+        }, 
+        {
+            "location": "/installation/#ligne-de-vie", 
+            "text": "L'url  /healthcheck  renvoie une code HTTP 200 si tout est correct. \nPour certaines images, ce chemin peut ne pas \u00eatre pr\u00e9sent \u00e0 la racine. \nPar exemple, la loigne de vie est localis\u00e9e par d\u00e9faut dans  /rest/admin/healthcheck  pour  tock/admin  \net dans  /rest/nlp/healthcheck  pour  tock/nlp_api", 
+            "title": "Ligne de vie"
+        }, 
+        {
+            "location": "/installation/#contact", 
+            "text": "Pour toute question ou remarque, n'h\u00e9sitez pas \u00e0 nous contacter sur  gitter .", 
+            "title": "Contact"
         }
     ]
 }

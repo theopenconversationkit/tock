@@ -17,6 +17,7 @@ pages:
     - i18n: i18n.md
     - KDoc: kdoc.md
     - Contribuer au projet: contribuer.md
+    - Installation de Tock: installation.md
 theme:
   name: 'material'
   custom_dir: 'theme'
