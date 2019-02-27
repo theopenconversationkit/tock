@@ -17,7 +17,7 @@
 package fr.vsct.tock.shared.security.auth
 
 import com.google.common.io.BaseEncoding
-import fr.vsct.tock.shared.defaultNamespace
+import fr.vsct.tock.shared.mapProperty
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.security.TockUser
 import fr.vsct.tock.shared.security.TockUserRole
@@ -34,11 +34,15 @@ import io.vertx.ext.auth.jwt.JWTAuthOptions
 import io.vertx.ext.auth.jwt.impl.JWTUser
 import io.vertx.ext.jwt.JWTOptions
 import io.vertx.ext.web.handler.AuthHandler
+import mu.KotlinLogging
 
 internal class AWSJWTAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx), JWTAuth {
 
     companion object {
+        private val logger = KotlinLogging.logger {}
         private val jwtAlgorithm = property("jwt_algorithm", "ES256")
+        private val namespaceMapping = mapProperty("tock_jwt_custom_namespace_mapping", emptyMap())
+        private val customRolesMapping = mapProperty("tock_jwt_custom_roles_mapping", emptyMap())
     }
 
     //cached values
@@ -57,11 +61,22 @@ internal class AWSJWTAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx), JW
                 val user = it.result() as? JWTUser
                 if (user != null) {
                     val token = user.principal()
-                    val customRole = token.getString("custom:roles")
-                    val customName = token.getString("email")
-                    val (namespace, roleName) = parseCustomRole(customRole)
-                    val u = TockUser(customName, namespace, TockUserRole.values().map { it.toString() }.toSet())
-                    resultHandler.handle(Future.succeededFuture(u))
+                    val customRoles = token.getString("custom:roles")
+                    val roles = parseUserRoles(customRoles)
+                    if (roles.isEmpty()) {
+                        logger.warn { "empty role for $customRoles" }
+                        resultHandler.handle(Future.failedFuture("Unauthorized"))
+                    } else {
+                        val namespace = parseNamespace(customRoles)
+                        if (namespace == null) {
+                            logger.warn { "no namespace for $customRoles" }
+                            resultHandler.handle(Future.failedFuture("Unauthorized"))
+                        } else {
+                            val customName = token.getString("email")
+                            val u = TockUser(customName, namespace, roles)
+                            resultHandler.handle(Future.succeededFuture(u))
+                        }
+                    }
                 } else {
                     resultHandler.handle(Future.failedFuture("Unauthorized"))
                 }
@@ -75,12 +90,21 @@ internal class AWSJWTAuthProvider(vertx: Vertx) : SSOTockAuthProvider(vertx), JW
         } ?: resultHandler.handle(Future.failedFuture("no jwt provider"))
     }
 
-    /**
-     *  TODO a workaround
-     */
-    private fun parseCustomRole(customRole: String): Pair<String, String> {
-        return Pair(defaultNamespace, "technicalAdmin")
-    }
+    private fun parseCustomRoles(customRoles: String): List<String> = customRoles
+        .split(",")
+        .map { it.removePrefix("[").removeSuffix("]").trim() }
+
+    private fun parseNamespace(customRoles: String): String? =
+        parseCustomRoles(customRoles)
+            .flatMap { namespaceMapping[it]?.split(",")?.map { n -> n.trim() } ?: emptyList() }
+            .firstOrNull()
+
+    private fun parseUserRoles(customRoles: String): Set<String> =
+        parseCustomRoles(customRoles)
+            .flatMap { customRolesMapping[it]?.split(",")?.map { r -> TockUserRole.toRole(r) } ?: emptyList() }
+            .filterNotNull()
+            .map { it.name }
+            .toSet()
 
     private fun getJwtAuthProvider(authInfo: JsonObject): JWTAuth? {
 

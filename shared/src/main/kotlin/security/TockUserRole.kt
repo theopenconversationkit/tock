@@ -45,7 +45,7 @@ enum class TockUserRole {
 
         fun toRole(role: String): TockUserRole? =
             try {
-                valueOf(role)
+                valueOf(role.trim())
             } catch (e: Exception) {
                 logger.error { "unknown role : $role" }
                 null
