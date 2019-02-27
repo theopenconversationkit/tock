@@ -92,7 +92,7 @@ open class BotAdminVerticle : AdminVerticle() {
             BotAdminService.getBotConfigurationsByNamespaceAndBotId(context.organization, context.path("botId"))
         }
 
-        blockingJsonPost("/configuration/bots", admin) { context, query: ApplicationScopedQuery ->
+        blockingJsonPost("/configuration/bots") { context, query: ApplicationScopedQuery ->
             if (context.organization == query.namespace) {
                 BotAdminService.getBotConfigurationsByNamespaceAndNlpModel(query.namespace, query.applicationName)
             } else {
@@ -100,7 +100,7 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/configuration/bot", admin) { context, bot: BotConfiguration ->
+        blockingJsonPost("/configuration/bot") { context, bot: BotConfiguration ->
             if (context.organization == bot.namespace) {
                 if (bot._id != null) {
                     val conf = BotAdminService.getBotConfigurationById(bot._id)

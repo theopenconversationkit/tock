@@ -15,6 +15,7 @@
  */
 
 import {Injectable} from "@angular/core";
+import {UserRole} from "../model/auth";
 
 @Injectable()
 export class ApplicationConfig {
@@ -25,4 +26,6 @@ export class ApplicationConfig {
   displayDialogUrl: string;
   /** url to answer to sentence if it exists */
   answerToSentenceUrl: string;
+  /** url map for each default rights */
+  roleMap: Map<UserRole, string>
 }

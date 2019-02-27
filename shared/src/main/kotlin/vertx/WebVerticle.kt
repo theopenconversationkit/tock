@@ -195,8 +195,7 @@ abstract class WebVerticle : AbstractVerticle() {
     /**
      * The default role of a service.
      */
-    protected open fun defaultRole(): TockUserRole? =
-        if (cachedAuthProvider == null) null else nlpUser
+    protected open fun defaultRole(): TockUserRole? = null
 
     protected open fun startServer(startFuture: Future<Void>) {
         val port = verticleIntProperty("port", 8080)
@@ -243,7 +242,7 @@ abstract class WebVerticle : AbstractVerticle() {
                     handler.invoke(context)
                 } else {
                     context.isAuthorized(role) {
-                        if (it.succeeded()) {
+                        if (it.result() == true) {
                             handler.invoke(context)
                         } else {
                             context.fail(401)

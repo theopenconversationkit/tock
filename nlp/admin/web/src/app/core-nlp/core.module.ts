@@ -23,12 +23,24 @@ import {StateService} from "./state.service";
 import {ApplicationService} from "./applications.service";
 import {ApplicationConfig} from "./application.config";
 import {ApplicationResolver} from "./application.resolver";
+import {UserRole} from "../model/auth";
 
 @NgModule({
   imports: [CommonModule, RestModule, AuthModule],
   declarations: [],
   providers: [
-    {provide: ApplicationConfig, useValue: {configurationUrl: "/applications"}},
+    {
+      provide: ApplicationConfig,
+      useValue: {
+        configurationUrl: "/applications",
+        roleMap: new Map(
+          [
+            [UserRole.nlpUser, "/nlp"],
+            [UserRole.admin, "/configuration"],
+            [UserRole.technicalAdmin, "/configuration"],
+          ])
+      },
+    },
     SettingsService,
     StateService,
     ApplicationService,

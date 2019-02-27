@@ -18,6 +18,7 @@ import {CommonModule} from "@angular/common";
 import {NgModule, Optional, SkipSelf} from "@angular/core";
 import {BotConfigurationService} from "./bot-configuration.service";
 import {ApplicationConfig} from "../core-nlp/application.config";
+import {UserRole} from "../model/auth";
 
 @NgModule({
   imports: [CommonModule],
@@ -29,7 +30,14 @@ import {ApplicationConfig} from "../core-nlp/application.config";
       useValue: {
         configurationUrl: "/configuration",
         displayDialogUrl: "/monitoring/dialogs",
-        answerToSentenceUrl : "/build/intent-create"
+        answerToSentenceUrl : "/build/intent-create",
+        roleMap: new Map(
+          [
+            [UserRole.nlpUser, "/nlp"],
+            [UserRole.botUser, "/build"],
+            [UserRole.admin, "/configuration"],
+            [UserRole.technicalAdmin, "/configuration"],
+          ])
       }
       },
     BotConfigurationService
