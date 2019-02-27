@@ -23,7 +23,7 @@ class TabLink {
 }
 
 const tabs = [
-  new TabLink("nlp", "NLP Applications"),
+  new TabLink("nlp", "NLU Applications"),
   new TabLink("bot", "Bot Configurations"),
 ];
 
