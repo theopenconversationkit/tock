@@ -10,7 +10,7 @@ Avec Maven :
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>bot-test</artifactId>
-            <version>2.0.1</version>
+            <version>2.0.2</version>
             <scope>test</scope>
         </dependency>
 ```
@@ -18,7 +18,7 @@ Avec Maven :
 ou Gradle :
 
 ```gradle
-      testCompile 'fr.vsct.tock:bot-test:2.0.1'
+      testCompile 'fr.vsct.tock:bot-test:2.0.2'
 ``` 
 
 L'ensemble de ce framework est documenté au format KDoc [ici](../dokka/tock/fr.vsct.tock.bot.test).

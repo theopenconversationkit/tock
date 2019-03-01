@@ -98,6 +98,10 @@ Old Slack connector model - will be removed in 19.3
 
 Teams connector implementation
 
+# Package fr.vsct.tock.bot.connector.teams.messages
+
+Teams connector complex messages
+
 # Package fr.vsct.tock.bot.connector.whatsapp
 
 WhatsApp connector implementation

@@ -14,14 +14,14 @@ With Maven:
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>bot-toolkit</artifactId>
-            <version>2.0.1</version>
+            <version>2.0.2</version>
         </dependency>
 ```
 
 With Gradle:
 
 ```gradle
-      compile 'fr.vsct.tock:bot-toolkit:2.0.1'
+      compile 'fr.vsct.tock:bot-toolkit:2.0.2'
 ```
 
 ## A Bot is a Set of Stories
@@ -130,6 +130,9 @@ Five are available by default:
 * [Google Assistant](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-ga)
 * [Slack](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-slack)
 * [RocketChat](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-rocketchat)
+* [Twitter](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-alexa) 
+* [WhatsApp](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-whatsapp)
+* [Teams](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-teams) 
 * [Alexa](https://github.com/voyages-sncf-technologies/tock/tree/master/bot/connector-alexa) - for Alexa, the NLP model is necessarily managed on Amazon side. So only the conversational framework of Tock can be used with this connector.
 
 ## Advanced options

@@ -60,7 +60,7 @@ Des notions avancées comme la fusion d'entités sont également mis à disposit
 (par exemple le fait de préciser la date "demain" puis plus tard "plutôt le soir" met automatiquement la valeur de la date à jour)
 
 ### Connecteurs tiers
-Des connecteurs à Facebook Messenger, Google Assistant et Slack sont disponibles. 
+Des connecteurs à Facebook Messenger, Google Assistant, WhatsApp, RocketChat, Twitter, Alexa, Teams et Slack sont disponibles. 
 Il est possible d'en créer facilement d'autres, que ce soit pour se connecter à d'autres canaux ou pour répondre à des besoins spécifiques.
 
 ### Suivi des conversations

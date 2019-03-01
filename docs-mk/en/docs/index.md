@@ -65,7 +65,7 @@ Advanced features like entity values merge are also provided.
 
 ### Third party connectors
 
-Connectors to Facebook Messenger, Google Assistant and Slack are available.
+Connectors to Facebook Messenger, Google Assistant, WhatsApp, RocketChat, Twitter, Alexa, Teams and Slack are available.
 It is easy to create others, whether to connect to other channels (please contribute!) or for custom needs.
 
 ### Conversations monitoring

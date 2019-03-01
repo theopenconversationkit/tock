@@ -53,6 +53,7 @@ fr.vsct.tock.bot.connector.slack
 fr.vsct.tock.bot.connector.slack.model
 fr.vsct.tock.bot.connector.slack.model.old
 fr.vsct.tock.bot.connector.teams
+fr.vsct.tock.bot.connector.teams.messages
 fr.vsct.tock.bot.connector.whatsapp
 fr.vsct.tock.bot.connector.whatsapp.model.common
 fr.vsct.tock.bot.connector.whatsapp.model.send

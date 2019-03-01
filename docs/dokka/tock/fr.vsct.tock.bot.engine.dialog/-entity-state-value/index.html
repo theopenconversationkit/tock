@@ -8,7 +8,7 @@
 <a href="../../index.html">tock</a>&nbsp;/&nbsp;<a href="../index.html">fr.vsct.tock.bot.engine.dialog</a>&nbsp;/&nbsp;<a href="./index.html">EntityStateValue</a><br/>
 <br/>
 <h1>EntityStateValue</h1>
-<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">EntityStateValue</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/dialog/EntityStateValue.kt#L28">(source)</a>
+<code><span class="keyword">data</span> <span class="keyword">class </span><span class="identifier">EntityStateValue</span></code> <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/bot/engine/src/main/kotlin/fr/vsct/tock/bot/engine/dialog/EntityStateValue.kt#L32">(source)</a>
 <p>EntityStateValue is the current value of an entity with its history.</p>
 <h3>Constructors</h3>
 <table>
@@ -18,7 +18,7 @@
 <p><a href="-init-.html">&lt;init&gt;</a></p>
 </td>
 <td>
-<code><span class="identifier">EntityStateValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.EntityStateValue$<init>(fr.vsct.tock.bot.engine.dialog.EntityValue, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue)), java.time.Instant)/_value">_value</span><span class="symbol">:</span>&nbsp;<a href="../-entity-value/index.html"><span class="identifier">EntityValue</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.EntityStateValue$<init>(fr.vsct.tock.bot.engine.dialog.EntityValue, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue)), java.time.Instant)/_history">_history</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../-archived-entity-value/index.html"><span class="identifier">ArchivedEntityValue</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;mutableListOf()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.EntityStateValue$<init>(fr.vsct.tock.bot.engine.dialog.EntityValue, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue)), java.time.Instant)/_lastUpdate">_lastUpdate</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/8/docs/api/java/time/Instant.html"><span class="identifier">Instant</span></a>&nbsp;<span class="symbol">=</span>&nbsp;now()<span class="symbol">)</span></code>
+<code><span class="identifier">EntityStateValue</span><span class="symbol">(</span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.EntityStateValue$<init>(fr.vsct.tock.bot.engine.dialog.EntityValue, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue)), java.time.Instant, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.dialog.EntityStateValue)), kotlin.collections.Map((org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), )))/currentValue">currentValue</span><span class="symbol">:</span>&nbsp;<a href="../-entity-value/index.html"><span class="identifier">EntityValue</span></a><span class="symbol">?</span><span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.EntityStateValue$<init>(fr.vsct.tock.bot.engine.dialog.EntityValue, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue)), java.time.Instant, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.dialog.EntityStateValue)), kotlin.collections.Map((org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), )))/currentHistory">currentHistory</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-mutable-list/index.html"><span class="identifier">MutableList</span></a><span class="symbol">&lt;</span><a href="../-archived-entity-value/index.html"><span class="identifier">ArchivedEntityValue</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;mutableListOf()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.EntityStateValue$<init>(fr.vsct.tock.bot.engine.dialog.EntityValue, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue)), java.time.Instant, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.dialog.EntityStateValue)), kotlin.collections.Map((org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), )))/initialUpdate">initialUpdate</span><span class="symbol">:</span>&nbsp;<a href="http://docs.oracle.com/javase/8/docs/api/java/time/Instant.html"><span class="identifier">Instant</span></a>&nbsp;<span class="symbol">=</span>&nbsp;now()<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.EntityStateValue$<init>(fr.vsct.tock.bot.engine.dialog.EntityValue, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue)), java.time.Instant, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.dialog.EntityStateValue)), kotlin.collections.Map((org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), )))/stateValueId">stateValueId</span><span class="symbol">:</span>&nbsp;<span class="identifier">Id</span><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">EntityStateValue</span></a><span class="symbol">&gt;</span><span class="symbol">?</span>&nbsp;<span class="symbol">=</span>&nbsp;null<span class="symbol">, </span><span class="identifier" id="fr.vsct.tock.bot.engine.dialog.EntityStateValue$<init>(fr.vsct.tock.bot.engine.dialog.EntityValue, kotlin.collections.MutableList((fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue)), java.time.Instant, org.litote.kmongo.Id((fr.vsct.tock.bot.engine.dialog.EntityStateValue)), kotlin.collections.Map((org.litote.kmongo.Id((fr.vsct.tock.bot.engine.action.Action)), )))/oldActionsMap">oldActionsMap</span><span class="symbol">:</span>&nbsp;<a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-map/index.html"><span class="identifier">Map</span></a><span class="symbol">&lt;</span><span class="identifier">Id</span><span class="symbol">&lt;</span><a href="../../fr.vsct.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">&gt;</span><span class="symbol">,</span>&nbsp;<a href="../../fr.vsct.tock.bot.engine.action/-action/index.html"><span class="identifier">Action</span></a><span class="symbol">&gt;</span>&nbsp;<span class="symbol">=</span>&nbsp;emptyMap()<span class="symbol">)</span></code>
 <p>EntityStateValue is the current value of an entity with its history.</p>
 </td>
 </tr>
@@ -27,6 +27,15 @@
 <h3>Properties</h3>
 <table>
 <tbody>
+<tr>
+<td>
+<p><a href="has-bean-updated-in-bus.html">hasBeanUpdatedInBus</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">hasBeanUpdatedInBus</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin/-boolean/index.html"><span class="identifier">Boolean</span></a></code>
+<p>Is this state has been updated un current <a href="#">BotBus</a>?</p>
+</td>
+</tr>
 <tr>
 <td>
 <p><a href="history.html">history</a></p>
@@ -52,7 +61,16 @@ Could be empty if there is no history and current value is null.</p>
 </td>
 <td>
 <code><span class="keyword">val </span><span class="identifier">previousValues</span><span class="symbol">: </span><a href="https://kotlinlang.org/api/latest/jvm/stdlib/kotlin.collections/-list/index.html"><span class="identifier">List</span></a><span class="symbol">&lt;</span><a href="../-archived-entity-value/index.html"><span class="identifier">ArchivedEntityValue</span></a><span class="symbol">&gt;</span></code>
-<p>Returns previous values for this entity.</p>
+<p>Previous values for this entity.</p>
+</td>
+</tr>
+<tr>
+<td>
+<p><a href="state-value-id.html">stateValueId</a></p>
+</td>
+<td>
+<code><span class="keyword">val </span><span class="identifier">stateValueId</span><span class="symbol">: </span><span class="identifier">Id</span><span class="symbol">&lt;</span><a href="./index.html"><span class="identifier">EntityStateValue</span></a><span class="symbol">&gt;</span><span class="symbol">?</span></code>
+<p>State value id if any.</p>
 </td>
 </tr>
 <tr>
@@ -61,7 +79,7 @@ Could be empty if there is no history and current value is null.</p>
 </td>
 <td>
 <code><span class="keyword">val </span><span class="identifier">value</span><span class="symbol">: </span><a href="../-entity-value/index.html"><span class="identifier">EntityValue</span></a><span class="symbol">?</span></code>
-<p>Current entity's value</p>
+<p>Current entity value</p>
 </td>
 </tr>
 </tbody>
