@@ -1,15 +1,13 @@
-
-- 2.0.2 February 2019
-    - External NLP demo server
-    - Github oauth2 admin authentication
-    - Twitter connector
-    
+ 
 - 19.3 March 2019
+    - Add dialog flow view    
+    - AB Test engine workflow
+    
+- 19.3.1 June 2019
     - Conversational framework: allow to create a bot in the administration interface without IDE
     - Bot API 
-    - AB Test engine workflow
     - add code editor admin interface
-    - External Bot demo server        
+    - External Bot demo server            
 
 - 19.9 September 2019  
     - Spacy and RASA support
@@ -18,7 +16,12 @@
     - Conversational framework: support for other languages than Kotlin (using APIs & multi-platform Kotlin feature)
     - nodejs support sample 
     
-## Latest releases   
+## Latest releases  
+
+- 2.0.2 February 2019
+    - External NLP demo server
+    - Github oauth2 admin authentication
+    - Twitter connector 
   
 - 2.0.1 January 2019
     - WhatsApp connector
