@@ -123,11 +123,11 @@ internal object OpenNlpModelBuilder : NlpEngineModelBuilder {
                             false
                         )
                     } catch (e: Exception) {
-                        logger.error("error with $text when reunify entities", e)
+                        logger.warn("error with $text when reunify entities", e)
                         null
                     }
                 } else {
-                    logger.error { "error with $text when reunify entities" }
+                    logger.warn { "error with $text when reunify entities" }
                     null
                 }
             }
