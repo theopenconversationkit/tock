@@ -1,6 +1,7 @@
 package fr.vsct.tock.bot.connector.teams.messages
 
 import com.microsoft.bot.schema.models.CardAction
+import com.microsoft.bot.schema.models.CardImage
 
 class TeamsBotTextMessage(text: String) : TeamsBotMessage(text) {
     override fun equals(other: Any?): Boolean {
@@ -12,6 +13,28 @@ class TeamsBotTextMessage(text: String) : TeamsBotMessage(text) {
 
     override fun toString(): String {
         return text ?: ""
+    }
+}
+
+class TeamsHeroCard(
+    val title: String,
+    val subtitle: String?,
+    val attachmentContent: String,
+    val images: List<CardImage>?,
+    val buttons: List<CardAction>?,
+    val tap: CardAction?
+): TeamsBotMessage(null) {
+
+    override fun toString(): String {
+        val images = images?.map {  it.url() } ?: ""
+        val buttons = buttons?.map { it.value() } ?: ""
+        return "TeamsHeroCard(" +
+            "title=$title, " +
+            "subtitle=$subtitle, " +
+            "attachmentContent=$attachmentContent, " +
+            "images=$images, " +
+            "buttons=$buttons, " +
+            "tap=${tap?.value()})"
     }
 
 }

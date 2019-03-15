@@ -2,16 +2,16 @@ package fr.vsct.tock.bot.connector.teams
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy.SNAKE_CASE
-import com.microsoft.bot.schema.models.ActionTypes
 import com.microsoft.bot.schema.models.Activity
 import com.microsoft.bot.schema.models.ActivityTypes
 import com.microsoft.bot.schema.models.Attachment
-import com.microsoft.bot.schema.models.CardAction
+import com.microsoft.bot.schema.models.HeroCard
 import com.microsoft.bot.schema.models.TextFormatTypes
 import com.microsoft.bot.schema.models.ThumbnailCard
 import fr.vsct.tock.bot.connector.teams.messages.MarkdownHelper.activeLink
 import fr.vsct.tock.bot.connector.teams.messages.TeamsBotMessage
 import fr.vsct.tock.bot.connector.teams.messages.TeamsCardAction
+import fr.vsct.tock.bot.connector.teams.messages.TeamsHeroCard
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.jackson.mapper
@@ -101,19 +101,32 @@ internal class TeamsClient(
     }
 
     private fun getAttachment(event: TeamsBotMessage): MutableList<Attachment>? {
-        val adapativeCard = mutableListOf<Attachment>()
+        val attachments = mutableListOf<Attachment>()
 
         when (event) {
             is TeamsCardAction -> {
                 val card = ThumbnailCard().withTitle(event.actionTitle).withButtons(event.buttons)
-                adapativeCard.add(Attachment()
+                attachments.add(Attachment()
                     .withContentType("application/vnd.microsoft.card.thumbnail")
+                    .withContent(card)
+                )
+            }
+            is TeamsHeroCard -> {
+                val card = HeroCard()
+                    .withTitle(event.title)
+                    .withSubtitle(event.subtitle)
+                    .withText(event.attachmentContent)
+                    .withImages(event.images)
+                    .withButtons(event.buttons)
+                    .withTap(event.tap)
+                attachments.add(Attachment()
+                    .withContentType("application/vnd.microsoft.card.hero")
                     .withContent(card)
                 )
             }
         }
 
-        return adapativeCard
+        return attachments
     }
 
     fun isTokenExpired(): Boolean {
