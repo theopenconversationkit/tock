@@ -82,7 +82,7 @@ class ApplicationCodecServiceTest : AbstractTest() {
         every { context.config.getIntentsByApplicationId(appId) } returns emptyList()
         every { context.config.search(any()) } returns SentencesQueryResult(1, sentences)
 
-        val dump = ApplicationCodecService.exportSentences(appId, null, null, DumpType.full)
+        val dump = ApplicationCodecService.exportSentences(appId, DumpType.full)
 
         assertEquals(0, dump.sentences.size)
     }

@@ -24,6 +24,7 @@ import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import org.litote.kmongo.Id
+import java.util.Locale
 
 /**
  * To import and export applications, intents, entities and sentences.
@@ -44,25 +45,37 @@ interface ApplicationCodec {
      * Import the application dump.
      */
     fun import(
-            namespace: String,
-            dump: ApplicationDump,
-            configuration: ApplicationImportConfiguration = ApplicationImportConfiguration()): ImportReport
+        namespace: String,
+        dump: ApplicationDump,
+        configuration: ApplicationImportConfiguration = ApplicationImportConfiguration()
+    ): ImportReport
 
     /**
      * Import the sentences dump.
      */
     fun importSentences(
-            namespace: String,
-            dump: SentencesDump
+        namespace: String,
+        dump: SentencesDump
     ): ImportReport
 
     /**
      * Export sentences dump.
+     *
      * @param intent if specified, only the sentences classified as this intent are exported
+     * @param locale if specified, only the sentences for this locale are exported
      */
     fun exportSentences(
-            applicationId: Id<ApplicationDefinition>,
-            intent: String?,
-            query: SentencesQuery?,
-            dumpType: DumpType): SentencesDump
+        applicationId: Id<ApplicationDefinition>,
+        dumpType: DumpType,
+        intent: String? = null,
+        locale: Locale? = null
+    ): SentencesDump
+
+    /**
+     * Export sentences dump.
+     */
+    fun exportSentences(
+        query: SentencesQuery,
+        dumpType: DumpType
+    ): SentencesDump
 }

@@ -210,41 +210,11 @@ paths:
               schema:
                 type: "object"
 
-  /sentences/dump/{dumpType}/{applicationId}:
+  /sentences/dump/{dumpType}/{applicationId}/{intent}/{locale}:
     get:
       tags:
         - "Sentence"
-      summary: "Retrieve sentences dump that matches given application identifier"
-      consumes:
-        - "application/json"
-      produces:
-        - "application/json"
-      parameters:
-        - name: "dumpType"
-          in: "path"
-          description: "Dump type"
-          required: true
-          schema:
-            type: "string"
-            enum: [full, obfuscated]
-        - name: "applicationId"
-          in: "path"
-          description: "Application identifier"
-          required: true
-          schema:
-            type: "string"
-      responses:
-        200:
-          content:
-            application/json:
-              description: "successful operation"
-              schema:
-                type: "object"
-  /sentences/dump/{dumpType}/{applicationId}/{intent}:
-    get:
-      tags:
-        - "Sentence"
-      summary: "Retrieve qualified sentences dump that matches given application identifier and intent"
+      summary: "Retrieve qualified sentences dump that matches given application identifier, intent and locale"
       consumes:
         - "application/json"
       produces:
@@ -266,7 +236,13 @@ paths:
         - name: "intent"
           in: "path"
           description: "Intent name"
-          required: true
+          required: false
+          schema:
+            type: "string"
+        - name: "locale"
+          in: "path"
+          description: "Locale"
+          required: false
           schema:
             type: "string"
       responses:

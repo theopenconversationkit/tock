@@ -142,8 +142,6 @@ open class AdminVerticle : WebVerticle() {
             if (it.organization == front.getApplicationById(id)?.namespace) {
                 front.exportSentences(
                     id,
-                    null,
-                    null,
                     DumpType.parseDumpType(it.path("dumpType"))
                 )
             } else {
@@ -155,8 +153,6 @@ open class AdminVerticle : WebVerticle() {
             val id: Id<ApplicationDefinition> = context.pathId("applicationId")
             if (context.organization == front.getApplicationById(id)?.namespace) {
                 front.exportSentences(
-                    id,
-                    null,
                     query.toSentencesQuery(id),
                     DumpType.parseDumpType(
                         context.path("dumpType")
@@ -172,9 +168,24 @@ open class AdminVerticle : WebVerticle() {
             val id: Id<ApplicationDefinition> = it.pathId("applicationId")
             if (it.organization == front.getApplicationById(id)?.namespace) {
                 front.exportSentences(
-                    id, it.path("intent"),
-                    null,
-                    DumpType.parseDumpType(it.path("dumpType"))
+                    id,
+                    DumpType.parseDumpType(it.path("dumpType")),
+                    it.path("intent")
+                )
+            } else {
+                unauthorized()
+            }
+        }
+
+        //Retrieve qualified sentences dump that matches given application identifier, intent and locale
+        blockingJsonGet("/sentences/dump/:dumpType/:applicationId/:intent/:locale", admin) {
+            val id: Id<ApplicationDefinition> = it.pathId("applicationId")
+            if (it.organization == front.getApplicationById(id)?.namespace) {
+                front.exportSentences(
+                    id,
+                    DumpType.parseDumpType(it.path("dumpType")),
+                    it.path("intent"),
+                    it.pathToLocale("locale")
                 )
             } else {
                 unauthorized()
@@ -185,8 +196,6 @@ open class AdminVerticle : WebVerticle() {
             val id: Id<ApplicationDefinition> = context.pathId("applicationId")
             if (context.organization == front.getApplicationById(id)?.namespace) {
                 front.exportSentences(
-                    id,
-                    null,
                     query.toSentencesQuery(id),
                     DumpType.parseDumpType(context.path("dumpType"))
                 )
@@ -395,7 +404,7 @@ open class AdminVerticle : WebVerticle() {
                 val sb = StringBuilder()
                 val p = newPrinter(sb)
 
-                front.export(app._id, Locale(context.pathParam("locale")))
+                front.export(app._id, context.pathToLocale("locale"))
                     .forEach {
                         p.printRecord(it.date, it.intent, it.text)
                     }
@@ -652,7 +661,7 @@ open class AdminVerticle : WebVerticle() {
                 front.deletePredefinedValueLabelByName(
                     entityType,
                     context.path("value"),
-                    Locale.forLanguageTag(context.path("locale")),
+                    context.pathToLocale("locale"),
                     context.path("label")
                 )
             } else {

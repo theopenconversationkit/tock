@@ -27,7 +27,6 @@ import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.property
 import fr.vsct.tock.shared.security.TockUserRole
-import fr.vsct.tock.shared.security.TockUserRole.nlpUser
 import fr.vsct.tock.shared.security.auth.AWSJWTAuthProvider
 import fr.vsct.tock.shared.security.auth.GithubOAuthProvider
 import fr.vsct.tock.shared.security.auth.PropertyBasedAuthProvider
@@ -63,6 +62,7 @@ import java.nio.charset.StandardCharsets
 import java.nio.file.Files
 import java.nio.file.Paths
 import java.util.EnumSet
+import java.util.Locale
 import kotlin.LazyThreadSafetyMode.PUBLICATION
 
 /**
@@ -500,6 +500,8 @@ abstract class WebVerticle : AbstractVerticle() {
 
     fun RoutingContext.path(name: String): String =
         pathParam(name)!!.let { URLDecoder.decode(it, StandardCharsets.UTF_8.name()) }
+
+    fun RoutingContext.pathToLocale(name: String): Locale = Locale.forLanguageTag(path(name))
 
     fun <T> RoutingContext.pathId(name: String): Id<T> = path(name).toId()
 

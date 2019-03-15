@@ -137,8 +137,8 @@ export class ApplicationService implements OnDestroy {
     return this.rest.get(`/sentences/dump/${full ? 'full/' : ''}${application._id}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
-  getSentencesDumpForIntent(application: Application, intent: Intent, full: boolean): Observable<Blob> {
-    return this.rest.get(`/sentences/dump/${full ? 'full/' : ''}${application._id}/${encodeURIComponent(intent.qualifiedName())}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
+  getSentencesDumpForIntent(application: Application, intent: Intent, locale:string, full: boolean): Observable<Blob> {
+    return this.rest.get(`/sentences/dump/${full ? 'full/' : ''}${application._id}/${encodeURIComponent(intent.qualifiedName())}/${locale}`, (r => new Blob([JSON.stringify(r)], {type: 'application/json'})));
   }
 
   prepareApplicationDumpUploader(uploader: FileUploader, configuration: ApplicationImportConfiguration) {

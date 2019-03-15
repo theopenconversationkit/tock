@@ -213,6 +213,7 @@ export class IntentsComponent implements OnInit {
     this.applicationService.getSentencesDumpForIntent(
       this.state.currentApplication,
       intent,
+      this.state.currentLocale,
       this.state.hasRole(UserRole.technicalAdmin))
       .subscribe(blob => {
         saveAs(blob, intent.name + "_sentences.json");

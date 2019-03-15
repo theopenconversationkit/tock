@@ -54,6 +54,7 @@ import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 import org.litote.kmongo.toId
 import java.time.Instant
+import java.util.Locale
 
 /**
  *
@@ -331,13 +332,24 @@ object ApplicationCodecService : ApplicationCodec {
 
     override fun exportSentences(
         applicationId: Id<ApplicationDefinition>,
+        dumpType: DumpType,
         intent: String?,
-        query: SentencesQuery?,
+        locale: Locale?
+    ): SentencesDump {
+        val filteredIntentId = if (intent == null) null else config.getIntentIdByQualifiedName(intent)
+        return exportSentences(
+            SentencesQuery(applicationId, intentId = filteredIntentId, language = locale),
+            dumpType
+        )
+    }
+
+    override fun exportSentences(
+        query: SentencesQuery,
         dumpType: DumpType
     ): SentencesDump {
+        val applicationId = query.applicationId
         val app = config.getApplicationById(applicationId)!!
-
-        val filteredIntentId = if (intent == null) null else config.getIntentIdByQualifiedName(intent)
+        val filteredIntentId = query.intentId
 
         val intents = config
             .getIntentsByApplicationId(applicationId)
@@ -346,10 +358,7 @@ object ApplicationCodecService : ApplicationCodec {
             .mapValues { it.value.first() }
 
         val sentences = config
-            .search(
-                (query ?: SentencesQuery(applicationId, intentId = filteredIntentId))
-                    .copy(start = 0, size = Integer.MAX_VALUE, searchMark = null)
-            )
+            .search(query.copy(start = 0, size = Integer.MAX_VALUE, searchMark = null))
             .sentences
 
         return SentencesDump(
