@@ -17,44 +17,51 @@
 package fr.vsct.tock.nlp.front.shared.codec
 
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedEntity
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
 import java.util.Locale
 
 /**
  * A classified sentences dump.
  */
-data class SentencesDump(val applicationName: String,
-                         val language: Locale? = null,
-                         val sentences: List<SentenceDump>)
+data class SentencesDump(
+    val applicationName: String,
+    val language: Locale? = null,
+    val sentences: List<SentenceDump>
+)
 
 
-data class SentenceDump(val text: String,
-                        val intent: String,
-                        val entities: List<SentenceEntityDump> = emptyList(),
-                        val language: Locale? = null)
+data class SentenceDump(
+    val text: String,
+    val intent: String,
+    val entities: List<SentenceEntityDump> = emptyList(),
+    val language: Locale? = null,
+    val status: ClassifiedSentenceStatus = ClassifiedSentenceStatus.model
+)
 
 data class SentenceEntityDump(
-        val entity: String,
-        val role: String,
-        val subEntities: List<SentenceEntityDump> = emptyList(),
-        val start: Int,
-        val end: Int) {
+    val entity: String,
+    val role: String,
+    val subEntities: List<SentenceEntityDump> = emptyList(),
+    val start: Int,
+    val end: Int
+) {
 
     constructor(entity: ClassifiedEntity) :
             this(
-                    entity.type,
-                    entity.role,
-                    entity.subEntities.map { SentenceEntityDump(it) },
-                    entity.start,
-                    entity.end
+                entity.type,
+                entity.role,
+                entity.subEntities.map { SentenceEntityDump(it) },
+                entity.start,
+                entity.end
             )
 
     fun toClassifiedEntity(): ClassifiedEntity {
         return ClassifiedEntity(
-                entity,
-                role,
-                start,
-                end,
-                subEntities.map { it.toClassifiedEntity() }
+            entity,
+            role,
+            start,
+            end,
+            subEntities.map { it.toClassifiedEntity() }
         )
     }
 }

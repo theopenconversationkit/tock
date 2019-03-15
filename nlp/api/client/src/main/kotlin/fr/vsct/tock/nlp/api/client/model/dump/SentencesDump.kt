@@ -34,7 +34,8 @@ data class SentenceDump(val text: String,
                         /**
                          * If null and if [SentencesDump.language] is also null, an error will be thrown.
                          */
-                        val language: Locale? = null)
+                        val language: Locale? = null,
+                        val status: ClassifiedSentenceStatus = ClassifiedSentenceStatus.model)
 
 data class SentenceEntityDump(
         val entity: String,

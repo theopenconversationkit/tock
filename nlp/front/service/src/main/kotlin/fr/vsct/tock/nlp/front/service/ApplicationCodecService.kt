@@ -33,6 +33,7 @@ import fr.vsct.tock.nlp.front.shared.codec.SentencesDump
 import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.Classification
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
+import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.model
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus.validated
 import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
@@ -298,7 +299,8 @@ object ApplicationCodecService : ApplicationCodec {
                             appId,
                             Instant.now(),
                             Instant.now(),
-                            validated,
+                            //need to switch model status to validated in order to trigger model rebuild
+                            s.status.takeUnless { it == model } ?: validated,
                             Classification(
                                 intent?._id ?: UNKNOWN_INTENT_NAME.toId(),
                                 s.entities.map { it.toClassifiedEntity() }
@@ -365,7 +367,8 @@ object ApplicationCodecService : ApplicationCodec {
                             s.text,
                             sentenceIntent?.qualifiedName ?: Intent.UNKNOWN_INTENT_NAME,
                             s.classification.entities.map { SentenceEntityDump(it) },
-                            s.language
+                            s.language,
+                            s.status
                         )
                     }
                 }
