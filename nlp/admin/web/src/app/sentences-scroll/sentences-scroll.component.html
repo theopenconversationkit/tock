@@ -89,14 +89,14 @@
 
       <ng-container matColumnDef="select">
         <mat-header-cell *matHeaderCellDef>
-          <mat-checkbox (selectionChange)="$event ? masterToggle() : null"
+          <mat-checkbox (change)="$event ? masterToggle() : null"
                         [checked]="selection.hasValue() && isAllSelected()"
                         [indeterminate]="selection.hasValue() && !isAllSelected()">
           </mat-checkbox>
         </mat-header-cell>
         <mat-cell *matCellDef="let row">
           <mat-checkbox (click)="$event.stopPropagation()"
-                        (selectionChange)="$event ? toggle(row) : null"
+                        (change)="$event ? toggle(row) : null"
                         [checked]="selection.isSelected(row)">
           </mat-checkbox>
         </mat-cell>
