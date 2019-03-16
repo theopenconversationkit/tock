@@ -69,7 +69,7 @@
           <tr *ngFor="let predefinedValue of selectedEntityType.predefinedValues">
             <td>
               <mat-form-field>
-                <input matInput #pv [(value)]="predefinedValue.value" (selectionChange)="updatePredefinedValueName(predefinedValue, pv.value)">
+                <input matInput #pv [(value)]="predefinedValue.value" (blur)="updatePredefinedValueName(predefinedValue, pv)">
               </mat-form-field>
             </td>
             <td>

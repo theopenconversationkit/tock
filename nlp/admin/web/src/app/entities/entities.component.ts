@@ -19,7 +19,7 @@ import {map} from 'rxjs/operators';
 import {Component, OnInit} from "@angular/core";
 import {StateService} from "../core-nlp/state.service";
 import {NlpService} from "../nlp-tabs/nlp.service";
-import {MatDialog, MatDialogConfig, MatSnackBar, MatSnackBarConfig} from "@angular/material";
+import {MatDialog, MatDialogConfig, MatInput, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {ApplicationService} from "../core-nlp/applications.service";
 import {EntityDefinition, EntityType, PredefinedValue} from "../model/nlp";
 import {ConfirmDialogComponent} from "../shared-nlp/confirm-dialog/confirm-dialog.component";
@@ -79,16 +79,33 @@ export class EntitiesComponent implements OnInit {
     }
   }
 
-  updatePredefinedValueName(predefinedValue: PredefinedValue, newValue: string) {
-    if (newValue.trim() === "") {
-      this.snackBar.open(`Empty Predefined Value is not allowed`, "Error", {duration: 5000} as MatSnackBarConfig<any>);
-    } else {
-      this.nlp.createOrUpdatePredefinedValue(
-        this.state.createPredefinedValueQuery(this.selectedEntityType.name, newValue, predefinedValue.value)).subscribe(
-        next => {
-          this.selectedEntityType = next
-        },
-        error => this.snackBar.open(`Update Predefined Value '${name}' failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>))
+  updatePredefinedValueName(predefinedValue: PredefinedValue, input: MatInput) {
+    const newValue = input.value;
+    const oldValue = predefinedValue.value;
+    if (oldValue !== newValue) {
+      if (newValue.trim() === "") {
+        this.snackBar.open(`Empty Predefined Value is not allowed`, "Error", {duration: 5000} as MatSnackBarConfig<any>);
+        input.value = oldValue;
+        input.focus();
+      } else {
+        if(this.selectedEntityType.predefinedValues.some(v => v.value === newValue) {
+          this.snackBar.open(`Predefined Value already exist`, "Error", {duration: 5000} as MatSnackBarConfig<any>);
+          input.value = oldValue;
+          input.focus();
+        }
+        else {
+          this.nlp.createOrUpdatePredefinedValue(
+            this.state.createPredefinedValueQuery(this.selectedEntityType.name, newValue, oldValue)).subscribe(
+            next => {
+              this.selectedEntityType = next
+            },
+            error => {
+              input.value = oldValue;
+              input.focus();
+              this.snackBar.open(`Update Predefined Value '${name}' failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>)
+            })
+        }
+      }
     }
   }
 
