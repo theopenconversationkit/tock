@@ -88,7 +88,7 @@ export class EntitiesComponent implements OnInit {
         input.value = oldValue;
         input.focus();
       } else {
-        if(this.selectedEntityType.predefinedValues.some(v => v.value === newValue) {
+        if(this.selectedEntityType.predefinedValues.some(v => v.value === newValue)) {
           this.snackBar.open(`Predefined Value already exist`, "Error", {duration: 5000} as MatSnackBarConfig<any>);
           input.value = oldValue;
           input.focus();
