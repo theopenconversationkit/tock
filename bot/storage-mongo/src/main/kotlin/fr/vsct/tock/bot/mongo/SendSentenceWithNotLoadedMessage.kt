@@ -42,8 +42,7 @@ internal class SendSentenceWithNotLoadedMessage(
     date: Instant = Instant.now(),
     state: EventState = EventState(),
     metadata: ActionMetadata = ActionMetadata()
-) :
-    SendSentence(playerId, applicationId, recipientId, text, mutableListOf(), id, date, state, metadata, null) {
+) : SendSentence(playerId, applicationId, recipientId, text, mutableListOf(), id, date, state, metadata, null) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
@@ -78,4 +77,10 @@ internal class SendSentenceWithNotLoadedMessage(
             this.loadedNlpStats = value
             nlpStatsLoaded = true
         }
+
+    override fun toString(): String {
+        return if (messageLoaded) super.toString() else "SendSentenceWithNotLoadedMessage(dialogId=$dialogId, messageLoaded=$messageLoaded, nlpStatsLoaded=$nlpStatsLoaded)"
+    }
+
+
 }

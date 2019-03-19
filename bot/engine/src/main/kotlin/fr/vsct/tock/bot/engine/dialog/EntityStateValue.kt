@@ -94,6 +94,10 @@ data class EntityStateValue(
         }
     }
 
+    override fun toString(): String {
+        return "EntityStateValue(currentValue=$currentValue, currentHistory=$currentHistory, initialUpdate=$initialUpdate, stateValueId=$stateValueId, updated=$updated, loaded=$loaded)"
+    }
+
     /**
      * Current entity value
      */
@@ -127,5 +131,6 @@ data class EntityStateValue(
      * Is this state has been updated un current [BotBus]?
      */
     val hasBeanUpdatedInBus: Boolean get() = initialUpdate != updated
+
 
 }
