@@ -67,9 +67,9 @@ export class DialogsComponent extends ScrollComponent<DialogReport> {
 
   search(query: PaginatedQuery): Observable<PaginatedResult<DialogReport>> {
     return this.route.queryParams.pipe(mergeMap(params => {
-      this.filter.dialogId = params["dialogId"];
-      this.filter.text = params["text"];
-      this.filter.intentName = params["intentName"];
+      if (params["dialogId"]) this.filter.dialogId = params["dialogId"];
+      if (params["text"]) this.filter.text = params["text"];
+      if (params["intentName"]) this.filter.intentName = params["intentName"];
       return this.monitoring.dialogs(this.buildDialogQuery(query));
     }));
   }
