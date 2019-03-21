@@ -24,7 +24,6 @@ import com.fasterxml.jackson.databind.JsonSerializer
 import com.fasterxml.jackson.databind.SerializerProvider
 import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import com.fasterxml.jackson.databind.annotation.JsonSerialize
-import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.AnyValueWrapper.AnyValueDeserializer
 import fr.vsct.tock.shared.jackson.AnyValueWrapper.AnyValueSerializer
 import mu.KotlinLogging
@@ -61,13 +60,16 @@ data class AnyValueWrapper(val klass: String, val value: Any?) {
                     try {
                         Class.forName(jp.text)
                     } catch (e: Exception) {
-                        logger.error(e)
+                        logger.warn("deserialization error for class ${e.message}")
                         null
                     }
                 fieldName = jp.fieldNameWithValueReady()
                 if (fieldName != null) {
                     if (classValue == null) {
-                        logger.debug { jp.readValueAsTree() }
+                        if (jp.currentToken.isStructStart) {
+                            jp.skipChildren()
+                        }
+                        jp.nextToken()
                         jp.checkEndToken()
                         return null
                     } else {

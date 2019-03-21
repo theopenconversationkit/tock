@@ -1,0 +1,586 @@
+{
+  "_id": "5c940a77c9d2b049ca5f3024",
+  "playerIds": [
+    {
+      "id": "test_5c90098ee446ed7027ab7778_fr",
+      "type": "user",
+      "clientId": null
+    },
+    {
+      "id": "test_bot_5c90098ee446ed7027ab7778_fr",
+      "type": "bot",
+      "clientId": null
+    }
+  ],
+  "state": {
+    "currentIntent": {
+      "name": "indicate_location"
+    },
+    "entityValues": {
+      "location": {
+        "value": null,
+        "lastUpdate": "2019-03-21T22:15:20.698Z",
+        "id": "5c940a7ec9d2b049ca5f302d"
+      },
+      "origin": {
+        "value": {
+          "start": null,
+          "end": null,
+          "entity": {
+            "entityType": {
+              "name": "app:location",
+              "subEntities": [],
+              "predefinedValues": []
+            },
+            "role": "origin"
+          },
+          "content": null,
+          "value": {
+            "@type": "place",
+            "name": "Châtelet-les-Halles (Paris)",
+            "id": "stop_area:OCE:SA:87758607",
+            "label": null,
+            "quality": 0,
+            "embedded_type": "stop_area",
+            "coord": null
+          },
+          "evaluated": true,
+          "subEntities": [],
+          "probability": 1,
+          "mergeSupport": false
+        },
+        "lastUpdate": "2019-03-21T22:15:20.698Z",
+        "id": "5c940cfa09980e5ebbf5afb9"
+      }
+    },
+    "context": {
+      "currentStops": {
+        "klass": "[Lfr.vsct.tock.bot.open.data.client.sncf.model.StationStop;",
+        "value": [
+          {
+            "display_informations": {
+              "direction": "Poissy (Poissy)",
+              "label": "A",
+              "color": "D1302F",
+              "commercial_mode": "RER",
+              "headsign": "483468"
+            },
+            "stop_date_time": {
+              "stop_point": null,
+              "departure_date_time": "2019-03-21T23:16:00Z",
+              "arrival_date_time": "2019-03-21T23:16:00Z"
+            },
+            "links": [
+              {
+                "type": "line",
+                "id": "line:OCE:SN-87758201-87386573"
+              },
+              {
+                "type": "vehicle_journey",
+                "id": "vehicle_journey:OCE:SN483468F01003_dst_1"
+              },
+              {
+                "type": "route",
+                "id": "route:OCE:SN-RERA-87758201-87386573"
+              },
+              {
+                "type": "commercial_mode",
+                "id": "commercial_mode:rer"
+              },
+              {
+                "type": "physical_mode",
+                "id": "physical_mode:RapidTransit"
+              },
+              {
+                "type": "network",
+                "id": "network:sncf"
+              }
+            ]
+          },
+          {
+            "display_informations": {
+              "direction": "Robinson (Sceaux)",
+              "label": "B",
+              "color": "427DBD",
+              "commercial_mode": "RER",
+              "headsign": "481756"
+            },
+            "stop_date_time": {
+              "stop_point": null,
+              "departure_date_time": "2019-03-21T23:17:00Z",
+              "arrival_date_time": "2019-03-21T23:17:00Z"
+            },
+            "links": [
+              {
+                "type": "line",
+                "id": "line:OCE:SN-87271528-87758722"
+              },
+              {
+                "type": "vehicle_journey",
+                "id": "vehicle_journey:OCE:SN481756F01002_dst_1"
+              },
+              {
+                "type": "route",
+                "id": "route:OCE:SN-RERB-87271528-87758722"
+              },
+              {
+                "type": "commercial_mode",
+                "id": "commercial_mode:rer"
+              },
+              {
+                "type": "physical_mode",
+                "id": "physical_mode:RapidTransit"
+              },
+              {
+                "type": "network",
+                "id": "network:sncf"
+              }
+            ]
+          },
+          {
+            "display_informations": {
+              "direction": "Aérop-C-de-Gaulle-2-TGV (Tremblay-en-France)",
+              "label": "B",
+              "color": "427DBD",
+              "commercial_mode": "RER",
+              "headsign": "484638"
+            },
+            "stop_date_time": {
+              "stop_point": null,
+              "departure_date_time": "2019-03-21T23:26:00Z",
+              "arrival_date_time": "2019-03-21T23:26:00Z"
+            },
+            "links": [
+              {
+                "type": "line",
+                "id": "line:OCE:SN-87001479-87758896"
+              },
+              {
+                "type": "vehicle_journey",
+                "id": "vehicle_journey:OCE:SN484638F01002_dst_1"
+              },
+              {
+                "type": "route",
+                "id": "route:OCE:SN-RERB-87758896-87001479"
+              },
+              {
+                "type": "commercial_mode",
+                "id": "commercial_mode:rer"
+              },
+              {
+                "type": "physical_mode",
+                "id": "physical_mode:RapidTransit"
+              },
+              {
+                "type": "network",
+                "id": "network:sncf"
+              }
+            ]
+          },
+          {
+            "display_informations": {
+              "direction": "Denfert-Rochereau (Paris)",
+              "label": "B",
+              "color": "427DBD",
+              "commercial_mode": "RER",
+              "headsign": "484920"
+            },
+            "stop_date_time": {
+              "stop_point": null,
+              "departure_date_time": "2019-03-21T23:26:00Z",
+              "arrival_date_time": "2019-03-21T23:26:00Z"
+            },
+            "links": [
+              {
+                "type": "line",
+                "id": "line:OCE:SN-87001479-87758631"
+              },
+              {
+                "type": "vehicle_journey",
+                "id": "vehicle_journey:OCE:SN484920F01008_dst_1"
+              },
+              {
+                "type": "route",
+                "id": "route:OCE:SN-RERB-87001479-87758631"
+              },
+              {
+                "type": "commercial_mode",
+                "id": "commercial_mode:rer"
+              },
+              {
+                "type": "physical_mode",
+                "id": "physical_mode:RapidTransit"
+              },
+              {
+                "type": "network",
+                "id": "network:sncf"
+              }
+            ]
+          }
+        ]
+      }
+    },
+    "userLocation": null,
+    "nextActionState": null
+  },
+  "stories": [
+    {
+      "storyDefinitionId": "greetings",
+      "currentIntent": {
+        "name": "greetings"
+      },
+      "currentStep": null,
+      "actions": [
+        {
+          "type": "sentence",
+          "text": "yo",
+          "customMessage": false,
+          "id": "5c940a77c9d2b049ca5f3023",
+          "date": "2019-03-21T22:04:39.104Z",
+          "state": {
+            "entityValues": [],
+            "testEvent": false,
+            "targetConnectorType": {
+              "id": "messenger",
+              "userInterfaceType": "textChat"
+            },
+            "userInterface": null,
+            "intent": "greetings",
+            "step": null
+          },
+          "botMetadata": {
+            "lastAnswer": false,
+            "priority": "normal",
+            "notificationType": null
+          },
+          "playerId": {
+            "id": "test_5c90098ee446ed7027ab7778_fr",
+            "type": "user",
+            "clientId": null
+          },
+          "recipientId": {
+            "id": "test_bot_5c90098ee446ed7027ab7778_fr",
+            "type": "bot",
+            "clientId": null
+          },
+          "applicationId": "rest-bot_open_data_m"
+        },
+        {
+          "type": "sentence",
+          "text": "Bienvenue chez le Bot Open Data Sncf! :)",
+          "customMessage": false,
+          "id": "5c940a77c9d2b049ca5f3026",
+          "date": "2019-03-21T22:04:39.504Z",
+          "state": {
+            "entityValues": [],
+            "testEvent": false,
+            "targetConnectorType": null,
+            "userInterface": null,
+            "intent": null,
+            "step": null
+          },
+          "botMetadata": {
+            "lastAnswer": false,
+            "priority": "normal",
+            "notificationType": null
+          },
+          "playerId": {
+            "id": "test_bot_5c90098ee446ed7027ab7778_fr",
+            "type": "bot",
+            "clientId": null
+          },
+          "recipientId": {
+            "id": "test_5c90098ee446ed7027ab7778_fr",
+            "type": "user",
+            "clientId": null
+          },
+          "applicationId": "rest-bot_open_data_m"
+        },
+        {
+          "type": "sentence",
+          "text": "Il s'agit d'un bot de démonstration du framework Tock : https://github.com/voyages-sncf-technologies/tock",
+          "customMessage": false,
+          "id": "5c940a77c9d2b049ca5f3027",
+          "date": "2019-03-21T22:04:39.505Z",
+          "state": {
+            "entityValues": [],
+            "testEvent": false,
+            "targetConnectorType": null,
+            "userInterface": null,
+            "intent": null,
+            "step": null
+          },
+          "botMetadata": {
+            "lastAnswer": false,
+            "priority": "normal",
+            "notificationType": null
+          },
+          "playerId": {
+            "id": "test_bot_5c90098ee446ed7027ab7778_fr",
+            "type": "bot",
+            "clientId": null
+          },
+          "recipientId": {
+            "id": "test_5c90098ee446ed7027ab7778_fr",
+            "type": "user",
+            "clientId": null
+          },
+          "applicationId": "rest-bot_open_data_m"
+        },
+        {
+          "type": "sentence",
+          "text": null,
+          "customMessage": true,
+          "id": "5c940a77c9d2b049ca5f3028",
+          "date": "2019-03-21T22:04:39.517Z",
+          "state": {
+            "entityValues": [],
+            "testEvent": false,
+            "targetConnectorType": null,
+            "userInterface": null,
+            "intent": null,
+            "step": null
+          },
+          "botMetadata": {
+            "lastAnswer": true,
+            "priority": "normal",
+            "notificationType": null
+          },
+          "playerId": {
+            "id": "test_bot_5c90098ee446ed7027ab7778_fr",
+            "type": "bot",
+            "clientId": null
+          },
+          "recipientId": {
+            "id": "test_5c90098ee446ed7027ab7778_fr",
+            "type": "user",
+            "clientId": null
+          },
+          "applicationId": "rest-bot_open_data_m"
+        }
+      ]
+    },
+    {
+      "storyDefinitionId": "departures",
+      "currentIntent": {
+        "name": "indicate_location"
+      },
+      "currentStep": null,
+      "actions": [
+        {
+          "type": "sentence",
+          "text": "Paris",
+          "customMessage": false,
+          "id": "5c940a7dc9d2b049ca5f302a",
+          "date": "2019-03-21T22:04:45.040Z",
+          "state": {
+            "entityValues": [
+              {
+                "start": 0,
+                "end": 5,
+                "entity": {
+                  "entityType": {
+                    "name": "app:location",
+                    "subEntities": [],
+                    "predefinedValues": []
+                  },
+                  "role": "location"
+                },
+                "content": "Paris",
+                "value": null,
+                "evaluated": false,
+                "subEntities": [],
+                "probability": 1,
+                "mergeSupport": false
+              }
+            ],
+            "testEvent": false,
+            "targetConnectorType": {
+              "id": "messenger",
+              "userInterfaceType": "textChat"
+            },
+            "userInterface": null,
+            "intent": "indicate_location",
+            "step": null
+          },
+          "botMetadata": {
+            "lastAnswer": false,
+            "priority": "normal",
+            "notificationType": null
+          },
+          "playerId": {
+            "id": "test_5c90098ee446ed7027ab7778_fr",
+            "type": "user",
+            "clientId": null
+          },
+          "recipientId": {
+            "id": "test_bot_5c90098ee446ed7027ab7778_fr",
+            "type": "bot",
+            "clientId": null
+          },
+          "applicationId": "rest-bot_open_data_m"
+        },
+        {
+          "type": "sentence",
+          "text": "De quelle gare souhaitez vous voir les départs?",
+          "customMessage": false,
+          "id": "5c940a7ec9d2b049ca5f302c",
+          "date": "2019-03-21T22:04:46.545Z",
+          "state": {
+            "entityValues": [],
+            "testEvent": false,
+            "targetConnectorType": null,
+            "userInterface": null,
+            "intent": null,
+            "step": null
+          },
+          "botMetadata": {
+            "lastAnswer": true,
+            "priority": "normal",
+            "notificationType": null
+          },
+          "playerId": {
+            "id": "test_bot_5c90098ee446ed7027ab7778_fr",
+            "type": "bot",
+            "clientId": null
+          },
+          "recipientId": {
+            "id": "test_5c90098ee446ed7027ab7778_fr",
+            "type": "user",
+            "clientId": null
+          },
+          "applicationId": "rest-bot_open_data_m"
+        },
+        {
+          "type": "sentence",
+          "text": "Paris",
+          "customMessage": false,
+          "id": "5c940cf609980e5ebbf5afb5",
+          "date": "2019-03-21T22:15:18.053Z",
+          "state": {
+            "entityValues": [
+              {
+                "start": null,
+                "end": null,
+                "entity": {
+                  "entityType": {
+                    "name": "app:location",
+                    "subEntities": [],
+                    "predefinedValues": []
+                  },
+                  "role": "location"
+                },
+                "content": null,
+                "value": {
+                  "@type": "place",
+                  "name": "Châtelet-les-Halles (Paris)",
+                  "id": "stop_area:OCE:SA:87758607",
+                  "label": null,
+                  "quality": 0,
+                  "embedded_type": "stop_area",
+                  "coord": null
+                },
+                "evaluated": true,
+                "subEntities": [],
+                "probability": 1,
+                "mergeSupport": false
+              }
+            ],
+            "testEvent": false,
+            "targetConnectorType": {
+              "id": "messenger",
+              "userInterfaceType": "textChat"
+            },
+            "userInterface": null,
+            "intent": "indicate_location",
+            "step": null
+          },
+          "botMetadata": {
+            "lastAnswer": false,
+            "priority": "normal",
+            "notificationType": null
+          },
+          "playerId": {
+            "id": "test_5c90098ee446ed7027ab7778_fr",
+            "type": "user",
+            "clientId": null
+          },
+          "recipientId": {
+            "id": "test_bot_5c90098ee446ed7027ab7778_fr",
+            "type": "bot",
+            "clientId": null
+          },
+          "applicationId": "rest-bot_open_data_m"
+        },
+        {
+          "type": "sentence",
+          "text": "Départs de la gare de Châtelet-les-Halles (Paris) :",
+          "customMessage": false,
+          "id": "5c940cf809980e5ebbf5afb7",
+          "date": "2019-03-21T22:15:20.804Z",
+          "state": {
+            "entityValues": [],
+            "testEvent": false,
+            "targetConnectorType": null,
+            "userInterface": null,
+            "intent": null,
+            "step": null
+          },
+          "botMetadata": {
+            "lastAnswer": false,
+            "priority": "normal",
+            "notificationType": null
+          },
+          "playerId": {
+            "id": "test_bot_5c90098ee446ed7027ab7778_fr",
+            "type": "bot",
+            "clientId": null
+          },
+          "recipientId": {
+            "id": "test_5c90098ee446ed7027ab7778_fr",
+            "type": "user",
+            "clientId": null
+          },
+          "applicationId": "rest-bot_open_data_m"
+        },
+        {
+          "type": "sentence",
+          "text": null,
+          "customMessage": true,
+          "id": "5c940cfa09980e5ebbf5afb8",
+          "date": "2019-03-21T22:15:22.087Z",
+          "state": {
+            "entityValues": [],
+            "testEvent": false,
+            "targetConnectorType": null,
+            "userInterface": null,
+            "intent": null,
+            "step": null
+          },
+          "botMetadata": {
+            "lastAnswer": true,
+            "priority": "normal",
+            "notificationType": null
+          },
+          "playerId": {
+            "id": "test_bot_5c90098ee446ed7027ab7778_fr",
+            "type": "bot",
+            "clientId": null
+          },
+          "recipientId": {
+            "id": "test_5c90098ee446ed7027ab7778_fr",
+            "type": "user",
+            "clientId": null
+          },
+          "applicationId": "rest-bot_open_data_m"
+        }
+      ]
+    }
+  ],
+  "applicationIds": [
+    "rest-bot_open_data_m"
+  ],
+  "lastUpdateDate": "2019-03-21T22:15:22.166Z",
+  "groupId": null,
+  "test": false
+}

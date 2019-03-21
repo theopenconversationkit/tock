@@ -78,12 +78,14 @@ inline fun <reified T : Any> JsonParser.readValue() = this.readValueAs(T::class.
  * @return the field name, null if [JsonToken.END_OBJECT]
  */
 fun JsonParser.fieldNameWithValueReady(): String? {
-    if (currentToken == JsonToken.END_OBJECT) {
+    if (currentToken?.isStructEnd == true) {
         return null
     }
-    val firstToken = nextToken()
-    if (firstToken == JsonToken.END_OBJECT) {
-        return null
+    if (currentToken != JsonToken.FIELD_NAME) {
+        nextToken()
+        if (currentToken?.isStructEnd == true) {
+            return null
+        }
     }
     val fieldName = currentName
     nextToken()
@@ -91,7 +93,7 @@ fun JsonParser.fieldNameWithValueReady(): String? {
 }
 
 internal fun JsonParser.checkEndToken() {
-    if (currentToken != JsonToken.END_OBJECT) {
+    if (currentToken?.isStructEnd != true) {
         nextToken()
         checkEndToken()
     }

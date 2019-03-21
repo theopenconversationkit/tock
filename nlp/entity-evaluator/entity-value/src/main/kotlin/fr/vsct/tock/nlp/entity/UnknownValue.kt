@@ -16,8 +16,27 @@
 
 package fr.vsct.tock.nlp.entity
 
+import com.fasterxml.jackson.core.JsonParser
+import com.fasterxml.jackson.core.JsonToken
+import com.fasterxml.jackson.databind.DeserializationContext
+import com.fasterxml.jackson.databind.JsonDeserializer
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize
+
+internal object UnknownValueDeserializer : JsonDeserializer<UnknownValue>() {
+    override fun deserialize(p: JsonParser, ctxt: DeserializationContext): UnknownValue {
+        while (p.currentToken == JsonToken.FIELD_NAME) {
+            p.nextToken()
+            if (p.currentToken?.isStructStart == true) {
+                p.skipChildren()
+            }
+            p.nextToken()
+        }
+        return UnknownValue()
+    }
+}
+
 /**
  * Used when real value type is unavailable.
  */
-class UnknownValue : Value {
-}
+@JsonDeserialize(using = UnknownValueDeserializer::class)
+class UnknownValue : Value

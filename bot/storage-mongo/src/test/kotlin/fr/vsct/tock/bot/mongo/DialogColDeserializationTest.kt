@@ -48,6 +48,7 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.util.UUID
 import kotlin.test.assertEquals
+import kotlin.test.assertNotNull
 import kotlin.test.assertTrue
 
 /**
@@ -175,6 +176,13 @@ class DialogColDeserializationTest : AbstractTest(false) {
         println(mapper.writeValueAsString(s))
         val r = mapper.readValue<StoryMongoWrapper>(mapper.writeValueAsString(s))
         assertEquals(s, r)
+    }
+
+    @Test
+    fun `deserialization of unknown value is ok`() {
+        val json = this::class.java.getResourceAsStream("/dialog.json")
+        val col : DialogCol? = mapper.readValue(json)
+        assertNotNull(col)
     }
 
 }
