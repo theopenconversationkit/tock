@@ -42,6 +42,8 @@
         <module>connector-twitter</module>
         <module>connector-whatsapp</module>
         <module>connector-teams</module>
+        <module>connector-businesschat</module>
+
         <module>storage-mongo</module>
 
         <module>toolkit-base</module>
@@ -50,6 +52,7 @@
         <module>test</module>
 
         <module>admin</module>
+
 
     </modules>
 
@@ -118,6 +121,11 @@
             <dependency>
                 <groupId>fr.vsct.tock</groupId>
                 <artifactId>tock-bot-storage-mongo</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
+                <artifactId>tock-bot-connector-businesschat</artifactId>
                 <version>${project.version}</version>
             </dependency>
         </dependencies>
