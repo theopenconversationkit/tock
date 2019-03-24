@@ -27,6 +27,7 @@ import fr.vsct.tock.bot.admin.model.BotI18nLabel
 import fr.vsct.tock.bot.admin.model.BotI18nLabels
 import fr.vsct.tock.bot.admin.model.BotIntentSearchRequest
 import fr.vsct.tock.bot.admin.model.CreateBotIntentRequest
+import fr.vsct.tock.bot.admin.model.DialogFlowRequest
 import fr.vsct.tock.bot.admin.model.DialogsSearchQuery
 import fr.vsct.tock.bot.admin.model.TestPlanUpdate
 import fr.vsct.tock.bot.admin.model.UpdateBotIntentRequest
@@ -107,13 +108,13 @@ open class BotAdminVerticle : AdminVerticle() {
                     if (conf == null || bot.namespace != conf.namespace || bot.botId != conf.botId) {
                         unauthorized()
                     }
-                    if (getBotConfigurationByApplicationIdAndBotId(bot.applicationId, bot.botId)
+                    if (getBotConfigurationByApplicationIdAndBotId(bot.namespace, bot.applicationId, bot.botId)
                             ?.run { _id != conf._id } == true
                     ) {
                         badRequest("Connector identifier already exists")
                     }
                 } else {
-                    if (getBotConfigurationByApplicationIdAndBotId(bot.applicationId, bot.botId) != null
+                    if (getBotConfigurationByApplicationIdAndBotId(bot.namespace, bot.applicationId, bot.botId) != null
                     ) {
                         badRequest("Connector identifier already exists")
                     }
@@ -287,6 +288,14 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonDelete("/bot/intent/:intentId", botUser) { context ->
             BotAdminService.deleteBotIntent(context.organization, context.path("intentId"))
+        }
+
+        blockingJsonPost("/flow", botUser) { context, request: DialogFlowRequest ->
+            if (context.organization == request.namespace) {
+                BotAdminService.loadDialogFlow(request)
+            } else {
+                unauthorized()
+            }
         }
 
         blockingJsonGet("/i18n", botUser) { context ->

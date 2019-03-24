@@ -28,6 +28,7 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.admin.bot.BotVersion
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
+import fr.vsct.tock.bot.admin.dialog.ApplicationDialogFlowData
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReportQueryResult
 import fr.vsct.tock.bot.admin.kotlin.compiler.KotlinFile
@@ -38,6 +39,7 @@ import fr.vsct.tock.bot.admin.model.BotIntent
 import fr.vsct.tock.bot.admin.model.BotIntentSearchRequest
 import fr.vsct.tock.bot.admin.model.BotStoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.model.CreateBotIntentRequest
+import fr.vsct.tock.bot.admin.model.DialogFlowRequest
 import fr.vsct.tock.bot.admin.model.DialogsSearchQuery
 import fr.vsct.tock.bot.admin.model.UpdateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
@@ -49,6 +51,7 @@ import fr.vsct.tock.bot.connector.rest.client.ConnectorRestClient
 import fr.vsct.tock.bot.connector.rest.client.model.ClientMessageRequest
 import fr.vsct.tock.bot.connector.rest.client.model.ClientSentence
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.engine.dialog.DialogFlowDAO
 import fr.vsct.tock.bot.engine.feature.FeatureDAO
 import fr.vsct.tock.bot.engine.feature.FeatureState
 import fr.vsct.tock.nlp.admin.AdminService
@@ -64,6 +67,7 @@ import fr.vsct.tock.shared.Dice
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.property
+import fr.vsct.tock.shared.provide
 import fr.vsct.tock.shared.vertx.UnauthorizedException
 import fr.vsct.tock.shared.vertx.WebVerticle.Companion.badRequest
 import fr.vsct.tock.translator.I18nKeyProvider
@@ -89,6 +93,7 @@ object BotAdminService {
     private val applicationConfigurationDAO: BotApplicationConfigurationDAO  by injector.instance()
     private val storyDefinitionDAO: StoryDefinitionConfigurationDAO by injector.instance()
     private val featureDAO: FeatureDAO by injector.instance()
+    private val dialogFlowDAO: DialogFlowDAO get() = injector.provide()
     private val restConnectorClientCache: MutableMap<String, ConnectorRestClient> = ConcurrentHashMap()
     private val front = FrontClient
 
@@ -126,8 +131,12 @@ object BotAdminService {
         return applicationConfigurationDAO.getConfigurationById(id)
     }
 
-    fun getBotConfigurationByApplicationIdAndBotId(applicationId: String, botId: String): BotApplicationConfiguration? {
-        return applicationConfigurationDAO.getConfigurationByApplicationIdAndBotId(applicationId, botId)
+    fun getBotConfigurationByApplicationIdAndBotId(
+        namespace: String,
+        applicationId: String,
+        botId: String
+    ): BotApplicationConfiguration? {
+        return applicationConfigurationDAO.getConfigurationByApplicationIdAndBotId(namespace, applicationId, botId)
     }
 
     fun getBotConfigurationsByNamespaceAndBotId(namespace: String, botId: String): List<BotApplicationConfiguration> {
@@ -402,5 +411,9 @@ object BotAdminService {
 
     fun deleteFeature(botId: String, namespace: String, category: String, name: String) {
         featureDAO.deleteFeature(botId, namespace, category, name)
+    }
+
+    fun loadDialogFlow(request:DialogFlowRequest) : ApplicationDialogFlowData {
+        return dialogFlowDAO.loadApplicationData(request.namespace, request.botId, null)
     }
 }

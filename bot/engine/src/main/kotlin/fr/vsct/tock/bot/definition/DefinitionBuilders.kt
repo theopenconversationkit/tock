@@ -84,7 +84,11 @@ fun bot(
     /**
      * To handle keywords.
      */
-    keywordStory: StoryDefinition = defaultKeywordStory
+    keywordStory: StoryDefinition = defaultKeywordStory,
+    /**
+     * The optional dialog flow.
+     */
+    conversation: DialogFlowDefinition? = null
 ): SimpleBotDefinition {
     fun findStory(intent: IntentAware?): StoryDefinition? =
         intent as? StoryDefinition

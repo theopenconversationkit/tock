@@ -20,7 +20,6 @@ import com.github.salomonbrys.kodein.instance
 import com.mongodb.ReadPreference.secondaryPreferred
 import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.ReplaceOptions
-import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReport
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReportQuery
@@ -29,6 +28,7 @@ import fr.vsct.tock.bot.admin.user.UserReportDAO
 import fr.vsct.tock.bot.admin.user.UserReportQuery
 import fr.vsct.tock.bot.admin.user.UserReportQueryResult
 import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -41,6 +41,7 @@ import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
+import fr.vsct.tock.bot.mongo.BotApplicationConfigurationMongoDAO.getApplicationIds
 import fr.vsct.tock.bot.mongo.ClientIdCol_.Companion.UserIds
 import fr.vsct.tock.bot.mongo.DialogCol_.Companion.GroupId
 import fr.vsct.tock.bot.mongo.DialogCol_.Companion.PlayerIds
@@ -114,7 +115,6 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
 
     private val logger = KotlinLogging.logger {}
 
-    private val botConfiguration: BotApplicationConfigurationDAO by injector.instance()
     private val executor: Executor by injector.instance()
 
     val userTimelineCol = database.getCollection<UserTimelineCol>("user_timeline")
@@ -175,7 +175,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
         )
     }
 
-    override fun save(userTimeline: UserTimeline) {
+    override fun save(userTimeline: UserTimeline, botDefinition: BotDefinition?) {
         logger.debug { "start to save timeline $userTimeline" }
         val oldTimeline = userTimelineCol.findOneById(userTimeline.playerId.id)
         logger.debug { "load old timeline $userTimeline" }
@@ -211,8 +211,9 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     upsert()
                 )
             }
+            var lastSnapshot: SnapshotCol? = null
             for (dialog in userTimeline.dialogs) {
-                addSnapshot(dialog)
+                lastSnapshot = addSnapshot(dialog)
                 addArchivedValues(dialog)
 
                 dialog.allActions().forEach {
@@ -239,19 +240,19 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     }
                 }
             }
-            val dialog = userTimeline.currentDialog
-            if (dialog != null) {
-                dialog.allActions().lastOrNull { it.playerId.type == PlayerType.user }
-                    ?.let { action ->
-                        if (action is SendSentence && action.stringText != null) {
-                            val text = textKey(action.stringText!!)
-                            dialogTextCol.replaceOneWithFilter(
-                                and(Text eq text, DialogId eq dialog.id),
-                                DialogTextCol(text, dialog.id),
-                                ReplaceOptions().upsert(true)
-                            )
-                        }
-                    }
+            val lastUserAction = lastDialog?.allActions()?.lastOrNull { it.playerId.type == PlayerType.user }
+            lastUserAction?.let { action ->
+                if (action is SendSentence && action.stringText != null) {
+                    val text = textKey(action.stringText!!)
+                    dialogTextCol.replaceOneWithFilter(
+                        and(Text eq text, DialogId eq lastDialog.id),
+                        DialogTextCol(text, lastDialog.id),
+                        ReplaceOptions().upsert(true)
+                    )
+                }
+            }
+            if (botDefinition != null && lastDialog != null && lastSnapshot != null && lastUserAction != null) {
+                DialogFlowMongoDAO.addFlowStat(botDefinition, lastUserAction, lastDialog, lastSnapshot)
             }
         }
         logger.debug { "end saving timeline $userTimeline" }
@@ -456,27 +457,12 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             return if (count > start) {
                 val list = c.find(filter)
                     .skip(start.toInt()).limit(size).descendingSort(LastUpdateDate).map { it.toUserReport() }.toList()
-                UserReportQueryResult(count, start, start + size, list)
+                UserReportQueryResult(count, start, start + list.size, list)
             } else {
                 UserReportQueryResult(0, 0, 0, emptyList())
             }
         }
     }
-
-    private fun getApplicationIds(namespace: String, nlpModel: String): Set<String> =
-        botConfiguration
-            .getConfigurationsByNamespaceAndNlpModel(namespace, nlpModel)
-            .asSequence()
-            .flatMap {
-                sequenceOf(
-                    it.applicationId,
-                    //special messenger connector fix
-                    it.parameters["pageId"],
-                    it.parameters["appId"]
-                ).filterNotNull()
-            }
-            .toSet()
-
 
     override fun search(query: DialogReportQuery): DialogReportQueryResult {
         with(query) {
@@ -517,7 +503,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     .descendingSort(LastUpdateDate)
                     .map { it.toDialogReport() }
                     .toList()
-                DialogReportQueryResult(count, start, start + size, list)
+                DialogReportQueryResult(count, start, start + list.size, list)
             } else {
                 DialogReportQueryResult(0, 0, 0, emptyList())
             }
@@ -554,20 +540,17 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
             .toList()
     }
 
-    private fun addSnapshot(dialog: Dialog) {
-        val snapshot = Snapshot(
-            dialog.state.currentIntent?.name,
-            dialog.state.entityValues.values.mapNotNull { it.value })
+    private fun addSnapshot(dialog: Dialog): SnapshotCol {
+        val snapshot = Snapshot(dialog)
         val existingSnapshot = snapshotCol.findOneById(dialog.id)
-        if (existingSnapshot == null) {
-            snapshotCol.insertOne(SnapshotCol(dialog.id, listOf(snapshot)))
+        return if (existingSnapshot == null) {
+            SnapshotCol(dialog.id, listOf(snapshot))
+                .also { snapshotCol.insertOne(it) }
         } else {
-            snapshotCol.save(
-                existingSnapshot.copy(
-                    snapshots = existingSnapshot.snapshots + snapshot,
-                    lastUpdateDate = now()
-                )
-            )
+            existingSnapshot.copy(
+                snapshots = existingSnapshot.snapshots + snapshot,
+                lastUpdateDate = now()
+            ).also { snapshotCol.save(it) }
         }
     }
 

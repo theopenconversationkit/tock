@@ -24,9 +24,19 @@ import java.time.Instant.now
  * A "snapshot" is a readonly view of the state in the dialog, usually after a bot reply.
  */
 data class Snapshot(
+    val storyDefinitionId: String?,
     val intentName: String?,
+    val step: String?,
     val entityValues: List<EntityValue>,
-    val date: Instant = now()) {
+    val date: Instant = now()
+) {
+
+    constructor(dialog: Dialog) : this(
+        dialog.currentStory?.definition?.id,
+        dialog.state.currentIntent?.name,
+        dialog.currentStory?.currentStep,
+        dialog.state.entityValues.values.mapNotNull { it.value }
+    )
 
     /**
      * Does this value exist in the snapshot?

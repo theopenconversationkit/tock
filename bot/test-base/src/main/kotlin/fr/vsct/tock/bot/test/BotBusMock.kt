@@ -339,12 +339,7 @@ open class BotBusMock(
     }
 
     private fun addSnapshot() {
-        context.snapshots.add(
-            Snapshot(
-                dialog.state.currentIntent?.name,
-                dialog.state.entityValues.values.mapNotNull { it.value }
-            )
-        )
+        context.snapshots.add(Snapshot(dialog))
     }
 
     /**

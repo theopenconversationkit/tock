@@ -43,7 +43,7 @@ internal object TwitterConnectorProvider : ConnectorProvider {
      */
     override fun connector(connectorConfiguration: ConnectorConfiguration): Connector {
         with(connectorConfiguration) {
-            val appId = parameters[APP_ID]?.takeIf { it.isNotBlank() } ?: connectorId
+            val appId = parameters.getValue(APP_ID)
             return TwitterConnector(
                 appId,
                 getBaseUrl(),

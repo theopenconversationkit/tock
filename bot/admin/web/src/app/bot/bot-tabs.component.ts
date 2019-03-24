@@ -23,6 +23,7 @@ class TabLink {
 }
 
 const tabs = [
+  new TabLink("flow", "Bot Flow"),
   new TabLink("intent-create", "Add new Answer"),
   new TabLink("intent-search", "Search Answers"),
   new TabLink("i18n", "i18n"),
@@ -43,7 +44,7 @@ export class BotTabsComponent implements OnInit {
 
   ngOnInit() {
     if(this.router.routerState.snapshot.url.endsWith("/build")) {
-      this.router.navigateByUrl("/build/intent-create");
+      this.router.navigateByUrl("/build/flow");
     }
   }
 

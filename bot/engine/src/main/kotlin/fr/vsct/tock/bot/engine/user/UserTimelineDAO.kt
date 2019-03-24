@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.engine.user
 
+import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.dialog.ArchivedEntityValue
@@ -32,8 +33,11 @@ interface UserTimelineDAO {
 
     /**
      * Saves the timeline.
+     *
+     * @param userTimeline the timeline to save
+     * @param botDefinition the optional bot definition (in order to add stats about the bot)
      */
-    fun save(userTimeline: UserTimeline)
+    fun save(userTimeline: UserTimeline, botDefinition: BotDefinition? = null)
 
     /**
      * Update playerId for dialog and user timelines.

@@ -65,6 +65,7 @@ class BotBusMockTest {
         every { storyDefinition.mainIntent() } returns intent
         every { storyDefinition.supportIntent(any()) } returns true
         every { storyDefinition.steps } returns emptySet()
+        every { storyDefinition.id } returns "storyId"
 
         every { action.applicationId } returns "appId"
         every { action.state } returns EventState()

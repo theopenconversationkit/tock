@@ -263,8 +263,9 @@ object BotRepository {
 
         confs.forEach { c ->
             if (existingConfs.none { c.equalsWithoutId(it) }) {
-                val botDefinition = botProviders.find { it.botId() == c.botId }?.botDefinition()
-                if (botDefinition != null) {
+                val botDefinition =
+                    botProviders.find { it.botId() == c.botId }?.botDefinition()
+                if (botDefinition?.namespace == c.namespace) {
                     logger.debug { "refresh configuration $c" }
                     val oldConfiguration = existingConfs.find { it._id == c._id }
                     val connector = findConnectorProvider(c.connectorType).connector(ConnectorConfiguration(c))
@@ -275,7 +276,7 @@ object BotRepository {
                         removeBot(oldConfiguration)
                     }
                 } else {
-                    logger.trace { "unknown bot ${c.botId} - installation skipped" }
+                    logger.trace { "not valid namespace for bot ${c.botId} - installation skipped" }
                 }
             }
         }

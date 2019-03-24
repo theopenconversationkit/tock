@@ -30,6 +30,7 @@ import fr.vsct.tock.bot.definition.BotAnswerInterceptor
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.definition.StoryHandlerListener
+import fr.vsct.tock.bot.engine.dialog.DialogFlowDAO
 import fr.vsct.tock.bot.engine.feature.FeatureDAO
 import fr.vsct.tock.bot.engine.nlp.NlpController
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -120,6 +121,11 @@ open class TestContext {
     var mockedFeatureDAO: FeatureDAO = newMock()
 
     /**
+     * Default mocked [UserLock].
+     */
+    var mockedDialogFlowDAO: DialogFlowDAO = newMock()
+
+    /**
      * The test [Kodein] injected.
      */
     val testKodein: Kodein
@@ -160,6 +166,7 @@ open class TestContext {
                 bind<TestPlanDAO>() with provider { mockedTestPlanDAO }
                 bind<UserLock>() with provider { mockedUserLock }
                 bind<FeatureDAO>() with provider { mockedFeatureDAO }
+                bind<DialogFlowDAO>() with provider { mockedDialogFlowDAO }
             })
         testModules.forEach { import(it, true) }
     }

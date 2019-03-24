@@ -22,6 +22,7 @@ import {Observable} from "rxjs";
 import {I18nLabel, I18nLabels} from "./model/i18n";
 import {FileUploader} from "ng2-file-upload";
 import {Feature} from "./model/feature";
+import {ApplicationDialogFlow, DialogFlowRequest} from "./model/flow";
 
 @Injectable()
 export class BotService {
@@ -95,6 +96,10 @@ export class BotService {
 
   deleteFeature(botId: string, category: string, name: string): Observable<boolean> {
     return this.rest.delete(`/feature/${encodeURIComponent(botId)}/${encodeURIComponent(category)}/${encodeURIComponent(name)}`);
+  }
+
+  getApplicationFlow(request: DialogFlowRequest): Observable<ApplicationDialogFlow> {
+    return this.rest.post(`/flow`, request, ApplicationDialogFlow.fromJSON);
   }
 
 }

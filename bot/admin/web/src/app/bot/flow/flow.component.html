@@ -1,0 +1,42 @@
+<!--
+  ~ Copyright (C) 2017 VSCT
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~ http://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~  Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<mat-card>
+  <mat-card-title>Dialog Flow</mat-card-title>
+  <tock-select-bot [(configurationId)]="botConfigurationId" [displayConnectorChoice]="false"
+                   (configurationIdChange)="displayFlow()" class="select">
+  </tock-select-bot>
+  <mat-form-field class="select">
+    <mat-label>Layout</mat-label>
+    <mat-select [(value)]="selectedLayout" (selectionChange)="changeLayout($event.value)">
+      <mat-option *ngFor="let l of layouts" [value]="l.name">{{l.name}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+</mat-card>
+
+<div *ngIf="graphData" style="height: 90%; width: 80%; float: left; overflow: auto; overflow-y: hidden">
+  <tock-cytoscape [elements]="graphData" [layout]="layout" (select)="nodeChange($event)"></tock-cytoscape>
+</div>
+
+<div *ngIf="graphData && selectedNode" style="height: 90%; width: 20%; float: left; overflow: auto; overflow-x: hidden">
+  <ul>
+    <li>Story: <b>{{selectedNode.storyDefinitionId}}</b></li>
+    <li>Intent: <b>{{selectedNode.intent}}</b></li>
+    <li *ngIf="selectedNode.step">Step: <b>{{selectedNode.step}}</b></li>
+    <li *ngIf="selectedNode.entities.length !==0">Entities: <b>{{selectedNode.entities}}</b></li>
+    <li>Count: <b>{{selectedNode.count}}</b></li>
+  </ul>
+</div>

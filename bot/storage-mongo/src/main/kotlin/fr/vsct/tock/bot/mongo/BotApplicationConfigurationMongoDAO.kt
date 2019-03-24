@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Applica
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.BotId
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Namespace
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.NlpModel
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration_.Companion.Parameters
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.watch
 import mu.KotlinLogging
@@ -29,6 +30,7 @@ import org.bson.types.ObjectId
 import org.litote.kmongo.Id
 import org.litote.kmongo.deleteOne
 import org.litote.kmongo.deleteOneById
+import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
@@ -52,7 +54,9 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
 
 
     init {
-        col.ensureUniqueIndex(ApplicationId, BotId)
+        col.ensureUniqueIndex(ApplicationId, BotId, Namespace)
+        col.ensureIndex(ApplicationId, BotId)
+        col.ensureIndex(Namespace, BotId)
     }
 
     override fun listenChanges(listener: () -> Unit) {
@@ -65,14 +69,29 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
     }
 
     override fun getConfigurationByApplicationIdAndBotId(
+        namespace: String,
         applicationId: String,
         botId: String
     ): BotApplicationConfiguration? {
-        return col.findOne(ApplicationId eq applicationId, BotId eq botId)
+        return col.findOne(Namespace eq namespace, ApplicationId eq applicationId, BotId eq botId)
     }
 
-    override fun getConfigurationsByBotId(botId: String): List<BotApplicationConfiguration> {
-        return col.find(BotId eq botId).toList()
+    //TODO remove this in 19.9
+    fun getHackedConfigurationByApplicationIdAndBot(
+        namespace: String,
+        applicationId: String,
+        botId: String
+    ): BotApplicationConfiguration? {
+        return getConfigurationByApplicationIdAndBotId(namespace, applicationId, botId)
+                ?: col.findOne(
+                    Namespace eq namespace,
+                    Parameters.keyProjection("appId") eq applicationId,
+                    BotId eq botId
+                )
+    }
+
+    override fun getConfigurationsByNamespaceAndBotId(namespace:String, botId: String): List<BotApplicationConfiguration> {
+        return col.find(Namespace eq namespace, BotId eq botId).toList()
     }
 
     override fun save(conf: BotApplicationConfiguration): BotApplicationConfiguration {
@@ -105,4 +124,17 @@ internal object BotApplicationConfigurationMongoDAO : BotApplicationConfiguratio
     override fun getConfigurations(): List<BotApplicationConfiguration> {
         return col.find().toList()
     }
+
+    fun getApplicationIds(namespace: String, nlpModel: String): Set<String> =
+        getConfigurationsByNamespaceAndNlpModel(namespace, nlpModel)
+            .asSequence()
+            .flatMap {
+                sequenceOf(
+                    it.applicationId,
+                    //special messenger connector fix TODO remove this in 19.9
+                    it.parameters["pageId"],
+                    it.parameters["appId"]
+                ).filterNotNull()
+            }
+            .toSet()
 }

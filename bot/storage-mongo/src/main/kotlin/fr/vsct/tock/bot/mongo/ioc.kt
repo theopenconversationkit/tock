@@ -25,6 +25,7 @@ import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.admin.test.TestPlanDAO
 import fr.vsct.tock.bot.admin.user.UserReportDAO
+import fr.vsct.tock.bot.engine.dialog.DialogFlowDAO
 import fr.vsct.tock.bot.engine.feature.FeatureDAO
 import fr.vsct.tock.bot.engine.user.UserLock
 import fr.vsct.tock.bot.engine.user.UserTimelineDAO
@@ -36,7 +37,11 @@ internal const val MONGO_DATABASE: String = "tock_bot_mongo_db"
 
 val botMongoModule = Kodein.Module {
     bind<MongoDatabase>(MONGO_DATABASE) with provider { getDatabase(MONGO_DATABASE) }
-    bind<com.mongodb.reactivestreams.client.MongoDatabase>(MONGO_DATABASE) with provider { getAsyncDatabase(MONGO_DATABASE) }
+    bind<com.mongodb.reactivestreams.client.MongoDatabase>(MONGO_DATABASE) with provider {
+        getAsyncDatabase(
+            MONGO_DATABASE
+        )
+    }
     bind<BotApplicationConfigurationDAO>() with provider { BotApplicationConfigurationMongoDAO }
     bind<StoryDefinitionConfigurationDAO>() with provider { StoryDefinitionConfigurationMongoDAO }
     bind<I18nDAO>() with provider { I18nMongoDAO }
@@ -46,4 +51,5 @@ val botMongoModule = Kodein.Module {
     bind<TestPlanDAO>() with provider { TestPlanMongoDAO }
     bind<UserLock>() with provider { MongoUserLock }
     bind<FeatureDAO>() with provider { FeatureMongoDAO }
+    bind<DialogFlowDAO>() with provider { DialogFlowMongoDAO }
 }

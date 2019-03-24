@@ -35,20 +35,21 @@ import mu.KotlinLogging
  * Base implementation of [BotDefinition].
  */
 open class BotDefinitionBase(
-    override val botId: String,
-    override val namespace: String,
-    override val stories: List<StoryDefinition>,
-    override val nlpModelName: String = botId,
-    override val unknownStory: StoryDefinition = defaultUnknownStory,
-    override val helloStory: StoryDefinition? = null,
-    override val goodbyeStory: StoryDefinition? = null,
-    override val noInputStory: StoryDefinition? = null,
-    override val botDisabledStory: StoryDefinition? = null,
-    override val botEnabledStory: StoryDefinition? = null,
-    override val userLocationStory: StoryDefinition? = null,
-    override val handleAttachmentStory: StoryDefinition? = null,
-    override val eventListener: EventListener = EventListenerBase(),
-    override val keywordStory: StoryDefinition = defaultKeywordStory
+        override val botId: String,
+        override val namespace: String,
+        override val stories: List<StoryDefinition>,
+        override val nlpModelName: String = botId,
+        override val unknownStory: StoryDefinition = defaultUnknownStory,
+        override val helloStory: StoryDefinition? = null,
+        override val goodbyeStory: StoryDefinition? = null,
+        override val noInputStory: StoryDefinition? = null,
+        override val botDisabledStory: StoryDefinition? = null,
+        override val botEnabledStory: StoryDefinition? = null,
+        override val userLocationStory: StoryDefinition? = null,
+        override val handleAttachmentStory: StoryDefinition? = null,
+        override val eventListener: EventListener = EventListenerBase(),
+        override val keywordStory: StoryDefinition = defaultKeywordStory,
+        override val conversation: DialogFlowDefinition? = null
 ) : BotDefinition {
 
     companion object {
@@ -58,16 +59,16 @@ open class BotDefinitionBase(
          * The default [unknownStory].
          */
         val defaultUnknownStory =
-            SimpleStoryDefinition(
-                "tock_unknown_story",
-                object : SimpleStoryHandlerBase() {
-                    override fun action(bus: BotBus) {
-                        bus.markAsUnknown()
-                        bus.end(bus.botDefinition.defaultUnknownAnswer)
-                    }
-                },
-                setOf(Intent.unknown)
-            )
+                SimpleStoryDefinition(
+                        "tock_unknown_story",
+                        object : SimpleStoryHandlerBase() {
+                            override fun action(bus: BotBus) {
+                                bus.markAsUnknown()
+                                bus.end(bus.botDefinition.defaultUnknownAnswer)
+                            }
+                        },
+                        setOf(Intent.unknown)
+                )
 
         /**
          * Returns a (potential) keyword from the [BotBus].
@@ -85,9 +86,9 @@ open class BotDefinitionBase(
          */
         fun testContextKeywordHandler(bus: BotBus, sendEnd: Boolean = true) {
             bus.userTimeline.dialogs.add(
-                Dialog(
-                    setOf(bus.userId, bus.botId)
-                )
+                    Dialog(
+                            setOf(bus.userId, bus.botId)
+                    )
             )
             bus.botDefinition.testBehaviour.setup(bus)
             if (sendEnd) {
@@ -100,9 +101,9 @@ open class BotDefinitionBase(
          */
         fun endTestContextKeywordHandler(bus: BotBus, sendEnd: Boolean = true) {
             bus.userTimeline.dialogs.add(
-                Dialog(
-                    setOf(bus.userId, bus.botId)
-                )
+                    Dialog(
+                            setOf(bus.userId, bus.botId)
+                    )
             )
             bus.botDefinition.testBehaviour.cleanup(bus)
             if (sendEnd) {
@@ -117,32 +118,32 @@ open class BotDefinitionBase(
             bus.handleDelete()
             if (sendEnd) {
                 bus.end(
-                    bus.baseI18nValue(
-                        "user removed - {0} {1}",
-                        bus.userTimeline.userPreferences.firstName,
-                        bus.userTimeline.userPreferences.lastName
-                    )
+                        bus.baseI18nValue(
+                                "user removed - {0} {1}",
+                                bus.userTimeline.userPreferences.firstName,
+                                bus.userTimeline.userPreferences.lastName
+                        )
                 )
             }
         }
 
         private fun BotBus.baseI18nValue(
-            defaultLabel: String,
-            vararg args: Any?
+                defaultLabel: String,
+                vararg args: Any?
         ): I18nLabelValue = i18nValue(botDefinition.namespace, defaultLabel, *args)
 
         private fun i18nValue(
-            namespace: String,
-            defaultLabel: String,
-            vararg args: Any?
+                namespace: String,
+                defaultLabel: String,
+                vararg args: Any?
         ): I18nLabelValue =
-            I18nLabelValue(
-                generateKey(namespace, "keywords", defaultLabel),
-                namespace,
-                "keywords",
-                defaultLabel,
-                args.toList()
-            )
+                I18nLabelValue(
+                        generateKey(namespace, "keywords", defaultLabel),
+                        namespace,
+                        "keywords",
+                        defaultLabel,
+                        args.toList()
+                )
 
         private fun BotBus.handleDelete() {
             val userTimelineDao: UserTimelineDAO by injector.instance()
@@ -165,21 +166,21 @@ open class BotDefinitionBase(
          * The default [keywordStory].
          */
         val defaultKeywordStory =
-            SimpleStoryDefinition(
-                "tock_keyword_story",
-                object : SimpleStoryHandlerBase() {
-                    override fun action(bus: BotBus) {
-                        val text = getKeyword(bus)
-                        when (getKeyword(bus)) {
-                            deleteKeyword -> deleteKeywordHandler(bus)
-                            testContextKeyword -> testContextKeywordHandler(bus)
-                            endTestContextKeyword -> endTestContextKeywordHandler(bus)
-                            else -> bus.end(bus.baseI18nValue("unknown keyword : {0}"), text)
-                        }
-                    }
-                },
-                setOf(Intent.keyword)
-            )
+                SimpleStoryDefinition(
+                        "tock_keyword_story",
+                        object : SimpleStoryHandlerBase() {
+                            override fun action(bus: BotBus) {
+                                val text = getKeyword(bus)
+                                when (getKeyword(bus)) {
+                                    deleteKeyword -> deleteKeywordHandler(bus)
+                                    testContextKeyword -> testContextKeywordHandler(bus)
+                                    endTestContextKeyword -> endTestContextKeywordHandler(bus)
+                                    else -> bus.end(bus.baseI18nValue("unknown keyword : {0}"), text)
+                                }
+                            }
+                        },
+                        setOf(Intent.keyword)
+                )
     }
 
     /**

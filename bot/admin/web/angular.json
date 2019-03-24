@@ -29,7 +29,16 @@
               },
               "src/styles.css"
             ],
-            "scripts": []
+            "scripts": [
+              "node_modules/cytoscape/dist/cytoscape.min.js",
+              "node_modules/elkjs/lib/elk.bundled.js",
+              "node_modules/cytoscape-elk/cytoscape-elk.js",
+              "node_modules/webcola/WebCola/cola.min.js",
+              "node_modules/cytoscape-cola/cytoscape-cola.js",
+              "node_modules/cytoscape-cose-bilkent/cytoscape-cose-bilkent.js",
+              "node_modules/dagre/dist/dagre.min.js",
+              "node_modules/cytoscape-dagre/cytoscape-dagre.js"
+            ]
           },
           "configurations": {
             "production": {

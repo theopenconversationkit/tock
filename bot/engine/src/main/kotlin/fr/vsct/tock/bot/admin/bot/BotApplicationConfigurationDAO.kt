@@ -36,9 +36,9 @@ interface BotApplicationConfigurationDAO {
 
     fun getConfigurationById(id: Id<BotApplicationConfiguration>): BotApplicationConfiguration?
 
-    fun getConfigurationByApplicationIdAndBotId(applicationId: String, botId: String): BotApplicationConfiguration?
+    fun getConfigurationByApplicationIdAndBotId(namespace: String, applicationId: String, botId: String): BotApplicationConfiguration?
 
-    fun getConfigurationsByBotId(botId: String): List<BotApplicationConfiguration>
+    fun getConfigurationsByNamespaceAndBotId(namespace:String, botId: String): List<BotApplicationConfiguration>
 
     fun delete(conf: BotApplicationConfiguration)
 }

@@ -32,6 +32,8 @@ import {I18nComponent} from "./i18n/i18n.component";
 import {FileUploadModule} from "ng2-file-upload";
 import {I18nLabelComponent} from "./i18n/i18n-label.component";
 import {FeatureComponent} from "./feature/feature.component";
+import {FlowComponent} from "./flow/flow.component";
+import {CytoComponent} from "./flow/cyto.component";
 
 const routes: Routes = [
   {
@@ -45,6 +47,10 @@ const routes: Routes = [
       {
         path: '',
         component: CreateBotIntentComponent
+      },
+      {
+        path: 'flow',
+        component: FlowComponent
       },
       {
         path: 'intent-create',
@@ -90,7 +96,9 @@ export class BotRoutingModule {
     SearchBotIntentComponent,
     I18nComponent,
     I18nLabelComponent,
-    FeatureComponent
+    FeatureComponent,
+    FlowComponent,
+    CytoComponent
   ],
   exports: [],
   providers: [

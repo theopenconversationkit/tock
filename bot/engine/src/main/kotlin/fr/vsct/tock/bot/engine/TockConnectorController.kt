@@ -154,7 +154,7 @@ internal class TockConnectorController constructor(
                     bot.handle(transformedAction, userTimeline, this, data)
 
                     if (data.saveTimeline) {
-                        userTimelineDAO.save(userTimeline)
+                        userTimelineDAO.save(userTimeline, bot.botDefinition)
                     }
                 } catch (t: Throwable) {
                     callback.exceptionThrown(action, t)
