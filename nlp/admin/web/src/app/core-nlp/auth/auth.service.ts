@@ -58,7 +58,7 @@ export class AuthService {
   }
 
   private logUser(user: User): boolean {
-    if (user.roles) {
+    if (user.roles && user.roles.length !== 0) {
       this.logged = true;
       this.authListeners.forEach(l => l.login(user));
       return true
