@@ -15,7 +15,7 @@
   -->
 
 <mat-card>
-  <mat-card-title>Dialog Flow</mat-card-title>
+  <mat-card-title>Bot Flow</mat-card-title>
   <tock-select-bot [(configurationId)]="botConfigurationId" [displayConnectorChoice]="false"
                    (configurationIdChange)="displayFlow()" class="select">
   </tock-select-bot>
@@ -25,6 +25,14 @@
       <mat-option *ngFor="let l of layouts" [value]="l.name">{{l.name}}</mat-option>
     </mat-select>
   </mat-form-field>
+  <mat-checkbox [(ngModel)]="recursive" (change)="update()" class="checkbox">Display Recursive</mat-checkbox>
+  <mat-checkbox [(ngModel)]="entity" (change)="update()" class="checkbox">Entity</mat-checkbox>
+  <mat-checkbox [(ngModel)]="step" (change)="update()" class="checkbox">Step</mat-checkbox>
+  <mat-checkbox [(ngModel)]="intent" (change)="update()" class="checkbox">Intent</mat-checkbox>
+  / Node Weight:
+  <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalNodeCount" [max]="maxNodeCount" (change)="update()"></mat-slider>
+  Transition Percentage:
+  <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalTransitionCount" (change)="update()"></mat-slider>
 </mat-card>
 
 <div *ngIf="graphData" style="height: 90%; width: 80%; float: left; overflow: auto; overflow-y: hidden">

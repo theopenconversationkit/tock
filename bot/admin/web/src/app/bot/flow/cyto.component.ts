@@ -22,7 +22,7 @@ declare var cytoscape: any;
   selector: 'tock-cytoscape',
   template: '<div id="cy"></div>',
   styles: [`#cy {
-    height: 100%;
+    height: 75%;
     width: 100%;
     position: relative;
     left: 0;
@@ -105,10 +105,10 @@ export class CytoComponent implements OnChanges {
 
   public render() {
     setTimeout(_ => {
-      let cy_contianer = this.renderer.selectRootElement("#cy");
+      let cy_container = this.renderer.selectRootElement("#cy");
       let localselect = this.select;
       let cy = cytoscape({
-        container: cy_contianer,
+        container: cy_container,
         layout: this.layout,
         minZoom: this.zoom.min,
         maxZoom: this.zoom.max,

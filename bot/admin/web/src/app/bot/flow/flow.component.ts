@@ -72,13 +72,15 @@ export class FlowComponent implements OnInit {
       name: 'grid',
       nodeDimensionsIncludeLabels: true,
       directed: true,
-      animate: true
+      animate: true,
+      spacingFactor: 0.5
     },
     {
       name: 'circle',
       nodeDimensionsIncludeLabels: true,
       directed: true,
-      animate: true
+      animate: true,
+      spacingFactor: 0.5
     },
     {
       name: 'concentric',
@@ -92,11 +94,21 @@ export class FlowComponent implements OnInit {
       padding: 10,
       directed: true,
       animate: true,
-      maximal: true
+      maximal: false,
+      grid: true,
+      spacingFactor: 0.5
     }
   ];
   layout = this.layouts[0];
   selectedLayout = this.layout.name;
+  recursive: boolean = true;
+  entity: boolean = true;
+  step: boolean = true;
+  intent: boolean = true;
+  minimalNodeCount: number = 0;
+  maxNodeCount: number = 1;
+  minimalTransitionCount: number = 0;
+
   selectedNode: DialogFlowStateData;
 
   graphData;
@@ -115,6 +127,10 @@ export class FlowComponent implements OnInit {
 
   changeLayout(layout: string) {
     this.layout = this.layouts.find(l => l.name === layout);
+  }
+
+  update() {
+    setTimeout(_ => this.toGraphData(this.flow));
   }
 
   displayFlow() {
@@ -138,34 +154,86 @@ export class FlowComponent implements OnInit {
       edges: []
     };
     graph.nodes.push({data: {id: 'null', name: 'Startup', weight: 1, colorCode: 'blue', shapeType: 'ellipse'}});
+    const states = [];
+    const statesByKey = [];
+    const statesById = [];
     this.flow.states.forEach(s => {
-      graph.nodes.push({
-        data: {
-          id: s._id,
-          name: s.storyDefinitionId === 'tock_unknown_story' ? 'unknown' : s.storyDefinitionId,
-          weight: s.count,
-          colorCode: entityColor(s.storyDefinitionId ? s.storyDefinitionId : "start"),
-          shapeType: 'roundrectangle'
+      if (this.entity && this.step && this.intent) {
+        statesById[s._id] = s._id;
+        states.push(s);
+      } else {
+        let key = s.storyDefinitionId
+          + (this.intent ? "+" + s.intent : "")
+          + (this.step ? "+" + s.step : "")
+          + (this.entity ? "+" + s.entities.join("%") : "");
+        let state = statesByKey[key];
+        if (!state) {
+          state = Object.assign({}, s);
+          if (!this.entity) {
+            state.entities = [];
+          }
+          if (!this.intent) {
+            state.intent = null;
+          }
+          if (!this.step) {
+            state.step = null;
+          }
+          states.push(state);
+          statesByKey[key] = state;
+          statesById[s._id] = s._id;
+        } else {
+          state.count += s.count;
+          statesById[s._id] = state._id;
         }
-      })
+      }
     });
+    let maxCount = 1;
+    const realStates = [];
+    states.forEach(s => {
+      if (this.minimalNodeCount <= s.count) {
+        realStates[s._id] = s._id;
+        maxCount = Math.max(maxCount, s.count);
+        graph.nodes.push({
+          data: {
+            id: s._id,
+            name: s.storyDefinitionId === 'tock_unknown_story' ? 'unknown' : s.storyDefinitionId
+              + (!s.intent || s.intent === s.storyDefinitionId ? "" : "/" + s.intent)
+              + (s.step ? "*" + s.intent : ""),
+            weight: s.count,
+            colorCode: entityColor(s.storyDefinitionId ? s.storyDefinitionId : "start"),
+            shapeType: 'roundrectangle'
+          }
+        })
+      }
+    });
+    this.maxNodeCount = maxCount;
+
     let transitions = [];
     this.flow.transitions.forEach(t => {
-      transitions[t.previousStateId] = (transitions[t.previousStateId] ? transitions[t.previousStateId] : 0)
-        + t.count;
+      let prev = statesById[t.previousStateId];
+      let next = statesById[t.nextStateId];
+      if (this.recursive || prev !== next) {
+        transitions[prev] = (transitions[prev] ? transitions[prev] : 0) + t.count;
+      }
     });
     this.flow.transitions.forEach(t => {
-      let percentage = Math.round((t.count * 10000.0) / transitions[t.previousStateId]) / 100;
-      graph.edges.push({
-        data: {
-          source: t.previousStateId ? t.previousStateId : 'null',
-          target: t.nextStateId,
-          colorCode: entityColor(DialogFlowStateTransitionType[t.type] ? DialogFlowStateTransitionType[t.type] : DialogFlowStateTransitionType[DialogFlowStateTransitionType.nlp]),
-          strength: t.count,
-          label: percentage + '%',
-          classes: 'autorotate'
+      let prev = statesById[t.previousStateId];
+      let next = statesById[t.nextStateId];
+      let percentage = Math.round((t.count * 10000.0) / transitions[prev]) / 100;
+      if ((this.recursive || prev !== next) && realStates[next] && (!t.previousStateId || realStates[prev])) {
+        if (percentage >= this.minimalTransitionCount) {
+          graph.edges.push({
+            data: {
+              source: prev ? prev : 'null',
+              target: next,
+              colorCode: entityColor(DialogFlowStateTransitionType[t.type] ? DialogFlowStateTransitionType[t.type] : DialogFlowStateTransitionType[DialogFlowStateTransitionType.nlp]),
+              strength: t.count,
+              label: percentage + '%',
+              classes: 'autorotate'
+            }
+          });
         }
-      });
+      }
     });
     this.graphData = graph;
   }

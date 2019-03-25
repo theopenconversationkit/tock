@@ -24,3 +24,7 @@ tock-cytoscape {
 .select {
   display: inline-flex;
 }
+
+.checkbox {
+  margin-left: 10px;
+}
