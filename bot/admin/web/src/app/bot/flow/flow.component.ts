@@ -136,14 +136,18 @@ export class FlowComponent implements OnInit {
   displayFlow() {
     this.botConfiguration.configurations.subscribe(c => {
       const conf = c.find(c => c._id === this.botConfigurationId);
-      this.bot.getApplicationFlow(
-        new DialogFlowRequest(
-          this.state.currentApplication.namespace,
-          this.state.currentApplication.name,
-          this.state.currentLocale,
-          conf.botId
-        )
-      ).subscribe(f => this.toGraphData(f));
+      if (conf) {
+        this.bot.getApplicationFlow(
+          new DialogFlowRequest(
+            this.state.currentApplication.namespace,
+            this.state.currentApplication.name,
+            this.state.currentLocale,
+            conf.botId
+          )
+        ).subscribe(f => this.toGraphData(f));
+      } else {
+        this.graphData = null;
+      }
     });
   }
 

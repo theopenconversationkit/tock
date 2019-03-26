@@ -257,5 +257,5 @@ interface BotDefinition : I18nKeyProvider {
     fun defaultDelay(answerIndex: Int): Long =
             if (answerIndex == 0) 0 else defaultBreath
 
-    val conversation: DialogFlowDefinition? get() = null
+    val flowDefinition: DialogFlowDefinition? get() = null
 }

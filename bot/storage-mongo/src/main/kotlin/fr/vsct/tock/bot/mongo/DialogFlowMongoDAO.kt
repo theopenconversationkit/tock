@@ -96,11 +96,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                 ensureIndex(DialogId)
             }
 
-    override fun save(conversation: DialogFlowDefinition) {
-        TODO("not implemented")
-    }
-
-    override fun load(namespace: String, botId: String): DialogFlowDefinition {
+    override fun saveFlow(bot: BotDefinition, flow: DialogFlowDefinition) {
         TODO("not implemented")
     }
 
@@ -180,7 +176,10 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                     StoryDefinitionId eq storyDefinitionId,
                     Intent eq intentName,
                     Step eq step,
-                    if(entities.size < 2) Entities eq entities else and(Entities size entities.size, Entities all entities)
+                    if (entities.size < 2) Entities eq entities else and(
+                        Entities size entities.size,
+                        Entities all entities
+                    )
                 ) ?: (this.apply { flowStateCol.insertOne(this) })
             }
         } else {
@@ -225,7 +224,10 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
             NextStateId eq nextStateId,
             Intent eq intent,
             Step eq step,
-            if(newEntities.size < 2) NewEntities eq newEntities else and(NewEntities size newEntities.size, NewEntities all newEntities),
+            if (newEntities.size < 2) NewEntities eq newEntities else and(
+                NewEntities size newEntities.size,
+                NewEntities all newEntities
+            ),
             Type eq type
         ) ?: (DialogFlowStateTransitionCol(
             botDefinition.namespace,

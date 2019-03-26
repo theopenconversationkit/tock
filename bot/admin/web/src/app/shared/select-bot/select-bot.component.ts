@@ -56,9 +56,9 @@ export class SelectBotComponent implements OnInit {
       ? this.botConfiguration.restConfigurations : this.botConfiguration.configurations)
       .subscribe(conf => {
         setTimeout(_ => {
-          if (conf.length !== 0) {
+          if (conf.length !== 0 && conf !== this.configurations) {
             this.botNames = Array.from(new Set(conf.map(c => this.getName(c)))).sort();
-            if (!this.allowNoSelection && !this.configurationId) {
+            if (!this.allowNoSelection) {
               this.configurationId = conf[0]._id;
             }
             if (this.configurationId) {
@@ -66,9 +66,14 @@ export class SelectBotComponent implements OnInit {
             } else {
               this.currentBotName = 'None';
               this.configurations = conf;
+              this.configurationIdChange.emit(null)
             }
           } else {
-            this.configurations = [];
+            if(conf.length === 0) {
+              this.currentBotName = 'None';
+              this.configurations = conf;
+              this.configurationIdChange.emit(null)
+            }
           }
 
         });

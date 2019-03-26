@@ -17,8 +17,6 @@
 package fr.vsct.tock.bot.definition
 
 data class DialogFlowDefinition(
-        val namespace: String,
-        val botId: String,
-        val states: Set<DialogFlowState>,
-        val transitions: Set<DialogFlowStateTransition>
+    val states: Set<DialogFlowState>,
+    val transitions: Set<DialogFlowStateTransition>
 )

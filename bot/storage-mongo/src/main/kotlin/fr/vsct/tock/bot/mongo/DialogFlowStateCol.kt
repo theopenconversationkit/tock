@@ -32,7 +32,7 @@ import java.time.Instant.now
 @Data(internal = true)
 @JacksonData(internal = true)
 internal data class DialogFlowStateCol(
-    val namespace:String,
+    val namespace: String,
     val botId: String,
     val storyDefinitionId: String,
     val intent: String,
@@ -44,7 +44,7 @@ internal data class DialogFlowStateCol(
 @Data(internal = true)
 @JacksonData(internal = true)
 internal data class DialogFlowStateTransitionCol(
-    val namespace:String,
+    val namespace: String,
     val botId: String,
     val previousStateId: Id<DialogFlowStateCol>?,
     val nextStateId: Id<DialogFlowStateCol>,

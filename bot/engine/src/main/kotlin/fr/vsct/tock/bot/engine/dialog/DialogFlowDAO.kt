@@ -17,13 +17,12 @@
 package fr.vsct.tock.bot.engine.dialog
 
 import fr.vsct.tock.bot.admin.dialog.ApplicationDialogFlowData
+import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.DialogFlowDefinition
 
 interface DialogFlowDAO {
 
-    fun save(conversation: DialogFlowDefinition)
-
-    fun load(namespace: String, botId: String): DialogFlowDefinition
+    fun saveFlow(bot: BotDefinition, flow: DialogFlowDefinition)
 
     fun loadApplicationData(namespace: String, botId: String, applicationId: String?): ApplicationDialogFlowData
 }

@@ -1,13 +1,16 @@
  
 - 19.3 March 2019
-    - Add dialog flow view    
-    - AB Test engine workflow
+    - Add bot flow view 
     
-- 19.3.1 June 2019
+- 19.3.1 May 2019
+    - Business Chat connector
+    - Code editor admin interface 
+    - AB Test engine workflow     
+    
+- 19.3.2 July 2019
     - Conversational framework: allow to create a bot in the administration interface without IDE
-    - Bot API 
-    - add code editor admin interface
-    - External Bot demo server            
+    - Bot API
+    - External Bot demo server           
 
 - 19.9 September 2019  
     - Spacy and RASA support

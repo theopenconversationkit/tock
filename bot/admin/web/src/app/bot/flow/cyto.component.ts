@@ -14,9 +14,9 @@
  * limitations under the License.
  */
 
-import {Component, ElementRef, EventEmitter, Input, OnChanges, Output, Renderer} from '@angular/core';
+import {Component, ElementRef, EventEmitter, Input, OnChanges, OnDestroy, Output, Renderer} from '@angular/core';
 
-declare var cytoscape: any;                    
+declare var cytoscape: any;
 
 @Component({
   selector: 'tock-cytoscape',
@@ -29,7 +29,7 @@ declare var cytoscape: any;
     top: 0;
   }`]
 })
-export class CytoComponent implements OnChanges {
+export class CytoComponent implements OnChanges, OnDestroy {
 
   @Input() public elements: any;
   @Input() public style: any;
@@ -37,6 +37,8 @@ export class CytoComponent implements OnChanges {
   @Input() public zoom: any;
 
   @Output() select: EventEmitter<any> = new EventEmitter<any>();
+
+  private cy;
 
   public constructor(private renderer: Renderer, private el: ElementRef) {
     this.layout = this.layout || {
@@ -99,6 +101,12 @@ export class CytoComponent implements OnChanges {
       });
   }
 
+  ngOnDestroy(): void {
+    if (this.cy) {
+      this.cy.destroy();
+    }
+  }
+
   public ngOnChanges(): any {
     this.render();
   }
@@ -118,8 +126,8 @@ export class CytoComponent implements OnChanges {
 
 
       cy.on('tap', 'node', function (e) {
-        var node = e.target;
-        var neighborhood = node.neighborhood().add(node);
+        let node = e.target;
+        let neighborhood = node.neighborhood().add(node);
 
         cy.elements().addClass('faded');
         neighborhood.removeClass('faded');
@@ -131,6 +139,10 @@ export class CytoComponent implements OnChanges {
           cy.elements().removeClass('faded');
         }
       });
+      if (this.cy) {
+        this.cy.destroy();
+      }
+      this.cy = cy;
     })
   }
 

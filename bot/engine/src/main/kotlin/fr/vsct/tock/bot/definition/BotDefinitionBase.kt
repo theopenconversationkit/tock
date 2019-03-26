@@ -49,7 +49,7 @@ open class BotDefinitionBase(
         override val handleAttachmentStory: StoryDefinition? = null,
         override val eventListener: EventListener = EventListenerBase(),
         override val keywordStory: StoryDefinition = defaultKeywordStory,
-        override val conversation: DialogFlowDefinition? = null
+        override val flowDefinition: DialogFlowDefinition? = null
 ) : BotDefinition {
 
     companion object {
