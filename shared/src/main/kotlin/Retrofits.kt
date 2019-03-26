@@ -40,6 +40,7 @@ import retrofit2.converter.jackson.JacksonConverterFactory
 import java.io.EOFException
 import java.net.Inet4Address
 import java.net.NetworkInterface
+import java.net.Proxy
 import java.nio.charset.StandardCharsets.UTF_8
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeUnit.MILLISECONDS
@@ -81,7 +82,8 @@ fun retrofitBuilderWithTimeoutAndLogger(
     /**
      * Add a circuit breaker facility.
      */
-    circuitBreaker: Boolean = false
+    circuitBreaker: Boolean = false,
+    proxy: Proxy? = null
 ): Retrofit.Builder = OkHttpClient.Builder()
     .readTimeout(ms, MILLISECONDS)
     .connectTimeout(ms, MILLISECONDS)
@@ -94,6 +96,10 @@ fun retrofitBuilderWithTimeoutAndLogger(
             ?.addInterceptor(GzipRequestInterceptor())
     }
     .addInterceptor(LoggingInterceptor(logger, level))
+    .apply {
+        takeIf { proxy != null }
+            ?.proxy(proxy)
+    }
 
     .build()
     .let {
