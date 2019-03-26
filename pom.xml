@@ -48,11 +48,11 @@
         <klaxon>5.0.5</klaxon>
         <vertx>3.6.3</vertx>
         <retrofit>2.5.0</retrofit>
-        <okhttp>3.13.1</okhttp>
+        <okhttp>3.14.0</okhttp>
         <okhttp-signpost>1.1.0</okhttp-signpost>
         <signpost-core>1.2.1.2</signpost-core>
         <circuitbreaker>0.13.2</circuitbreaker>
-        <guava>27.0.1-jre</guava>
+        <guava>27.1-jre</guava>
         <google-auth>1.28.0</google-auth>
         <jasypt>1.9.2</jasypt>
         <commons-csv>1.6</commons-csv>
@@ -64,15 +64,15 @@
 
         <junit-jupiter>5.4.0</junit-jupiter>
 
-        <mockk>1.9.1</mockk>
-        <byte-buddy>1.9.10</byte-buddy>
+        <mockk>1.9.3</mockk>
+        <byte-buddy>1.9.11</byte-buddy>
 
         <plugin.surefire>3.0.0-M3</plugin.surefire>
         <plugin.source>3.0.1</plugin.source>
         <plugin.release>2.5.3</plugin.release>
         <plugin.gpg>1.6</plugin.gpg>
         <plugin.nexus-staging>1.6.8</plugin.nexus-staging>
-        <plugin.dokka>0.9.17</plugin.dokka>
+        <plugin.dokka>0.9.18</plugin.dokka>
         <plugin.assembly>3.1.1</plugin.assembly>
         <plugin.frontend>1.7.5</plugin.frontend>
         <plugin.clean>3.1.0</plugin.clean>

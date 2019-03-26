@@ -30,7 +30,7 @@
 
     <properties>
         <microsoft.bot>4.0.0-a1</microsoft.bot>
-        <mockwebserver>3.13.1</mockwebserver>
+        <mockwebserver>3.14.0</mockwebserver>
         <nimbus-jose-jwt.version>7.0.1</nimbus-jose-jwt.version>
     </properties>
 
