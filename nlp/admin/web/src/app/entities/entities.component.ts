@@ -71,6 +71,13 @@ export class EntitiesComponent implements OnInit {
     });
   }
 
+  private refreshEntityType(entityType: EntityType) {
+    this.selectedEntityType = entityType;
+    const types = this.state.entityTypes.getValue();
+    types[types.findIndex(e => e.name === entityType.name)] = entityType;
+    this.state.entityTypes.next(types);
+  }
+
   selectEntityType(entityType: EntityType) {
     if (entityType.namespace() === this.state.currentApplication.namespace) {
       this.selectedEntityType = entityType;
@@ -88,16 +95,15 @@ export class EntitiesComponent implements OnInit {
         input.value = oldValue;
         input.focus();
       } else {
-        if(this.selectedEntityType.predefinedValues.some(v => v.value === newValue)) {
+        if (this.selectedEntityType.predefinedValues.some(v => v.value === newValue)) {
           this.snackBar.open(`Predefined Value already exist`, "Error", {duration: 5000} as MatSnackBarConfig<any>);
           input.value = oldValue;
           input.focus();
-        }
-        else {
+        } else {
           this.nlp.createOrUpdatePredefinedValue(
             this.state.createPredefinedValueQuery(this.selectedEntityType.name, newValue, oldValue)).subscribe(
             next => {
-              this.selectedEntityType = next
+              this.refreshEntityType(next);
             },
             error => {
               input.value = oldValue;
@@ -116,7 +122,7 @@ export class EntitiesComponent implements OnInit {
       this.nlp.createOrUpdatePredefinedValue(
         this.state.createPredefinedValueQuery(this.selectedEntityType.name, name)).subscribe(
         next => {
-          this.selectedEntityType = next
+          this.refreshEntityType(next);
         },
         error => this.snackBar.open(`Create Predefined Value '${name}' failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>))
     }
@@ -151,7 +157,7 @@ export class EntitiesComponent implements OnInit {
           name))
         .subscribe(
           next => {
-            this.selectedEntityType = next
+            this.refreshEntityType(next);
           },
           error => this.snackBar.open(`Create Label '${name}' for Predefined Value '${predefinedValue.value}' failed`, "Error", {duration: 5000} as MatSnackBarConfig<any>))
     }
