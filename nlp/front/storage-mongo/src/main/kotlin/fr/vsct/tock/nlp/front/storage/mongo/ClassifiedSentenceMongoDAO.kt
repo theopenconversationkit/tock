@@ -19,6 +19,7 @@ package fr.vsct.tock.nlp.front.storage.mongo
 import com.mongodb.ReadPreference.secondaryPreferred
 import com.mongodb.client.MongoCollection
 import com.mongodb.client.model.Collation
+import com.mongodb.client.model.IndexOptions
 import com.mongodb.client.model.ReplaceOptions
 import fr.vsct.tock.nlp.core.Intent
 import fr.vsct.tock.nlp.front.service.storage.ClassifiedSentenceDAO
@@ -47,9 +48,9 @@ import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogMongoDAO.ParseRequestLogStatCol
 import fr.vsct.tock.shared.defaultLocale
 import mu.KotlinLogging
+import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
-import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.MongoOperator.elemMatch
 import org.litote.kmongo.MongoOperator.pull
 import org.litote.kmongo.`in`
@@ -149,6 +150,10 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
         c.ensureIndex(Language, ApplicationId, UsageCount)
         c.ensureIndex(Language, ApplicationId, UnknownCount)
         c.ensureIndex(Language, Status, Classification_.intentId)
+        c.ensureIndex(
+            ApplicationId, Classification_.intentId, Language, UpdateDate,
+            indexOptions = IndexOptions().background(true)
+        )
         c
     }
 
