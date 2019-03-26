@@ -446,6 +446,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#configuration-de-proxy-http" title="Configuration de proxy http" class="md-nav__link">
+    Configuration de proxy http
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#encryption-et-obfuscation" title="Encryption et Obfuscation" class="md-nav__link">
     Encryption et Obfuscation
   </a>
@@ -604,6 +611,13 @@
 </li>
       
         <li class="md-nav__item">
+  <a href="#configuration-de-proxy-http" title="Configuration de proxy http" class="md-nav__link">
+    Configuration de proxy http
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
   <a href="#encryption-et-obfuscation" title="Encryption et Obfuscation" class="md-nav__link">
     Encryption et Obfuscation
   </a>
@@ -682,9 +696,11 @@
                 <h1 id="installer-et-configurer-tock-en-production">Installer et configurer Tock en production<a class="headerlink" href="#installer-et-configurer-tock-en-production" title="Permanent link">&para;</a></h1>
 <h2 id="composants">Composants<a class="headerlink" href="#composants" title="Permanent link">&para;</a></h2>
 <p>Tock est composé par défaut de plusieurs images dockers et d'une base de donnée, <a href="https://www.mongodb.com">MongoDB</a>.</p>
-<p>Un exemple de configuration complète sous forme de fichier <em>docker-compose</em> (docker-compose n'étant pas forcément adapté à la production)
-est disponible dans le projet <a href="https://github.com/voyages-sncf-technologies/tock-docker">tock-docker</a> : 
+<p>Un exemple de configuration complète sous forme de fichier <em>docker-compose</em> est disponible dans le projet <a href="https://github.com/voyages-sncf-technologies/tock-docker">tock-docker</a> : 
 <a href="https://github.com/voyages-sncf-technologies/tock-docker/blob/master/docker-compose-bot-open-data.yml">docker-compose-bot-open-data.yml</a></p>
+<p>Si vous souhaitez utiliser docker-compose en production, merci de lire cet <a href="https://docs.docker.com/compose/production/">article</a> 
+et de revoir la configuration, qui est uniquement donnée dans le projet <em>tock-docker</em> à titre d'exemple d'environnement de dévelopement. 
+En particulier, la configuration des instances MongoDB devra être revue attentivement. </p>
 <h3 id="mongodb">MongoDB<a class="headerlink" href="#mongodb" title="Permanent link">&para;</a></h3>
 <p>La base Mongo doit être configurée "en replica set", c'est à dire avec au minimum 3 instances déployées.
 C'est obligatoire car Tock utilise la fonctionnalité des <a href="https://docs.mongodb.com/manual/changeStreams/">Change Streams</a>
@@ -751,6 +767,9 @@ Le code est disponible ici : <a href="https://github.com/voyages-sncf-technologi
 </ul>
 <p>Si ces modèles ne correspondent pas à votre besoin, il est relativement simple d'en développer d'autres
 en se basant sur les exemples ci-dessus. N'hésitez pas à contribuer au projet et à nous contacter pour toute question!</p>
+<h2 id="configuration-de-proxy-http">Configuration de proxy http<a class="headerlink" href="#configuration-de-proxy-http" title="Permanent link">&para;</a></h2>
+<p>L'ajout des <a href="https://docs.oracle.com/javase/8/docs/technotes/guides/net/proxies.html">propriétés système java correspondantes</a>
+<em>https.proxyHost</em>, <em>http.proxyHost</em> et <em>http.nonProxyHosts</em> est la méthode recommandée pour configurer un proxy.</p>
 <h2 id="encryption-et-obfuscation">Encryption et Obfuscation<a class="headerlink" href="#encryption-et-obfuscation" title="Permanent link">&para;</a></h2>
 <h3 id="encryption">Encryption<a class="headerlink" href="#encryption" title="Permanent link">&para;</a></h3>
 <p>Il est recommandé de déployer vos MongoDB <a href="https://docs.mongodb.com/manual/tutorial/configure-encryption/">en mode encrypté</a>.</p>
@@ -761,16 +780,20 @@ jugées sensibles si ce mot de passe est spécifié. Pour plus de détails, cons
 <h3 id="obfuscation">Obfuscation<a class="headerlink" href="#obfuscation" title="Permanent link">&para;</a></h3>
 <p>Par ailleurs, il peut être souhaitable que certaines phrases soient affichées dans les logs
  ou dans l'interface d'administration de manière <em>obfusquée</em>. 
- Tock met à disposition un système basé sur les expressions régulières dont l'interface de base
+ Ce serait par exemple le cas de numéros confidentiels de cartes de fidélité  qui ne devraient être lues, ni
+ par vos administrateurs systèmes, ni par les utilisateurs de l'interface d'administration. </p>
+<p>Tock met à disposition un système basé sur les expressions régulières dont l'interface de base
  est <a href="https://github.com/voyages-sncf-technologies/tock/blob/master/shared/src/main/kotlin/security/StringObfuscator.kt">StringObfuscator</a>.</p>
 <h2 id="monitoring">Monitoring<a class="headerlink" href="#monitoring" title="Permanent link">&para;</a></h2>
 <h3 id="logs">Logs<a class="headerlink" href="#logs" title="Permanent link">&para;</a></h3>
 <p>Tock utilise <a href="../www.slf4j.org">SLF4J</a>. </p>
 <h3 id="ligne-de-vie">Ligne de vie<a class="headerlink" href="#ligne-de-vie" title="Permanent link">&para;</a></h3>
-<p>L'url <code>/healthcheck</code> renvoie une code HTTP 200 si tout est correct. 
-Pour certaines images, ce chemin peut ne pas être présent à la racine. 
-Par exemple, la loigne de vie est localisée par défaut dans <code>/rest/admin/healthcheck</code> pour <code>tock/admin</code> 
-et dans <code>/rest/nlp/healthcheck</code> pour <code>tock/nlp_api</code>  </p>
+<p>L'url <code>/healthcheck</code> renvoie une code HTTP 200 si tout est correct. </p>
+<p>Pour certaines images, le ligne de vie peut ne pas être présente à la racine. En particulier :</p>
+<ul>
+<li>Pour <code>tock/admin</code>, la ligne de vie est localisée par défaut dans <code>/rest/admin/healthcheck</code> </li>
+<li>Pour <code>tock/nlp_api</code> , la ligne de vie est <code>/rest/nlp/healthcheck</code> </li>
+</ul>
 <h2 id="contact">Contact<a class="headerlink" href="#contact" title="Permanent link">&para;</a></h2>
 <p>Pour toute question ou remarque, n'hésitez pas à nous contacter sur <a href="https://gitter.im/tockchat/Lobby">gitter</a>.  </p>
                 

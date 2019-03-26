@@ -4,9 +4,12 @@
 
 Tock est composé par défaut de plusieurs images dockers et d'une base de donnée, [MongoDB](https://www.mongodb.com).
 
-Un exemple de configuration complète sous forme de fichier *docker-compose* (docker-compose n'étant pas forcément adapté à la production)
-est disponible dans le projet [tock-docker](https://github.com/voyages-sncf-technologies/tock-docker) : 
+Un exemple de configuration complète sous forme de fichier *docker-compose* est disponible dans le projet [tock-docker](https://github.com/voyages-sncf-technologies/tock-docker) : 
 [docker-compose-bot-open-data.yml](https://github.com/voyages-sncf-technologies/tock-docker/blob/master/docker-compose-bot-open-data.yml)
+
+Si vous souhaitez utiliser docker-compose en production, merci de lire cet [article](https://docs.docker.com/compose/production/) 
+et de revoir la configuration, qui est uniquement donnée dans le projet *tock-docker* à titre d'exemple d'environnement de dévelopement. 
+En particulier, la configuration des instances MongoDB devra être revue attentivement. 
 
 ### MongoDB
 
@@ -91,6 +94,11 @@ Le code est disponible ici : [PropertyBasedAuthProvider](https://github.com/voya
 Si ces modèles ne correspondent pas à votre besoin, il est relativement simple d'en développer d'autres
 en se basant sur les exemples ci-dessus. N'hésitez pas à contribuer au projet et à nous contacter pour toute question!
 
+## Configuration de proxy http
+
+L'ajout des [propriétés système java correspondantes](https://docs.oracle.com/javase/8/docs/technotes/guides/net/proxies.html)
+*https.proxyHost*, *http.proxyHost* et *http.nonProxyHosts* est la méthode recommandée pour configurer un proxy.
+
 ## Encryption et Obfuscation
 
 ### Encryption
@@ -107,6 +115,9 @@ jugées sensibles si ce mot de passe est spécifié. Pour plus de détails, cons
 
 Par ailleurs, il peut être souhaitable que certaines phrases soient affichées dans les logs
  ou dans l'interface d'administration de manière *obfusquée*. 
+ Ce serait par exemple le cas de numéros confidentiels de cartes de fidélité  qui ne devraient être lues, ni
+ par vos administrateurs systèmes, ni par les utilisateurs de l'interface d'administration. 
+  
  Tock met à disposition un système basé sur les expressions régulières dont l'interface de base
  est [StringObfuscator](https://github.com/voyages-sncf-technologies/tock/blob/master/shared/src/main/kotlin/security/StringObfuscator.kt).
  
@@ -119,9 +130,11 @@ Tock utilise [SLF4J](www.slf4j.org).
 ### Ligne de vie
 
 L'url `/healthcheck` renvoie une code HTTP 200 si tout est correct. 
-Pour certaines images, ce chemin peut ne pas être présent à la racine. 
-Par exemple, la loigne de vie est localisée par défaut dans `/rest/admin/healthcheck` pour `tock/admin` 
-et dans `/rest/nlp/healthcheck` pour `tock/nlp_api`  
+
+Pour certaines images, le ligne de vie peut ne pas être présente à la racine. En particulier :
+ 
+- Pour `tock/admin`, la ligne de vie est localisée par défaut dans `/rest/admin/healthcheck` 
+- Pour `tock/nlp_api` , la ligne de vie est `/rest/nlp/healthcheck` 
  
 ## Contact
 
