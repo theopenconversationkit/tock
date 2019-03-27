@@ -56,6 +56,7 @@ import fr.vsct.tock.bot.mongo.UserTimelineCol_.Companion.ApplicationIds
 import fr.vsct.tock.bot.mongo.UserTimelineCol_.Companion.LastUpdateDate
 import fr.vsct.tock.bot.mongo.UserTimelineCol_.Companion.TemporaryIds
 import fr.vsct.tock.shared.Executor
+import fr.vsct.tock.shared.booleanProperty
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.intProperty
@@ -108,6 +109,7 @@ import java.util.concurrent.TimeUnit.DAYS
 internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogReportDAO {
 
     private val maxActionsByDialog = intProperty("tock_bot_max_actions_by_dialog", 1000)
+    private val dialogFlowStatEnabled = booleanProperty("tock_bot_sialog_flow_stat", true)
 
     //wrapper to workaround the 1024 chars limit for String indexes
     private fun textKey(text: String): String =
@@ -251,7 +253,7 @@ internal object UserTimelineMongoDAO : UserTimelineDAO, UserReportDAO, DialogRep
                     )
                 }
             }
-            if (botDefinition != null && lastDialog != null && lastSnapshot != null && lastUserAction != null) {
+            if (dialogFlowStatEnabled && botDefinition != null && lastDialog != null && lastSnapshot != null && lastUserAction != null) {
                 DialogFlowMongoDAO.addFlowStat(botDefinition, lastUserAction, lastDialog, lastSnapshot)
             }
         }
