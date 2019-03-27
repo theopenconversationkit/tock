@@ -35,6 +35,9 @@ import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import io.vertx.core.MultiMap
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.async
+import kotlinx.coroutines.runBlocking
 import mu.KotlinLogging
 import retrofit2.Call
 import retrofit2.http.GET
@@ -50,13 +53,14 @@ import java.util.concurrent.TimeUnit
 internal class AuthenticateBotConnectorService(private val appId: String) {
 
     var microsoftOpenIdMetadataApi: MicrosoftOpenIdMetadataApi
+    var microsoftOpenIdMetadataApiForBotFwkEmulator: MicrosoftOpenIdMetadataApi
     var microsoftJwksApi: MicrosoftJwksApi
 
     private val logger = KotlinLogging.logger {}
     val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
 
     @Volatile
-    private var tokenIds: List<String>? = null
+    private var tokenIds: ArrayList<String>? = null
     @Volatile
     var cacheKeys: Cache<String, MicrosoftValidSigningKeys> = CacheBuilder.newBuilder()
         .maximumSize(1)
@@ -74,6 +78,16 @@ internal class AuthenticateBotConnectorService(private val appId: String) {
             .build()
             .create()
 
+        microsoftOpenIdMetadataApiForBotFwkEmulator = retrofitBuilderWithTimeoutAndLogger(
+            longProperty("tock_microsoft_request_timeout", 5000),
+            this.logger,
+            level = Level.BASIC
+        )
+            .baseUrl(OPENID_METADATA_LOCATION_BOT_FWK_EMULATOR)
+            .addJacksonConverter(teamsMapper)
+            .build()
+            .create()
+
         microsoftJwksApi = retrofitBuilderWithTimeoutAndLogger(
             longProperty("tock_microsoft_request_timeout", 5000),
             this.logger,
@@ -87,13 +101,80 @@ internal class AuthenticateBotConnectorService(private val appId: String) {
 
     companion object {
         const val OPENID_METADATA_LOCATION = "https://login.botframework.com/v1/"
+        const val OPENID_METADATA_LOCATION_BOT_FWK_EMULATOR = "https://login.microsoftonline.com/botframework.com/v2.0/"
         const val AUTHORIZATION_HEADER = "Authorization"
-        const val ISSUER = "https://api.botframework.com"
+        const val ISSUER_BOT_CONNECTOR_SERVICE = "https://api.botframework.com"
+        val ISSUER_BOT_FWK_EMULATOR = listOf(
+            "https://sts.windows.net/d6d49420-f39b-4df7-a1dc-d59a935871db/",
+            "https://sts.windows.net/f8cdef31-a31e-4b4a-93e4-5f571e91255a/",
+            "https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0")
         const val BEARER_PREFIX = "Bearer "
     }
 
-    fun checkRequestFromConnectorBotService(headers: MultiMap, activity: Activity) {
-        checkTokenValidity(headers, activity)
+    /**
+     * Here we check the token header validity
+     * The method to check this token is not the same either the request come from Teams throught BotConnectorService,
+     * or for the Bot Framework Emulator - to test purpose
+     * If the checks failed in both case, we only loggued the error from the BotConnectorService checks
+     */
+    fun checkRequestValidity(headers: MultiMap, activity: Activity) {
+        var isFromTheBotConnectorService = false
+        var isFromTheBotFwkEmulator = false
+        var errorStackTrace: String? = ""
+
+        runBlocking {
+            val jobAuthenticateFromBotConnectorService = async(Dispatchers.Default) {
+                isFromTheBotConnectorService = try {
+                    checkTokenValidityFromConnectorService(headers, activity)
+                } catch (e: Exception) {
+                    errorStackTrace = e.message
+                    false
+                }
+            }
+            val jobAuthenticateFromBotFrameworkEmulator = async(Dispatchers.Default) {
+                isFromTheBotFwkEmulator = checkTokenValidityFromEmulator(headers, activity)
+            }
+
+            jobAuthenticateFromBotConnectorService.join()
+            jobAuthenticateFromBotFrameworkEmulator.join()
+        }
+
+        if (!isFromTheBotConnectorService && !isFromTheBotFwkEmulator) {
+            throw ForbiddenException("Unvalid JWT in Authorization Header : $errorStackTrace")
+        }
+
+    }
+
+    /**
+     * @see https://docs.microsoft.com/en-us/azure/bot-service/rest-api/bot-framework-rest-connector-authentication?view=azure-bot-service-4.0#emulator-to-bot
+     *
+     * The token was sent in the HTTP Authorization header with "Bearer" scheme.
+     * The token is valid JSON that conforms to the JWT standard.
+     * The token contains a valid "issuer" claim.
+     * The token contains an "audience" claim with a value equal to the bot's Microsoft App ID.
+     * The token contains an "appid" claim with the value equal to the bot's Microsoft App ID
+     * The token is within its validity period. Industry-standard clock-skew is 5 minutes.
+     * The token has a valid cryptographic signature, with a key listed in the OpenID keys document that was retrieved in Step 3, using the signing algorithm that is specified in the id_token_signing_alg_values_supported property of the Open ID Metadata document that was retrieved in Step 2.
+     */
+    private fun checkTokenValidityFromEmulator(headers: MultiMap, activity: Activity): Boolean {
+        logger.debug("Validating token from incoming request...")
+        val authorizationHeader = headers[AUTHORIZATION_HEADER]
+        try {
+            if (!authorizationHeader.contains(BEARER_PREFIX)) throw ForbiddenException("Authorization Header does not contains the Bearer scheme")
+            val token = authorizationHeader.removePrefix(BEARER_PREFIX)
+            val signedJWT = SignedJWT.parse(token)
+            if (!ISSUER_BOT_FWK_EMULATOR.contains(signedJWT.jwtClaimsSet.issuer)) {
+                logger.error("Invalid issuer : ${signedJWT.jwtClaimsSet.issuer}")
+                throw ForbiddenException("Issuer is not valid")
+            }
+            if (!signedJWT.jwtClaimsSet.audience.contains(appId)) throw ForbiddenException("Audience is not valid")
+            if (signedJWT.jwtClaimsSet.getClaim("azp") != appId)  throw ForbiddenException("AppId claim is not valid")
+            checkValidity(signedJWT)
+            checkSignature(signedJWT, activity)
+        } catch (e: Exception) {
+            return false
+        }
+        return true
     }
 
     /**
@@ -107,26 +188,26 @@ internal class AuthenticateBotConnectorService(private val appId: String) {
      * The token has a valid cryptographic signature, with a key listed in the OpenID keys document that was retrieved in Step 3, using the signing algorithm that is specified in the id_token_signing_alg_values_supported property of the Open ID Metadata document that was retrieved in Step 2.
      * The token contains a "serviceUrl" claim with value that matches the servieUrl property at the root of the Activity object of the incoming request.    *
      */
-    private fun checkTokenValidity(headers: MultiMap, activity: Activity) {
+    private fun checkTokenValidityFromConnectorService(headers: MultiMap, activity: Activity): Boolean {
         logger.debug("Validating token from incoming request...")
         val authorizationHeader = headers[AUTHORIZATION_HEADER]
         try {
             if (!authorizationHeader.contains(BEARER_PREFIX)) throw ForbiddenException("Authorization Header does not contains the Bearer scheme")
             val token = authorizationHeader.removePrefix(BEARER_PREFIX)
             val signedJWT = SignedJWT.parse(token)
-            if (signedJWT.jwtClaimsSet.issuer != ISSUER) throw ForbiddenException("Issuer is not valid")
+            if (signedJWT.jwtClaimsSet.issuer != ISSUER_BOT_CONNECTOR_SERVICE) throw ForbiddenException("Issuer is not valid")
             if (!signedJWT.jwtClaimsSet.audience.contains(appId)) throw ForbiddenException("Audience is not valid")
             checkValidity(signedJWT)
             checkSignature(signedJWT, activity)
             if ((signedJWT.jwtClaimsSet.getClaim("serviceurl")
-                        ?: throw ForbiddenException("Token doesn't contains any serviceUrl Claims")) != activity.serviceUrl()
+                    ?: throw ForbiddenException("Token doesn't contains any serviceUrl Claims")) != activity.serviceUrl()
             ) {
                 throw ForbiddenException("ServiceUrl in token Authorization and in activity doesn't match")
             }
         } catch (e: Exception) {
-            logger.error("Unvalid JWT in Authorization Header : ${e.message}")
             throw ForbiddenException("Unvalid JWT in Authorization Header : ${e.message}")
         }
+        return true
     }
 
     private fun checkValidity(signedJWT: SignedJWT) {
@@ -141,7 +222,8 @@ internal class AuthenticateBotConnectorService(private val appId: String) {
         cacheKeys.get("jwks_uri") {
             getJWK()
         }?.keys?.forEach {
-            if (it.endorsements?.contains(activity.channelId()) == true && (it.kid == signedJWT.header.keyID)) {
+            if (//it.endorsements?.contains(activity.channelId()) == true &&
+                (it.kid == signedJWT.header.keyID)) {
                 val algo = it.kty
                 val verifier: JWSVerifier = when (algo) {
                     "RSA" -> RSASSAVerifier(RSAKey.parse(it.toString()))
@@ -162,18 +244,25 @@ internal class AuthenticateBotConnectorService(private val appId: String) {
         logger.debug("Getting new jwks")
         val microsoftOpenidMetadata = microsoftOpenIdMetadataApi.getMicrosoftOpenIdMetadata().execute()
         val response = microsoftOpenidMetadata.body()
-        tokenIds =
-            response?.idTokenSigningAlgValuesSupported ?: throw IOException("Error : Unable to get OpenidMetadata")
-        return microsoftJwksApi.getJwk(
+        tokenIds = response?.idTokenSigningAlgValuesSupported ?: throw IOException("Error : Unable to get OpenidMetadata")
+        val keysForBotConnectorService = microsoftJwksApi.getJwk(
             response.jwksUri
         ).execute().body() ?: throw IOException("Error : Unable to get JWK signatures")
+
+        val microsoftOpenidMetadataBotFwkEmulator = microsoftOpenIdMetadataApiForBotFwkEmulator.getMicrosoftOpenIdMetadataForBotFwkEmulator().execute()
+        val nextResponse = microsoftOpenidMetadataBotFwkEmulator.body()
+        tokenIds?.addAll(nextResponse?.idTokenSigningAlgValuesSupported ?: throw IOException("Error : Unable to get OpenidMetadata"))
+        val keysForBotFwkEmulator = microsoftJwksApi.getJwk(
+            nextResponse!!.jwksUri
+        ).execute().body() ?: throw IOException("Error : Unable to get JWK signatures")
+        return  MicrosoftValidSigningKeys(keysForBotConnectorService.keys.union(keysForBotFwkEmulator.keys).toList())
     }
 
     data class MicrosoftOpenidMetadata(
         val issuer: String,
         val authorizationEndpoint: String,
         val jwksUri: String,
-        val idTokenSigningAlgValuesSupported: List<String>,
+        val idTokenSigningAlgValuesSupported: ArrayList<String>,
         val tokenEndpointAuthMethodsSupported: List<String>
     )
 
@@ -181,6 +270,9 @@ internal class AuthenticateBotConnectorService(private val appId: String) {
 
         @GET(".well-known/openidconfiguration/")
         fun getMicrosoftOpenIdMetadata(): Call<MicrosoftOpenidMetadata>
+
+        @GET(".well-known/openid-configuration/")
+        fun getMicrosoftOpenIdMetadataForBotFwkEmulator(): Call<MicrosoftOpenidMetadata>
     }
 
     data class MicrosoftValidSigningKeys(

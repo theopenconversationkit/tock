@@ -48,6 +48,17 @@ class AuthenticateBotConnectorServiceTest {
                 "\"sub\":\"test\"," +
                 "\"serviceurl\": \"https://serviceurl\"}"
     ) as JSONObject
+
+    private val validJsonPayloadFromBotFwkEmulator: JSONObject = JSONParser(JSONParser.MODE_JSON_SIMPLE).parse(
+        "{\"iss\":\"https://login.microsoftonline.com/d6d49420-f39b-4df7-a1dc-d59a935871db/v2.0\"," +
+            "\"iat\":${notBefore.epochSecond}," +
+            "\"nbf\":${notBefore.epochSecond}" +
+            ",\"exp\":${expirationDate.epochSecond}," +
+            "\"aud\":\"fakeAppId\"," +
+            "\"azp\":\"fakeAppId\"," +
+            "\"sub\":\"test\"," +
+            "\"serviceurl\": \"https://serviceurl\"}"
+    ) as JSONObject
     private val jwk = RSAKeyGenerator(2048)
         .keyUse(KeyUse.SIGNATURE)
         .keyID(UUID.randomUUID().toString())
@@ -74,7 +85,7 @@ class AuthenticateBotConnectorServiceTest {
         val server = getMicrosoftMockServer(authenticateBotConnectorService)
 
         //check that it does not fail
-        authenticateBotConnectorService.checkRequestFromConnectorBotService(headers, activity)
+        authenticateBotConnectorService.checkRequestValidity(headers, activity)
 
         server.shutdown()
 
@@ -87,7 +98,7 @@ class AuthenticateBotConnectorServiceTest {
         val authenticateBotConnectorService = AuthenticateBotConnectorService("fakeAppId")
 
         assertFailsWith(ForbiddenException::class) {
-            authenticateBotConnectorService.checkRequestFromConnectorBotService(headers, activity)
+            authenticateBotConnectorService.checkRequestValidity(headers, activity)
         }
     }
 
@@ -98,7 +109,7 @@ class AuthenticateBotConnectorServiceTest {
         val authenticateBotConnectorService = AuthenticateBotConnectorService("fakeAppId")
 
         assertFailsWith(ForbiddenException::class) {
-            authenticateBotConnectorService.checkRequestFromConnectorBotService(headers, activity)
+            authenticateBotConnectorService.checkRequestValidity(headers, activity)
         }
     }
 
@@ -109,7 +120,7 @@ class AuthenticateBotConnectorServiceTest {
         val authenticateBotConnectorService = AuthenticateBotConnectorService("fakeAppId")
 
         assertFailsWith(ForbiddenException::class) {
-            authenticateBotConnectorService.checkRequestFromConnectorBotService(headers, activity)
+            authenticateBotConnectorService.checkRequestValidity(headers, activity)
         }
     }
 
@@ -136,7 +147,7 @@ class AuthenticateBotConnectorServiceTest {
         val server = getMicrosoftMockServer(authenticateBotConnectorService)
 
         assertFailsWith(ForbiddenException::class) {
-            authenticateBotConnectorService.checkRequestFromConnectorBotService(headers, activity)
+            authenticateBotConnectorService.checkRequestValidity(headers, activity)
         }
 
         server.shutdown()
@@ -166,7 +177,7 @@ class AuthenticateBotConnectorServiceTest {
         val server = getMicrosoftMockServer(authenticateBotConnectorService)
 
         assertFailsWith(ForbiddenException::class) {
-            authenticateBotConnectorService.checkRequestFromConnectorBotService(headers, activity)
+            authenticateBotConnectorService.checkRequestValidity(headers, activity)
         }
 
         server.shutdown()
@@ -196,7 +207,7 @@ class AuthenticateBotConnectorServiceTest {
         val server = getMicrosoftMockServer(authenticateBotConnectorService)
 
         assertFailsWith(ForbiddenException::class) {
-            authenticateBotConnectorService.checkRequestFromConnectorBotService(headers, activity)
+            authenticateBotConnectorService.checkRequestValidity(headers, activity)
         }
 
         server.shutdown()
@@ -226,7 +237,7 @@ class AuthenticateBotConnectorServiceTest {
         val server = getMicrosoftMockServer(authenticateBotConnectorService)
 
         assertFailsWith(ForbiddenException::class) {
-            authenticateBotConnectorService.checkRequestFromConnectorBotService(headers, activity)
+            authenticateBotConnectorService.checkRequestValidity(headers, activity)
         }
 
         server.shutdown()
@@ -253,7 +264,7 @@ class AuthenticateBotConnectorServiceTest {
         val server = getMicrosoftMockServer(authenticateBotConnectorService)
 
         assertFailsWith(ForbiddenException::class) {
-            authenticateBotConnectorService.checkRequestFromConnectorBotService(headers, activity)
+            authenticateBotConnectorService.checkRequestValidity(headers, activity)
         }
         server.shutdown()
     }
@@ -276,7 +287,7 @@ class AuthenticateBotConnectorServiceTest {
         val server = getMicrosoftMockServer(authenticateBotConnectorService)
 
         assertFailsWith(ForbiddenException::class) {
-            authenticateBotConnectorService.checkRequestFromConnectorBotService(headers, otherActivity)
+            authenticateBotConnectorService.checkRequestValidity(headers, otherActivity)
         }
         server.shutdown()
     }
@@ -297,7 +308,7 @@ class AuthenticateBotConnectorServiceTest {
         val server = getMicrosoftMockServer(authenticateBotConnectorService)
 
         //check that it does not fail
-        authenticateBotConnectorService.checkRequestFromConnectorBotService(headers, activity)
+        authenticateBotConnectorService.checkRequestValidity(headers, activity)
         val firstRecordedRequest = server.takeRequest()
         assertEquals("GET /.well-known/openidconfiguration/ HTTP/1.1", firstRecordedRequest.requestLine)
         val secondRecordedResponse = server.takeRequest()
@@ -322,13 +333,13 @@ class AuthenticateBotConnectorServiceTest {
         val server = getMicrosoftMockServer(authenticateBotConnectorService)
 
         //check that it does not fail
-        authenticateBotConnectorService.checkRequestFromConnectorBotService(headers, activity)
+        authenticateBotConnectorService.checkRequestValidity(headers, activity)
         val firstRecordedRequest = server.takeRequest()
         assertEquals("GET /.well-known/openidconfiguration/ HTTP/1.1", firstRecordedRequest.requestLine)
         val secondRecordedResponse = server.takeRequest()
         assertEquals("GET / HTTP/1.1", secondRecordedResponse.requestLine)
         //check that it does not fail
-        authenticateBotConnectorService.checkRequestFromConnectorBotService(headers, activity)
+        authenticateBotConnectorService.checkRequestValidity(headers, activity)
 
         val thirdRecordedRequest = server.takeRequest(1, TimeUnit.SECONDS)
         assertNull(thirdRecordedRequest)
@@ -355,7 +366,7 @@ class AuthenticateBotConnectorServiceTest {
         val server = getMicrosoftMockServer(authenticateBotConnectorService)
 
         //check that it does not fail
-        authenticateBotConnectorService.checkRequestFromConnectorBotService(headers, activity)
+        authenticateBotConnectorService.checkRequestValidity(headers, activity)
         val firstRecordedRequest = server.takeRequest()
         assertEquals("GET /.well-known/openidconfiguration/ HTTP/1.1", firstRecordedRequest.requestLine)
         val secondRecordedResponse = server.takeRequest()
@@ -364,13 +375,40 @@ class AuthenticateBotConnectorServiceTest {
         Thread.sleep(1000)
 
         //check that it does not fail
-        authenticateBotConnectorService.checkRequestFromConnectorBotService(headers, activity)
+        authenticateBotConnectorService.checkRequestValidity(headers, activity)
         val thirdRecordedRequest = server.takeRequest(1, TimeUnit.SECONDS)
         val fourthRequest = server.takeRequest(1, TimeUnit.SECONDS)
         assertEquals("GET /.well-known/openidconfiguration/ HTTP/1.1", thirdRecordedRequest.requestLine)
         assertEquals("GET / HTTP/1.1", fourthRequest.requestLine)
 
         server.shutdown()
+    }
+
+    @Test
+    fun testRequestFromTheBotConnectorService() {
+        val jwsObject = JWSObject(
+            JWSHeader.Builder(JWSAlgorithm.RS256).keyID(jwk.keyID).build(),
+            Payload(validJsonPayloadFromBotFwkEmulator)
+        )
+        jwsObject.sign(RSASSASigner(jwk))
+        val token = jwsObject.serialize()
+        val bearerAuthorization = "Bearer $token"
+
+        val headers: MultiMap = CaseInsensitiveHeaders().add("Authorization", bearerAuthorization)
+        val authenticateBotConnectorService = AuthenticateBotConnectorService("fakeAppId")
+        authenticateBotConnectorService.cacheKeys = CacheBuilder.newBuilder()
+            .maximumSize(1)
+            .expireAfterWrite(500, TimeUnit.MILLISECONDS)
+            .build()
+
+        val server = getMicrosoftMockServer(authenticateBotConnectorService)
+
+        //check that it does not fail
+        authenticateBotConnectorService.checkRequestValidity(headers, activity)
+        val firstRecordedRequest = server.takeRequest()
+        assertEquals("GET /.well-known/openidconfiguration/ HTTP/1.1", firstRecordedRequest.requestLine)
+        val secondRecordedResponse = server.takeRequest()
+        assertEquals("GET / HTTP/1.1", secondRecordedResponse.requestLine)
     }
 
     private fun getMicrosoftMockServer(authenticateBotConnectorService: AuthenticateBotConnectorService): MockWebServer {

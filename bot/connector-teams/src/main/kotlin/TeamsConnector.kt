@@ -67,7 +67,7 @@ internal class TeamsConnector(
                 try {
                     val body = context.bodyAsString
                     val activity: Activity = mapper.readValue(body)
-                    authenticateBotConnectorService.checkRequestFromConnectorBotService(
+                    authenticateBotConnectorService.checkRequestValidity(
                         context.request().headers(),
                         activity
                     )
