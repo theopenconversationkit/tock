@@ -32,12 +32,18 @@
         <microsoft.bot>4.0.0-a1</microsoft.bot>
         <mockwebserver>3.14.0</mockwebserver>
         <nimbus-jose-jwt.version>7.0.1</nimbus-jose-jwt.version>
+        <couroutine.version>1.1.1</couroutine.version>
     </properties>
 
     <dependencies>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-engine-jackson</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.jetbrains.kotlinx</groupId>
+            <artifactId>kotlinx-coroutines-core</artifactId>
+            <version>${couroutine.version}</version>
         </dependency>
         <dependency>
             <groupId>com.nimbusds</groupId>
@@ -118,4 +124,27 @@
         </dependency>
     </dependencies>
 
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.2</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
 </project>
