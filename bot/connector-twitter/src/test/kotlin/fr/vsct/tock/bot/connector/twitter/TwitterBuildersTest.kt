@@ -26,6 +26,8 @@ import fr.vsct.tock.shared.tockInternalInjector
 import io.mockk.every
 import io.mockk.mockk
 import org.junit.jupiter.api.BeforeEach
+import org.junit.jupiter.api.Test
+import kotlin.test.assertEquals
 
 class TwitterBuildersTest {
 
@@ -47,4 +49,38 @@ class TwitterBuildersTest {
         every { bus.translate(allAny()) } answers { firstArg() ?: "" }
     }
 
+    @Test
+    fun `strip dots lesser for twitter`() {
+        val givenStringLesserThan: CharSequence = "String Text"
+
+        assertEquals("String Text", givenStringLesserThan.truncateIfLongerThan(12))
+        assertEquals("", givenStringLesserThan.truncateIfLongerThan(0))
+        assertEquals("S", givenStringLesserThan.truncateIfLongerThan(1))
+        assertEquals("St", givenStringLesserThan.truncateIfLongerThan(2))
+        assertEquals("Str", givenStringLesserThan.truncateIfLongerThan(3))
+        assertEquals("S...", givenStringLesserThan.truncateIfLongerThan(4))
+        assertEquals("String Text", givenStringLesserThan.truncateIfLongerThan(-1))
+    }
+
+    @Test
+    fun `strip dots longer for twitter`() {
+        val givenStringMoreThan: CharSequence = "String Text 1 String Text 1"
+
+        assertEquals("String T...", givenStringMoreThan.truncateIfLongerThan(11))
+    }
+
+    @Test
+    fun `strip dots for twitter empty`() {
+        val givenStringEmpty: CharSequence = ""
+
+        assertEquals("", givenStringEmpty.truncateIfLongerThan(11))
+    }
+
+    @Test
+    fun `no strip dots for twitter equal`() {
+        val givenStringEqual: CharSequence = "String Text"
+
+        assertEquals("String Text", givenStringEqual.truncateIfLongerThan(11))
+
+    }
 }
