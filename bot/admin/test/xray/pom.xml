@@ -21,7 +21,7 @@
     <parent>
         <groupId>fr.vsct.tock</groupId>
         <artifactId>tock-bot-admin-test</artifactId>
-        <version>19.3.0-SNAPSHOT</version>
+        <version>19.3.0</version>
     </parent>
 
     <artifactId>tock-bot-admin-test-xray</artifactId>
