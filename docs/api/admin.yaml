@@ -1,7 +1,7 @@
 openapi: "3.0.0"
 info:
   description: "This is the Tock NLP ADMIN API. You can manage your model with it!"
-  version: "2.0.0"
+  version: "19.3.0"
   title: "Tock NLP ADMIN API"
   termsOfService: "https://voyages-sncf-technologies.github.io/tock/fr/"
   license:
