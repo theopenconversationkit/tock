@@ -31,6 +31,7 @@ import com.nimbusds.jwt.SignedJWT
 import fr.vsct.tock.shared.Level
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.create
+import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
@@ -53,7 +54,7 @@ import java.util.concurrent.TimeUnit
 internal class AuthenticateBotConnectorService(private val appId: String) {
 
     var microsoftOpenIdMetadataApi: MicrosoftOpenIdMetadataApi
-    var microsoftOpenIdMetadataApiForBotFwkEmulator: MicrosoftOpenIdMetadataApi
+    private var microsoftOpenIdMetadataApiForBotFwkEmulator: MicrosoftOpenIdMetadataApi
     var microsoftJwksApi: MicrosoftJwksApi
 
     private val logger = KotlinLogging.logger {}
@@ -131,12 +132,14 @@ internal class AuthenticateBotConnectorService(private val appId: String) {
                     false
                 }
             }
-            val jobAuthenticateFromBotFrameworkEmulator = async(Dispatchers.Default) {
-                isFromTheBotFwkEmulator = checkTokenValidityFromEmulator(headers, activity)
-            }
+            val jobAuthenticateFromBotFrameworkEmulator = if (devEnvironment) {
+                 async(Dispatchers.Default) {
+                    isFromTheBotFwkEmulator = checkTokenValidityFromEmulator(headers)
+                }
+            } else null
 
             jobAuthenticateFromBotConnectorService.join()
-            jobAuthenticateFromBotFrameworkEmulator.join()
+            jobAuthenticateFromBotFrameworkEmulator?.join()
         }
 
         if (!isFromTheBotConnectorService && !isFromTheBotFwkEmulator) {
@@ -156,7 +159,7 @@ internal class AuthenticateBotConnectorService(private val appId: String) {
      * The token is within its validity period. Industry-standard clock-skew is 5 minutes.
      * The token has a valid cryptographic signature, with a key listed in the OpenID keys document that was retrieved in Step 3, using the signing algorithm that is specified in the id_token_signing_alg_values_supported property of the Open ID Metadata document that was retrieved in Step 2.
      */
-    private fun checkTokenValidityFromEmulator(headers: MultiMap, activity: Activity): Boolean {
+    private fun checkTokenValidityFromEmulator(headers: MultiMap): Boolean {
         logger.debug("Validating token from incoming request...")
         val authorizationHeader = headers[AUTHORIZATION_HEADER]
         try {
@@ -170,7 +173,7 @@ internal class AuthenticateBotConnectorService(private val appId: String) {
             if (!signedJWT.jwtClaimsSet.audience.contains(appId)) throw ForbiddenException("Audience is not valid")
             if (signedJWT.jwtClaimsSet.getClaim("azp") != appId)  throw ForbiddenException("AppId claim is not valid")
             checkValidity(signedJWT)
-            checkSignature(signedJWT, activity)
+            checkSignature(signedJWT)
         } catch (e: Exception) {
             return false
         }
@@ -198,7 +201,7 @@ internal class AuthenticateBotConnectorService(private val appId: String) {
             if (signedJWT.jwtClaimsSet.issuer != ISSUER_BOT_CONNECTOR_SERVICE) throw ForbiddenException("Issuer is not valid")
             if (!signedJWT.jwtClaimsSet.audience.contains(appId)) throw ForbiddenException("Audience is not valid")
             checkValidity(signedJWT)
-            checkSignature(signedJWT, activity)
+            checkSignature(signedJWT)
             if ((signedJWT.jwtClaimsSet.getClaim("serviceurl")
                     ?: throw ForbiddenException("Token doesn't contains any serviceUrl Claims")) != activity.serviceUrl()
             ) {
@@ -218,7 +221,7 @@ internal class AuthenticateBotConnectorService(private val appId: String) {
         if (now.before(notBefore)) throw ForbiddenException("Authorization header is not valid yet")
     }
 
-    private fun checkSignature(signedJWT: SignedJWT, activity: Activity) {
+    private fun checkSignature(signedJWT: SignedJWT) {
         cacheKeys.get("jwks_uri") {
             getJWK()
         }?.keys?.forEach {
@@ -244,18 +247,23 @@ internal class AuthenticateBotConnectorService(private val appId: String) {
         logger.debug("Getting new jwks")
         val microsoftOpenidMetadata = microsoftOpenIdMetadataApi.getMicrosoftOpenIdMetadata().execute()
         val response = microsoftOpenidMetadata.body()
-        tokenIds = response?.idTokenSigningAlgValuesSupported ?: throw IOException("Error : Unable to get OpenidMetadata")
+        tokenIds = response?.idTokenSigningAlgValuesSupported ?: throw IOException("Error : Unable to get OpenidMetadata to validate BotConnectorServiceKeys")
         val keysForBotConnectorService = microsoftJwksApi.getJwk(
             response.jwksUri
-        ).execute().body() ?: throw IOException("Error : Unable to get JWK signatures")
+        ).execute().body() ?: throw IOException("Error : Unable to get JWK signatures to validate BotConnectorServiceKeys")
+        val listOfKeys: MutableList<MicrosoftValidSigningKey> = keysForBotConnectorService.keys.toMutableList()
 
-        val microsoftOpenidMetadataBotFwkEmulator = microsoftOpenIdMetadataApiForBotFwkEmulator.getMicrosoftOpenIdMetadataForBotFwkEmulator().execute()
-        val nextResponse = microsoftOpenidMetadataBotFwkEmulator.body()
-        tokenIds?.addAll(nextResponse?.idTokenSigningAlgValuesSupported ?: throw IOException("Error : Unable to get OpenidMetadata"))
-        val keysForBotFwkEmulator = microsoftJwksApi.getJwk(
-            nextResponse!!.jwksUri
-        ).execute().body() ?: throw IOException("Error : Unable to get JWK signatures")
-        return  MicrosoftValidSigningKeys(keysForBotConnectorService.keys.union(keysForBotFwkEmulator.keys).toList())
+        if (devEnvironment) {
+            val microsoftOpenidMetadataBotFwkEmulator = microsoftOpenIdMetadataApiForBotFwkEmulator.getMicrosoftOpenIdMetadataForBotFwkEmulator().execute()
+            val nextResponse = microsoftOpenidMetadataBotFwkEmulator.body()
+            tokenIds?.addAll(nextResponse?.idTokenSigningAlgValuesSupported ?: throw IOException("Error : Unable to get OpenidMetadata to validate BotFrameworkEmulatorKeys"))
+            val keysForBotFwkEmulator = microsoftJwksApi.getJwk(
+                nextResponse!!.jwksUri
+            ).execute().body() ?: throw IOException("Error : Unable to get JWK signatures to validate BotFrameworkEmulatorKeys")
+            listOfKeys.addAll(keysForBotFwkEmulator.keys)
+        }
+
+        return  MicrosoftValidSigningKeys(listOfKeys)
     }
 
     data class MicrosoftOpenidMetadata(
