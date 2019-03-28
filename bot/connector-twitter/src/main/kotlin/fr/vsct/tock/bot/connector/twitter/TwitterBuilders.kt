@@ -43,6 +43,16 @@ internal const val TWITTER_CONNECTOR_TYPE_ID = "twitter"
  */
 val twitterConnectorType = ConnectorType(TWITTER_CONNECTOR_TYPE_ID)
 
+const val maxOptionLabel = 36
+const val maxOptionDescription = 72
+const val maxMetadata = 1000
+
+fun CharSequence.truncateIfLongerThan(maxCharacter: Int): String =
+    if(maxCharacter >= 0 && this.length > maxCharacter) {
+        if(maxCharacter > 3) this.substring(0, maxCharacter - 3) + "..."
+        else this.substring(0, maxCharacter)
+    }
+    else this.toString()
 
 /**
  * Creates a direct message with only text
@@ -131,8 +141,9 @@ fun BotBus.webUrl(
     url: CharSequence
 ): WebUrl {
     val l = translate(label)
-    if (l.length > 36) {
-        logger.warn { "label $l has more than 36 chars" }
+    if (l.length > maxOptionLabel) {
+        logger.warn { "label $l has more than $maxOptionLabel chars, it will be truncated" }
+        return WebUrl(l.truncateIfLongerThan(maxOptionLabel), url.toString())
     }
     return WebUrl(l.toString(), url.toString())
 }
@@ -178,18 +189,18 @@ private fun BotBus.option(
     metadataEncoder: (IntentAware, StoryStep<out StoryHandlerDefinition>?, Map<String, String>) -> String
 ): Option {
     val l = translate(label)
-    if (l.length > 36) {
-        logger.warn { "label $l has more than 36 chars" }
+    if (l.length > maxOptionLabel) {
+        logger.warn { "label $l has more than $maxOptionLabel chars, it will be truncated" }
     }
     val d = translate(description)
-    if (d.length > 72) {
-        logger.warn { "label $d has more than 72 chars" }
+    if (d.length > maxOptionDescription) {
+        logger.warn { "label $d has more than $maxOptionDescription chars, it will be truncated" }
     }
     val metadata = metadataEncoder.invoke(targetIntent, step, parameters)
-    if (metadata.length > 1000) {
-        logger.warn { "payload $metadata has more than 1000 chars" }
+    if (metadata.length > maxMetadata) {
+        logger.warn { "payload $metadata has more than $maxMetadata chars, it will be truncated" }
     }
-    return Option(l.toString(), d.toString(), metadata)
+    return Option(l.truncateIfLongerThan(maxOptionLabel), d.truncateIfLongerThan(maxOptionDescription), metadata.truncateIfLongerThan(maxMetadata))
 }
 
 /**
