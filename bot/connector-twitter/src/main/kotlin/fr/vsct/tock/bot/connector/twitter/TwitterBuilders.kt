@@ -43,16 +43,15 @@ internal const val TWITTER_CONNECTOR_TYPE_ID = "twitter"
  */
 val twitterConnectorType = ConnectorType(TWITTER_CONNECTOR_TYPE_ID)
 
-const val maxOptionLabel = 36
-const val maxOptionDescription = 72
-const val maxMetadata = 1000
+private const val MAX_OPTION_LABEL = 36
+private const val MAX_OPTION_DESCRIPTION = 72
+private const val MAX_METADATA = 1000
 
-fun CharSequence.truncateIfLongerThan(maxCharacter: Int): String =
-    if(maxCharacter >= 0 && this.length > maxCharacter) {
-        if(maxCharacter > 3) this.substring(0, maxCharacter - 3) + "..."
+private fun CharSequence.truncateIfLongerThan(maxCharacter: Int): String =
+    if (maxCharacter >= 0 && this.length > maxCharacter) {
+        if (maxCharacter > 3) this.substring(0, maxCharacter - 3) + "..."
         else this.substring(0, maxCharacter)
-    }
-    else this.toString()
+    } else this.toString()
 
 /**
  * Creates a direct message with only text
@@ -141,9 +140,9 @@ fun BotBus.webUrl(
     url: CharSequence
 ): WebUrl {
     val l = translate(label)
-    if (l.length > maxOptionLabel) {
-        logger.warn { "label $l has more than $maxOptionLabel chars, it will be truncated" }
-        return WebUrl(l.truncateIfLongerThan(maxOptionLabel), url.toString())
+    if (l.length > MAX_OPTION_LABEL) {
+        logger.warn { "label $l has more than $MAX_OPTION_LABEL chars, it will be truncated" }
+        return WebUrl(l.truncateIfLongerThan(MAX_OPTION_LABEL), url.toString())
     }
     return WebUrl(l.toString(), url.toString())
 }
@@ -189,18 +188,22 @@ private fun BotBus.option(
     metadataEncoder: (IntentAware, StoryStep<out StoryHandlerDefinition>?, Map<String, String>) -> String
 ): Option {
     val l = translate(label)
-    if (l.length > maxOptionLabel) {
-        logger.warn { "label $l has more than $maxOptionLabel chars, it will be truncated" }
+    if (l.length > MAX_OPTION_LABEL) {
+        logger.warn { "label $l has more than $MAX_OPTION_LABEL chars, it will be truncated" }
     }
     val d = translate(description)
-    if (d.length > maxOptionDescription) {
-        logger.warn { "label $d has more than $maxOptionDescription chars, it will be truncated" }
+    if (d.length > MAX_OPTION_DESCRIPTION) {
+        logger.warn { "label $d has more than $MAX_OPTION_DESCRIPTION chars, it will be truncated" }
     }
     val metadata = metadataEncoder.invoke(targetIntent, step, parameters)
-    if (metadata.length > maxMetadata) {
-        logger.warn { "payload $metadata has more than $maxMetadata chars, it will be truncated" }
+    if (metadata.length > MAX_METADATA) {
+        logger.warn { "payload $metadata has more than $MAX_METADATA chars, it will be truncated" }
     }
-    return Option(l.truncateIfLongerThan(maxOptionLabel), d.truncateIfLongerThan(maxOptionDescription), metadata.truncateIfLongerThan(maxMetadata))
+    return Option(
+        l.truncateIfLongerThan(MAX_OPTION_LABEL),
+        d.truncateIfLongerThan(MAX_OPTION_DESCRIPTION),
+        metadata.truncateIfLongerThan(MAX_METADATA)
+    )
 }
 
 /**
