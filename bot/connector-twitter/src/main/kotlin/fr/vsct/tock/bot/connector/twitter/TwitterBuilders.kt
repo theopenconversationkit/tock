@@ -47,7 +47,7 @@ private const val MAX_OPTION_LABEL = 36
 private const val MAX_OPTION_DESCRIPTION = 72
 private const val MAX_METADATA = 1000
 
-private fun CharSequence.truncateIfLongerThan(maxCharacter: Int): String =
+internal fun CharSequence.truncateIfLongerThan(maxCharacter: Int): String =
     if (maxCharacter >= 0 && this.length > maxCharacter) {
         if (maxCharacter > 3) this.substring(0, maxCharacter - 3) + "..."
         else this.substring(0, maxCharacter)
