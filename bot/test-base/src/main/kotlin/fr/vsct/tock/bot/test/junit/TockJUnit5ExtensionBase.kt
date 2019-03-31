@@ -58,7 +58,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
      */
     fun sendChoice(
         intent: IntentAware = testContext.defaultStoryDefinition(botDefinition),
-        parameters: Parameters,
+        parameters: Parameters = Parameters(),
         connectorType: ConnectorType = testContext.defaultConnectorType(),
         userInterfaceType: UserInterfaceType = connectorType.userInterfaceType,
         locale: Locale = testContext.defaultLocale(),

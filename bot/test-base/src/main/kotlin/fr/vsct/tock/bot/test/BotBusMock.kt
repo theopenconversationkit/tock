@@ -318,6 +318,9 @@ open class BotBusMock(
         action.metadata.priority = mockData.priority
         if (action is SendSentence) {
             action.messages.addAll(mockData.connectorMessages.values)
+            if (action.text == null && !action.hasMessage(connectorType)) {
+                error("Error: No message specified when calling send() or end()")
+            }
         }
         mockData.clear()
         action.state.testEvent = userPreferences.test

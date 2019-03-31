@@ -180,4 +180,13 @@ class BotBusMockTest {
 
         assertEquals(Step.a.name, botBus.story.currentStep)
     }
+
+    @Test
+    fun `send message with no content is throwing an error`() {
+        val botBus = BotBusMock(context)
+        assertThrows(IllegalStateException::class.java) {
+            botBus.end()
+        }
+
+    }
 }
