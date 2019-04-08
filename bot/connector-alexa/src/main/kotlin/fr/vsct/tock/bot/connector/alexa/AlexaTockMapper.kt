@@ -47,7 +47,7 @@ open class AlexaTockMapper(val applicationId: String) {
     open fun alexaIntentToTockIntent(request: IntentRequest, botDefinition: BotDefinition): String {
         val intentName = request.intent.name
         return if (intentName.endsWith("_intent")) {
-            intentName.substring(0, "_intent".length)
+            intentName.substring(0, intentName.length - "_intent".length)
         } else {
             intentName
         }
