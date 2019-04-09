@@ -17,7 +17,9 @@
 package fr.vsct.tock.bot.connector.twitter
 
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.twitter.model.AttachmentData
 import fr.vsct.tock.bot.connector.twitter.model.CTA
+import fr.vsct.tock.bot.connector.twitter.model.MediaCategory
 import fr.vsct.tock.bot.connector.twitter.model.MessageCreate
 import fr.vsct.tock.bot.connector.twitter.model.MessageData
 import fr.vsct.tock.bot.connector.twitter.model.Option
@@ -79,7 +81,10 @@ fun BotBus.directMessageWithButtons(message: CharSequence, ctas: List<CTA>): Out
                 target = Recipient(userId.id),
                 sourceAppId = applicationId,
                 senderId = botId.id,
-                messageData = MessageData(translate(message).toString(), ctas = ctas)
+                messageData = MessageData(
+                    translate(message).toString(),
+                    ctas = if (ctas.isNotEmpty()) ctas else null
+                )
             )
         )
     )
@@ -89,16 +94,7 @@ fun BotBus.directMessageWithButtons(message: CharSequence, ctas: List<CTA>): Out
  * @see https://developer.twitter.com/en/docs/direct-messages/buttons/api-reference/buttons
  */
 fun BotBus.directMessageWithButtons(message: CharSequence, vararg ctas: CTA): OutcomingEvent =
-    OutcomingEvent(
-        DirectMessageOutcomingEvent(
-            MessageCreate(
-                target = Recipient(userId.id),
-                sourceAppId = applicationId,
-                senderId = botId.id,
-                messageData = MessageData(translate(message).toString(), ctas = ctas.toList())
-            )
-        )
-    )
+    directMessageWithButtons(message, ctas.toList())
 
 /**
  * Creates a direct message with quick replies
@@ -111,7 +107,10 @@ fun BotBus.directMessageWithOptions(message: CharSequence, options: List<Option>
                 target = Recipient(userId.id),
                 sourceAppId = applicationId,
                 senderId = botId.id,
-                messageData = MessageData(translate(message).toString(), quickReply = Options(options))
+                messageData = MessageData(
+                    translate(message).toString(),
+                    quickReply = if (options.isNotEmpty()) Options(options) else null
+                )
             )
         )
     )
@@ -120,16 +119,101 @@ fun BotBus.directMessageWithOptions(message: CharSequence, options: List<Option>
  * Creates a direct message with quick replies
  * @see https://developer.twitter.com/en/docs/direct-messages/quick-replies/overview
  */
-fun BotBus.directMessageWithOptions(message: CharSequence, vararg options: Option): OutcomingEvent = OutcomingEvent(
+fun BotBus.directMessageWithOptions(message: CharSequence, vararg options: Option): OutcomingEvent =
+    directMessageWithOptions(message, options.toList())
+
+
+/**
+ * Creates a direct message with an attachment
+ * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
+ */
+fun BotBus.directMessageWithAttachment(
+    message: CharSequence,
+    mediaCategory: MediaCategory,
+    contentType: String,
+    bytes: ByteArray,
+    vararg options: Option
+): OutcomingEvent = OutcomingEvent(
     DirectMessageOutcomingEvent(
         MessageCreate(
             target = Recipient(userId.id),
             sourceAppId = applicationId,
             senderId = botId.id,
-            messageData = MessageData(translate(message).toString(), quickReply = Options(options.toList()))
+            messageData = MessageData(
+                translate(message).toString(),
+                quickReply = if (options.size > 0) Options(options.toList()) else null
+            )
         )
+    ),
+    AttachmentData(
+        mediaCategory,
+        contentType,
+        bytes
     )
 )
+
+/**
+ * Creates a direct message with a gif (Max 15MB)
+ * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
+ */
+fun BotBus.directMessageWithGIF(
+    message: CharSequence,
+    contentType: String,
+    bytes: ByteArray,
+    vararg options: Option
+): OutcomingEvent = directMessageWithAttachment(message, MediaCategory.GIF, contentType, bytes, *options)
+
+/**
+ * Creates a direct message with a gif (Max 15MB)
+ * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
+ */
+fun BotBus.directMessageWithGIF(
+    contentType: String,
+    bytes: ByteArray,
+    vararg options: Option
+): OutcomingEvent = directMessageWithImage("", contentType, bytes, *options)
+
+/**
+ * Creates a direct message with an image (Max 5MB)
+ * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
+ */
+fun BotBus.directMessageWithImage(
+    message: CharSequence,
+    contentType: String,
+    bytes: ByteArray,
+    vararg options: Option
+): OutcomingEvent = directMessageWithAttachment(message, MediaCategory.IMAGE, contentType, bytes, *options)
+
+/**
+ * Creates a direct message with an image (Max 5MB)
+ * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
+ */
+fun BotBus.directMessageWithImage(
+    contentType: String,
+    bytes: ByteArray,
+    vararg options: Option
+): OutcomingEvent = directMessageWithImage("", contentType, bytes, *options)
+
+/**
+ * Creates a direct message with a video (Max 15MB)
+ * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
+ */
+fun BotBus.directMessageWithVideo(
+    message: CharSequence,
+    contentType: String,
+    bytes: ByteArray,
+    vararg options: Option
+): OutcomingEvent = directMessageWithAttachment(message, MediaCategory.VIDEO, contentType, bytes, *options)
+
+/**
+ * Creates a direct message with a video (Max 15MB)
+ * @see https://developer.twitter.com/en/docs/direct-messages/message-attachments/overview
+ */
+fun BotBus.directMessageWithVideo(
+    contentType: String,
+    bytes: ByteArray,
+    vararg options: Option
+): OutcomingEvent = directMessageWithVideo("", contentType, bytes, *options)
 
 /**
  * Creates a url button
