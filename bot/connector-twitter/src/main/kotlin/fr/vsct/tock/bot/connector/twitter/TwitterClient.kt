@@ -16,7 +16,13 @@
 
 package fr.vsct.tock.bot.connector.twitter
 
+import fr.vsct.tock.bot.connector.ConnectorException
 import fr.vsct.tock.bot.connector.twitter.model.AccessToken
+import fr.vsct.tock.bot.connector.twitter.model.Attachment
+import fr.vsct.tock.bot.connector.twitter.model.AttachmentMedia
+import fr.vsct.tock.bot.connector.twitter.model.Command
+import fr.vsct.tock.bot.connector.twitter.model.MediaCategory
+import fr.vsct.tock.bot.connector.twitter.model.MediaUpload
 import fr.vsct.tock.bot.connector.twitter.model.RequestToken
 import fr.vsct.tock.bot.connector.twitter.model.User
 import fr.vsct.tock.bot.connector.twitter.model.Webhook
@@ -28,13 +34,18 @@ import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 import oauth.signpost.http.HttpParameters
+import okhttp3.MediaType
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Call
 import retrofit2.Response
 import retrofit2.converter.scalars.ScalarsConverterFactory
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
+import retrofit2.http.Multipart
 import retrofit2.http.POST
+import retrofit2.http.Part
 import retrofit2.http.Path
 import retrofit2.http.Query
 import se.akerfeldt.okhttp.signpost.OkHttpOAuthConsumer
@@ -43,10 +54,6 @@ import java.net.URLDecoder
 import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
-
-enum class GrantType(val grantType: String) {
-    CLIENT_CREDENTIALS("client_credentials")
-}
 
 /**
  * Twitter client
@@ -60,6 +67,8 @@ internal class TwitterClient(
 ) {
 
     private val BASE_URL = "https://api.twitter.com"
+    private val BASE_MEDIA_URL = "https://upload.twitter.com"
+    private val MEDIA_CHUNK_SIZE = 1024 * 500
 
     /**
      * @see https://developer.twitter.com/en/docs/basics/authentication/api-reference/authenticate
@@ -130,6 +139,38 @@ internal class TwitterClient(
 
     }
 
+    /**
+     * @see https://developer.twitter.com/en/docs/media/upload-media/overview
+     *
+     */
+    interface MediaApi {
+
+        @POST("/1.1/media/upload.json")
+        fun init(
+            @Query("command") command: Command = Command.INIT,
+            @Query("total_bytes") totalBytes: Long,
+            @Query("media_type") mediaTYpe: String,
+            @Query("media_category") mediaCategory: String?,
+            @Query("additional_owners") additionalOwners: String?
+        ): Call<MediaUpload>
+
+        @Multipart
+        @POST("/1.1/media/upload.json")
+        fun append(
+            @Query("command") command: Command = Command.APPEND,
+            @Query("media_id") mediaId: String,
+            @Query("segment_index") segmentIndex: Int,
+            @Part file: MultipartBody.Part
+        ): Call<Unit>
+
+        @POST("/1.1/media/upload.json")
+        fun finalize(
+            @Query("command") command: Command = Command.FINALIZE,
+            @Query("media_id") mediaId: String
+        ): Call<MediaUpload>
+
+    }
+
     private val logger = KotlinLogging.logger {}
 
     private val accountActivityApi: AccountActivityApi
@@ -137,6 +178,8 @@ internal class TwitterClient(
     private val directMessageApi: DirectMessageApi
 
     private val userApi: UserApi
+
+    private val mediaApi: MediaApi
 
     init {
 
@@ -171,6 +214,16 @@ internal class TwitterClient(
             interceptors = listOf(SigningInterceptor(accountActivityApiConsumer))
         )
             .baseUrl(BASE_URL)
+            .addJacksonConverter()
+            .build()
+            .create()
+
+        mediaApi = retrofitBuilderWithTimeoutAndLogger(
+            longProperty("tock_twitter_request_timeout_ms", 30000),
+            logger,
+            interceptors = listOf(SigningInterceptor(accountActivityApiConsumer))
+        )
+            .baseUrl(BASE_MEDIA_URL)
             .addJacksonConverter()
             .build()
             .create()
@@ -223,7 +276,7 @@ internal class TwitterClient(
             val response = oAuthApi.requestToken().execute()
             if (response.isSuccessful) {
                 response.body()?.let {
-                    logger.info { it }
+                    logger.debug { it }
                     val queryPairs = splitQuery(it)
                     RequestToken(
                         queryPairs.get("oauth_token") ?: "",
@@ -279,7 +332,7 @@ internal class TwitterClient(
             val response = oAuthApi.accessToken().execute()
             if (response.isSuccessful) {
                 response.body()?.let {
-                    logger.info { it }
+                    logger.debug { it }
                     val queryPairs = splitQuery(it)
                     AccessToken(
                         queryPairs["oauth_token"] ?: "",
@@ -313,9 +366,8 @@ internal class TwitterClient(
         return try {
             val response = accountActivityApi.registerWebhook(environment, url).execute()
             if (response.isSuccessful) {
-                response.body()?.let {
-                    logger.info { it }
-                    it
+                response.body()?.also {
+                    logger.debug { it }
                 }
             } else {
                 response.logError()
@@ -405,9 +457,8 @@ internal class TwitterClient(
         return try {
             val response = userApi.user(userId).execute()
             if (response.isSuccessful) {
-                response.body()?.let {
-                    logger.info { it }
-                    it
+                response.body()?.also {
+                    logger.debug { it }
                 } ?: defaultUser()
             } else {
                 response.logError()
@@ -429,40 +480,112 @@ internal class TwitterClient(
      *
      * @return list of webhooks
      */
-    fun webhooks(): List<Webhook> {
-        return try {
-            val response = accountActivityApi.webhooks(environment).execute()
-            if (response.isSuccessful) {
-                response.body()?.let {
-                    logger.info { it }
-                    it
-                } ?: emptyList()
-            } else {
-                response.logError()
-                emptyList()
-            }
-        } catch (e: Exception) {
-            //log and ignore
-            logger.error(e)
+    fun webhooks(): List<Webhook> = try {
+        val response = accountActivityApi.webhooks(environment).execute()
+        if (response.isSuccessful) {
+            response.body()?.also {
+                logger.debug { it }
+            } ?: emptyList()
+        } else {
+            response.logError()
             emptyList()
+        }
+    } catch (e: Exception) {
+        //log and ignore
+        logger.error(e)
+        emptyList()
+    }
+
+    fun sendDirectMessage(outcomingEvent: OutcomingEvent): Boolean = try {
+        val response = directMessageApi.new(outcomingEvent).execute()
+        if (!response.isSuccessful) {
+            response.logError()
+            false
+        } else {
+            true
+        }
+    } catch (e: Exception) {
+        //log and ignore
+        logger.error(e)
+        false
+    }
+
+    fun createAttachment(mediaCategory: MediaCategory, contentType: String, data: ByteArray): Attachment {
+
+        val mediaUploadInit = uploadMediaInit(mediaCategory, contentType, data.size.toLong())
+
+        uploadMedia(data, mediaUploadInit.mediaIdString)
+
+        val mediaUpload = uploadMediaFinalize(mediaUploadInit.mediaIdString)
+
+        return Attachment(type = "media", media = AttachmentMedia(mediaUpload.mediaIdString))
+
+    }
+
+    private fun uploadMedia(data: ByteArray, mediaId: String) {
+
+        var segmentIndex = 0
+        val segmentCount = (data.size + MEDIA_CHUNK_SIZE - 1) / MEDIA_CHUNK_SIZE
+
+        while (segmentIndex < segmentCount) {
+            val start = segmentIndex * MEDIA_CHUNK_SIZE
+            val end = if (segmentIndex < segmentCount - 1) MEDIA_CHUNK_SIZE * (segmentIndex + 1) else data.size
+            val chunk = data.copyOfRange(start, end)
+            val append = uploadMediaAppend(mediaId, segmentIndex, chunk)
+
+            if (!append) {
+                throw ConnectorException("Media upload append segment_index $segmentIndex failed")
+            }
+            segmentIndex++
         }
 
     }
 
-    fun sendDirectMessage(outcomingEvent: OutcomingEvent): Boolean {
-        return try {
-            val response = directMessageApi.new(outcomingEvent).execute()
-            if (!response.isSuccessful) {
-                response.logError()
-                false
-            } else {
-                true
-            }
-        } catch (e: Exception) {
-            //log and ignore
-            logger.error(e)
-            false
+    private fun uploadMediaInit(mediaCategory: MediaCategory, contentType: String, totalBytes: Long): MediaUpload {
+        val response = mediaApi.init(Command.INIT, totalBytes, contentType, mediaCategory.mediaCategory, null).execute()
+        if (response.isSuccessful) {
+            return response.body()?.also {
+                logger.debug { it }
+            } ?: throw ConnectorException("null body")
+        } else {
+            response.logError()
+            throw ConnectorException("Media upload init failed")
         }
+    }
+
+    private fun uploadMediaAppend(mediaId: String, segmentIndex: Int, chunk: ByteArray): Boolean {
+
+        val requestChunk: RequestBody = RequestBody.create(
+            MediaType.get("application/octet-stream"),
+            chunk
+        )
+
+        val body = MultipartBody.Part.createFormData("media", "chunk-segment-$segmentIndex", requestChunk)
+
+        val response = mediaApi.append(Command.APPEND, mediaId, segmentIndex, body).execute()
+
+        if (!response.isSuccessful) {
+            response.logError()
+        }
+
+        return response.isSuccessful
+
+    }
+
+
+    private fun uploadMediaFinalize(mediaId: String): MediaUpload {
+
+        val response = mediaApi.finalize(Command.FINALIZE, mediaId).execute()
+
+        if (response.isSuccessful) {
+            return response.body()?.also {
+                logger.debug { it }
+            } ?: throw ConnectorException("null body")
+        } else {
+            response.logError()
+            throw ConnectorException("Media upload finalize failed")
+        }
+
     }
 
     fun b64HmacSHA256(payload: String): String {

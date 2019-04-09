@@ -22,6 +22,7 @@ data class MessageData(
     val text: String,
     val entities: Entities? = null,
     val ctas: List<CTA>? = null,
+    val attachment: Attachment? = null,
     @JsonProperty("quick_reply") val quickReply: QuickReply? = null,
     @JsonProperty("quick_reply_response") val quickReplyResponse: QuickReplyResponse? = null
 
