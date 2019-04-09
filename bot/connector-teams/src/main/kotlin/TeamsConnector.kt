@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.connector.teams
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import com.microsoft.bot.schema.models.Activity
+import com.microsoft.bot.schema.models.ActivityTypes
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
@@ -36,6 +37,7 @@ import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
+import fr.vsct.tock.shared.warn
 import mu.KotlinLogging
 import java.time.Duration
 
@@ -67,6 +69,10 @@ internal class TeamsConnector(
                 try {
                     val body = context.bodyAsString
                     val activity: Activity = mapper.readValue(body)
+                    if (activity.type() != ActivityTypes.MESSAGE) {
+                        logger.debug(activity.toString())
+                        throw NoMessageException("The activity received is not a message")
+                    }
                     authenticateBotConnectorService.checkRequestValidity(
                         context.request().headers(),
                         activity
@@ -93,6 +99,8 @@ internal class TeamsConnector(
                     context.fail(403)
                     responseSent = true
                     logger.logError(e.message!!, requestTimerData)
+                } catch (e: NoMessageException){
+                    logger.warn(e.toString())
                 } catch (e: Exception) {
                     logger.logError(e, requestTimerData)
                 } finally {
@@ -113,7 +121,7 @@ internal class TeamsConnector(
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         if (event is SendSentence && callback is TeamsConnectorCallback) {
 
-            var teamsMessage = SendActionConverter.toActivity(event)
+            val teamsMessage = SendActionConverter.toActivity(event)
 
             val delay = Duration.ofMillis(delayInMs)
             executor.executeBlocking(delay) {
@@ -122,3 +130,5 @@ internal class TeamsConnector(
         }
     }
 }
+
+class NoMessageException(exception: String): Exception(exception)
