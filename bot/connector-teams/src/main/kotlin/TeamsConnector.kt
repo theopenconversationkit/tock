@@ -37,7 +37,6 @@ import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.warn
 import mu.KotlinLogging
 import java.time.Duration
 
@@ -59,12 +58,11 @@ internal class TeamsConnector(
     private val executor: Executor by injector.instance()
     private val authenticateBotConnectorService = AuthenticateBotConnectorService(appId)
 
-    private var responseSent = false
-
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
 
             router.post(path).handler { context ->
+                var responseSent = false
                 val requestTimerData = BotRepository.requestTimer.start("teams_webhook")
                 try {
                     val body = context.bodyAsString
@@ -98,8 +96,8 @@ internal class TeamsConnector(
                 } catch (e: ForbiddenException) {
                     context.fail(403)
                     responseSent = true
-                    logger.logError(e.message!!, requestTimerData)
-                } catch (e: NoMessageException){
+                    logger.logError(e.message ?: "error", requestTimerData)
+                } catch (e: NoMessageException) {
                     logger.warn(e.toString())
                 } catch (e: Exception) {
                     logger.logError(e, requestTimerData)
@@ -112,7 +110,6 @@ internal class TeamsConnector(
                             logger.error(e)
                         }
                     }
-                    responseSent = false
                 }
             }
         }
@@ -131,4 +128,4 @@ internal class TeamsConnector(
     }
 }
 
-class NoMessageException(exception: String): Exception(exception)
+class NoMessageException(exception: String) : Exception(exception)
