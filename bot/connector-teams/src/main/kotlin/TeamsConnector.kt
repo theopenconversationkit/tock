@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.connector.teams
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import com.microsoft.bot.schema.models.Activity
+import com.microsoft.bot.schema.models.ActivityTypes
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
@@ -57,16 +58,19 @@ internal class TeamsConnector(
     private val executor: Executor by injector.instance()
     private val authenticateBotConnectorService = AuthenticateBotConnectorService(appId)
 
-    private var responseSent = false
-
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
 
             router.post(path).handler { context ->
+                var responseSent = false
                 val requestTimerData = BotRepository.requestTimer.start("teams_webhook")
                 try {
                     val body = context.bodyAsString
                     val activity: Activity = mapper.readValue(body)
+                    if (activity.type() != ActivityTypes.MESSAGE) {
+                        logger.debug(activity.toString())
+                        throw NoMessageException("The activity received is not a message")
+                    }
                     authenticateBotConnectorService.checkRequestValidity(
                         context.request().headers(),
                         activity
@@ -92,7 +96,9 @@ internal class TeamsConnector(
                 } catch (e: ForbiddenException) {
                     context.fail(403)
                     responseSent = true
-                    logger.logError(e.message!!, requestTimerData)
+                    logger.logError(e.message ?: "error", requestTimerData)
+                } catch (e: NoMessageException) {
+                    logger.warn(e.toString())
                 } catch (e: Exception) {
                     logger.logError(e, requestTimerData)
                 } finally {
@@ -104,7 +110,6 @@ internal class TeamsConnector(
                             logger.error(e)
                         }
                     }
-                    responseSent = false
                 }
             }
         }
@@ -113,7 +118,7 @@ internal class TeamsConnector(
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
         if (event is SendSentence && callback is TeamsConnectorCallback) {
 
-            var teamsMessage = SendActionConverter.toActivity(event)
+            val teamsMessage = SendActionConverter.toActivity(event)
 
             val delay = Duration.ofMillis(delayInMs)
             executor.executeBlocking(delay) {
@@ -122,3 +127,5 @@ internal class TeamsConnector(
         }
     }
 }
+
+class NoMessageException(exception: String) : Exception(exception)
