@@ -94,7 +94,7 @@ import java.time.Instant
 import java.time.LocalDate
 import java.util.Date
 import java.util.Locale
-import java.util.concurrent.TimeUnit
+import java.util.concurrent.TimeUnit.DAYS
 
 /**
  *
@@ -202,7 +202,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
         c.ensureIndex(Query.context.language, ApplicationId, Text)
         c.ensureIndex(
             Date,
-            indexOptions = IndexOptions().expireAfter(longProperty("tock_nlp_log_index_ttl_days", 7), TimeUnit.DAYS)
+            indexOptions = IndexOptions().expireAfter(longProperty("tock_nlp_log_index_ttl_days", 7), DAYS)
         )
         c.withReadPreference(secondaryPreferred())
     }
@@ -210,6 +210,12 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
     internal val statsCol: MongoCollection<ParseRequestLogStatCol> by lazy {
         val c = database.getCollection<ParseRequestLogStatCol>("parse_request_log_stats")
         c.ensureIndex(Language, ApplicationId, Text)
+        c.ensureIndex(
+            Date,
+            indexOptions = IndexOptions()
+                .expireAfter(longProperty("tock_nlp_log_stats_index_ttl_days", 30), DAYS)
+                .background(true)
+        )
         c
     }
 
