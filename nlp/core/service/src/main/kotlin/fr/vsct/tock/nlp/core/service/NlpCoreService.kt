@@ -38,6 +38,7 @@ import fr.vsct.tock.nlp.model.IntentContext
 import fr.vsct.tock.nlp.model.ModelHolder
 import fr.vsct.tock.nlp.model.ModelNotInitializedException
 import fr.vsct.tock.nlp.model.NlpClassifier
+import fr.vsct.tock.shared.checkMaxLengthAllowed
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
@@ -60,14 +61,15 @@ internal object NlpCoreService : NlpCore {
         text: String,
         intentSelector: IntentSelector
     ): ParsingResult {
+        val t = checkMaxLengthAllowed(text)
         return parse(
             context,
-            text,
-            { nlpClassifier.classifyIntent(IntentContext(context), text) },
+            t,
+            { nlpClassifier.classifyIntent(IntentContext(context), t) },
             { intent ->
                 nlpClassifier.classifyEntities(
                     EntityCallContextForIntent(context, intent),
-                    text
+                    t
                 )
             },
             intentSelector

@@ -39,6 +39,7 @@ import fr.vsct.tock.bot.engine.dialog.NextUserActionState
 import fr.vsct.tock.bot.engine.dialog.Story
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserLocation
+import fr.vsct.tock.shared.checkMaxLengthAllowed
 import fr.vsct.tock.shared.jackson.AnyValueWrapper
 import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 import fr.vsct.tock.translator.UserInterfaceType.textChat
@@ -62,7 +63,7 @@ internal data class DialogCol(
     val applicationIds: Set<String> = emptySet(),
     val lastUpdateDate: Instant = now(),
     val groupId: String? = null,
-    val test:Boolean = false
+    val test: Boolean = false
 ) {
 
     companion object {
@@ -246,7 +247,10 @@ internal data class DialogCol(
 
         constructor(sentence: SendSentence) :
                 this(
-                    if (sentence.state.testEvent) sentence.stringText else obfuscate(sentence.stringText),
+                    sentence.stringText?.let {
+                        val text = checkMaxLengthAllowed(it)
+                        if (sentence.state.testEvent) text else obfuscate(text)
+                    },
                     sentence is SendSentenceWithNotLoadedMessage || sentence.messages.isNotEmpty()
                 ) {
             assignFrom(sentence)

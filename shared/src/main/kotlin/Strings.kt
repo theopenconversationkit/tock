@@ -17,6 +17,18 @@
 package fr.vsct.tock.shared
 
 /**
+ * This is the maximum text size allowed.
+ */
+private const val TEXT_MAX_LENGTH_ALLOWED = 50000
+
+/**
+ * Checks that the text has no more than 50000 chars.
+ * Else cuts the String.
+ */
+fun checkMaxLengthAllowed(text: String): String =
+    if (text.length > TEXT_MAX_LENGTH_ALLOWED) text.substring(0, TEXT_MAX_LENGTH_ALLOWED) else text
+
+/**
  * Extract a namespace from a qualified name (ie namespace:name).
  */
 fun String.namespace(): String = namespaceAndName().first
