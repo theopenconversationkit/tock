@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.mongo
 
+import com.mongodb.client.model.IndexOptions
 import fr.vsct.tock.bot.admin.dialog.ApplicationDialogFlowData
 import fr.vsct.tock.bot.admin.dialog.DialogFlowStateData
 import fr.vsct.tock.bot.admin.dialog.DialogFlowStateTransitionData
@@ -49,6 +50,8 @@ import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionCol_.Companion.Type
 import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.Date
 import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.DialogId
 import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.TransitionId
+import fr.vsct.tock.shared.longProperty
+import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.`in`
@@ -68,6 +71,7 @@ import org.litote.kmongo.project
 import org.litote.kmongo.size
 import org.litote.kmongo.sum
 import org.litote.kmongo.toId
+import java.util.concurrent.TimeUnit
 
 /**
  *
@@ -94,6 +98,12 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                 ensureIndex(TransitionId)
                 ensureIndex(TransitionId, Date)
                 ensureIndex(DialogId)
+                ensureIndex(
+                    Date,
+                    indexOptions = IndexOptions()
+                        .expireAfter(longProperty("tock_bot_flow_stats_index_ttl_days", 365), TimeUnit.DAYS)
+                        .background(true)
+                )
             }
 
     override fun saveFlow(bot: BotDefinition, flow: DialogFlowDefinition) {
@@ -229,17 +239,18 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                 NewEntities all newEntities
             ),
             Type eq type
-        ) ?: (DialogFlowStateTransitionCol(
-            botDefinition.namespace,
-            botDefinition.botId,
-            previousStateId,
-            nextStateId,
-            intent,
-            step,
-            newEntities,
-            type
-        )
-            .also { flowTransitionCol.insertOne(it) }
+        ) ?: (
+                DialogFlowStateTransitionCol(
+                    botDefinition.namespace,
+                    botDefinition.botId,
+                    previousStateId,
+                    nextStateId,
+                    intent,
+                    step,
+                    newEntities,
+                    type
+                )
+                    .also { flowTransitionCol.insertOne(it) }
                 )
 
 
@@ -258,7 +269,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                         applicationId._id,
                         transition._id,
                         dialog.id,
-                        (lastUserAction as? SendSentence)?.stringText
+                        obfuscate((lastUserAction as? SendSentence)?.stringText)
                     )
                 )
             } else {
