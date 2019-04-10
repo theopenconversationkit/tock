@@ -1,16 +1,12 @@
- 
-- 19.3 March 2019
-    - Add bot flow view 
-    
 - 19.3.1 May 2019
     - Business Chat connector
-    - Code editor admin interface 
-    - AB Test engine workflow     
+    - Code editor admin interface   
     
 - 19.3.2 July 2019
     - Conversational framework: allow to create a bot in the administration interface without IDE
     - Bot API
-    - External Bot demo server           
+    - External Bot demo server
+    - AB Test engine workflow           
 
 - 19.9 September 2019  
     - Spacy and RASA support
@@ -20,6 +16,9 @@
     - nodejs support sample 
     
 ## Latest releases  
+              
+- 19.3 March 2019
+    - Add bot flow view     
 
 - 2.0.2 February 2019
     - External NLP demo server
