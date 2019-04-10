@@ -16,8 +16,9 @@
 
 <mat-card>
   <mat-card-title>Bot Flow</mat-card-title>
-  <tock-select-bot [(configurationId)]="botConfigurationId" [displayConnectorChoice]="false"
-                   (configurationIdChange)="displayFlow()" class="select">
+  <tock-select-bot [(configurationId)]="botConfigurationId" [displayConnectorChoice]="true"
+                   [allowNoConfigurationSelection]="true"
+                   (configurationIdChange)="displayFlow($event)" class="select">
   </tock-select-bot>
   <mat-form-field class="select">
     <mat-label>Layout</mat-label>

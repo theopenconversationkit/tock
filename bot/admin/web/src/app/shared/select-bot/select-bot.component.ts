@@ -37,6 +37,9 @@ export class SelectBotComponent implements OnInit {
   @Output()
   private configurationIdChange = new EventEmitter<string>();
 
+  @Input()
+  allowNoConfigurationSelection: boolean = false;
+
   configurations: BotApplicationConfiguration[];
 
   botNames: string[];
@@ -99,10 +102,13 @@ export class SelectBotComponent implements OnInit {
   }
 
   changeConnectorType(connectorType: ConnectorType) {
-    this.changeConf(
-      this.configurations.find(
-        c => this.getName(c) === this.currentBotName
-          && c.ownerConnectorType.id === connectorType.id),
-      this.configurations)
+    let conf = this.configurations.find(
+      c => this.getName(c) === this.currentBotName
+        && c.ownerConnectorType.id === connectorType.id);
+    if(conf) {
+      this.changeConf(conf, this.configurations);
+    } else {
+      this.configurationIdChange.emit("all")
+    }
   }
 }

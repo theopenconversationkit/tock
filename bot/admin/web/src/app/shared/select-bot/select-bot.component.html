@@ -30,6 +30,7 @@
     <mat-select (selectionChange)="changeConnectorType($event.value)"
                 placeholder="Select a connector"
                 [ngModel]="currentConnectorType">
+      <mat-option *ngIf="allowNoConfigurationSelection" value="">All</mat-option>
       <mat-option *ngFor="let c of connectorTypes" [value]="c">{{ c.id }}</mat-option>
     </mat-select>
   </mat-form-field>

@@ -114,6 +114,7 @@ export class FlowComponent implements OnInit {
   graphData;
 
   botConfigurationId: string;
+  lastBotId: string;
   flow: ApplicationDialogFlow;
 
   constructor(private nlp: NlpService,
@@ -133,16 +134,21 @@ export class FlowComponent implements OnInit {
     setTimeout(_ => this.toGraphData(this.flow));
   }
 
-  displayFlow() {
+  displayFlow(event: string) {
     this.botConfiguration.configurations.subscribe(c => {
+      const all = event === "all";
       const conf = c.find(c => c._id === this.botConfigurationId);
-      if (conf) {
+      if (conf || all) {
+        if (!all) {
+          this.lastBotId = conf.botId;
+        }
         this.bot.getApplicationFlow(
           new DialogFlowRequest(
             this.state.currentApplication.namespace,
             this.state.currentApplication.name,
             this.state.currentLocale,
-            conf.botId
+            this.lastBotId,
+            conf ? conf._id : null
           )
         ).subscribe(f => this.toGraphData(f));
       } else {

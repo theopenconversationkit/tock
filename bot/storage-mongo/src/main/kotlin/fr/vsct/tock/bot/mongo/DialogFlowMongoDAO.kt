@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.mongo
 
 import com.mongodb.client.model.IndexOptions
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.dialog.ApplicationDialogFlowData
 import fr.vsct.tock.bot.admin.dialog.DialogFlowStateData
 import fr.vsct.tock.bot.admin.dialog.DialogFlowStateTransitionData
@@ -47,6 +48,7 @@ import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionCol_.Companion.NewEntitie
 import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionCol_.Companion.NextStateId
 import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionCol_.Companion.PreviousStateId
 import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionCol_.Companion.Type
+import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.ApplicationId
 import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.Date
 import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.DialogId
 import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.TransitionId
@@ -113,12 +115,12 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     override fun loadApplicationData(
         namespace: String,
         botId: String,
-        applicationId: String?
+        applicationId: Id<BotApplicationConfiguration>?
     ): ApplicationDialogFlowData {
         val states = findStates(namespace, botId)
         val transitions = findTransitions(namespace, botId)
         val stats =
-            findStats(transitions.map { it._id }).associateBy { it.first }.mapValues { it.value.second }
+            findStats(transitions.map { it._id }, applicationId).associateBy { it.first }.mapValues { it.value.second }
 
         @Suppress("UNCHECKED_CAST")
         val transitionsWithStats = transitions.map {
@@ -143,6 +145,8 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
                 transitionsWithStats.asSequence().map { if (it.nextStateId == s._id || it.previousStateId == s._id) it.count else 0 }.sum(),
                 s._id as Id<DialogFlowStateData>
             )
+        }.filter {
+            it.count != 0L
         }
 
         return ApplicationDialogFlowData(statesWithStats, transitionsWithStats)
@@ -154,9 +158,19 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     private fun findTransitions(namespace: String, botId: String): List<DialogFlowStateTransitionCol> =
         flowTransitionCol.find(Namespace eq namespace, BotId eq botId).toList()
 
-    private fun findStats(transitionIds: List<Id<DialogFlowStateTransitionCol>>): List<Pair<Id<DialogFlowStateTransitionCol>, Long>> =
+    private fun findStats(
+        transitionIds: List<Id<DialogFlowStateTransitionCol>>,
+        botAppConfId: Id<BotApplicationConfiguration>?
+    ): List<Pair<Id<DialogFlowStateTransitionCol>, Long>> =
         flowTransitionStatsCol.aggregate<Pair<String, Long>>(
-            match(TransitionId `in` transitionIds),
+            match(
+                and(
+                    listOfNotNull(
+                        TransitionId `in` transitionIds,
+                        if (botAppConfId == null) null else ApplicationId eq botAppConfId
+                    )
+                )
+            ),
             group(
                 TransitionId,
                 Pair<*, Long>::second sum 1
@@ -260,13 +274,13 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         val state = findState(botDefinition, snapshot.snapshots.lastOrNull())
         if (state != null) {
             val transition = findTransition(botDefinition, previousState, state, lastUserAction)
-            val applicationId = getHackedConfigurationByApplicationIdAndBot(
+            val botAppConf = getHackedConfigurationByApplicationIdAndBot(
                 botDefinition.namespace, lastUserAction.applicationId, botDefinition.botId
             )
-            if (applicationId != null) {
+            if (botAppConf != null) {
                 flowTransitionStatsCol.insertOne(
                     DialogFlowStateTransitionStatCol(
-                        applicationId._id,
+                        botAppConf._id,
                         transition._id,
                         dialog.id,
                         obfuscate((lastUserAction as? SendSentence)?.stringText)

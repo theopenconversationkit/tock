@@ -16,13 +16,19 @@
 
 package fr.vsct.tock.bot.engine.dialog
 
+import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.dialog.ApplicationDialogFlowData
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.DialogFlowDefinition
+import org.litote.kmongo.Id
 
 interface DialogFlowDAO {
 
     fun saveFlow(bot: BotDefinition, flow: DialogFlowDefinition)
 
-    fun loadApplicationData(namespace: String, botId: String, applicationId: String?): ApplicationDialogFlowData
+    fun loadApplicationData(
+        namespace: String,
+        botId: String,
+        applicationId: Id<BotApplicationConfiguration>?
+    ): ApplicationDialogFlowData
 }

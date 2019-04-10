@@ -414,6 +414,6 @@ object BotAdminService {
     }
 
     fun loadDialogFlow(request:DialogFlowRequest) : ApplicationDialogFlowData {
-        return dialogFlowDAO.loadApplicationData(request.namespace, request.botId, null)
+        return dialogFlowDAO.loadApplicationData(request.namespace, request.botId, request.botConfigurationId)
     }
 }
