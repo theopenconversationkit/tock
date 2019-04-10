@@ -121,30 +121,34 @@ open class BotAdminVerticle : AdminVerticle() {
                 }
                 val conf = bot.toBotApplicationConfiguration()
                 val connectorProvider = BotRepository.findConnectorProvider(conf.connectorType)
-                connectorProvider.check(conf.toConnectorConfiguration())
-                    .apply {
-                        if (isNotEmpty()) {
-                            badRequest(joinToString())
+                if (connectorProvider != null) {
+                    connectorProvider.check(conf.toConnectorConfiguration())
+                        .apply {
+                            if (isNotEmpty()) {
+                                badRequest(joinToString())
+                            }
+                        }
+                    BotAdminService.saveApplicationConfiguration(conf)
+                    //add rest connector
+                    if (bot._id == null && bot.connectorType != rest) {
+                        addRestConnector(conf).apply {
+                            BotAdminService.saveApplicationConfiguration(
+                                BotApplicationConfiguration(
+                                    connectorId,
+                                    conf.botId,
+                                    conf.namespace,
+                                    conf.nlpModel,
+                                    type,
+                                    ownerConnectorType,
+                                    getName(),
+                                    getBaseUrl(),
+                                    path = path
+                                )
+                            )
                         }
                     }
-                BotAdminService.saveApplicationConfiguration(conf)
-                //add rest connector
-                if (bot._id == null && bot.connectorType != rest) {
-                    addRestConnector(conf).apply {
-                        BotAdminService.saveApplicationConfiguration(
-                            BotApplicationConfiguration(
-                                connectorId,
-                                conf.botId,
-                                conf.namespace,
-                                conf.nlpModel,
-                                type,
-                                ownerConnectorType,
-                                getName(),
-                                getBaseUrl(),
-                                path = path
-                            )
-                        )
-                    }
+                } else {
+                    logger.error("unknown connector provider ${conf.connectorType}")
                 }
             } else {
                 unauthorized()

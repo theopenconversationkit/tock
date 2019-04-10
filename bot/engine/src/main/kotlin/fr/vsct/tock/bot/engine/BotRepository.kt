@@ -251,8 +251,8 @@ object BotRepository {
     /**
      * Returns the [ConnectorProvider] for the specified [ConnectorType].
      */
-    fun findConnectorProvider(connectorType: ConnectorType): ConnectorProvider {
-        return connectorProviders.first { it.connectorType == connectorType }
+    fun findConnectorProvider(connectorType: ConnectorType): ConnectorProvider? {
+        return connectorProviders.firstOrNull { it.connectorType == connectorType }
     }
 
     private fun checkBotConfigurations(startup: Boolean = false) {
@@ -268,12 +268,15 @@ object BotRepository {
                 if (botDefinition?.namespace == c.namespace) {
                     logger.debug { "refresh configuration $c" }
                     val oldConfiguration = existingConfs.find { it._id == c._id }
-                    val connector = findConnectorProvider(c.connectorType).connector(ConnectorConfiguration(c))
+                    val connector = findConnectorProvider(c.connectorType)?.connector(ConnectorConfiguration(c))
+                    if (connector != null) {
+                        createBot(botDefinition, connector, c)
 
-                    createBot(botDefinition, connector, c)
-
-                    if (oldConfiguration != null) {
-                        removeBot(oldConfiguration)
+                        if (oldConfiguration != null) {
+                            removeBot(oldConfiguration)
+                        }
+                    } else {
+                        logger.warn { "unknown connector ${c.connectorType}" }
                     }
                 } else {
                     logger.trace { "not valid namespace for bot ${c.botId} - installation skipped" }
