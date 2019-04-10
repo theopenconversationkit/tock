@@ -322,6 +322,7 @@ open class BotBusMock(
                 error("Error: No message specified when calling send() or end()")
             }
         }
+        logger.trace { "send action $action $mockData" }
         mockData.clear()
         action.state.testEvent = userPreferences.test
 
@@ -336,7 +337,6 @@ open class BotBusMock(
             addSnapshot()
         }
 
-        logger.trace { "send action $action $mockData" }
         sendAction(applyBotAnswerInterceptor(action), mockData.currentDelay)
         return this
     }

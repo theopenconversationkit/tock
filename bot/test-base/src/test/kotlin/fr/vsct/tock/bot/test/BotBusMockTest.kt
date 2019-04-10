@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.test
 
+import fr.vsct.tock.bot.connector.messenger.model.send.TextMessage
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.SimpleStoryHandlerBase
@@ -187,6 +188,14 @@ class BotBusMockTest {
         assertThrows(IllegalStateException::class.java) {
             botBus.end()
         }
+    }
 
+    @Test
+    fun `forgot to send a message is throwing an error`() {
+        val botBus = BotBusMock(context)
+        botBus.withMessage(TextMessage("one"))
+        assertThrows(IllegalStateException::class.java) {
+            botBus.withMessage(TextMessage("one"))
+        }
     }
 }

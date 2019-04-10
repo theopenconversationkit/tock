@@ -38,8 +38,8 @@ internal data class BusMockData(
     }
 
     fun addMessage(message: ConnectorMessage) {
-        connectorMessages.put(message.connectorType, message)
+        connectorMessages.put(message.connectorType, message)?.also {
+            error("You replace a message that has not yet been sent - do you forget to call send() or end() method before withMessage() ? - $it")
+        }
     }
-
-    fun getMessage(type: ConnectorType): ConnectorMessage? = connectorMessages[type]
 }

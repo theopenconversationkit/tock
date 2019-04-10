@@ -18,19 +18,26 @@ package fr.vsct.tock.bot.engine
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.engine.action.ActionNotificationType
 import fr.vsct.tock.bot.engine.action.ActionPriority
 import fr.vsct.tock.bot.engine.action.ActionPriority.normal
-import fr.vsct.tock.bot.engine.action.ActionNotificationType
+import mu.KLogger
+import mu.KotlinLogging
 
 /**
  *
  */
 internal data class BusContext(
-        var currentDelay: Long = 0,
-        val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf(),
-        val contextMap: MutableMap<String, Any> = mutableMapOf(),
-        var priority: ActionPriority = normal,
-        var notificationType: ActionNotificationType? = null) {
+    var currentDelay: Long = 0,
+    val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf(),
+    val contextMap: MutableMap<String, Any> = mutableMapOf(),
+    var priority: ActionPriority = normal,
+    var notificationType: ActionNotificationType? = null
+) {
+
+    companion object {
+        val logger: KLogger = KotlinLogging.logger {}
+    }
 
     fun clear() {
         connectorMessages.clear()
@@ -38,8 +45,8 @@ internal data class BusContext(
     }
 
     fun addMessage(message: ConnectorMessage) {
-        connectorMessages.put(message.connectorType, message)
+        connectorMessages.put(message.connectorType, message)?.also {
+            logger.warn { "You replace a message that has not yet been sent - do you forget to call send() or end() method before withMessage() ? - $it" }
+        }
     }
-
-    fun getMessage(type: ConnectorType): ConnectorMessage? = connectorMessages[type]
 }
