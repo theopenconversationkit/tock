@@ -115,4 +115,15 @@ class DialogFlowMongoDAOTest : AbstractTest() {
         assertEquals(1, DialogFlowMongoDAO.flowTransitionCol.countDocuments())
         assertEquals(2, DialogFlowMongoDAO.flowTransitionStatsCol.countDocuments())
     }
+
+    @Test
+    fun `addFlowStat add a stat with one entity even if a flow state exists with more one entity thant contains this entity in state`() {
+        setupData("a", "b")
+        setupData("a")
+        setupData("a")
+        setupData("a", "b")
+        assertEquals(2, DialogFlowMongoDAO.flowStateCol.countDocuments())
+        assertEquals(2, DialogFlowMongoDAO.flowTransitionCol.countDocuments())
+        assertEquals(4, DialogFlowMongoDAO.flowTransitionStatsCol.countDocuments())
+    }
 }

@@ -85,7 +85,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     internal val flowStateCol =
         MongoBotConfiguration.database.getCollection<DialogFlowStateCol>("flow_state")
             .apply {
-                ensureUniqueIndex(Namespace, BotId, StoryDefinitionId, Intent, Step, Entities)
+                ensureIndex(Namespace, BotId, StoryDefinitionId, Intent, Step, Entities)
             }
 
     internal val flowTransitionCol =
