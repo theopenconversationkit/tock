@@ -20,6 +20,10 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
+import fr.vsct.tock.bot.connector.twitter.model.Attachment
+import fr.vsct.tock.bot.connector.twitter.model.MediaCategory
+import fr.vsct.tock.bot.connector.twitter.model.MessageCreate
+import fr.vsct.tock.bot.connector.twitter.model.MessageData
 import fr.vsct.tock.bot.connector.twitter.model.Webhook
 import fr.vsct.tock.bot.connector.twitter.model.incoming.IncomingEvent
 import fr.vsct.tock.bot.connector.twitter.model.outcoming.DirectMessageOutcomingEvent
@@ -190,13 +194,68 @@ internal class TwitterConnector internal constructor(
 
     private fun sendMessage(outcomingEvent: OutcomingEvent, delayInMs: Long) {
         executor.executeBlocking(Duration.ofMillis(delayInMs)) {
+
             when (outcomingEvent.event) {
+
                 is DirectMessageOutcomingEvent -> {
-                    client.sendDirectMessage(outcomingEvent)
+
+                    if (outcomingEvent.attachmentData != null) {
+                        sendDirectMessageWithAttachment(
+                            outcomingEvent.attachmentData.mediaCategory,
+                            outcomingEvent.attachmentData.contentType,
+                            outcomingEvent.attachmentData.bytes,
+                            outcomingEvent.event
+                        )
+                    } else {
+                        client.sendDirectMessage(outcomingEvent)
+                    }
+
                 }
             }
         }
     }
+
+    private fun sendDirectMessageWithAttachment(
+        mediaCategory: MediaCategory,
+        contentType: String,
+        bytes: ByteArray,
+        event: DirectMessageOutcomingEvent
+    ) {
+        lateinit var outcomingEvent: OutcomingEvent
+        try {
+            val attachment = client.createAttachment(mediaCategory, contentType, bytes)
+            outcomingEvent = buildDirectMessageOutcomingEventWithAttachment(event, attachment)
+        } catch (e: Exception) {
+            logger.error { e }
+            outcomingEvent = OutcomingEvent(event)
+        } finally {
+            if (!client.sendDirectMessage(outcomingEvent)) {
+                logger.error { "sendDirectMessage with attachment failed" }
+            }
+        }
+    }
+
+    private fun buildDirectMessageOutcomingEventWithAttachment(
+        event: DirectMessageOutcomingEvent,
+        attachment: Attachment
+    ): OutcomingEvent = OutcomingEvent(
+        DirectMessageOutcomingEvent(
+            MessageCreate(
+                target = event.messageCreate.target,
+                sourceAppId = event.messageCreate.sourceAppId,
+                senderId = event.messageCreate.senderId,
+                messageData = MessageData(
+                    text = event.messageCreate.messageData.text,
+                    entities = event.messageCreate.messageData.entities,
+                    ctas = event.messageCreate.messageData.ctas,
+                    attachment = attachment,
+                    quickReply = event.messageCreate.messageData.quickReply,
+                    quickReplyResponse = event.messageCreate.messageData.quickReplyResponse
+
+                )
+            )
+        )
+    )
 
     private fun isSignedByTwitter(payload: String, twitterSignature: String): Boolean {
         return "sha256=${client.b64HmacSHA256(payload)}" == twitterSignature
