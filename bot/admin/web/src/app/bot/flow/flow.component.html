@@ -14,12 +14,28 @@
   ~ limitations under the License.
   -->
 
-<mat-card>
-  <mat-card-title>Bot Flow</mat-card-title>
+<mat-expansion-panel>
+  <mat-expansion-panel-header>
+    <mat-panel-title>
+      Bot Flow
+    </mat-panel-title>
+    <mat-panel-description>
+      Layout options
+    </mat-panel-description>
+  </mat-expansion-panel-header>
   <tock-select-bot [(configurationId)]="botConfigurationId" [displayConnectorChoice]="true"
-                   [allowNoConfigurationSelection]="true"
+                   [allowNoConfigurationSelection]="true" [useRestConfiguration]="false"
                    (configurationIdChange)="displayFlow($event)" class="select">
   </tock-select-bot>
+  <mat-form-field class="select">
+    <mat-label>Story Focus</mat-label>
+    <mat-select [(value)]="selectedStoryId" (selectionChange)="update()">
+      <mat-option [value]="undefined">All</mat-option>
+      <mat-option *ngFor="let s of stories | keyvalue: valueAscOrder" [value]="s.key">{{s.value}}</mat-option>
+    </mat-select>
+  </mat-form-field>
+  <mat-checkbox *ngIf="selectedStoryId" [(ngModel)]="displayOnlyNext" (change)="update()" class="checkbox">Only outward</mat-checkbox>
+  <br/>
   <mat-form-field class="select">
     <mat-label>Layout</mat-label>
     <mat-select [(value)]="selectedLayout" (selectionChange)="changeLayout($event.value)">
@@ -31,10 +47,11 @@
   <mat-checkbox [(ngModel)]="step" (change)="update()" class="checkbox">Step</mat-checkbox>
   <mat-checkbox [(ngModel)]="intent" (change)="update()" class="checkbox">Intent</mat-checkbox>
   / Node Weight:
-  <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalNodeCount" [max]="maxNodeCount" (change)="update()"></mat-slider>
+  <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalNodeCount" [max]="maxNodeCount"
+              (change)="update()"></mat-slider>
   Transition Percentage:
-  <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalTransitionCount" (change)="update()"></mat-slider>
-</mat-card>
+  <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalTransitionPercentage" (change)="update()"></mat-slider>
+</mat-expansion-panel>
 
 <div *ngIf="graphData" style="height: 90%; width: 80%; float: left; overflow: auto; overflow-y: hidden">
   <tock-cytoscape [elements]="graphData" [layout]="layout" (select)="nodeChange($event)"></tock-cytoscape>

@@ -40,6 +40,9 @@ export class SelectBotComponent implements OnInit {
   @Input()
   allowNoConfigurationSelection: boolean = false;
 
+  @Input()
+  useRestConfiguration: boolean = true;
+
   configurations: BotApplicationConfiguration[];
 
   botNames: string[];
@@ -55,24 +58,25 @@ export class SelectBotComponent implements OnInit {
   }
 
   ngOnInit() {
-    (this.displayConnectorChoice
+    (this.displayConnectorChoice && this.useRestConfiguration
       ? this.botConfiguration.restConfigurations : this.botConfiguration.configurations)
       .subscribe(conf => {
         setTimeout(_ => {
           if (conf.length !== 0 && conf !== this.configurations) {
             this.botNames = Array.from(new Set(conf.map(c => this.getName(c)))).sort();
+            const retainedConfs = conf.filter(c => this.useRestConfiguration || !c.connectorType.isRest());
             if (!this.allowNoSelection) {
               this.configurationId = conf[0]._id;
             }
             if (this.configurationId) {
-              this.changeConf(conf.find(c => c._id === this.configurationId), conf);
+              this.changeConf(conf.find(c => c._id === this.configurationId), retainedConfs);
             } else {
               this.currentBotName = 'None';
-              this.configurations = conf;
+              this.configurations = retainedConfs;
               this.configurationIdChange.emit(null)
             }
           } else {
-            if(conf.length === 0) {
+            if (conf.length === 0) {
               this.currentBotName = 'None';
               this.configurations = conf;
               this.configurationIdChange.emit(null)
@@ -86,8 +90,10 @@ export class SelectBotComponent implements OnInit {
   private changeConf(conf: BotApplicationConfiguration, configurations: BotApplicationConfiguration[]) {
     if (conf) {
       this.currentBotName = this.getName(conf);
-      this.currentConnectorType = conf.ownerConnectorType;
-      this.connectorTypes = configurations.filter(c => c.name === conf.name).map(c => c.ownerConnectorType);
+      this.currentConnectorType = conf.ownConnectorType();
+      this.connectorTypes = configurations
+        .filter(c => c.name === conf.name)
+        .map(c => c.ownConnectorType());
       this.configurationId = conf._id;
       this.configurations = configurations;
       this.configurationIdChange.emit(conf._id);
@@ -104,8 +110,8 @@ export class SelectBotComponent implements OnInit {
   changeConnectorType(connectorType: ConnectorType) {
     let conf = this.configurations.find(
       c => this.getName(c) === this.currentBotName
-        && c.ownerConnectorType.id === connectorType.id);
-    if(conf) {
+        && c.ownConnectorType().id === connectorType.id);
+    if (conf) {
       this.changeConf(conf, this.configurations);
     } else {
       this.configurationIdChange.emit("all")

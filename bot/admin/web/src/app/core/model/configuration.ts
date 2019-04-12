@@ -31,6 +31,10 @@ export class BotApplicationConfiguration {
               public path?: string) {
   }
 
+  ownConnectorType(): ConnectorType {
+    return  this.ownerConnectorType ? this.ownerConnectorType : this.connectorType;
+  }
+
   static fromJSON(json?: any): BotApplicationConfiguration {
     const value = Object.create(BotApplicationConfiguration.prototype);
 
