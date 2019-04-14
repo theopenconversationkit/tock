@@ -36,7 +36,8 @@ export class CytoComponent implements OnChanges, OnDestroy {
   @Input() public layout: any;
   @Input() public zoom: any;
 
-  @Output() select: EventEmitter<any> = new EventEmitter<any>();
+  @Output() selectedNode: EventEmitter<string> = new EventEmitter<string>();
+  @Output() selectedEdge: EventEmitter<string> = new EventEmitter<string>();
 
   private cy;
 
@@ -114,7 +115,8 @@ export class CytoComponent implements OnChanges, OnDestroy {
   public render() {
     setTimeout(_ => {
       let cy_container = this.renderer.selectRootElement("#cy");
-      let localselect = this.select;
+      let nodeSelector = this.selectedNode;
+      let edgeSelector = this.selectedEdge;
       let cy = cytoscape({
         container: cy_container,
         layout: this.layout,
@@ -131,7 +133,16 @@ export class CytoComponent implements OnChanges, OnDestroy {
 
         cy.elements().addClass('faded');
         neighborhood.removeClass('faded');
-        localselect.emit(node.data('id'));
+        nodeSelector.emit(node.data('id'));
+      });
+
+      cy.on('tap', 'edge', function (e) {
+        let node = e.target;
+        cy.elements().addClass('faded');
+        node.target().removeClass('faded');
+        node.source().removeClass('faded');
+        node.removeClass('faded');
+        edgeSelector.emit(node.data('key'));
       });
 
       cy.on('tap', function (e) {

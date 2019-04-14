@@ -54,6 +54,7 @@ import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.Dialog
 import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.TransitionId
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
+import fr.vsct.tock.shared.sumByLong
 import mu.KotlinLogging
 import org.litote.kmongo.Id
 import org.litote.kmongo.`in`
@@ -83,67 +84,69 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     private val logger = KotlinLogging.logger {}
 
     internal val flowStateCol =
-        MongoBotConfiguration.database.getCollection<DialogFlowStateCol>("flow_state")
-            .apply {
-                ensureIndex(Namespace, BotId, StoryDefinitionId, Intent, Step, Entities)
-            }
+            MongoBotConfiguration.database.getCollection<DialogFlowStateCol>("flow_state")
+                    .apply {
+                        ensureIndex(Namespace, BotId, StoryDefinitionId, Intent, Step, Entities)
+                    }
 
     internal val flowTransitionCol =
-        MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionCol>("flow_transition")
-            .apply {
-                ensureUniqueIndex(Namespace, BotId, PreviousStateId, NextStateId, Intent, Step, NewEntities, Type)
-            }
+            MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionCol>("flow_transition")
+                    .apply {
+                        ensureUniqueIndex(Namespace, BotId, PreviousStateId, NextStateId, Intent, Step, NewEntities, Type)
+                    }
 
     internal val flowTransitionStatsCol =
-        MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionStatCol>("flow_transition_stats")
-            .apply {
-                ensureIndex(TransitionId)
-                ensureIndex(TransitionId, Date)
-                ensureIndex(DialogId)
-                ensureIndex(
-                    Date,
-                    indexOptions = IndexOptions()
-                        .expireAfter(longProperty("tock_bot_flow_stats_index_ttl_days", 365), TimeUnit.DAYS)
-                        .background(true)
-                )
-            }
+            MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionStatCol>("flow_transition_stats")
+                    .apply {
+                        ensureIndex(TransitionId)
+                        ensureIndex(TransitionId, Date)
+                        ensureIndex(DialogId)
+                        ensureIndex(
+                                Date,
+                                indexOptions = IndexOptions()
+                                        .expireAfter(longProperty("tock_bot_flow_stats_index_ttl_days", 365), TimeUnit.DAYS)
+                                        .background(true)
+                        )
+                    }
 
     override fun saveFlow(bot: BotDefinition, flow: DialogFlowDefinition) {
         TODO("not implemented")
     }
 
     override fun loadApplicationData(
-        namespace: String,
-        botId: String,
-        applicationId: Id<BotApplicationConfiguration>?
+            namespace: String,
+            botId: String,
+            applicationId: Id<BotApplicationConfiguration>?
     ): ApplicationDialogFlowData {
         val states = findStates(namespace, botId)
         val transitions = findTransitions(namespace, botId)
         val stats =
-            findStats(transitions.map { it._id }, applicationId).associateBy { it.first }.mapValues { it.value.second }
+                findStats(transitions.map { it._id }, applicationId).associateBy { it.first }.mapValues { it.value.second }
 
         @Suppress("UNCHECKED_CAST")
         val transitionsWithStats = transitions.map {
             DialogFlowStateTransitionData(
-                it.previousStateId as? Id<DialogFlowStateData>?,
-                it.nextStateId as Id<DialogFlowStateData>,
-                it.intent,
-                it.step,
-                it.newEntities,
-                it.type,
-                stats[it._id] ?: 0
+                    it.previousStateId as? Id<DialogFlowStateData>?,
+                    it.nextStateId as Id<DialogFlowStateData>,
+                    it.intent,
+                    it.step,
+                    it.newEntities,
+                    it.type,
+                    stats[it._id] ?: 0
             )
-        }
+        }.filter { it.count != 0L }
+
+        val transitionCountByNext = transitionsWithStats.groupBy { it.nextStateId }.mapValues { e -> e.value.sumByLong { it.count } }
 
         @Suppress("UNCHECKED_CAST")
         val statesWithStats = states.map { s ->
             DialogFlowStateData(
-                s.storyDefinitionId,
-                s.intent,
-                s.step,
-                s.entities,
-                transitionsWithStats.asSequence().map { if (it.nextStateId == s._id || it.previousStateId == s._id) it.count else 0 }.sum(),
-                s._id as Id<DialogFlowStateData>
+                    s.storyDefinitionId,
+                    s.intent,
+                    s.step,
+                    s.entities,
+                    transitionCountByNext[s._id as Id<DialogFlowStateData>] ?: 0L,
+                    s._id as Id<DialogFlowStateData>
             )
         }.filter {
             it.count != 0L
@@ -153,57 +156,57 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     }
 
     private fun findStates(namespace: String, botId: String): List<DialogFlowStateCol> =
-        flowStateCol.find(Namespace eq namespace, BotId eq botId).toList()
+            flowStateCol.find(Namespace eq namespace, BotId eq botId).toList()
 
     private fun findTransitions(namespace: String, botId: String): List<DialogFlowStateTransitionCol> =
-        flowTransitionCol.find(Namespace eq namespace, BotId eq botId).toList()
+            flowTransitionCol.find(Namespace eq namespace, BotId eq botId).toList()
 
     private fun findStats(
-        transitionIds: List<Id<DialogFlowStateTransitionCol>>,
-        botAppConfId: Id<BotApplicationConfiguration>?
+            transitionIds: List<Id<DialogFlowStateTransitionCol>>,
+            botAppConfId: Id<BotApplicationConfiguration>?
     ): List<Pair<Id<DialogFlowStateTransitionCol>, Long>> =
-        flowTransitionStatsCol.aggregate<Pair<String, Long>>(
-            match(
-                and(
-                    listOfNotNull(
-                        TransitionId `in` transitionIds,
-                        if (botAppConfId == null) null else ApplicationId eq botAppConfId
+            flowTransitionStatsCol.aggregate<Pair<String, Long>>(
+                    match(
+                            and(
+                                    listOfNotNull(
+                                            TransitionId `in` transitionIds,
+                                            if (botAppConfId == null) null else ApplicationId eq botAppConfId
+                                    )
+                            )
+                    ),
+                    group(
+                            TransitionId,
+                            Pair<*, Long>::second sum 1
+                    ),
+                    project(
+                            Pair<Id<DialogFlowStateTransitionCol>, Long>::first from _id,
+                            Pair<*, Long>::second from Pair<*, Long>::second
                     )
-                )
-            ),
-            group(
-                TransitionId,
-                Pair<*, Long>::second sum 1
-            ),
-            project(
-                Pair<Id<DialogFlowStateTransitionCol>, Long>::first from _id,
-                Pair<*, Long>::second from Pair<*, Long>::second
-            )
 
-        ).map { it.first.toId<DialogFlowStateTransitionCol>() to it.second }.toList()
+            ).map { it.first.toId<DialogFlowStateTransitionCol>() to it.second }.toList()
 
     private fun findState(botDefinition: BotDefinition, snapshot: Snapshot?): DialogFlowStateCol? {
         val storyDefinitionId = snapshot?.storyDefinitionId
         val intentName = snapshot?.intentName
         return if (storyDefinitionId != null && intentName != null) {
             DialogFlowStateCol(
-                botDefinition.namespace,
-                botDefinition.botId,
-                storyDefinitionId,
-                intentName,
-                snapshot.step,
-                snapshot.entityValues.map { it.entity.role }.toSortedSet()
+                    botDefinition.namespace,
+                    botDefinition.botId,
+                    storyDefinitionId,
+                    intentName,
+                    snapshot.step,
+                    snapshot.entityValues.map { it.entity.role }.toSortedSet()
             ).run {
                 flowStateCol.findOne(
-                    Namespace eq namespace,
-                    BotId eq botId,
-                    StoryDefinitionId eq storyDefinitionId,
-                    Intent eq intentName,
-                    Step eq step,
-                    if (entities.size < 2) Entities eq entities else and(
-                        Entities size entities.size,
-                        Entities all entities
-                    )
+                        Namespace eq namespace,
+                        BotId eq botId,
+                        StoryDefinitionId eq storyDefinitionId,
+                        Intent eq intentName,
+                        Step eq step,
+                        if (entities.size < 2) Entities eq entities else and(
+                                Entities size entities.size,
+                                Entities all entities
+                        )
                 ) ?: (this.apply { flowStateCol.insertOne(this) })
             }
         } else {
@@ -212,60 +215,60 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     }
 
     private fun findTransition(
-        botDefinition: BotDefinition,
-        previousState: DialogFlowStateCol?,
-        state: DialogFlowStateCol,
-        lastUserAction: Action?
+            botDefinition: BotDefinition,
+            previousState: DialogFlowStateCol?,
+            state: DialogFlowStateCol,
+            lastUserAction: Action?
     ): DialogFlowStateTransitionCol =
-        findTransition(
-            botDefinition,
-            previousState?._id,
-            state._id,
-            lastUserAction?.state?.intent,
-            lastUserAction?.state?.step,
-            lastUserAction?.state?.entityValues?.map { it.entity.role }?.toSortedSet() ?: emptySet(),
-            when (lastUserAction) {
-                is SendChoice -> choice
-                is SendLocation -> location
-                is SendAttachment -> attachment
-                else -> nlp
-            }
-        )
+            findTransition(
+                    botDefinition,
+                    previousState?._id,
+                    state._id,
+                    lastUserAction?.state?.intent,
+                    lastUserAction?.state?.step,
+                    lastUserAction?.state?.entityValues?.map { it.entity.role }?.toSortedSet() ?: emptySet(),
+                    when (lastUserAction) {
+                        is SendChoice -> choice
+                        is SendLocation -> location
+                        is SendAttachment -> attachment
+                        else -> nlp
+                    }
+            )
 
     private fun findTransition(
-        botDefinition: BotDefinition,
-        previousStateId: Id<DialogFlowStateCol>?,
-        nextStateId: Id<DialogFlowStateCol>,
-        intent: String?,
-        step: String?,
-        newEntities: Set<String>,
-        type: DialogFlowStateTransitionType
+            botDefinition: BotDefinition,
+            previousStateId: Id<DialogFlowStateCol>?,
+            nextStateId: Id<DialogFlowStateCol>,
+            intent: String?,
+            step: String?,
+            newEntities: Set<String>,
+            type: DialogFlowStateTransitionType
     ): DialogFlowStateTransitionCol =
-        flowTransitionCol.findOne(
-            Namespace eq botDefinition.namespace,
-            BotId eq botDefinition.botId,
-            PreviousStateId eq previousStateId,
-            NextStateId eq nextStateId,
-            Intent eq intent,
-            Step eq step,
-            if (newEntities.size < 2) NewEntities eq newEntities else and(
-                NewEntities size newEntities.size,
-                NewEntities all newEntities
-            ),
-            Type eq type
-        ) ?: (
-                DialogFlowStateTransitionCol(
-                    botDefinition.namespace,
-                    botDefinition.botId,
-                    previousStateId,
-                    nextStateId,
-                    intent,
-                    step,
-                    newEntities,
-                    type
-                )
-                    .also { flowTransitionCol.insertOne(it) }
-                )
+            flowTransitionCol.findOne(
+                    Namespace eq botDefinition.namespace,
+                    BotId eq botDefinition.botId,
+                    PreviousStateId eq previousStateId,
+                    NextStateId eq nextStateId,
+                    Intent eq intent,
+                    Step eq step,
+                    if (newEntities.size < 2) NewEntities eq newEntities else and(
+                            NewEntities size newEntities.size,
+                            NewEntities all newEntities
+                    ),
+                    Type eq type
+            ) ?: (
+                    DialogFlowStateTransitionCol(
+                            botDefinition.namespace,
+                            botDefinition.botId,
+                            previousStateId,
+                            nextStateId,
+                            intent,
+                            step,
+                            newEntities,
+                            type
+                    )
+                            .also { flowTransitionCol.insertOne(it) }
+                    )
 
 
     fun addFlowStat(botDefinition: BotDefinition, lastUserAction: Action, dialog: Dialog, snapshot: SnapshotCol) {
@@ -275,16 +278,16 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
         if (state != null) {
             val transition = findTransition(botDefinition, previousState, state, lastUserAction)
             val botAppConf = getHackedConfigurationByApplicationIdAndBot(
-                botDefinition.namespace, lastUserAction.applicationId, botDefinition.botId
+                    botDefinition.namespace, lastUserAction.applicationId, botDefinition.botId
             )
             if (botAppConf != null) {
                 flowTransitionStatsCol.insertOne(
-                    DialogFlowStateTransitionStatCol(
-                        botAppConf._id,
-                        transition._id,
-                        dialog.id,
-                        obfuscate((lastUserAction as? SendSentence)?.stringText)
-                    )
+                        DialogFlowStateTransitionStatCol(
+                                botAppConf._id,
+                                transition._id,
+                                dialog.id,
+                                obfuscate((lastUserAction as? SendSentence)?.stringText)
+                        )
                 )
             } else {
                 logger.warn { "unknown applicationId : ${lastUserAction.applicationId} for $botDefinition" }

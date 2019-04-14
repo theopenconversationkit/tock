@@ -23,18 +23,18 @@ import java.util.Enumeration
  * Return a map with only not null values.
  */
 fun <K, V> mapNotNullValues(vararg pairs: Pair<K, V?>): Map<K, V> =
-    mapOf(*pairs).filterValues { it != null }.mapValues { it.value!! }
+        mapOf(*pairs).filterValues { it != null }.mapValues { it.value!! }
 
 /**
  * Map not null values of the [Pair] results of the specified transformation.
  */
 fun <T, K, V> Iterable<T>.mapNotNullValues(transform: (T) -> Pair<K, V?>): List<Pair<K, V>> =
-    map { transform.invoke(it) }
-        .filter { it.second != null }
-        .map {
-            @Suppress("UNCHECKED_CAST")
-            it as Pair<K, V>
-        }
+        map { transform.invoke(it) }
+                .filter { it.second != null }
+                .map {
+                    @Suppress("UNCHECKED_CAST")
+                    it as Pair<K, V>
+                }
 
 /**
  * Extract a [Set] from an [Enumeration].
@@ -48,4 +48,15 @@ fun <T> Iterator<T>.toList(): List<T> = mutableListOf<T>().apply {
     while (hasNext()) {
         add(next())
     }
+}
+
+/**
+ * Returns the sum of all values produced by [selector] function applied to each element in the collection.
+ */
+inline fun <T> Iterable<T>.sumByLong(selector: (T) -> Long): Long {
+    var sum: Long = 0
+    for (element in this) {
+        sum += selector(element)
+    }
+    return sum
 }

@@ -18,16 +18,11 @@ import {Component, OnInit} from "@angular/core";
 import {BotService} from "../bot-service";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
-import {
-  ApplicationDialogFlow,
-  DialogFlowRequest,
-  DialogFlowStateData,
-  DialogFlowStateTransitionData,
-  DialogFlowStateTransitionType
-} from "../model/flow";
+import {ApplicationDialogFlow, DialogFlowRequest, DialogFlowStateTransitionType} from "../model/flow";
 import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {entityColor} from "../../model/nlp";
 import {KeyValue} from "@angular/common";
+import {NodeTransition, StoryNode} from "./node";
 
 @Component({
   selector: 'tock-flow',
@@ -115,8 +110,10 @@ export class FlowComponent implements OnInit {
   displayOnlyNext: boolean = false;
   stories: Map<string, string> = new Map();
 
-  selectedNode: DialogFlowStateData;
-
+  selectedEdge: NodeTransition;
+  selectedNode: StoryNode;
+  allNodes: StoryNode[];
+  allTransitions: Map<string, NodeTransition>;
   graphData;
 
   botConfigurationId: string;
@@ -125,7 +122,7 @@ export class FlowComponent implements OnInit {
 
   valueAscOrder = (a: KeyValue<string, string>, b: KeyValue<string, string>): number => {
     return a.value.localeCompare(b.value);
-  }
+  };
 
   constructor(private nlp: NlpService,
               private state: StateService,
@@ -140,8 +137,19 @@ export class FlowComponent implements OnInit {
     this.layout = this.layouts.find(l => l.name === layout);
   }
 
-  update() {
+  updateCount() {
     setTimeout(_ => this.toGraphData(this.flow));
+  }
+
+  reset() {
+    this.selectedStoryId = null;
+    this.displayOnlyNext = null;
+    this.update();
+  }
+
+  update() {
+    this.minimalNodeCount = 0;
+    this.updateCount();
   }
 
   displayFlow(event: string) {
@@ -160,7 +168,10 @@ export class FlowComponent implements OnInit {
             this.lastBotId,
             conf ? conf._id : null
           )
-        ).subscribe(f => this.toGraphData(f));
+        ).subscribe(f => {
+          this.flow = f;
+          this.reset();
+        });
       } else {
         this.graphData = null;
       }
@@ -170,162 +181,178 @@ export class FlowComponent implements OnInit {
   private toGraphData(flow: ApplicationDialogFlow) {
     this.flow = flow;
 
-    //set all stories
-    const stories = new Map<string, string>();
-    flow.states.forEach(s => stories.set(s.storyDefinitionId, s.displayName()));
-    this.stories = stories;
-
     const graph = {
       nodes: [],
       edges: []
     };
 
-    const originalStatesById = new Map<string, DialogFlowStateData>();
-    const states = [];
-    const statesByKey = [];
-    const oldStateIdNewStateIdMap = [];
+    //1 create nodes
+    let nodeCount = 0;
+    const nodesMap = new Map<number, StoryNode>();
+    const stateIdNodeMap = new Map<string, StoryNode>();
+
+    const nodeByKey = [];
     this.flow.states.forEach(s => {
-      originalStatesById.set(s._id, s);
       if (this.entity && this.step && this.intent) {
-        oldStateIdNewStateIdMap[s._id] = s._id;
-        states.push(s);
+        const node = new StoryNode(s.storyDefinitionId, [s], nodeCount++, s.entities, s.intent, s.step);
+        nodesMap.set(node.id, node);
+        stateIdNodeMap.set(s._id, node);
       } else {
         let key = s.storyDefinitionId
           + (this.intent ? "+" + s.intent : "")
           + (this.step ? "+" + s.step : "")
           + (this.entity ? "+" + s.entities.join("%") : "");
-        let state = statesByKey[key];
-        if (!state) {
-          state = DialogFlowStateData.fromJSON(s);
-          if (!this.entity) {
-            state.entities = [];
-          }
-          if (!this.intent) {
-            state.intent = null;
-          }
-          if (!this.step) {
-            state.step = null;
-          }
-          states.push(state);
-          statesByKey[key] = state;
-          oldStateIdNewStateIdMap[s._id] = s._id;
+        let node = nodeByKey[key];
+        if (!node) {
+          node = new StoryNode(
+            s.storyDefinitionId,
+            [s],
+            nodeCount++,
+            this.entity ? s.entities : [],
+            this.intent ? s.intent : null,
+            this.step ? s.step : null
+          );
+          nodeByKey[key] = node;
+          nodesMap.set(node.id, node);
         } else {
-          state.count += s.count;
-          oldStateIdNewStateIdMap[s._id] = state._id;
+          node.states.push(s);
+          node.count += s.count;
         }
+        stateIdNodeMap.set(s._id, node);
       }
     });
-    let maxCount = 1;
-    let finalStates = [];
-    //1 filter state by count
-    states.forEach(s => {
+
+    //2 set stories map
+    const stories = new Map<string, string>();
+    nodesMap.forEach(s => stories.set(s.storyDefinitionId, s.displayName()));
+    this.stories = stories;
+
+    let finalNodes: StoryNode[] = [];
+    //3 filter state by count
+    nodesMap.forEach(s => {
       if (this.minimalNodeCount <= s.count) {
-        finalStates[s._id] = s;
+        finalNodes[s.id] = s;
       }
     });
 
-    //count transitions
-    let transitionTotal = [];
-    let transitions = new Map<string, DialogFlowStateTransitionData>();
+    //4 create transitions
+    const countTransitionByStartId = [];
+    const transitionsByKey = new Map<string, NodeTransition>();
     this.flow.transitions.forEach(t => {
-      let prev = oldStateIdNewStateIdMap[t.previousStateId];
-      let next = oldStateIdNewStateIdMap[t.nextStateId];
-      if (this.recursive || prev !== next) {
-        const tId = prev + "_" + next + "_" + t.type;
-        const transition = transitions.get(tId);
-        const oldCount = transitionTotal[prev];
-        transitionTotal[prev] = (oldCount ? oldCount : 0) + t.count;
-        if (!transition) {
-          transitions.set(tId, Object.assign({}, t));
-        } else {
-          transition.count += t.count;
+      const prev = stateIdNodeMap.get(t.previousStateId);
+      const next = stateIdNodeMap.get(t.nextStateId);
+      const prevId = prev ? prev.id : -1;
+      //next should always exist but check anyway...
+      if (next) {
+        const nextId = next.id;
+        if (this.recursive || prev !== next) {
+          const tId = prevId + "_" + nextId + "_" + t.type;
+          const transition = transitionsByKey.get(tId);
+          if (!transition) {
+            transitionsByKey.set(tId, new NodeTransition([t], prevId, nextId, t.type));
+          } else {
+            transition.transitions.push(t);
+            transition.count = transition.count + t.count;
+          }
+          const oldCount = countTransitionByStartId[prevId];
+          countTransitionByStartId[prevId] = oldCount ? oldCount + t.count : t.count;
         }
       }
     });
 
-    //2 filter transition per percentage
-    let finalTransitions = new Map<string, DialogFlowStateTransitionData>();
-    transitions.forEach((t, k) => {
-      let prev = oldStateIdNewStateIdMap[t.previousStateId];
-      let next = oldStateIdNewStateIdMap[t.nextStateId];
-      let prevState = finalStates[prev];
-      let nextState = finalStates[next];
-      let percentage = Math.round((t.count * 10000.0) / transitionTotal[prev]) / 100;
-      if ((this.recursive || prev !== next) && finalStates[next] && (!t.previousStateId || finalStates[prev])) {
+    //5 filter transitions per percentage
+    const finalTransitions = new Map<string, NodeTransition>();
+    transitionsByKey.forEach((t, k) => {
+      const prev = nodesMap.get(t.previousId);
+      const next = nodesMap.get(t.nextId);
+      const prevId = prev ? prev.id : -1;
+      const nextId = next.id;
+      const finalPrev = prev ? finalNodes[prev.id] : null;
+      const finalNext = finalNodes[nextId];
+      const percentage = Math.round((t.count * 10000.0) / countTransitionByStartId[prevId]) / 100;
+      if ((this.recursive || prev !== next) && finalNodes[nextId] && (t.previousId === -1 || finalNodes[prevId])) {
         if (percentage >= this.minimalTransitionPercentage
           && (!this.selectedStoryId ||
-            (prevState && prevState.storyDefinitionId === this.selectedStoryId)
-            || (!this.displayOnlyNext && nextState && nextState.storyDefinitionId === this.selectedStoryId))) {
+            (finalPrev && finalPrev.storyDefinitionId === this.selectedStoryId)
+            || (!this.displayOnlyNext && finalNext && finalNext.storyDefinitionId === this.selectedStoryId))) {
           finalTransitions.set(k, t);
         }
       }
     });
 
-    //3 filter by selected story
+    //6 filter by selected story and create graph nodes
+    let maxCount = 1;
     let addStartup = true;
     const tmpFinalStates = [];
-    states.forEach(s => {
-      if (finalStates[s._id]) {
-        let include = true;
-        if (this.selectedStoryId) {
-          //try to find a transition with this state and selectedStoryId
-          include = s.storyDefinitionId === this.selectedStoryId;
-          if (!include) {
-            finalTransitions.forEach(t => {
-              if (!include) {
-                let prev = finalStates[oldStateIdNewStateIdMap[t.previousStateId]];
-                let next = finalStates[oldStateIdNewStateIdMap[t.nextStateId]];
-                if (((!this.displayOnlyNext && prev && prev._id === s._id) || (next && next._id === s._id))
-                  && (
-                    (prev && prev.storyDefinitionId === this.selectedStoryId)
-                    || (!this.displayOnlyNext && next && next.storyDefinitionId === this.selectedStoryId)
-                  )) {
-                  include = true;
-                }
+    finalNodes.forEach(s => {
+      let include = true;
+      if (this.selectedStoryId) {
+        //try to find a transition with this state and selectedStoryId
+        include = s.storyDefinitionId === this.selectedStoryId;
+        if (!include) {
+          finalTransitions.forEach(t => {
+            if (!include) {
+              const prev = finalNodes[t.previousId];
+              const next = finalNodes[t.nextId];
+              const prevId = prev ? prev.id : -1;
+              if (((!this.displayOnlyNext && prev && prevId === s.id) || (next && next.id === s.id))
+                && (
+                  (prev && prev.storyDefinitionId === this.selectedStoryId)
+                  || (!this.displayOnlyNext && next && next.storyDefinitionId === this.selectedStoryId)
+                )) {
+                include = true;
               }
-            });
-          }
-        }
-        if (include) {
-          addStartup = false;
-          tmpFinalStates[s._id] = s;
-          maxCount = Math.max(maxCount, s.count);
-          const originalState = originalStatesById.get(s._id);
-          const storyId = s.storyDefinitionId;
-          graph.nodes.push({
-            data: {
-              id: s._id,
-              name: s.nodeName(originalState.intent),
-              weight: s.count,
-              colorCode: entityColor(storyId ? storyId : "start"),
-              shapeType: 'roundrectangle'
             }
-          })
+          });
         }
+      }
+      if (include) {
+        addStartup = false;
+        tmpFinalStates[s.id] = s;
+        if (this.selectedStoryId) {
+          if (s.storyDefinitionId === this.selectedStoryId) {
+            maxCount = Math.max(maxCount, s.count);
+          }
+        } else {
+          maxCount = Math.max(maxCount, s.count);
+        }
+        //console.log(s);
+        graph.nodes.push({
+          data: {
+            id: s.id,
+            name: s.nodeName(),
+            weight: s.count,
+            colorCode: entityColor(s.storyDefinitionId),
+            shapeType: s.dynamic ? 'ellipse' : 'roundrectangle'
+          }
+        })
       }
     });
     this.maxNodeCount = maxCount;
-    finalStates = tmpFinalStates;
+    finalNodes = tmpFinalStates;
 
-    finalTransitions.forEach(t => {
-      let prev = oldStateIdNewStateIdMap[t.previousStateId];
-      let next = oldStateIdNewStateIdMap[t.nextStateId];
-      let percentage = Math.round((t.count * 10000.0) / transitionTotal[prev]) / 100;
-      let fPrev = finalStates[prev];
-      let fNext = finalStates[next];
-      if (fNext && (!t.previousStateId || fPrev)
+    //7 create graph edges
+    finalTransitions.forEach((t, k) => {
+      const prev = nodesMap.get(t.previousId);
+      const next = nodesMap.get(t.nextId);
+      const prevId = prev ? prev.id : -1;
+      let percentage = Math.round((t.count * 10000.0) / countTransitionByStartId[prevId]) / 100;
+      let fPrev = finalNodes[prevId];
+      let fNext = finalNodes[next.id];
+      if (fNext && (t.previousId === -1 || fPrev)
         && (!this.selectedStoryId
-          || (fPrev && this.selectedStoryId == fPrev.storyDefinitionId)
-          || (fNext && this.selectedStoryId == fNext.storyDefinitionId))) {
+          || (fPrev && this.selectedStoryId === fPrev.storyDefinitionId)
+          || (!this.displayOnlyNext && this.selectedStoryId === fNext.storyDefinitionId))) {
 
-        if (!t.previousStateId && (!this.selectedStoryId || (!this.displayOnlyNext && this.selectedStoryId == fNext.storyDefinitionId))) {
-          console.log(t);
+        if (t.previousId === -1) {
           addStartup = true;
         }
+        //console.log(t);
         graph.edges.push({
           data: {
-            source: prev ? prev : 'null',
-            target: next,
+            source: prevId,
+            target: next.id,
+            key: k,
             colorCode: entityColor(DialogFlowStateTransitionType[t.type] ? DialogFlowStateTransitionType[t.type] : DialogFlowStateTransitionType[DialogFlowStateTransitionType.nlp]),
             strength: t.count,
             label: percentage + '%',
@@ -334,15 +361,25 @@ export class FlowComponent implements OnInit {
         });
       }
     });
-    //4.0 add startup if useful
+
+    //8 add startup if useful
     if (addStartup) {
-      graph.nodes.push({data: {id: 'null', name: 'Startup', weight: 1, colorCode: 'blue', shapeType: 'ellipse'}});
+      graph.nodes.push({data: {id: -1, name: 'Startup', weight: 1, colorCode: 'blue', shapeType: 'vee'}});
     }
 
+    //9 init vars
+    this.allNodes = finalNodes;
+    this.allTransitions = finalTransitions;
     this.graphData = graph;
   }
 
   nodeChange(id: string) {
-    this.selectedNode = this.flow.states.find(s => s._id === id);
+    this.selectedNode = this.allNodes[id];
+    this.selectedEdge = null;
+  }
+
+  edgeChange(key: string) {
+    this.selectedEdge = this.allTransitions.get(key);
+    this.selectedNode = null;
   }
 }

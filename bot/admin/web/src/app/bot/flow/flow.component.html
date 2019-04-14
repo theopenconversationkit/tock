@@ -48,21 +48,27 @@
   <mat-checkbox [(ngModel)]="intent" (change)="update()" class="checkbox">Intent</mat-checkbox>
   / Node Weight:
   <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalNodeCount" [max]="maxNodeCount"
-              (change)="update()"></mat-slider>
+              (change)="updateCount()"></mat-slider>
   Transition Percentage:
-  <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalTransitionPercentage" (change)="update()"></mat-slider>
+  <mat-slider thumbLabel tickInterval="1" [(ngModel)]="minimalTransitionPercentage" (change)="updateCount()"></mat-slider>
 </mat-expansion-panel>
 
 <div *ngIf="graphData" style="height: 90%; width: 80%; float: left; overflow: auto; overflow-y: hidden">
-  <tock-cytoscape [elements]="graphData" [layout]="layout" (select)="nodeChange($event)"></tock-cytoscape>
+  <tock-cytoscape [elements]="graphData" [layout]="layout" (selectedNode)="nodeChange($event)" (selectedEdge)="edgeChange($event)"></tock-cytoscape>
 </div>
 
 <div *ngIf="graphData && selectedNode" style="height: 90%; width: 20%; float: left; overflow: auto; overflow-x: hidden">
   <ul>
-    <li>Story: <b>{{selectedNode.storyDefinitionId}}</b></li>
-    <li>Intent: <b>{{selectedNode.intent}}</b></li>
+    <li>Story: <b>{{selectedNode.nodeName()}}</b></li>
+    <li *ngIf="selectedNode.intent">Intent: <b>{{selectedNode.intent}}</b></li>
     <li *ngIf="selectedNode.step">Step: <b>{{selectedNode.step}}</b></li>
     <li *ngIf="selectedNode.entities.length !==0">Entities: <b>{{selectedNode.entities}}</b></li>
     <li>Count: <b>{{selectedNode.count}}</b></li>
+  </ul>
+</div>
+
+<div *ngIf="graphData && selectedEdge" style="height: 90%; width: 20%; float: left; overflow: auto; overflow-x: hidden">
+  <ul>
+    <li>Count: <b>{{selectedEdge.count}}</b></li>
   </ul>
 </div>

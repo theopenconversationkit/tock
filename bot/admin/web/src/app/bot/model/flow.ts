@@ -60,21 +60,6 @@ export class DialogFlowStateData {
   ) {
   }
 
-  displayName(originalIntent?: string): string {
-    const sId = this.storyDefinitionId;
-    const i = originalIntent ? originalIntent : this.intent;
-    return sId === 'tock_unknown_story' ? 'unknown' :
-      ((sId && i && sId.match(/^[0-9a-fA-F]{24}$/)) ? i : sId);
-  }
-
-  nodeName(originalIntent?: string): string {
-    const nodeName = this.displayName(originalIntent);
-    const i = this.intent;
-    return nodeName
-      + (!i || i === nodeName || this.storyDefinitionId === 'tock_unknown_story' ? "" : "/" + i)
-      + (this.step ? "*" + this.step : "")
-  }
-
   static fromJSON(json: any): DialogFlowStateData {
     const value = Object.create(DialogFlowStateData.prototype);
     const result = Object.assign(value, json, {});
