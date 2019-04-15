@@ -52,6 +52,7 @@ import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.Applic
 import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.Date
 import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.DialogId
 import fr.vsct.tock.bot.mongo.DialogFlowStateTransitionStatCol_.Companion.TransitionId
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 import fr.vsct.tock.shared.sumByLong
@@ -98,15 +99,19 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     internal val flowTransitionStatsCol =
             MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionStatCol>("flow_transition_stats")
                     .apply {
-                        ensureIndex(TransitionId)
-                        ensureIndex(TransitionId, Date)
-                        ensureIndex(DialogId)
-                        ensureIndex(
-                                Date,
-                                indexOptions = IndexOptions()
-                                        .expireAfter(longProperty("tock_bot_flow_stats_index_ttl_days", 365), TimeUnit.DAYS)
-                                        .background(true)
-                        )
+                        try {
+                            ensureIndex(TransitionId)
+                            ensureIndex(TransitionId, Date)
+                            ensureIndex(DialogId)
+                            ensureIndex(
+                                    Date,
+                                    indexOptions = IndexOptions()
+                                            .expireAfter(longProperty("tock_bot_flow_stats_index_ttl_days", 365), TimeUnit.DAYS)
+                                            .background(true)
+                            )
+                        } catch (e: Exception) {
+                            logger.error(e)
+                        }
                     }
 
     override fun saveFlow(bot: BotDefinition, flow: DialogFlowDefinition) {
