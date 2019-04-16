@@ -31,12 +31,17 @@ import fr.vsct.tock.bot.definition.StoryHandlerBase
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.dialog.EntityValue
 import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.UserPreferences
+import fr.vsct.tock.bot.engine.user.UserState
 import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
+import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.translator.UserInterfaceType.textAndVoiceAssistant
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
+import java.time.Instant
 
 /**
  * Test a [StoryDefinition] with a mocked (mockk) [BotBus].
@@ -61,6 +66,8 @@ fun mockTockCommon(bus: BotBus) {
         }
         bus
     }
+
+    //withMessage
     every { bus.withMessage(any(), any()) }.answers {
         if (bus.targetConnectorType == args[0]) {
             @Suppress("UNCHECKED_CAST")
@@ -69,10 +76,27 @@ fun mockTockCommon(bus: BotBus) {
         bus
     }
 
-    every { bus.end(any<Long>()) } returns bus
-    every { bus.end(any<String>(), any()) } returns bus
+    //send
     every { bus.send(any<Long>()) } returns bus
     every { bus.send(any<String>(), any()) } returns bus
+    every { bus.send(any<String>(), any(), *anyVararg()) } returns bus
+    every { bus.send(any<String>(), *anyVararg()) } returns bus
+    every { bus.send(any<Long>(), any()) }.answers {
+        @Suppress("UNCHECKED_CAST")
+        (args[1] as BotBus.() -> Any?).invoke(bus)
+        bus
+    }
+
+    // end
+    every { bus.end(any<Long>()) } returns bus
+    every { bus.end(any<String>(), any()) } returns bus
+    every { bus.end(any<String>(), any(), *anyVararg()) } returns bus
+    every { bus.end(any<String>(), *anyVararg()) } returns bus
+    every { bus.end(any<Long>(), any()) }.answers {
+        @Suppress("UNCHECKED_CAST")
+        (args[1] as BotBus.() -> Any?).invoke(bus)
+        bus
+    }
 
     every {
         bus.entityValue(
@@ -83,11 +107,20 @@ fun mockTockCommon(bus: BotBus) {
     every { bus.changeEntityValue(any(), any<Value>()) } returns Unit
 
     val playerId = PlayerId("user")
-
     every { bus.userId } returns playerId
+    val botId = PlayerId("bot")
+    every { bus.botId } returns botId
+
     val userTimeline: UserTimeline = mockk()
+    val userState = UserState(Instant.now())
     every { bus.userTimeline } returns userTimeline
+    every { userTimeline.userState } returns userState
     every { userTimeline.playerId } returns playerId
+
+    every { bus.userLocale } returns defaultLocale
+    every { bus.userPreferences } returns UserPreferences()
+    every { bus.userInterfaceType } returns textAndVoiceAssistant
+
     val botDefinition: BotDefinition = mockk()
     every { bus.botDefinition} returns botDefinition
     every { botDefinition.defaultDelay(any())} returns 0
