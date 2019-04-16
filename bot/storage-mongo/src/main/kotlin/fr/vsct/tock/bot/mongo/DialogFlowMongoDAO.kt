@@ -63,7 +63,6 @@ import org.litote.kmongo.aggregate
 import org.litote.kmongo.all
 import org.litote.kmongo.and
 import org.litote.kmongo.ensureIndex
-import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
 import org.litote.kmongo.find
 import org.litote.kmongo.findOne
@@ -93,7 +92,7 @@ internal object DialogFlowMongoDAO : DialogFlowDAO {
     internal val flowTransitionCol =
             MongoBotConfiguration.database.getCollection<DialogFlowStateTransitionCol>("flow_transition")
                     .apply {
-                        ensureUniqueIndex(Namespace, BotId, PreviousStateId, NextStateId, Intent, Step, NewEntities, Type)
+                        ensureIndex(Namespace, BotId, PreviousStateId, NextStateId, Intent, Step, NewEntities, Type)
                     }
 
     internal val flowTransitionStatsCol =
