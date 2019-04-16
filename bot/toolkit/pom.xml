@@ -66,6 +66,10 @@
             <groupId>fr.vsct.tock</groupId>
             <artifactId>tock-bot-connector-teams</artifactId>
         </dependency>
+        <dependency>
+            <groupId>fr.vsct.tock</groupId>
+            <artifactId>tock-bot-connector-businesschat</artifactId>
+        </dependency>
 
         <!-- force okhttp dependencies -->
         <dependency>
