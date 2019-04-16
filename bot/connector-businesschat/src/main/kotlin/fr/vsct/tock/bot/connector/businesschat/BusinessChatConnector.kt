@@ -39,7 +39,7 @@ import mu.KotlinLogging
  * @param path base path for our business chat endpoints
  * @param businessId your organization Business ID
  */
-class BusinessChatConnector(private val path: String, private val connectorId: String, private val businessId: String) :
+internal class BusinessChatConnector(private val path: String, private val connectorId: String, private val businessId: String) :
         ConnectorBase(BusinessChatConnectorProvider.connectorType) {
 
     private val logger = KotlinLogging.logger { }

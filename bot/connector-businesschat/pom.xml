@@ -5,18 +5,18 @@
     <parent>
         <artifactId>tock-bot</artifactId>
         <groupId>fr.vsct.tock</groupId>
-        <version>19.3.0-SNAPSHOT</version>
+        <version>19.3.1-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>tock-bot-connector-businesschat</artifactId>
-    <name>Tock Bot business chat Connector</name>
-    <description>Bot Connector for business chat</description>
+    <name>Tock Bot Business Chat Connector</name>
+    <description>Bot Connector for Business Chat</description>
 
     <dependencies>
         <dependency>
             <groupId>fr.vsct.tock</groupId>
-            <artifactId>tock-bot-engine</artifactId>
+            <artifactId>tock-bot-engine-jackson</artifactId>
         </dependency>
     </dependencies>
 
