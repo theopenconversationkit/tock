@@ -19,12 +19,18 @@ package fr.vsct.tock.bot.connector.slack
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.slack.model.AttachmentField
+import fr.vsct.tock.bot.connector.slack.model.Button
 import fr.vsct.tock.bot.connector.slack.model.SlackConnectorMessage
 import fr.vsct.tock.bot.connector.slack.model.SlackEmoji
 import fr.vsct.tock.bot.connector.slack.model.SlackMessageAttachment
 import fr.vsct.tock.bot.connector.slack.model.SlackMessageOut
+import fr.vsct.tock.bot.definition.IntentAware
+import fr.vsct.tock.bot.definition.Parameters
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
+import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.I18nTranslator
+import fr.vsct.tock.bot.engine.action.SendChoice
 
 internal const val SLACK_CONNECTOR_TYPE_ID = "slack"
 
@@ -76,14 +82,36 @@ fun I18nTranslator.textMessage(message: CharSequence): SlackMessageOut {
 fun I18nTranslator.multiLineMessage(lines: List<CharSequence>, channel: String? = null): SlackMessageOut =
     SlackMessageOut(lines.joinToString("\n") { translate(it).toString() }, channel)
 
-fun I18nTranslator.attachmentMessage(
-    vararg fields: AttachmentField,
-    fallback: String,
-    color: String = "good",
+fun I18nTranslator.slackMessage(
+    message: CharSequence,
+    vararg attachments: SlackMessageAttachment
+): SlackMessageOut {
+    return slackMessage(message, null, attachments = *attachments)
+}
+
+fun I18nTranslator.slackMessage(
+    message: CharSequence,
+    channel: String? = null,
+    vararg attachments: SlackMessageAttachment
+): SlackMessageOut {
+    return SlackMessageOut(translate(message).toString(), channel, attachments.toList())
+}
+
+fun I18nTranslator.slackAttachment(
     text: CharSequence? = null,
-    pretext: String? = null
+    vararg buttons: Button
 ): SlackMessageAttachment =
-    SlackMessageAttachment(fields.toList(), fallback, color, translateAndReturnBlankAsNull(text), pretext)
+    slackAttachment(text, buttons.toList())
+
+fun I18nTranslator.slackAttachment(
+    text: CharSequence? = null,
+    buttons: List<Button> = emptyList(),
+    color: String = "good",
+    pretext: String? = null,
+    fallback: String = translate(text).toString(),
+    vararg fields: AttachmentField
+): SlackMessageAttachment =
+    SlackMessageAttachment(buttons, fields.toList(), fallback, color, translateAndReturnBlankAsNull(text), pretext)
 
 
 fun I18nTranslator.attachmentField(title: String, value: String, short: Boolean = true): AttachmentField =
@@ -92,3 +120,42 @@ fun I18nTranslator.attachmentField(title: String, value: String, short: Boolean 
 fun emojiMessage(emoji: SlackEmoji): SlackMessageOut = SlackMessageOut(emoji.format)
 
 fun emoji(emoji: SlackEmoji): String = emoji.format
+
+/**
+ * Creates Slack button: https://api.slack.com/reference/messaging/block-elements#button
+ */
+fun BotBus.slackButton(
+    title: CharSequence,
+    targetIntent: IntentAware,
+    parameters: Parameters,
+    name: String = "default"
+): Button =
+    slackButton(title, targetIntent, null, parameters, name)
+
+/**
+ * Creates a Slack button: https://api.slack.com/reference/messaging/block-elements#button
+ */
+fun BotBus.slackButton(
+    title: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    parameters: Parameters,
+    name: String = "default"
+): Button =
+    slackButton(title, targetIntent, step, *parameters.toArray(), name = name)
+
+/**
+ * Creates a Slack button: https://api.slack.com/reference/messaging/block-elements#button
+ */
+fun BotBus.slackButton(
+    title: CharSequence,
+    targetIntent: IntentAware,
+    step: StoryStep<out StoryHandlerDefinition>? = null,
+    vararg parameters: Pair<String, String>,
+    name: String = "default"
+): Button =
+    Button(
+        name,
+        translate(title).toString(),
+        SendChoice.encodeChoiceId(this, targetIntent, step, parameters.toMap())
+    )

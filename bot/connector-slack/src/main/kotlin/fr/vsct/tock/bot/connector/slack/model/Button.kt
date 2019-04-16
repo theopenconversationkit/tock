@@ -16,19 +16,26 @@
 
 package fr.vsct.tock.bot.connector.slack.model
 
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.message.Choice
 
+/**
+ * A Slack button: https://api.slack.com/reference/messaging/block-elements#button
+ */
+data class Button(
+    val name: String,
+    val text: String = "",
+    val value: String,
+    val type: String = "button"
+) {
 
-data class SlackMessageOut(
-    val text: String,
-    val channel: String? = null,
-    val attachments: List<SlackMessageAttachment> = emptyList()
-) : SlackConnectorMessage() {
-
-    override fun toSentenceElement(): SentenceElement? =
-        SentenceElement(
-            texts = mapOf(SlackMessageOut::text.name to text),
-            subElements = attachments.map { it.toSentenceSubElement() }
-        )
-
+    fun toChoice(): Choice {
+        return SendChoice.decodeChoiceId(value)
+            .let { (intent, params) ->
+                Choice(
+                    intent,
+                    params + (SendChoice.TITLE_PARAMETER to text)
+                )
+            }
+    }
 }

@@ -26,8 +26,12 @@ private val logger = KotlinLogging.logger {}
 
 
 internal fun RoutingContext.convertUrlEncodedStringToJson(): String {
-    val urlEncodedString = URLDecoder.decode(this.bodyAsString, "UTF-8")
-    logger.debug { "unparsed body from slack: $urlEncodedString" }
+    return parseJson(bodyAsString)
+}
+
+internal fun parseJson(body: String): String {
+    val urlEncodedString = URLDecoder.decode(body, "UTF-8")
+    logger.trace { "unparsed body from slack: $urlEncodedString" }
     val jsonObject = JsonObject()
     urlEncodedString.split("&").forEach { keyValue ->
         val keyValueList = keyValue.split("=")

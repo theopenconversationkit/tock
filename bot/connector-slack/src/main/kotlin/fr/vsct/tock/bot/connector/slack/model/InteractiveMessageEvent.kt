@@ -16,19 +16,10 @@
 
 package fr.vsct.tock.bot.connector.slack.model
 
-import fr.vsct.tock.bot.engine.message.SentenceElement
-
-
-data class SlackMessageOut(
-    val text: String,
-    val channel: String? = null,
-    val attachments: List<SlackMessageAttachment> = emptyList()
-) : SlackConnectorMessage() {
-
-    override fun toSentenceElement(): SentenceElement? =
-        SentenceElement(
-            texts = mapOf(SlackMessageOut::text.name to text),
-            subElements = attachments.map { it.toSentenceSubElement() }
-        )
-
-}
+/**
+ *
+ */
+data class InteractiveMessageEvent(
+    val user: SlackUser,
+    val actions: List<Button> = emptyList()
+) : EventApiMessage()

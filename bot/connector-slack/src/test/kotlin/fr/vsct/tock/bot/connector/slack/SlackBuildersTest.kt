@@ -40,7 +40,7 @@ class SlackBuildersTest {
         val field = arrayOf(AttachmentField("title", "value", false))
         val fallback = "fallback"
 
-        val attachmentMessage = bus.attachmentMessage(*field, fallback = fallback)
+        val attachmentMessage = bus.slackAttachment(fields = *field, fallback = fallback)
         assertEquals("good", attachmentMessage.color)
         assertEquals(fallback, attachmentMessage.fallback)
         assertEquals(field.toList(), attachmentMessage.fields)

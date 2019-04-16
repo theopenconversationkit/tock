@@ -16,25 +16,46 @@
 
 package fr.vsct.tock.bot.connector.slack
 
-import fr.vsct.tock.bot.connector.slack.model.MessageEvent
+import fr.vsct.tock.bot.connector.slack.model.CallbackEvent
+import fr.vsct.tock.bot.connector.slack.model.EventApiMessage
+import fr.vsct.tock.bot.connector.slack.model.InteractiveMessageEvent
 import fr.vsct.tock.bot.connector.slack.model.old.SlackMessageIn
+import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType.bot
+import mu.KotlinLogging
 
 
 internal object SlackRequestConverter {
 
-    fun toEvent(message: MessageEvent, applicationId: String): Event? {
-        return if (message.user == null) null
-        else SendSentence(
-            PlayerId(message.user),
-            applicationId,
-            PlayerId(applicationId, bot),
-            message.text
-        )
-    }
+    private val logger = KotlinLogging.logger {}
+
+    fun toEvent(event: EventApiMessage, applicationId: String): Event? =
+        if (event is InteractiveMessageEvent) {
+            val params = SendChoice.decodeChoiceId(event.actions.first().value)
+            SendChoice(
+                PlayerId(event.user.id),
+                applicationId,
+                PlayerId(applicationId, bot),
+                params.first,
+                params.second
+            )
+        } else if (event is CallbackEvent) {
+            event.event.let { message ->
+                if (message.user == null) null
+                else SendSentence(
+                    PlayerId(message.user),
+                    applicationId,
+                    PlayerId(applicationId, bot),
+                    message.text
+                )
+            }
+        } else {
+            logger.warn { "unhandled event: $event" }
+            null
+        }
 
     fun toEvent(message: SlackMessageIn, applicationId: String): Event? {
         val safeMessage = message

@@ -28,6 +28,8 @@ Say your tock bot installation lies at http://my-tock-bot-domain-name, then in o
 http://my-tock-bot-domain-name/[relative path of bot configuration]
 ```
 
+You need also to set the same url for 'Interactive Components' menu in order to handle button clicks.
+
 Then you just have to create a Bot User and to subscribe to the *message.channels* Bot Event.
 
 Invite the Bot user to the channel.
@@ -64,18 +66,22 @@ RTF (Rich Text Format) is a feature of Slack, you can find a documentation [here
 ```kotlin
 val attachmentStory = story("attachment") { bus ->
     with(bus) {
-        val attachments = arrayOf(attachmentField("title", "value"), attachmentField("title", "value"))
         withSlack {
-            attachmentMessage(
-                    *attachments,
-                    fallback = "fallback",
-                    text = "text"
-            )
+            slackMessage(
+                         "Hey!",
+                         slackAttachment(
+                                "You know what?",
+                                slackButton("Itineraries", search),
+                                slackButton("Departures", Departures),
+                                slackButton("Arrivals", Arrivals)
+                            )
+                        )
         }
         end()
     }
 }
 ```
+
 ##### Emojis
 
 Slack connector for Tock supports a few slack emojis, more will be added

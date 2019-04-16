@@ -20,7 +20,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
-import fr.vsct.tock.bot.connector.slack.model.CallbackEvent
 import fr.vsct.tock.bot.connector.slack.model.EventApiMessage
 import fr.vsct.tock.bot.connector.slack.model.SlackConnectorMessage
 import fr.vsct.tock.bot.connector.slack.model.UrlVerificationEvent
@@ -37,6 +36,7 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.vertx.vertx
 import mu.KotlinLogging
+import java.net.URLDecoder
 import java.time.Duration
 
 class SlackConnector(
@@ -68,8 +68,15 @@ class SlackConnector(
             router.post(path).handler { context ->
                 val requestTimerData = requestTimer.start("slack_webhook")
                 try {
-                    val body = context.bodyAsString
+                    val body = context.bodyAsString.let {
+                        if (it.startsWith("payload=")) {
+                            URLDecoder.decode(it.substring("payload=".length), "UTF-8")
+                        } else {
+                            it
+                        }
+                    }
                     logger.info { "message received from slack: $body" }
+
 
                     val message: EventApiMessage = mapper.readValue(body)
                     if (message is UrlVerificationEvent) {
@@ -77,10 +84,10 @@ class SlackConnector(
                             .response()
                             .putHeader("Content-type", "text/plain")
                             .end(message.challenge)
-                    } else if (message is CallbackEvent) {
+                    } else {
                         //answer to slack immediately
                         context.response().end()
-                        val event = SlackRequestConverter.toEvent(message.event, applicationId)
+                        val event = SlackRequestConverter.toEvent(message, applicationId)
                         if (event != null) {
                             executor.executeBlocking {
                                 controller.handle(event)
@@ -88,8 +95,6 @@ class SlackConnector(
                         } else {
                             logger.debug { "skip message: $body" }
                         }
-                    } else {
-                        logger.warn { "unhandled event: $body" }
                     }
                 } catch (e: Throwable) {
                     logger.logError(e, requestTimerData)

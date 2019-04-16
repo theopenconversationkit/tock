@@ -29,7 +29,7 @@ import retrofit2.http.Path
 
 object SlackClient {
 
-    private val logger = KotlinLogging.logger {  }
+    private val logger = KotlinLogging.logger { }
 
 
     interface SlackApi {
@@ -38,17 +38,17 @@ object SlackClient {
     }
 
     private val slackApi: SlackApi = retrofitBuilderWithTimeoutAndLogger(
-            30000,
-            logger
-            )
-            .baseUrl("https://hooks.slack.com")
-            .build()
-            .create(SlackApi::class.java)
+        30000,
+        logger
+    )
+        .baseUrl("https://hooks.slack.com")
+        .build()
+        .create(SlackApi::class.java)
 
     fun sendMessage(outToken1: String, outToken2: String, outToken3: String, message: SlackConnectorMessage) {
         val body = RequestBody.create(MediaType.parse("application/json"), mapper.writeValueAsBytes(message))
         val response = slackApi.sendMessage(outToken1, outToken2, outToken3, body).execute()
-        println(response)
+        logger.debug { response }
     }
 
 }
