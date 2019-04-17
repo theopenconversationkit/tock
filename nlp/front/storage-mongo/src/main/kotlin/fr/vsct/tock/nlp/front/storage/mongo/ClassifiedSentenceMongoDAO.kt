@@ -47,6 +47,7 @@ import fr.vsct.tock.nlp.front.storage.mongo.ClassifiedSentenceCol_.Companion.Usa
 import fr.vsct.tock.nlp.front.storage.mongo.MongoFrontConfiguration.database
 import fr.vsct.tock.nlp.front.storage.mongo.ParseRequestLogMongoDAO.ParseRequestLogStatCol
 import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.shared.error
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
@@ -142,18 +143,22 @@ internal object ClassifiedSentenceMongoDAO : ClassifiedSentenceDAO {
 
     private val col: MongoCollection<ClassifiedSentenceCol> by lazy {
         val c = database.getCollection<ClassifiedSentenceCol>("classified_sentence")
-        c.ensureUniqueIndex(Text, Language, ApplicationId)
-        c.ensureIndex(Language, ApplicationId, Status)
-        c.ensureIndex(Status)
-        c.ensureIndex(UpdateDate)
-        c.ensureIndex(orderBy(mapOf(ApplicationId to true, Language to true, UpdateDate to false)))
-        c.ensureIndex(Language, ApplicationId, UsageCount)
-        c.ensureIndex(Language, ApplicationId, UnknownCount)
-        c.ensureIndex(Language, Status, Classification_.intentId)
-        c.ensureIndex(
-            ApplicationId, Classification_.intentId, Language, UpdateDate,
-            indexOptions = IndexOptions().background(true)
-        )
+        try {
+            c.ensureUniqueIndex(Text, Language, ApplicationId)
+            c.ensureIndex(Language, ApplicationId, Status)
+            c.ensureIndex(Status)
+            c.ensureIndex(UpdateDate)
+            c.ensureIndex(orderBy(mapOf(ApplicationId to true, Language to true, UpdateDate to false)))
+            c.ensureIndex(Language, ApplicationId, UsageCount)
+            c.ensureIndex(Language, ApplicationId, UnknownCount)
+            c.ensureIndex(Language, Status, Classification_.intentId)
+            c.ensureIndex(
+                ApplicationId, Classification_.intentId, Language, UpdateDate,
+                indexOptions = IndexOptions().background(true)
+            )
+        } catch (e: Exception) {
+            logger.error(e)
+        }
         c
     }
 
