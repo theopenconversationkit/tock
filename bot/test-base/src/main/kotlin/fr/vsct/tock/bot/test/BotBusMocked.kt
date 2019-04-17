@@ -105,6 +105,22 @@ fun mockTockCommon(bus: BotBus) {
         )
     } returns null
     every { bus.changeEntityValue(any(), any<Value>()) } returns Unit
+    every {
+        bus.entityText(
+            any<Entity>()
+        )
+    } returns null
+    every {
+        bus.entityValueDetails(
+            any<Entity>()
+        )
+    } returns null
+    every {
+        bus.entityValueDetails(
+            any<String>()
+        )
+    } returns null
+    every { bus.changeEntityText(any(), any()) } returns Unit
 
     val playerId = PlayerId("user")
     every { bus.userId } returns playerId
