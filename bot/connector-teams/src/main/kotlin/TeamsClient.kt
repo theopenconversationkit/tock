@@ -12,6 +12,7 @@ import fr.vsct.tock.bot.connector.teams.messages.MarkdownHelper.activeLink
 import fr.vsct.tock.bot.connector.teams.messages.TeamsBotMessage
 import fr.vsct.tock.bot.connector.teams.messages.TeamsCardAction
 import fr.vsct.tock.bot.connector.teams.messages.TeamsHeroCard
+import fr.vsct.tock.shared.Level
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.jackson.mapper
@@ -51,7 +52,8 @@ internal class TeamsClient(
     init {
         loginApi = retrofitBuilderWithTimeoutAndLogger(
             longProperty("tock_whatsapp_request_timeout_ms", 30000),
-            logger
+            logger,
+            Level.BASIC
         )
             .baseUrl("https://login.microsoftonline.com")
             .addJacksonConverter(teamsMapper)
@@ -61,7 +63,8 @@ internal class TeamsClient(
         connectorApi = retrofitBuilderWithTimeoutAndLogger(
             longProperty("tock_whatsapp_request_timeout_ms", 30000),
             logger,
-            interceptors = listOf(customInterceptor)
+            Level.BASIC,
+            listOf(customInterceptor)
         )
             .baseUrl("https://smba.trafficmanager.net/emea/")
             .addJacksonConverter(teamsMapper)
@@ -130,7 +133,6 @@ internal class TeamsClient(
     }
 
     fun isTokenExpired(): Boolean {
-        logger.debug { "IS TOKEN EXPIRED" }
         if (Instant.now().isAfter(
                 tokenExpiration?.minus(
                     10,
@@ -138,6 +140,7 @@ internal class TeamsClient(
                 )
             )
         ) {
+            logger.debug("Microsoft token is expired, gotta fetching a new one")
             return true
         }
         return false
@@ -201,10 +204,7 @@ internal class TeamsClient(
             request = request.newBuilder()
                 .addHeader("Authorization", "Bearer $token")
                 .build()
-            val response = chain.proceed(request)
-            logger.debug { "Response sent to Teams : ${response.code()} - ${response.message()}" }
-
-            return response
+            return chain.proceed(request)
         }
     }
 }
