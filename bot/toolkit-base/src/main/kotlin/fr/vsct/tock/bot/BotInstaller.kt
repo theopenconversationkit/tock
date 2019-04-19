@@ -47,9 +47,9 @@ fun registerBot(botProvider: BotProvider) = BotRepository.registerBotProvider(bo
 /**
  * Register and install a new bot.
  */
-fun registerAndInstallBot(botDefinition: BotDefinition) {
+fun registerAndInstallBot(botDefinition: BotDefinition, additionalModules: List<Kodein.Module> = emptyList()) {
     registerBot(botDefinition)
-    installBots()
+    installBots(additionalModules = additionalModules)
 }
 
 /**
