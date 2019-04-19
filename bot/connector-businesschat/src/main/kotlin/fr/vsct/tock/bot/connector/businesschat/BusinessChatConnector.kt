@@ -39,8 +39,12 @@ import mu.KotlinLogging
  * @param path base path for our business chat endpoints
  * @param businessId your organization Business ID
  */
-internal class BusinessChatConnector(private val path: String, private val connectorId: String, private val businessId: String) :
-        ConnectorBase(BusinessChatConnectorProvider.connectorType) {
+internal class BusinessChatConnector(
+    private val path: String,
+    private val connectorId: String,
+    private val businessId: String
+) :
+    ConnectorBase(BusinessChatConnectorProvider.connectorType) {
 
     private val logger = KotlinLogging.logger { }
     private val cspBusinessChatClient: CSPBusinessChatClient get() = injector.provide()
@@ -66,7 +70,7 @@ internal class BusinessChatConnector(private val path: String, private val conne
      */
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
-            router.post(path).handler { context ->
+            router.post(path).blockingHandler { context ->
                 val requestTimerData = BotRepository.requestTimer.start("business chat start")
                 try {
                     val body = context.bodyAsString
@@ -82,10 +86,10 @@ internal class BusinessChatConnector(private val path: String, private val conne
                                 when (it) {
                                     is SendSentence -> {
                                         controller.handle(
-                                                event,
-                                                ConnectorData(
-                                                        BusinessChatConnectorCallback(connectorId)
-                                                )
+                                            event,
+                                            ConnectorData(
+                                                BusinessChatConnectorCallback(connectorId)
+                                            )
                                         )
                                     }
                                 }
