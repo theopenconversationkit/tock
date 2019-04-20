@@ -22,10 +22,14 @@ import fr.vsct.tock.bot.connector.ConnectorProvider
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.ConnectorTypeConfiguration
 import fr.vsct.tock.bot.connector.ConnectorTypeConfigurationField
-import fr.vsct.tock.translator.UserInterfaceType
+import fr.vsct.tock.shared.resourceAsString
+import fr.vsct.tock.translator.UserInterfaceType.textAndVoiceAssistant
 
-const val BUSINESS_CHAT_CONNECTOR_TYPE_ID = "business chat"
-val businessChatConnectorType = ConnectorType(BUSINESS_CHAT_CONNECTOR_TYPE_ID, UserInterfaceType.textAndVoiceAssistant)
+internal const val BUSINESS_CHAT_CONNECTOR_TYPE_ID = "businesschat"
+/**
+ * The Business Chat connector type.
+ */
+val businessChatConnectorType = ConnectorType(BUSINESS_CHAT_CONNECTOR_TYPE_ID, textAndVoiceAssistant)
 
 /**
  * Defines the configuration to be exposed on the bot admin
@@ -49,14 +53,15 @@ internal object BusinessChatConnectorProvider : ConnectorProvider {
      */
     override fun configuration(): ConnectorTypeConfiguration {
         return ConnectorTypeConfiguration(
-            businessChatConnectorType,
-            listOf(
-                ConnectorTypeConfigurationField(
-                    "Business Id",
-                    BUSINESS_ID,
-                    true
-                )
-            )
+                businessChatConnectorType,
+                listOf(
+                        ConnectorTypeConfigurationField(
+                                "Business Id",
+                                BUSINESS_ID,
+                                true
+                        )
+                ),
+                resourceAsString("/businesschat.svg")
         )
     }
 }

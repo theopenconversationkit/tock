@@ -16,8 +16,8 @@
 
 package fr.vsct.tock.bot.connector.businesschat
 
-import fr.vsct.tock.bot.connector.businesschat.model.csp.message.Message
 import fr.vsct.tock.bot.connector.businesschat.model.common.MessageType
+import fr.vsct.tock.bot.connector.businesschat.model.csp.message.Message
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorTextMessage
 import fr.vsct.tock.bot.engine.BotBus
@@ -27,7 +27,7 @@ import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 
-object MessageConverter {
+internal object MessageConverter {
 
     /**
      * Converts a [BotBus] [Action] to a [BusinessChatConnectorMessage]
@@ -36,8 +36,7 @@ object MessageConverter {
         return if (action is SendSentence) {
             if (action.text == null) {
                 action.messages.first() as? BusinessChatConnectorMessage
-            }
-            else BusinessChatConnectorTextMessage(
+            } else BusinessChatConnectorTextMessage(
                     sourceId = action.playerId.id,
                     destinationId = action.recipientId.id,
                     body = action.text.toString()
@@ -49,16 +48,16 @@ object MessageConverter {
      * Converts a message to a [Event]
      */
     fun toEvent(message: Message, connectorId: String): Event? =
-        when (message.type) {
-            MessageType.text -> {
-                SendSentence(
-                    applicationId = connectorId,
-                    playerId = PlayerId(message.sourceId, PlayerType.user),
-                    recipientId = PlayerId(message.destinationId, PlayerType.bot),
-                    text = message.body
-                )
+            when (message.type) {
+                MessageType.text -> {
+                    SendSentence(
+                            applicationId = connectorId,
+                            playerId = PlayerId(message.sourceId, PlayerType.user),
+                            recipientId = PlayerId(message.destinationId, PlayerType.bot),
+                            text = message.body
+                    )
+                }
+                else -> null
             }
-            else -> null
-        }
 }
 
