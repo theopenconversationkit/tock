@@ -441,7 +441,7 @@ interface BotBus : I18nTranslator {
     fun end(
         delay: Long = botDefinition.defaultDelay(currentAnswerIndex),
         messageProvider: BotBus.() -> Any?
-    ): Any? {
+    ): BotBus {
         val r = messageProvider(this)
         if (r is CharSequence) {
             end(r, delay)
