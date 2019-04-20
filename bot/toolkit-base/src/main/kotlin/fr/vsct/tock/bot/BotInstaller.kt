@@ -37,39 +37,52 @@ import io.vertx.ext.web.Router
 /**
  * Register a new bot.
  */
+@Deprecated("use registerAndInstallBot")
 fun registerBot(botDefinition: BotDefinition) = registerBot(BotProviderBase(botDefinition))
 
 /**
  * Register a new bot.
  */
+@Deprecated("use registerAndInstallBot")
 fun registerBot(botProvider: BotProvider) = BotRepository.registerBotProvider(botProvider)
 
 /**
  * Register and install a new bot.
  */
-fun registerAndInstallBot(botDefinition: BotDefinition, additionalModules: List<Kodein.Module> = emptyList()) {
+fun registerAndInstallBot(
+    botDefinition: BotDefinition,
+    additionalModules: List<Kodein.Module> = emptyList(),
+    vararg routerHandlers: (Router) -> Unit
+) {
     registerBot(botDefinition)
-    installBots(additionalModules = additionalModules)
+    installBots(routerHandlers.toList(), additionalModules)
 }
 
 /**
  * Register and install a new bot.
  */
-fun registerAndInstallBot(botProvider: BotProvider) {
+fun registerAndInstallBot(
+    botProvider: BotProvider,
+    additionalModules: List<Kodein.Module> = emptyList(),
+    vararg routerHandlers: (Router) -> Unit
+) {
     registerBot(botProvider)
-    installBots()
+    installBots(routerHandlers.toList(), additionalModules)
 }
 
 /**
  * Install the bot(s) with the specified additional router handlers and additional Tock Modules
  */
+@Deprecated("use registerAndInstallBot")
 fun installBots(vararg routerHandlers: (Router) -> Unit, additionalModules: List<Kodein.Module> = emptyList()) {
-    install(routerHandlers.toList(), additionalModules)
+    installBots(routerHandlers.toList(), additionalModules)
 }
 
-private fun install(routerHandlers: List<(Router) -> Unit>, additionalModules: List<Kodein.Module> = emptyList()) {
+/**
+ * Install the bot(s) with the specified additional router handlers and additional Tock Modules
+ */
+private fun installBots(routerHandlers: List<(Router) -> Unit>, additionalModules: List<Kodein.Module> = emptyList()) {
     BotIoc.setup(additionalModules)
-
     BotRepository.installBots(routerHandlers.toList())
 }
 
