@@ -16,6 +16,7 @@
 
 import {Component, Inject, OnInit} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
+import {StateService} from "../../core-nlp/state.service";
 
 @Component({
   selector: 'tock-intent-dialog',
@@ -24,24 +25,29 @@ import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 })
 export class IntentDialogComponent implements OnInit {
 
-  create:boolean;
+  create: boolean;
   name: string;
   label: string;
-  category: string;
+  category: string = "default";
   description: string;
+  categories: string[];
+  dialogType: string;
   private nameInitialized = false;
 
   constructor(
     public dialogRef: MatDialogRef<IntentDialogComponent>,
-    @Inject(MAT_DIALOG_DATA) public data: any) {
-       this.create = this.data.create;
-       this.name = this.data.name;
-       this.label = this.data.label;
-       this.description = this.data.description;
-       this.category = this.data.category;
+    @Inject(MAT_DIALOG_DATA) public data: any,
+    private state: StateService) {
+    this.create = this.data.create;
+    this.name = this.data.name;
+    this.label = this.data.label;
+    this.description = this.data.description;
+    this.category = this.data.category;
+    this.dialogType = this.data.story ? "Story" : "Intent";
   }
 
   ngOnInit() {
+    this.state.currentIntentsCategories.subscribe(c => this.categories = c.map(cat => cat.category));
   }
 
   copyToName() {

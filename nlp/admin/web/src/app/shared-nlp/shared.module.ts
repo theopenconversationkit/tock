@@ -19,6 +19,7 @@ import {CommonModule} from "@angular/common";
 import {FormsModule} from "@angular/forms";
 import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component";
 import {
+  MatAutocompleteModule,
   MatButtonModule,
   MatButtonToggleModule,
   MatCardModule,
@@ -53,6 +54,7 @@ import {ScrollComponent} from "../scroll/scroll.component";
 @NgModule({
   imports: [
     CommonModule,
+    MatAutocompleteModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,
@@ -83,6 +85,7 @@ import {ScrollComponent} from "../scroll/scroll.component";
   declarations: [ConfirmDialogComponent, MapToIterablePipe, ScrollComponent],
   providers: [],
   exports: [
+    MatAutocompleteModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,

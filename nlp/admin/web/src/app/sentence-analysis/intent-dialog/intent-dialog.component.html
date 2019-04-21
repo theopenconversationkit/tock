@@ -14,25 +14,29 @@
   ~ limitations under the License.
   -->
 
-<h1 mat-dialog-title *ngIf="create">Create New Intent</h1>
-<h1 mat-dialog-title *ngIf="!create">Update Intent {{name ? name : label}}</h1>
+<h1 mat-dialog-title *ngIf="create">Create New {{dialogType}}</h1>
+<h1 mat-dialog-title *ngIf="!create">Update {{dialogType}} {{name ? name : label}}</h1>
 <div class="container">
   <form #intentForm="ngForm" class="container">
     <mat-form-field>
       <input matInput name="label" placeholder="Label" [(ngModel)]="label" (keyup)="copyToName()" (keyup.enter)="save()"
-             matTooltip="Displayed label of the intent">
+             matTooltip="Displayed label">
     </mat-form-field>
     <mat-form-field>
       <input [disabled]="!create" matInput name="name" placeholder="Name" [(ngModel)]="name" (keyup)="format()" (keyup.enter)="save()"
-             matTooltip="Technical id of the intent"
+             matTooltip="Technical id"
              required>
     </mat-form-field>
     <mat-form-field>
-      <textarea rows="5" matInput name="description" placeholder="Description" [(ngModel)]="description"></textarea>
-    </mat-form-field>
-    <mat-form-field>
       <input matInput name="category" placeholder="Category" [(ngModel)]="category"
-             matTooltip="Optional category of the intent">
+             matTooltip="Category"
+             [matAutocomplete]="catAuto">
+    </mat-form-field>
+    <mat-autocomplete #catAuto="matAutocomplete">
+      <mat-option *ngFor="let c of categories" [value]="c">{{c}}</mat-option>
+      </mat-autocomplete>
+    <mat-form-field>
+      <textarea rows="5" matInput name="description" placeholder="Description" [(ngModel)]="description"></textarea>
     </mat-form-field>
   </form>
 </div>
