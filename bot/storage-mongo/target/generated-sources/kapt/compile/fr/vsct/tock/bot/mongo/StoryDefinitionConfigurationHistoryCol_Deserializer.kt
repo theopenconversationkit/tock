@@ -5,7 +5,7 @@ import com.fasterxml.jackson.core.JsonToken
 import com.fasterxml.jackson.databind.DeserializationContext
 import com.fasterxml.jackson.databind.JsonDeserializer
 import com.fasterxml.jackson.databind.module.SimpleModule
-import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
 import java.time.Instant
 import kotlin.Boolean
 import kotlin.String

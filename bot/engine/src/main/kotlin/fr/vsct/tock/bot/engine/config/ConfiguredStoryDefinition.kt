@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.engine.config
 
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
-import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.definition.Intent
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.definition.StoryHandler
@@ -35,17 +35,17 @@ internal class ConfiguredStoryDefinition(val configuration: StoryDefinitionConfi
     override val id: String = configuration._id.toString()
 
     override val starterIntents: Set<Intent> =
-        setOf(configuration.intent) + (configuration.storyDefinition()?.starterIntents ?: emptySet())
+        setOf(configuration.intent) + (configuration.storyDefinition(configuration.botId)?.starterIntents ?: emptySet())
 
     override val intents: Set<Intent> =
-        starterIntents + (configuration.storyDefinition()?.intents ?: emptySet())
+        starterIntents + (configuration.storyDefinition(configuration.botId)?.intents ?: emptySet())
 
     override val storyHandler: StoryHandler = ConfiguredStoryHandler(configuration)
 
     override val steps: Set<StoryStep<out StoryHandlerDefinition>> =
-        configuration.storyDefinition()?.steps ?: emptySet()
+        configuration.storyDefinition(configuration.botId)?.steps ?: emptySet()
 
     override val unsupportedUserInterfaces: Set<UserInterfaceType> =
-        configuration.storyDefinition()?.unsupportedUserInterfaces ?: emptySet()
+        configuration.storyDefinition(configuration.botId)?.unsupportedUserInterfaces ?: emptySet()
 
 }

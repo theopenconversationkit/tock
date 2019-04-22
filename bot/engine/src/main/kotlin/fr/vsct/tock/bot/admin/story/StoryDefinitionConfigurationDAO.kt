@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.bot
+package fr.vsct.tock.bot.admin.story
 
 import org.litote.kmongo.Id
 
@@ -30,9 +30,11 @@ interface StoryDefinitionConfigurationDAO {
 
     fun getStoryDefinitionById(id: Id<StoryDefinitionConfiguration>): StoryDefinitionConfiguration?
 
-    fun getStoryDefinitionByBotIdAndIntent(botId: String, intent:String): StoryDefinitionConfiguration?
+    fun getStoryDefinitionByNamespaceAndBotIdAndIntent(namespace: String, botId: String, intent: String): StoryDefinitionConfiguration?
 
-    fun getStoryDefinitionsByBotId(botId: String): List<StoryDefinitionConfiguration>
+    fun getStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace: String, botId: String, storyId: String): StoryDefinitionConfiguration?
+
+    fun getStoryDefinitionsByNamespaceAndBotId(namespace: String, botId: String): List<StoryDefinitionConfiguration>
 
     fun save(story: StoryDefinitionConfiguration)
 

@@ -49,7 +49,7 @@ export class I18nLabel {
               public statCount?: number,
               public lastUpdate?: Date,
               public unhandledLocaleStats?: I18nLabelStat[],
-              public version?:number) {
+              public version?: number) {
   }
 
   defaultLocalizedLabel(): I18nLocalizedLabel {
@@ -163,5 +163,13 @@ export class I18nLabelStat {
 
   static fromJSONArray(json?: Array<any>): I18nLabelStat[] {
     return json ? json.map(I18nLabelStat.fromJSON) : [];
+  }
+}
+
+export class CreateI18nLabelRequest {
+
+  constructor(public category: string,
+              public label:string,
+              public locale:string) {
   }
 }

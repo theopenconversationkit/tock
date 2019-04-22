@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.mongo
 
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
-import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanExecution
 import fr.vsct.tock.bot.connector.ConnectorType

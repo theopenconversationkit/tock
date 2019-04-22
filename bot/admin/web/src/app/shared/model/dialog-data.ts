@@ -17,7 +17,7 @@
 import {AttachmentType, ConnectorType, EventType} from "../../core/model/configuration";
 import {JsonUtils} from "../../model/commons";
 import {ClassifiedEntity} from "../../model/nlp";
-import {IntentName} from "../../bot/model/bot-intent";
+import {IntentName} from "../../bot/model/story";
 
 export class DialogReport {
 

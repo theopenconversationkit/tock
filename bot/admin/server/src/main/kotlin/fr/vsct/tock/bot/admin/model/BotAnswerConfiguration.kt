@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.admin.model
 
+import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
 
@@ -23,9 +24,16 @@ import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
  *
  */
 @JsonTypeInfo(
-    use = JsonTypeInfo.Id.NAME,
-    include = JsonTypeInfo.As.EXISTING_PROPERTY,
-    property = "answerType"
+        use = JsonTypeInfo.Id.NAME,
+        include = JsonTypeInfo.As.EXISTING_PROPERTY,
+        property = "answerType"
 )
-abstract class BotAnswerConfiguration(val answerType: AnswerConfigurationType) {
+@JsonSubTypes(
+        JsonSubTypes.Type(value = BotSimpleAnswerConfiguration::class, name = "0"),
+        JsonSubTypes.Type(value = BotSimpleAnswerConfiguration::class, name = "simple"),
+        JsonSubTypes.Type(value = BotScriptAnswerConfiguration::class, name = "2"),
+        JsonSubTypes.Type(value = BotScriptAnswerConfiguration::class, name = "script")
+)
+abstract class BotAnswerConfiguration(val answerType: AnswerConfigurationType, val modified: Boolean = false) {
+
 }

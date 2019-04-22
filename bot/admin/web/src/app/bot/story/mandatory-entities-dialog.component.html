@@ -1,0 +1,69 @@
+<h1 mat-dialog-title>Mandatory Entities</h1>
+<div class="container">
+  <div *ngFor="let e of entities">
+    <!-- intent -->
+    <mat-form-field>
+      <input matInput name="intent" placeholder="Intent" [(ngModel)]="e.intent.name"
+             matTooltip="Intent used to find the Entity"
+             [matAutocomplete]="intentAuto"
+             (change)="onIntentChange(e, $event.target.value)"
+             (blur)="onIntentChange(e, $event.target.value)"
+             required>
+    </mat-form-field>
+      &nbsp;
+    <!-- entity role -->
+    <mat-form-field>
+      <input matInput name="role" placeholder="Entity" [(ngModel)]="e.role"
+             [matAutocomplete]="entityAuto"
+             required>
+    </mat-form-field>
+    <button class="answerButton" mat-icon-button color="warn"
+            matTooltip="Remove Mandatory Entity" (click)="removeEntity(e)">
+      <mat-icon>remove</mat-icon>
+    </button>
+    <tock-answer [answer]="e"></tock-answer>
+  </div>
+
+  <div>
+    <!-- intent -->
+    <mat-form-field>
+      <input matInput name="intent" placeholder="Intent" [(ngModel)]="newEntity.intent.name"
+             matTooltip="Intent used to find the Entity"
+             [matAutocomplete]="intentAuto"
+             (change)="onIntentChange(newEntity, $event.target.value)"
+             (blur)="onIntentChange(newEntity, $event.target.value)"
+             required>
+    </mat-form-field>
+    &nbsp;
+    <!-- entity role -->
+    <mat-form-field>
+      <input #newRole matInput name="role" placeholder="Entity" [(ngModel)]="newEntity.role"
+             [matAutocomplete]="entityAuto"
+             required>
+    </mat-form-field>
+    <button mat-icon-button color="primary" matTooltip="Add Mandatory Entity" class="answerButton" (click)="addEntity()">
+      <mat-icon>library_add</mat-icon>
+    </button>
+    <tock-answer [answer]="newEntity"></tock-answer>
+  </div>
+
+  <mat-autocomplete #entityAuto="matAutocomplete">
+    <mat-option *ngFor="let e of entityRoles" [value]="e">
+      {{e}}
+    </mat-option>
+  </mat-autocomplete>
+
+  <mat-autocomplete #intentAuto="matAutocomplete">
+    <mat-optgroup *ngFor="let category of state.currentIntentsCategories | async" [label]="category.category">
+      <mat-option *ngFor="let intent of category.intents" [value]="intent.name">
+        {{intent.intentLabel()}}
+      </mat-option>
+    </mat-optgroup>
+  </mat-autocomplete>
+
+
+</div>
+<mat-dialog-actions>
+  <button mat-stroked-button (click)="cancel()">Cancel</button>
+  <button mat-raised-button class="submit-button" color="primary" (click)="save()">Update</button>
+</mat-dialog-actions>

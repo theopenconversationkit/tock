@@ -58,13 +58,7 @@
 </div>
 
 <div *ngIf="graphData && selectedNode" style="height: 90%; width: 20%; float: left; overflow: auto; overflow-x: hidden">
-  <ul>
-    <li>Story: <b>{{selectedNode.nodeName()}}</b></li>
-    <li *ngIf="selectedNode.intent">Intent: <b>{{selectedNode.intent}}</b></li>
-    <li *ngIf="selectedNode.step">Step: <b>{{selectedNode.step}}</b></li>
-    <li *ngIf="selectedNode.entities.length !==0">Entities: <b>{{selectedNode.entities}}</b></li>
-    <li>Count: <b>{{selectedNode.count}}</b></li>
-  </ul>
+  <tock-story [storyNode]="selectedNode"></tock-story>
 </div>
 
 <div *ngIf="graphData && selectedEdge" style="height: 90%; width: 20%; float: left; overflow: auto; overflow-x: hidden">

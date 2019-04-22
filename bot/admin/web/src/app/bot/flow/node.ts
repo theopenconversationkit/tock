@@ -17,6 +17,14 @@ export class StoryNode {
     this.count = this.states.reduce((sum, s) => sum + s.count, 0);
   }
 
+  displayCount(): string {
+    if (this.count < 1000) {
+      return this.count.toString();
+    } else {
+      return Math.floor(this.count / 1000) + "k"
+    }
+  }
+
   displayName(): string {
     const sId = this.storyDefinitionId;
     const i = this.states[0].intent ? this.states[0].intent : this.intent;

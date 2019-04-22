@@ -22,7 +22,8 @@ import fr.vsct.tock.bot.admin.bot.BotVersion
  * An [AnswerConfiguration] defined by a Kotlin script.
  */
 data class ScriptAnswerConfiguration(
-        val scriptVersions: List<ScriptAnswerVersionedConfiguration>
+        val scriptVersions: List<ScriptAnswerVersionedConfiguration>,
+        val current:ScriptAnswerVersionedConfiguration = scriptVersions.maxBy { it.date }!!
 ) : AnswerConfiguration(AnswerConfigurationType.script) {
 
     internal fun findBestVersion(version: BotVersion): ScriptAnswerVersionedConfiguration? {

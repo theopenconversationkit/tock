@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.admin
 
 import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
+import fr.vsct.tock.bot.admin.BotAdminService.createI18nRequest
 import fr.vsct.tock.bot.admin.BotAdminService.dialogReportDAO
 import fr.vsct.tock.bot.admin.BotAdminService.getBotConfigurationByApplicationIdAndBotId
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
@@ -25,12 +26,13 @@ import fr.vsct.tock.bot.admin.model.BotConfiguration
 import fr.vsct.tock.bot.admin.model.BotDialogRequest
 import fr.vsct.tock.bot.admin.model.BotI18nLabel
 import fr.vsct.tock.bot.admin.model.BotI18nLabels
-import fr.vsct.tock.bot.admin.model.BotIntentSearchRequest
-import fr.vsct.tock.bot.admin.model.CreateBotIntentRequest
+import fr.vsct.tock.bot.admin.model.BotStoryDefinitionConfiguration
+import fr.vsct.tock.bot.admin.model.CreateI18nLabelRequest
+import fr.vsct.tock.bot.admin.model.CreateStoryRequest
 import fr.vsct.tock.bot.admin.model.DialogFlowRequest
 import fr.vsct.tock.bot.admin.model.DialogsSearchQuery
+import fr.vsct.tock.bot.admin.model.StorySearchRequest
 import fr.vsct.tock.bot.admin.model.TestPlanUpdate
-import fr.vsct.tock.bot.admin.model.UpdateBotIntentRequest
 import fr.vsct.tock.bot.admin.model.UserSearchQuery
 import fr.vsct.tock.bot.admin.model.XRayPlanExecutionConfiguration
 import fr.vsct.tock.bot.admin.test.TestPlan
@@ -109,7 +111,7 @@ open class BotAdminVerticle : AdminVerticle() {
                         unauthorized()
                     }
                     if (getBotConfigurationByApplicationIdAndBotId(bot.namespace, bot.applicationId, bot.botId)
-                            ?.run { _id != conf._id } == true
+                                    ?.run { _id != conf._id } == true
                     ) {
                         badRequest("Connector identifier already exists")
                     }
@@ -123,27 +125,27 @@ open class BotAdminVerticle : AdminVerticle() {
                 val connectorProvider = BotRepository.findConnectorProvider(conf.connectorType)
                 if (connectorProvider != null) {
                     connectorProvider.check(conf.toConnectorConfiguration())
-                        .apply {
-                            if (isNotEmpty()) {
-                                badRequest(joinToString())
+                            .apply {
+                                if (isNotEmpty()) {
+                                    badRequest(joinToString())
+                                }
                             }
-                        }
                     BotAdminService.saveApplicationConfiguration(conf)
                     //add rest connector
                     if (bot._id == null && bot.connectorType != rest) {
                         addRestConnector(conf).apply {
                             BotAdminService.saveApplicationConfiguration(
-                                BotApplicationConfiguration(
-                                    connectorId,
-                                    conf.botId,
-                                    conf.namespace,
-                                    conf.nlpModel,
-                                    type,
-                                    ownerConnectorType,
-                                    getName(),
-                                    getBaseUrl(),
-                                    path = path
-                                )
+                                    BotApplicationConfiguration(
+                                            connectorId,
+                                            conf.botId,
+                                            conf.namespace,
+                                            conf.nlpModel,
+                                            type,
+                                            ownerConnectorType,
+                                            getName(),
+                                            getBaseUrl(),
+                                            path = path
+                                    )
                             )
                         }
                     }
@@ -157,14 +159,14 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonDelete("/configuration/bot/:confId", admin) { context ->
             BotAdminService.getBotConfigurationById(context.pathId("confId"))
-                ?.let {
-                    if (context.organization == it.namespace) {
-                        BotAdminService.deleteApplicationConfiguration(it)
-                        true
-                    } else {
-                        null
-                    }
-                } ?: unauthorized()
+                    ?.let {
+                        if (context.organization == it.namespace) {
+                            BotAdminService.deleteApplicationConfiguration(it)
+                            true
+                        } else {
+                            null
+                        }
+                    } ?: unauthorized()
         }
 
         blockingJsonPost("/test/talk", botUser) { context, query: BotDialogRequest ->
@@ -205,31 +207,31 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/test/plan/:planId/dialog/delete/:dialogId", botUser) { context, _: ApplicationScopedQuery ->
             TestPlanService.removeDialogFromTestPlan(
-                context.loadTestPlan(),
-                context.pathId("dialogId")
+                    context.loadTestPlan(),
+                    context.pathId("dialogId")
             )
         }
 
         blockingJsonPost("/test/plan/execute", botUser) { context, testPlan: TestPlan ->
             BotAdminService.getBotConfiguration(testPlan.botApplicationConfigurationId, context.organization)
-                .let {
-                    TestPlanService.saveAndRunTestPlan(
-                        BotAdminService.getRestClient(it),
-                        testPlan
-                    )
-                }
+                    .let {
+                        TestPlanService.saveAndRunTestPlan(
+                                BotAdminService.getRestClient(it),
+                                testPlan
+                        )
+                    }
         }
 
         blockingJsonPost("/test/plan/:planId/run", botUser) { context, _: ApplicationScopedQuery ->
             context.loadTestPlan().run {
                 TestPlanService.runTestPlan(
-                    BotAdminService.getRestClient(
-                        BotAdminService.getBotConfiguration(
-                            botApplicationConfigurationId,
-                            namespace
-                        )
-                    ),
-                    this
+                        BotAdminService.getRestClient(
+                                BotAdminService.getBotConfiguration(
+                                        botApplicationConfigurationId,
+                                        namespace
+                                )
+                        ),
+                        this
                 )
             }
         }
@@ -274,24 +276,28 @@ open class BotAdminVerticle : AdminVerticle() {
             }
         }
 
-        blockingJsonPost("/bot/intent/new", botUser) { context, query: CreateBotIntentRequest ->
-            BotAdminService.createBotIntent(context.organization, query) ?: unauthorized()
+        blockingJsonPost("/bot/story/new", botUser) { context, query: CreateStoryRequest ->
+            BotAdminService.createStory(context.organization, query) ?: unauthorized()
         }
 
-        blockingJsonPost("/bot/intent", botUser) { context, query: UpdateBotIntentRequest ->
-            BotAdminService.updateBotIntent(context.organization, query) ?: unauthorized()
+        blockingJsonPost("/bot/story", botUser) { context, story: BotStoryDefinitionConfiguration ->
+            BotAdminService.saveStory(context.organization, story) ?: unauthorized()
         }
 
-        blockingJsonPost("/bot/intents/search", botUser) { context, request: BotIntentSearchRequest ->
+        blockingJsonPost("/bot/story/search", botUser) { context, request: StorySearchRequest ->
             if (context.organization == request.namespace) {
-                BotAdminService.loadBotIntents(request)
+                BotAdminService.loadStories(request)
             } else {
                 unauthorized()
             }
         }
 
-        blockingJsonDelete("/bot/intent/:intentId", botUser) { context ->
-            BotAdminService.deleteBotIntent(context.organization, context.path("intentId"))
+        blockingJsonGet("/bot/story/:storyId", botUser) { context ->
+            BotAdminService.findStory(context.organization, context.path("storyId"))
+        }
+
+        blockingJsonDelete("/bot/story/:storyId", botUser) { context ->
+            BotAdminService.deleteStory(context.organization, context.path("storyId"))
         }
 
         blockingJsonPost("/flow", botUser) { context, request: DialogFlowRequest ->
@@ -305,13 +311,13 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingJsonGet("/i18n", botUser) { context ->
             val stats = i18n.getLabelStats(context.organization).groupBy { it.labelId }
             BotI18nLabels(i18n
-                .getLabels(context.organization)
-                .map {
-                    BotI18nLabel(
-                        it,
-                        stats[it._id] ?: emptyList()
-                    )
-                })
+                    .getLabels(context.organization)
+                    .map {
+                        BotI18nLabel(
+                                it,
+                                stats[it._id] ?: emptyList()
+                        )
+                    })
         }
 
         blockingJsonPost("/i18n/complete", botUser) { context, labels: List<I18nLabel> ->
@@ -328,6 +334,10 @@ open class BotAdminVerticle : AdminVerticle() {
             } else {
                 unauthorized()
             }
+        }
+
+        blockingJsonPost("/i18n/create", botUser) { context, request: CreateI18nLabelRequest ->
+            createI18nRequest(context.organization, request)
         }
 
         blockingDelete("/i18n/:id", botUser) { context ->
@@ -369,9 +379,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/xray/execute", botUser) { _, configuration: XRayPlanExecutionConfiguration ->
             XrayService(
-                listOfNotNull(configuration.configurationId),
-                listOf(configuration.testPlanKey),
-                configuration.testedBotId
+                    listOfNotNull(configuration.configurationId),
+                    listOf(configuration.testPlanKey),
+                    configuration.testedBotId
             ).executePlans()
         }
 

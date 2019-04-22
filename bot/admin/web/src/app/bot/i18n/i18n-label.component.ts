@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 import {StateService} from "../../core-nlp/state.service";
-import {Component, Input, OnInit} from "@angular/core";
+import {Component, EventEmitter, Input, OnInit, Output} from "@angular/core";
 import {I18nLabel, I18nLocalizedLabel, userInterfaces} from "../model/i18n";
 import {BotService} from "../bot-service";
 import {MatSnackBar} from "@angular/material";
@@ -44,6 +44,9 @@ export class I18nLabelComponent implements OnInit {
   intent: string;
 
   connectorTypes: ConnectorTypeConfiguration[] = [];
+
+  @Output()
+  delete = new EventEmitter();
 
   constructor(public state: StateService,
               private botService: BotService,
@@ -76,6 +79,7 @@ export class I18nLabelComponent implements OnInit {
         l = label._id;
       }
     }
+    this.delete.emit(label);
     this.botService
       .deleteI18nLabel(label)
       .subscribe(_ => this.snackBar.open(`Label ${l} deleted`, "Delete", {duration: 3000}));

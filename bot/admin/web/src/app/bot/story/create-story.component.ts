@@ -21,36 +21,30 @@ import {StateService} from "../../core-nlp/state.service";
 import {NormalizeUtil} from "../../model/commons";
 import {ParseQuery, Sentence} from "../../model/nlp";
 import {BotService} from "../bot-service";
-import {AnswerConfigurationType, CreateBotIntentRequest} from "../model/bot-intent";
+import {AnswerConfigurationType, CreateStoryRequest, IntentName, StoryDefinitionConfiguration} from "../model/story";
 import {ActivatedRoute} from "@angular/router";
+import {BotConfigurationService} from "../../core/bot-configuration.service";
 
 @Component({
-  selector: 'tock-create-bot-intent',
-  templateUrl: './create-bot-intent.component.html',
-  styleUrls: ['./create-bot-intent.component.css']
+  selector: 'tock-create-story',
+  templateUrl: './create-story.component.html',
+  styleUrls: ['./create-story.component.css']
 })
-export class CreateBotIntentComponent implements OnInit {
+export class CreateStoryComponent implements OnInit {
 
   sentence: Sentence;
   text: string;
-  reply: string;
-  script: string;
   intent: string;
-  intentId: string;
-  supportedConfigTypes = [AnswerConfigurationType.simple, AnswerConfigurationType.script];
-  configType: AnswerConfigurationType = AnswerConfigurationType.simple;
-
-  sentenceMode: boolean;
-  intentMode: boolean;
 
   botConfigurationId: string;
 
+  story: StoryDefinitionConfiguration;
+
   @ViewChild('newSentence') newSentence: ElementRef;
 
-  //@ViewChild('newReply') newReply: ElementRef;
-
   constructor(private nlp: NlpService,
-              private state: StateService,
+              public state: StateService,
+              private botConfiguration: BotConfigurationService,
               private bot: BotService,
               private snackBar: MatSnackBar,
               private route: ActivatedRoute) {
@@ -62,19 +56,8 @@ export class CreateBotIntentComponent implements OnInit {
       if (this.text) {
         this.onSentence(this.text);
       }
-      window.setTimeout(() => this.newSentence.nativeElement.focus(), 500);
+      setTimeout(() => this.newSentence.nativeElement.focus(), 500);
     });
-  }
-
-  getTypeLabel(type: AnswerConfigurationType): string {
-    switch (type) {
-      case AnswerConfigurationType.simple :
-        return "Simple";
-      case AnswerConfigurationType.script :
-        return "Script";
-      default :
-        return "Unknown";
-    }
   }
 
   onSentence(value: string) {
@@ -84,21 +67,34 @@ export class CreateBotIntentComponent implements OnInit {
     if (v.length == 0) {
       this.snackBar.open(`Please enter a non-empty sentence`, "ERROR", {duration: 2000});
     } else {
-      this.intentMode = false;
-      this.sentenceMode = true;
       this.nlp.parse(new ParseQuery(app.namespace, app.name, language, v, true)).subscribe(sentence => {
         this.sentence = sentence;
         this.initIntentName(v);
-        //setTimeout(_ => this.newReply.nativeElement.focus(), 100);
+        this.createStory();
       });
     }
   }
 
+  private createStory() {
+    this.botConfiguration.configurations.subscribe(confs => {
+      const botId = confs.find(c => c._id === this.botConfigurationId).botId;
+      let intent = this.intent;
+      this.story = new StoryDefinitionConfiguration(
+        intent,
+        botId,
+        new IntentName(intent),
+        AnswerConfigurationType.simple,
+        this.state.user.organization,
+        [],
+        "build",
+        intent
+      )
+    });
+  }
+
   resetState() {
-    this.sentenceMode = false;
-    this.intentMode = false;
     this.sentence = null;
-    this.intentId = null;
+    this.story = null;
   }
 
   initIntentName(value: string) {
@@ -113,63 +109,43 @@ export class CreateBotIntentComponent implements OnInit {
       candidate = candidateBase + (count++);
     }
     this.intent = candidate;
-    this.script = "import fr.vsct.tock.bot.definition.story\n" +
-      "\n" +
-      "val greetings = story(\"" + this.intent + "\") { \n" +
-      "           end(\"Hello World! :)\")\n" +
-      "}"
   }
 
-  isSimpleAnswer(): boolean {
-    return this.configType === AnswerConfigurationType.simple;
-  }
-
-  isScriptAnswer(): boolean {
-    return this.configType === AnswerConfigurationType.script;
-  }
-
-  onIntentChange(e:string) {
-    if(e) {
-      this.intentMode = true;
-      this.sentenceMode = false;
-      this.intentId = e;
+  onIntentChange(e: string) {
+    if (e) {
+      this.createStory();
     } else {
       this.resetState();
     }
   }
 
   onReply() {
-    if (this.sentenceMode && this.state.intentExists(this.intent)) {
+    if (this.state.intentExists(this.intent)) {
       this.snackBar.open(`Intent ${this.intent} already exists`, "Error", {duration: 5000});
       return;
     }
-    const answer = this.isScriptAnswer() ? this.script : this.reply;
-    if (!answer || answer.trim().length === 0) {
-      this.snackBar.open(`Please set a non empty reply`, "Error", {duration: 5000});
-      return;
-    }
-    this.bot.newBotIntent(
-      new CreateBotIntentRequest(
-        this.botConfigurationId,
-        this.intent,
-        this.state.currentLocale,
-        this.text ? [this.text.trim()] : [],
-        this.configType,
-        answer,
-        this.intentId
-      )
-    ).subscribe(intent => {
-      this.state.addIntent(intent);
-      this.snackBar.open(`New answer saved for language ${this.state.currentLocale}`, "Answer Saved", {duration: 3000});
-      this.onClose();
+    let invalidMessage = this.story.currentAnswer().invalidMessage();
+    if (invalidMessage) {
+      this.snackBar.open(`Error: ${invalidMessage}`, "ERROR", {duration: 5000});
+    } else {
+      this.bot.newStory(
+        new CreateStoryRequest(
+          this.story,
+          this.state.currentLocale,
+          this.text ? [this.text.trim()] : []
+        )
+      ).subscribe(intent => {
+        this.state.addIntent(intent);
+        this.snackBar.open(`New story created for language ${this.state.currentLocale}`, "New Story", {duration: 3000});
+        this.onClose();
 
-      this.newSentence.nativeElement.focus();
-    });
+        this.newSentence.nativeElement.focus();
+      });
+    }
   }
 
   onClose() {
     this.resetState();
-    this.reply = null;
     this.intent = null;
     this.text = null;
   }

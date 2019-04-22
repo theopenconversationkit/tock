@@ -1,4 +1,4 @@
-package fr.vsct.tock.bot.admin.bot
+package fr.vsct.tock.bot.admin.story
 
 import fr.vsct.tock.bot.admin.answer.AnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
@@ -29,6 +29,20 @@ private val __Answers: KProperty1<StoryDefinitionConfiguration, List<AnswerConfi
     get() = StoryDefinitionConfiguration::answers
 private val __Version: KProperty1<StoryDefinitionConfiguration, Int?>
     get() = StoryDefinitionConfiguration::version
+private val __Namespace: KProperty1<StoryDefinitionConfiguration, String?>
+    get() = StoryDefinitionConfiguration::namespace
+private val __MandatoryEntities: KProperty1<StoryDefinitionConfiguration,
+        List<StoryDefinitionConfigurationMandatoryEntity>?>
+    get() = StoryDefinitionConfiguration::mandatoryEntities
+private val __Steps: KProperty1<StoryDefinitionConfiguration,
+        List<StoryDefinitionConfigurationStep>?>
+    get() = StoryDefinitionConfiguration::steps
+private val __Name: KProperty1<StoryDefinitionConfiguration, String?>
+    get() = StoryDefinitionConfiguration::name
+private val __Category: KProperty1<StoryDefinitionConfiguration, String?>
+    get() = StoryDefinitionConfiguration::category
+private val __Description: KProperty1<StoryDefinitionConfiguration, String?>
+    get() = StoryDefinitionConfiguration::description
 private val ___id: KProperty1<StoryDefinitionConfiguration, Id<StoryDefinitionConfiguration>?>
     get() = StoryDefinitionConfiguration::_id
 class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property: KProperty1<*,
@@ -53,6 +67,27 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
     val version: KPropertyPath<T, Int?>
         get() = KPropertyPath<T, Int?>(this,__Version)
 
+    val namespace: KPropertyPath<T, String?>
+        get() = KPropertyPath<T, String?>(this,__Namespace)
+
+    val mandatoryEntities: KCollectionSimplePropertyPath<T,
+            StoryDefinitionConfigurationMandatoryEntity?>
+        get() = KCollectionSimplePropertyPath<T,
+                StoryDefinitionConfigurationMandatoryEntity?>(this,StoryDefinitionConfiguration::mandatoryEntities)
+
+    val steps: KCollectionSimplePropertyPath<T, StoryDefinitionConfigurationStep?>
+        get() = KCollectionSimplePropertyPath<T,
+                StoryDefinitionConfigurationStep?>(this,StoryDefinitionConfiguration::steps)
+
+    val name_: KPropertyPath<T, String?>
+        get() = KPropertyPath<T, String?>(this,__Name)
+
+    val category: KPropertyPath<T, String?>
+        get() = KPropertyPath<T, String?>(this,__Category)
+
+    val description: KPropertyPath<T, String?>
+        get() = KPropertyPath<T, String?>(this,__Description)
+
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
         get() = KPropertyPath<T, Id<StoryDefinitionConfiguration>?>(this,___id)
 
@@ -70,6 +105,20 @@ class StoryDefinitionConfiguration_<T>(previous: KPropertyPath<T, *>?, property:
             get() = KCollectionSimplePropertyPath(null, __Answers)
         val Version: KProperty1<StoryDefinitionConfiguration, Int?>
             get() = __Version
+        val Namespace: KProperty1<StoryDefinitionConfiguration, String?>
+            get() = __Namespace
+        val MandatoryEntities: KCollectionSimplePropertyPath<StoryDefinitionConfiguration,
+                StoryDefinitionConfigurationMandatoryEntity?>
+            get() = KCollectionSimplePropertyPath(null, __MandatoryEntities)
+        val Steps: KCollectionSimplePropertyPath<StoryDefinitionConfiguration,
+                StoryDefinitionConfigurationStep?>
+            get() = KCollectionSimplePropertyPath(null, __Steps)
+        val Name: KProperty1<StoryDefinitionConfiguration, String?>
+            get() = __Name
+        val Category: KProperty1<StoryDefinitionConfiguration, String?>
+            get() = __Category
+        val Description: KProperty1<StoryDefinitionConfiguration, String?>
+            get() = __Description
         val _id: KProperty1<StoryDefinitionConfiguration, Id<StoryDefinitionConfiguration>?>
             get() = ___id}
 }
@@ -95,6 +144,27 @@ class StoryDefinitionConfiguration_Col<T>(previous: KPropertyPath<T, *>?, proper
 
     val version: KPropertyPath<T, Int?>
         get() = KPropertyPath<T, Int?>(this,__Version)
+
+    val namespace: KPropertyPath<T, String?>
+        get() = KPropertyPath<T, String?>(this,__Namespace)
+
+    val mandatoryEntities: KCollectionSimplePropertyPath<T,
+            StoryDefinitionConfigurationMandatoryEntity?>
+        get() = KCollectionSimplePropertyPath<T,
+                StoryDefinitionConfigurationMandatoryEntity?>(this,StoryDefinitionConfiguration::mandatoryEntities)
+
+    val steps: KCollectionSimplePropertyPath<T, StoryDefinitionConfigurationStep?>
+        get() = KCollectionSimplePropertyPath<T,
+                StoryDefinitionConfigurationStep?>(this,StoryDefinitionConfiguration::steps)
+
+    val name_: KPropertyPath<T, String?>
+        get() = KPropertyPath<T, String?>(this,__Name)
+
+    val category: KPropertyPath<T, String?>
+        get() = KPropertyPath<T, String?>(this,__Category)
+
+    val description: KPropertyPath<T, String?>
+        get() = KPropertyPath<T, String?>(this,__Description)
 
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
         get() = KPropertyPath<T, Id<StoryDefinitionConfiguration>?>(this,___id)
@@ -124,6 +194,27 @@ class StoryDefinitionConfiguration_Map<T, K>(previous: KPropertyPath<T, *>?, pro
 
     val version: KPropertyPath<T, Int?>
         get() = KPropertyPath<T, Int?>(this,__Version)
+
+    val namespace: KPropertyPath<T, String?>
+        get() = KPropertyPath<T, String?>(this,__Namespace)
+
+    val mandatoryEntities: KCollectionSimplePropertyPath<T,
+            StoryDefinitionConfigurationMandatoryEntity?>
+        get() = KCollectionSimplePropertyPath<T,
+                StoryDefinitionConfigurationMandatoryEntity?>(this,StoryDefinitionConfiguration::mandatoryEntities)
+
+    val steps: KCollectionSimplePropertyPath<T, StoryDefinitionConfigurationStep?>
+        get() = KCollectionSimplePropertyPath<T,
+                StoryDefinitionConfigurationStep?>(this,StoryDefinitionConfiguration::steps)
+
+    val name_: KPropertyPath<T, String?>
+        get() = KPropertyPath<T, String?>(this,__Name)
+
+    val category: KPropertyPath<T, String?>
+        get() = KPropertyPath<T, String?>(this,__Category)
+
+    val description: KPropertyPath<T, String?>
+        get() = KPropertyPath<T, String?>(this,__Description)
 
     val _id: KPropertyPath<T, Id<StoryDefinitionConfiguration>?>
         get() = KPropertyPath<T, Id<StoryDefinitionConfiguration>?>(this,___id)

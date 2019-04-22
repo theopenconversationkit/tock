@@ -22,12 +22,14 @@ import fr.vsct.tock.bot.admin.answer.ScriptAnswerConfiguration
 /**
  *
  */
-data class BotScriptAnswerConfiguration(val scriptVersions: List<BotScriptAnswerVersionedConfiguration>) :
-    BotAnswerConfiguration(AnswerConfigurationType.script) {
+data class BotScriptAnswerConfiguration(
+        val scriptVersions: List<BotScriptAnswerVersionedConfiguration>,
+        val current: BotScriptAnswerVersionedConfiguration = scriptVersions.maxBy { it.date }!!) :
+        BotAnswerConfiguration(AnswerConfigurationType.script) {
 
     constructor(conf: ScriptAnswerConfiguration) : this(conf.scriptVersions.map {
         BotScriptAnswerVersionedConfiguration(
-            it
+                it
         )
     })
 

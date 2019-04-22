@@ -1,4 +1,4 @@
-package fr.vsct.tock.bot.admin.bot
+package fr.vsct.tock.bot.admin.story
 
 import com.fasterxml.jackson.core.JsonGenerator
 import com.fasterxml.jackson.databind.SerializerProvider
@@ -44,6 +44,40 @@ internal class StoryDefinitionConfiguration_Serializer :
         gen.writeFieldName("version")
         val _version_ = value.version
         gen.writeNumber(_version_)
+        gen.writeFieldName("namespace")
+        val _namespace_ = value.namespace
+        gen.writeString(_namespace_)
+        gen.writeFieldName("mandatoryEntities")
+        val _mandatoryEntities_ = value.mandatoryEntities
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.List::class.java,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity::class.java)
+                ),
+                true,
+                null
+                )
+                .serialize(_mandatoryEntities_, gen, serializers)
+        gen.writeFieldName("steps")
+        val _steps_ = value.steps
+        serializers.findTypedValueSerializer(
+                serializers.config.typeFactory.constructCollectionType(
+                kotlin.collections.List::class.java,
+                serializers.config.typeFactory.constructType(fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationStep::class.java)
+                ),
+                true,
+                null
+                )
+                .serialize(_steps_, gen, serializers)
+        gen.writeFieldName("name")
+        val _name_ = value.name
+        gen.writeString(_name_)
+        gen.writeFieldName("category")
+        val _category_ = value.category
+        gen.writeString(_category_)
+        gen.writeFieldName("description")
+        val _description_ = value.description
+        gen.writeString(_description_)
         gen.writeFieldName("_id")
         val __id_ = value._id
         serializers.defaultSerializeValue(__id_, gen)

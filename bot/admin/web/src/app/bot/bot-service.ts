@@ -16,10 +16,10 @@
 
 import {Injectable} from "@angular/core";
 import {RestService} from "../core-nlp/rest/rest.service";
-import {BotIntent, BotIntentSearchQuery, CreateBotIntentRequest, UpdateBotIntentRequest} from "./model/bot-intent";
+import {CreateStoryRequest, StoryDefinitionConfiguration, StorySearchQuery} from "./model/story";
 import {Intent} from "../model/nlp";
 import {Observable} from "rxjs";
-import {I18nLabel, I18nLabels} from "./model/i18n";
+import {CreateI18nLabelRequest, I18nLabel, I18nLabels} from "./model/i18n";
 import {FileUploader} from "ng2-file-upload";
 import {Feature} from "./model/feature";
 import {ApplicationDialogFlow, DialogFlowRequest} from "./model/flow";
@@ -30,20 +30,24 @@ export class BotService {
   constructor(private rest: RestService) {
   }
 
-  newBotIntent(request: CreateBotIntentRequest): Observable<Intent> {
-    return this.rest.post("/bot/intent/new", request, Intent.fromJSON);
+  newStory(request: CreateStoryRequest): Observable<Intent> {
+    return this.rest.post("/bot/story/new", request, Intent.fromJSON);
   }
 
-  updateBotIntent(request: UpdateBotIntentRequest): Observable<Intent> {
-    return this.rest.post("/bot/intent", request, Intent.fromJSON);
+  getStories(request: StorySearchQuery): Observable<StoryDefinitionConfiguration[]> {
+    return this.rest.post("/bot/story/search", request, StoryDefinitionConfiguration.fromJSONArray);
   }
 
-  getBotIntents(request: BotIntentSearchQuery): Observable<BotIntent[]> {
-    return this.rest.post("/bot/intents/search", request, BotIntent.fromJSONArray);
+  saveStory(story: StoryDefinitionConfiguration): Observable<StoryDefinitionConfiguration> {
+    return this.rest.post("/bot/story", story, StoryDefinitionConfiguration.fromJSON)
   }
 
-  deleteBotIntent(storyDefinitionId: string): Observable<boolean> {
-    return this.rest.delete(`/bot/intent/${storyDefinitionId}`);
+  findStory(storyDefinitionId: string): Observable<StoryDefinitionConfiguration> {
+    return this.rest.get(`/bot/story/${storyDefinitionId}`, StoryDefinitionConfiguration.fromJSON)
+  }
+
+  deleteStory(storyDefinitionId: string): Observable<boolean> {
+    return this.rest.delete(`/bot/story/${storyDefinitionId}`);
   }
 
   i18nLabels(): Observable<I18nLabels> {
@@ -60,6 +64,10 @@ export class BotService {
 
   saveI18nLabel(label: I18nLabel): Observable<boolean> {
     return this.rest.post("/i18n/save", label);
+  }
+
+  createI18nLabel(request: CreateI18nLabelRequest): Observable<I18nLabel> {
+    return this.rest.post("/i18n/create", request, I18nLabel.fromJSON);
   }
 
   deleteI18nLabel(label: I18nLabel): Observable<boolean> {

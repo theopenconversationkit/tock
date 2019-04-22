@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-import {Component, Inject, OnInit} from '@angular/core';
+import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
 
@@ -30,9 +30,11 @@ export class IntentDialogComponent implements OnInit {
   label: string;
   category: string = "default";
   description: string;
-  categories: string[];
+  categories: string[] = [];
   dialogType: string;
   private nameInitialized = false;
+
+  @ViewChild('labelElement') labelElement: ElementRef;
 
   constructor(
     public dialogRef: MatDialogRef<IntentDialogComponent>,
@@ -44,6 +46,7 @@ export class IntentDialogComponent implements OnInit {
     this.description = this.data.description;
     this.category = this.data.category;
     this.dialogType = this.data.story ? "Story" : "Intent";
+    setTimeout(() => this.labelElement.nativeElement.focus(), 500);
   }
 
   ngOnInit() {

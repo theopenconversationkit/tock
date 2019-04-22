@@ -30,7 +30,7 @@ import {UserRole} from "../model/auth";
       useValue: {
         configurationUrl: "/configuration",
         displayDialogUrl: "/monitoring/dialogs",
-        answerToSentenceUrl : "/build/intent-create",
+        answerToSentenceUrl : "/build/story-create",
         roleMap: new Map(
           [
             [UserRole.nlpUser, "/nlp"],

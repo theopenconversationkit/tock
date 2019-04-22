@@ -26,4 +26,5 @@ data class BotSimpleAnswerConfiguration(val answers: List<BotSimpleAnswer>)
     : BotAnswerConfiguration(AnswerConfigurationType.simple) {
 
     constructor(conf: SimpleAnswerConfiguration) : this(conf.answers.map { BotSimpleAnswer(it) })
+
 }

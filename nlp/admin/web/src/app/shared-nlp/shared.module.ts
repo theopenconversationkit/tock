@@ -20,6 +20,7 @@ import {FormsModule} from "@angular/forms";
 import {ConfirmDialogComponent} from "./confirm-dialog/confirm-dialog.component";
 import {
   MatAutocompleteModule,
+  MatBadgeModule,
   MatButtonModule,
   MatButtonToggleModule,
   MatCardModule,
@@ -55,6 +56,7 @@ import {ScrollComponent} from "../scroll/scroll.component";
   imports: [
     CommonModule,
     MatAutocompleteModule,
+    MatBadgeModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,
@@ -86,6 +88,7 @@ import {ScrollComponent} from "../scroll/scroll.component";
   providers: [],
   exports: [
     MatAutocompleteModule,
+    MatBadgeModule,
     MatButtonModule,
     MatButtonToggleModule,
     MatCardModule,

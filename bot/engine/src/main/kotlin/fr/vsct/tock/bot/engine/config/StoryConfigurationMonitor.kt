@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.engine.config
 
 import com.github.salomonbrys.kodein.instance
-import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.engine.Bot
 import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
@@ -55,8 +55,8 @@ internal object StoryConfigurationMonitor {
 
     private fun refresh(bot: Bot) {
         bot.botDefinition.updateStories(
-            storyDAO.getStoryDefinitionsByBotId(bot.botDefinition.botId)
-                .map { ConfiguredStoryDefinition(it) }
+                storyDAO.getStoryDefinitionsByNamespaceAndBotId(bot.botDefinition.namespace, bot.botDefinition.botId)
+                        .map { ConfiguredStoryDefinition(it) }
         )
     }
 

@@ -1,0 +1,17 @@
+.answer-title {
+  font-size: medium;
+  vertical-align: text-bottom;
+}
+.category {
+  font-size: x-small;
+}
+.actionButton {
+  margin-left: -15px;
+}
+.actions {
+  margin-top: 20px;
+}
+
+.intent {
+  font-style: italic;
+}

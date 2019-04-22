@@ -19,7 +19,8 @@ package fr.vsct.tock.bot.engine.config
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType.simple
 import fr.vsct.tock.bot.admin.answer.ScriptAnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.SimpleAnswerConfiguration
-import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
+import fr.vsct.tock.bot.admin.story.StoryDefinitionAnswersContainer
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.definition.StoryHandler
 import fr.vsct.tock.bot.engine.BotBus
 import mu.KotlinLogging
@@ -27,19 +28,30 @@ import mu.KotlinLogging
 /**
  *
  */
-internal class ConfiguredStoryHandler(val configuration: StoryDefinitionConfiguration) : StoryHandler {
+internal class ConfiguredStoryHandler(private val configuration: StoryDefinitionConfiguration) : StoryHandler {
 
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
     override fun handle(bus: BotBus) {
-        configuration.findCurrentAnswer().apply {
+        configuration.mandatoryEntities.forEach { entity ->
+            if (bus.entityValueDetails(entity.role) == null) {
+                entity.send(bus)
+                return@handle
+            }
+        }
+
+        configuration.send(bus)
+    }
+
+    private fun StoryDefinitionAnswersContainer.send(bus: BotBus) {
+        findCurrentAnswer().apply {
             when (this) {
                 null -> bus.fallbackAnswer()
                 is SimpleAnswerConfiguration -> bus.handleSimpleAnswer(this)
-                is ScriptAnswerConfiguration -> bus.handleScriptAnswer()
-                else -> error("type not supported for now: $configuration")
+                is ScriptAnswerConfiguration -> bus.handleScriptAnswer(this@send)
+                else -> error("type not supported for now: $this")
             }
         }
     }
@@ -47,7 +59,7 @@ internal class ConfiguredStoryHandler(val configuration: StoryDefinitionConfigur
     override fun support(bus: BotBus): Double = 1.0
 
     private fun BotBus.fallbackAnswer() =
-        botDefinition.unknownStory.storyHandler.handle(this)
+            botDefinition.unknownStory.storyHandler.handle(this)
 
     private fun BotBus.handleSimpleAnswer(simple: SimpleAnswerConfiguration?) {
         if (simple == null) {
@@ -55,23 +67,23 @@ internal class ConfiguredStoryHandler(val configuration: StoryDefinitionConfigur
         } else {
             simple.answers.let {
                 it.subList(0, it.size - 1)
-                    .forEach {
-                        send(it.key, it.delay)
-                    }
+                        .forEach { a ->
+                            if (a.delay == -1L) send(a.key) else send(a.key, a.delay)
+                        }
                 it.last().apply {
-                    end(key, delay)
+                    if (delay == -1L) end(key) else end(key, delay)
                 }
             }
         }
     }
 
-    private fun BotBus.handleScriptAnswer() {
-        configuration.storyDefinition()
-            ?.storyHandler
-            ?.handle(this)
+    private fun BotBus.handleScriptAnswer(container: StoryDefinitionAnswersContainer) {
+        container.storyDefinition(botDefinition.botId)
+                ?.storyHandler
+                ?.handle(this)
                 ?: {
-                    logger.warn { "no story definition for configured script for $configuration - use unknown" }
-                    handleSimpleAnswer(configuration.findAnswer(simple) as? SimpleAnswerConfiguration)
+                    logger.warn { "no story definition for configured script for $container - use unknown" }
+                    handleSimpleAnswer(container.findAnswer(simple) as? SimpleAnswerConfiguration)
                 }.invoke()
     }
 }

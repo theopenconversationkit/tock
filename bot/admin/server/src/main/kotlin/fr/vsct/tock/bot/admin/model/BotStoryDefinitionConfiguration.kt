@@ -16,38 +16,55 @@
 
 package fr.vsct.tock.bot.admin.model
 
+import fr.vsct.tock.bot.admin.answer.AnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
 import fr.vsct.tock.bot.admin.answer.ScriptAnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.SimpleAnswerConfiguration
-import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.definition.Intent
 import org.litote.kmongo.Id
 import org.litote.kmongo.newId
 
-/**
- *
- */
-data class BotStoryDefinitionConfiguration(
-    val storyId: String,
-    val botId: String,
-    val intent: Intent,
-    val currentType: AnswerConfigurationType,
-    val answers: List<BotAnswerConfiguration>,
-    val _id: Id<StoryDefinitionConfiguration> = newId()
-) {
-
-    constructor(story: StoryDefinitionConfiguration) : this(
-        story.storyId,
-        story.botId,
-        story.intent,
-        story.currentType,
-        story.answers.map {
+internal fun List<AnswerConfiguration>.mapAnswers(): List<BotAnswerConfiguration> =
+        map {
             when (it) {
                 is SimpleAnswerConfiguration -> BotSimpleAnswerConfiguration(it)
                 is ScriptAnswerConfiguration -> BotScriptAnswerConfiguration(it)
                 else -> error("unsupported conf $it")
             }
-        },
-        story._id
+        }
+
+/**
+ *
+ */
+data class BotStoryDefinitionConfiguration(
+        val storyId: String,
+        val botId: String,
+        val intent: Intent,
+        val currentType: AnswerConfigurationType,
+        val namespace: String,
+        val answers: List<BotAnswerConfiguration>,
+        val mandatoryEntities: List<BotStoryDefinitionConfigurationMandatoryEntity> = emptyList(),
+        val steps: List<BotStoryDefinitionConfigurationStep> = emptyList(),
+        val name: String = storyId,
+        val category: String = "default",
+        val description: String = "",
+        val _id: Id<StoryDefinitionConfiguration> = newId()
+) {
+
+    constructor(story: StoryDefinitionConfiguration) : this(
+            story.storyId,
+            story.botId,
+            story.intent,
+            story.currentType,
+            story.namespace,
+            story.answers.mapAnswers(),
+            story.mandatoryEntities.map { BotStoryDefinitionConfigurationMandatoryEntity(story, it) },
+            story.steps.map { BotStoryDefinitionConfigurationStep(story, it) },
+            story.name,
+            story.category,
+            story.description,
+            story._id
     )
+
 }

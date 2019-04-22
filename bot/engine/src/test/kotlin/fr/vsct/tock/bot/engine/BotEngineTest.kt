@@ -22,7 +22,7 @@ import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
-import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData

@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.admin.model
 
 import fr.vsct.tock.bot.admin.answer.SimpleAnswer
 import fr.vsct.tock.translator.I18nLabel
+import fr.vsct.tock.translator.I18nLabelValue
 import fr.vsct.tock.translator.Translator
 
 /**
@@ -27,4 +28,7 @@ data class BotSimpleAnswer(val label: I18nLabel, val delay: Long) {
 
     constructor(answer: SimpleAnswer)
             : this(Translator.saveIfNotExists(answer.key), answer.delay)
+
+    fun toConfiguration(): SimpleAnswer =
+            SimpleAnswer(I18nLabelValue(label), delay)
 }

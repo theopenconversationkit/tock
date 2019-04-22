@@ -1,7 +1,7 @@
 package fr.vsct.tock.bot.mongo
 
-import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
-import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration_
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration_
 import java.time.Instant
 import kotlin.Boolean
 import kotlin.String

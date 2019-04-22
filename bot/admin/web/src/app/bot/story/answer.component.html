@@ -1,0 +1,24 @@
+<div *ngIf="answer && answer.currentAnswer()">
+  <div *ngIf="!fullDisplay">
+    <span class="simple">{{answer.simpleTextView()}}</span>
+    <button mat-icon-button color="primary" matTooltip="Edit Answer" (click)="editAnswer()">
+      <mat-icon>question_answer</mat-icon>
+    </button>
+  </div>
+  <div *ngIf="fullDisplay">
+    <div class="answer-group">
+      <label id="answer-type-label">Type:</label>
+      <mat-radio-group aria-labelledby="answer-type-label" [(ngModel)]="answer.currentType" (change)="changeType($event)">
+        <mat-radio-button [value]="0" class="answer-type">Simple</mat-radio-button>
+        <mat-radio-button [value]="2" class="answer-type">Script</mat-radio-button>
+      </mat-radio-group>
+    </div>
+
+    <div *ngIf="answer.isSimpleAnswer()">
+      <tock-simple-answer [container]="answer"></tock-simple-answer>
+    </div>
+    <div *ngIf="answer.isScriptAnswer()">
+      <tock-script-answer [container]="answer"></tock-script-answer>
+    </div>
+  </div>
+</div>

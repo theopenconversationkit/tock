@@ -21,7 +21,7 @@ import com.github.salomonbrys.kodein.KodeinInjector
 import com.github.salomonbrys.kodein.bind
 import com.github.salomonbrys.kodein.provider
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfigurationDAO
-import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.admin.dialog.DialogReportDAO
 import fr.vsct.tock.bot.admin.test.TestPlanDAO
 import fr.vsct.tock.bot.admin.user.UserReportDAO

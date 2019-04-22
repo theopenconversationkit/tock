@@ -14,6 +14,7 @@
  * limitations under the License.
  */
 package fr.vsct.tock.bot.admin.kotlin.compiler
+
 /**
  *
  */
@@ -21,10 +22,16 @@ data class CompileError(
         val interval: TextInterval,
         val message: String,
         val severity: Severity,
-        val className: String? = null)
+        val className: String? = null) {
+    override fun toString(): String = "$interval: $message"
+}
 
-data class TextInterval(val start: TextPosition, val end: TextPosition)
+data class TextInterval(val start: TextPosition, val end: TextPosition) {
+    override fun toString(): String = "start $start | end $end"
+}
 
-data class TextPosition(val line: Int, val ch: Int)
+data class TextPosition(val line: Int, val ch: Int) {
+    override fun toString(): String = "line $line, char $ch"
+}
 
 enum class Severity { INFO, ERROR, WARNING }

@@ -16,29 +16,37 @@
 
 package fr.vsct.tock.bot.mongo
 
-import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration
-import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfigurationDAO
-import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration_.Companion.BotId
-import fr.vsct.tock.bot.admin.bot.StoryDefinitionConfiguration_.Companion.Intent
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationDAO
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.BotId
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Intent
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.Namespace
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration_.Companion.StoryId
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.asyncDatabase
 import fr.vsct.tock.bot.mongo.MongoBotConfiguration.database
 import fr.vsct.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Conf
 import fr.vsct.tock.bot.mongo.StoryDefinitionConfigurationHistoryCol_.Companion.Date
+import fr.vsct.tock.shared.defaultNamespace
+import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.watch
 import mu.KotlinLogging
 import org.litote.jackson.data.JacksonData
 import org.litote.kmongo.Data
 import org.litote.kmongo.Id
+import org.litote.kmongo.ascending
+import org.litote.kmongo.deleteMany
 import org.litote.kmongo.deleteOneById
 import org.litote.kmongo.ensureIndex
 import org.litote.kmongo.ensureUniqueIndex
 import org.litote.kmongo.eq
+import org.litote.kmongo.exists
 import org.litote.kmongo.findOne
 import org.litote.kmongo.findOneById
 import org.litote.kmongo.getCollection
 import org.litote.kmongo.getCollectionOfName
 import org.litote.kmongo.reactivestreams.getCollectionOfName
 import org.litote.kmongo.save
+import org.litote.kmongo.set
 import java.time.Instant
 
 /**
@@ -51,21 +59,48 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
     @Data(internal = true)
     @JacksonData(internal = true)
     data class StoryDefinitionConfigurationHistoryCol(
-        val conf: StoryDefinitionConfiguration,
-        val deleted: Boolean = false,
-        val date: Instant = Instant.now()
+            val conf: StoryDefinitionConfiguration,
+            val deleted: Boolean = false,
+            val date: Instant = Instant.now()
     )
 
     private val col = database.getCollectionOfName<StoryDefinitionConfiguration>("story_configuration")
     private val asyncCol = asyncDatabase.getCollectionOfName<StoryDefinitionConfiguration>("story_configuration")
     private val historyCol =
-        database.getCollection<StoryDefinitionConfigurationHistoryCol>("story_configuration_history")
+            database.getCollection<StoryDefinitionConfigurationHistoryCol>("story_configuration_history")
 
     init {
-        col.ensureIndex(BotId)
-        col.ensureUniqueIndex(BotId, Intent.name_)
-        historyCol.ensureIndex(Conf.botId)
-        historyCol.ensureIndex(Date)
+        try {
+            //TODO remove this in 19.9
+            try {
+                col.dropIndex(ascending(BotId))
+            } catch (e: Exception) {
+                //ignore
+            }
+            try {
+                col.dropIndex(ascending(BotId, Intent.name_))
+            } catch (e: Exception) {
+                //ignore
+            }
+            try {
+                historyCol.dropIndex(ascending(Conf.botId))
+                historyCol.deleteMany()
+            } catch (e: Exception) {
+                //ignore
+            }
+            col.updateMany(
+                    Namespace exists false,
+                    set(Namespace, defaultNamespace)
+            )
+            //END TODO
+
+            col.ensureIndex(Namespace, BotId)
+            col.ensureUniqueIndex(Namespace, BotId, Intent.name_)
+
+            historyCol.ensureIndex(Date)
+        } catch (e: Exception) {
+            logger.error(e)
+        }
     }
 
     override fun listenChanges(listener: () -> Unit) {
@@ -76,22 +111,26 @@ internal object StoryDefinitionConfigurationMongoDAO : StoryDefinitionConfigurat
         return col.findOneById(id)
     }
 
-    override fun getStoryDefinitionByBotIdAndIntent(botId: String, intent: String): StoryDefinitionConfiguration? {
+    override fun getStoryDefinitionByNamespaceAndBotIdAndIntent(namespace: String, botId: String, intent: String): StoryDefinitionConfiguration? {
         return col.findOne(BotId eq botId, Intent.name_ eq intent)
     }
 
-    override fun getStoryDefinitionsByBotId(botId: String): List<StoryDefinitionConfiguration> {
+    override fun getStoryDefinitionByNamespaceAndBotIdAndStoryId(namespace: String, botId: String, storyId: String): StoryDefinitionConfiguration? {
+        return col.findOne(BotId eq botId, StoryId eq storyId)
+    }
+
+    override fun getStoryDefinitionsByNamespaceAndBotId(namespace: String, botId: String): List<StoryDefinitionConfiguration> {
         return col.find(BotId eq botId).toList()
     }
 
     override fun save(story: StoryDefinitionConfiguration) {
         val previous = col.findOneById(story._id)
         val toSave =
-            if (previous != null) {
-                story.copy(version = previous.version + 1)
-            } else {
-                story
-            }
+                if (previous != null) {
+                    story.copy(version = previous.version + 1)
+                } else {
+                    story
+                }
         historyCol.save(StoryDefinitionConfigurationHistoryCol(toSave))
         col.save(toSave)
     }

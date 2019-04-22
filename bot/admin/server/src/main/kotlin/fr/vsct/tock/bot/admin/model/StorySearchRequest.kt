@@ -21,5 +21,5 @@ import fr.vsct.tock.nlp.admin.model.PaginatedQuery
 /**
  *
  */
-class BotIntentSearchRequest : PaginatedQuery() {
+class StorySearchRequest : PaginatedQuery() {
 }

@@ -19,16 +19,16 @@ import {BotService} from "../bot-service";
 import {MatSnackBar} from "@angular/material";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
-import {BotIntent, BotIntentSearchQuery, UpdateBotIntentRequest} from "../model/bot-intent";
+import {StoryDefinitionConfiguration, StorySearchQuery} from "../model/story";
 
 @Component({
-  selector: 'tock-search-bot-intent',
-  templateUrl: './search-bot-intent.component.html',
-  styleUrls: ['./search-bot-intent.component.css']
+  selector: 'tock-search-story',
+  templateUrl: './search-story.component.html',
+  styleUrls: ['./search-story.component.css']
 })
-export class SearchBotIntentComponent implements OnInit {
+export class SearchStoryComponent implements OnInit {
 
-  intents: BotIntent[];
+  stories: StoryDefinitionConfiguration[];
 
   constructor(private nlp: NlpService,
               private state: StateService,
@@ -37,37 +37,19 @@ export class SearchBotIntentComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this.bot.getBotIntents(
-      new BotIntentSearchQuery(
+    this.bot.getStories(
+      new StorySearchQuery(
         this.state.currentApplication.namespace,
         this.state.currentApplication.name,
         this.state.currentLocale,
         0,
-        10
-      )).subscribe(intents => {
-      this.intents = intents;
-      this.intents.forEach(i => i.storyDefinition.initTextAnswer());
+        1000
+      )).subscribe(s => {
+      this.stories = s;
     })
   }
 
-  delete(intent: BotIntent) {
-    this.bot.deleteBotIntent(intent.storyDefinition._id)
-      .subscribe(_ => {
-        this.ngOnInit();
-        this.snackBar.open(`Answer deleted`, "Delete", {duration: 2000})
-      });
-  }
-
-  update(intent: BotIntent) {
-    this.bot.updateBotIntent(
-      new UpdateBotIntentRequest(
-        intent.storyDefinition._id,
-        this.state.currentLocale,
-        intent.storyDefinition.textAnswer
-      ))
-      .subscribe(_ => {
-        this.ngOnInit();
-        this.snackBar.open(`Answer updated`, "Update", {duration: 2000})
-      });
+  delete(storyDefinitionId: string) {
+    this.stories = this.stories.filter(s => s._id !== storyDefinitionId);
   }
 }

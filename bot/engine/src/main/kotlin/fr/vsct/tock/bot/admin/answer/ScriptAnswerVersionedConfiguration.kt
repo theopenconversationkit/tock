@@ -20,28 +20,31 @@ import fr.vsct.tock.bot.admin.bot.BotVersion
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.shared.error
 import mu.KotlinLogging
+import java.time.Instant
+import java.time.Instant.now
 
 /**
  * A version of [ScriptAnswerConfiguration]
  * - useful to be compliant with the current tock and bot versions.
  */
 class ScriptAnswerVersionedConfiguration(
-    val script: String,
-    val compiledCode: List<Pair<String, ByteArray>>,
-    val version: BotVersion,
-    val mainClassName: String
+        val script: String,
+        val compiledCode: List<Pair<String, ByteArray>>,
+        val version: BotVersion,
+        val mainClassName: String,
+        val date: Instant = now()
 ) {
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
     private class ScriptClassLoader(
-        val classes: Map<String, ByteArray>
+            val classes: Map<String, ByteArray>
     ) : ClassLoader(ScriptClassLoader::class.java.classLoader) {
 
         @Override
         override fun findClass(name: String): Class<*> =
-            classes[name]?.run { defineClass(name, this, 0, this.size) } ?: super.findClass(name)
+                classes[name]?.run { defineClass(name, this, 0, this.size) } ?: super.findClass(name)
 
     }
 
@@ -50,13 +53,13 @@ class ScriptAnswerVersionedConfiguration(
             val classLoader = ScriptClassLoader(compiledCode.toMap())
             val c = classLoader.loadClass(mainClassName)
             c.declaredFields
-                .firstOrNull { field ->
-                    StoryDefinition::class.java.isAssignableFrom(field.type)
-                }
-                ?.run {
-                    isAccessible = true
-                    get(null) as? StoryDefinition
-                }
+                    .firstOrNull { field ->
+                        StoryDefinition::class.java.isAssignableFrom(field.type)
+                    }
+                    ?.run {
+                        isAccessible = true
+                        get(null) as? StoryDefinition
+                    }
         } catch (t: Throwable) {
             logger.error(t)
             null

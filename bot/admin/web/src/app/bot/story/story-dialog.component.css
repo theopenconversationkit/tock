@@ -14,16 +14,24 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.admin.model
+.container {
+  display: flex;
+  flex-direction: column;
+  width:400px;
+}
 
-import java.util.Locale
+.container > * {
+  width: 100%;
+}
 
-/**
- *
- */
-class UpdateBotIntentRequest(
-    val storyDefinitionId: String,
-    val language: Locale,
-    val reply: String
-) {
+.container form {
+  margin-bottom: 20px;
+}
+
+.container form > * {
+  margin: 5px 0;
+}
+
+.submit-button {
+  margin-left: 20px;
 }

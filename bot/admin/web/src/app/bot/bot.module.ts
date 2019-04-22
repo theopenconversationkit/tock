@@ -22,10 +22,10 @@ import {SharedModule} from "../shared-nlp/shared.module";
 import {AuthGuard} from "../core-nlp/auth/auth.guard";
 import {BotSharedModule} from "../shared/bot-shared.module";
 import {MomentModule} from "ngx-moment";
-import {CreateBotIntentComponent} from "./intent/create-bot-intent.component";
+import {CreateStoryComponent} from "./story/create-story.component";
 import {BotService} from "./bot-service";
 import {BotTabsComponent} from "./bot-tabs.component";
-import {SearchBotIntentComponent} from "./intent/search-bot-intent.component";
+import {SearchStoryComponent} from "./story/search-story.component";
 import {NlpModule} from "../nlp-tabs/nlp.module"
 import {ApplicationResolver} from "../core-nlp/application.resolver";
 import {I18nComponent} from "./i18n/i18n.component";
@@ -34,6 +34,13 @@ import {I18nLabelComponent} from "./i18n/i18n-label.component";
 import {FeatureComponent} from "./feature/feature.component";
 import {FlowComponent} from "./flow/flow.component";
 import {CytoComponent} from "./flow/cyto.component";
+import {StoryComponent} from "./story/story.component";
+import {AnswerComponent} from "./story/answer.component";
+import {SimpleAnswerComponent} from "./story/simple-answer.component";
+import {ScriptAnswerComponent} from "./story/script-answer.component";
+import {AnswerDialogComponent} from "./story/answer-dialog.component";
+import {StoryDialogComponent} from "./story/story-dialog.component";
+import {MandatoryEntitiesDialogComponent} from "./story/mandatory-entities-dialog.component";
 
 const routes: Routes = [
   {
@@ -46,19 +53,19 @@ const routes: Routes = [
     children: [
       {
         path: '',
-        component: CreateBotIntentComponent
+        component: FlowComponent
       },
       {
         path: 'flow',
         component: FlowComponent
       },
       {
-        path: 'intent-create',
-        component: CreateBotIntentComponent
+        path: 'story-create',
+        component: CreateStoryComponent
       },
       {
-        path: 'intent-search',
-        component: SearchBotIntentComponent
+        path: 'story-search',
+        component: SearchStoryComponent
       },
       {
         path: 'i18n',
@@ -92,19 +99,30 @@ export class BotRoutingModule {
   ],
   declarations: [
     BotTabsComponent,
-    CreateBotIntentComponent,
-    SearchBotIntentComponent,
+    CreateStoryComponent,
+    SearchStoryComponent,
     I18nComponent,
     I18nLabelComponent,
     FeatureComponent,
     FlowComponent,
-    CytoComponent
+    CytoComponent,
+    StoryComponent,
+    AnswerComponent,
+    SimpleAnswerComponent,
+    ScriptAnswerComponent,
+    StoryDialogComponent,
+    AnswerDialogComponent,
+    MandatoryEntitiesDialogComponent
   ],
   exports: [],
   providers: [
     BotService
   ],
-  entryComponents: []
+  entryComponents: [
+    StoryDialogComponent,
+    AnswerDialogComponent,
+    MandatoryEntitiesDialogComponent
+  ]
 })
 export class BotModule {
 }

@@ -16,12 +16,13 @@
 
 package fr.vsct.tock.bot.admin.model
 
-import fr.vsct.tock.nlp.admin.model.SentenceReport
+import java.util.Locale
 
 /**
  *
  */
-data class BotIntent(
-        val storyDefinition: BotStoryDefinitionConfiguration,
-        val firstSentences: List<SentenceReport>
+data class CreateStoryRequest(
+        val story: BotStoryDefinitionConfiguration,
+        val language: Locale,
+        val firstSentences: List<String>
 )

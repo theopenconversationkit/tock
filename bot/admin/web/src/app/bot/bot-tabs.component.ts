@@ -24,8 +24,8 @@ class TabLink {
 
 const tabs = [
   new TabLink("flow", "Bot Flow"),
-  new TabLink("intent-create", "Add new Answer"),
-  new TabLink("intent-search", "Search Answers"),
+  new TabLink("story-create", "New Story"),
+  new TabLink("story-search", "Search Stories"),
   new TabLink("i18n", "i18n"),
   new TabLink("feature-flipping", "Feature Flipping")
 ];

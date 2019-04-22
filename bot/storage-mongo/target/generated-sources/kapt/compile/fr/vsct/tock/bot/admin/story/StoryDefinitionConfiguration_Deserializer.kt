@@ -1,4 +1,4 @@
-package fr.vsct.tock.bot.admin.bot
+package fr.vsct.tock.bot.admin.story
 
 import com.fasterxml.jackson.core.JsonParser
 import com.fasterxml.jackson.core.JsonToken
@@ -41,6 +41,19 @@ internal class StoryDefinitionConfiguration_Deserializer :
             var _answers_set : Boolean = false
             var _version_: Int? = null
             var _version_set : Boolean = false
+            var _namespace_: String? = null
+            var _namespace_set : Boolean = false
+            var _mandatoryEntities_: MutableList<StoryDefinitionConfigurationMandatoryEntity>? =
+                    null
+            var _mandatoryEntities_set : Boolean = false
+            var _steps_: MutableList<StoryDefinitionConfigurationStep>? = null
+            var _steps_set : Boolean = false
+            var _name_: String? = null
+            var _name_set : Boolean = false
+            var _category_: String? = null
+            var _category_set : Boolean = false
+            var _description_: String? = null
+            var _description_set : Boolean = false
             var __id_: Id<StoryDefinitionConfiguration>? = null
             var __id_set : Boolean = false
             var _token_ : JsonToken? = currentToken
@@ -83,6 +96,36 @@ internal class StoryDefinitionConfiguration_Deserializer :
                              else p.intValue;
                             _version_set = true
                             }
+                    "namespace" -> {
+                            _namespace_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _namespace_set = true
+                            }
+                    "mandatoryEntities" -> {
+                            _mandatoryEntities_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_mandatoryEntities__reference);
+                            _mandatoryEntities_set = true
+                            }
+                    "steps" -> {
+                            _steps_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.readValueAs(_steps__reference);
+                            _steps_set = true
+                            }
+                    "name" -> {
+                            _name_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _name_set = true
+                            }
+                    "category" -> {
+                            _category_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _category_set = true
+                            }
+                    "description" -> {
+                            _description_ = if(_token_ == JsonToken.VALUE_NULL) null
+                             else p.text;
+                            _description_set = true
+                            }
                     "_id" -> {
                             __id_ = if(_token_ == JsonToken.VALUE_NULL) null
                              else p.readValueAs(__id__reference);
@@ -97,10 +140,13 @@ internal class StoryDefinitionConfiguration_Deserializer :
                 _token_ = currentToken
                         } 
             return if(_storyId_set && _botId_set && _intent_set && _currentType_set && _answers_set
-                    && _version_set && __id_set)
+                    && _version_set && _namespace_set && _mandatoryEntities_set && _steps_set &&
+                    _name_set && _category_set && _description_set && __id_set)
                     StoryDefinitionConfiguration(storyId = _storyId_!!, botId = _botId_!!, intent =
                             _intent_!!, currentType = _currentType_!!, answers = _answers_!!,
-                            version = _version_!!, _id = __id_!!)
+                            version = _version_!!, namespace = _namespace_!!, mandatoryEntities =
+                            _mandatoryEntities_!!, steps = _steps_!!, name = _name_!!, category =
+                            _category_!!, description = _description_!!, _id = __id_!!)
                     else {
                     val map = mutableMapOf<KParameter, Any?>()
                     if(_storyId_set)
@@ -115,6 +161,18 @@ internal class StoryDefinitionConfiguration_Deserializer :
                     map[parameters.getValue("answers")] = _answers_
                     if(_version_set)
                     map[parameters.getValue("version")] = _version_
+                    if(_namespace_set)
+                    map[parameters.getValue("namespace")] = _namespace_
+                    if(_mandatoryEntities_set)
+                    map[parameters.getValue("mandatoryEntities")] = _mandatoryEntities_
+                    if(_steps_set)
+                    map[parameters.getValue("steps")] = _steps_
+                    if(_name_set)
+                    map[parameters.getValue("name")] = _name_
+                    if(_category_set)
+                    map[parameters.getValue("category")] = _category_
+                    if(_description_set)
+                    map[parameters.getValue("description")] = _description_
                     if(__id_set)
                     map[parameters.getValue("_id")] = __id_ 
                     primaryConstructor.callBy(map) 
@@ -134,11 +192,24 @@ internal class StoryDefinitionConfiguration_Deserializer :
                 primaryConstructor.findParameterByName("intent")!!, "currentType" to
                 primaryConstructor.findParameterByName("currentType")!!, "answers" to
                 primaryConstructor.findParameterByName("answers")!!, "version" to
-                primaryConstructor.findParameterByName("version")!!, "_id" to
+                primaryConstructor.findParameterByName("version")!!, "namespace" to
+                primaryConstructor.findParameterByName("namespace")!!, "mandatoryEntities" to
+                primaryConstructor.findParameterByName("mandatoryEntities")!!, "steps" to
+                primaryConstructor.findParameterByName("steps")!!, "name" to
+                primaryConstructor.findParameterByName("name")!!, "category" to
+                primaryConstructor.findParameterByName("category")!!, "description" to
+                primaryConstructor.findParameterByName("description")!!, "_id" to
                 primaryConstructor.findParameterByName("_id")!!) }
 
         private val _answers__reference: TypeReference<List<AnswerConfiguration>> = object :
                 TypeReference<List<AnswerConfiguration>>() {}
+
+        private val _mandatoryEntities__reference:
+                TypeReference<List<StoryDefinitionConfigurationMandatoryEntity>> = object :
+                TypeReference<List<StoryDefinitionConfigurationMandatoryEntity>>() {}
+
+        private val _steps__reference: TypeReference<List<StoryDefinitionConfigurationStep>> =
+                object : TypeReference<List<StoryDefinitionConfigurationStep>>() {}
 
         private val __id__reference: TypeReference<Id<StoryDefinitionConfiguration>> = object :
                 TypeReference<Id<StoryDefinitionConfiguration>>() {}

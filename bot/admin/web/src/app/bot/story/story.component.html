@@ -1,0 +1,65 @@
+<mat-card *ngIf="story">
+  <mat-card-title>
+    <span *ngIf="!storyNode" class="answer-title" matTooltip="Story name">{{story.name}}</span>
+    <span *ngIf="storyNode" class="answer-title" matTooltip="Story name" [matBadge]="storyNode.displayCount()" matBadgeOverlap="false">{{story.name}}</span>
+    <span class="category" matTooltip="Story category">&nbsp;[{{story.category}}]</span>
+    <span class="category" matTooltip="Story category">&nbsp;[{{story.category}}]</span>
+    <button mat-icon-button color="primary" matTooltip="Edit" (click)="editStory()">
+      <mat-icon>edit</mat-icon>
+    </button>
+    <button class="actionButton" mat-icon-button matTooltip="Edit Mandatory Entities" (click)="editEntities()">
+      <mat-icon>extension</mat-icon>
+    </button>
+    <button *ngIf="story._id" mat-icon-button color="warn" matTooltip="Delete" (click)="deleteStory()">
+      <mat-icon>delete</mat-icon>
+    </button>
+  </mat-card-title>
+  <mat-card-subtitle>
+    <span class="intent" matTooltip="Main Intent">{{story.intent.name}}</span>
+    {{story.description}}
+    <ul *ngIf="storyNode">
+      <li *ngIf="storyNode.intent">Intent: <b>{{storyNode.intent}}</b></li>
+      <li *ngIf="storyNode.step">Step: <b>{{storyNode.step}}</b></li>
+      <li *ngIf="storyNode.entities.length !==0">Entities: <b>{{storyNode.entities}}</b></li>
+      <li>{{storyNode.count}} {{storyNode.count === 1 ? 'instance' : 'instances'}}</li>
+    </ul>
+  </mat-card-subtitle>
+
+
+  <mat-card-content>
+    <!-- mandatory entities -->
+    <div *ngIf="story.mandatoryEntities.length !== 0">
+      Mandatory Entities :
+      <ul>
+        <li *ngFor="let e of story.mandatoryEntities">{{e.role}}</li>
+      </ul>
+    </div>
+
+    <!-- default answer -->
+    Main Answer:
+    <tock-answer [answer]="story" [fullDisplay]="fullDisplay"></tock-answer>
+
+    <!-- steps -->
+
+  </mat-card-content>
+</mat-card>
+<mat-card *ngIf="!story && storyNode">
+  <mat-card-title>
+    <span class="answer-title" matTooltip="Story name" [matBadge]="storyNode.displayCount()"
+          matBadgeOverlap="false">{{storyNode.nodeName()}}</span>
+  </mat-card-title>
+  <mat-card-subtitle>
+    <ul>
+      <li *ngIf="storyNode.intent">Intent: <b>{{storyNode.intent}}</b></li>
+      <li *ngIf="storyNode.step">Step: <b>{{storyNode.step}}</b></li>
+      <li *ngIf="storyNode.entities.length !==0">Entities: <b>{{storyNode.entities}}</b></li>
+      <li>{{storyNode.count}} {{storyNode.count === 1 ? 'instance' : 'instances'}}</li>
+    </ul>
+  </mat-card-subtitle>
+
+
+  <mat-card-content>
+    <button class="actionButton" matTooltip="Create Story" (click)="createStory()">Create Managed Story</button>
+  </mat-card-content>
+</mat-card>
+

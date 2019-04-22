@@ -17,11 +17,13 @@
 package fr.vsct.tock.bot.admin.model
 
 import fr.vsct.tock.bot.admin.answer.ScriptAnswerVersionedConfiguration
+import java.time.Instant
 
 /**
  *
  */
-data class BotScriptAnswerVersionedConfiguration(val script: String) {
+data class BotScriptAnswerVersionedConfiguration(val script: String, val date:Instant = Instant.now()) {
 
-    constructor(conf: ScriptAnswerVersionedConfiguration) : this(conf.script)
+    constructor(conf: ScriptAnswerVersionedConfiguration) : this(conf.script, conf.date)
+
 }

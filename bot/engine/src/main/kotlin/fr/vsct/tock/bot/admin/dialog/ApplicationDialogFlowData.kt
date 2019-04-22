@@ -16,10 +16,13 @@
 
 package fr.vsct.tock.bot.admin.dialog
 
+import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationFlowNode
+
 /**
- *
+ * All data about bot flow.
  */
 data class ApplicationDialogFlowData(
-    val states: List<DialogFlowStateData>,
-    val transitions: List<DialogFlowStateTransitionData>
+        val states: List<DialogFlowStateData>,
+        val transitions: List<DialogFlowStateTransitionData>,
+        val configuredFlow: List<StoryDefinitionConfigurationFlowNode>
 ) 

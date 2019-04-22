@@ -1,0 +1,42 @@
+<div *ngIf="!fullDisplay">
+
+  <button mat-icon-button class="display" color="primary" matTooltip="Display I18n" (click)="toggleDisplay()">
+    <mat-icon>fullscreen</mat-icon>
+  </button>
+
+  <div *ngFor="let a of answer.answers">
+    <textarea class="i18n-label"
+              matInput
+              [(ngModel)]="a.label.defaultLabel"
+              (change)="updateLabel(a)">
+    </textarea>
+    <button *ngIf="answer.answers.length !== 1" class="answerButton" mat-icon-button color="warn"
+            matTooltip="Delete Answer" (click)="deleteAnswer(a, true)">
+      <mat-icon>remove</mat-icon>
+    </button>
+  </div>
+  <textarea class="i18n-label i18n-label-add"
+            matInput
+            placeholder="Add new Anwser"
+            [(ngModel)]="newAnswer"
+            (keyup.enter)="addAnswer()"
+            #newAnswerElement>
+    </textarea>
+  <button mat-icon-button color="primary" matTooltip="Add Answer" class="answerButton" (click)="addAnswer()">
+    <mat-icon>library_add</mat-icon>
+  </button>
+</div>
+<div *ngIf="fullDisplay">
+  <button mat-icon-button class="display" color="primary" matTooltip="Hide I18n" (click)="toggleDisplay()">
+    <mat-icon>fullscreen_exit</mat-icon>
+  </button>
+  <mat-list dense>
+    <tock-i18n-label
+      *ngFor="let a of answer.answers"
+      [deleteAllowed]="answer.answers.length !== 1"
+      [i]="a.label"
+      (delete)="deleteAnswer(a, false)"></tock-i18n-label>
+  </mat-list>
+
+</div>
+
