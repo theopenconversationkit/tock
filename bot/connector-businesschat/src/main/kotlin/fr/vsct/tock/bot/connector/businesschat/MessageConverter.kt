@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.connector.businesschat
 
 import fr.vsct.tock.bot.connector.businesschat.model.common.MessageType
-import fr.vsct.tock.bot.connector.businesschat.model.csp.message.Message
+import fr.vsct.tock.bot.connector.businesschat.model.common.ReceivedModel
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorTextMessage
 import fr.vsct.tock.bot.engine.BotBus
@@ -47,17 +47,17 @@ internal object MessageConverter {
     /**
      * Converts a message to a [Event]
      */
-    fun toEvent(message: Message, connectorId: String): Event? =
-            when (message.type) {
-                MessageType.text -> {
-                    SendSentence(
-                            applicationId = connectorId,
-                            playerId = PlayerId(message.sourceId, PlayerType.user),
-                            recipientId = PlayerId(message.destinationId, PlayerType.bot),
-                            text = message.body
-                    )
-                }
-                else -> null
+    fun toEvent(message: ReceivedModel, connectorId: String): Event? =
+        when (message.type) {
+            MessageType.text -> {
+                SendSentence(
+                    applicationId = connectorId,
+                    playerId = PlayerId(message.sourceId, PlayerType.user),
+                    recipientId = PlayerId(message.destinationId, PlayerType.bot),
+                    text = message.body
+                )
             }
+            else -> null
+        }
 }
 
