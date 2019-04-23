@@ -65,6 +65,7 @@
         <junit-jupiter>5.4.0</junit-jupiter>
 
         <mockk>1.9.3</mockk>
+        <assertj>3.12.2</assertj>
         <byte-buddy>1.9.11</byte-buddy>
 
         <plugin.surefire>3.0.0-M3</plugin.surefire>

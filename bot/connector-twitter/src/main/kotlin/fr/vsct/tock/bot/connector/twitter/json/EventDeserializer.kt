@@ -22,10 +22,12 @@ import com.fasterxml.jackson.databind.DeserializationContext
 import fr.vsct.tock.bot.connector.twitter.model.Application
 import fr.vsct.tock.bot.connector.twitter.model.DirectMessage
 import fr.vsct.tock.bot.connector.twitter.model.DirectMessageIndicateTyping
+import fr.vsct.tock.bot.connector.twitter.model.Tweet
 import fr.vsct.tock.bot.connector.twitter.model.User
 import fr.vsct.tock.bot.connector.twitter.model.incoming.DirectMessageIncomingEvent
 import fr.vsct.tock.bot.connector.twitter.model.incoming.DirectMessageIndicateTypingIncomingEvent
 import fr.vsct.tock.bot.connector.twitter.model.incoming.IncomingEvent
+import fr.vsct.tock.bot.connector.twitter.model.incoming.TweetIncomingEvent
 import fr.vsct.tock.shared.jackson.JacksonDeserializer
 import fr.vsct.tock.shared.jackson.read
 import fr.vsct.tock.shared.jackson.readListValues
@@ -45,10 +47,11 @@ class EventDeserializer : JacksonDeserializer<IncomingEvent>() {
             var users: Map<String, User>? = null,
             var apps: Map<String, Application>? = null,
             var directMessages: List<DirectMessage>? = null,
-            var directMessagesIndicateTyping: List<DirectMessageIndicateTyping>? = null
+            var directMessagesIndicateTyping: List<DirectMessageIndicateTyping>? = null,
+            var tweets: List<Tweet>? = null
         )
 
-        val (forUserId, users, apps, directMessages, directMessageIndicateTyping)
+        val (forUserId, users, apps, directMessages, directMessageIndicateTyping, statuses)
                 = jp.read<EventFields> { fields, name ->
             with(fields) {
                 when (name) {
@@ -57,18 +60,20 @@ class EventDeserializer : JacksonDeserializer<IncomingEvent>() {
                     DirectMessageIncomingEvent::apps.name -> apps = jp.readValueAs(object : TypeReference<Map<String, Application>>() {})
                     "direct_message_events" -> directMessages = jp.readListValues()
                     "direct_message_indicate_typing_events" -> directMessagesIndicateTyping = jp.readListValues()
+                    "tweet_create_events" -> tweets = jp.readValueAs(object : TypeReference<List<Tweet>>() {})
                     else -> unknownValue
                 }
             }
         }
 
-        return if (directMessages != null) {
-            DirectMessageIncomingEvent(forUserId!!, users!!, apps, directMessages)
-        } else if (directMessageIndicateTyping != null) {
-            DirectMessageIndicateTypingIncomingEvent(forUserId!!, users!!, directMessageIndicateTyping)
-        } else {
-            logger.error { "unknown event" }
-            null
+        return when {
+            directMessages != null -> DirectMessageIncomingEvent(forUserId!!, users!!, apps, directMessages)
+            directMessageIndicateTyping != null -> DirectMessageIndicateTypingIncomingEvent(forUserId!!, users!!, directMessageIndicateTyping)
+            statuses != null -> TweetIncomingEvent(forUserId!!, statuses)
+            else -> {
+                logger.error { "unknown event" }
+                null
+            }
         }
     }
 

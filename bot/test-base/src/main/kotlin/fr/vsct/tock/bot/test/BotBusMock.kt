@@ -26,6 +26,7 @@ import fr.vsct.tock.bot.engine.BotBus
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionNotificationType
 import fr.vsct.tock.bot.engine.action.ActionPriority
+import fr.vsct.tock.bot.engine.action.ActionVisibility
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
@@ -316,6 +317,7 @@ open class BotBusMock(
     private fun answer(action: Action, delay: Long = 0): BotBus {
         mockData.currentDelay += delay
         action.metadata.priority = mockData.priority
+        action.metadata.visibility = mockData.visibility
         if (action is SendSentence) {
             action.messages.addAll(mockData.connectorMessages.values)
             if (action.text == null && !action.hasMessage(connectorType)) {
@@ -387,6 +389,11 @@ open class BotBusMock(
 
     override fun withNotificationType(notificationType: ActionNotificationType): BotBus {
         mockData.notificationType = notificationType
+        return this
+    }
+
+    override fun withVisibility(visibility: ActionVisibility): BotBus {
+        mockData.visibility = visibility
         return this
     }
 

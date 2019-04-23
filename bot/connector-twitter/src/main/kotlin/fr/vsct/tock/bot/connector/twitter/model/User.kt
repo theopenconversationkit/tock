@@ -16,22 +16,25 @@
 
 package fr.vsct.tock.bot.connector.twitter.model
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 import com.fasterxml.jackson.annotation.JsonProperty
 
+@JsonIgnoreProperties(ignoreUnknown = true)
 data class User(
     val id: String,
     val lang: String?,
     val location: String?,
-    @JsonProperty("created_timestamp") val created: Long,
+    @JsonProperty("created_timestamp") val createdTimestamp: Long? = null,
+    @JsonProperty("created_at") val created: String? = null,
+    val url: String? = null,
+    val description: String? = null,
     val name: String,
     @JsonProperty("screen_name") val screenName: String,
     val protected: Boolean,
     val verified: Boolean,
     @JsonProperty("followers_count") val followersCount: Int,
     @JsonProperty("friends_count") val friendsCount: Int,
-    @JsonProperty("profile_image_url") val profileImageUrl: String,
-    @JsonProperty("profile_image_url_https") val profileImageUrlHttps: String,
     @JsonProperty("statuses_count") val statusesCount: Int,
-    @JsonProperty("time_zone") val timeZone: String?,
-    @JsonProperty("utc_offset") val utcOffset: String?
-)
+    @JsonProperty("profile_image_url_https") val profileImageUrlHttps: String? = null,
+    @JsonProperty("utc_offset") val utcOffset: String? = null
+    )

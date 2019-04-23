@@ -14,15 +14,13 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.twitter.model
+package fr.vsct.tock.bot.connector.twitter
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import fr.vsct.tock.bot.connector.ConnectorCallbackBase
+import fr.vsct.tock.bot.engine.action.ActionVisibility
 
-data class Entities(
-    val hashtags: List<Hashtag>? = null,
-    @JsonProperty("user_mentions") val mentions: List<Mention>? = null,
-    val urls: List<Url>? = null,
-    val symbols: List<Symbol>? = null,
-    val polls: List<Poll>? = null,
-    val media: List<MediaEntities>? = null
-)
+class TwitterConnectorCallback(
+    override val applicationId: String,
+    val visibility: ActionVisibility,
+    val threadId: Long?
+): ConnectorCallbackBase(applicationId, twitterConnectorType)

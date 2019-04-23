@@ -26,13 +26,16 @@ import fr.vsct.tock.bot.connector.twitter.model.Option
 import fr.vsct.tock.bot.connector.twitter.model.Options
 import fr.vsct.tock.bot.connector.twitter.model.Recipient
 import fr.vsct.tock.bot.connector.twitter.model.TwitterConnectorMessage
+import fr.vsct.tock.bot.connector.twitter.model.TwitterPublicConnectorMessage
 import fr.vsct.tock.bot.connector.twitter.model.WebUrl
 import fr.vsct.tock.bot.connector.twitter.model.outcoming.DirectMessageOutcomingEvent
 import fr.vsct.tock.bot.connector.twitter.model.outcoming.OutcomingEvent
+import fr.vsct.tock.bot.connector.twitter.model.outcoming.Tweet
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
 import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.action.ActionVisibility
 import fr.vsct.tock.bot.engine.action.SendChoice
 import mu.KotlinLogging
 
@@ -291,9 +294,53 @@ private fun BotBus.option(
 }
 
 /**
- * Adds a Twitter [ConnectorMessage] if the current connector is Twitter.
+ * Adds a Twitter [ConnectorMessage] if the current connector is Twitter and the interface is not public.
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
 fun BotBus.withTwitter(messageProvider: () -> TwitterConnectorMessage): BotBus {
-    return withMessage(twitterConnectorType, messageProvider)
+    withVisibility(action.metadata.visibility)
+    return if(action.metadata.visibility != ActionVisibility.public) {
+        withMessage(twitterConnectorType, messageProvider)
+    } else {
+        this
+    }
+}
+
+/**
+ * Adds a Twitter [ConnectorMessage] if the current connector is Twitter and the interface is public.
+ * You need to call [BotBus.send] or [BotBus.end] later to send this message.
+ */
+fun BotBus.withPublicTwitter(messageProvider: () -> TwitterPublicConnectorMessage): BotBus {
+    withVisibility(action.metadata.visibility)
+    return if(action.metadata.visibility == ActionVisibility.public) {
+        withMessage(twitterConnectorType, messageProvider)
+    } else {
+        this
+    }
+}
+
+/**
+ * End the conversation only if the visibility is public
+ */
+fun BotBus.endIfPublicTwitter() {
+    if (targetConnectorType == twitterConnectorType && action.metadata.visibility == ActionVisibility.public) {
+        end()
+    }
+}
+
+/**
+ * Create a tweet
+ * @see https://developer.twitter.com/en/docs/tweets/post-and-engage/overview
+ */
+fun BotBus.tweet(message: CharSequence): Tweet {
+    return Tweet(translate(message).toString())
+}
+
+
+/**
+ * Create a tweet with a link for DM to the account listened
+ * @see https://developer.twitter.com/en/docs/tweets/post-and-engage/overview
+ */
+fun BotBus.tweetWithInviteForDM(message: CharSequence): Tweet {
+    return Tweet(translate(message).toString(), botId.id)
 }

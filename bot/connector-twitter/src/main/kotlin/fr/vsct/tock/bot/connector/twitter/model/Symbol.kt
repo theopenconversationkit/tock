@@ -17,5 +17,6 @@
 package fr.vsct.tock.bot.connector.twitter.model
 
 data class Symbol(
-    override val indices: List<Int>
+    override val indices: List<Int>,
+    val text: String
 ) : Entity()

@@ -64,6 +64,7 @@ Access token is associated to your developer account by default.
     twurl -X POST "/1.1/account_activity/all/develop/subscriptions.json"
 
 ### How to use
+#### Private conversation (Direct message)
 ##### Simple message:
 
 ```kotlin
@@ -77,7 +78,7 @@ val greetings = story("hello") { bus ->
 }
 ```
 
-#### Quick replies
+##### Quick replies
 ```kotlin
 val greetings = story("hello") { bus ->
     end {
@@ -93,7 +94,7 @@ val greetings = story("hello") { bus ->
 }
 ```
 
-#### URL Button
+##### URL Button
 ```kotlin
 val greetings = story("hello") { bus ->
     end {
@@ -110,3 +111,42 @@ val greetings = story("hello") { bus ->
 }
 ```
 
+#### Public conversation (limited)
+The current implementation listens only the top level tweets (no reply), the basic use case is to invite someone to chat with Direct Message
+
+##### Simple message
+```kotlin
+val greetings = story("hello") { bus ->
+    end {
+        resetDialogState()
+        withPublicTwitter {
+            tweet("Hello !")
+        }
+    }
+}
+```
+
+##### Simple message with invitation for DM
+```kotlin
+val greetings = story("hello") { bus ->
+    end {
+        resetDialogState()
+        tweetWithInviteForDM {
+            tweet("Hello !")
+        }
+    }
+}
+```
+
+##### End the conversation only if the connector is twitter and the conversation is public
+```kotlin
+val greetings = story("hello") { bus ->
+    end {
+        resetDialogState()
+        tweetWithInviteForDM {
+            tweet("Hello !")
+        }
+        endIfPublicTwitter()
+    }
+}
+```

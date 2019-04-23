@@ -25,5 +25,7 @@ data class ActionMetadata(
         /** Significance deals with the notification level. */
         var priority: ActionPriority = ActionPriority.normal,
         /** tag deals with type of message notification. */
-        var notificationType: ActionNotificationType? = null) {
+        var notificationType: ActionNotificationType? = null,
+        /** visibility of the message */
+        var visibility: ActionVisibility = ActionVisibility.unknown) {
 }
