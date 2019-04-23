@@ -21,6 +21,7 @@ import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.action.ActionNotificationType
 import fr.vsct.tock.bot.engine.action.ActionPriority
 import fr.vsct.tock.bot.engine.action.ActionPriority.normal
+import fr.vsct.tock.bot.engine.action.ActionVisibility
 import mu.KLogger
 import mu.KotlinLogging
 
@@ -32,9 +33,9 @@ internal data class BusContext(
     val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf(),
     val contextMap: MutableMap<String, Any> = mutableMapOf(),
     var priority: ActionPriority = normal,
-    var notificationType: ActionNotificationType? = null
+    var notificationType: ActionNotificationType? = null,
+    var visibility: ActionVisibility = ActionVisibility.unknown
 ) {
-
     companion object {
         val logger: KLogger = KotlinLogging.logger {}
     }
@@ -42,6 +43,7 @@ internal data class BusContext(
     fun clear() {
         connectorMessages.clear()
         priority = normal
+        visibility = ActionVisibility.unknown
     }
 
     fun addMessage(message: ConnectorMessage) {

@@ -20,17 +20,22 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
+import fr.vsct.tock.bot.connector.ConnectorData
+import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.twitter.model.Attachment
 import fr.vsct.tock.bot.connector.twitter.model.MediaCategory
 import fr.vsct.tock.bot.connector.twitter.model.MessageCreate
 import fr.vsct.tock.bot.connector.twitter.model.MessageData
 import fr.vsct.tock.bot.connector.twitter.model.Webhook
 import fr.vsct.tock.bot.connector.twitter.model.incoming.IncomingEvent
+import fr.vsct.tock.bot.connector.twitter.model.incoming.TweetIncomingEvent
 import fr.vsct.tock.bot.connector.twitter.model.outcoming.DirectMessageOutcomingEvent
 import fr.vsct.tock.bot.connector.twitter.model.outcoming.OutcomingEvent
+import fr.vsct.tock.bot.connector.twitter.model.outcoming.Tweet
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.ActionVisibility
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.monitoring.logError
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -133,8 +138,18 @@ internal class TwitterConnector internal constructor(
                                 logger.info { incomingEvent }
                                 executor.executeBlocking {
                                     val event = WebhookActionConverter.toEvent(incomingEvent, applicationId)
+                                    val (threadId, visibility) = if (incomingEvent is TweetIncomingEvent) {
+                                        incomingEvent.tweets.first().id to ActionVisibility.public
+                                    } else {
+                                        null to ActionVisibility.private
+                                    }
+                                    val callback = TwitterConnectorCallback(
+                                        applicationId,
+                                        visibility,
+                                        threadId
+                                    )
                                     if (event != null) {
-                                        controller.handle(event)
+                                        controller.handle(event, ConnectorData(callback))
                                     } else {
                                         logger.logError(
                                             "unable to convert $incomingEvent to event",
@@ -183,34 +198,43 @@ internal class TwitterConnector internal constructor(
      * @param delayInMs the optional delay
      */
     override fun send(event: Event, callback: ConnectorCallback, delayInMs: Long) {
+        callback as TwitterConnectorCallback
         logger.debug { "event: $event" }
         if (event is Action) {
-            val outcomingEvent = TwitterMessageConverter.toOutcomingEvent(event)
+            if(event.metadata.visibility == ActionVisibility.unknown) {
+                event.metadata.visibility = callback.visibility
+            }
+            val outcomingEvent = TwitterMessageConverter.toEvent(event)
             if (outcomingEvent != null) {
-                sendMessage(outcomingEvent, delayInMs)
+                sendMessage(outcomingEvent, callback, delayInMs)
             }
         }
     }
 
-    private fun sendMessage(outcomingEvent: OutcomingEvent, delayInMs: Long) {
+    private fun sendMessage(message: ConnectorMessage, callback: TwitterConnectorCallback, delayInMs: Long) {
         executor.executeBlocking(Duration.ofMillis(delayInMs)) {
+            when (message) {
+                is OutcomingEvent -> {
+                    when (message.event) {
+                        is DirectMessageOutcomingEvent -> {
+                            if (message.attachmentData != null) {
+                                sendDirectMessageWithAttachment(
+                                    message.attachmentData.mediaCategory,
+                                    message.attachmentData.contentType,
+                                    message.attachmentData.bytes,
+                                    message.event
+                                )
+                            } else {
+                                client.sendDirectMessage(message)
+                            }
 
-            when (outcomingEvent.event) {
-
-                is DirectMessageOutcomingEvent -> {
-
-                    if (outcomingEvent.attachmentData != null) {
-                        sendDirectMessageWithAttachment(
-                            outcomingEvent.attachmentData.mediaCategory,
-                            outcomingEvent.attachmentData.contentType,
-                            outcomingEvent.attachmentData.bytes,
-                            outcomingEvent.event
-                        )
-                    } else {
-                        client.sendDirectMessage(outcomingEvent)
+                        }
                     }
-
                 }
+                is Tweet -> {
+                    client.sendTweet(message, callback.threadId)
+                }
+                else -> logger.error { "Unknown message to send by twitter : " + message.javaClass }
             }
         }
     }

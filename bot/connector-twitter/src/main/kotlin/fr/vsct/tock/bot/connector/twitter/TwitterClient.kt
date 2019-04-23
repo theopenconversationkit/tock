@@ -54,6 +54,8 @@ import java.net.URLDecoder
 import java.util.*
 import javax.crypto.Mac
 import javax.crypto.spec.SecretKeySpec
+import fr.vsct.tock.bot.connector.twitter.model.Tweet as InputTweet
+import fr.vsct.tock.bot.connector.twitter.model.outcoming.Tweet as OutputTweet
 
 /**
  * Twitter client
@@ -171,6 +173,18 @@ internal class TwitterClient(
 
     }
 
+    interface StatusApi {
+
+        @POST("/1.1/statuses/update.json")
+        fun status(
+            @Query("status") statusMessage: String,
+            @Query("in_reply_to_status_id") replyStatusId: String? = null,
+            @Query("auto_populate_reply_metadata") autoPopulateMetadata: String = "true",
+            @Query("enable_dmcommands") enableDM: String = "false"
+        ): Call<InputTweet>
+
+    }
+
     private val logger = KotlinLogging.logger {}
 
     private val accountActivityApi: AccountActivityApi
@@ -181,17 +195,19 @@ internal class TwitterClient(
 
     private val mediaApi: MediaApi
 
+    private val statusApi: StatusApi
+
     init {
 
-        val accountActivityApiConsumer = OkHttpOAuthConsumer(consumerKey, consumerSecret)
+        val twitterOAuthConsumer = OkHttpOAuthConsumer(consumerKey, consumerSecret)
         if (token != null) {
-            accountActivityApiConsumer.setTokenWithSecret(token, secret)
+            twitterOAuthConsumer.setTokenWithSecret(token, secret)
         }
 
         accountActivityApi = retrofitBuilderWithTimeoutAndLogger(
             longProperty("tock_twitter_request_timeout_ms", 30000),
             logger,
-            interceptors = listOf(SigningInterceptor(accountActivityApiConsumer))
+            interceptors = listOf(SigningInterceptor(twitterOAuthConsumer))
         )
             .baseUrl(BASE_URL)
             .addJacksonConverter()
@@ -201,7 +217,7 @@ internal class TwitterClient(
         directMessageApi = retrofitBuilderWithTimeoutAndLogger(
             longProperty("tock_twitter_request_timeout_ms", 30000),
             logger,
-            interceptors = listOf(SigningInterceptor(accountActivityApiConsumer))
+            interceptors = listOf(SigningInterceptor(twitterOAuthConsumer))
         )
             .baseUrl(BASE_URL)
             .addJacksonConverter()
@@ -211,7 +227,7 @@ internal class TwitterClient(
         userApi = retrofitBuilderWithTimeoutAndLogger(
             longProperty("tock_twitter_request_timeout_ms", 30000),
             logger,
-            interceptors = listOf(SigningInterceptor(accountActivityApiConsumer))
+            interceptors = listOf(SigningInterceptor(twitterOAuthConsumer))
         )
             .baseUrl(BASE_URL)
             .addJacksonConverter()
@@ -221,16 +237,26 @@ internal class TwitterClient(
         mediaApi = retrofitBuilderWithTimeoutAndLogger(
             longProperty("tock_twitter_request_timeout_ms", 30000),
             logger,
-            interceptors = listOf(SigningInterceptor(accountActivityApiConsumer))
+            interceptors = listOf(SigningInterceptor(twitterOAuthConsumer))
         )
             .baseUrl(BASE_MEDIA_URL)
+            .addJacksonConverter()
+            .build()
+            .create()
+
+        statusApi = retrofitBuilderWithTimeoutAndLogger(
+            longProperty("tock_twitter_request_timeout_ms", 30000),
+            logger,
+            interceptors = listOf(SigningInterceptor(twitterOAuthConsumer))
+        )
+            .baseUrl(BASE_URL)
             .addJacksonConverter()
             .build()
             .create()
     }
 
     private fun defaultUser(): User {
-        return User("", "", "", Date().time, "", "", false, false, 0, 0, "", "", 0, "", "")
+        return User("", "", "", Date().time, null,null, null, "", "", false, false, 0, 0, 0, "", "")
     }
 
     private fun Response<*>.logError() {
@@ -498,6 +524,27 @@ internal class TwitterClient(
 
     fun sendDirectMessage(outcomingEvent: OutcomingEvent): Boolean = try {
         val response = directMessageApi.new(outcomingEvent).execute()
+        if (!response.isSuccessful) {
+            response.logError()
+            false
+        } else {
+            true
+        }
+    } catch (e: Exception) {
+        //log and ignore
+        logger.error(e)
+        false
+    }
+
+    fun sendTweet(tweet: fr.vsct.tock.bot.connector.twitter.model.outcoming.Tweet, threadId: Long?): Boolean = try {
+        val enableDM = tweet.dmRecipientID != null
+        val message = if(enableDM) {
+            tweet.text + " https://twitter.com/messages/compose?recipient_id=" + tweet.dmRecipientID
+        } else {
+            tweet.text
+        }
+
+        val response = statusApi.status(message, threadId?.toString(), enableDM = enableDM.toString()).execute()
         if (!response.isSuccessful) {
             response.logError()
             false

@@ -20,6 +20,7 @@ import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.action.ActionNotificationType
 import fr.vsct.tock.bot.engine.action.ActionPriority
+import fr.vsct.tock.bot.engine.action.ActionVisibility
 
 /**
  *
@@ -29,7 +30,8 @@ internal data class BusMockData(
     val connectorMessages: MutableMap<ConnectorType, ConnectorMessage> = mutableMapOf(),
     val contextMap: MutableMap<String, Any> = mutableMapOf(),
     var priority: ActionPriority = ActionPriority.normal,
-    var notificationType: ActionNotificationType? = null
+    var notificationType: ActionNotificationType? = null,
+    var visibility: ActionVisibility = ActionVisibility.unknown
 ) {
 
     fun clear() {

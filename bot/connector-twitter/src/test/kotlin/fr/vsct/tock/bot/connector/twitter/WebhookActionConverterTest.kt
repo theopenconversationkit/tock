@@ -14,9 +14,8 @@
  * limitations under the License.
  */
 
-package fr.vsct.tock.bot.connector.twitter.fr.vsct.tock.bot.connector.twitter.json
+package fr.vsct.tock.bot.connector.twitter
 
-import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.connector.twitter.model.Application
 import fr.vsct.tock.bot.connector.twitter.model.DirectMessage
 import fr.vsct.tock.bot.connector.twitter.model.DirectMessageIndicateTyping
@@ -26,97 +25,24 @@ import fr.vsct.tock.bot.connector.twitter.model.Mention
 import fr.vsct.tock.bot.connector.twitter.model.MessageCreate
 import fr.vsct.tock.bot.connector.twitter.model.MessageData
 import fr.vsct.tock.bot.connector.twitter.model.Recipient
-import fr.vsct.tock.bot.connector.twitter.model.Symbol
 import fr.vsct.tock.bot.connector.twitter.model.Tweet
 import fr.vsct.tock.bot.connector.twitter.model.Url
 import fr.vsct.tock.bot.connector.twitter.model.User
 import fr.vsct.tock.bot.connector.twitter.model.incoming.DirectMessageIncomingEvent
 import fr.vsct.tock.bot.connector.twitter.model.incoming.DirectMessageIndicateTypingIncomingEvent
-import fr.vsct.tock.bot.connector.twitter.model.incoming.IncomingEvent
 import fr.vsct.tock.bot.connector.twitter.model.incoming.TweetIncomingEvent
-import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.resourceAsStream
-import mu.KotlinLogging
+import fr.vsct.tock.bot.engine.action.ActionMetadata
+import fr.vsct.tock.bot.engine.action.ActionVisibility
+import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.PlayerType
 import org.assertj.core.api.Assertions.assertThat
 import org.junit.jupiter.api.Test
-import java.util.*
 
-internal class IncomingEventDeserializationTest {
-
-    companion object {
-        private val logger = KotlinLogging.logger {}
-    }
-
+internal class WebhookActionConverterTest {
     @Test
-    fun `serialize deserialize direct message`() {
-        val twitterEvent = DirectMessageIncomingEvent(
-            forUserId = "forUserId",
-            directMessages = listOf(
-                DirectMessage(
-                    id = "id",
-                    created = Date().time,
-                    messageCreated = MessageCreate(
-                        target = Recipient(
-                            recipientId = "recipientId"
-                        ),
-                        senderId = "senderId",
-                        sourceAppId = "sourceAppId",
-                        messageData = MessageData(
-                            text = "message",
-                            entities = Entities(
-                                hashtags = listOf(Hashtag("tag1", listOf(1, 5)), Hashtag("tag2", listOf(1, 5))),
-                                symbols = listOf(Symbol(listOf(0, 5), "test")),
-                                mentions = listOf(Mention("screenName", "name", "id", "idStr", listOf(1, 5))),
-                                urls = listOf(Url("url", "expandedUrl", "displayUrl", listOf(1, 5)))
-                            )
-                        )
-                    )
-                )
-            ),
-            apps = mapOf(
-                "appId" to Application(
-                    id = "appId",
-                    name = "applicationName",
-                    url = "url"
-                )
-            ),
-            users = mapOf(
-                "user1" to User(
-                    id = "id",
-                    lang = "fr",
-                    location = "",
-                    name = "name",
-                    screenName = "screenName",
-                    protected = false,
-                    verified = true,
-                    followersCount = 100,
-                    friendsCount = 100,
-                    statusesCount = 100,
-                    profileImageUrlHttps = "https://photo.com"
-                ),
-                "user2" to User(
-                    id = "id",
-                    lang = "fr",
-                    location = "",
-                    name = "name",
-                    screenName = "screenName",
-                    protected = false,
-                    verified = true,
-                    followersCount = 100,
-                    friendsCount = 100,
-                    statusesCount = 100,
-                    profileImageUrlHttps = "https://photo.com"
-                )
-
-            )
-        )
-        val s = mapper.writeValueAsString(twitterEvent)
-        assertThat(mapper.readValue<DirectMessageIncomingEvent>(s)).isEqualTo(twitterEvent)
-    }
-
-    @Test
-    fun `direct message event sent`() {
-        val expected = DirectMessageIncomingEvent(
+    fun `ignore direct message sent from the account listened`() {
+        val directMessageSent = DirectMessageIncomingEvent(
             forUserId = "14235326",
             directMessages = listOf(
                 DirectMessage(
@@ -178,13 +104,14 @@ internal class IncomingEventDeserializationTest {
                 )
             )
         )
-        val deserializedEvent = mapper.readValue<IncomingEvent>(resourceAsStream("/direct_message_event_sent.json"))
-        assertThat(deserializedEvent).isEqualTo(expected)
+
+        val event = WebhookActionConverter.toEvent(directMessageSent, "appId")
+        assertThat(event).isNull()
     }
 
     @Test
     fun `direct message event received`() {
-        val expected = DirectMessageIncomingEvent(
+        val directMessageReceived = DirectMessageIncomingEvent(
             forUserId = "14235326",
             directMessages = listOf(
                 DirectMessage(
@@ -239,13 +166,25 @@ internal class IncomingEventDeserializationTest {
                 )
             )
         )
-        val deserializedEvent = mapper.readValue<IncomingEvent>(resourceAsStream("/direct_message_event_received.json"))
-        assertThat(deserializedEvent).isEqualTo(expected)
+
+        val event = WebhookActionConverter.toEvent(directMessageReceived, "appId") as SendSentence
+        val expectedEvent = SendSentence(
+            PlayerId("707685546848550916"),
+            "appId",
+            PlayerId("14235326"),
+            "Plouf",
+            metadata = ActionMetadata(visibility = ActionVisibility.private)
+        )
+
+        assertThat(event).isEqualToIgnoringGivenFields(expectedEvent,
+            "id", "date")
+        assertThat(event.playerId.type).isEqualTo(PlayerType.user)
+        assertThat(event.recipientId.type).isEqualTo(PlayerType.bot)
     }
 
     @Test
-    fun `direct message indicate typing event`() {
-        val expected = DirectMessageIndicateTypingIncomingEvent(
+    fun `ignoring direct message indicate typing event`() {
+        val typingEvent = DirectMessageIndicateTypingIncomingEvent(
             forUserId = "14235326",
             directMessagesIndicateTyping = listOf(
                 DirectMessageIndicateTyping(
@@ -287,54 +226,9 @@ internal class IncomingEventDeserializationTest {
                 )
             )
         )
-        val deserializedEvent = mapper.readValue<IncomingEvent>(resourceAsStream("/direct_message_indicate_typing_event.json"))
-        assertThat(deserializedEvent).isEqualTo(expected)
-    }
 
-    @Test
-    fun `serialize deserialize tweet`() {
-        val twitterEvent = TweetIncomingEvent(
-            forUserId = "toto",
-            tweets = listOf(
-                Tweet(
-                    created = "Fri Apr 26 12:53:39 +0000 2019",
-                    id = 110L,
-                    text = "Mon Tweet",
-                    lang = "fr",
-                    truncated = false,
-                    user = User(
-                        id = "id",
-                        lang = "fr",
-                        location = "",
-                        name = "name",
-                        screenName = "screenName",
-                        protected = false,
-                        verified = true,
-                        followersCount = 100,
-                        friendsCount = 100,
-                        statusesCount = 100,
-                        profileImageUrlHttps = "https://photo.com"
-                    ),
-                    isQuote = false,
-                    entities = Entities(
-                        hashtags = listOf(Hashtag("tag1", listOf(1, 5)), Hashtag("tag2", listOf(1, 5))),
-                        symbols = listOf(Symbol(listOf(0, 5), "test")),
-                        mentions = listOf(Mention("screenName", "name", "id", "idStr", listOf(1, 5))),
-                        urls = listOf(Url("url", "expandedUrl", "displayUrl", listOf(1, 5)))
-                    ),
-                    extendedEntities = Entities(
-                        hashtags = listOf(Hashtag("tag1", listOf(1, 5)), Hashtag("tag2", listOf(1, 5))),
-                        symbols = listOf(Symbol(listOf(0, 5), "test")),
-                        mentions = listOf(Mention("screenName", "name", "id", "idStr", listOf(1, 5))),
-                        urls = listOf(Url("url", "expandedUrl", "displayUrl", listOf(1, 5)))
-                    ),
-                    inReplyToStatusId = 10L
-                )
-            )
-        )
-        val s = mapper.writeValueAsString(twitterEvent)
-
-        assertThat(mapper.readValue<TweetIncomingEvent>(s)).isEqualTo(twitterEvent)
+        val event = WebhookActionConverter.toEvent(typingEvent, "appId")
+        assertThat(event).isNull()
     }
 
     @Test
@@ -372,8 +266,20 @@ internal class IncomingEventDeserializationTest {
                 )
             )
         )
-        val deserializedEvent = mapper.readValue<IncomingEvent>(resourceAsStream("/incoming_tweet_with_mention.json"))
-        assertThat(deserializedEvent).isEqualTo(expected)
+
+        val event = WebhookActionConverter.toEvent(expected, "appId") as SendSentence
+        val expectedEvent = SendSentence(
+            PlayerId("14235326", PlayerType.bot),
+            "appId",
+            PlayerId("602907365", PlayerType.user),
+            "Hello @Delphes99 alors ?",
+            metadata = ActionMetadata(visibility = ActionVisibility.public)
+        )
+
+        assertThat(event).isEqualToIgnoringGivenFields(expectedEvent,
+            "id", "date")
+        assertThat(event.playerId.type).isEqualTo(PlayerType.user)
+        assertThat(event.recipientId.type).isEqualTo(PlayerType.bot)
     }
 
     @Test
@@ -413,12 +319,24 @@ internal class IncomingEventDeserializationTest {
                 )
             )
         )
-        val deserializedEvent = mapper.readValue<IncomingEvent>(resourceAsStream("/incoming_tweet_with_mention_reply.json"))
-        assertThat(deserializedEvent).isEqualTo(expected)
+
+        val event = WebhookActionConverter.toEvent(expected, "appId") as SendSentence
+        val expectedEvent = SendSentence(
+            PlayerId("14235326", PlayerType.bot),
+            "appId",
+            PlayerId("602907365", PlayerType.user),
+            "@Delphes99 alors?",
+            metadata = ActionMetadata(visibility = ActionVisibility.public)
+        )
+
+        assertThat(event).isEqualToIgnoringGivenFields(expectedEvent,
+            "id", "date")
+        assertThat(event.playerId.type).isEqualTo(PlayerType.user)
+        assertThat(event.recipientId.type).isEqualTo(PlayerType.bot)
     }
 
     @Test
-    fun `incoming tweet sent`() {
+    fun `ignore tweet sent from the account listened`() {
         val expected = TweetIncomingEvent(
             forUserId = "602907365",
             tweets = listOf(
@@ -454,7 +372,8 @@ internal class IncomingEventDeserializationTest {
                 )
             )
         )
-        val deserializedEvent = mapper.readValue<IncomingEvent>(resourceAsStream("/incoming_tweet_sent.json"))
-        assertThat(deserializedEvent).isEqualTo(expected)
+
+        val event = WebhookActionConverter.toEvent(expected, "appId")
+        assertThat(event).isNull()
     }
 }

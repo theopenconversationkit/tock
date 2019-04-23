@@ -19,9 +19,13 @@ package fr.vsct.tock.bot.connector.twitter
 import fr.vsct.tock.bot.connector.twitter.model.OptionsResponse
 import fr.vsct.tock.bot.connector.twitter.model.incoming.DirectMessageIncomingEvent
 import fr.vsct.tock.bot.connector.twitter.model.incoming.IncomingEvent
+import fr.vsct.tock.bot.connector.twitter.model.incoming.TweetIncomingEvent
+import fr.vsct.tock.bot.engine.action.ActionMetadata
+import fr.vsct.tock.bot.engine.action.ActionVisibility
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
+import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 import mu.KotlinLogging
 
@@ -31,12 +35,30 @@ internal object WebhookActionConverter {
 
     fun toEvent(incomingEvent: IncomingEvent, applicationId: String): Event? {
         return when (incomingEvent) {
+            is TweetIncomingEvent -> {
+                val tweet = incomingEvent.tweets.first()
+                // Ignore all replies and quoted tweets && message from account listened
+                val isReplyMessage = tweet.isQuote && tweet.inReplyToStatusId == null
+                val isFromAccountListened = incomingEvent.forUserId.equals(tweet.user.id)
+                if (!isReplyMessage && !isFromAccountListened) {
+                    SendSentence(
+                        incomingEvent.playerId(PlayerType.user),
+                        applicationId,
+                        PlayerId(incomingEvent.forUserId, PlayerType.bot),
+                        //extended entities and full_text
+                        tweet.extendedTweet?.text ?: tweet.text,
+                        metadata = ActionMetadata(visibility = ActionVisibility.public)
+                    )
+                } else {
+                    logger.debug { "ignore event $incomingEvent with tweet text = [${tweet.text}] from [${tweet.user.id}][${tweet.user.name}]" }
+                    null
+                }
+            }
             is DirectMessageIncomingEvent -> {
-                // Ignore all application event
-                if (incomingEvent.apps == null || !incomingEvent.apps.containsKey(applicationId)) {
-
-                    incomingEvent.directMessages.firstOrNull()?.let {
-
+                // ignore direct message sent from the bot
+                val firstOrNull = incomingEvent.directMessages.firstOrNull()
+                if (!incomingEvent.forUserId.equals(firstOrNull?.messageCreated?.senderId)) {
+                        firstOrNull?.let {
                         return if (it.messageCreated.messageData.quickReplyResponse != null) {
                             when (it.messageCreated.messageData.quickReplyResponse) {
                                 is OptionsResponse -> {
@@ -47,7 +69,8 @@ internal object WebhookActionConverter {
                                                     incomingEvent.playerId(PlayerType.user),
                                                     applicationId,
                                                     incomingEvent.recipientId(PlayerType.bot),
-                                                    parameters[SendChoice.NLP]
+                                                    parameters[SendChoice.NLP],
+                                                    metadata = ActionMetadata(visibility = ActionVisibility.private)
                                                 )
                                             } else {
                                                 SendChoice(
@@ -55,7 +78,8 @@ internal object WebhookActionConverter {
                                                     applicationId,
                                                     incomingEvent.recipientId(PlayerType.bot),
                                                     intentName,
-                                                    parameters
+                                                    parameters,
+                                                    metadata = ActionMetadata(visibility = ActionVisibility.private)
                                                 )
                                             }
                                         }
@@ -71,7 +95,8 @@ internal object WebhookActionConverter {
                                 incomingEvent.playerId(PlayerType.user),
                                 applicationId,
                                 incomingEvent.recipientId(PlayerType.bot),
-                                it.messageCreated.messageData.text
+                                it.messageCreated.messageData.text,
+                                metadata = ActionMetadata(visibility = ActionVisibility.private)
                             )
                         }
                     }

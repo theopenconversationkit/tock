@@ -13,30 +13,25 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
+
 package fr.vsct.tock.bot.connector.twitter.model.incoming
 
-import com.fasterxml.jackson.databind.annotation.JsonDeserialize
-import fr.vsct.tock.bot.connector.twitter.json.EventDeserializer
-import fr.vsct.tock.bot.connector.twitter.model.TwitterConnectorMessage
+import com.fasterxml.jackson.annotation.JsonProperty
+import fr.vsct.tock.bot.connector.twitter.model.Tweet
 import fr.vsct.tock.bot.connector.twitter.model.User
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 
 /**
- * IncomingEvent object
+ * Tweet (Status) IncomingEvent
  */
-@JsonDeserialize(using = EventDeserializer::class)
-abstract class IncomingEvent : TwitterConnectorMessage() {
+data class TweetIncomingEvent(
+    @JsonProperty("for_user_id") override val forUserId: String,
+    @JsonProperty("tweet_create_events") val tweets: List<Tweet>
+    ) : IncomingEvent() {
+    override val users: Map<String, User>
+        get() = mapOf(Pair(tweets.first().user.id, tweets.first().user))
 
-    abstract val forUserId: String
-    abstract val users: Map<String, User>
-
-    open fun playerId(playerType: PlayerType): PlayerId =
-        PlayerId(users.values.firstOrNull()?.id ?: error("null sender field in IncomingEvent"), playerType)
-
-    open fun recipientId(playerType: PlayerType): PlayerId = PlayerId(
-        users.values.lastOrNull()?.id ?: error("id or userRef must not be null"),
-        playerType
-    )
-
+    override fun playerId(playerType: PlayerType): PlayerId =
+        tweets.first().playerId(playerType)
 }

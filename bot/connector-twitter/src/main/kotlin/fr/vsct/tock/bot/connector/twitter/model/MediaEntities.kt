@@ -16,13 +16,13 @@
 
 package fr.vsct.tock.bot.connector.twitter.model
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties
 
-data class Entities(
-    val hashtags: List<Hashtag>? = null,
-    @JsonProperty("user_mentions") val mentions: List<Mention>? = null,
-    val urls: List<Url>? = null,
-    val symbols: List<Symbol>? = null,
-    val polls: List<Poll>? = null,
-    val media: List<MediaEntities>? = null
+@JsonIgnoreProperties(ignoreUnknown = true)
+data class MediaEntities(
+    val display_url: String,
+    val expanded_url: String,
+    val indices: List<Int>,
+    val media_url: String,
+    val media_url_https: String
 )

@@ -30,6 +30,7 @@ import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionNotificationType
 import fr.vsct.tock.bot.engine.action.ActionPriority
+import fr.vsct.tock.bot.engine.action.ActionVisibility
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.Dialog
@@ -521,6 +522,11 @@ interface BotBus : I18nTranslator {
     fun withNotificationType(notificationType: ActionNotificationType): BotBus
 
     /**
+     * Adds the specified [ActionVisibility] to the bus context.
+     */
+    fun withVisibility(visibility: ActionVisibility): BotBus
+
+    /**
      * Adds the specified [ConnectorMessage] to the bus context if the [targetConnectorType] is compatible.
      */
     fun withMessage(message: ConnectorMessage): BotBus = withMessage(message.connectorType) { message }
@@ -600,5 +606,4 @@ interface BotBus : I18nTranslator {
 
     //I18nTranslator implementation
     override val contextId: String? get() = dialog.id.toString()
-
 }

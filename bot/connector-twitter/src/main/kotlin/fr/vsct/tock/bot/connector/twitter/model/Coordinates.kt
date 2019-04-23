@@ -16,13 +16,4 @@
 
 package fr.vsct.tock.bot.connector.twitter.model
 
-import com.fasterxml.jackson.annotation.JsonProperty
-
-data class Entities(
-    val hashtags: List<Hashtag>? = null,
-    @JsonProperty("user_mentions") val mentions: List<Mention>? = null,
-    val urls: List<Url>? = null,
-    val symbols: List<Symbol>? = null,
-    val polls: List<Poll>? = null,
-    val media: List<MediaEntities>? = null
-)
+data class Coordinates(val coordinates: List<Float>, val type: String)

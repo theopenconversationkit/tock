@@ -16,13 +16,11 @@
 
 package fr.vsct.tock.bot.connector.twitter.model
 
-import com.fasterxml.jackson.annotation.JsonProperty
+import com.fasterxml.jackson.annotation.JsonIgnore
+import fr.vsct.tock.bot.connector.ConnectorMessage
+import fr.vsct.tock.bot.connector.ConnectorType
+import fr.vsct.tock.bot.connector.twitter.TwitterConnectorProvider
 
-data class Entities(
-    val hashtags: List<Hashtag>? = null,
-    @JsonProperty("user_mentions") val mentions: List<Mention>? = null,
-    val urls: List<Url>? = null,
-    val symbols: List<Symbol>? = null,
-    val polls: List<Poll>? = null,
-    val media: List<MediaEntities>? = null
-)
+abstract class TwitterPublicConnectorMessage : ConnectorMessage {
+    override val connectorType: ConnectorType @JsonIgnore get() = TwitterConnectorProvider.connectorType
+}
