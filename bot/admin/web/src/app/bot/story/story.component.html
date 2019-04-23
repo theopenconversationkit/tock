@@ -3,7 +3,6 @@
     <span *ngIf="!storyNode" class="answer-title" matTooltip="Story name">{{story.name}}</span>
     <span *ngIf="storyNode" class="answer-title" matTooltip="Story name" [matBadge]="storyNode.displayCount()" matBadgeOverlap="false">{{story.name}}</span>
     <span class="category" matTooltip="Story category">&nbsp;[{{story.category}}]</span>
-    <span class="category" matTooltip="Story category">&nbsp;[{{story.category}}]</span>
     <button mat-icon-button color="primary" matTooltip="Edit" (click)="editStory()">
       <mat-icon>edit</mat-icon>
     </button>
