@@ -45,6 +45,7 @@ internal class TeamsClient(
     var loginApi: LoginMicrosoftOnline
     private val connectorApi: ConnectorMicrosoftApi
     private val logger = KotlinLogging.logger {}
+    private val logLevel = if (logger.isDebugEnabled) {Level.BODY} else {Level.BASIC}
     private val customInterceptor = CustomInterceptor()
     //copy root mapper and set property naming strategy
     val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(SNAKE_CASE)
@@ -53,7 +54,7 @@ internal class TeamsClient(
         loginApi = retrofitBuilderWithTimeoutAndLogger(
             longProperty("tock_whatsapp_request_timeout_ms", 30000),
             logger,
-            Level.BASIC
+            logLevel
         )
             .baseUrl("https://login.microsoftonline.com")
             .addJacksonConverter(teamsMapper)
@@ -63,7 +64,7 @@ internal class TeamsClient(
         connectorApi = retrofitBuilderWithTimeoutAndLogger(
             longProperty("tock_whatsapp_request_timeout_ms", 30000),
             logger,
-            Level.BASIC,
+            logLevel,
             listOf(customInterceptor)
         )
             .baseUrl("https://smba.trafficmanager.net/emea/")
