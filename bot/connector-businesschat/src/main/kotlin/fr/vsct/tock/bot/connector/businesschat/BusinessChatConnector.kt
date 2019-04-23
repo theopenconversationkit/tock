@@ -56,10 +56,10 @@ internal class BusinessChatConnector(
         when (event) {
             is SendSentence -> {
                 val message = MessageConverter.toMessage(event)
-                if (message is BusinessChatConnectorTextMessage) {
-                    cspBusinessChatClient.sendMessage(message)
-                } else if (message is BusinessChatConnectorImageMessage) {
-                    cspBusinessChatClient.sendAttachment(message)
+                when (message) {
+                    is BusinessChatConnectorTextMessage -> cspBusinessChatClient.sendMessage(message)
+                    is BusinessChatConnectorImageMessage -> cspBusinessChatClient.sendAttachment(message)
+                    is BusinessChatConnectorListPickerMessage -> cspBusinessChatClient.sendListPicker(message)
                 }
             }
         }
@@ -74,7 +74,7 @@ internal class BusinessChatConnector(
                 val requestTimerData = BotRepository.requestTimer.start("business chat start")
                 try {
                     val body = context.bodyAsString
-                    val message = mapper.readValue<Message>(body)
+                    val message = mapper.readValue<ReceivedModel>(body)
 
                     when (businessId) {
                         message.sourceId -> {
