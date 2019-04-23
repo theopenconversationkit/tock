@@ -35,17 +35,22 @@ internal class ConfiguredStoryDefinition(val configuration: StoryDefinitionConfi
     override val id: String = configuration._id.toString()
 
     override val starterIntents: Set<Intent> =
-        setOf(configuration.intent) + (configuration.storyDefinition(configuration.botId)?.starterIntents ?: emptySet())
+            setOf(configuration.intent) + (configuration.storyDefinition(configuration.botId)?.starterIntents
+                    ?: emptySet())
 
     override val intents: Set<Intent> =
-        starterIntents + (configuration.storyDefinition(configuration.botId)?.intents ?: emptySet())
+            starterIntents +
+                    (configuration.storyDefinition(configuration.botId)?.intents ?: emptySet()) +
+                    configuration.mandatoryEntities.map { it.intent } +
+                    configuration.steps.map { it.intent }
 
     override val storyHandler: StoryHandler = ConfiguredStoryHandler(configuration)
 
     override val steps: Set<StoryStep<out StoryHandlerDefinition>> =
-        configuration.storyDefinition(configuration.botId)?.steps ?: emptySet()
+            (configuration.storyDefinition(configuration.botId)?.steps ?: emptySet()) +
+                    configuration.steps.map { it.toStoryStep() }
 
     override val unsupportedUserInterfaces: Set<UserInterfaceType> =
-        configuration.storyDefinition(configuration.botId)?.unsupportedUserInterfaces ?: emptySet()
+            configuration.storyDefinition(configuration.botId)?.unsupportedUserInterfaces ?: emptySet()
 
 }

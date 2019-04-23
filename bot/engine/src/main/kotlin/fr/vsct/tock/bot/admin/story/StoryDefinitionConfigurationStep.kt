@@ -3,6 +3,9 @@ package fr.vsct.tock.bot.admin.story
 import fr.vsct.tock.bot.admin.answer.AnswerConfiguration
 import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.bot.definition.IntentAware
+import fr.vsct.tock.bot.definition.SimpleStoryStep
+import fr.vsct.tock.bot.definition.StoryStep
 
 /**
  * A [StoryStep] configuration in a [StoryDefinitionConfiguration].
@@ -24,4 +27,11 @@ data class StoryDefinitionConfigurationStep(
          * The type of answer configuration.
          */
         override val currentType: AnswerConfigurationType
-) : StoryDefinitionAnswersContainer
+) : StoryDefinitionAnswersContainer {
+
+    fun toStoryStep(): StoryStep<*> =
+            object : SimpleStoryStep {
+                override val name: String get() = this@StoryDefinitionConfigurationStep.name
+                override val intent: IntentAware? get() = this@StoryDefinitionConfigurationStep.intent
+            }
+}

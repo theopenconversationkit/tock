@@ -35,6 +35,12 @@ internal class ConfiguredStoryHandler(private val configuration: StoryDefinition
     }
 
     override fun handle(bus: BotBus) {
+        configuration.steps.find { bus.isIntent(it.intent) }
+                ?.also {
+                    it.send(bus)
+                    return@handle
+                }
+
         configuration.mandatoryEntities.forEach { entity ->
             if (bus.entityValueDetails(entity.role) == null) {
                 entity.send(bus)
