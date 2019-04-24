@@ -1,6 +1,13 @@
 <h1 mat-dialog-title>Mandatory Entities</h1>
 <div class="container">
   <div *ngFor="let e of entities">
+    <!-- entity role -->
+    <mat-form-field>
+      <input matInput name="role" placeholder="Entity" [(ngModel)]="e.role"
+             [matAutocomplete]="entityAuto"
+             required>
+    </mat-form-field>
+
     <!-- intent -->
     <mat-form-field>
       <input matInput name="intent" placeholder="Intent" [(ngModel)]="e.intent.name"
@@ -10,13 +17,7 @@
              (blur)="onIntentChange(e, $event.target.value)"
              required>
     </mat-form-field>
-      &nbsp;
-    <!-- entity role -->
-    <mat-form-field>
-      <input matInput name="role" placeholder="Entity" [(ngModel)]="e.role"
-             [matAutocomplete]="entityAuto"
-             required>
-    </mat-form-field>
+
     <button class="answerButton" mat-icon-button color="warn"
             matTooltip="Remove Mandatory Entity" (click)="removeEntity(e)">
       <mat-icon>remove</mat-icon>
@@ -25,6 +26,12 @@
   </div>
 
   <div>
+    <!-- entity role -->
+    <mat-form-field>
+      <input #newRole matInput name="role" placeholder="Entity" [(ngModel)]="newEntity.role"
+             [matAutocomplete]="entityAuto"
+             required>
+    </mat-form-field>
     <!-- intent -->
     <mat-form-field>
       <input matInput name="intent" placeholder="Intent" [(ngModel)]="newEntity.intent.name"
@@ -35,12 +42,7 @@
              required>
     </mat-form-field>
     &nbsp;
-    <!-- entity role -->
-    <mat-form-field>
-      <input #newRole matInput name="role" placeholder="Entity" [(ngModel)]="newEntity.role"
-             [matAutocomplete]="entityAuto"
-             required>
-    </mat-form-field>
+
     <button mat-icon-button color="primary" matTooltip="Add Mandatory Entity" class="answerButton" (click)="addEntity()">
       <mat-icon>library_add</mat-icon>
     </button>

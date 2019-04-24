@@ -17,6 +17,7 @@
 import {Component, ElementRef, Inject, OnInit, ViewChild} from '@angular/core';
 import {MAT_DIALOG_DATA, MatDialogRef} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
+import {IntentsCategory} from "../../model/nlp";
 
 @Component({
   selector: 'tock-story-dialog',
@@ -27,13 +28,15 @@ export class StoryDialogComponent implements OnInit {
 
   create: boolean;
   name: string;
-  intent:string;
+  intent: string;
   label: string;
   category: string = "default";
   description: string;
   categories: string[] = [];
+  originalCategories: IntentsCategory[] = [];
   dialogType: string;
   private nameInitialized = false;
+  intentCategories: IntentsCategory[] = [];
 
   @ViewChild('labelElement') labelElement: ElementRef;
 
@@ -52,7 +55,32 @@ export class StoryDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.state.currentIntentsCategories.subscribe(c => this.categories = c.map(cat => cat.category));
+    this.state.currentIntentsCategories.subscribe(c => {
+      this.originalCategories = c;
+      this.intentCategories = c;
+      this.categories = c.map(cat => cat.category);
+    });
+  }
+
+  private oldIntent:string;
+
+  intentCategoryChange() {
+    if(this.oldIntent !== this.intent) {
+      this.oldIntent = this.intent;
+      let intent = this.intent.trim().toLowerCase();
+      this.intentCategories = this.originalCategories.map(
+        c => new IntentsCategory(c.category, c.intents.filter(i => i.intentLabel().toLowerCase().startsWith(intent)))
+      )
+        .filter(c => c.intents.length !== 0)
+    }
+  }
+
+  categoryChange() {
+    let cat = this.category.toLowerCase().trim();
+    let allCats = this.originalCategories.map(cat => cat.category);
+    this.categories = cat.length === 0
+      ? allCats
+      : allCats.filter(c => c.toLowerCase().startsWith(cat))
   }
 
   copyToName() {

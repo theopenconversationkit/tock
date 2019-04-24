@@ -32,13 +32,13 @@
     <!-- intent -->
     <mat-form-field>
       <input matInput name="intent" placeholder="Intent" [(ngModel)]="intent"
-             matTooltip="Intent"
+             matTooltip="Intent" (keyup)="intentCategoryChange()"
              [matAutocomplete]="intentAuto"
              (change)="intent = $event.target.value"
              required>
     </mat-form-field>
     <mat-autocomplete #intentAuto="matAutocomplete">
-      <mat-optgroup *ngFor="let category of state.currentIntentsCategories | async" [label]="category.category">
+      <mat-optgroup *ngFor="let category of intentCategories" [label]="category.category">
         <mat-option *ngFor="let intent of category.intents" [value]="intent.name">
           {{intent.intentLabel()}}
         </mat-option>
@@ -47,7 +47,7 @@
     <!-- category -->
     <mat-form-field>
       <input matInput name="category" placeholder="Category" [(ngModel)]="category"
-             matTooltip="Category"
+             matTooltip="Category" (keyup)="categoryChange()"
              [matAutocomplete]="catAuto">
     </mat-form-field>
     <mat-autocomplete #catAuto="matAutocomplete">

@@ -102,9 +102,10 @@ export class StoryComponent implements OnInit, OnChanges {
 
   private saveStory() {
     if (this.story._id) {
-      this.bot.saveStory(this.story).subscribe(s =>
-        this.snackBar.open(`Story ${this.story.name} modified`, "Update", {duration: 3000})
-      )
+      this.bot.saveStory(this.story).subscribe(s => {
+        this.state.resetConfiguration();
+        this.snackBar.open(`Story ${this.story.name} modified`, "Update", {duration: 3000});
+      })
     }
   }
 

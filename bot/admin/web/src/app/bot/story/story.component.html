@@ -2,7 +2,6 @@
   <mat-card-title>
     <span *ngIf="!storyNode" class="answer-title" matTooltip="Story name">{{story.name}}</span>
     <span *ngIf="storyNode" class="answer-title" matTooltip="Story name" [matBadge]="storyNode.displayCount()" matBadgeOverlap="false">{{story.name}}</span>
-    <span class="category" matTooltip="Story category">&nbsp;[{{story.category}}]</span>
     <button mat-icon-button color="primary" matTooltip="Edit" (click)="editStory()">
       <mat-icon>edit</mat-icon>
     </button>
@@ -15,7 +14,10 @@
   </mat-card-title>
   <mat-card-subtitle>
     <span class="intent" matTooltip="Main Intent">{{story.intent.name}}</span>
+    <span class="category" matTooltip="Story category">&nbsp;[{{story.category}}]</span>
+    <div>
     {{story.description}}
+    </div>
     <ul *ngIf="storyNode">
       <li *ngIf="storyNode.intent">Intent: <b>{{storyNode.intent}}</b></li>
       <li *ngIf="storyNode.step">Step: <b>{{storyNode.step}}</b></li>

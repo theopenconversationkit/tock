@@ -31,6 +31,7 @@ export class IntentDialogComponent implements OnInit {
   category: string = "default";
   description: string;
   categories: string[] = [];
+  originalCategories: string[] = [];
   dialogType: string;
   private nameInitialized = false;
 
@@ -50,13 +51,23 @@ export class IntentDialogComponent implements OnInit {
   }
 
   ngOnInit() {
-    this.state.currentIntentsCategories.subscribe(c => this.categories = c.map(cat => cat.category));
+    this.state.currentIntentsCategories.subscribe(c => {
+      this.categories = c.map(cat => cat.category);
+      this.originalCategories = this.categories;
+    });
   }
 
   copyToName() {
     if (!this.nameInitialized && this.create) {
       this.formatName(this.label);
     }
+  }
+
+  categoryChange() {
+    let cat = this.category.toLowerCase().trim();
+    this.categories = cat.length === 0
+      ? this.originalCategories
+      : this.originalCategories.filter(c => c.toLowerCase().startsWith(cat))
   }
 
   format() {

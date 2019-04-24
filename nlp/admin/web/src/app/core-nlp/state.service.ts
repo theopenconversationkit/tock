@@ -80,6 +80,10 @@ export class StateService implements AuthListener {
     this.resetConfigurationEmitter.emit(true);
   }
 
+  refreshIntentsAndEntities() {
+    this.changeApplication(this.currentApplication);
+  }
+
   currentEngine(): NlpEngineType {
     return this.currentApplication.nlpEngineType;
   }

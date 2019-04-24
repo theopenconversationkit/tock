@@ -355,13 +355,31 @@ object BotAdminService {
         val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()
         return if (botConf != null) {
 
-            if (storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
-                            namespace,
-                            botConf.botId,
-                            story.intent.name
-                    )?._id != storyDefinition?._id
-            ) {
-                badRequest("Story already exists for the intent ${story.intent.name}")
+            storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
+                    namespace,
+                    botConf.botId,
+                    story.intent.name
+            ).let {
+                if (it == null) {
+                    //intent change
+                    if (storyDefinition?._id != null) {
+                        val nlpApplication = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)!!
+                        AdminService.createOrUpdateIntent(
+                                namespace,
+                                IntentDefinition(
+                                        story.intent.name,
+                                        namespace,
+                                        setOf(nlpApplication._id),
+                                        emptySet(),
+                                        category = story.category
+                                )
+                        )
+                    }
+                } else {
+                    if (it._id != storyDefinition?._id) {
+                        badRequest("Story already exists for the intent ${story.intent.name}")
+                    }
+                }
             }
             if (storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndStoryId(
                             namespace,
