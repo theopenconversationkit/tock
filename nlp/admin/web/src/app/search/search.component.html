@@ -15,7 +15,7 @@
   -->
 
 <div class="search">
-  <tock-sentences-scroll [filter]="filter" title="" [displayStatus]="true"
+  <tock-sentences-scroll [filter]="filter" title="" [displayStatus]="true" [loadOnInit]="false"
                          (selectedSentences)="selectedSentences = $event">
     <mat-card>
       <mat-card-content>

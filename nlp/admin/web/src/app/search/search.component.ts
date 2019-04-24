@@ -47,20 +47,24 @@ export class SearchComponent implements OnInit {
   }
 
   ngOnInit() {
+    this.status = null;
     this.route.queryParams.subscribe(params => {
-      this.filter.search = params["text"];
-      this.fillEntitiesFilter();
+      if (params["text"]) {
+        this.filter.search = params["text"];
+      }
+      if (params["status"]) {
+        this.status = SentenceStatus[SentenceStatus[params["status"]]];
+      }
+      this.state.currentIntents.subscribe(i => {
+        const search = this.filter.search;
+        this.filter = new SentenceFilter();
+        this.filter.search = search;
+        this.selectedSentences = null;
+        this.update = new SentencesUpdate();
+        this.fillEntitiesFilter();
+        this.search();
+      })
     });
-    this.state.currentIntents.subscribe(i => {
-      const search = this.filter.search;
-      this.filter = new SentenceFilter();
-      this.filter.search = search;
-      this.status = null;
-      this.selectedSentences = null;
-      this.update = new SentencesUpdate();
-      this.fillEntitiesFilter();
-      this.search();
-    })
   }
 
   private fillEntitiesFilter() {

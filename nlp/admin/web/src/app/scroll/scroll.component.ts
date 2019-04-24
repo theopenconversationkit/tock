@@ -28,6 +28,7 @@ import {Observable} from "rxjs";
 export class ScrollComponent<T> implements OnInit, OnDestroy {
 
   @Input() title: string;
+  @Input() loadOnInit:boolean = true;
 
   cursor: number = 0;
   pageSize: number = 10;
@@ -44,7 +45,9 @@ export class ScrollComponent<T> implements OnInit, OnDestroy {
   }
 
   ngOnInit() {
-    this.load();
+    if(this.loadOnInit) {
+      this.load();
+    }
     this.currentApplicationUnsuscriber = this.state.currentApplicationEmitter.subscribe(_ => this.refresh());
     this.currentLocaleUnsuscriber = this.state.currentLocaleEmitter.subscribe(_ => this.refresh());
   }

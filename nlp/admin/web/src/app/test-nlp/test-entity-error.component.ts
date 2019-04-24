@@ -70,7 +70,8 @@ export class TestEntityErrorComponent implements OnInit, AfterViewInit {
           ['/nlp/search'],
           {
             queryParams: {
-              text: "^" + escapeRegex(error.sentence.text) + "$"
+              text: "^" + escapeRegex(error.sentence.text) + "$",
+              status: "model"
             }
           }
         );

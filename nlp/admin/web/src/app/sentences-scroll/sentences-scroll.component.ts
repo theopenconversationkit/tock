@@ -41,6 +41,7 @@ export class SentencesScrollComponent extends ScrollComponent<Sentence> implemen
   @Input() displayUnknownButton: boolean = true;
   @Input() displayProbabilities: boolean = false;
   @Input() displayStatus: boolean = false;
+
   @Output() selectedSentences: EventEmitter<Sentence[]> = new EventEmitter<Sentence[]>();
 
   pageIndex: number = 0;
