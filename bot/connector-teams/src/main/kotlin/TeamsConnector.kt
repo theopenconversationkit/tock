@@ -40,6 +40,7 @@ import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
 import mu.KotlinLogging
 import java.time.Duration
+import kotlin.system.measureTimeMillis
 
 /**
  *
@@ -65,55 +66,58 @@ internal class TeamsConnector(
         controller.registerServices(path) { router ->
 
             router.post(path).handler { context ->
-                var responseSent = false
-                val requestTimerData = BotRepository.requestTimer.start("teams_webhook")
-                try {
-                    val body = context.bodyAsString
-                    val activity: Activity = mapper.readValue(body)
-                    if (activity.type() != ActivityTypes.MESSAGE) {
-                        logger.debug(activity.toString())
-                        throw NoMessageException("The activity received is not a message")
-                    }
-                    authenticateBotConnectorService.checkRequestValidity(
-                        context.request().headers(),
-                        activity
-                    )
-                    executor.executeBlocking {
-                        val e: Event? = SendSentence(
-                            PlayerId(activity.from().id()),
-                            connectorId,
-                            PlayerId(connectorId, PlayerType.bot),
-                            activity.text()
-                        )
-                        if (e != null) {
-                            controller.handle(
-                                e,
-                                ConnectorData(
-                                    TeamsConnectorCallback(connectorId, activity)
-                                )
-                            )
-                        } else {
-                            logger.warn { "null event for $body" }
+                val timeElapsed = measureTimeMillis {
+                    var responseSent = false
+                    val requestTimerData = BotRepository.requestTimer.start("teams_webhook")
+                    try {
+                        val body = context.bodyAsString
+                        val activity: Activity = mapper.readValue(body)
+                        if (activity.type() != ActivityTypes.MESSAGE) {
+                            logger.debug(activity.toString())
+                            throw NoMessageException("The activity received is not a message")
                         }
-                    }
-                } catch (e: ForbiddenException) {
-                    context.fail(403)
-                    responseSent = true
-                    logger.logError(e.message ?: "error", requestTimerData)
-                } catch (e: NoMessageException) {
-                    logger.warn(e.toString())
-                } catch (e: Exception) {
-                    logger.logError(e, requestTimerData)
-                } finally {
-                    BotRepository.requestTimer.end(requestTimerData)
-                    if (!responseSent) {
-                        try {
-                            context.response().end()
-                        } catch (e: Throwable) {
-                            logger.error(e)
+                        authenticateBotConnectorService.checkRequestValidity(
+                            context.request().headers(),
+                            activity
+                        )
+                        executor.executeBlocking {
+                            val e: Event? = SendSentence(
+                                PlayerId(activity.from().id()),
+                                connectorId,
+                                PlayerId(connectorId, PlayerType.bot),
+                                activity.text()
+                            )
+                            if (e != null) {
+                                controller.handle(
+                                    e,
+                                    ConnectorData(
+                                        TeamsConnectorCallback(connectorId, activity)
+                                    )
+                                )
+                            } else {
+                                logger.warn { "null event for $body" }
+                            }
+                        }
+                    } catch (e: ForbiddenException) {
+                        context.fail(403)
+                        responseSent = true
+                        logger.logError(e.message ?: "error", requestTimerData)
+                    } catch (e: NoMessageException) {
+                        logger.warn(e.toString())
+                    } catch (e: Exception) {
+                        logger.logError(e, requestTimerData)
+                    } finally {
+                        BotRepository.requestTimer.end(requestTimerData)
+                        if (!responseSent) {
+                            try {
+                                context.response().end()
+                            } catch (e: Throwable) {
+                                logger.error(e)
+                            }
                         }
                     }
                 }
+                logger.trace("Time elapsed : $timeElapsed ms")
             }
         }
     }

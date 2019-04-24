@@ -44,7 +44,7 @@ object TokenHandler {
         }
     }
 
-    private fun isTokenExpired(): Boolean {
+    fun isTokenExpired(): Boolean {
         logger.debug { "IS TOKEN EXPIRED" }
         if (Instant.now().isAfter(
                 tokenExpiration?.minus(
@@ -66,7 +66,7 @@ object TokenHandler {
         tokenExpiration = Instant.now().plus(response.body()?.expiresIn!!, ChronoUnit.SECONDS)
     }
 
-    private fun setId(appId: String, password: String) {
+    fun setId(appId: String, password: String) {
         this.appId = appId
         this.password = password
     }

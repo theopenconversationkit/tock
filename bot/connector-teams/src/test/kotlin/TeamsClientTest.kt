@@ -1,8 +1,11 @@
 package fr.vsct.tock.bot.connector.teams
 
+import com.microsoft.bot.schema.models.Activity
+import fr.vsct.tock.bot.connector.teams.messages.TeamsBotTextMessage
 import fr.vsct.tock.bot.connector.teams.token.TokenHandler
-import fr.vsct.tock.bot.connector.teams.token.TokenHandler.checkToken
+import fr.vsct.tock.bot.connector.teams.token.TokenHandler.isTokenExpired
 import fr.vsct.tock.bot.connector.teams.token.TokenHandler.loginApi
+import fr.vsct.tock.bot.connector.teams.token.TokenHandler.setId
 import fr.vsct.tock.bot.connector.teams.token.TokenHandler.teamsMapper
 import fr.vsct.tock.bot.engine.nlp.NlpProxyBotListener.logger
 import fr.vsct.tock.shared.addJacksonConverter
@@ -11,11 +14,21 @@ import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import okhttp3.mockwebserver.MockResponse
 import okhttp3.mockwebserver.MockWebServer
+import org.junit.jupiter.api.BeforeEach
 import org.junit.jupiter.api.Test
+import org.junit.jupiter.api.TestInstance
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
+import kotlin.test.assertFalse
+import kotlin.test.assertTrue
 
+@TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class TeamsClientTest {
+
+    @BeforeEach
+    private fun resetToken() {
+        TokenHandler.token = null
+    }
 
     @Test
     fun getTokenWorksFineWithGoodResponse() {
@@ -65,18 +78,17 @@ class TeamsClientTest {
             .create()
 
         assertFailsWith(IllegalStateException::class) {
-            TokenHandler.takeCareOfTheToken("fakeId", "fakePassword")
-            //Sleep to let the time to fetchToken() async method to execute
-            Thread.sleep(1000)
+            setId("fakeId", "fakePassword")
+            TokenHandler.checkToken()
         }
         server.shutdown()
     }
 
-/*
+
     @Test
     fun testTokenValidity() {
         val server = MockWebServer()
-        val teamsClient = TeamsClient("fakeId", "fakePassword")
+        val client = TeamsClient()
 
         val apiResponse = MockResponse()
             .addHeader("Content-Type", "application/json")
@@ -93,26 +105,28 @@ class TeamsClientTest {
         server.enqueue(apiResponse)
         server.enqueue(connectorResponse)
 
-        teamsClient.loginApi = retrofitBuilderWithTimeoutAndLogger(
+        loginApi = retrofitBuilderWithTimeoutAndLogger(
             longProperty("tock_whatsapp_request_timeout_ms", 30000),
             logger
         )
             .baseUrl("http://${server.hostName}:${server.port}/")
-            .addJacksonConverter(teamsClient.teamsMapper)
+            .addJacksonConverter(teamsMapper)
             .build()
             .create()
 
-        val activity = teamsClient.teamsMapper.readValue(
+        val activity = teamsMapper.readValue(
             "{\"text\":\"plop\",\"textFormat\":\"plain\",\"type\":\"message\",\"timestamp\":\"2019-01-17T09:40:33.755Z\",\"localTimestamp\":\"2019-01-17T10:40:33.755+01:00\",\"id\":\"1547718033691\",\"channelId\":\"msteams\",\"serviceUrl\":\"http://${server.hostName}:${server.port}/\",\"from\":{\"id\":\"29:1y1-JPsfBcQcMo6FnyhuRPyB5mb073MBxGdulNe6GUKE576AkjDw-9Bzgnb4l_kSxEVL1SVf-ShMGMtB8_o6DRg\",\"name\":\"Barre Sébastien\",\"aadObjectId\":\"317e208d-d6b7-451a-ae40-860d2bf09d80\"},\"conversation\":{\"conversationType\":\"personal\",\"id\":\"a:1HWuSX9zTFGpthhsdqTB3qeqxoGjEGnHRMB0O0X6Dop9Nl72GVDcdfTOl7yI5KsnemLBjJFezDgThHsbPHwB14tABOxPV3_m9l_v_JdQMwVpQxkyxibKXa6d9eRHYQ7nD\"},\"recipient\":{\"id\":\"28:92427410-7ddc-4112-b2b8-e5a4f9b7fd7c\",\"name\":\"EVE-DEV\"},\"entities\":[{\"locale\":\"fr-FR\",\"country\":\"FR\",\"platform\":\"Windows\",\"type\":\"clientInfo\"}],\"channelData\":{\"tenant\":{\"id\":\"85eca096-674d-4fd9-9a9e-ae1178e2ee56\"}}}",
             Activity::class.java
         )
 
-        teamsClient.sendMessage(activity, TeamsBotTextMessage( "plop"))
+        setId("fakeId", "fakePassword")
 
-        assertFalse(teamsClient.isTokenExpired())
+        client.sendMessage(activity, TeamsBotTextMessage( "plop"))
+
+        assertFalse(isTokenExpired())
         Thread.sleep(1000)
-        assertTrue(teamsClient.isTokenExpired())
+        assertTrue(isTokenExpired())
         server.shutdown()
-    }*/
+    }
 
 }
