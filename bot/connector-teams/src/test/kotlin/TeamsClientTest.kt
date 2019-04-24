@@ -1,10 +1,10 @@
 package fr.vsct.tock.bot.connector.teams
 
-import com.microsoft.bot.schema.models.Activity
-import fr.vsct.tock.bot.connector.teams.messages.TeamsBotTextMessage
-import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.connector.teams.token.TokenHandler
+import fr.vsct.tock.bot.connector.teams.token.TokenHandler.checkToken
+import fr.vsct.tock.bot.connector.teams.token.TokenHandler.loginApi
+import fr.vsct.tock.bot.connector.teams.token.TokenHandler.teamsMapper
 import fr.vsct.tock.bot.engine.nlp.NlpProxyBotListener.logger
-import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.longProperty
@@ -14,15 +14,12 @@ import okhttp3.mockwebserver.MockWebServer
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 import kotlin.test.assertFailsWith
-import kotlin.test.assertFalse
-import kotlin.test.assertTrue
 
 class TeamsClientTest {
 
     @Test
     fun getTokenWorksFineWithGoodResponse() {
         val server = MockWebServer()
-        val teamsClient = TeamsClient("fakeId", "fakePassword")
 
         val apiResponse = MockResponse()
             .addHeader("Content-Type", "application/json")
@@ -33,19 +30,17 @@ class TeamsClientTest {
 
         server.enqueue(apiResponse)
 
-        teamsClient.loginApi = retrofitBuilderWithTimeoutAndLogger(
+        loginApi = retrofitBuilderWithTimeoutAndLogger(
             longProperty("tock_whatsapp_request_timeout_ms", 30000),
             logger
-        )
-            .baseUrl("http://${server.hostName}:${server.port}/")
-            .addJacksonConverter(teamsClient.teamsMapper)
-            .build()
-            .create()
+        ).baseUrl("http://${server.hostName}:${server.port}/").addJacksonConverter(teamsMapper).build().create()
 
-        teamsClient.checkToken()
+        TokenHandler.takeCareOfTheToken("fakeId", "fakePassword")
+        //Sleep to let the time to fetchToken() async method to execute
+        Thread.sleep(1000)
         assertEquals(
-            teamsClient.token,
-            "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im5iQ3dXMTF3M1hrQi14VWFYd0tSU0xqTUhHUSIsImtpZCI6Im5iQ3dXMTF3M1hrQi14VWFYd0tSU0xqTUhHUSJ9.eyJhdWQiOiJodHRwczovL2FwaS5ib3RmcmFtZXdvcmsuY29tIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvZDZkNDk0MjAtZjM5Yi00ZGY3LWExZGMtZDU5YTkzNTg3MWRiLyIsImlhdCI6MTU0NzY0ODM0MywibmJmIjoxNTQ3NjQ4MzQzLCJleHAiOjE1NDc2NTIyNDMsImFpbyI6IjQySmdZS2laKzB2bTg0NmMvTlY1QjNPMExFT1hBZ0E9IiwiYXBwaWQiOiI5MjQyNzQxMC03ZGRjLTQxMTItYjJiOC1lNWE0ZjliN2ZkN2MiLCJhcHBpZGFjciI6IjEiLCJpZHAiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC9kNmQ0OTQyMC1mMzliLTRkZjctYTFkYy1kNTlhOTM1ODcxZGIvIiwidGlkIjoiZDZkNDk0MjAtZjM5Yi00ZGY3LWExZGMtZDU5YTkzNTg3MWRiIiwidXRpIjoiX3BZcDF3MnJzVUcyV1pSdjRRUXBBQSIsInZlciI6IjEuMCJ9.fBXBiXgv_cmsq-0EpZ-zsaGrmtCCkR20kRUNENqWSechZFpyCBaSOSeB9xdvhi2SId8HLXN1tQtwA-u4yPwlLBseXpbv1vCCh1Z6ASB9BmjqYJUk3RNZuGKbf5VDJMYlweeC_FNIV6OiIId9y0gHfuDBRcaYaJwGKVUeGfyYXBMT3ReY3_dYp5POc4eIm6wlLxscCkUKtNiPCxVviQywE3sMYdaH-3Y8rUuSTKB3cqYgIxyvas4Ld42rsWsHv1TFRG8dRO-nPCjBMYwZ_cTIcB1M0F1bipTS39-ij22IV5Cvvs_bzvzLNQPv6mO2MptLL8m-QHUqx_hAyhzeBeJtYw"
+            "eyJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiIsIng1dCI6Im5iQ3dXMTF3M1hrQi14VWFYd0tSU0xqTUhHUSIsImtpZCI6Im5iQ3dXMTF3M1hrQi14VWFYd0tSU0xqTUhHUSJ9.eyJhdWQiOiJodHRwczovL2FwaS5ib3RmcmFtZXdvcmsuY29tIiwiaXNzIjoiaHR0cHM6Ly9zdHMud2luZG93cy5uZXQvZDZkNDk0MjAtZjM5Yi00ZGY3LWExZGMtZDU5YTkzNTg3MWRiLyIsImlhdCI6MTU0NzY0ODM0MywibmJmIjoxNTQ3NjQ4MzQzLCJleHAiOjE1NDc2NTIyNDMsImFpbyI6IjQySmdZS2laKzB2bTg0NmMvTlY1QjNPMExFT1hBZ0E9IiwiYXBwaWQiOiI5MjQyNzQxMC03ZGRjLTQxMTItYjJiOC1lNWE0ZjliN2ZkN2MiLCJhcHBpZGFjciI6IjEiLCJpZHAiOiJodHRwczovL3N0cy53aW5kb3dzLm5ldC9kNmQ0OTQyMC1mMzliLTRkZjctYTFkYy1kNTlhOTM1ODcxZGIvIiwidGlkIjoiZDZkNDk0MjAtZjM5Yi00ZGY3LWExZGMtZDU5YTkzNTg3MWRiIiwidXRpIjoiX3BZcDF3MnJzVUcyV1pSdjRRUXBBQSIsInZlciI6IjEuMCJ9.fBXBiXgv_cmsq-0EpZ-zsaGrmtCCkR20kRUNENqWSechZFpyCBaSOSeB9xdvhi2SId8HLXN1tQtwA-u4yPwlLBseXpbv1vCCh1Z6ASB9BmjqYJUk3RNZuGKbf5VDJMYlweeC_FNIV6OiIId9y0gHfuDBRcaYaJwGKVUeGfyYXBMT3ReY3_dYp5POc4eIm6wlLxscCkUKtNiPCxVviQywE3sMYdaH-3Y8rUuSTKB3cqYgIxyvas4Ld42rsWsHv1TFRG8dRO-nPCjBMYwZ_cTIcB1M0F1bipTS39-ij22IV5Cvvs_bzvzLNQPv6mO2MptLL8m-QHUqx_hAyhzeBeJtYw",
+            TokenHandler.token
         )
         server.shutdown()
     }
@@ -53,7 +48,6 @@ class TeamsClientTest {
     @Test
     fun getTokenThrowIOExceptionWithBadResponse() {
         val server = MockWebServer()
-        val teamsClient = TeamsClient("fakeId", "fakePassword")
 
         val apiResponse = MockResponse()
             .addHeader("Content-Type", "application/json")
@@ -61,22 +55,24 @@ class TeamsClientTest {
 
         server.enqueue(apiResponse)
 
-        teamsClient.loginApi = retrofitBuilderWithTimeoutAndLogger(
+        loginApi = retrofitBuilderWithTimeoutAndLogger(
             longProperty("tock_whatsapp_request_timeout_ms", 30000),
             logger
         )
             .baseUrl("http://${server.hostName}:${server.port}/")
-            .addJacksonConverter(teamsClient.teamsMapper)
+            .addJacksonConverter(teamsMapper)
             .build()
             .create()
 
         assertFailsWith(IllegalStateException::class) {
-            teamsClient.checkToken()
+            TokenHandler.takeCareOfTheToken("fakeId", "fakePassword")
+            //Sleep to let the time to fetchToken() async method to execute
+            Thread.sleep(1000)
         }
         server.shutdown()
     }
 
-
+/*
     @Test
     fun testTokenValidity() {
         val server = MockWebServer()
@@ -117,6 +113,6 @@ class TeamsClientTest {
         Thread.sleep(1000)
         assertTrue(teamsClient.isTokenExpired())
         server.shutdown()
-    }
+    }*/
 
 }

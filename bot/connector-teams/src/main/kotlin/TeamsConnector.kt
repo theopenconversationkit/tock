@@ -26,6 +26,7 @@ import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.teams.auth.AuthenticateBotConnectorService
 import fr.vsct.tock.bot.connector.teams.auth.ForbiddenException
 import fr.vsct.tock.bot.connector.teams.messages.SendActionConverter
+import fr.vsct.tock.bot.connector.teams.token.TokenHandler.takeCareOfTheToken
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -47,18 +48,20 @@ internal class TeamsConnector(
     private val connectorId: String,
     private val path: String,
     val appId: String,
-    appPassword: String
+    val appPassword: String
 ) : ConnectorBase(teamsConnectorType) {
 
     companion object {
         private val logger = KotlinLogging.logger {}
     }
 
-    private val client = TeamsClient(appId, appPassword)
+    private val client = TeamsClient()
     private val executor: Executor by injector.instance()
     private val authenticateBotConnectorService = AuthenticateBotConnectorService(appId)
 
     override fun register(controller: ConnectorController) {
+        takeCareOfTheToken(appId, appPassword)
+
         controller.registerServices(path) { router ->
 
             router.post(path).handler { context ->
