@@ -30,6 +30,7 @@ import io.vertx.ext.web.Router
 import io.vertx.ext.web.RoutingContext
 import mu.KLogger
 import mu.KotlinLogging
+import java.time.Instant
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.CopyOnWriteArrayList
 import java.util.concurrent.CopyOnWriteArraySet
@@ -40,11 +41,12 @@ import java.util.concurrent.CopyOnWriteArraySet
 internal class BotVerticle : WebVerticle() {
 
     inner class ServiceInstaller(
-        val serviceId: String,
-        private val installer: (Router) -> Unit,
-        var routes: MutableList<Route> = CopyOnWriteArrayList(),
-        @Volatile
-        var installed: Boolean = false
+            val serviceId: String,
+            private val installer: (Router) -> Unit,
+            var routes: MutableList<Route> = CopyOnWriteArrayList(),
+            @Volatile
+            var installed: Boolean = false,
+            val registrationDate: Instant = Instant.now()
     ) {
 
         fun install() {
@@ -92,20 +94,20 @@ internal class BotVerticle : WebVerticle() {
         }
         if (handlers[installer.serviceId] == installer) {
             handlers.remove(installer.serviceId)
-                ?.also {
-                    val s = secondaryInstallers.find {
-                        it.serviceId == installer.serviceId
-                    }
+                    ?.also {
+                        val s = secondaryInstallers.find {
+                            it.serviceId == installer.serviceId
+                        }
 
-                    logger.debug { "remove service ${it.serviceId}" }
-                    it.uninstall()
-                    if (s != null) {
-                        s.install()
-                        secondaryInstallers.remove(s)
-                        handlers[it.serviceId] = s
+                        logger.debug { "remove service ${it.serviceId}" }
+                        it.uninstall()
+                        if (s != null) {
+                            s.install()
+                            secondaryInstallers.remove(s)
+                            handlers[it.serviceId] = s
+                        }
+                        return
                     }
-                    return
-                }
         }
     }
 
@@ -121,16 +123,18 @@ internal class BotVerticle : WebVerticle() {
 
     override fun configure() {
         if (!initialized) {
+            initialized = true
             initEncryptor()
             initTranslator()
             if (nlpProxyOnBot) {
                 registerServices("nlp_proxy_bot", NlpProxyBotListener.configure(vertx))
             }
-            initialized = true
         }
 
-        handlers.forEach {
-            it.value.install()
+        logger.info { "Install Bot Services / ${handlers.size} registered" }
+        //sort installers by registration date to keep registration order
+        handlers.values.sortedBy { it.registrationDate }.forEach {
+            it.install()
         }
     }
 
