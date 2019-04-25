@@ -238,14 +238,14 @@ object BotRepository {
                 if (it.succeeded()) {
                     logger.info { "Bots installed" }
                     botsInstalled = true
+                    //listen future changes
+                    botConfigurationDAO.listenChanges { executor.executeBlocking { checkBotConfigurations() } }
                 } else {
                     logger.error("Bots installation failure", it.cause() ?: IllegalArgumentException())
                 }
             }
         }
 
-        //listen future changes
-        botConfigurationDAO.listenChanges { executor.executeBlocking { checkBotConfigurations() } }
     }
 
     /**

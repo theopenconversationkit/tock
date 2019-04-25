@@ -72,7 +72,6 @@ internal class BotVerticle : WebVerticle() {
 
     private val handlers: MutableMap<String, ServiceInstaller> = ConcurrentHashMap()
     private val secondaryInstallers: MutableSet<ServiceInstaller> = CopyOnWriteArraySet()
-    @Volatile
     private var initialized: Boolean = false
 
     override fun authProvider(): TockAuthProvider? = defaultAuthProvider()
@@ -121,6 +120,7 @@ internal class BotVerticle : WebVerticle() {
 
     private val nlpProxyOnBot = booleanProperty("tock_nlp_proxy_on_bot", false)
 
+    @Synchronized
     override fun configure() {
         if (!initialized) {
             initialized = true
@@ -131,10 +131,16 @@ internal class BotVerticle : WebVerticle() {
             }
         }
 
-        logger.info { "Install Bot Services / ${handlers.size} registered" }
-        //sort installers by registration date to keep registration order
-        handlers.values.sortedBy { it.registrationDate }.forEach {
-            it.install()
+        install()
+    }
+
+    private fun install() {
+        if (handlers.isNotEmpty()) {
+            logger.info { "Install Bot Services / ${handlers.size} registered" }
+            //sort installers by registration date to keep registration order
+            handlers.values.sortedBy { it.registrationDate }.forEach {
+                it.install()
+            }
         }
     }
 
