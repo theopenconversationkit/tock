@@ -36,6 +36,7 @@ export class LogsComponent extends ScrollComponent<Log> {
   title: string = "Logs";
   text: string;
   test: boolean = false;
+  onlyCurrentLocale: boolean = false;
 
   constructor(state: StateService,
               private nlp: NlpService,
@@ -45,7 +46,6 @@ export class LogsComponent extends ScrollComponent<Log> {
               private snackBar: MatSnackBar) {
     super(state);
   }
-
 
   protected searchMark(t: Log): SearchMark {
     return new SearchMark(
@@ -58,12 +58,14 @@ export class LogsComponent extends ScrollComponent<Log> {
     return this.nlp.searchLogs(new LogsQuery(
       query.namespace,
       query.applicationName,
-      query.language,
+      this.onlyCurrentLocale ? query.language : null,
       query.start,
       query.size,
       query.searchMark,
       this.text,
-      this.test));
+      this.test
+    ))
+      ;
   }
 
 

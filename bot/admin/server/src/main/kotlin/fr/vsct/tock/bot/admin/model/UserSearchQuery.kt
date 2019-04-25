@@ -34,7 +34,7 @@ data class UserSearchQuery(
         return UserReportQuery(
                 namespace,
                 applicationName,
-                language,
+                currentLanguage,
                 start,
                 size,
                 name,

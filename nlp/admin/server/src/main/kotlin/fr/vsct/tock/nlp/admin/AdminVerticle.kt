@@ -236,7 +236,7 @@ open class AdminVerticle : WebVerticle() {
         blockingJsonPost("/application/builds", nlpUser) { context, query: PaginatedQuery ->
             val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
             if (context.organization == app?.namespace) {
-                front.builds(app._id, query.language, query.start.toInt(), query.size)
+                front.builds(app._id, query.currentLanguage, query.start.toInt(), query.size)
             } else {
                 unauthorized()
             }
@@ -588,7 +588,7 @@ open class AdminVerticle : WebVerticle() {
         { context, query: ApplicationScopedQuery ->
             val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)
             if (app != null && context.organization == app.namespace) {
-                front.exportIntentsSchema(app.name, app._id, query.language)
+                front.exportIntentsSchema(app.name, app._id, query.currentLanguage)
             } else {
                 unauthorized()
             }

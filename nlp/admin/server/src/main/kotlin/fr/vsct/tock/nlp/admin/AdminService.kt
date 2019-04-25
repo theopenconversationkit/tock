@@ -55,7 +55,7 @@ object AdminService {
             if (result.intent.withNamespace(result.intentNamespace) == Intent.UNKNOWN_INTENT_NAME) Intent.UNKNOWN_INTENT_NAME.toId()
             else front.getIntentIdByQualifiedName(result.intent.withNamespace(result.intentNamespace))!!
         val application = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
-        return SentenceReport(result, query.language, application._id, intentId)
+        return SentenceReport(result, query.currentLanguage, application._id, intentId)
     }
 
     fun searchSentences(query: SearchQuery, encryptSentences: Boolean): SentencesReport {
@@ -176,7 +176,7 @@ object AdminService {
     fun testBuildStats(query: ApplicationScopedQuery): List<TestBuildStat> {
         val app = front.getApplicationByNamespaceAndName(query.namespace, query.applicationName)!!
         val stats = front
-            .getTestBuilds(app._id, query.language)
+            .getTestBuilds(app._id, query.currentLanguage)
             .map {
                 TestBuildStat(
                     it.startDate,

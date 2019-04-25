@@ -307,7 +307,7 @@ internal object ParseRequestLogMongoDAO : ParseRequestLogDAO {
             val baseFilter =
                     and(
                             ApplicationId eq applicationId,
-                            Query.context.language eq language,
+                            if(language == null) null else Query.context.language eq language,
                             if (query.displayTests) null else Query.context.test eq false,
                             when {
                                 search.isNullOrBlank() -> null

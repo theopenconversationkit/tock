@@ -438,10 +438,10 @@ object BotAdminService {
             val restClient = getRestClient(conf)
             val response = restClient.talk(
                     conf.path ?: conf.applicationId,
-                    request.language,
+                    request.currentLanguage,
                     ClientMessageRequest(
-                            "test_${conf._id}_${request.language}",
-                            "test_bot_${conf._id}_${request.language}",
+                            "test_${conf._id}_${request.currentLanguage}",
+                            "test_bot_${conf._id}_${request.currentLanguage}",
                             request.message.toClientMessage(),
                             conf.targetConnectorType.toClientConnectorType()
                     )

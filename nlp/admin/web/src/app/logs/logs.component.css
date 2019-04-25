@@ -36,6 +36,10 @@
   font-size: large;
 }
 
+.choice {
+  margin-right: 10px;
+}
+
 .intentProbability {
   font-style: italic;
   font-size: x-small;

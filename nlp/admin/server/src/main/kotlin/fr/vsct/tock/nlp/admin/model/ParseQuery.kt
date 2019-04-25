@@ -34,7 +34,7 @@ data class ParseQuery(
                 namespace,
                 applicationName,
                 QueryContext(
-                        language,
+                        currentLanguage,
                         "admin",
                         checkExistingQuery = checkExistingQuery
                 ),

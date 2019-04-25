@@ -27,7 +27,7 @@ data class LogStatsQuery(val intent: String?, val minOccurrences: Int?) : Applic
     fun toStatQuery(application: ApplicationDefinition): ParseRequestLogStatQuery {
         return ParseRequestLogStatQuery(
             application._id,
-            language,
+            currentLanguage,
             intent,
             minOccurrences
         )
