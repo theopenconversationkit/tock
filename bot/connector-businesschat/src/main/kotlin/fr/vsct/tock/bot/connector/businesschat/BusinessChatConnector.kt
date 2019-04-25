@@ -20,8 +20,9 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
-import fr.vsct.tock.bot.connector.businesschat.model.csp.message.Message
+import fr.vsct.tock.bot.connector.businesschat.model.common.ReceivedModel
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorImageMessage
+import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorListPickerMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorTextMessage
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
@@ -40,11 +41,11 @@ import mu.KotlinLogging
  * @param businessId your organization Business ID
  */
 internal class BusinessChatConnector(
-    private val path: String,
-    private val connectorId: String,
-    private val businessId: String
+        private val path: String,
+        private val connectorId: String,
+        private val businessId: String
 ) :
-    ConnectorBase(BusinessChatConnectorProvider.connectorType) {
+        ConnectorBase(BusinessChatConnectorProvider.connectorType) {
 
     private val logger = KotlinLogging.logger { }
     private val cspBusinessChatClient: CSPBusinessChatClient get() = injector.provide()
@@ -86,10 +87,10 @@ internal class BusinessChatConnector(
                                 when (it) {
                                     is SendSentence -> {
                                         controller.handle(
-                                            event,
-                                            ConnectorData(
-                                                BusinessChatConnectorCallback(connectorId)
-                                            )
+                                                event,
+                                                ConnectorData(
+                                                        BusinessChatConnectorCallback(connectorId)
+                                                )
                                         )
                                     }
                                 }
