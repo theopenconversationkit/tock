@@ -20,14 +20,19 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
-import fr.vsct.tock.bot.connector.businesschat.model.csp.message.Message
+import fr.vsct.tock.bot.connector.businesschat.model.common.MessageType
+import fr.vsct.tock.bot.connector.businesschat.model.common.ReceivedModel
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorImageMessage
+import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorListPickerMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorTextMessage
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.monitoring.logError
+import fr.vsct.tock.bot.engine.user.PlayerId
+import fr.vsct.tock.bot.engine.user.PlayerType
+import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
 import fr.vsct.tock.shared.jackson.mapper
@@ -48,6 +53,7 @@ internal class BusinessChatConnector(
 
     private val logger = KotlinLogging.logger { }
     private val cspBusinessChatClient: CSPBusinessChatClient get() = injector.provide()
+    private val executor: Executor get() = injector.provide()
 
     /**
      * Called for each messages sent on the bot bus
@@ -70,7 +76,7 @@ internal class BusinessChatConnector(
      */
     override fun register(controller: ConnectorController) {
         controller.registerServices(path) { router ->
-            router.post(path).blockingHandler { context ->
+            router.post(path).handler { context ->
                 val requestTimerData = BotRepository.requestTimer.start("business chat start")
                 try {
                     val body = context.bodyAsString
@@ -81,22 +87,37 @@ internal class BusinessChatConnector(
                             logger.info("Ignoring echo message")
                         }
                         else -> {
-                            val event = MessageConverter.toEvent(message, connectorId)
-                            event?.let {
-                                when (it) {
-                                    is SendSentence -> {
+                            executor.executeBlocking {
+                                if (message.type == MessageType.interactive) {
+                                    val listPickerChoice = cspBusinessChatClient.receiveListPickerChoice(message)
+                                    if (listPickerChoice != null) {
                                         controller.handle(
-                                            event,
-                                            ConnectorData(
-                                                BusinessChatConnectorCallback(connectorId)
+                                            SendSentence(
+                                                applicationId = connectorId,
+                                                playerId = PlayerId(message.sourceId, PlayerType.user),
+                                                recipientId = PlayerId(message.destinationId, PlayerType.bot),
+                                                text = listPickerChoice.text
                                             )
                                         )
+                                    }
+                                } else {
+                                    val event = MessageConverter.toEvent(message, connectorId)
+                                    event?.let {
+                                        when (it) {
+                                            is SendSentence -> {
+                                                controller.handle(
+                                                    event,
+                                                    ConnectorData(
+                                                        BusinessChatConnectorCallback(connectorId)
+                                                    )
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }
                         }
                     }
-
                 } catch (e: Exception) {
                     BotRepository.requestTimer.end(requestTimerData)
                     logger.logError(e, requestTimerData)
@@ -108,7 +129,6 @@ internal class BusinessChatConnector(
                         logger.error(e)
                     }
                 }
-
             }
         }
     }
