@@ -17,6 +17,7 @@
 package fr.vsct.tock.bot.admin.test.xray
 
 import fr.vsct.tock.bot.admin.bot.BotApplicationConfiguration
+import fr.vsct.tock.bot.admin.test.TestClientService
 import fr.vsct.tock.bot.admin.test.TestPlan
 import fr.vsct.tock.bot.admin.test.TestPlanExecution
 import fr.vsct.tock.shared.addJacksonConverter
@@ -29,7 +30,7 @@ import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 /**
  *
  */
-object TockTestClient {
+internal object TockTestClient : TestClientService {
 
     private val tockTimeoutInSeconds = longProperty("tock_bot_test_timeout_in_ms", 60 * 60000L)
     private val tockLogin = property("tock_bot_test_login", "please set tock test login")
@@ -48,11 +49,15 @@ object TockTestClient {
                 .create()
     }
 
-    fun executeTestPlan(testPlan: TestPlan): TestPlanExecution {
+    override fun executeTestPlan(testPlan: TestPlan): TestPlanExecution {
         return tock.executeTestPlan(testPlan).execute().body() ?: TestPlanExecution(testPlan._id, emptyList(), 1)
     }
 
-    fun getBotConfigurations(botId: String): List<BotApplicationConfiguration> {
+    override fun getBotConfigurations(namespace: String, botId: String): List<BotApplicationConfiguration> {
         return tock.getBotConfigurations(botId).execute().body() ?: error("not a bot configuration")
     }
+
+    override fun priority(): Int = 0
 }
+
+internal class TockRestClientService : TestClientService by TockTestClient

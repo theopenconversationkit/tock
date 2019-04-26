@@ -177,6 +177,11 @@
             </dependency>
             <dependency>
                 <groupId>fr.vsct.tock</groupId>
+                <artifactId>tock-bot-admin-server</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
                 <artifactId>tock-bot-admin-test-core</artifactId>
                 <version>${project.version}</version>
             </dependency>

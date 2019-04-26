@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.admin.test.xray
 
+import fr.vsct.tock.shared.defaultNamespace
 import mu.KotlinLogging
 
 private val logger = KotlinLogging.logger {}
@@ -23,9 +24,9 @@ private val logger = KotlinLogging.logger {}
 /**
  *
  */
-fun main(args: Array<String>) {
+fun main() {
     logger.info { "Start tests" }
-    val result = XrayService().executePlans()
+    val result = XrayService().executePlans(defaultNamespace)
     if (result.total == 0) {
         logger.error { "No test played" }
         System.exit(1)

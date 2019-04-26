@@ -377,12 +377,12 @@ open class BotAdminVerticle : AdminVerticle() {
             XrayConfiguration.isXrayAvailable()
         }
 
-        blockingJsonPost("/xray/execute", botUser) { _, configuration: XRayPlanExecutionConfiguration ->
+        blockingJsonPost("/xray/execute", botUser) { context, configuration: XRayPlanExecutionConfiguration ->
             XrayService(
                     listOfNotNull(configuration.configurationId),
                     listOf(configuration.testPlanKey),
                     configuration.testedBotId
-            ).executePlans()
+            ).executePlans(context.organization)
         }
 
         configureStaticHandling()
