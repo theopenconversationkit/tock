@@ -18,8 +18,10 @@ package fr.vsct.tock.bot.connector.businesschat
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorImageMessage
+import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorListPickerMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorTextMessage
+import fr.vsct.tock.bot.connector.businesschat.model.input.ListPickerItem
 import fr.vsct.tock.bot.engine.BotBus
 
 /**
@@ -39,11 +41,11 @@ fun BotBus.withBusinessChat(messageProvider: () -> BusinessChatConnectorMessage)
 fun BotBus.businessChatText(
     text: String
 ): BusinessChatConnectorMessage =
-        BusinessChatConnectorTextMessage(
-                sourceId = botId.id,
-                destinationId = userId.id,
-                body = translate(text).toString()
-        )
+    BusinessChatConnectorTextMessage(
+        sourceId = botId.id,
+        destinationId = userId.id,
+        body = translate(text).toString()
+    )
 
 /**
  * Creates a [BusinessChatConnectorImageMessage]
@@ -52,12 +54,36 @@ fun BotBus.businessChatText(
  * @param mimeType the mime type of the image, which is image/png by default
  */
 fun BotBus.businessChatAttachement(
-        attachment: ByteArray,
-        mimeType: String = "image/png"
+    attachment: ByteArray,
+    mimeType: String = "image/png"
 ): BusinessChatConnectorMessage =
-        BusinessChatConnectorImageMessage(
+    BusinessChatConnectorImageMessage(
+        sourceId = botId.id,
+        destinationId = userId.id,
+        bytes = attachment,
+        mimeType = mimeType
+    )
+
+/**
+ * Creates a [BusinessChatListPicker].
+ *
+ * @param title the list title
+ * @param subtitle the list subtitle
+ * @param listDetails the list details, in the top of items list
+ * @param items the items list
+ */
+fun BotBus.businessChatListPicker(
+        title: String,
+        subtitle: String,
+        listDetails: String,
+        items: List<ListPickerItem>
+): BusinessChatConnectorMessage =
+        BusinessChatConnectorListPickerMessage(
                 sourceId = botId.id,
                 destinationId = userId.id,
-                bytes = attachment,
-                mimeType = mimeType
+                title = title,
+                subtitle = subtitle,
+                listDetails = listDetails,
+                multipleSelection = false,
+                items = items
         )
