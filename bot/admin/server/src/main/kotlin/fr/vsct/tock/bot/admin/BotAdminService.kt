@@ -47,6 +47,9 @@ import fr.vsct.tock.bot.admin.model.UserSearchQueryResult
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationDAO
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity
+import fr.vsct.tock.bot.admin.test.TestPlan
+import fr.vsct.tock.bot.admin.test.TestPlanExecution
+import fr.vsct.tock.bot.admin.test.TestPlanService
 import fr.vsct.tock.bot.admin.test.toClientConnectorType
 import fr.vsct.tock.bot.admin.test.toClientMessage
 import fr.vsct.tock.bot.admin.user.UserReportDAO
@@ -485,4 +488,13 @@ object BotAdminService {
     fun loadDialogFlow(request: DialogFlowRequest): ApplicationDialogFlowData {
         return dialogFlowDAO.loadApplicationData(request.namespace, request.botId, request.botConfigurationId)
     }
+
+    fun executeTestPlan(namespace: String, testPlan: TestPlan): TestPlanExecution =
+            getBotConfiguration(testPlan.botApplicationConfigurationId, namespace)
+                    .let {
+                        TestPlanService.saveAndRunTestPlan(
+                                getRestClient(it),
+                                testPlan
+                        )
+                    }
 }

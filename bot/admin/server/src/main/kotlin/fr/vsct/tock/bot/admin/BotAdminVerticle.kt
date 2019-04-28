@@ -213,13 +213,7 @@ open class BotAdminVerticle : AdminVerticle() {
         }
 
         blockingJsonPost("/test/plan/execute", botUser) { context, testPlan: TestPlan ->
-            BotAdminService.getBotConfiguration(testPlan.botApplicationConfigurationId, context.organization)
-                    .let {
-                        TestPlanService.saveAndRunTestPlan(
-                                BotAdminService.getRestClient(it),
-                                testPlan
-                        )
-                    }
+            BotAdminService.executeTestPlan(context.organization, testPlan)
         }
 
         blockingJsonPost("/test/plan/:planId/run", botUser) { context, _: ApplicationScopedQuery ->
