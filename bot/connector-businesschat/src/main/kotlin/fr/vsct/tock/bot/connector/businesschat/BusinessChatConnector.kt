@@ -88,29 +88,32 @@ internal class BusinessChatConnector(
                         }
                         else -> {
                             executor.executeBlocking {
-                                if (message.type == MessageType.interactive) {
-                                    val listPickerChoice = cspBusinessChatClient.receiveListPickerChoice(message)
-                                    if (listPickerChoice != null) {
-                                        controller.handle(
-                                            SendSentence(
-                                                applicationId = connectorId,
-                                                playerId = PlayerId(message.sourceId, PlayerType.user),
-                                                recipientId = PlayerId(message.destinationId, PlayerType.bot),
-                                                text = listPickerChoice.text
-                                            )
-                                        )
-                                    }
-                                } else {
-                                    val event = MessageConverter.toEvent(message, connectorId)
-                                    event?.let {
-                                        when (it) {
-                                            is SendSentence -> {
-                                                controller.handle(
-                                                    event,
-                                                    ConnectorData(
-                                                        BusinessChatConnectorCallback(connectorId)
-                                                    )
+                                when {
+                                    message.type == MessageType.interactive -> {
+                                        val listPickerChoice = cspBusinessChatClient.receiveListPickerChoice(message)
+                                        if (listPickerChoice != null) {
+                                            controller.handle(
+                                                SendSentence(
+                                                    applicationId = connectorId,
+                                                    playerId = PlayerId(message.sourceId, PlayerType.user),
+                                                    recipientId = PlayerId(message.destinationId, PlayerType.bot),
+                                                    text = listPickerChoice.text
                                                 )
+                                            )
+                                        }
+                                    }
+                                    message.type == MessageType.interactive -> {
+                                        val event = MessageConverter.toEvent(message, connectorId)
+                                        event?.let {
+                                            when (it) {
+                                                is SendSentence -> {
+                                                    controller.handle(
+                                                        event,
+                                                        ConnectorData(
+                                                            BusinessChatConnectorCallback(connectorId)
+                                                        )
+                                                    )
+                                                }
                                             }
                                         }
                                     }

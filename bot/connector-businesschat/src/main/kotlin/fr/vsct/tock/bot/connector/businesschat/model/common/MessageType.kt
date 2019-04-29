@@ -19,7 +19,10 @@ package fr.vsct.tock.bot.connector.businesschat.model.common
 /**
  * https://developer.apple.com/documentation/businesschatapi/messages_received/receiving_messages_from_the_business_chat_service
  */
-enum class MessageType {
- text,
- interactive
+class MessageType {
+    //We se this instead of an enum so we wil not throw an exception if the MessageType is unknown
+    companion object {
+        const val text = "text"
+        const val interactive = "interactive"
+    }
 }

@@ -25,7 +25,7 @@ import java.util.UUID
  */
 open class BusinessChatCommonModel(
     val id: String = UUID.randomUUID().toString(),
-    val type: MessageType,
+    val type: String,
     @get:JsonProperty("v")
     val version: Int = 1,
     val intent: String? = null,
