@@ -2,12 +2,13 @@ package fr.vsct.tock.bot.connector.teams.token
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
-import fr.vsct.tock.bot.engine.nlp.NlpProxyBotListener.logger
+import fr.vsct.tock.shared.Level
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import mu.KotlinLogging
 import java.time.Instant
 import java.time.temporal.ChronoUnit
 import kotlin.concurrent.fixedRateTimer
@@ -17,6 +18,8 @@ import kotlin.concurrent.fixedRateTimer
  * This token is mandatory in request from bot to teams via microsoft-api
  */
 object TokenHandler {
+
+    private val logger = KotlinLogging.logger {}
 
     @Volatile
     var token: String? = null
@@ -31,7 +34,8 @@ object TokenHandler {
 
     var loginApi: LoginMicrosoftOnline = retrofitBuilderWithTimeoutAndLogger(
         longProperty("tock_whatsapp_request_timeout_ms", 30000),
-        logger
+        logger,
+        level = Level.BASIC
     )
         .baseUrl("https://login.microsoftonline.com")
         .addJacksonConverter(teamsMapper)
@@ -71,9 +75,9 @@ object TokenHandler {
         this.password = password
     }
 
-    fun takeCareOfTheToken(appId: String, password: String) {
+    fun launchTokenCollector(appId: String, password: String, msInterval: Long = (60 * 60 * 1000).toLong()) {
         setId(appId, password)
-        fixedRateTimer(name = "microsoft-api-token-handling", initialDelay = 0.toLong(), period = 60000.toLong()) {
+        fixedRateTimer(name = "microsoft-api-token-handling", initialDelay = 0.toLong(), period = msInterval) {
             checkToken()
         }
     }
