@@ -48,7 +48,7 @@ class TeamsClientTest {
             logger
         ).baseUrl("http://${server.hostName}:${server.port}/").addJacksonConverter(teamsMapper).build().create()
 
-        TokenHandler.takeCareOfTheToken("fakeId", "fakePassword")
+        TokenHandler.launchTokenCollector("fakeId", "fakePassword")
         //Sleep to let the time to fetchToken() async method to execute
         Thread.sleep(1000)
         assertEquals(
