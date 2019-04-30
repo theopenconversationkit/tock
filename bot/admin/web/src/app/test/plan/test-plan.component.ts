@@ -86,6 +86,7 @@ export class TestPlanComponent implements OnInit {
         this.xray.testedBotId = conf ? conf.botId : c[0].botId;
         this.test.executeXRay(this.xray).subscribe(r => {
           this.executeXray = false;
+          this.reload();
           if (r.total === 0) {
             this.snackBar.open(`No tests executed for Plan ${this.xray.testPlanKey}`, "Execution", {duration: 2000})
           } else if (r.total === r.success) {

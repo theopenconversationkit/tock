@@ -176,6 +176,7 @@ object TestPlanService {
                     }
                     val botMessage = botMessages.removeAt(0)
                     if (!botMessage.deepEquals(it)) {
+                        logger.info { "no same message:\n$botMessage\n${it.messages.map { m -> m.toClientMessage() }}" }
                         return DialogExecutionReport(
                             dialog.id,
                             true,

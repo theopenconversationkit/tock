@@ -35,7 +35,7 @@ internal object TockTestClient : TestClientService {
     private val tockTimeoutInSeconds = longProperty("tock_bot_test_timeout_in_ms", 60 * 60000L)
     private val tockLogin = property("tock_bot_test_login", "please set tock test login")
     private val tockPassword = property("tock_bot_test_password", "please set tock test password")
-    private val tockUrl = property("tock_bot_test_url", "please set tock test url")
+    private val tockUrl = property("tock_bot_test_url", "http://set_property_tock_bot_test_url")
 
     val tock: TockTestApi
 
