@@ -23,6 +23,7 @@ import {BotConfigurationService} from "../../core/bot-configuration.service";
 import {entityColor} from "../../model/nlp";
 import {KeyValue} from "@angular/common";
 import {NodeTransition, StoryNode} from "./node";
+import {MatSnackBar} from "@angular/material";
 
 @Component({
   selector: 'tock-flow',
@@ -128,7 +129,8 @@ export class FlowComponent implements OnInit {
   constructor(private nlp: NlpService,
               private state: StateService,
               private bot: BotService,
-              private botConfiguration: BotConfigurationService) {
+              private botConfiguration: BotConfigurationService,
+              private snackBar: MatSnackBar) {
   }
 
   ngOnInit(): void {
@@ -227,7 +229,6 @@ export class FlowComponent implements OnInit {
     //2 set stories map
     const stories = new Map<string, string>();
     nodesMap.forEach(s => stories.set(s.storyDefinitionId, s.displayName()));
-    this.stories = stories;
 
     let finalNodes: StoryNode[] = [];
     //3 filter state by count
@@ -330,49 +331,54 @@ export class FlowComponent implements OnInit {
         })
       }
     });
-    this.maxNodeCount = maxCount;
     finalNodes = tmpFinalStates;
 
-    //7 create graph edges
-    finalTransitions.forEach((t, k) => {
-      const prev = nodesMap.get(t.previousId);
-      const next = nodesMap.get(t.nextId);
-      const prevId = prev ? prev.id : -1;
-      let percentage = Math.round((t.count * 10000.0) / countTransitionByStartId[prevId]) / 100;
-      let fPrev = finalNodes[prevId];
-      let fNext = finalNodes[next.id];
-      if (fNext && (t.previousId === -1 || fPrev)
-        && (!this.selectedStoryId
-          || (!displayOnlyPrev && fPrev && this.selectedStoryId === fPrev.storyDefinitionId)
-          || (!displayOnlyNext && this.selectedStoryId === fNext.storyDefinitionId))) {
+    if(finalTransitions.size > 1000) {
+      this.snackBar.open("More than 1000 nodes to render - please change your options to decrease the number of nodes", "Error", {duration: 5000})
+    } else {
+      //7 create graph edges
+      finalTransitions.forEach((t, k) => {
+        const prev = nodesMap.get(t.previousId);
+        const next = nodesMap.get(t.nextId);
+        const prevId = prev ? prev.id : -1;
+        let percentage = Math.round((t.count * 10000.0) / countTransitionByStartId[prevId]) / 100;
+        let fPrev = finalNodes[prevId];
+        let fNext = finalNodes[next.id];
+        if (fNext && (t.previousId === -1 || fPrev)
+          && (!this.selectedStoryId
+            || (!displayOnlyPrev && fPrev && this.selectedStoryId === fPrev.storyDefinitionId)
+            || (!displayOnlyNext && this.selectedStoryId === fNext.storyDefinitionId))) {
 
-        if (t.previousId === -1) {
-          addStartup = true;
-        }
-        //console.log(t);
-        graph.edges.push({
-          data: {
-            source: prevId,
-            target: next.id,
-            key: k,
-            colorCode: entityColor(DialogFlowStateTransitionType[t.type] ? DialogFlowStateTransitionType[t.type] : DialogFlowStateTransitionType[DialogFlowStateTransitionType.nlp]),
-            strength: t.count,
-            label: percentage + '%',
-            classes: 'autorotate'
+          if (t.previousId === -1) {
+            addStartup = true;
           }
-        });
+          //console.log(t);
+          graph.edges.push({
+            data: {
+              source: prevId,
+              target: next.id,
+              key: k,
+              colorCode: entityColor(DialogFlowStateTransitionType[t.type] ? DialogFlowStateTransitionType[t.type] : DialogFlowStateTransitionType[DialogFlowStateTransitionType.nlp]),
+              strength: t.count,
+              label: percentage + '%',
+              classes: 'autorotate'
+            }
+          });
+        }
+      });
+
+      //8 add startup if useful
+      if (addStartup) {
+        graph.nodes.push({data: {id: -1, name: 'Startup', weight: 1, colorCode: 'blue', shapeType: 'vee'}});
       }
-    });
 
-    //8 add startup if useful
-    if (addStartup) {
-      graph.nodes.push({data: {id: -1, name: 'Startup', weight: 1, colorCode: 'blue', shapeType: 'vee'}});
+      //9 init vars
+      this.maxNodeCount = maxCount;
+      this.stories = stories;
+      this.allNodes = finalNodes;
+      this.allTransitions = finalTransitions;
+      this.graphData = graph;
     }
-
-    //9 init vars
-    this.allNodes = finalNodes;
-    this.allTransitions = finalTransitions;
-    this.graphData = graph;
   }
 
   nodeChange(id: string) {
