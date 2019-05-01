@@ -107,7 +107,8 @@ export class FlowComponent implements OnInit {
   minimalTransitionPercentage: number = 10;
 
   selectedStoryId: string;
-  displayOnlyNext: boolean = false;
+  direction: number;
+
   stories: Map<string, string> = new Map();
 
   selectedEdge: NodeTransition;
@@ -143,7 +144,7 @@ export class FlowComponent implements OnInit {
 
   reset() {
     this.selectedStoryId = null;
-    this.displayOnlyNext = null;
+    this.direction = null;
     this.update();
   }
 
@@ -180,7 +181,8 @@ export class FlowComponent implements OnInit {
 
   private toGraphData(flow: ApplicationDialogFlow) {
     this.flow = flow;
-
+    const displayOnlyNext: boolean = this.direction === -1;
+    const displayOnlyPrev: boolean = this.direction === 1;
     const graph = {
       nodes: [],
       edges: []
@@ -273,8 +275,8 @@ export class FlowComponent implements OnInit {
       if ((this.recursive || prev !== next) && finalNodes[nextId] && (t.previousId === -1 || finalNodes[prevId])) {
         if (percentage >= this.minimalTransitionPercentage
           && (!this.selectedStoryId ||
-            (finalPrev && finalPrev.storyDefinitionId === this.selectedStoryId)
-            || (!this.displayOnlyNext && finalNext && finalNext.storyDefinitionId === this.selectedStoryId))) {
+            (!displayOnlyPrev && finalPrev && finalPrev.storyDefinitionId === this.selectedStoryId)
+            || (!displayOnlyNext && finalNext && finalNext.storyDefinitionId === this.selectedStoryId))) {
           finalTransitions.set(k, t);
         }
       }
@@ -295,10 +297,10 @@ export class FlowComponent implements OnInit {
               const prev = finalNodes[t.previousId];
               const next = finalNodes[t.nextId];
               const prevId = prev ? prev.id : -1;
-              if (((!this.displayOnlyNext && prev && prevId === s.id) || (next && next.id === s.id))
+              if (((!displayOnlyNext && prev && prevId === s.id) || (!displayOnlyPrev && next && next.id === s.id))
                 && (
-                  (prev && prev.storyDefinitionId === this.selectedStoryId)
-                  || (!this.displayOnlyNext && next && next.storyDefinitionId === this.selectedStoryId)
+                  (!displayOnlyPrev && prev && prev.storyDefinitionId === this.selectedStoryId)
+                  || (!displayOnlyNext && next && next.storyDefinitionId === this.selectedStoryId)
                 )) {
                 include = true;
               }
@@ -341,8 +343,8 @@ export class FlowComponent implements OnInit {
       let fNext = finalNodes[next.id];
       if (fNext && (t.previousId === -1 || fPrev)
         && (!this.selectedStoryId
-          || (fPrev && this.selectedStoryId === fPrev.storyDefinitionId)
-          || (!this.displayOnlyNext && this.selectedStoryId === fNext.storyDefinitionId))) {
+          || (!displayOnlyPrev && fPrev && this.selectedStoryId === fPrev.storyDefinitionId)
+          || (!displayOnlyNext && this.selectedStoryId === fNext.storyDefinitionId))) {
 
         if (t.previousId === -1) {
           addStartup = true;

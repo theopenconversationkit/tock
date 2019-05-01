@@ -34,7 +34,14 @@
       <mat-option *ngFor="let s of stories | keyvalue: valueAscOrder" [value]="s.key">{{s.value}}</mat-option>
     </mat-select>
   </mat-form-field>
-  <mat-checkbox *ngIf="selectedStoryId" [(ngModel)]="displayOnlyNext" (change)="update()" class="checkbox">Only outward</mat-checkbox>
+  <mat-form-field *ngIf="selectedStoryId" class="select">
+    <mat-label>Direction</mat-label>
+    <mat-select [(value)]="direction" (selectionChange)="update()">
+      <mat-option [value]="undefined">Both</mat-option>
+      <mat-option [value]="-1">Outcoming</mat-option>
+      <mat-option [value]="1">Incoming</mat-option>
+    </mat-select>
+  </mat-form-field>
   <br/>
   <mat-form-field class="select">
     <mat-label>Layout</mat-label>
