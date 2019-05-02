@@ -9,8 +9,11 @@ import fr.vsct.tock.shared.devEnvironment
 import fr.vsct.tock.shared.jackson.mapper
 import fr.vsct.tock.shared.longProperty
 import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
+import kotlinx.coroutines.NonCancellable.cancel
 import mu.KotlinLogging
 import java.io.IOException
+import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.concurrent.fixedRateTimer
 
 /**
@@ -32,6 +35,7 @@ object JWKHandler {
     private var OPENID_METADATA_LOCATION_BOT_FWK_EMULATOR = "https://login.microsoftonline.com/botframework.com/v2.0/"
 
     private val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+    private lateinit var jwkTimerTask: Timer
 
     private var microsoftOpenIdMetadataApiForBotFwkEmulator: MicrosoftOpenIdMetadataApi = retrofitBuilderWithTimeoutAndLogger(
         longProperty("tock_microsoft_request_timeout", 5000),
@@ -63,9 +67,16 @@ object JWKHandler {
         .build()
         .create()
 
-    fun launchJWKCollector(msInterval: Long = (23 * 60 * 60 * 1000).toLong()) {
-        fixedRateTimer("microsoft-jwk-collector", initialDelay = 0.toLong(), period = msInterval) {
+    fun launchJWKCollector(msInterval: Long = 23 * 60 * 60 * 1000L) {
+        jwkTimerTask = fixedRateTimer("microsoft-jwk-collector", initialDelay = 0L, period = msInterval) {
             collectJWK()
+        }
+    }
+
+    fun stopJWKCollector() {
+        if (::jwkTimerTask.isInitialized) {
+            jwkTimerTask.cancel()
+            jwkTimerTask.purge()
         }
     }
 
@@ -74,11 +85,11 @@ object JWKHandler {
         val microsoftOpenidMetadata = microsoftOpenIdMetadataApi.getMicrosoftOpenIdMetadata().execute()
         val response = microsoftOpenidMetadata.body()
         tokenIds = response?.idTokenSigningAlgValuesSupported
-            ?: throw IOException("Error : Unable to get OpenidMetadata to validate BotConnectorServiceKeys")
+            ?: error("Error : Unable to get OpenidMetadata to validate BotConnectorServiceKeys")
         val keysForBotConnectorService = microsoftJwksApi.getJwk(
             response.jwksUri
         ).execute().body()
-            ?: throw IOException("Error : Unable to get JWK signatures to validate BotConnectorServiceKeys")
+            ?: error("Error : Unable to get JWK signatures to validate BotConnectorServiceKeys")
         val listOfKeys: MutableList<MicrosoftValidSigningKey> = keysForBotConnectorService.keys.toMutableList()
 
         if (devEnvironment) {
@@ -86,12 +97,12 @@ object JWKHandler {
             val nextResponse = microsoftOpenidMetadataBotFwkEmulator.body()
             tokenIds?.addAll(
                 nextResponse?.idTokenSigningAlgValuesSupported
-                    ?: throw IOException("Error : Unable to get OpenidMetadata to validate BotFrameworkEmulatorKeys")
+                    ?: error("Error : Unable to get OpenidMetadata to validate BotFrameworkEmulatorKeys")
             )
             val keysForBotFwkEmulator = microsoftJwksApi.getJwk(
                 nextResponse!!.jwksUri
             ).execute().body()
-                ?: throw IOException("Error : Unable to get JWK signatures to validate BotFrameworkEmulatorKeys")
+                ?: error("Error : Unable to get JWK signatures to validate BotFrameworkEmulatorKeys")
             listOfKeys.addAll(keysForBotFwkEmulator.keys)
         }
 

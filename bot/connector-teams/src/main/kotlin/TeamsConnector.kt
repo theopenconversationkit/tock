@@ -26,8 +26,10 @@ import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.teams.auth.AuthenticateBotConnectorService
 import fr.vsct.tock.bot.connector.teams.auth.ForbiddenException
 import fr.vsct.tock.bot.connector.teams.auth.JWKHandler.launchJWKCollector
+import fr.vsct.tock.bot.connector.teams.auth.JWKHandler.stopJWKCollector
 import fr.vsct.tock.bot.connector.teams.messages.SendActionConverter
 import fr.vsct.tock.bot.connector.teams.token.TokenHandler.launchTokenCollector
+import fr.vsct.tock.bot.connector.teams.token.TokenHandler.stopTokenCollector
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -60,6 +62,12 @@ internal class TeamsConnector(
     private val client = TeamsClient()
     private val executor: Executor by injector.instance()
     private val authenticateBotConnectorService = AuthenticateBotConnectorService(appId)
+
+    override fun unregister(controller: ConnectorController) {
+        super.unregister(controller)
+        stopTokenCollector()
+        stopJWKCollector()
+    }
 
     override fun register(controller: ConnectorController) {
         launchTokenCollector(appId, appPassword)
