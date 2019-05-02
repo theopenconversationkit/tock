@@ -11,6 +11,7 @@ import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 import java.time.Instant
 import java.time.temporal.ChronoUnit
+import java.util.*
 import kotlin.concurrent.fixedRateTimer
 
 /**
@@ -26,14 +27,16 @@ object TokenHandler {
     @Volatile
     private var tokenExpiration: Instant? = null
 
+    @Volatile
     private lateinit var appId: String
+    @Volatile
     private lateinit var password: String
 
     val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
-
+    private lateinit var tokenTimerTask: Timer
 
     var loginApi: LoginMicrosoftOnline = retrofitBuilderWithTimeoutAndLogger(
-        longProperty("tock_whatsapp_request_timeout_ms", 30000),
+        longProperty("tock_microsoft_request_timeout", 30000),
         logger,
         level = Level.BASIC
     )
@@ -75,10 +78,17 @@ object TokenHandler {
         this.password = password
     }
 
-    fun launchTokenCollector(appId: String, password: String, msInterval: Long = (60 * 60 * 1000).toLong()) {
+    fun launchTokenCollector(appId: String, password: String, msInterval: Long = 60 * 60 * 1000L) {
         setId(appId, password)
-        fixedRateTimer(name = "microsoft-api-token-handling", initialDelay = 0.toLong(), period = msInterval) {
+        tokenTimerTask = fixedRateTimer(name = "microsoft-api-token-handling", initialDelay = 0L, period = msInterval) {
             checkToken()
+        }
+    }
+
+    fun stopTokenCollector() {
+        if (::tokenTimerTask.isInitialized) {
+            tokenTimerTask.cancel()
+            tokenTimerTask.purge()
         }
     }
 
