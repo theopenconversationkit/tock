@@ -38,7 +38,6 @@ export class SimpleAnswerComponent implements OnInit {
   }
 
   updateLabel(answer: SimpleAnswer) {
-    answer.label.defaultLocalizedLabel().label = answer.label.defaultLabel;
     this.bot
       .saveI18nLabel(answer.label)
       .subscribe(_ => this.snackBar.open(`Label updated`, "Update", {duration: 3000}));

@@ -187,7 +187,7 @@ export class MandatoryEntity extends AnswerContainer {
     return of(this);
   }
 
-  clone() : MandatoryEntity {
+  clone(): MandatoryEntity {
     return new MandatoryEntity(this.role, this.intent, this.answers.slice(0).map(a => a.clone()), this.currentType, this.category);
   }
 
@@ -292,7 +292,7 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
   }
 
   simpleTextView(): string {
-    const r = this.answers && this.answers.length > 0 ? this.answers[0].label.defaultLabel : "[no text]";
+    const r = this.answers && this.answers.length > 0 ? this.answers[0].label.defaultLocalizedLabel().label : "[no text]";
 
     return r.substring(0, Math.min(r.length, 15)) + (r.length > 15 || this.answers.length > 1 ? "..." : "");
   }
@@ -307,8 +307,8 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
 
   clone(): AnswerConfiguration {
     return new SimpleAnswerConfiguration(
-      this.answers.slice(0)
-    )
+      this.answers.map(a => a.clone())
+    );
   }
 
   checkAfterReset(bot: BotService) {
@@ -332,6 +332,10 @@ export class SimpleAnswer {
 
   constructor(public label: I18nLabel,
               public delay: number = -1) {
+  }
+
+  clone(): SimpleAnswer {
+    return new SimpleAnswer(this.label.clone(), this.delay);
   }
 
   static fromJSON(json: any): SimpleAnswer {

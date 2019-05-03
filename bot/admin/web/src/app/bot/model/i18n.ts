@@ -52,6 +52,19 @@ export class I18nLabel {
               public version?: number) {
   }
 
+  clone(): I18nLabel {
+    return new I18nLabel(
+      this._id,
+      this.category,
+      this.i18n.map(i => i.clone()),
+      this.defaultLabel,
+      this.statCount,
+      this.lastUpdate,
+      this.unhandledLocaleStats,
+      this.version
+    )
+  }
+
   defaultLocalizedLabel(): I18nLocalizedLabel {
     const d = this.label(this.i18n[0].locale, defaultUserInterfaceType);
     return d ? d : this.i18n[0];
@@ -96,6 +109,18 @@ export class I18nLocalizedLabel {
               public alternatives: string[],
               public stats?: I18nLabelStat[]) {
 
+  }
+
+  clone() : I18nLocalizedLabel {
+    return new I18nLocalizedLabel(
+      this.locale,
+      this.interfaceType,
+      this.label,
+      this.validated,
+      this.connectorId,
+      this.alternatives.slice(0),
+      this.stats
+    )
   }
 
   iconUrl(): string {

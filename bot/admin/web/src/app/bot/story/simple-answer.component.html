@@ -7,7 +7,7 @@
   <div *ngFor="let a of answer.answers">
     <textarea class="i18n-label"
               matInput
-              [(ngModel)]="a.label.defaultLabel"
+              [(ngModel)]="a.label.defaultLocalizedLabel().label"
               (change)="updateLabel(a)">
     </textarea>
     <button *ngIf="answer.answers.length !== 1" class="answerButton" mat-icon-button color="warn"
