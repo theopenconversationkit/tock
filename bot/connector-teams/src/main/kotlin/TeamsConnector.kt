@@ -28,8 +28,7 @@ import fr.vsct.tock.bot.connector.teams.auth.ForbiddenException
 import fr.vsct.tock.bot.connector.teams.auth.JWKHandler.launchJWKCollector
 import fr.vsct.tock.bot.connector.teams.auth.JWKHandler.stopJWKCollector
 import fr.vsct.tock.bot.connector.teams.messages.SendActionConverter
-import fr.vsct.tock.bot.connector.teams.token.TokenHandler.launchTokenCollector
-import fr.vsct.tock.bot.connector.teams.token.TokenHandler.stopTokenCollector
+import fr.vsct.tock.bot.connector.teams.token.TokenHandler
 import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.SendSentence
@@ -59,18 +58,23 @@ internal class TeamsConnector(
         private val logger = KotlinLogging.logger {}
     }
 
-    private val client = TeamsClient()
+    private var listOfTokenHandler = mutableMapOf<String, TokenHandler>()
+    private val tokenHandler = TokenHandler(appId, appPassword)
+
+    private val client = TeamsClient(tokenHandler)
     private val executor: Executor by injector.instance()
     private val authenticateBotConnectorService = AuthenticateBotConnectorService(appId)
 
     override fun unregister(controller: ConnectorController) {
         super.unregister(controller)
-        stopTokenCollector()
+        listOfTokenHandler[connectorId]?.stopTokenCollector()
+        listOfTokenHandler.remove(connectorId)
         stopJWKCollector()
     }
 
     override fun register(controller: ConnectorController) {
-        launchTokenCollector(appId, appPassword)
+        tokenHandler.launchTokenCollector()
+        listOfTokenHandler[this.connectorId] = tokenHandler
         launchJWKCollector()
 
         controller.registerServices(path) { router ->

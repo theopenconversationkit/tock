@@ -11,8 +11,6 @@ import fr.vsct.tock.bot.connector.teams.messages.TeamsBotMessage
 import fr.vsct.tock.bot.connector.teams.messages.TeamsCardAction
 import fr.vsct.tock.bot.connector.teams.messages.TeamsHeroCard
 import fr.vsct.tock.bot.connector.teams.token.TokenHandler
-import fr.vsct.tock.bot.connector.teams.token.TokenHandler.checkToken
-import fr.vsct.tock.bot.connector.teams.token.TokenHandler.teamsMapper
 import fr.vsct.tock.shared.addJacksonConverter
 import fr.vsct.tock.shared.create
 import fr.vsct.tock.shared.longProperty
@@ -27,7 +25,7 @@ import retrofit2.http.POST
 import retrofit2.http.Url
 
 
-internal class TeamsClient {
+internal class TeamsClient(private val tokenHandler: TokenHandler) {
     private val connectorApi: ConnectorMicrosoftApi
     private val logger = KotlinLogging.logger {}
     private val customInterceptor = CustomInterceptor()
@@ -41,7 +39,7 @@ internal class TeamsClient {
             interceptors = listOf(customInterceptor)
         )
             .baseUrl("https://smba.trafficmanager.net/emea/")
-            .addJacksonConverter(teamsMapper)
+            .addJacksonConverter(tokenHandler.teamsMapper)
             .build()
             .create()
     }
@@ -118,11 +116,11 @@ internal class TeamsClient {
     private inner class CustomInterceptor : Interceptor {
 
         override fun intercept(chain: Interceptor.Chain): Response {
-            checkToken()
+            tokenHandler.checkToken()
 
             var request = chain.request()
             request = request.newBuilder()
-                .addHeader("Authorization", "Bearer ${TokenHandler.token}")
+                .addHeader("Authorization", "Bearer ${tokenHandler.token}")
                 .build()
             val response = chain.proceed(request)
             logger.debug { "Response sent to Teams : ${response.code()} - ${response.message()}" }
