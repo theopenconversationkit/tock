@@ -30,23 +30,23 @@ infix fun TemporalAccessor?.by(dateFormatPattern: String): DateTemplate = by(Dat
 /**
  * Format a [TemporalAccessor] this the specified [DateTimeFormatter].
  */
-infix fun TemporalAccessor?.by(formatter: DateTimeFormatter): DateTemplate = DateTemplate(this, formatter)
+infix fun TemporalAccessor?.by(formatter: DateTimeFormatter): DateTemplate = DefaultDateTemplate(this, formatter)
 
 
 /**
  * Format a [TemporalAccessor] this the specified [DateTimeFormatterProvider].
  */
-infix fun TemporalAccessor?.by(formatterProvider: DateTimeFormatterProvider): DateTemplate = DateTemplate(this, formatterProvider)
+infix fun TemporalAccessor?.by(formatterProvider: DateTimeFormatterProvider): DateTemplate = DefaultDateTemplate(this, formatterProvider)
 
 /**
  * To immediately format this date with the given locale.
  */
-fun TemporalAccessor?.formatWith(formatter: DateTimeFormatter, locale: Locale): CharSequence? = if (this == null) null else by(formatter).formatTo(locale)
+fun TemporalAccessor?.formatWith(formatter: DateTimeFormatter, locale: Locale): CharSequence? = if (this == null) null else (by(formatter) as DefaultDateTemplate).formatTo(locale)
 
 /**
  * To immediately format this date with the given locale.
  */
-fun TemporalAccessor?.formatWith(formatterProvider: DateTimeFormatterProvider, locale: Locale): CharSequence? = if (this == null) null else by(formatterProvider).formatTo(locale)
+fun TemporalAccessor?.formatWith(formatterProvider: DateTimeFormatterProvider, locale: Locale): CharSequence? = if (this == null) null else (by(formatterProvider) as DefaultDateTemplate).formatTo(locale)
 
 
 /**
