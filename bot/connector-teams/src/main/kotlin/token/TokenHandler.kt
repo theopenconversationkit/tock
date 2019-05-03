@@ -18,7 +18,7 @@ import kotlin.concurrent.fixedRateTimer
  * Handle the generation and the refresh of the token header
  * This token is mandatory in request from bot to teams via microsoft-api
  */
-object TokenHandler {
+class TokenHandler(private val appId: String, private val password: String) {
 
     private val logger = KotlinLogging.logger {}
 
@@ -26,11 +26,6 @@ object TokenHandler {
     var token: String? = null
     @Volatile
     private var tokenExpiration: Instant? = null
-
-    @Volatile
-    private lateinit var appId: String
-    @Volatile
-    private lateinit var password: String
 
     val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
     private lateinit var tokenTimerTask: Timer
@@ -73,13 +68,7 @@ object TokenHandler {
         tokenExpiration = Instant.now().plus(response.body()?.expiresIn!!, ChronoUnit.SECONDS)
     }
 
-    fun setId(appId: String, password: String) {
-        this.appId = appId
-        this.password = password
-    }
-
-    fun launchTokenCollector(appId: String, password: String, msInterval: Long = 60 * 60 * 1000L) {
-        setId(appId, password)
+    fun launchTokenCollector(msInterval: Long = 60 * 60 * 1000L) {
         tokenTimerTask = fixedRateTimer(name = "microsoft-api-token-handling", initialDelay = 0L, period = msInterval) {
             checkToken()
         }
