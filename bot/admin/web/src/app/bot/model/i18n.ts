@@ -44,6 +44,7 @@ export class I18nLabel {
 
   constructor(public _id: string,
               public category: string,
+              public namespace:string,
               public i18n: I18nLocalizedLabel[],
               public defaultLabel?: string,
               public statCount?: number,
@@ -56,6 +57,7 @@ export class I18nLabel {
     return new I18nLabel(
       this._id,
       this.category,
+      this.namespace,
       this.i18n.map(i => i.clone()),
       this.defaultLabel,
       this.statCount,

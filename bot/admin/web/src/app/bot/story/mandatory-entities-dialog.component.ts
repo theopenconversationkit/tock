@@ -1,7 +1,9 @@
 import {Component, ElementRef, Inject, OnInit, ViewChild} from "@angular/core";
-import {MAT_DIALOG_DATA, MatDialogRef, MatSnackBar} from "@angular/material";
+import {MAT_DIALOG_DATA, MatDialog, MatDialogRef, MatSnackBar} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
 import {AnswerConfigurationType, IntentName, MandatoryEntity, SimpleAnswerConfiguration} from "../model/story";
+import {EntityDefinition, IntentsCategory} from "../../model/nlp";
+import {CreateEntityDialogComponent} from "../../sentence-analysis/create-entity-dialog/create-entity-dialog.component";
 
 @Component({
   selector: 'tock-mandatory-entities-dialog',
@@ -12,26 +14,34 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
 
   entities: MandatoryEntity[];
   newEntity: MandatoryEntity;
-  entityRoles: string[] = [];
+
+  intentCategories: IntentsCategory[] = [];
+  currentIntentCategories: IntentsCategory[] = [];
 
   originalEntities: MandatoryEntity[];
 
-  @ViewChild('newRole') newRoleElement: ElementRef;
+  currentEditedIntent:string;
 
   constructor(
     public dialogRef: MatDialogRef<MandatoryEntitiesDialogComponent>,
     @Inject(MAT_DIALOG_DATA) public data: any,
     public state: StateService,
-    private snackBar: MatSnackBar) {
+    private snackBar: MatSnackBar,
+    private dialog: MatDialog) {
+
     this.setNewEntity();
     this.entities = this.data.entities ? this.data.entities.slice(0).map(a => a.clone()) : [];
+    this.state.entities.subscribe(allEntities => {
+      this.entities.forEach(e => e.entity = allEntities.find(a => a.role === e.role));
+    });
     this.newEntity.category = this.data.category;
-
-    setTimeout(() => this.newRoleElement.nativeElement.focus(), 500);
   }
 
   ngOnInit() {
-    this.setDefaultRoles();
+    this.state.currentIntentsCategories.subscribe(c => {
+      this.intentCategories = c;
+      this.currentIntentCategories = c;
+    });
   }
 
   private setNewEntity() {
@@ -44,24 +54,42 @@ export class MandatoryEntitiesDialogComponent implements OnInit {
       c ? c : "");
   }
 
-  private setDefaultRoles() {
-    this.state.entities.subscribe(e => {
-      this.entityRoles = e.map(e => e.role).sort((a, b) => a.localeCompare(b));
-    });
+  onIntentChange(entity: MandatoryEntity, name: string) {
+     if(this.currentEditedIntent !== name) {
+       this.currentEditedIntent = name;
+       const intent = name.trim().toLowerCase();
+       let target = this.intentCategories.map(
+         c => new IntentsCategory(c.category,
+           c.intents.filter(i =>
+             i.intentLabel().toLowerCase().startsWith(intent)
+             && (!entity.role || i.entities.find(e => e.role === entity.role))
+           ))
+       )
+         .filter(c => c.intents.length !== 0);
+       if (target.length === 0) {
+         target = this.intentCategories.map(
+           c => new IntentsCategory(c.category,
+             c.intents.filter(i => i.intentLabel().toLowerCase().startsWith(intent))))
+           .filter(c => c.intents.length !== 0);
+       }
+
+       this.currentIntentCategories = target;
+     }
   }
 
-  onIntentChange(entity: MandatoryEntity, name: string) {
-    entity.intent.name = name;
-    const i = this.state.findIntentByName(name);
-    let roles = [];
-    if (i) {
-      roles = i.entities.map(e => e.role).sort((a, b) => a.localeCompare(b));
-    }
-    if (roles.length === 0) {
-      this.setDefaultRoles();
-    } else {
-      this.entityRoles = roles;
-    }
+  selectEntity(e:MandatoryEntity) {
+    let dialogRef = this.dialog.open(CreateEntityDialogComponent,
+      {
+        data: {}
+      }
+    );
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result !== "cancel") {
+        let name = result.name;
+        let role = result.role;
+        e.entity = new EntityDefinition(name, role);
+        e.role = role;
+      }});
   }
 
   removeEntity(e: MandatoryEntity) {

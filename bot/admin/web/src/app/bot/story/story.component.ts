@@ -121,7 +121,7 @@ export class StoryComponent implements OnInit, OnChanges {
       }
     );
     dialogRef.afterClosed().subscribe(result => {
-      if (result.entities) {
+      if (result && result.entities) {
         this.story.mandatoryEntities = result.entities;
         this.saveStory();
       }

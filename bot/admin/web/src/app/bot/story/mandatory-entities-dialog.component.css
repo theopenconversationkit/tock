@@ -12,3 +12,9 @@
   margin-left: 20px;
 }
 
+.entity-button {
+  margin-right: 10px;
+  margin-left: 10px;
+  display: inline-block;
+}
+

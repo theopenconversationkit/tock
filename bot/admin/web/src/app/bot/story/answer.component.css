@@ -13,3 +13,7 @@
 .simple {
   font-size: small;
 }
+
+.answer-container {
+  min-width: 400px;
+}

@@ -2,61 +2,72 @@
 <div class="container">
   <div *ngFor="let e of entities">
     <!-- entity role -->
-    <mat-form-field>
-      <input matInput name="role" placeholder="Entity" [(ngModel)]="e.role"
-             [matAutocomplete]="entityAuto"
-             required>
-    </mat-form-field>
+    <mat-chip-list *ngIf="e.entity" class="entity-button">
+      <mat-chip matTooltip="Change Entity"
+                selected="false"
+                (click)="selectEntity(e)"
+                [style.background-color]="e.entity.entityColor"
+                color="primary">
+        {{e.entity.qualifiedName(state.user)}}
+      </mat-chip>
+    </mat-chip-list>
+    <button *ngIf="!e.entity" class="entity-button" mat-button color="primary" (click)="selectEntity(e)">
+      Select Entity
+    </button>
 
     <!-- intent -->
     <mat-form-field>
       <input matInput name="intent" placeholder="Intent" [(ngModel)]="e.intent.name"
              matTooltip="Intent used to find the Entity"
              [matAutocomplete]="intentAuto"
-             (change)="onIntentChange(e, $event.target.value)"
-             (blur)="onIntentChange(e, $event.target.value)"
+             (keyup)="onIntentChange(e, $event.target.value)"
+             (focus)="onIntentChange(e, $event.target.value)"
              required>
     </mat-form-field>
 
-    <button class="answerButton" mat-icon-button color="warn"
+    <tock-answer [answer]="e" class="entity-button"></tock-answer>&nbsp;
+
+    <button class="entity-button" mat-icon-button color="warn"
             matTooltip="Remove Mandatory Entity" (click)="removeEntity(e)">
       <mat-icon>remove</mat-icon>
     </button>
-    <tock-answer [answer]="e"></tock-answer>
   </div>
 
   <div>
     <!-- entity role -->
-    <mat-form-field>
-      <input #newRole matInput name="role" placeholder="Entity" [(ngModel)]="newEntity.role"
-             [matAutocomplete]="entityAuto"
-             required>
-    </mat-form-field>
+    <mat-chip-list *ngIf="newEntity.entity" class="entity-button">
+      <mat-chip matTooltip="Change Entity"
+                selected="false"
+                (click)="selectEntity(newEntity)"
+                [style.background-color]="newEntity.entity.entityColor"
+                color="primary">
+        {{newEntity.entity.qualifiedName(state.user)}}
+      </mat-chip>
+    </mat-chip-list>
+    <button *ngIf="!newEntity.entity" class="entity-button" mat-button color="primary" (click)="selectEntity(newEntity)">
+      Select Entity
+    </button>
+
     <!-- intent -->
     <mat-form-field>
-      <input matInput name="intent" placeholder="Intent" [(ngModel)]="newEntity.intent.name"
+      <input matInput name="intent" placeholder="Select Intent" [(ngModel)]="newEntity.intent.name"
              matTooltip="Intent used to find the Entity"
              [matAutocomplete]="intentAuto"
-             (change)="onIntentChange(newEntity, $event.target.value)"
-             (blur)="onIntentChange(newEntity, $event.target.value)"
+             (keyup)="onIntentChange(newEntity, $event.target.value)"
+             (focus)="onIntentChange(newEntity, $event.target.value)"
              required>
     </mat-form-field>
-    &nbsp;
 
-    <button mat-icon-button color="primary" matTooltip="Add Mandatory Entity" class="answerButton" (click)="addEntity()">
+    <tock-answer [answer]="newEntity" class="entity-button"></tock-answer>&nbsp;
+
+    <button mat-icon-button color="primary" matTooltip="Add Mandatory Entity" class="entity-button" (click)="addEntity()">
       <mat-icon>library_add</mat-icon>
     </button>
-    <tock-answer [answer]="newEntity"></tock-answer>
+
   </div>
 
-  <mat-autocomplete #entityAuto="matAutocomplete">
-    <mat-option *ngFor="let e of entityRoles" [value]="e">
-      {{e}}
-    </mat-option>
-  </mat-autocomplete>
-
   <mat-autocomplete #intentAuto="matAutocomplete">
-    <mat-optgroup *ngFor="let category of state.currentIntentsCategories | async" [label]="category.category">
+    <mat-optgroup *ngFor="let category of currentIntentCategories" [label]="category.category">
       <mat-option *ngFor="let intent of category.intents" [value]="intent.name">
         {{intent.intentLabel()}}
       </mat-option>

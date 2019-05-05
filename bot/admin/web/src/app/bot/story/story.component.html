@@ -32,13 +32,13 @@
     <div *ngIf="story.mandatoryEntities.length !== 0">
       Mandatory Entities :
       <ul>
-        <li *ngFor="let e of story.mandatoryEntities">{{e.role}}</li>
+        <li *ngFor="let e of story.mandatoryEntities">{{e.role}} <span class="intent" matTooltip="Intent requested">[{{e.intent.name}}]</span>: <tock-answer class="answer" [answer]="e" [editable]="false"></tock-answer></li>
       </ul>
     </div>
 
     <!-- default answer -->
     Main Answer:
-    <tock-answer [answer]="story" [fullDisplay]="fullDisplay"></tock-answer>
+    <tock-answer class="answer" [answer]="story" [fullDisplay]="fullDisplay"></tock-answer>
 
     <!-- steps -->
 

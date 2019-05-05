@@ -89,7 +89,7 @@ export class CreateEntityDialogComponent implements OnInit {
     if (!role || role.length === 0) {
       role = entityNameFromQualifiedName(name);
     }
-    if (this.entityProvider.hasEntityRole(role)) {
+    if (this.entityProvider && this.entityProvider.hasEntityRole(role)) {
       this.error = "Entity role already exists";
     } else {
       this.dialogRef.close({name: name, role: role});

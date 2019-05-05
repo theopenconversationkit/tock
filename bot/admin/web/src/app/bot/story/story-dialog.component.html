@@ -32,7 +32,8 @@
     <!-- intent -->
     <mat-form-field>
       <input matInput name="intent" placeholder="Intent" [(ngModel)]="intent"
-             matTooltip="Intent" (keyup)="intentCategoryChange()"
+             matTooltip="Intent"
+             (keyup)="intentCategoryChange()" (focus)="intentCategoryChange()"
              [matAutocomplete]="intentAuto"
              (change)="intent = $event.target.value"
              required>
@@ -47,7 +48,7 @@
     <!-- category -->
     <mat-form-field>
       <input matInput name="category" placeholder="Category" [(ngModel)]="category"
-             matTooltip="Category" (keyup)="categoryChange()"
+             matTooltip="Category" (keyup)="categoryChange()" (focus)="categoryChange()"
              [matAutocomplete]="catAuto">
     </mat-form-field>
     <mat-autocomplete #catAuto="matAutocomplete">

@@ -24,6 +24,9 @@ export class AnswerComponent implements OnInit {
   @Input()
   fullDisplay: boolean = false;
 
+  @Input()
+  editable:boolean = true;
+
   constructor(private state: StateService,
               private bot: BotService,
               private dialog: MatDialog,

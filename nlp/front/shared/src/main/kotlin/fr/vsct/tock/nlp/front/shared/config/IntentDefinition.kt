@@ -84,6 +84,10 @@ data class IntentDefinition(
         return entities.firstOrNull { it.entityTypeName == type && it.role == role }
     }
 
+    fun findEntity(role: String): EntityDefinition? {
+        return entities.firstOrNull { it.role == role }
+    }
+
     fun findEntity(entity: Entity): EntityDefinition? {
         return findEntity(entity.entityType.name, entity.role)
     }

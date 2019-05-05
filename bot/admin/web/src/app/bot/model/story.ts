@@ -15,7 +15,7 @@
  */
 
 import {PaginatedQuery} from "../../model/commons";
-import {Sentence} from "../../model/nlp";
+import {EntityDefinition, Sentence} from "../../model/nlp";
 import {I18nLabel} from "./i18n";
 import {BotService} from "../bot-service";
 import {Observable, of} from "rxjs";
@@ -171,6 +171,8 @@ export enum AnswerConfigurationType {
 
 export class MandatoryEntity extends AnswerContainer {
 
+  public entity: EntityDefinition;
+
   constructor(public role: string,
               public intent: IntentName,
               answers: AnswerConfiguration[],
@@ -292,9 +294,9 @@ export class SimpleAnswerConfiguration extends AnswerConfiguration {
   }
 
   simpleTextView(): string {
-    const r = this.answers && this.answers.length > 0 ? this.answers[0].label.defaultLocalizedLabel().label : "[no text]";
+    const r = this.answers && this.answers.length > 0 ? this.answers[0].label.defaultLocalizedLabel().label : "[no answer yet]";
 
-    return r.substring(0, Math.min(r.length, 15)) + (r.length > 15 || this.answers.length > 1 ? "..." : "");
+    return r.substring(0, Math.min(r.length, 30)) + (r.length > 30 || this.answers.length > 1 ? "..." : "");
   }
 
   invalidMessage(): string {

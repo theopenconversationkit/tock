@@ -63,9 +63,12 @@ import fr.vsct.tock.nlp.admin.AdminService
 import fr.vsct.tock.nlp.admin.model.SentenceReport
 import fr.vsct.tock.nlp.front.client.FrontClient
 import fr.vsct.tock.nlp.front.service.applicationDAO
+import fr.vsct.tock.nlp.front.shared.config.ApplicationDefinition
 import fr.vsct.tock.nlp.front.shared.config.Classification
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentence
 import fr.vsct.tock.nlp.front.shared.config.ClassifiedSentenceStatus
+import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
+import fr.vsct.tock.nlp.front.shared.config.EntityTypeDefinition
 import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 import fr.vsct.tock.nlp.front.shared.config.SentencesQuery
 import fr.vsct.tock.shared.Dice
@@ -339,6 +342,7 @@ object BotAdminService {
             toConfiguration(botId, oldStory?.answers)
 
     private fun BotStoryDefinitionConfigurationMandatoryEntity.toEntityConfiguration(
+            app: ApplicationDefinition,
             botId: String,
             oldStory: StoryDefinitionConfiguration?
     ): StoryDefinitionConfigurationMandatoryEntity =
@@ -347,7 +351,24 @@ object BotAdminService {
                     intent,
                     answers.map { it.toConfiguration(botId, oldStory?.mandatoryEntities?.find { it.role == role }?.answers) },
                     currentType
-            )
+            ).apply {
+                //check that the intent & entity exist
+                var newIntent = front.getIntentByNamespaceAndName(app.namespace, intent.name)
+                val existingEntity = newIntent?.findEntity(role)
+                val entityTypeName = entity!!.entityTypeName
+                if (existingEntity == null) {
+                    if (front.getEntityTypeByName(entityTypeName) == null) {
+                        front.save(EntityTypeDefinition(entityTypeName))
+                    }
+                }
+                if (newIntent == null) {
+                    newIntent = IntentDefinition(intent.name, app.namespace, setOf(app._id), setOf(EntityDefinition(entityTypeName, role)))
+                    front.save(newIntent)
+                } else if (existingEntity == null) {
+                    front.save(newIntent.copy(entities = newIntent.entities + EntityDefinition(entityTypeName, role)))
+                }
+
+            }
 
     fun saveStory(
             namespace: String,
@@ -358,6 +379,8 @@ object BotAdminService {
         val botConf = getBotConfigurationsByNamespaceAndBotId(namespace, story.botId).firstOrNull()
         return if (botConf != null) {
 
+            val application = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)!!
+
             storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(
                     namespace,
                     botConf.botId,
@@ -366,13 +389,12 @@ object BotAdminService {
                 if (it == null) {
                     //intent change
                     if (storyDefinition?._id != null) {
-                        val nlpApplication = front.getApplicationByNamespaceAndName(namespace, botConf.nlpModel)!!
                         AdminService.createOrUpdateIntent(
                                 namespace,
                                 IntentDefinition(
                                         story.intent.name,
                                         namespace,
-                                        setOf(nlpApplication._id),
+                                        setOf(application._id),
                                         emptySet(),
                                         category = story.category
                                 )
@@ -401,7 +423,7 @@ object BotAdminService {
                         currentType = story.currentType,
                         intent = story.intent,
                         answers = story.answers.map { it.toStoryConfiguration(botConf.botId, storyDefinition) },
-                        mandatoryEntities = story.mandatoryEntities.map { it.toEntityConfiguration(botConf.botId, storyDefinition) }
+                        mandatoryEntities = story.mandatoryEntities.map { it.toEntityConfiguration(application, botConf.botId, storyDefinition) }
                 )
             } else {
                 StoryDefinitionConfiguration(
@@ -412,7 +434,7 @@ object BotAdminService {
                         story.answers.map { it.toStoryConfiguration(botConf.botId, storyDefinition) },
                         0,
                         namespace,
-                        story.mandatoryEntities.map { it.toEntityConfiguration(botConf.botId, storyDefinition) },
+                        story.mandatoryEntities.map { it.toEntityConfiguration(application, botConf.botId, storyDefinition) },
                         emptyList(),
                         story.name,
                         story.category,

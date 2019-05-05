@@ -4,6 +4,7 @@ import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationMandatoryEntity
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.nlp.front.shared.config.EntityDefinition
 
 data class BotStoryDefinitionConfigurationMandatoryEntity(
         /**
@@ -22,7 +23,11 @@ data class BotStoryDefinitionConfigurationMandatoryEntity(
          * The type of answer configuration.
          */
         val currentType: AnswerConfigurationType,
-        val category:String
+        val category: String,
+        /**
+         * Entity defined by the entity role.
+         */
+        val entity: EntityDefinition? = null
 ) {
 
     constructor(story: StoryDefinitionConfiguration, e: StoryDefinitionConfigurationMandatoryEntity) :

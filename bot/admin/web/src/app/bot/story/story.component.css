@@ -15,3 +15,7 @@
 .intent {
   font-style: italic;
 }
+
+.answer {
+  display:inline-block;
+}

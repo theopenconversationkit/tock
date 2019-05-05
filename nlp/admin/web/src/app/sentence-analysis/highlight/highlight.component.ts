@@ -36,7 +36,7 @@ import {
 } from "../../model/nlp";
 import {NlpService} from "../../nlp-tabs/nlp.service";
 import {StateService} from "../../core-nlp/state.service";
-import {MatDialog, MatDialogConfig, MatSnackBar, MatSnackBarConfig} from "@angular/material";
+import {MatDialog, MatSnackBar, MatSnackBarConfig} from "@angular/material";
 import {CreateEntityDialogComponent} from "../create-entity-dialog/create-entity-dialog.component";
 import {User} from "../../model/auth";
 import {ApplicationConfig} from "../../core-nlp/application.config";
@@ -193,7 +193,8 @@ export class HighlightComponent implements OnInit, OnChanges, AfterViewInit {
         data: {
           entityProvider: this.entityProvider
         }
-      } as MatDialogConfig);
+      }
+    );
     dialogRef.afterClosed().subscribe(result => {
       if (result && result !== "cancel") {
         let name = result.name;
