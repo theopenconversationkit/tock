@@ -20,7 +20,6 @@ import com.fasterxml.jackson.module.kotlin.readValue
 import fr.vsct.tock.bot.connector.ConnectorBase
 import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
-import fr.vsct.tock.bot.connector.businesschat.model.common.MessageType
 import fr.vsct.tock.bot.connector.businesschat.model.common.ReceivedModel
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorImageMessage
 import fr.vsct.tock.bot.connector.businesschat.model.input.BusinessChatConnectorListPickerMessage
@@ -30,8 +29,6 @@ import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.monitoring.logError
-import fr.vsct.tock.bot.engine.user.PlayerId
-import fr.vsct.tock.bot.engine.user.PlayerType
 import fr.vsct.tock.shared.Executor
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.injector
@@ -82,39 +79,19 @@ internal class BusinessChatConnector(
                     val body = context.bodyAsString
                     val message = mapper.readValue<ReceivedModel>(body)
 
-                    when (businessId) {
-                        message.sourceId -> {
-                            logger.info("Ignoring echo message")
-                        }
-                        else -> {
-                            executor.executeBlocking {
-                                if (message.type == MessageType.interactive) {
-                                    val listPickerChoice = cspBusinessChatClient.receiveListPickerChoice(message)
-                                    if (listPickerChoice != null) {
-                                        controller.handle(
-                                            SendSentence(
-                                                applicationId = connectorId,
-                                                playerId = PlayerId(message.sourceId, PlayerType.user),
-                                                recipientId = PlayerId(message.destinationId, PlayerType.bot),
-                                                text = listPickerChoice.text
-                                            )
-                                        )
-                                    }
-                                } else {
-                                    val event = MessageConverter.toEvent(message, connectorId)
-                                    event?.let {
-                                        when (it) {
-                                            is SendSentence -> {
-                                                controller.handle(
-                                                    event,
-                                                    ConnectorData(
-                                                        BusinessChatConnectorCallback(connectorId)
-                                                    )
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
+                    if (businessId == message.sourceId && message.handoverData == null) {
+                        logger.info("Ignoring echo message")
+                    }
+                    else {
+                        executor.executeBlocking {
+                            val event = MessageConverter.toEvent(message, connectorId, cspBusinessChatClient)
+                            event?.let {
+                                controller.handle(
+                                    event,
+                                    ConnectorData(
+                                        BusinessChatConnectorCallback(connectorId)
+                                    )
+                                )
                             }
                         }
                     }

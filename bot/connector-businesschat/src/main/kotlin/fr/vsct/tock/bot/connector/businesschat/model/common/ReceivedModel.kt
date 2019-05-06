@@ -15,8 +15,20 @@ class ReceivedModel(
     destinationId: String,
     val body: String?,
     val interactiveData: InteractiveData?,
-    val interactiveDataRef: InteractiveDataRef?
+    val interactiveDataRef: InteractiveDataRef?,
+    @JsonProperty("data")
+    val handoverData: HandoverData?
 ) : BusinessChatCommonModel(sourceId = sourceId, destinationId = destinationId, type = MessageType.text)
+
+data class HandoverData (
+    @JsonProperty("new_owner_app_id")
+    val newOwnerAppId: String?,
+    @JsonProperty("recipient_id")
+    val recipientId: String?,
+    val metadata: String?,
+    @JsonProperty("recipient_user_id")
+    val recipientUserId: String?
+)
 
 class InteractiveData(val data: Data)
 class Data(val replyMessage: ReplyMessage?)

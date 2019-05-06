@@ -16,6 +16,7 @@
 
 package fr.vsct.tock.bot.definition
 
+import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.SendChoice
@@ -23,7 +24,10 @@ import fr.vsct.tock.bot.engine.event.EndConversationEvent
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.event.NoInputEvent
 import fr.vsct.tock.bot.engine.event.OneToOneEvent
+import fr.vsct.tock.bot.engine.event.PassThreadControlEvent
 import fr.vsct.tock.bot.engine.event.StartConversationEvent
+import fr.vsct.tock.bot.engine.user.UserTimelineDAO
+import fr.vsct.tock.shared.injector
 import mu.KotlinLogging
 
 /**
@@ -62,6 +66,13 @@ open class EventListenerBase : EventListener {
                 is StartConversationEvent -> helloStory.sendChoice(event, true)
                 is EndConversationEvent -> goodbyeStory.sendChoice(event)
                 is NoInputEvent -> goodbyeStory.sendChoice(event)
+                is PassThreadControlEvent -> {
+                    val userTimelineDAO: UserTimelineDAO by injector.instance()
+                    val timeline = userTimelineDAO.loadWithoutDialogs(event.userId)
+                    timeline.userState.botDisabled = false
+                    userTimelineDAO.save(timeline)
+                    true
+                }
                 else -> false
             }
         }

@@ -16,10 +16,16 @@
 
 package fr.vsct.tock.bot.connector.businesschat.model.common
 
+import com.fasterxml.jackson.annotation.JsonProperty
+
 /**
  * https://developer.apple.com/documentation/businesschatapi/messages_received/receiving_messages_from_the_business_chat_service
  */
 enum class MessageType {
  text,
- interactive
+ interactive,
+ @JsonProperty("pass-thread-control")
+ pass_thread_control,
+ @JsonProperty("take-thread-control")
+ take_thread_control
 }
