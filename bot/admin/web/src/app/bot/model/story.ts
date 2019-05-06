@@ -15,7 +15,7 @@
  */
 
 import {PaginatedQuery} from "../../model/commons";
-import {EntityDefinition, Sentence} from "../../model/nlp";
+import {EntityDefinition, Intent, Sentence} from "../../model/nlp";
 import {I18nLabel} from "./i18n";
 import {BotService} from "../bot-service";
 import {Observable, of} from "rxjs";
@@ -172,6 +172,7 @@ export enum AnswerConfigurationType {
 export class MandatoryEntity extends AnswerContainer {
 
   public entity: EntityDefinition;
+  public intentDefinition: Intent;
 
   constructor(public role: string,
               public intent: IntentName,
@@ -190,7 +191,7 @@ export class MandatoryEntity extends AnswerContainer {
   }
 
   clone(): MandatoryEntity {
-    return new MandatoryEntity(this.role, this.intent, this.answers.slice(0).map(a => a.clone()), this.currentType, this.category);
+    return new MandatoryEntity(this.role, this.intent.clone(), this.answers.slice(0).map(a => a.clone()), this.currentType, this.category);
   }
 
   static fromJSON(json: any): MandatoryEntity {
@@ -236,6 +237,10 @@ export class StoryStep {
 
 export class IntentName {
   constructor(public name: string) {
+  }
+
+  clone(): IntentName {
+    return new IntentName(this.name);
   }
 
   static fromJSON(json: any): IntentName {

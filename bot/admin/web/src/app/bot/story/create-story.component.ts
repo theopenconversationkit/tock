@@ -135,8 +135,8 @@ export class CreateStoryComponent implements OnInit {
           this.text ? [this.text.trim()] : []
         )
       ).subscribe(intent => {
-        this.state.addIntent(intent);
-        this.snackBar.open(`New story created for language ${this.state.currentLocale}`, "New Story", {duration: 3000});
+        this.state.resetConfiguration();
+        this.snackBar.open(`New story ${this.story.name} created for language ${this.state.currentLocale}`, "New Story", {duration: 3000});
         this.onClose();
 
         this.newSentence.nativeElement.focus();

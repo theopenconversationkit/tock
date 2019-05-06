@@ -22,6 +22,7 @@
              [matAutocomplete]="intentAuto"
              (keyup)="onIntentChange(e, $event.target.value)"
              (focus)="onIntentChange(e, $event.target.value)"
+             (blur)="validateIntent(e)"
              required>
     </mat-form-field>
 
@@ -55,6 +56,7 @@
              [matAutocomplete]="intentAuto"
              (keyup)="onIntentChange(newEntity, $event.target.value)"
              (focus)="onIntentChange(newEntity, $event.target.value)"
+             (blur)="validateIntent(newEntity)"
              required>
     </mat-form-field>
 

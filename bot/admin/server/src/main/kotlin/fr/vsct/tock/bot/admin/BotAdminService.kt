@@ -362,10 +362,22 @@ object BotAdminService {
                     }
                 }
                 if (newIntent == null) {
-                    newIntent = IntentDefinition(intent.name, app.namespace, setOf(app._id), setOf(EntityDefinition(entityTypeName, role)))
+                    newIntent = IntentDefinition(
+                        intent.name,
+                        app.namespace,
+                        setOf(app._id),
+                        setOf(EntityDefinition(entityTypeName, role)),
+                        label = intentDefinition?.label,
+                        category = intentDefinition?.category,
+                        description = intentDefinition?.description
+                        )
                     front.save(newIntent)
                 } else if (existingEntity == null) {
-                    front.save(newIntent.copy(entities = newIntent.entities + EntityDefinition(entityTypeName, role)))
+                    front.save(newIntent.copy(
+                        applications = newIntent.applications + app._id,
+                        entities = newIntent.entities + EntityDefinition(entityTypeName, role)
+                    )
+                    )
                 }
 
             }
