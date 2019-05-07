@@ -18,8 +18,11 @@ package fr.vsct.tock.bot.connector.twitter.model.outcoming
 import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonTypeName
 import fr.vsct.tock.bot.connector.twitter.model.MessageCreate
+import fr.vsct.tock.bot.engine.monitoring.logError
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
+import mu.KotlinLogging
+import org.apache.commons.lang3.exception.ExceptionUtils
 
 /**
  * Direct Message OutcomingEvent
@@ -29,6 +32,13 @@ data class DirectMessageOutcomingEvent(
     @JsonProperty("message_create")
     val messageCreate: MessageCreate
 ) : AbstractOutcomingEvent() {
+    private val logger = KotlinLogging.logger {}
+
+    init {
+        val stackTrace = ExceptionUtils.getStackTrace(Throwable())
+        logger.error { "Twitt debug new DM" + stackTrace }
+    }
+
     override fun playerId(playerType: PlayerType): PlayerId =
         PlayerId(messageCreate.senderId, playerType)
 

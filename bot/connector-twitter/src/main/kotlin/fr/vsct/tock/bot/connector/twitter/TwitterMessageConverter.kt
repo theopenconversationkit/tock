@@ -34,6 +34,7 @@ internal object TwitterMessageConverter {
 
     fun toEvent(action: Action): ConnectorMessage? {
         return if (action is SendSentence) {
+            logger.error { "Twitt debug toEvent : read metadata " + System.identityHashCode(action) }
             if(action.metadata.visibility == ActionVisibility.public) {
                 if (action.hasMessage(TwitterConnectorProvider.connectorType)) {
                     action.message(TwitterConnectorProvider.connectorType) as Tweet
