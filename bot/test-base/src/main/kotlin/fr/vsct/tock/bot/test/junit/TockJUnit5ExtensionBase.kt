@@ -22,6 +22,7 @@ import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.Parameters
 import fr.vsct.tock.bot.definition.StoryDefinition
 import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.ActionMetadata
 import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.dialog.EntityValue
@@ -101,6 +102,7 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
         userId: PlayerId = testContext.defaultPlayerId(),
         botId: PlayerId = PlayerId("bot", PlayerType.bot),
         userPreferences: UserPreferences = UserPreferences(locale = locale),
+        metadata: ActionMetadata = ActionMetadata(),
         tests: BotBusMock.() -> Unit
     ) {
         send(
@@ -120,7 +122,8 @@ open class TockJUnit5ExtensionBase<out T : TestContext>(
                     state = EventState(
                         entities.toMutableList(),
                         intent = intent.wrappedIntent().name
-                    )
+                    ),
+                    metadata = metadata
                 )
             },
             tests

@@ -150,3 +150,17 @@ val greetings = story("hello") { bus ->
     }
 }
 ```
+
+##### How to test public Tweet
+```kotlin
+@Test
+internal fun myTest() {
+    val expected = Tweet("Hello !")
+    
+    bus.connectorType = twitterConnectorType
+    
+    ext.send(metadata = ActionMetadata(visibility = ActionVisibility.public)) {
+        firstAnswer.assert(expected)
+    }
+}
+```
