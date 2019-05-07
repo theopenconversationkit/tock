@@ -73,7 +73,7 @@ internal object MessageConverter {
                 }
             }
             MessageType.pass_thread_control -> {
-                if(message.handoverData?.newOwnerAppId != null && message.handoverData.metadata == "alcmeon_to_oui") {
+                if(message.handoverData?.newOwnerAppId != null && message.handoverData.metadata == "alcmeon-secondary-done") {
                     PassThreadControlEvent(
                         recipientId = PlayerId(message.destinationId, PlayerType.user),
                         userId = PlayerId(message.destinationId, PlayerType.user),
