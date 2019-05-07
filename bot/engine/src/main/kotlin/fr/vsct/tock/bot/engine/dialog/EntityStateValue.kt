@@ -55,10 +55,10 @@ data class EntityStateValue(
     private var updated: Instant = initialUpdate
     private var loaded: Boolean = stateValueId == null
 
-    internal constructor(action: Action, entityValue: EntityValue)
+    constructor(action: Action, entityValue: EntityValue)
             : this(entityValue, mutableListOf(ArchivedEntityValue(entityValue, action)))
 
-    internal constructor(entity: Entity, value: Value) : this(EntityValue(entity, value))
+    constructor(entity: Entity, value: Value) : this(EntityValue(entity, value))
 
     init {
         if (value != null) {

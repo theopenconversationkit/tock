@@ -61,7 +61,7 @@ object BotRepository {
     private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
     internal val botProviders: MutableSet<BotProvider> = mutableSetOf()
     internal val storyHandlerListeners: MutableList<StoryHandlerListener> = mutableListOf()
-    internal val nlpListeners: MutableList<NlpListener> = mutableListOf(BuiltInKeywordListener)
+    val nlpListeners: MutableList<NlpListener> = mutableListOf(BuiltInKeywordListener)
     private val nlpClient: NlpClient get() = injector.provide()
     private val nlpController: NlpController get() = injector.provide()
     private val executor: Executor get() = injector.provide()

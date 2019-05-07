@@ -92,8 +92,6 @@ internal class TockConnectorController constructor(
     private val userLock: UserLock by injector.instance()
     private val userTimelineDAO: UserTimelineDAO by injector.instance()
 
-    val connectorType: ConnectorType get() = connector.connectorType
-
     private val serviceInstallers: MutableList<BotVerticle.ServiceInstaller> = CopyOnWriteArrayList()
 
     override fun handle(event: Event, data: ConnectorData) {
