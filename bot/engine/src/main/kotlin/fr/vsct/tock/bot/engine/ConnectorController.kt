@@ -19,6 +19,7 @@ package fr.vsct.tock.bot.engine
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorCallbackBase
 import fr.vsct.tock.bot.connector.ConnectorData
+import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryHandlerDefinition
@@ -42,6 +43,8 @@ interface ConnectorController {
      * The connector used by the controller.
      */
     val connector: Connector
+
+    val connectorType: ConnectorType get() = connector.connectorType
 
     /**
      * Sends a notification to the connector.
