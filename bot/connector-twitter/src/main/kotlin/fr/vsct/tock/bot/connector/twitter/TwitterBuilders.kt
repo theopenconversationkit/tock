@@ -298,7 +298,6 @@ private fun BotBus.option(
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
 fun BotBus.withTwitter(messageProvider: () -> TwitterConnectorMessage): BotBus {
-    logger.error { "Twitt debug : read metadata" + System.identityHashCode(action.metadata) }
     withVisibility(action.metadata.visibility)
     return if(action.metadata.visibility != ActionVisibility.public) {
         withMessage(twitterConnectorType, messageProvider)
@@ -312,7 +311,6 @@ fun BotBus.withTwitter(messageProvider: () -> TwitterConnectorMessage): BotBus {
  * You need to call [BotBus.send] or [BotBus.end] later to send this message.
  */
 fun BotBus.withPublicTwitter(messageProvider: () -> TwitterPublicConnectorMessage): BotBus {
-    logger.error { "Twitt debug : read metadata" + System.identityHashCode(action.metadata) }
     withVisibility(action.metadata.visibility)
     return if(action.metadata.visibility == ActionVisibility.public) {
         withMessage(twitterConnectorType, messageProvider)

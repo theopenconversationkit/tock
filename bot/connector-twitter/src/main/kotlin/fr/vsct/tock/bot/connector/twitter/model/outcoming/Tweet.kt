@@ -17,14 +17,5 @@
 package fr.vsct.tock.bot.connector.twitter.model.outcoming
 
 import fr.vsct.tock.bot.connector.twitter.model.TwitterPublicConnectorMessage
-import mu.KotlinLogging
-import org.apache.commons.lang3.exception.ExceptionUtils
 
-data class Tweet(val text: String, val dmRecipientID: String? = null): TwitterPublicConnectorMessage() {
-    private val logger = KotlinLogging.logger {}
-
-    init {
-        val stackTrace = ExceptionUtils.getStackTrace(Throwable())
-        logger.error { "Twitt debug new Tweet" + stackTrace }
-    }
-}
+data class Tweet(val text: String, val dmRecipientID: String? = null): TwitterPublicConnectorMessage()

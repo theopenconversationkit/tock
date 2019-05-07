@@ -36,7 +36,6 @@ import fr.vsct.tock.bot.engine.BotRepository
 import fr.vsct.tock.bot.engine.ConnectorController
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.ActionVisibility
-import fr.vsct.tock.bot.engine.action.SendSentence
 import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.monitoring.logError
 import fr.vsct.tock.bot.engine.user.PlayerId
@@ -150,7 +149,6 @@ internal class TwitterConnector internal constructor(
                                         threadId
                                     )
                                     if (event != null) {
-                                        logger.error { "Twitt debug : created metadata " + ((event as? SendSentence)?.metadata?.let { System.identityHashCode(it) } ?: "Not sentence" )}
                                         controller.handle(event, ConnectorData(callback))
                                     } else {
                                         logger.logError(
