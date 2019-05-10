@@ -95,14 +95,18 @@ internal class Nlp : NlpController {
                         listenNlpSuccessCall(query, nlpResult)
                         val intent = findIntent(userTimeline, dialog, sentence, nlpResult)
 
-                        val customEntityEvaluations = BotRepository.nlpListeners.flatMap {
-                            try {
-                                it.evaluateEntities(userTimeline, dialog, sentence, nlpResult)
-                            } catch (e: Exception) {
-                                logger.error(e)
-                                emptyList<EntityValue>()
-                            }
+                        val customEntityEvaluations: MutableList<EntityValue> = mutableListOf()
+                        BotRepository.forEachNlpListener {
+                            customEntityEvaluations.addAll(
+                                try {
+                                    it.evaluateEntities(userTimeline, dialog, sentence, nlpResult)
+                                } catch (e: Exception) {
+                                    logger.error(e)
+                                    emptyList<EntityValue>()
+                                }
+                            )
                         }
+
                         val entityEvaluations = customEntityEvaluations +
                                 nlpResult.entities
                                     .asSequence()
@@ -138,21 +142,19 @@ internal class Nlp : NlpController {
             sentence: SendSentence,
             nlpResult: NlpResult
         ): Intent {
-
-            for (l in BotRepository.nlpListeners) {
-                val i =
-                    try {
-                        l.findIntent(userTimeline, dialog, sentence, nlpResult)
+            var i: Intent? = null
+            BotRepository.forEachNlpListener {
+                if (i == null) {
+                    i = try {
+                        it.findIntent(userTimeline, dialog, sentence, nlpResult)?.wrappedIntent()
                     } catch (e: Exception) {
                         logger.error(e)
                         null
                     }
-                if (i != null) {
-                    return i.wrappedIntent()
                 }
             }
 
-            return botDefinition.findIntent(nlpResult.intent)
+            return i ?: botDefinition.findIntent(nlpResult.intent)
         }
 
         private fun evaluateEntitiesForPrecomputedNlp(nlpQuery: NlpQuery, nlpResult: NlpResult): NlpResult {
@@ -194,20 +196,27 @@ internal class Nlp : NlpController {
 
 
         private fun findKeyword(sentence: String?): Intent? {
-            if (sentence != null) {
-                BotRepository.nlpListeners.forEach {
-                    try {
-                        it.handleKeyword(sentence)?.apply { return this }
-                    } catch (e: Exception) {
-                        logger.error(e)
+            return if (sentence != null) {
+                var i: Intent? = null
+                BotRepository.forEachNlpListener {
+                    if (i == null) {
+                        i = try {
+                            it.handleKeyword(sentence)
+                        } catch (e: Exception) {
+                            logger.error(e)
+                            null
+                        }
                     }
+
                 }
+                i
+            } else {
+                null
             }
-            return null
         }
 
         private fun listenNlpSuccessCall(query: NlpQuery, result: NlpResult) {
-            BotRepository.nlpListeners.forEach {
+            BotRepository.forEachNlpListener {
                 try {
                     it.success(query, result)
                 } catch (e: Exception) {
@@ -217,7 +226,7 @@ internal class Nlp : NlpController {
         }
 
         private fun listenNlpErrorCall(query: NlpQuery, throwable: Throwable?) {
-            BotRepository.nlpListeners.forEach {
+            BotRepository.forEachNlpListener {
                 try {
                     it.error(query, throwable)
                 } catch (e: Exception) {
@@ -324,11 +333,11 @@ internal class Nlp : NlpController {
                 .groupBy { it.entity.role }
                 .map { NlpEntityMergeContext(it.key, entityValues[it.key], it.value) }
             //sort entities
-            BotRepository.nlpListeners.forEach { merge = it.sortEntitiesToMerge(merge) }
+            BotRepository.forEachNlpListener { merge = it.sortEntitiesToMerge(merge) }
 
             return merge.mapNotNull { mergeContext ->
                 var context = mergeContext
-                BotRepository.nlpListeners.forEach { context = it.mergeEntityValues(this, action, context) }
+                BotRepository.forEachNlpListener { context = it.mergeEntityValues(this, action, context) }
                 val result = mergeEntityValues(action, context.newValues, context.initialValue)
                 entityValues[context.entityRole] = result
                 result.value

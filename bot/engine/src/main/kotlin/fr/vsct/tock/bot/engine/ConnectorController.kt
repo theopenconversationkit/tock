@@ -44,13 +44,15 @@ interface ConnectorController {
      */
     val connector: Connector
 
+    /**
+     * The type of connector used by the controller.
+     */
     val connectorType: ConnectorType get() = connector.connectorType
 
     /**
      * Sends a notification to the connector.
      * A [BotBus] is created and the corresponding story is called.
      *
-     * @param applicationId the configuration connector id
      * @param recipientId the recipient identifier
      * @param intent the notification intent
      * @param step the optional step target

@@ -61,7 +61,7 @@ object BotRepository {
     private val botConfigurationDAO: BotApplicationConfigurationDAO get() = injector.provide()
     internal val botProviders: MutableSet<BotProvider> = mutableSetOf()
     internal val storyHandlerListeners: MutableList<StoryHandlerListener> = mutableListOf()
-    val nlpListeners: MutableList<NlpListener> = mutableListOf(BuiltInKeywordListener)
+    private val nlpListeners: MutableList<NlpListener> = mutableListOf(BuiltInKeywordListener)
     private val nlpClient: NlpClient get() = injector.provide()
     private val nlpController: NlpController get() = injector.provide()
     private val executor: Executor get() = injector.provide()
@@ -123,6 +123,13 @@ object BotRepository {
         }
 
     private val verticle by lazy { BotVerticle() }
+
+    /**
+     * Calls the specified [action] for each registered [NlpListener].
+     */
+    fun forEachNlpListener(action: (NlpListener) -> Unit) {
+        nlpListeners.forEach(action)
+    }
 
     /**
      * Sends a notification to the connector.

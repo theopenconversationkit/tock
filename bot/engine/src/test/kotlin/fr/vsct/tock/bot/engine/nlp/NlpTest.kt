@@ -121,7 +121,7 @@ class NlpTest : BotEngineTest() {
                 return listOf(customValue)
             }
         }
-        BotRepository.nlpListeners.add(nlpListener)
+        BotRepository.registerNlpListener(nlpListener)
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
 
         assertEquals(5, userAction.state.entityValues.size)
@@ -146,7 +146,7 @@ class NlpTest : BotEngineTest() {
                 return test2
             }
         }
-        BotRepository.nlpListeners.add(nlpListener)
+        BotRepository.registerNlpListener(nlpListener)
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
 
         assertEquals(test2.wrappedIntent(), dialog.state.currentIntent)
@@ -179,7 +179,7 @@ class NlpTest : BotEngineTest() {
                     entityToMerge
                 }
         }
-        BotRepository.nlpListeners.add(nlpListener)
+        BotRepository.registerNlpListener(nlpListener)
         Nlp().parseSentence(userAction as SendSentence, userTimeline, dialog, connectorController, botDefinition)
 
         verify { nlpClient.mergeValues(any()) }
