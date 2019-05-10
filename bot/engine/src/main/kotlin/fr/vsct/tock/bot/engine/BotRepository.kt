@@ -262,6 +262,7 @@ object BotRepository {
         return connectorProviders.firstOrNull { it.connectorType == connectorType }
     }
 
+    @Synchronized
     private fun checkBotConfigurations(startup: Boolean = false) {
         logger.trace { "check configurations" }
         //clone conf list as we may update connectorControllerMap
@@ -338,7 +339,7 @@ object BotRepository {
             controller.unregisterServices()
             if (controller is TockConnectorController) {
                 StoryConfigurationMonitor.unmonitor(controller.bot)
-                TockConnectorController.unregister(controller.connector, controller.bot, verticle)
+                TockConnectorController.unregister(controller)
             }
         }
     }

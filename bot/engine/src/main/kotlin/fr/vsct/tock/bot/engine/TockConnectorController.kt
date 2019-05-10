@@ -19,7 +19,6 @@ package fr.vsct.tock.bot.engine
 import com.github.salomonbrys.kodein.instance
 import fr.vsct.tock.bot.connector.Connector
 import fr.vsct.tock.bot.connector.ConnectorData
-import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.definition.BotDefinition
 import fr.vsct.tock.bot.engine.action.Action
 import fr.vsct.tock.bot.engine.action.SendAttachment
@@ -76,15 +75,11 @@ internal class TockConnectorController constructor(
                 }
 
         internal fun unregister(
-            connector: Connector,
-            bot: Bot,
-            verticle: BotVerticle
-        ) =
-            TockConnectorController(bot, connector, verticle)
-                .apply {
-                    logger.info { "Unregister connector $connector for bot $bot" }
-                    connector.unregister(this)
-                }
+            controller: TockConnectorController
+        ) {
+            logger.info { "Unregister connector ${controller.connector} for bot ${controller.bot}" }
+            controller.connector.unregister(controller)
+        }
 
     }
 
