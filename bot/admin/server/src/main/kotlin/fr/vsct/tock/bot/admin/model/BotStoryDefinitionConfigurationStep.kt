@@ -4,6 +4,7 @@ import fr.vsct.tock.bot.admin.answer.AnswerConfigurationType
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfiguration
 import fr.vsct.tock.bot.admin.story.StoryDefinitionConfigurationStep
 import fr.vsct.tock.bot.definition.Intent
+import fr.vsct.tock.nlp.front.shared.config.IntentDefinition
 
 data class BotStoryDefinitionConfigurationStep(
         /**
@@ -22,7 +23,14 @@ data class BotStoryDefinitionConfigurationStep(
          * The type of answer configuration.
          */
         val currentType: AnswerConfigurationType,
-        val category: String) {
+        /**
+         * The category of the answers.
+         */
+        val category: String,
+        /**
+         * Intent defined by the intent name.
+         */
+        val intentDefinition: IntentDefinition? = null) {
 
     constructor(story: StoryDefinitionConfiguration, e: StoryDefinitionConfigurationStep) :
             this(

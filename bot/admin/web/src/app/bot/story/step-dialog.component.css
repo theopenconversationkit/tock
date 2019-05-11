@@ -1,0 +1,20 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  min-width: 400px;
+}
+
+.container > * {
+  width: 100%;
+}
+
+.submit-button {
+  margin-left: 20px;
+}
+
+.entity-button {
+  margin-right: 10px;
+  margin-left: 10px;
+  display: inline-block;
+}
+

@@ -7,6 +7,7 @@ import {ConfirmDialogComponent} from "../../shared-nlp/confirm-dialog/confirm-di
 import {StoryDialogComponent} from "./story-dialog.component";
 import {MandatoryEntitiesDialogComponent} from "./mandatory-entities-dialog.component";
 import {StoryNode} from "../flow/node";
+import {StepDialogComponent} from "./step-dialog.component";
 
 @Component({
   selector: 'tock-story',
@@ -123,6 +124,25 @@ export class StoryComponent implements OnInit, OnChanges {
     dialogRef.afterClosed().subscribe(result => {
       if (result && result.entities) {
         this.story.mandatoryEntities = result.entities;
+        this.saveStory();
+      }
+    });
+  }
+
+  editSteps() {
+    let dialogRef = this.dialog.open(
+      StepDialogComponent,
+      {
+        data:
+          {
+            steps: this.story.steps,
+            category: this.story.category
+          }
+      }
+    );
+    dialogRef.afterClosed().subscribe(result => {
+      if (result && result.steps) {
+        this.story.steps = result.steps;
         this.saveStory();
       }
     });

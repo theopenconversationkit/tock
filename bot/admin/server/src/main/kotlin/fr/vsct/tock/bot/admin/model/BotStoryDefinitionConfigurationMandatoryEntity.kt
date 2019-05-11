@@ -24,6 +24,9 @@ data class BotStoryDefinitionConfigurationMandatoryEntity(
      * The type of answer configuration.
      */
     val currentType: AnswerConfigurationType,
+    /**
+     * The category of the answers.
+     */
     val category: String,
     /**
      * Entity defined by the entity role.

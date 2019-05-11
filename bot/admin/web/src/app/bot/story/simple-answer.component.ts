@@ -30,7 +30,7 @@ export class SimpleAnswerComponent implements OnInit {
 
   ngOnInit(): void {
     this.answer = this.container.simpleAnswer();
-    setTimeout(_ => this.newAnswerElement.nativeElement.focus(), 100);
+    setTimeout(_ => this.newAnswerElement.nativeElement.focus(), 500);
   }
 
   toggleDisplay() {
@@ -41,6 +41,12 @@ export class SimpleAnswerComponent implements OnInit {
     this.bot
       .saveI18nLabel(answer.label)
       .subscribe(_ => this.snackBar.open(`Label updated`, "Update", {duration: 3000}));
+  }
+
+  addAnswerIfNonEmpty() {
+    if (this.newAnswer && this.newAnswer.trim().length !== 0) {
+      this.addAnswer();
+    }
   }
 
   addAnswer() {

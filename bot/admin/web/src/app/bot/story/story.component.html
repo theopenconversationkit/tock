@@ -8,6 +8,9 @@
     <button class="actionButton" mat-icon-button matTooltip="Edit Mandatory Entities" (click)="editEntities()">
       <mat-icon>extension</mat-icon>
     </button>
+    <button class="actionButton" mat-icon-button matTooltip="Edit Steps" (click)="editSteps()">
+      <mat-icon>dns</mat-icon>
+    </button>
     <button *ngIf="story._id" mat-icon-button color="warn" matTooltip="Delete" (click)="deleteStory()">
       <mat-icon>delete</mat-icon>
     </button>
@@ -30,9 +33,23 @@
   <mat-card-content>
     <!-- mandatory entities -->
     <div *ngIf="story.mandatoryEntities.length !== 0">
-      Mandatory Entities :
+      Mandatory Entities
+      <button mat-icon-button matTooltip="Edit Mandatory Entities" (click)="editEntities()">
+        <mat-icon>extension</mat-icon>
+      </button>
       <ul>
         <li *ngFor="let e of story.mandatoryEntities">{{e.role}} <span class="intent" matTooltip="Intent requested">[{{e.intent.name}}]</span>: <tock-answer class="answer" [answer]="e" [editable]="false"></tock-answer></li>
+      </ul>
+    </div>
+
+    <!-- steps -->
+    <div *ngIf="story.steps.length !== 0">
+      Steps
+      <button mat-icon-button matTooltip="Edit Steps" (click)="editSteps()">
+        <mat-icon>dns</mat-icon>
+      </button>
+      <ul>
+        <li *ngFor="let s of story.steps"><span class="intent" matTooltip="Intent requested">[{{s.intent.name}}]</span>: <tock-answer class="answer" [answer]="s" [editable]="false"></tock-answer></li>
       </ul>
     </div>
 

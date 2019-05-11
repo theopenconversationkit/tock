@@ -210,13 +210,28 @@ export class MandatoryEntity extends AnswerContainer {
   }
 }
 
-export class StoryStep {
+export class StoryStep extends AnswerContainer {
+
+  public intentDefinition: Intent;
 
   constructor(public name: string,
               public intent: IntentName,
-              public answers: AnswerConfiguration[],
-              public currentType: AnswerConfigurationType) {
+              answers: AnswerConfiguration[],
+              currentType: AnswerConfigurationType,
+              category: string) {
+    super(currentType, answers, category)
+  }
 
+  containerId(): string {
+    return this.name;
+  }
+
+  save(bot: BotService): Observable<AnswerContainer> {
+    return of(this);
+  }
+
+  clone(): StoryStep {
+    return new StoryStep(this.name, this.intent.clone(), this.answers.slice(0).map(a => a.clone()), this.currentType, this.category);
   }
 
   static fromJSON(json: any): StoryStep {

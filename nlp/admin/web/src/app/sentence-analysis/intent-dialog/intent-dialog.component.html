@@ -32,7 +32,7 @@
              matTooltip="Category" (keyup)="categoryChange()" (focus)="categoryChange()"
              [matAutocomplete]="catAuto">
     </mat-form-field>
-    <mat-autocomplete #catAuto="matAutocomplete">
+    <mat-autocomplete #catAuto="matAutocomplete" autoActiveFirstOption>
       <mat-option *ngFor="let c of categories" [value]="c">{{c}}</mat-option>
       </mat-autocomplete>
     <mat-form-field>

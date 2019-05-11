@@ -20,6 +20,7 @@
             placeholder="Add new Anwser"
             [(ngModel)]="newAnswer"
             (keyup.enter)="addAnswer()"
+            (blur)="addAnswerIfNonEmpty()"
             #newAnswerElement>
     </textarea>
   <button mat-icon-button color="primary" matTooltip="Add Answer" class="answerButton" (click)="addAnswer()">

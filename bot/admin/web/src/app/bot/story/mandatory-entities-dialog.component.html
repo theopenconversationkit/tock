@@ -1,6 +1,8 @@
 <h1 mat-dialog-title>Mandatory Entities</h1>
 <div class="container">
   <div *ngFor="let e of entities">
+    <!-- answer -->
+    <tock-answer [answer]="e" class="entity-button"></tock-answer>&nbsp;
     <!-- entity role -->
     <mat-chip-list *ngIf="e.entity" class="entity-button">
       <mat-chip matTooltip="Change Entity"
@@ -26,8 +28,6 @@
              required>
     </mat-form-field>
 
-    <tock-answer [answer]="e" class="entity-button"></tock-answer>&nbsp;
-
     <button class="entity-button" mat-icon-button color="warn"
             matTooltip="Remove Mandatory Entity" (click)="removeEntity(e)">
       <mat-icon>remove</mat-icon>
@@ -35,6 +35,8 @@
   </div>
 
   <div>
+    <!-- answer -->
+    <tock-answer [answer]="newEntity" class="entity-button"></tock-answer>&nbsp;
     <!-- entity role -->
     <mat-chip-list *ngIf="newEntity.entity" class="entity-button">
       <mat-chip matTooltip="Change Entity"
@@ -60,15 +62,13 @@
              required>
     </mat-form-field>
 
-    <tock-answer [answer]="newEntity" class="entity-button"></tock-answer>&nbsp;
-
     <button mat-icon-button color="primary" matTooltip="Add Mandatory Entity" class="entity-button" (click)="addEntity()">
       <mat-icon>library_add</mat-icon>
     </button>
 
   </div>
 
-  <mat-autocomplete #intentAuto="matAutocomplete">
+  <mat-autocomplete #intentAuto="matAutocomplete" autoActiveFirstOption>
     <mat-optgroup *ngFor="let category of currentIntentCategories" [label]="category.category">
       <mat-option *ngFor="let intent of category.intents" [value]="intent.name">
         {{intent.intentLabel()}}
