@@ -37,6 +37,7 @@ export class StoryDialogComponent implements OnInit {
   dialogType: string;
   private nameInitialized = false;
   intentCategories: IntentsCategory[] = [];
+  freezeIntent:boolean = false;
 
   @ViewChild('labelElement') labelElement: ElementRef;
 
@@ -51,6 +52,7 @@ export class StoryDialogComponent implements OnInit {
     this.description = this.data.description;
     this.category = this.data.category;
     this.dialogType = this.data.story ? "Story" : "Intent";
+    this.freezeIntent = this.data.freezeIntent;
     setTimeout(() => this.labelElement.nativeElement.focus(), 500);
   }
 

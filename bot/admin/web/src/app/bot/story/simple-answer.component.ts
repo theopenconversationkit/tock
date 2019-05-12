@@ -44,7 +44,7 @@ export class SimpleAnswerComponent implements OnInit {
   }
 
   addAnswerIfNonEmpty() {
-    if (this.newAnswer && this.newAnswer.trim().length !== 0) {
+    if (this.newAnswer && this.newAnswer.trim().length !== 0 && this.answer.answers.length === 0) {
       this.addAnswer();
     }
   }

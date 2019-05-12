@@ -146,6 +146,8 @@ export class FlowComponent implements OnInit {
 
   reset() {
     this.selectedStoryId = null;
+    this.selectedNode = null;
+    this.selectedEdge = null;
     this.direction = null;
     this.update();
   }
@@ -159,9 +161,11 @@ export class FlowComponent implements OnInit {
     this.botConfiguration.configurations.subscribe(c => {
       const all = event === "all";
       const conf = c.find(c => c._id === this.botConfigurationId);
-      if (conf || all) {
+      if (conf || (all && c.length !== 0)) {
         if (!all) {
           this.lastBotId = conf.botId;
+        } else {
+          this.lastBotId = c[0].botId
         }
         this.bot.getApplicationFlow(
           new DialogFlowRequest(
@@ -177,207 +181,211 @@ export class FlowComponent implements OnInit {
         });
       } else {
         this.graphData = null;
+        this.flow = null;
+        this.reset();
       }
     });
   }
 
   private toGraphData(flow: ApplicationDialogFlow) {
     this.flow = flow;
-    const displayOnlyNext: boolean = this.direction === -1;
-    const displayOnlyPrev: boolean = this.direction === 1;
-    const graph = {
-      nodes: [],
-      edges: []
-    };
+    if (flow) {
+      const displayOnlyNext: boolean = this.direction === -1;
+      const displayOnlyPrev: boolean = this.direction === 1;
+      const graph = {
+        nodes: [],
+        edges: []
+      };
 
-    //1 create nodes
-    let nodeCount = 0;
-    const nodesMap = new Map<number, StoryNode>();
-    const stateIdNodeMap = new Map<string, StoryNode>();
+      //1 create nodes
+      let nodeCount = 0;
+      const nodesMap = new Map<number, StoryNode>();
+      const stateIdNodeMap = new Map<string, StoryNode>();
 
-    const nodeByKey = [];
-    this.flow.states.forEach(s => {
-      if (this.entity && this.step && this.intent) {
-        const node = new StoryNode(s.storyDefinitionId, [s], nodeCount++, s.entities, s.intent, s.step);
-        nodesMap.set(node.id, node);
-        stateIdNodeMap.set(s._id, node);
-      } else {
-        let key = s.storyDefinitionId
-          + (this.intent ? "+" + s.intent : "")
-          + (this.step ? "+" + s.step : "")
-          + (this.entity ? "+" + s.entities.join("%") : "");
-        let node = nodeByKey[key];
-        if (!node) {
-          node = new StoryNode(
-            s.storyDefinitionId,
-            [s],
-            nodeCount++,
-            this.entity ? s.entities : [],
-            this.intent ? s.intent : null,
-            this.step ? s.step : null
-          );
-          nodeByKey[key] = node;
+      const nodeByKey = [];
+      this.flow.states.forEach(s => {
+        if (this.entity && this.step && this.intent) {
+          const node = new StoryNode(s.storyDefinitionId, [s], nodeCount++, s.entities, s.intent, s.step);
           nodesMap.set(node.id, node);
+          stateIdNodeMap.set(s._id, node);
         } else {
-          node.states.push(s);
-          node.count += s.count;
-        }
-        stateIdNodeMap.set(s._id, node);
-      }
-    });
-
-    //2 set stories map
-    const stories = new Map<string, string>();
-    nodesMap.forEach(s => stories.set(s.storyDefinitionId, s.displayName()));
-
-    let finalNodes: StoryNode[] = [];
-    //3 filter state by count
-    nodesMap.forEach(s => {
-      if (this.minimalNodeCount <= s.count) {
-        finalNodes[s.id] = s;
-      }
-    });
-
-    //4 create transitions
-    const countTransitionByStartId = [];
-    const transitionsByKey = new Map<string, NodeTransition>();
-    this.flow.transitions.forEach(t => {
-      const prev = stateIdNodeMap.get(t.previousStateId);
-      const next = stateIdNodeMap.get(t.nextStateId);
-      const prevId = prev ? prev.id : -1;
-      //next should always exist but check anyway...
-      if (next) {
-        const nextId = next.id;
-        if (this.recursive || prev !== next) {
-          const tId = prevId + "_" + nextId + "_" + t.type;
-          const transition = transitionsByKey.get(tId);
-          if (!transition) {
-            transitionsByKey.set(tId, new NodeTransition([t], prevId, nextId, t.type));
+          let key = s.storyDefinitionId
+            + (this.intent ? "+" + s.intent : "")
+            + (this.step ? "+" + s.step : "")
+            + (this.entity ? "+" + s.entities.join("%") : "");
+          let node = nodeByKey[key];
+          if (!node) {
+            node = new StoryNode(
+              s.storyDefinitionId,
+              [s],
+              nodeCount++,
+              this.entity ? s.entities : [],
+              this.intent ? s.intent : null,
+              this.step ? s.step : null
+            );
+            nodeByKey[key] = node;
+            nodesMap.set(node.id, node);
           } else {
-            transition.transitions.push(t);
-            transition.count = transition.count + t.count;
+            node.states.push(s);
+            node.count += s.count;
           }
-          const oldCount = countTransitionByStartId[prevId];
-          countTransitionByStartId[prevId] = oldCount ? oldCount + t.count : t.count;
-        }
-      }
-    });
-
-    //5 filter transitions per percentage
-    const finalTransitions = new Map<string, NodeTransition>();
-    transitionsByKey.forEach((t, k) => {
-      const prev = nodesMap.get(t.previousId);
-      const next = nodesMap.get(t.nextId);
-      const prevId = prev ? prev.id : -1;
-      const nextId = next.id;
-      const finalPrev = prev ? finalNodes[prev.id] : null;
-      const finalNext = finalNodes[nextId];
-      const percentage = Math.round((t.count * 10000.0) / countTransitionByStartId[prevId]) / 100;
-      if ((this.recursive || prev !== next) && finalNodes[nextId] && (t.previousId === -1 || finalNodes[prevId])) {
-        if (percentage >= this.minimalTransitionPercentage
-          && (!this.selectedStoryId ||
-            (!displayOnlyPrev && finalPrev && finalPrev.storyDefinitionId === this.selectedStoryId)
-            || (!displayOnlyNext && finalNext && finalNext.storyDefinitionId === this.selectedStoryId))) {
-          finalTransitions.set(k, t);
-        }
-      }
-    });
-
-    //6 filter by selected story and create graph nodes
-    let maxCount = 1;
-    let addStartup = true;
-    const tmpFinalStates = [];
-    finalNodes.forEach(s => {
-      let include = true;
-      if (this.selectedStoryId) {
-        //try to find a transition with this state and selectedStoryId
-        include = s.storyDefinitionId === this.selectedStoryId;
-        if (!include) {
-          finalTransitions.forEach(t => {
-            if (!include) {
-              const prev = finalNodes[t.previousId];
-              const next = finalNodes[t.nextId];
-              const prevId = prev ? prev.id : -1;
-              if (((!displayOnlyNext && prev && prevId === s.id) || (!displayOnlyPrev && next && next.id === s.id))
-                && (
-                  (!displayOnlyPrev && prev && prev.storyDefinitionId === this.selectedStoryId)
-                  || (!displayOnlyNext && next && next.storyDefinitionId === this.selectedStoryId)
-                )) {
-                include = true;
-              }
-            }
-          });
-        }
-      }
-      if (include) {
-        addStartup = false;
-        tmpFinalStates[s.id] = s;
-        if (this.selectedStoryId) {
-          if (s.storyDefinitionId === this.selectedStoryId) {
-            maxCount = Math.max(maxCount, s.count);
-          }
-        } else {
-          maxCount = Math.max(maxCount, s.count);
-        }
-        //console.log(s);
-        graph.nodes.push({
-          data: {
-            id: s.id,
-            name: s.nodeName(),
-            weight: s.count,
-            colorCode: entityColor(s.storyDefinitionId),
-            shapeType: s.dynamic ? 'ellipse' : 'roundrectangle'
-          }
-        })
-      }
-    });
-    finalNodes = tmpFinalStates;
-
-    if(finalTransitions.size > 1000) {
-      this.snackBar.open("More than 1000 nodes to render - please change your options to decrease the number of nodes", "Error", {duration: 5000})
-    } else {
-      //7 create graph edges
-      finalTransitions.forEach((t, k) => {
-        const prev = nodesMap.get(t.previousId);
-        const next = nodesMap.get(t.nextId);
-        const prevId = prev ? prev.id : -1;
-        let percentage = Math.round((t.count * 10000.0) / countTransitionByStartId[prevId]) / 100;
-        let fPrev = finalNodes[prevId];
-        let fNext = finalNodes[next.id];
-        if (fNext && (t.previousId === -1 || fPrev)
-          && (!this.selectedStoryId
-            || (!displayOnlyPrev && fPrev && this.selectedStoryId === fPrev.storyDefinitionId)
-            || (!displayOnlyNext && this.selectedStoryId === fNext.storyDefinitionId))) {
-
-          if (t.previousId === -1) {
-            addStartup = true;
-          }
-          //console.log(t);
-          graph.edges.push({
-            data: {
-              source: prevId,
-              target: next.id,
-              key: k,
-              colorCode: entityColor(DialogFlowStateTransitionType[t.type] ? DialogFlowStateTransitionType[t.type] : DialogFlowStateTransitionType[DialogFlowStateTransitionType.nlp]),
-              strength: t.count,
-              label: percentage + '%',
-              classes: 'autorotate'
-            }
-          });
+          stateIdNodeMap.set(s._id, node);
         }
       });
 
-      //8 add startup if useful
-      if (addStartup) {
-        graph.nodes.push({data: {id: -1, name: 'Startup', weight: 1, colorCode: 'blue', shapeType: 'vee'}});
-      }
+      //2 set stories map
+      const stories = new Map<string, string>();
+      nodesMap.forEach(s => stories.set(s.storyDefinitionId, s.displayName()));
 
-      //9 init vars
-      this.maxNodeCount = maxCount;
-      this.stories = stories;
-      this.allNodes = finalNodes;
-      this.allTransitions = finalTransitions;
-      this.graphData = graph;
+      let finalNodes: StoryNode[] = [];
+      //3 filter state by count
+      nodesMap.forEach(s => {
+        if (this.minimalNodeCount <= s.count) {
+          finalNodes[s.id] = s;
+        }
+      });
+
+      //4 create transitions
+      const countTransitionByStartId = [];
+      const transitionsByKey = new Map<string, NodeTransition>();
+      this.flow.transitions.forEach(t => {
+        const prev = stateIdNodeMap.get(t.previousStateId);
+        const next = stateIdNodeMap.get(t.nextStateId);
+        const prevId = prev ? prev.id : -1;
+        //next should always exist but check anyway...
+        if (next) {
+          const nextId = next.id;
+          if (this.recursive || prev !== next) {
+            const tId = prevId + "_" + nextId + "_" + t.type;
+            const transition = transitionsByKey.get(tId);
+            if (!transition) {
+              transitionsByKey.set(tId, new NodeTransition([t], prevId, nextId, t.type));
+            } else {
+              transition.transitions.push(t);
+              transition.count = transition.count + t.count;
+            }
+            const oldCount = countTransitionByStartId[prevId];
+            countTransitionByStartId[prevId] = oldCount ? oldCount + t.count : t.count;
+          }
+        }
+      });
+
+      //5 filter transitions per percentage
+      const finalTransitions = new Map<string, NodeTransition>();
+      transitionsByKey.forEach((t, k) => {
+        const prev = nodesMap.get(t.previousId);
+        const next = nodesMap.get(t.nextId);
+        const prevId = prev ? prev.id : -1;
+        const nextId = next.id;
+        const finalPrev = prev ? finalNodes[prev.id] : null;
+        const finalNext = finalNodes[nextId];
+        const percentage = Math.round((t.count * 10000.0) / countTransitionByStartId[prevId]) / 100;
+        if ((this.recursive || prev !== next) && finalNodes[nextId] && (t.previousId === -1 || finalNodes[prevId])) {
+          if (percentage >= this.minimalTransitionPercentage
+            && (!this.selectedStoryId ||
+              (!displayOnlyPrev && finalPrev && finalPrev.storyDefinitionId === this.selectedStoryId)
+              || (!displayOnlyNext && finalNext && finalNext.storyDefinitionId === this.selectedStoryId))) {
+            finalTransitions.set(k, t);
+          }
+        }
+      });
+
+      //6 filter by selected story and create graph nodes
+      let maxCount = 1;
+      let addStartup = true;
+      const tmpFinalStates = [];
+      finalNodes.forEach(s => {
+        let include = true;
+        if (this.selectedStoryId) {
+          //try to find a transition with this state and selectedStoryId
+          include = s.storyDefinitionId === this.selectedStoryId;
+          if (!include) {
+            finalTransitions.forEach(t => {
+              if (!include) {
+                const prev = finalNodes[t.previousId];
+                const next = finalNodes[t.nextId];
+                const prevId = prev ? prev.id : -1;
+                if (((!displayOnlyNext && prev && prevId === s.id) || (!displayOnlyPrev && next && next.id === s.id))
+                  && (
+                    (!displayOnlyPrev && prev && prev.storyDefinitionId === this.selectedStoryId)
+                    || (!displayOnlyNext && next && next.storyDefinitionId === this.selectedStoryId)
+                  )) {
+                  include = true;
+                }
+              }
+            });
+          }
+        }
+        if (include) {
+          addStartup = false;
+          tmpFinalStates[s.id] = s;
+          if (this.selectedStoryId) {
+            if (s.storyDefinitionId === this.selectedStoryId) {
+              maxCount = Math.max(maxCount, s.count);
+            }
+          } else {
+            maxCount = Math.max(maxCount, s.count);
+          }
+          //console.log(s);
+          graph.nodes.push({
+            data: {
+              id: s.id,
+              name: s.nodeName(),
+              weight: s.count,
+              colorCode: entityColor(s.storyDefinitionId),
+              shapeType: s.dynamic ? 'ellipse' : 'roundrectangle'
+            }
+          })
+        }
+      });
+      finalNodes = tmpFinalStates;
+
+      if (finalTransitions.size > 1000) {
+        this.snackBar.open("More than 1000 nodes to render - please change your options to decrease the number of nodes", "Error", {duration: 5000})
+      } else {
+        //7 create graph edges
+        finalTransitions.forEach((t, k) => {
+          const prev = nodesMap.get(t.previousId);
+          const next = nodesMap.get(t.nextId);
+          const prevId = prev ? prev.id : -1;
+          let percentage = Math.round((t.count * 10000.0) / countTransitionByStartId[prevId]) / 100;
+          let fPrev = finalNodes[prevId];
+          let fNext = finalNodes[next.id];
+          if (fNext && (t.previousId === -1 || fPrev)
+            && (!this.selectedStoryId
+              || (!displayOnlyPrev && fPrev && this.selectedStoryId === fPrev.storyDefinitionId)
+              || (!displayOnlyNext && this.selectedStoryId === fNext.storyDefinitionId))) {
+
+            if (t.previousId === -1) {
+              addStartup = true;
+            }
+            //console.log(t);
+            graph.edges.push({
+              data: {
+                source: prevId,
+                target: next.id,
+                key: k,
+                colorCode: entityColor(DialogFlowStateTransitionType[t.type] ? DialogFlowStateTransitionType[t.type] : DialogFlowStateTransitionType[DialogFlowStateTransitionType.nlp]),
+                strength: t.count,
+                label: percentage + '%',
+                classes: 'autorotate'
+              }
+            });
+          }
+        });
+
+        //8 add startup if useful
+        if (addStartup) {
+          graph.nodes.push({data: {id: -1, name: 'Startup', weight: 1, colorCode: 'blue', shapeType: 'vee'}});
+        }
+
+        //9 init vars
+        this.maxNodeCount = maxCount;
+        this.stories = stories;
+        this.allNodes = finalNodes;
+        this.allTransitions = finalTransitions;
+        this.graphData = graph;
+      }
     }
   }
 

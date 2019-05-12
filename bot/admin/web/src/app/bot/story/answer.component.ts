@@ -27,6 +27,9 @@ export class AnswerComponent implements OnInit {
   @Input()
   editable:boolean = true;
 
+  @Input()
+  create:boolean = false;
+
   constructor(private state: StateService,
               private bot: BotService,
               private dialog: MatDialog,
@@ -46,7 +49,8 @@ export class AnswerComponent implements OnInit {
       {
         data:
           {
-            answer: this.answer
+            answer: this.answer,
+            create: this.create
           }
       }
     );

@@ -1,5 +1,5 @@
-import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChanges} from "@angular/core";
-import {StoryDefinitionConfiguration} from "../model/story";
+import {Component, EventEmitter, Input, OnChanges, OnInit, Output, SimpleChange, SimpleChanges} from "@angular/core";
+import {AnswerConfigurationType, CreateStoryRequest, IntentName, StoryDefinitionConfiguration} from "../model/story";
 import {BotService} from "../bot-service";
 import {MatDialog, MatSnackBar} from "@angular/material";
 import {StateService} from "../../core-nlp/state.service";
@@ -17,9 +17,6 @@ import {StepDialogComponent} from "./step-dialog.component";
 export class StoryComponent implements OnInit, OnChanges {
 
   @Input()
-  storyDefinitionId: string = null;
-
-  @Input()
   story: StoryDefinitionConfiguration = null;
 
   @Input()
@@ -27,6 +24,9 @@ export class StoryComponent implements OnInit, OnChanges {
 
   @Input()
   fullDisplay: boolean = false;
+
+  @Input()
+  botId: string = null;
 
   @Input()
   displayCancel: boolean = false;
@@ -45,13 +45,28 @@ export class StoryComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges) {
-    if (!this.story) {
-      const id = this.storyDefinitionId ? this.storyDefinitionId : this.storyNode.storyDefinitionId;
-      this.bot.findStory(id)
-        .subscribe(s => {
-          this.story = s.storyId ? s : null;
-        });
+    if (changes.storyNode) {
+      const c = (changes.storyNode as SimpleChange).currentValue;
+      if (!c) {
+        this.story = null;
+      } else if (c.dynamic) {
+        this.bot.findStory(this.storyNode.storyDefinitionId)
+          .subscribe(s => {
+            //explicit null value if no story found
+            this.story = s.storyId ? s : null;
+          });
+      } else {
+        this.initStoryByBotIdAndIntent();
+      }
     }
+  }
+
+  private initStoryByBotIdAndIntent() {
+    this.bot.findStoryByBotIdAndIntent(this.botId, this.storyNode.storyDefinitionId)
+      .subscribe(s => {
+        //explicit null value if no story found
+        this.story = s.storyId ? s : null;
+      });
   }
 
   deleteStory() {
@@ -67,6 +82,7 @@ export class StoryComponent implements OnInit, OnChanges {
         this.bot.deleteStory(this.story._id)
           .subscribe(_ => {
             this.delete.emit(this.story._id);
+            this.story = null;
             this.snackBar.open(`Story deleted`, "Delete", {duration: 2000})
           });
       }
@@ -85,7 +101,7 @@ export class StoryComponent implements OnInit, OnChanges {
             intent: this.story.intent.name,
             description: this.story.description,
             category: this.story.category,
-            story: true
+            freezeIntent: this.storyNode
           }
       }
     );
@@ -149,6 +165,34 @@ export class StoryComponent implements OnInit, OnChanges {
   }
 
   createStory() {
+    const intent = this.state.findIntentByName(this.storyNode.storyDefinitionId);
+    this.story = new StoryDefinitionConfiguration(
+      intent.name,
+      this.botId,
+      new IntentName(intent.name),
+      AnswerConfigurationType.simple,
+      this.state.user.organization,
+      [],
+      "build",
+      intent.name
+    );
+  }
 
+  saveNewStory() {
+    let invalidMessage = this.story.currentAnswer().invalidMessage();
+    if (invalidMessage) {
+      this.snackBar.open(`Error: ${invalidMessage}`, "ERROR", {duration: 5000});
+    } else {
+      this.bot.newStory(
+        new CreateStoryRequest(
+          this.story,
+          this.state.currentLocale,
+          []
+        )
+      ).subscribe(intent => {
+        this.snackBar.open(`New story ${this.story.name} created for language ${this.state.currentLocale}`, "New Story", {duration: 3000});
+        this.initStoryByBotIdAndIntent();
+      });
+    }
   }
 }

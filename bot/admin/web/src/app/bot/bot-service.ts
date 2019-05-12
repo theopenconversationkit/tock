@@ -46,6 +46,10 @@ export class BotService {
     return this.rest.get(`/bot/story/${storyDefinitionId}`, StoryDefinitionConfiguration.fromJSON)
   }
 
+  findStoryByBotIdAndIntent(botId: string, intent:string): Observable<StoryDefinitionConfiguration> {
+    return this.rest.get(`/bot/story/${botId}/${intent}`, StoryDefinitionConfiguration.fromJSON)
+  }
+
   deleteStory(storyDefinitionId: string): Observable<boolean> {
     return this.rest.delete(`/bot/story/${storyDefinitionId}`);
   }

@@ -36,7 +36,7 @@ export class AnswerDialogComponent implements OnInit {
     let invalidMessage = this.answer.currentAnswer().invalidMessage();
     if (invalidMessage) {
       this.snackBar.open(`Error: ${invalidMessage}`, "ERROR", {duration: 5000});
-    } else {
+    } else if (!this.create) {
       this.answer.save(this.bot).subscribe(r => {
           this.dialogRef.close({
             answer: this.answer
@@ -46,6 +46,10 @@ export class AnswerDialogComponent implements OnInit {
         e => {
           //do nothing
         });
+    } else {
+      this.dialogRef.close({
+        answer: this.answer
+      });
     }
 
   }

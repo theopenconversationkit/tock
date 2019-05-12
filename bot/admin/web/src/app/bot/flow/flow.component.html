@@ -64,11 +64,11 @@
   <tock-cytoscape [elements]="graphData" [layout]="layout" (selectedNode)="nodeChange($event)" (selectedEdge)="edgeChange($event)"></tock-cytoscape>
 </div>
 
-<div *ngIf="graphData && selectedNode" style="height: 90%; width: 20%; float: left; overflow: auto; overflow-x: hidden">
-  <tock-story [storyNode]="selectedNode"></tock-story>
+<div *ngIf="graphData && selectedNode" class="selected-node">
+  <tock-story [storyNode]="selectedNode" [botId]="lastBotId"></tock-story>
 </div>
 
-<div *ngIf="graphData && selectedEdge" style="height: 90%; width: 20%; float: left; overflow: auto; overflow-x: hidden">
+<div *ngIf="graphData && selectedEdge" class="selected-edge">
   <ul>
     <li>Count: <b>{{selectedEdge.count}}</b></li>
   </ul>

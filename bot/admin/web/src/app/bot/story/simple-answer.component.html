@@ -23,7 +23,7 @@
             (blur)="addAnswerIfNonEmpty()"
             #newAnswerElement>
     </textarea>
-  <button mat-icon-button color="primary" matTooltip="Add Answer" class="answerButton" (click)="addAnswer()">
+  <button *ngIf="answer.answers.length !== 0" mat-icon-button color="primary" matTooltip="Add Answer" class="answerButton" (click)="addAnswer()">
     <mat-icon>library_add</mat-icon>
   </button>
 </div>

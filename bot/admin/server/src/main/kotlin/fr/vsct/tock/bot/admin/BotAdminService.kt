@@ -228,6 +228,11 @@ object BotAdminService {
         return null
     }
 
+    fun findStoryByBotIdAndIntent(namespace: String, botId: String, intent: String): BotStoryDefinitionConfiguration? {
+        return storyDefinitionDAO.getStoryDefinitionByNamespaceAndBotIdAndIntent(namespace, botId, intent)
+            ?.let { BotStoryDefinitionConfiguration(it) }
+    }
+
     fun deleteStory(namespace: String, storyDefinitionId: String): Boolean {
         val story = storyDefinitionDAO.getStoryDefinitionById(storyDefinitionId.toId())
         if (story != null) {

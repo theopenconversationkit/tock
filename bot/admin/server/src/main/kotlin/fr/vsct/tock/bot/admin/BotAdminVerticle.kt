@@ -111,7 +111,7 @@ open class BotAdminVerticle : AdminVerticle() {
                         unauthorized()
                     }
                     if (getBotConfigurationByApplicationIdAndBotId(bot.namespace, bot.applicationId, bot.botId)
-                                    ?.run { _id != conf._id } == true
+                            ?.run { _id != conf._id } == true
                     ) {
                         badRequest("Connector identifier already exists")
                     }
@@ -125,27 +125,27 @@ open class BotAdminVerticle : AdminVerticle() {
                 val connectorProvider = BotRepository.findConnectorProvider(conf.connectorType)
                 if (connectorProvider != null) {
                     connectorProvider.check(conf.toConnectorConfiguration())
-                            .apply {
-                                if (isNotEmpty()) {
-                                    badRequest(joinToString())
-                                }
+                        .apply {
+                            if (isNotEmpty()) {
+                                badRequest(joinToString())
                             }
+                        }
                     BotAdminService.saveApplicationConfiguration(conf)
                     //add rest connector
                     if (bot._id == null && bot.connectorType != rest) {
                         addRestConnector(conf).apply {
                             BotAdminService.saveApplicationConfiguration(
-                                    BotApplicationConfiguration(
-                                            connectorId,
-                                            conf.botId,
-                                            conf.namespace,
-                                            conf.nlpModel,
-                                            type,
-                                            ownerConnectorType,
-                                            getName(),
-                                            getBaseUrl(),
-                                            path = path
-                                    )
+                                BotApplicationConfiguration(
+                                    connectorId,
+                                    conf.botId,
+                                    conf.namespace,
+                                    conf.nlpModel,
+                                    type,
+                                    ownerConnectorType,
+                                    getName(),
+                                    getBaseUrl(),
+                                    path = path
+                                )
                             )
                         }
                     }
@@ -159,14 +159,14 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonDelete("/configuration/bot/:confId", admin) { context ->
             BotAdminService.getBotConfigurationById(context.pathId("confId"))
-                    ?.let {
-                        if (context.organization == it.namespace) {
-                            BotAdminService.deleteApplicationConfiguration(it)
-                            true
-                        } else {
-                            null
-                        }
-                    } ?: unauthorized()
+                ?.let {
+                    if (context.organization == it.namespace) {
+                        BotAdminService.deleteApplicationConfiguration(it)
+                        true
+                    } else {
+                        null
+                    }
+                } ?: unauthorized()
         }
 
         blockingJsonPost("/test/talk", botUser) { context, query: BotDialogRequest ->
@@ -207,8 +207,8 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/test/plan/:planId/dialog/delete/:dialogId", botUser) { context, _: ApplicationScopedQuery ->
             TestPlanService.removeDialogFromTestPlan(
-                    context.loadTestPlan(),
-                    context.pathId("dialogId")
+                context.loadTestPlan(),
+                context.pathId("dialogId")
             )
         }
 
@@ -219,13 +219,13 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingJsonPost("/test/plan/:planId/run", botUser) { context, _: ApplicationScopedQuery ->
             context.loadTestPlan().run {
                 TestPlanService.runTestPlan(
-                        BotAdminService.getRestClient(
-                                BotAdminService.getBotConfiguration(
-                                        botApplicationConfigurationId,
-                                        namespace
-                                )
-                        ),
-                        this
+                    BotAdminService.getRestClient(
+                        BotAdminService.getBotConfiguration(
+                            botApplicationConfigurationId,
+                            namespace
+                        )
+                    ),
+                    this
                 )
             }
         }
@@ -290,6 +290,10 @@ open class BotAdminVerticle : AdminVerticle() {
             BotAdminService.findStory(context.organization, context.path("storyId"))
         }
 
+        blockingJsonGet("/bot/story/:botId/:intent", botUser) { context ->
+            BotAdminService.findStoryByBotIdAndIntent(context.organization, context.path("botId"), context.path("intent"))
+        }
+
         blockingJsonDelete("/bot/story/:storyId", botUser) { context ->
             BotAdminService.deleteStory(context.organization, context.path("storyId"))
         }
@@ -305,13 +309,13 @@ open class BotAdminVerticle : AdminVerticle() {
         blockingJsonGet("/i18n", botUser) { context ->
             val stats = i18n.getLabelStats(context.organization).groupBy { it.labelId }
             BotI18nLabels(i18n
-                    .getLabels(context.organization)
-                    .map {
-                        BotI18nLabel(
-                                it,
-                                stats[it._id] ?: emptyList()
-                        )
-                    })
+                .getLabels(context.organization)
+                .map {
+                    BotI18nLabel(
+                        it,
+                        stats[it._id] ?: emptyList()
+                    )
+                })
         }
 
         blockingJsonPost("/i18n/complete", botUser) { context, labels: List<I18nLabel> ->
@@ -364,7 +368,7 @@ open class BotAdminVerticle : AdminVerticle() {
             context.response().putHeader("Content-Type", "image/svg+xml")
             context.response().putHeader("Cache-Control", "max-age=84600, public")
             ConnectorTypeConfiguration.connectorConfigurations.first { it.connectorType.id == connectorType }.svgIcon
-                    ?: ""
+                ?: ""
         }
 
         blockingJsonGet("/xray/available", botUser) {
@@ -373,9 +377,9 @@ open class BotAdminVerticle : AdminVerticle() {
 
         blockingJsonPost("/xray/execute", botUser) { context, configuration: XRayPlanExecutionConfiguration ->
             XrayService(
-                    listOfNotNull(configuration.configurationId),
-                    listOf(configuration.testPlanKey),
-                    configuration.testedBotId
+                listOfNotNull(configuration.configurationId),
+                listOf(configuration.testPlanKey),
+                configuration.testedBotId
             ).executePlans(context.organization)
         }
 

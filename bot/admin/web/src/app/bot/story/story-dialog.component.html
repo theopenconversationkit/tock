@@ -32,7 +32,7 @@
     <!-- intent -->
     <mat-form-field>
       <input matInput name="intent" placeholder="Intent" [(ngModel)]="intent"
-             matTooltip="Intent"
+             matTooltip="Intent" [disabled]="freezeIntent"
              (keyup)="intentCategoryChange()" (focus)="intentCategoryChange()"
              [matAutocomplete]="intentAuto"
              (change)="intent = $event.target.value"

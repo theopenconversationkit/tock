@@ -20,8 +20,12 @@ export class StoryNode {
   displayCount(): string {
     if (this.count < 1000) {
       return this.count.toString();
+    } else if (this.count < 100000) {
+      return Math.floor(this.count / 1000) + "k";
+    } if (this.count < 1000000) {
+      return "."+ Math.floor(this.count / 100000) + "m";
     } else {
-      return Math.floor(this.count / 1000) + "k"
+      return Math.floor(this.count / 1000000) + "m"
     }
   }
 

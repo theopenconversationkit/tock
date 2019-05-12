@@ -29,3 +29,21 @@ tock-cytoscape {
 .checkbox {
   margin-left: 10px;
 }
+
+.selected-node {
+  height: 90%;
+  width: 20%;
+  float: left;
+  overflow: auto;
+  overflow-x: hidden;
+  margin-top:10px;
+}
+
+.selected-edge {
+  height: 90%;
+  width: 20%;
+  float: left;
+  overflow: auto;
+  overflow-x: hidden;
+  margin-top:10px;
+}
