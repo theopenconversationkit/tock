@@ -22,7 +22,7 @@ import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.connector.ga.model.response.GACustomPushMessage
 import fr.vsct.tock.bot.connector.ga.model.response.GAExpectedInput
 import fr.vsct.tock.bot.connector.ga.model.response.GAFinalResponse
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 
 /**
  *
@@ -41,7 +41,7 @@ data class GAResponseConnectorMessage(
 
     override val connectorType: ConnectorType @JsonIgnore get() = gaConnectorType
 
-    override fun toSentenceElement(): SentenceElement?
-            = expectedInput?.toSentenceElement() ?: finalResponse?.toSentenceElement()
+    override fun toGenericMessage(): GenericMessage?
+            = expectedInput?.toGenericMessage() ?: finalResponse?.toGenericMessage()
 
 }

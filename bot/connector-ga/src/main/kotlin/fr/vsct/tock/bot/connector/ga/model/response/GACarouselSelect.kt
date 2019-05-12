@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.bot.connector.ga.model.response
 
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 
 /**
  *
@@ -25,8 +25,8 @@ data class GACarouselSelect(
         val items: List<GACarouselItem>
 ) {
 
-    fun toSentenceElement(): SentenceElement?
-            = SentenceElement(subElements = items.map { it.toSentenceSubElement() })
+    fun toGenericMessage(): GenericMessage?
+            = GenericMessage(subElements = items.map { it.toGenericElement() })
 
 }
 

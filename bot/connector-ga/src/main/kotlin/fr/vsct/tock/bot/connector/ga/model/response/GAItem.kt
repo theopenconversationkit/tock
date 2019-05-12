@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.bot.connector.ga.model.response
 
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 
 data class GAItem(
         val simpleResponse: GASimpleResponse? = null,
@@ -24,8 +24,8 @@ data class GAItem(
         val structuredResponse: GAStructuredResponse? = null
 ) {
 
-    fun toSentenceElement(): SentenceElement? {
-        return simpleResponse?.toSentenceElement() ?: basicCard?.toSentenceElement()
+    fun toGenericMessage(): GenericMessage? {
+        return simpleResponse?.toGenericMessage() ?: basicCard?.toGenericMessage()
     }
 
 }

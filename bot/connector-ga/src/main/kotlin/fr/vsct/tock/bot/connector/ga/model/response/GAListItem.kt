@@ -18,7 +18,7 @@ package fr.vsct.tock.bot.connector.ga.model.response
 
 import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType
 import fr.vsct.tock.bot.engine.message.Attachment
-import fr.vsct.tock.bot.engine.message.SentenceSubElement
+import fr.vsct.tock.bot.engine.message.GenericElement
 import fr.vsct.tock.shared.mapNotNullValues
 
 data class GAListItem(
@@ -28,8 +28,8 @@ data class GAListItem(
         val image: GAImage? = null
 ) {
 
-    fun toSentenceSubElement(): SentenceSubElement {
-        return SentenceSubElement(
+    fun toGenericElement(): GenericElement {
+        return GenericElement(
                 choices = listOf(optionInfo.toChoice()),
                 texts = mapNotNullValues(
                         GAListItem::title.name to title,

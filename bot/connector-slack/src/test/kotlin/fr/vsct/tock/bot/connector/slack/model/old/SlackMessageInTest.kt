@@ -38,6 +38,6 @@ class SlackMessageInTest {
             "text",
             "trigger_word"
         )
-        assertEquals("text", inMessage.toSentenceElement().texts["text"])
+        assertEquals("text", inMessage.toGenericMessage().texts["text"])
     }
 }

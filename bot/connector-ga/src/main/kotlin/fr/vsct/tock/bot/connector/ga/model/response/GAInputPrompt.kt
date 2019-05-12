@@ -16,12 +16,12 @@
 
 package fr.vsct.tock.bot.connector.ga.model.response
 
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 
 data class GAInputPrompt(
         val richInitialPrompt: GARichResponse,
         val noInputPrompts: List<GASimpleResponse> = emptyList()
 ) {
-    fun toSentenceElement(): SentenceElement? = richInitialPrompt.toSentenceElement()
+    fun toGenericMessage(): GenericMessage? = richInitialPrompt.toGenericMessage()
 }
 

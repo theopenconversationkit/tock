@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.connector.messenger.model.send
 
 import com.fasterxml.jackson.annotation.JsonProperty
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 import fr.vsct.tock.shared.mapNotNullValues
 import fr.vsct.tock.shared.security.StringObfuscatorMode
 
@@ -31,10 +31,10 @@ data class ListPayload(
         val buttons: List<Button>?
 ) : ModelPayload(PayloadType.list) {
 
-    override fun toSentenceElement(): SentenceElement? {
-        return SentenceElement(
+    override fun toGenericMessage(): GenericMessage? {
+        return GenericMessage(
                 choices = buttons?.map { it.toChoice() } ?: emptyList(),
-                subElements = elements.map { it.toSentenceSubElement() },
+                subElements = elements.map { it.toGenericElement() },
                 metadata = mapNotNullValues(ListPayload::topElementStyle.name to topElementStyle?.name)
         )
     }

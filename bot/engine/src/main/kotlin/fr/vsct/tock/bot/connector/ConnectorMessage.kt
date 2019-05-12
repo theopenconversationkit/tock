@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.bot.connector
 
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 import fr.vsct.tock.shared.security.StringObfuscatorMode
 
 /**
@@ -30,10 +30,17 @@ interface ConnectorMessage {
     val connectorType: ConnectorType
 
     /**
-     * Transforms this message into a generic [SentenceElement].
+     * Transforms this message into a generic [GenericMessage].
      * @return the generic transformed element, null if unsupported
      */
-    fun toSentenceElement(): SentenceElement? = null
+    fun toGenericMessage(): GenericMessage? = toSentenceElement()
+
+    /**
+     * Transforms this message into a generic [GenericMessage].
+     * @return the generic transformed element, null if unsupported
+     */
+    @Deprecated("use toGenericMessage")
+    fun toSentenceElement(): GenericMessage? = null
 
     /**
      * Obfuscate the message - by default this method does nothing.

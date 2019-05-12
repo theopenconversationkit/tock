@@ -18,7 +18,7 @@ package fr.vsct.tock.bot.connector.ga.model.response
 
 import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.message.Attachment
-import fr.vsct.tock.bot.engine.message.SentenceSubElement
+import fr.vsct.tock.bot.engine.message.GenericElement
 import fr.vsct.tock.shared.mapNotNullValues
 
 data class GACarouselItem(
@@ -27,8 +27,8 @@ data class GACarouselItem(
         val description: String? = null,
         val image: GAImage? = null
 ) {
-    fun toSentenceSubElement(): SentenceSubElement {
-        return SentenceSubElement(
+    fun toGenericElement(): GenericElement {
+        return GenericElement(
                 choices = listOf(optionInfo.toChoice()),
                 texts = mapNotNullValues(
                         GACarouselItem::title.name to title,

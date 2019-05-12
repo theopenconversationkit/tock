@@ -21,7 +21,7 @@ import fr.vsct.tock.bot.connector.messenger.json.webhook.WebhookDeserializer
 import fr.vsct.tock.bot.connector.messenger.model.MessengerConnectorMessage
 import fr.vsct.tock.bot.connector.messenger.model.Recipient
 import fr.vsct.tock.bot.connector.messenger.model.Sender
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 
@@ -36,7 +36,7 @@ abstract class Webhook : MessengerConnectorMessage() {
     abstract val timestamp: Long
     open val priorMessage: PriorMessage? get() = null
 
-    override fun toSentenceElement(): SentenceElement? {
+    override fun toGenericMessage(): GenericMessage? {
         return null
     }
 

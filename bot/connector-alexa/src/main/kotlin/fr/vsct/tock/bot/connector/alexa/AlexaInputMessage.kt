@@ -19,7 +19,7 @@ package fr.vsct.tock.bot.connector.alexa
 import com.amazon.speech.speechlet.IntentRequest
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 import fr.vsct.tock.shared.error
 import fr.vsct.tock.shared.jackson.mapper
 import mu.KotlinLogging
@@ -49,8 +49,8 @@ data class AlexaInputMessage(
 
     override val connectorType: ConnectorType = alexaConnectorType
 
-    override fun toSentenceElement(): SentenceElement {
-        return SentenceElement(
+    override fun toGenericMessage(): GenericMessage {
+        return GenericMessage(
             texts = mapOf("json" to intentRequest)
         )
     }

@@ -17,14 +17,14 @@
 package fr.vsct.tock.bot.connector.ga.model.response
 
 import fr.vsct.tock.bot.connector.ga.model.GAIntent
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 
 data class GAExpectedIntent(
         val intent: GAIntent,
         val inputValueData: GAInputValueData? = null
 ) {
 
-    fun toSentenceElement(): SentenceElement?
-            = inputValueData?.toSentenceElement()
+    fun toGenericMessage(): GenericMessage?
+            = inputValueData?.toGenericMessage()
 
 }

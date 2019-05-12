@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.connector.ga.model.response
 
 import fr.vsct.tock.bot.connector.ga.model.GAIntent
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 
 data class GAExpectedInput(
         val inputPrompt: GAInputPrompt,
@@ -27,10 +27,10 @@ data class GAExpectedInput(
         val speechBiasingHints: List<String> = emptyList()
 ) {
 
-    fun toSentenceElement(): SentenceElement?
-            = inputPrompt.toSentenceElement()
+    fun toGenericMessage(): GenericMessage?
+            = inputPrompt.toGenericMessage()
             .let {
-                val intentElement = possibleIntents.map { it.toSentenceElement() }.filterNotNull().firstOrNull()
+                val intentElement = possibleIntents.map { it.toGenericMessage() }.filterNotNull().firstOrNull()
                 if (it == null) {
                     intentElement
                 } else if (intentElement == null) {

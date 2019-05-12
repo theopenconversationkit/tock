@@ -18,7 +18,7 @@ package fr.vsct.tock.bot.connector.messenger.model.send
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import fr.vsct.tock.bot.engine.message.Attachment
-import fr.vsct.tock.bot.engine.message.SentenceSubElement
+import fr.vsct.tock.bot.engine.message.GenericElement
 
 /**
  * See [https://developers.facebook.com/docs/messenger-platform/reference/template/media].
@@ -29,8 +29,8 @@ data class MediaElement(
     val buttons: List<Button>? = null
 ) {
 
-    fun toSentenceSubElement(): SentenceSubElement {
-        return SentenceSubElement(
+    fun toGenericElement(): GenericElement {
+        return GenericElement(
             choices = buttons?.map { it.toChoice() } ?: emptyList(),
             attachments = listOf(Attachment(attachmentId, mediaType.toAttachmentType()))
         )

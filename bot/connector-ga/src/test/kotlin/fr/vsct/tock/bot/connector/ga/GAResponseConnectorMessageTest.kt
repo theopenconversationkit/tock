@@ -42,7 +42,7 @@ class GAResponseConnectorMessageTest {
                 )
             )
         )
-        val e = r.toSentenceElement()
+        val e = r.toGenericMessage()
         assertEquals(mapOf("textToSpeech" to "ok computer"), e!!.texts)
     }
 }

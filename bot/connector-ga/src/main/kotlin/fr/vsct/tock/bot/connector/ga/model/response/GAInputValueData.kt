@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty
 import com.fasterxml.jackson.annotation.JsonSubTypes
 import com.fasterxml.jackson.annotation.JsonTypeInfo
 import fr.vsct.tock.bot.connector.ga.model.GAInputValueDataType
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 
 /**
  *
@@ -37,6 +37,6 @@ import fr.vsct.tock.bot.engine.message.SentenceElement
 )
 abstract class GAInputValueData(@get:JsonProperty("@type") val type: GAInputValueDataType) {
 
-    open fun toSentenceElement(): SentenceElement? = null
+    open fun toGenericMessage(): GenericMessage? = null
 
 }

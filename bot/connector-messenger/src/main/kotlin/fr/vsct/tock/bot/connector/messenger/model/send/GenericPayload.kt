@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 import fr.vsct.tock.shared.security.StringObfuscatorMode
 
 /**
@@ -24,9 +24,9 @@ import fr.vsct.tock.shared.security.StringObfuscatorMode
  */
 data class GenericPayload(val elements: List<Element>) : ModelPayload(PayloadType.generic) {
 
-    override fun toSentenceElement(): SentenceElement? {
-        return SentenceElement(
-                subElements = elements.map { it.toSentenceSubElement() }
+    override fun toGenericMessage(): GenericMessage? {
+        return GenericMessage(
+                subElements = elements.map { it.toGenericElement() }
         )
     }
 

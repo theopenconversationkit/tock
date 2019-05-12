@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.connector.ga.model.response
 
 import fr.vsct.tock.bot.connector.ga.model.GAIntent.option
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 
 /**
  *
@@ -28,10 +28,10 @@ data class GAOptionValueSpec(
         val carouselSelect: GACarouselSelect? = null
 ) : GAInputValueData(option.type!!) {
 
-    override fun toSentenceElement(): SentenceElement? {
-        return simpleSelect?.toSentenceElement()
-                ?: listSelect?.toSentenceElement()
-                ?: carouselSelect?.toSentenceElement()
+    override fun toGenericMessage(): GenericMessage? {
+        return simpleSelect?.toGenericMessage()
+                ?: listSelect?.toGenericMessage()
+                ?: carouselSelect?.toGenericMessage()
     }
 }
 

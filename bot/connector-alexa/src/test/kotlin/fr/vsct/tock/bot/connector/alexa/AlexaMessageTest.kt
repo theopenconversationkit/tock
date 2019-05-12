@@ -20,7 +20,7 @@ import com.amazon.speech.ui.Image
 import com.amazon.speech.ui.StandardCard
 import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.message.Attachment
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
 
@@ -43,9 +43,9 @@ class AlexaMessageTest {
             },
             "hey?"
         )
-        val e = m.toSentenceElement()
+        val e = m.toGenericMessage()
         assertEquals(
-            SentenceElement(
+            GenericMessage(
                 attachments = listOf(
                     Attachment("url1", SendAttachment.AttachmentType.image)
                 ),

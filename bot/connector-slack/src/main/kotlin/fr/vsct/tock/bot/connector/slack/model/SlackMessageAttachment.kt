@@ -19,7 +19,7 @@ package fr.vsct.tock.bot.connector.slack.model
 import com.fasterxml.jackson.annotation.JsonProperty
 import fr.vsct.tock.bot.engine.action.SendAttachment
 import fr.vsct.tock.bot.engine.message.Attachment
-import fr.vsct.tock.bot.engine.message.SentenceSubElement
+import fr.vsct.tock.bot.engine.message.GenericElement
 
 
 data class SlackMessageAttachment(
@@ -33,8 +33,8 @@ data class SlackMessageAttachment(
     val callbackId:String = "default"
 ) {
 
-    fun toSentenceSubElement(): SentenceSubElement =
-        SentenceSubElement(
+    fun toGenericElement(): GenericElement =
+        GenericElement(
             choices = actions.map { it.toChoice() },
             attachments = fields.map { Attachment(it.value, SendAttachment.AttachmentType.file) },
             texts = mapOf(::text.name to (text ?: ""))

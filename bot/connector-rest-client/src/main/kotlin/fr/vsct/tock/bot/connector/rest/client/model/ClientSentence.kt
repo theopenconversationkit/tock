@@ -20,6 +20,6 @@ package fr.vsct.tock.bot.connector.rest.client.model
  *
  */
 data class ClientSentence(val text: String?,
-                          val messages: MutableList<ClientSentenceElement> = mutableListOf())
+                          val messages: MutableList<ClientGenericMessage> = mutableListOf())
     : ClientMessage(ClientEventType.sentence) {
 }

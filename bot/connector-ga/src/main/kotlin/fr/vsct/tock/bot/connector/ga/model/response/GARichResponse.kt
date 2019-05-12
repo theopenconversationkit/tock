@@ -16,8 +16,8 @@
 
 package fr.vsct.tock.bot.connector.ga.model.response
 
-import fr.vsct.tock.bot.engine.message.SentenceElement
-import fr.vsct.tock.bot.engine.message.SentenceSubElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
+import fr.vsct.tock.bot.engine.message.GenericElement
 
 data class GARichResponse(
         val items: List<GAItem>,
@@ -25,14 +25,14 @@ data class GARichResponse(
         val linkOutSuggestion: GALinkOutSuggestion? = null
 ) {
 
-    fun toSentenceElement(): SentenceElement? {
+    fun toGenericMessage(): GenericMessage? {
         val e = items
                 .firstOrNull()
-                ?.toSentenceElement()
-                ?: SentenceElement(
+                ?.toGenericMessage()
+                ?: GenericMessage(
                 subElements =
                 items.mapNotNull {
-                    it.toSentenceElement()?.let { SentenceSubElement(it) }
+                    it.toGenericMessage()?.let { GenericElement(it) }
                 })
 
         return e.copy(

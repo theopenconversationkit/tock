@@ -19,11 +19,13 @@ package fr.vsct.tock.bot.connector.rest.client.model
 /**
  *
  */
-data class ClientSentenceSubElement(
+data class ClientGenericMessage(
+        val connectorType: ClientConnectorType,
         val attachments: List<ClientAttachment> = emptyList(),
         val choices: List<ClientChoice> = emptyList(),
+        //a qualified text map (ie "title" to "Ok computer", "subtitle" to "please listen")
         val texts: Map<String, String> = emptyMap(),
         val locations: List<ClientLocation> = emptyList(),
-        val metadata: Map<String, String> = emptyMap()
-) {
+        val metadata: Map<String, String> = emptyMap(),
+        val subElements: List<ClientGenericElement> = emptyList()) {
 }

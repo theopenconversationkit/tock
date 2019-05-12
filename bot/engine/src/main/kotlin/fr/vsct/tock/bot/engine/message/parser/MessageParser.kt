@@ -37,8 +37,8 @@ import fr.vsct.tock.bot.engine.message.Choice
 import fr.vsct.tock.bot.engine.message.Location
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.message.Sentence
-import fr.vsct.tock.bot.engine.message.SentenceElement
-import fr.vsct.tock.bot.engine.message.SentenceSubElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
+import fr.vsct.tock.bot.engine.message.GenericElement
 import fr.vsct.tock.bot.engine.user.UserLocation
 
 /**
@@ -75,11 +75,11 @@ object MessageParser {
         return mapper.writeValueAsString(map)
     }
 
-    internal fun elementsToString(elements: List<SentenceElement>): String {
+    internal fun elementsToString(elements: List<GenericMessage>): String {
         return elements.map { elementToString(it) }.joinToString()
     }
 
-    private fun elementToString(element: SentenceElement): String {
+    private fun elementToString(element: GenericMessage): String {
         return with(element) {
             val content = listOfNotNull(
                     if (connectorType == ConnectorType.none) null else "connectorType:$connectorType",
@@ -94,7 +94,7 @@ object MessageParser {
         }
     }
 
-    private fun subElementToString(element: SentenceSubElement): String {
+    private fun subElementToString(element: GenericElement): String {
         return with(element) {
             val content = listOfNotNull(
                     if (attachments.isEmpty()) null else "attachments:[${attachments.joinToString(fieldSeparator) { it.toPrettyString() }}]",
@@ -138,7 +138,7 @@ object MessageParser {
                 }
     }
 
-    private fun parseSentenceElement(content: String): SentenceElement {
+    private fun parseSentenceElement(content: String): GenericMessage {
         return content
                 .substring(content.indexOf("{") + 1, content.lastIndexOf("}"))
                 .let {
@@ -147,7 +147,7 @@ object MessageParser {
                     var texts: Map<String, String> = emptyMap()
                     var locations: List<Location> = emptyList()
                     var metadata: Map<String, String> = emptyMap()
-                    var subElements: List<SentenceSubElement> = emptyList()
+                    var elements: List<GenericElement> = emptyList()
 
                     it.split(elementsSeparator).forEach { s ->
                         if (s.startsWith("attachments")) {
@@ -163,7 +163,7 @@ object MessageParser {
                                     .split(fieldSeparator)
                                     .map { parseLocation(it.trim()) }
                         } else if (s.startsWith("subElements")) {
-                            subElements = s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
+                            elements = s.substring(s.indexOf("[") + 1, s.lastIndexOf("]"))
                                     .split(subElementsArraySeparator)
                                     .map { parseSentenceSubElement(it.trim()) }
                         } else if (s.startsWith("texts")) {
@@ -175,18 +175,18 @@ object MessageParser {
                         }
                     }
 
-                    SentenceElement(
+                    GenericMessage(
                             ConnectorType.none,
                             attachments,
                             choices,
                             texts,
                             locations,
                             metadata,
-                            subElements)
+                            elements)
                 }
     }
 
-    private fun parseSentenceSubElement(content: String): SentenceSubElement {
+    private fun parseSentenceSubElement(content: String): GenericElement {
         return content
                 .substring(content.indexOf("{") + 1, content.lastIndexOf("}"))
                 .let {
@@ -218,7 +218,7 @@ object MessageParser {
                         }
                     }
 
-                    SentenceSubElement(
+                    GenericElement(
                             attachments,
                             choices,
                             texts,

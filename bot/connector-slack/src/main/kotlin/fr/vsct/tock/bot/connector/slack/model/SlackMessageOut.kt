@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.bot.connector.slack.model
 
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 
 
 data class SlackMessageOut(
@@ -25,10 +25,10 @@ data class SlackMessageOut(
     val attachments: List<SlackMessageAttachment> = emptyList()
 ) : SlackConnectorMessage() {
 
-    override fun toSentenceElement(): SentenceElement? =
-        SentenceElement(
+    override fun toGenericMessage(): GenericMessage? =
+        GenericMessage(
             texts = mapOf(SlackMessageOut::text.name to text),
-            subElements = attachments.map { it.toSentenceSubElement() }
+            subElements = attachments.map { it.toGenericElement() }
         )
 
 }

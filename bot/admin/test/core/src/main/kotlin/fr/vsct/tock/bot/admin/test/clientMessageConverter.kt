@@ -24,8 +24,8 @@ import fr.vsct.tock.bot.connector.rest.client.model.ClientConnectorType
 import fr.vsct.tock.bot.connector.rest.client.model.ClientLocation
 import fr.vsct.tock.bot.connector.rest.client.model.ClientMessage
 import fr.vsct.tock.bot.connector.rest.client.model.ClientSentence
-import fr.vsct.tock.bot.connector.rest.client.model.ClientSentenceElement
-import fr.vsct.tock.bot.connector.rest.client.model.ClientSentenceSubElement
+import fr.vsct.tock.bot.connector.rest.client.model.ClientGenericMessage
+import fr.vsct.tock.bot.connector.rest.client.model.ClientGenericElement
 import fr.vsct.tock.bot.connector.rest.client.model.ClientUserInterfaceType
 import fr.vsct.tock.bot.connector.rest.client.model.ClientUserLocation
 import fr.vsct.tock.bot.engine.action.SendAttachment
@@ -34,8 +34,8 @@ import fr.vsct.tock.bot.engine.message.Choice
 import fr.vsct.tock.bot.engine.message.Location
 import fr.vsct.tock.bot.engine.message.Message
 import fr.vsct.tock.bot.engine.message.Sentence
-import fr.vsct.tock.bot.engine.message.SentenceElement
-import fr.vsct.tock.bot.engine.message.SentenceSubElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
+import fr.vsct.tock.bot.engine.message.GenericElement
 import fr.vsct.tock.bot.engine.user.UserLocation
 import fr.vsct.tock.translator.UserInterfaceType
 
@@ -91,8 +91,8 @@ fun ClientMessage.toMessage(): Message {
     }
 }
 
-fun SentenceElement.toClientSentenceElement(): ClientSentenceElement {
-    return ClientSentenceElement(
+fun GenericMessage.toClientSentenceElement(): ClientGenericMessage {
+    return ClientGenericMessage(
             connectorType.toClientConnectorType(),
             attachments.map { it.toClientMessage() as ClientAttachment },
             choices.map { it.toClientMessage() as ClientChoice },
@@ -103,8 +103,8 @@ fun SentenceElement.toClientSentenceElement(): ClientSentenceElement {
     )
 }
 
-fun ClientSentenceElement.toSentenceElement(): SentenceElement {
-    return SentenceElement(
+fun ClientGenericMessage.toSentenceElement(): GenericMessage {
+    return GenericMessage(
             connectorType.toConnectorType(),
             attachments.map { it.toMessage() as Attachment },
             choices.map { it.toMessage() as Choice },
@@ -115,8 +115,8 @@ fun ClientSentenceElement.toSentenceElement(): SentenceElement {
     )
 }
 
-fun SentenceSubElement.toClientSentenceSubElement(): ClientSentenceSubElement {
-    return ClientSentenceSubElement(
+fun GenericElement.toClientSentenceSubElement(): ClientGenericElement {
+    return ClientGenericElement(
             attachments.map { it.toClientMessage() as ClientAttachment },
             choices.map { it.toClientMessage() as ClientChoice },
             texts,
@@ -125,8 +125,8 @@ fun SentenceSubElement.toClientSentenceSubElement(): ClientSentenceSubElement {
     )
 }
 
-fun ClientSentenceSubElement.toSentenceSubElement(): SentenceSubElement {
-    return SentenceSubElement(
+fun ClientGenericElement.toSentenceSubElement(): GenericElement {
+    return GenericElement(
             attachments.map { it.toMessage() as Attachment },
             choices.map { it.toMessage() as Choice },
             texts,

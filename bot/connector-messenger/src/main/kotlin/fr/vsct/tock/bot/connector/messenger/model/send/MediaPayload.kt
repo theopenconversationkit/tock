@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 
 /**
  * A Media payload see [https://developers.facebook.com/docs/messenger-platform/send-messages/template/media].
@@ -26,9 +26,9 @@ data class MediaPayload(
     val sharable: Boolean = false
 ) : ModelPayload(PayloadType.media) {
 
-    override fun toSentenceElement(): SentenceElement? {
-        return SentenceElement(
-            subElements = elements.map { it.toSentenceSubElement() }
+    override fun toGenericMessage(): GenericMessage? {
+        return GenericMessage(
+            subElements = elements.map { it.toGenericElement() }
         )
     }
 

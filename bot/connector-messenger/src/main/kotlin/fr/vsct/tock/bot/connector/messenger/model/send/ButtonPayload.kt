@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.bot.connector.messenger.model.send
 
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 import fr.vsct.tock.shared.security.StringObfuscatorMode
 import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 
@@ -26,8 +26,8 @@ import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 //TODO check 640 char text limit
 data class ButtonPayload(val text: String, val buttons: List<Button>) : ModelPayload(PayloadType.button) {
 
-    override fun toSentenceElement(): SentenceElement? {
-        return SentenceElement(
+    override fun toGenericMessage(): GenericMessage? {
+        return GenericMessage(
                 texts = mapOf(ButtonPayload::text.name to text),
                 choices = buttons.map { it.toChoice() }
         )

@@ -22,7 +22,7 @@ import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.file
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.image
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.template
 import fr.vsct.tock.bot.connector.messenger.model.send.AttachmentType.video
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 import fr.vsct.tock.shared.security.StringObfuscatorMode
 
 /**
@@ -31,9 +31,9 @@ import fr.vsct.tock.shared.security.StringObfuscatorMode
 class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickReply>? = null) :
     Message(quickReplies?.run { if (isEmpty()) null else this }) {
 
-    override fun toSentenceElement(): SentenceElement? {
+    override fun toGenericMessage(): GenericMessage? {
         return when (attachment.type) {
-            audio, file, image, video -> SentenceElement(
+            audio, file, image, video -> GenericMessage(
                 this,
                 attachments = listOf(
                     fr.vsct.tock.bot.engine.message.Attachment(
@@ -42,7 +42,7 @@ class AttachmentMessage(val attachment: Attachment, quickReplies: List<QuickRepl
                     )
                 )
             )
-            template -> attachment.payload.toSentenceElement()
+            template -> attachment.payload.toGenericMessage()
         }?.run {
             if (quickReplies?.isNotEmpty() == true) {
                 copy(

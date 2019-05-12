@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.connector.messenger.model.send
 
 import fr.vsct.tock.bot.connector.ConnectorMessage
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 import fr.vsct.tock.shared.security.StringObfuscatorMode
 import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 
@@ -27,15 +27,15 @@ import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 //TODO check 640 char text limit https://developers.facebook.com/docs/messenger-platform/send-api-reference/text-message
 class TextMessage(val text: String, quickReplies: List<QuickReply>? = null) : Message(quickReplies?.run { if (isEmpty()) null else this }) {
 
-    override fun toSentenceElement(): SentenceElement? {
+    override fun toGenericMessage(): GenericMessage? {
         val texts = mapOf("title" to text)
         return if (quickReplies?.isNotEmpty() == true) {
-            SentenceElement(
+            GenericMessage(
                     texts = texts,
                     choices = quickReplies.mapNotNull { it.toChoice() },
                     locations = quickReplies.mapNotNull { it.toLocation() })
         } else {
-            SentenceElement(texts = texts)
+            GenericMessage(texts = texts)
         }
     }
 

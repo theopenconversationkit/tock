@@ -22,7 +22,7 @@ import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType
 import fr.vsct.tock.bot.engine.message.Attachment
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 import fr.vsct.tock.shared.mapNotNullValues
 
 /**
@@ -45,8 +45,8 @@ data class AlexaMessage(
 
     override val connectorType: ConnectorType = alexaConnectorType
 
-    override fun toSentenceElement(): SentenceElement {
-        return SentenceElement(
+    override fun toGenericMessage(): GenericMessage {
+        return GenericMessage(
             attachments = listOfNotNull(
                 card?.run {
                     if (this is StandardCard) {

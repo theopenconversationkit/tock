@@ -16,7 +16,7 @@
 
 package fr.vsct.tock.bot.connector.ga.model.response
 
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 import fr.vsct.tock.shared.mapNotNullValues
 
 data class GASimpleResponse(
@@ -25,8 +25,8 @@ data class GASimpleResponse(
         val displayText: String? = null
 ) {
 
-    fun toSentenceElement(): SentenceElement {
-        return SentenceElement(
+    fun toGenericMessage(): GenericMessage {
+        return GenericMessage(
                 texts = mapNotNullValues(
                         GASimpleResponse::textToSpeech.name to textToSpeech,
                         GASimpleResponse::ssml.name to ssml,

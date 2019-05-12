@@ -22,8 +22,8 @@ import fr.vsct.tock.bot.engine.message.Attachment
 import fr.vsct.tock.bot.engine.message.Choice
 import fr.vsct.tock.bot.engine.message.Location
 import fr.vsct.tock.bot.engine.message.Sentence
-import fr.vsct.tock.bot.engine.message.SentenceElement
-import fr.vsct.tock.bot.engine.message.SentenceSubElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
+import fr.vsct.tock.bot.engine.message.GenericElement
 import fr.vsct.tock.bot.engine.user.UserLocation
 import org.junit.jupiter.api.Test
 import kotlin.test.assertEquals
@@ -74,7 +74,7 @@ class MessageParserTest {
         val s = Sentence(
             null,
             mutableListOf(
-                SentenceElement(
+                GenericMessage(
                     texts = mapOf("1" to "2", "3" to "4"),
                     metadata = mapOf("a" to "b", "c" to "d"),
                     choices = listOf(
@@ -94,7 +94,7 @@ class MessageParserTest {
         val s = Sentence(
             null,
             mutableListOf(
-                SentenceElement(
+                GenericMessage(
                     texts = mapOf("1" to "2", "3" to "4"),
                     metadata = mapOf("a" to "b", "c" to "d"),
                     choices = listOf(
@@ -104,7 +104,7 @@ class MessageParserTest {
                         )
                     ),
                     subElements = listOf(
-                        SentenceSubElement(
+                        GenericElement(
                             texts = mapOf("1" to "2", "3" to "4"),
                             metadata = mapOf("a" to "b", "c" to "d"),
                             choices = listOf(
@@ -114,7 +114,7 @@ class MessageParserTest {
                                 )
                             )
                         ),
-                        SentenceSubElement(
+                        GenericElement(
                             texts = mapOf("1" to "2", "3" to "4"),
                             metadata = mapOf("a" to "b", "c" to "d"),
                             choices = listOf(

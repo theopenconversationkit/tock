@@ -29,20 +29,20 @@ import mu.KotlinLogging
  * Could be a simple text, or a complex message using secondary constructor.
  */
 data class Sentence(
-        val text: String?,
-        val messages: MutableList<SentenceElement> = mutableListOf(),
-        override val delay: Long = 0
+    val text: String?,
+    val messages: MutableList<GenericMessage> = mutableListOf(),
+    override val delay: Long = 0
 ) : Message {
 
     companion object {
         private val logger = KotlinLogging.logger {}
 
-        private fun toSentenceElement(message: ConnectorMessage): SentenceElement =
+        private fun toSentenceElement(message: ConnectorMessage): GenericMessage =
                 try {
-                    message.toSentenceElement() ?: SentenceElement(message)
+                    message.toGenericMessage() ?: GenericMessage(message)
                 } catch (t: Throwable) {
                     logger.error(t)
-                    SentenceElement(message)
+                    GenericMessage(message)
                 }
     }
 

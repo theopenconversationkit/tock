@@ -17,7 +17,7 @@
 package fr.vsct.tock.bot.connector.slack.model.old
 
 import fr.vsct.tock.bot.connector.slack.model.SlackConnectorMessage
-import fr.vsct.tock.bot.engine.message.SentenceElement
+import fr.vsct.tock.bot.engine.message.GenericMessage
 
 
 data class SlackMessageIn(
@@ -37,5 +37,5 @@ data class SlackMessageIn(
         return this.text.replace("${this.trigger_word} ", "")
     }
 
-    override fun toSentenceElement(): SentenceElement = SentenceElement(texts = mapOf(::text.name to text))
+    override fun toGenericMessage(): GenericMessage = GenericMessage(texts = mapOf(::text.name to text))
 }

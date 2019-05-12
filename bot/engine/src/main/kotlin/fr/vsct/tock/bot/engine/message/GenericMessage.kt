@@ -19,20 +19,23 @@ package fr.vsct.tock.bot.engine.message
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.ConnectorType
 
+@Deprecated("now GenericMessage", replaceWith = ReplaceWith("GenericMessage", "fr.vsct.tock.bot.engine.message.GenericMessage"))
+typealias SentenceElement = GenericMessage
+
 /**
  * An aggregation of [Message]s used in [Sentence].
  * This is usually a "generic" view of [ConnectorMessage].
  */
-data class SentenceElement(
-        val connectorType: ConnectorType = ConnectorType.none,
-        val attachments: List<Attachment> = emptyList(),
-        val choices: List<Choice> = emptyList(),
-        //a qualified text map (ie "title" to "Ok computer", "subtitle" to "please listen")
-        val texts: Map<String, String> = emptyMap(),
-        val locations: List<Location> = emptyList(),
-        val metadata: Map<String, String> = emptyMap(),
-        val subElements: List<SentenceSubElement> = emptyList(),
-        @Transient private val connectorMessage: ConnectorMessage? = null
+data class GenericMessage(
+    val connectorType: ConnectorType = ConnectorType.none,
+    val attachments: List<Attachment> = emptyList(),
+    val choices: List<Choice> = emptyList(),
+    //a qualified text map (ie "title" to "Ok computer", "subtitle" to "please listen")
+    val texts: Map<String, String> = emptyMap(),
+    val locations: List<Location> = emptyList(),
+    val metadata: Map<String, String> = emptyMap(),
+    val subElements: List<GenericElement> = emptyList(),
+    @Transient private val connectorMessage: ConnectorMessage? = null
 ) {
 
     constructor(connectorMessage: ConnectorMessage,
@@ -41,16 +44,16 @@ data class SentenceElement(
                 texts: Map<String, String> = emptyMap(),
                 locations: List<Location> = emptyList(),
                 metadata: Map<String, String> = emptyMap(),
-                subElements: List<SentenceSubElement> = emptyList()
+                subElements: List<GenericElement> = emptyList()
     ) : this(
-            connectorMessage.connectorType,
-            attachments,
-            choices,
-            texts,
-            locations,
-            metadata,
-            subElements,
-            connectorMessage) {
+        connectorMessage.connectorType,
+        attachments,
+        choices,
+        texts,
+        locations,
+        metadata,
+        subElements,
+        connectorMessage) {
     }
 
     internal fun findConnectorMessage() = connectorMessage

@@ -18,21 +18,21 @@ package fr.vsct.tock.bot.connector.messenger.model.send
 
 import com.fasterxml.jackson.annotation.JsonProperty
 import fr.vsct.tock.bot.engine.action.SendAttachment.AttachmentType.image
-import fr.vsct.tock.bot.engine.message.SentenceSubElement
+import fr.vsct.tock.bot.engine.message.GenericElement
 import fr.vsct.tock.shared.mapNotNullValues
 import fr.vsct.tock.shared.security.StringObfuscatorMode
 import fr.vsct.tock.shared.security.TockObfuscatorService.obfuscate
 
 /**
- * List or generic template elements.
+ * List or generic template subElements.
  */
 data class Element(val title: String,
                    @JsonProperty("image_url") val imageUrl: String? = null,
                    val subtitle: String? = null,
                    val buttons: List<Button>? = null) {
 
-    fun toSentenceSubElement(): SentenceSubElement {
-        return SentenceSubElement(
+    fun toGenericElement(): GenericElement {
+        return GenericElement(
                 choices = buttons?.map { it.toChoice() } ?: emptyList(),
                 texts = mapNotNullValues(
                         Element::title.name to title,
