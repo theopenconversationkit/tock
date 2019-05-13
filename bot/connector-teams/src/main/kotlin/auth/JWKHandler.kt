@@ -20,7 +20,7 @@ import kotlin.concurrent.fixedRateTimer
  * Handle the generation and the refresh of ths jks
  * Those jks are used to check the authenticity of incoming request
  */
-object JWKHandler {
+class JWKHandler {
 
     @Volatile
     private var tokenIds: ArrayList<String>? = null
@@ -30,12 +30,14 @@ object JWKHandler {
 
     private val logger = KotlinLogging.logger {}
 
-    private var OPENID_METADATA_LOCATION: String = "https://login.botframework.com/v1/"
-    private var JKS_BASE_LOCATION: String = "https://login.botframework.com/v1/.well-known/keys/"
-    private var OPENID_METADATA_LOCATION_BOT_FWK_EMULATOR = "https://login.microsoftonline.com/botframework.com/v2.0/"
-
     private val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
     private lateinit var jwkTimerTask: Timer
+
+    companion object {
+        private var OPENID_METADATA_LOCATION: String = "https://login.botframework.com/v1/"
+        private var JKS_BASE_LOCATION: String = "https://login.botframework.com/v1/.well-known/keys/"
+        private var OPENID_METADATA_LOCATION_BOT_FWK_EMULATOR = "https://login.microsoftonline.com/botframework.com/v2.0/"
+    }
 
     private var microsoftOpenIdMetadataApiForBotFwkEmulator: MicrosoftOpenIdMetadataApi = retrofitBuilderWithTimeoutAndLogger(
         longProperty("tock_microsoft_request_timeout", 5000),
@@ -67,8 +69,8 @@ object JWKHandler {
         .build()
         .create()
 
-    fun launchJWKCollector(msInterval: Long = 23 * 60 * 60 * 1000L) {
-        jwkTimerTask = fixedRateTimer("microsoft-jwk-collector", initialDelay = 0L, period = msInterval) {
+    fun launchJWKCollector(connectorId: String, msInterval: Long = 23 * 60 * 60 * 1000L) {
+        jwkTimerTask = fixedRateTimer("microsoft-jwk-collector-$connectorId", initialDelay = 0L, period = msInterval) {
             collectJWK()
         }
     }

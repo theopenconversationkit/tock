@@ -25,8 +25,7 @@ import fr.vsct.tock.bot.connector.ConnectorCallback
 import fr.vsct.tock.bot.connector.ConnectorData
 import fr.vsct.tock.bot.connector.teams.auth.AuthenticateBotConnectorService
 import fr.vsct.tock.bot.connector.teams.auth.ForbiddenException
-import fr.vsct.tock.bot.connector.teams.auth.JWKHandler.launchJWKCollector
-import fr.vsct.tock.bot.connector.teams.auth.JWKHandler.stopJWKCollector
+import fr.vsct.tock.bot.connector.teams.auth.JWKHandler
 import fr.vsct.tock.bot.connector.teams.messages.SendActionConverter
 import fr.vsct.tock.bot.connector.teams.token.TokenHandler
 import fr.vsct.tock.bot.engine.BotRepository
@@ -60,6 +59,7 @@ internal class TeamsConnector(
 
     private var tokenHandler = TokenHandler(appId, appPassword)
     private val client = TeamsClient(tokenHandler)
+    private val jwkHandler = JWKHandler()
     private val executor: Executor by injector.instance()
     private val authenticateBotConnectorService = AuthenticateBotConnectorService(appId)
 
@@ -67,14 +67,15 @@ internal class TeamsConnector(
         super.unregister(controller)
         logger.debug("Stopping tokenCollector for $connectorId")
         tokenHandler.stopTokenCollector()
-        stopJWKCollector()
+        logger.debug("Stopping JWKHandler for $connectorId")
+        jwkHandler.stopJWKCollector()
     }
 
     override fun register(controller: ConnectorController) {
 
         logger.debug("Register TeamsConnector : $connectorId")
         tokenHandler.launchTokenCollector(connectorId)
-        launchJWKCollector()
+        jwkHandler.launchJWKCollector(connectorId)
 
         controller.registerServices(path) { router ->
 
@@ -90,6 +91,7 @@ internal class TeamsConnector(
                             throw NoMessageException("The activity received is not a message")
                         }
                         authenticateBotConnectorService.checkRequestValidity(
+                            jwkHandler,
                             context.request().headers(),
                             activity
                         )

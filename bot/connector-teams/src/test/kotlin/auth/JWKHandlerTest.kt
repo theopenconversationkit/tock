@@ -16,6 +16,7 @@ class JWKHandlerTest {
 
     private var authenticateBotConnectorService: AuthenticateBotConnectorService = AuthenticateBotConnectorService("fakeAppId")
     private lateinit var server: MockWebServer
+    private val jwkHandler = JWKHandler()
 
     @BeforeAll
     fun launchJWKCollector() {
@@ -23,11 +24,11 @@ class JWKHandlerTest {
 
         server = getMicrosoftMockServer()
 
-        JWKHandler.setJKSBaseLocation("http://${server.hostName}:${server.port}/")
-        JWKHandler.setOpenIdMatadataLocation("http://${server.hostName}:${server.port}/")
-        JWKHandler.setOpenIdMatadataLocationBotFwkEmulator("http://${server.hostName}:${server.port}/")
+        jwkHandler.setJKSBaseLocation("http://${server.hostName}:${server.port}/")
+        jwkHandler.setOpenIdMatadataLocation("http://${server.hostName}:${server.port}/")
+        jwkHandler.setOpenIdMatadataLocationBotFwkEmulator("http://${server.hostName}:${server.port}/")
 
-        JWKHandler.launchJWKCollector(3000)
+        jwkHandler.launchJWKCollector("connectorId", 3000)
 
         Thread.sleep(500)
     }
