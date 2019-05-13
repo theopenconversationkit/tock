@@ -58,23 +58,22 @@ internal class TeamsConnector(
         private val logger = KotlinLogging.logger {}
     }
 
-    private var listOfTokenHandler = mutableMapOf<String, TokenHandler>()
-    private val tokenHandler = TokenHandler(appId, appPassword)
-
+    private var tokenHandler = TokenHandler(appId, appPassword)
     private val client = TeamsClient(tokenHandler)
     private val executor: Executor by injector.instance()
     private val authenticateBotConnectorService = AuthenticateBotConnectorService(appId)
 
     override fun unregister(controller: ConnectorController) {
         super.unregister(controller)
-        listOfTokenHandler[connectorId]?.stopTokenCollector()
-        listOfTokenHandler.remove(connectorId)
+        logger.debug("Stopping tokenCollector for $connectorId")
+        tokenHandler.stopTokenCollector()
         stopJWKCollector()
     }
 
     override fun register(controller: ConnectorController) {
-        tokenHandler.launchTokenCollector()
-        listOfTokenHandler[this.connectorId] = tokenHandler
+
+        logger.debug("Register TeamsConnector : $connectorId")
+        tokenHandler.launchTokenCollector(connectorId)
         launchJWKCollector()
 
         controller.registerServices(path) { router ->
