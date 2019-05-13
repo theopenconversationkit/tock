@@ -2,12 +2,8 @@ package fr.vsct.tock.bot.connector.teams.token
 
 import com.fasterxml.jackson.databind.ObjectMapper
 import com.fasterxml.jackson.databind.PropertyNamingStrategy
-import fr.vsct.tock.shared.Level
-import fr.vsct.tock.shared.addJacksonConverter
-import fr.vsct.tock.shared.create
+import fr.vsct.tock.shared.*
 import fr.vsct.tock.shared.jackson.mapper
-import fr.vsct.tock.shared.longProperty
-import fr.vsct.tock.shared.retrofitBuilderWithTimeoutAndLogger
 import mu.KotlinLogging
 import java.time.Instant
 import java.time.temporal.ChronoUnit
@@ -28,6 +24,7 @@ class TokenHandler(private val appId: String, private val password: String) {
     private var tokenExpiration: Instant? = null
 
     val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
+    @Volatile
     private lateinit var tokenTimerTask: Timer
 
     var loginApi: LoginMicrosoftOnline = retrofitBuilderWithTimeoutAndLogger(
@@ -68,8 +65,8 @@ class TokenHandler(private val appId: String, private val password: String) {
         tokenExpiration = Instant.now().plus(response.body()?.expiresIn!!, ChronoUnit.SECONDS)
     }
 
-    fun launchTokenCollector(msInterval: Long = 60 * 60 * 1000L) {
-        tokenTimerTask = fixedRateTimer(name = "microsoft-api-token-handling", initialDelay = 0L, period = msInterval) {
+    fun launchTokenCollector(connectorId: String, msInterval: Long =60 * 60 * 1000L) {
+        tokenTimerTask = fixedRateTimer(name = "microsoft-api-token-handling-$connectorId", initialDelay = 0L, period = msInterval) {
             checkToken()
         }
     }
@@ -78,6 +75,8 @@ class TokenHandler(private val appId: String, private val password: String) {
         if (::tokenTimerTask.isInitialized) {
             tokenTimerTask.cancel()
             tokenTimerTask.purge()
+        } else {
+            logger.error("Trying to stop an uninitialized tokentimertask !")
         }
     }
 

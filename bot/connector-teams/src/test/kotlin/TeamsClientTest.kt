@@ -46,7 +46,7 @@ class TeamsClientTest {
             logger
         ).baseUrl("http://${server.hostName}:${server.port}/").addJacksonConverter(tokenHandler.teamsMapper).build().create()
 
-        tokenHandler.launchTokenCollector()
+        tokenHandler.launchTokenCollector("connectorID")
         //Sleep to let the time to fetchToken() async method to execute
         Thread.sleep(1000)
         assertEquals(
