@@ -59,7 +59,6 @@
 
   </mat-card-content>
   <mat-card-actions *ngIf="storyNode">
-    <button *ngIf="story._id" (click)="deleteStory()" mat-raised-button color="warn">Delete Story</button>
     <button *ngIf="!story._id" (click)="saveNewStory()" mat-raised-button color="primary">Create Story</button>
   </mat-card-actions>
 </mat-card>
