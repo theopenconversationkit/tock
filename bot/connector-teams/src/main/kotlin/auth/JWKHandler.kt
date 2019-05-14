@@ -30,6 +30,8 @@ class JWKHandler {
 
     private val logger = KotlinLogging.logger {}
 
+    private val logLevel = if (logger.isDebugEnabled) {Level.BODY} else {Level.BASIC}
+
     private val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
     private lateinit var jwkTimerTask: Timer
 
@@ -42,7 +44,7 @@ class JWKHandler {
     private var microsoftOpenIdMetadataApiForBotFwkEmulator: MicrosoftOpenIdMetadataApi = retrofitBuilderWithTimeoutAndLogger(
         longProperty("tock_microsoft_request_timeout", 5000),
         this.logger,
-        level = Level.BASIC
+        logLevel
     )
         .baseUrl(OPENID_METADATA_LOCATION_BOT_FWK_EMULATOR)
         .addJacksonConverter(teamsMapper)
@@ -52,7 +54,7 @@ class JWKHandler {
     private var microsoftOpenIdMetadataApi: MicrosoftOpenIdMetadataApi  = retrofitBuilderWithTimeoutAndLogger(
         longProperty("tock_microsoft_request_timeout", 5000),
         logger,
-        level = Level.BASIC
+        logLevel
     )
         .baseUrl(OPENID_METADATA_LOCATION)
         .addJacksonConverter(teamsMapper)
@@ -62,7 +64,7 @@ class JWKHandler {
     private var microsoftJwksApi: MicrosoftJwksApi = retrofitBuilderWithTimeoutAndLogger(
         longProperty("tock_microsoft_request_timeout", 5000),
         this.logger,
-        level = Level.BASIC
+        logLevel
     )
         .baseUrl(JKS_BASE_LOCATION)
         .addJacksonConverter(teamsMapper)

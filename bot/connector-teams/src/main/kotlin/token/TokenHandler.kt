@@ -23,6 +23,8 @@ class TokenHandler(private val appId: String, private val password: String) {
     @Volatile
     private var tokenExpiration: Instant? = null
 
+    private val logLevel = if (logger.isDebugEnabled) {Level.BODY} else {Level.BASIC}
+
     val teamsMapper: ObjectMapper = mapper.copy().setPropertyNamingStrategy(PropertyNamingStrategy.SNAKE_CASE)
     @Volatile
     private lateinit var tokenTimerTask: Timer
@@ -30,7 +32,7 @@ class TokenHandler(private val appId: String, private val password: String) {
     var loginApi: LoginMicrosoftOnline = retrofitBuilderWithTimeoutAndLogger(
         longProperty("tock_microsoft_request_timeout", 30000),
         logger,
-        level = Level.BASIC
+        logLevel
     )
         .baseUrl("https://login.microsoftonline.com")
         .addJacksonConverter(teamsMapper)
