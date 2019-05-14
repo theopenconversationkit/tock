@@ -19,6 +19,7 @@ import com.fasterxml.jackson.databind.annotation.JsonDeserialize
 import fr.vsct.tock.bot.connector.twitter.json.EventDeserializer
 import fr.vsct.tock.bot.connector.twitter.model.TwitterConnectorMessage
 import fr.vsct.tock.bot.connector.twitter.model.User
+import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
 
@@ -27,7 +28,6 @@ import fr.vsct.tock.bot.engine.user.PlayerType
  */
 @JsonDeserialize(using = EventDeserializer::class)
 abstract class IncomingEvent : TwitterConnectorMessage() {
-
     abstract val forUserId: String
     abstract val users: Map<String, User>
 
@@ -39,4 +39,5 @@ abstract class IncomingEvent : TwitterConnectorMessage() {
         playerType
     )
 
+    abstract fun toEvent(applicationId: String): Event?
 }

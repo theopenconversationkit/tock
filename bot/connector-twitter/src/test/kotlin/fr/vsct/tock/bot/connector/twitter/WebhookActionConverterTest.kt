@@ -105,7 +105,7 @@ internal class WebhookActionConverterTest {
             )
         )
 
-        val event = WebhookActionConverter.toEvent(directMessageSent, "appId")
+        val event = directMessageSent.toEvent("appId")
         assertThat(event).isNull()
     }
 
@@ -167,7 +167,7 @@ internal class WebhookActionConverterTest {
             )
         )
 
-        val event = WebhookActionConverter.toEvent(directMessageReceived, "appId") as SendSentence
+        val event = directMessageReceived.toEvent("appId") as SendSentence
         val expectedEvent = SendSentence(
             PlayerId("707685546848550916"),
             "appId",
@@ -227,13 +227,13 @@ internal class WebhookActionConverterTest {
             )
         )
 
-        val event = WebhookActionConverter.toEvent(typingEvent, "appId")
+        val event = typingEvent.toEvent("appId")
         assertThat(event).isNull()
     }
 
     @Test
     fun `incoming tweet with mention`() {
-        val expected = TweetIncomingEvent(
+        val tweetIncomingEvent = TweetIncomingEvent(
             forUserId = "602907365",
             tweets = listOf(
                 Tweet(
@@ -267,7 +267,7 @@ internal class WebhookActionConverterTest {
             )
         )
 
-        val event = WebhookActionConverter.toEvent(expected, "appId") as SendSentence
+        val event = tweetIncomingEvent.toEvent("appId") as SendSentence
         val expectedEvent = SendSentence(
             PlayerId("14235326", PlayerType.bot),
             "appId",
@@ -320,7 +320,7 @@ internal class WebhookActionConverterTest {
             )
         )
 
-        val event = WebhookActionConverter.toEvent(expected, "appId") as SendSentence
+        val event = expected.toEvent("appId") as SendSentence
         val expectedEvent = SendSentence(
             PlayerId("14235326", PlayerType.bot),
             "appId",
@@ -373,7 +373,7 @@ internal class WebhookActionConverterTest {
             )
         )
 
-        val event = WebhookActionConverter.toEvent(expected, "appId")
+        val event = expected.toEvent("appId")
         assertThat(event).isNull()
     }
 }

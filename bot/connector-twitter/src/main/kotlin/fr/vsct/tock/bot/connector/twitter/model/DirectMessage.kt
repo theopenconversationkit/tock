@@ -45,4 +45,14 @@ data class DirectMessage(
             }
         }
 
+    fun isQuote(): Boolean =
+        textWithoutUrls().isBlank() && messageCreated.messageData.entities?.urls?.all { url -> url.url.startsWith("https://t.co/") } ?: false
+
+    fun textWithoutUrls(): String {
+        val messageData = messageCreated.messageData
+
+        return messageData.entities?.urls?.fold(messageData.text) { acc, url ->
+            acc.replace(url.url, "")
+        }?: messageData.text
+    }
 }

@@ -18,6 +18,7 @@ package fr.vsct.tock.bot.connector.twitter.model.incoming
 import com.fasterxml.jackson.annotation.JsonProperty
 import fr.vsct.tock.bot.connector.twitter.model.DirectMessageIndicateTyping
 import fr.vsct.tock.bot.connector.twitter.model.User
+import fr.vsct.tock.bot.engine.event.Event
 
 /**
  * Direct Message Indicate Typing IncomingEvent
@@ -28,4 +29,8 @@ data class DirectMessageIndicateTypingIncomingEvent(
     override val users: Map<String, User>,
     @JsonProperty("direct_message_indicate_typing_events")
     val directMessagesIndicateTyping: List<DirectMessageIndicateTyping>
-) : IncomingEvent()
+) : IncomingEvent() {
+    override fun toEvent(applicationId: String): Event? {
+        return null
+    }
+}

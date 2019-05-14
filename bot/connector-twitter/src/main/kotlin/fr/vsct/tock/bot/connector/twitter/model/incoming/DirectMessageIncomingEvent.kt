@@ -18,9 +18,17 @@ package fr.vsct.tock.bot.connector.twitter.model.incoming
 import com.fasterxml.jackson.annotation.JsonProperty
 import fr.vsct.tock.bot.connector.twitter.model.Application
 import fr.vsct.tock.bot.connector.twitter.model.DirectMessage
+import fr.vsct.tock.bot.connector.twitter.model.OptionsResponse
 import fr.vsct.tock.bot.connector.twitter.model.User
+import fr.vsct.tock.bot.engine.action.ActionMetadata
+import fr.vsct.tock.bot.engine.action.ActionVisibility
+import fr.vsct.tock.bot.engine.action.SendChoice
+import fr.vsct.tock.bot.engine.action.SendSentence
+import fr.vsct.tock.bot.engine.event.ContinuePublicConversationInPrivateEvent
+import fr.vsct.tock.bot.engine.event.Event
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.PlayerType
+import mu.KotlinLogging
 
 /**
  * Direct Message IncomingEvent
@@ -33,8 +41,70 @@ data class DirectMessageIncomingEvent(
     @JsonProperty("direct_message_events")
     val directMessages: List<DirectMessage>
 ) : IncomingEvent() {
+    companion object {
+        private val logger = KotlinLogging.logger {}
+    }
+
     override fun playerId(playerType: PlayerType): PlayerId =
         directMessages.first().playerId(playerType)
 
     override fun recipientId(playerType: PlayerType): PlayerId = directMessages.first().recipientId(playerType)
+
+    override fun toEvent(
+        applicationId: String
+    ): Event? {
+        // ignore direct message sent from the bot
+        val firstOrNull = directMessages.firstOrNull()
+        return if (!forUserId.equals(firstOrNull?.messageCreated?.senderId)) {
+            firstOrNull?.let {
+                val quickReplyResponse = it.messageCreated.messageData.quickReplyResponse
+                return if (quickReplyResponse != null) {
+                    when (quickReplyResponse) {
+                        is OptionsResponse -> {
+                            SendChoice.decodeChoiceId(quickReplyResponse.metadata)
+                                .let { (intentName, parameters) ->
+                                    if (parameters.containsKey(SendChoice.NLP)) {
+                                        SendSentence(
+                                            playerId(PlayerType.user),
+                                            applicationId,
+                                            recipientId(PlayerType.bot),
+                                            parameters[SendChoice.NLP],
+                                            metadata = ActionMetadata(visibility = ActionVisibility.private)
+                                        )
+                                    } else {
+                                        SendChoice(
+                                            playerId(PlayerType.user),
+                                            applicationId,
+                                            recipientId(PlayerType.bot),
+                                            intentName,
+                                            parameters,
+                                            metadata = ActionMetadata(visibility = ActionVisibility.private)
+                                        )
+                                    }
+                                }
+                        }
+                        else -> {
+                            logger.debug { "unknown quick reply response type $this" }
+                            null
+                        }
+                    }
+                } else {
+                    if(it.isQuote()) {
+                        ContinuePublicConversationInPrivateEvent(playerId(PlayerType.user), recipientId(PlayerType.bot), applicationId)
+                    } else {
+                        SendSentence(
+                            playerId(PlayerType.user),
+                            applicationId,
+                            recipientId(PlayerType.bot),
+                            it.textWithoutUrls(),
+                            metadata = ActionMetadata(visibility = ActionVisibility.private)
+                        )
+                    }
+                }
+            }
+        } else {
+            logger.debug { "ignore event $this from applicationId $applicationId" }
+            null
+        }
+    }
 }
