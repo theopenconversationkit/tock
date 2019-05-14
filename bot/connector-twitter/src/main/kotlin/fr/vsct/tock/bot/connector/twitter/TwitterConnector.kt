@@ -137,7 +137,7 @@ internal class TwitterConnector internal constructor(
                             } else {
                                 logger.info { incomingEvent }
                                 executor.executeBlocking {
-                                    val event = WebhookActionConverter.toEvent(incomingEvent, applicationId)
+                                    val event = incomingEvent.toEvent(applicationId)
                                     val (threadId, visibility) = if (incomingEvent is TweetIncomingEvent) {
                                         incomingEvent.tweets.first().id to ActionVisibility.public
                                     } else {

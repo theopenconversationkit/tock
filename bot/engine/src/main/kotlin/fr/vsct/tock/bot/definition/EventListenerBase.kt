@@ -48,16 +48,7 @@ open class EventListenerBase : EventListener {
                 if (this == null && !force) {
                     false
                 } else {
-                    controller.handle(
-                            SendChoice(
-                                    event.userId,
-                                    event.applicationId,
-                                    event.recipientId,
-                                    (this?.mainIntent() ?: controller.botDefinition.stories.first().mainIntent()).name,
-                                    state = event.state
-                            ),
-                            connectorData
-                    )
+                    sendChoice(event, this?.mainIntent() ?: controller.botDefinition.stories.first().mainIntent(), controller, connectorData)
                     true
                 }
 
@@ -78,5 +69,16 @@ open class EventListenerBase : EventListener {
         }
     }
 
-
+    protected fun sendChoice(event: OneToOneEvent, intent: IntentAware, controller: ConnectorController, connectorData: ConnectorData) {
+        controller.handle(
+            SendChoice(
+                event.userId,
+                event.applicationId,
+                event.recipientId,
+                intent.wrappedIntent().name,
+                state = event.state
+            ),
+            connectorData
+        )
+    }
 }
