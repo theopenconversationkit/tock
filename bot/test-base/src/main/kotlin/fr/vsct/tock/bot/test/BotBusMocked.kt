@@ -19,17 +19,22 @@ package fr.vsct.tock.bot.test
 import fr.vsct.tock.bot.connector.ConnectorMessage
 import fr.vsct.tock.bot.connector.messenger.messengerConnectorType
 import fr.vsct.tock.bot.connector.messenger.model.MessengerConnectorMessage
-import fr.vsct.tock.bot.connector.messenger.model.send.UrlButton
-import fr.vsct.tock.bot.connector.messenger.urlButton
 import fr.vsct.tock.bot.connector.messenger.withMessenger
 import fr.vsct.tock.bot.connector.twitter.model.TwitterConnectorMessage
 import fr.vsct.tock.bot.connector.twitter.twitterConnectorType
 import fr.vsct.tock.bot.connector.twitter.withTwitter
 import fr.vsct.tock.bot.definition.BotDefinition
+import fr.vsct.tock.bot.definition.IntentAware
 import fr.vsct.tock.bot.definition.StoryDefinitionBase
 import fr.vsct.tock.bot.definition.StoryHandlerBase
+import fr.vsct.tock.bot.definition.StoryHandlerDefinition
+import fr.vsct.tock.bot.definition.StoryStep
 import fr.vsct.tock.bot.engine.BotBus
+import fr.vsct.tock.bot.engine.action.Action
+import fr.vsct.tock.bot.engine.action.SendChoice
 import fr.vsct.tock.bot.engine.dialog.EntityValue
+import fr.vsct.tock.bot.engine.message.Message
+import fr.vsct.tock.bot.engine.message.MessagesList
 import fr.vsct.tock.bot.engine.user.PlayerId
 import fr.vsct.tock.bot.engine.user.UserPreferences
 import fr.vsct.tock.bot.engine.user.UserState
@@ -37,24 +42,38 @@ import fr.vsct.tock.bot.engine.user.UserTimeline
 import fr.vsct.tock.nlp.api.client.model.Entity
 import fr.vsct.tock.nlp.entity.Value
 import fr.vsct.tock.shared.defaultLocale
+import fr.vsct.tock.translator.I18nContext
+import fr.vsct.tock.translator.Translator
 import fr.vsct.tock.translator.UserInterfaceType.textAndVoiceAssistant
+import fr.vsct.tock.translator.UserInterfaceType.textChat
+import io.mockk.clearAllMocks
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
 import io.mockk.mockkStatic
 import java.time.Instant
+
+private val endCalled = ThreadLocal<Boolean>()
 
 /**
  * Test a [StoryDefinition] with a mocked (mockk) [BotBus].
  */
 fun StoryDefinitionBase.test(bus: BotBus) {
-    (storyHandler as? StoryHandlerBase<*>)?.newHandlerDefinition(bus)?.handle()
+    endCalled.remove()
+    val handler = storyHandler as? StoryHandlerBase<*>
+    handler?.checkPreconditions()?.invoke(bus)
+    if (endCalled.get() != true) {
+        (storyHandler as? StoryHandlerBase<*>)?.newHandlerDefinition(bus)?.handle()
             ?: error("story handler is not a StoryHandlerBase")
+    }
 }
 
 /**
  * Default mockk BotBus configuration.
  */
 fun mockTockCommon(bus: BotBus) {
+    clearAllMocks()
+
     every { bus.step } returns null
     every { bus.currentAnswerIndex } returns 0
     every { bus.choice(any()) } returns null
@@ -77,10 +96,12 @@ fun mockTockCommon(bus: BotBus) {
     }
 
     //send
+    every { bus.send(any<Message>(), any()) } returns bus
+    every { bus.send(any<Action>(), any()) } returns bus
     every { bus.send(any<Long>()) } returns bus
-    every { bus.send(any<String>(), any()) } returns bus
-    every { bus.send(any<String>(), any(), *anyVararg()) } returns bus
-    every { bus.send(any<String>(), *anyVararg()) } returns bus
+    every { bus.send(any<CharSequence>(), any()) } returns bus
+    every { bus.send(any(), any(), *anyVararg()) } returns bus
+    every { bus.send(any(), *anyVararg()) } returns bus
     every { bus.send(any<Long>(), any()) }.answers {
         @Suppress("UNCHECKED_CAST")
         (args[1] as BotBus.() -> Any?).invoke(bus)
@@ -88,14 +109,19 @@ fun mockTockCommon(bus: BotBus) {
     }
 
     // end
-    every { bus.end(any<Long>()) } returns bus
-    every { bus.end(any<String>(), any()) } returns bus
-    every { bus.end(any<String>(), any(), *anyVararg()) } returns bus
-    every { bus.end(any<String>(), *anyVararg()) } returns bus
+    fun BotBus.endCall(): BotBus = apply { endCalled.set(true) }
+
+    every { bus.end(any<MessagesList>(), any()) } answers { bus.endCall() }
+    every { bus.end(any<Message>(), any()) } answers { bus.endCall() }
+    every { bus.end(any<Action>(), any()) } answers { bus.endCall() }
+    every { bus.end(any<Long>()) } answers { bus.endCall() }
+    every { bus.end(any<CharSequence>(), any()) } answers { bus.endCall() }
+    every { bus.end(any(), any(), *anyVararg()) } answers { bus.endCall() }
+    every { bus.end(any(), *anyVararg()) } answers { bus.endCall() }
     every { bus.end(any<Long>(), any()) }.answers {
         @Suppress("UNCHECKED_CAST")
         (args[1] as BotBus.() -> Any?).invoke(bus)
-        bus
+        bus.endCall()
     }
 
     every {
@@ -138,8 +164,30 @@ fun mockTockCommon(bus: BotBus) {
     every { bus.userInterfaceType } returns textAndVoiceAssistant
 
     val botDefinition: BotDefinition = mockk()
-    every { bus.botDefinition} returns botDefinition
-    every { botDefinition.defaultDelay(any())} returns 0
+    every { bus.botDefinition } returns botDefinition
+    every { botDefinition.defaultDelay(any()) } returns 0
+    every { bus.resetDialogState() } returns Unit
+
+    every { bus.translate(any()) } answers { args[0] as CharSequence }
+    every { bus.translate(any(), *anyVararg()) } answers {
+        Translator.formatMessage(
+            args[0] as String,
+            I18nContext(defaultLocale, textChat, null),
+            args.subList(1, args.size)
+        )
+    }
+
+    mockkObject(SendChoice.Companion)
+    every {
+        SendChoice.encodeChoiceId(bus, any(), any(), any())
+    } answers {
+        SendChoice.encodeChoiceId(
+            (args[1] as IntentAware).wrappedIntent(),
+            args[2] as? StoryStep<out StoryHandlerDefinition>,
+            (args[3] as? Map<String, String>) ?: emptyMap(),
+            null,
+            null)
+    }
 }
 
 /**
@@ -155,11 +203,6 @@ fun mockMessenger(bus: BotBus) {
             (args[1] as (() -> MessengerConnectorMessage)).invoke()
         }
         bus
-    }
-    every { bus.urlButton(any(), any()) }.answers {
-        UrlButton(
-            args[2] as String, (args[1] as String).toString()
-        )
     }
 }
 
