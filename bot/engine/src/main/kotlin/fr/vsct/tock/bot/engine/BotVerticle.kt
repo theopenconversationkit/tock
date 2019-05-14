@@ -41,12 +41,12 @@ import java.util.concurrent.CopyOnWriteArraySet
 internal class BotVerticle : WebVerticle() {
 
     inner class ServiceInstaller(
-            val serviceId: String,
-            private val installer: (Router) -> Unit,
-            var routes: MutableList<Route> = CopyOnWriteArrayList(),
-            @Volatile
-            var installed: Boolean = false,
-            val registrationDate: Instant = Instant.now()
+        val serviceId: String,
+        private val installer: (Router) -> Unit,
+        var routes: MutableList<Route> = CopyOnWriteArrayList(),
+        @Volatile
+        var installed: Boolean = false,
+        val registrationDate: Instant = Instant.now()
     ) {
 
         fun install() {
@@ -93,20 +93,20 @@ internal class BotVerticle : WebVerticle() {
         }
         if (handlers[installer.serviceId] == installer) {
             handlers.remove(installer.serviceId)
-                    ?.also {
-                        val s = secondaryInstallers.find {
-                            it.serviceId == installer.serviceId
-                        }
-
-                        logger.debug { "remove service ${it.serviceId}" }
-                        it.uninstall()
-                        if (s != null) {
-                            s.install()
-                            secondaryInstallers.remove(s)
-                            handlers[it.serviceId] = s
-                        }
-                        return
+                ?.also {
+                    val s = secondaryInstallers.find {
+                        it.serviceId == installer.serviceId
                     }
+
+                    logger.debug { "remove service ${it.serviceId}" }
+                    it.uninstall()
+                    if (s != null) {
+                        s.install()
+                        secondaryInstallers.remove(s)
+                        handlers[it.serviceId] = s
+                    }
+                    return
+                }
         }
     }
 
@@ -135,7 +135,7 @@ internal class BotVerticle : WebVerticle() {
     }
 
     private fun install() {
-        if (handlers.isNotEmpty()) {
+        if (handlers.isNotEmpty() && handlers.any { !it.value.installed }) {
             logger.info { "Install Bot Services / ${handlers.size} registered" }
             //sort installers by registration date to keep registration order
             handlers.values.sortedBy { it.registrationDate }.forEach {
