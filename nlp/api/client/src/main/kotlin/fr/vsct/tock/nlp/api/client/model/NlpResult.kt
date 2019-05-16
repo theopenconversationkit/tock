@@ -58,7 +58,11 @@ data class NlpResult(
     /**
      * Other intents with significant probabilities.
      */
-    val otherIntentsProbabilities: Map<String, Double> = emptyMap()
+    val otherIntentsProbabilities: Map<String, Double> = emptyMap(),
+    /**
+     * The static text response possibly returned for the [NlpQuery]
+     */
+    val staticResponse: String? = null
 ) {
 
     fun firstValue(role: String): NlpEntityValue? = entities.firstOrNull { it.entity.role == role }

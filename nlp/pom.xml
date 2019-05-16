@@ -43,6 +43,7 @@
         <module>api</module>
 
         <module>integration-tests</module>
+        <module>dialogflow</module>
     </modules>
 
     <dependencyManagement>
@@ -99,6 +100,11 @@
             </dependency>
             <dependency>
                 <groupId>fr.vsct.tock</groupId>
+                <artifactId>tock-nlp-model-stanford</artifactId>
+                <version>19.3.0</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
                 <artifactId>tock-nlp-model-storage-mongo</artifactId>
                 <version>${project.version}</version>
             </dependency>
@@ -131,6 +137,11 @@
             <dependency>
                 <groupId>fr.vsct.tock</groupId>
                 <artifactId>tock-nlp-front-ioc</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>fr.vsct.tock</groupId>
+                <artifactId>tock-nlp-dialogflow</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
